@@ -307,6 +307,29 @@ function MessageBubble({ message, isOwn, showAvatar, currentUserEmail, onReact, 
           />
         ))}
       </div>
+
+      {/* Accessible delete confirmation dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="bg-gray-900 border-gray-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete message?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-gray-800 border-gray-700 text-gray-200 hover:bg-gray-700">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => onDelete?.(message.id)}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
