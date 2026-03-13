@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import ShareableSignalCard from '@/components/epics/02-signal-feed/feed/ShareableSignalCard';
+import { ShareableSignalCard } from '@/components/epics/02-signal-feed/feed';
 import { Search, Loader2, AlertCircle } from 'lucide-react';
 
 export default function SignalSearch() {

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Plus, X, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import ServiceComparison from '@/components/epics/01-index-engine/talent/ServiceComparison';
+import { ServiceComparison } from '@/components/epics/01-index-engine/talent';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

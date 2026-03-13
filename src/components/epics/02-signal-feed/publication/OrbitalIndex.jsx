@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 import { buildGraphFromNominees } from '@/functions/buildGraphFromNominees';
-import KnowledgeGraph from '@/components/epics/01-index-engine/discovery/KnowledgeGraph';
+import { KnowledgeGraph } from '@/components/epics/01-index-engine/discovery';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

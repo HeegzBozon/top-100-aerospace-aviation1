@@ -7,7 +7,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Camera, Loader2, Save, Mail, UserCircle, Linkedin } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import LinkedInConnect from '@/components/capabilities/onboarding/LinkedInConnect';
+import { LinkedInConnect } from '@/components/capabilities/onboarding';
 
 export default function UserProfileEditor({ user }) {
   const [formData, setFormData] = useState({

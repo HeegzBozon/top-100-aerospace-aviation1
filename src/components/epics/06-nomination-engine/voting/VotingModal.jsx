@@ -3,8 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Eye, Trophy } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import PairwiseVoting from '@/components/epics/06-nomination-engine/voting/PairwiseVoting';
-import RankedChoiceVoting from '@/components/epics/06-nomination-engine/voting/RankedChoiceVoting';
+import { PairwiseVoting } from '@/components/epics/06-nomination-engine/voting';
+import { RankedChoiceVoting } from '@/components/epics/06-nomination-engine/voting';
 
 export default function VotingModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('perception');

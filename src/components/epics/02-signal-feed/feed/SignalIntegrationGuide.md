@@ -7,7 +7,7 @@ Display all signals for a nominee with tabbed type filtering.
 
 **Usage:**
 ```jsx
-import NomineeSignalsSection from '@/components/epics/02-signal-feed/feed/NomineeSignalsSection';
+import { NomineeSignalsSection } from '@/components/epics/02-signal-feed/feed';
 
 // In Nominee.jsx or PublicProfile.jsx
 <NomineeSignalsSection 
@@ -25,7 +25,7 @@ Compact badge showing signal count for leaderboards/standings.
 
 **Usage:**
 ```jsx
-import SignalBadgeIndicator from '@/components/epics/02-signal-feed/feed/SignalBadgeIndicator';
+import { SignalBadgeIndicator } from '@/components/epics/02-signal-feed/feed';
 
 // In leaderboard/standings row
 <SignalBadgeIndicator 
@@ -46,7 +46,7 @@ LinkedIn sharing dialog for individual signals.
 
 **Usage:**
 ```jsx
-import LinkedInSignalShare from '@/components/epics/02-signal-feed/feed/LinkedInSignalShare';
+import { LinkedInSignalShare } from '@/components/epics/02-signal-feed/feed';
 
 // In ShareableSignalCard or profile signal display
 <LinkedInSignalShare 

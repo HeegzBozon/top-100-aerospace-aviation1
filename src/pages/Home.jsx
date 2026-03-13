@@ -6,8 +6,8 @@ import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
 import Landing2FeaturedSection from '@/components/landing/Landing2FeaturedSection';
 
 import TrendingSection from '@/components/landing/TrendingSection';
-import CalendarView from '@/components/capabilities/calendar/CalendarView';
-import GetStartedView from '@/components/capabilities/onboarding/GetStartedView';
+import { CalendarView } from '@/components/capabilities/calendar';
+import { GetStartedView } from '@/components/capabilities/onboarding';
 import HeroHeader from '@/components/home/HeroHeader';
 import AerospaceDashboardSection from '@/components/home/AerospaceDashboardSection';
 import IndustrySpotlight from '@/components/home/IndustrySpotlight';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import EventCard from '@/components/epics/03-mission-rooms/events/EventCard';
+import { EventCard } from '@/components/epics/03-mission-rooms/events';
 import { Loader2, CalendarDays } from 'lucide-react';
 
 export default function EventsTab() {

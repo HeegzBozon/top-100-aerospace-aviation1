@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, TrendingUp, Target, Flag } from 'lucide-react';
 
-import SeasonalPlanCreationForm from '@/components/epics/04-project-containers/planning/SeasonalPlanCreationForm';
-import ObjectiveCard from '@/components/epics/04-project-containers/planning/ObjectiveCard';
-import ObjectiveForm from '@/components/epics/04-project-containers/planning/ObjectiveForm';
+import { SeasonalPlanCreationForm } from '@/components/epics/04-project-containers/planning';
+import { ObjectiveCard } from '@/components/epics/04-project-containers/planning';
+import { ObjectiveForm } from '@/components/epics/04-project-containers/planning';
 
 export default function PIPlanner() {
   const [plans, setPlans] = useState([]);

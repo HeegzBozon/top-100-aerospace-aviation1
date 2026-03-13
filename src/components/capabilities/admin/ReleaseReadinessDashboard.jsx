@@ -5,8 +5,8 @@ import { InvokeLLM } from '@/integrations/Core';
 import { Feedback } from '@/entities/Feedback';
 import { Sprint } from '@/entities/Sprint';
 import { useToast } from "@/components/ui/use-toast";
-import SmartReleaseWizard from '@/components/capabilities/admin/SmartReleaseWizard';
-import BlockerResolutionWizard from '@/components/capabilities/admin/BlockerResolutionWizard'; // New import
+import { SmartReleaseWizard } from '@/components/capabilities/admin';
+import { BlockerResolutionWizard } from '@/components/capabilities/admin'; // New import
 import {
   CheckCircle,
   AlertTriangle,

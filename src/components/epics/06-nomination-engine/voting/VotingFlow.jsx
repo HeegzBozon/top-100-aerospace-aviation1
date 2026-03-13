@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { User } from '@/entities/User';
-import BallotBoxStep from '@/components/epics/05-rapid-response-cells/rituals/BallotBoxStep';
-import AuraRevealStep from '@/components/epics/05-rapid-response-cells/rituals/AuraRevealStep';
+import { BallotBoxStep } from '@/components/epics/05-rapid-response-cells/rituals';
+import { AuraRevealStep } from '@/components/epics/05-rapid-response-cells/rituals';
 import { Loader2 } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';

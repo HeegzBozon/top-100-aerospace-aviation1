@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, Briefcase, Star, Clock, DollarSign, Loader2, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import FavoriteButton from '@/components/epics/01-index-engine/talent/FavoriteButton';
+import { FavoriteButton } from '@/components/epics/01-index-engine/talent';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

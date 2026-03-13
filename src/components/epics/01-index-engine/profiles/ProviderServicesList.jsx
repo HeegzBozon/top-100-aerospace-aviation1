@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Star, Clock, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import IntroRequestModal from '@/components/epics/01-index-engine/talent/IntroRequestModal';
+import { IntroRequestModal } from '@/components/epics/01-index-engine/talent';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 

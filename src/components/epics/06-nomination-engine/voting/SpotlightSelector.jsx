@@ -146,7 +146,7 @@ export default function SpotlightSelector({ nominee, currentUser, activeSeason, 
                 <>
                   <Star className="w-5 h-5" />
                   Award Spotlight
-                </Button>
+                </>
               )}
             </button>
           </div>

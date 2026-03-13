@@ -8,12 +8,12 @@ import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
-import LinkedInPdfUpload from '@/components/epics/01-index-engine/profiles/LinkedInPdfUpload';
-import BioEditor from '@/components/epics/01-index-engine/profiles/BioEditor';
-import SixWordStoryEditor from '@/components/epics/01-index-engine/profiles/SixWordStoryEditor';
-import MediaEditor from '@/components/epics/01-index-engine/profiles/MediaEditor';
-import SocialsEditor from '@/components/epics/01-index-engine/profiles/SocialsEditor';
-import ProfilePreviewStep from '@/components/epics/01-index-engine/profiles/ProfilePreviewStep';
+import { LinkedInPdfUpload } from '@/components/epics/01-index-engine/profiles';
+import { BioEditor } from '@/components/epics/01-index-engine/profiles';
+import { SixWordStoryEditor } from '@/components/epics/01-index-engine/profiles';
+import { MediaEditor } from '@/components/epics/01-index-engine/profiles';
+import { SocialsEditor } from '@/components/epics/01-index-engine/profiles';
+import { ProfilePreviewStep } from '@/components/epics/01-index-engine/profiles';
 
 const steps = [
   { id: 'enrich', title: 'Enrich Profile', component: LinkedInPdfUpload },

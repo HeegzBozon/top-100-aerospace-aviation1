@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ProviderTierBadge from '@/components/epics/01-index-engine/talent/ProviderTierBadge';
+import { ProviderTierBadge } from '@/components/epics/01-index-engine/talent';
 
 export default function ProviderReviewManager() {
   const queryClient = useQueryClient();

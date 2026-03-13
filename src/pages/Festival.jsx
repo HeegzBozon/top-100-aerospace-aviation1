@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import EmceeCard from '@/components/epics/03-mission-rooms/events/EmceeCard';
-import EventCard from '@/components/epics/03-mission-rooms/events/EventCard';
-import QuestLink from '@/components/epics/03-mission-rooms/events/QuestLink';
+import { EmceeCard } from '@/components/epics/03-mission-rooms/events';
+import { EventCard } from '@/components/epics/03-mission-rooms/events';
+import { QuestLink } from '@/components/epics/03-mission-rooms/events';
 import { 
   Trophy, 
   Users, 

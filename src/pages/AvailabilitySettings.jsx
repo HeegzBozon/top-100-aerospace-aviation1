@@ -21,8 +21,8 @@ import {
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import AvailabilityCalendar from '@/components/epics/01-index-engine/talent/AvailabilityCalendar';
-import AvailabilityExceptions from '@/components/epics/01-index-engine/talent/AvailabilityExceptions';
+import { AvailabilityCalendar } from '@/components/epics/01-index-engine/talent';
+import { AvailabilityExceptions } from '@/components/epics/01-index-engine/talent';
 
 const DEFAULT_SETTINGS = {
   slot_interval_minutes: 15,

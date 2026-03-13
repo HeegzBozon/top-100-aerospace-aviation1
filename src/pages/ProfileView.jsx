@@ -9,11 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 
-import NomineeCareerHistorySection from '@/components/epics/01-index-engine/profiles/NomineeCareerHistorySection';
-import NomineeContributionsSection from '@/components/epics/01-index-engine/profiles/NomineeContributionsSection';
-import NomineeNewsSection from '@/components/epics/01-index-engine/profiles/NomineeNewsSection';
-import StartupPitch from '@/components/epics/01-index-engine/profiles/StartupPitch';
-import ProviderServicesList from '@/components/epics/01-index-engine/profiles/ProviderServicesList';
+import { NomineeCareerHistorySection } from '@/components/epics/01-index-engine/profiles';
+import { NomineeContributionsSection } from '@/components/epics/01-index-engine/profiles';
+import { NomineeNewsSection } from '@/components/epics/01-index-engine/profiles';
+import { StartupPitch } from '@/components/epics/01-index-engine/profiles';
+import { ProviderServicesList } from '@/components/epics/01-index-engine/profiles';
 
 const brandColors = {
     navyDeep: '#1e3a5a',

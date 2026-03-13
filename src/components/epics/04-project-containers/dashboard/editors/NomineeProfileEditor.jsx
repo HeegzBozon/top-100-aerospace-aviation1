@@ -10,7 +10,7 @@ import { Camera, Loader2, Save, Star, AlertTriangle, ExternalLink } from 'lucide
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import SocialStatsCard from '@/components/epics/01-index-engine/profiles/SocialStatsCard';
+import { SocialStatsCard } from '@/components/epics/01-index-engine/profiles';
 
 export default function NomineeProfileEditor({ user, nominee, onUpdate }) {
   const [formData, setFormData] = useState({

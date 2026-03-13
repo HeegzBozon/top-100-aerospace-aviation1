@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import RRFStageSelector from '@/components/epics/05-rapid-response-cells/rrf/RRFStageSelector';
-import RRFQuickActions from '@/components/epics/05-rapid-response-cells/rrf/RRFQuickActions';
+import { RRFStageSelector } from '@/components/epics/05-rapid-response-cells/rrf';
+import { RRFQuickActions } from '@/components/epics/05-rapid-response-cells/rrf';
 
 export default function PerryRRFRouter({ 
   conversationId, 

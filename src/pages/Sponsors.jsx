@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import SponsorCard from '@/components/epics/08-sponsor-commercial/sponsors/SponsorCard';
-import PartnershipChatModal from '@/components/epics/08-sponsor-commercial/sponsors/PartnershipChatModal';
-import BookMeetingModal from '@/components/epics/08-sponsor-commercial/sponsors/BookMeetingModal';
+import { SponsorCard } from '@/components/epics/08-sponsor-commercial/sponsors';
+import { PartnershipChatModal } from '@/components/epics/08-sponsor-commercial/sponsors';
+import { BookMeetingModal } from '@/components/epics/08-sponsor-commercial/sponsors';
 import { 
   Loader2, Award, TrendingUp, Users, Globe, Target, CheckCircle, 
   BarChart3, Rocket, Mail, Calendar, ArrowRight, Star, Trophy, 

@@ -6,8 +6,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { getAggregatedSpaceNews } from '@/functions/getAggregatedSpaceNews';
-import SpaceNewsCard from '@/components/epics/02-signal-feed/publication/SpaceNewsCard';
-import AlumniNewsTab from '@/components/epics/02-signal-feed/publication/AlumniNewsTab';
+import { SpaceNewsCard } from '@/components/epics/02-signal-feed/publication';
+import { AlumniNewsTab } from '@/components/epics/02-signal-feed/publication';
 
 
 const TABS = [

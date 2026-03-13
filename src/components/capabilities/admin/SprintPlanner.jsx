@@ -11,7 +11,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, Plus, Target, Clock, Users, BarChart3, Diamond, Edit, Star, BrainCircuit, Zap, Trash2, GripVertical, Rocket } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import SprintWizard from '@/components/capabilities/admin/SprintWizard';
+import { SprintWizard } from '@/components/capabilities/admin';
 
 const Quadrant = ({ title, items, droppableId, bgColor, borderColor }) => (
   <div className={`rounded-lg p-3 ${bgColor}`}>

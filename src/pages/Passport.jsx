@@ -10,9 +10,9 @@ import { Loader2 } from 'lucide-react';
 import HeroHeader from '@/components/home/HeroHeader';
 import FirstTimeUserWelcome from '@/components/FirstTimeUserWelcome';
 import MissingProfilePhotoPrompt from '@/components/MissingProfilePhotoPrompt';
-import Season3Onboarding from '@/components/capabilities/onboarding/Season3Onboarding';
-import DashboardOverview from '@/components/epics/04-project-containers/dashboard/DashboardOverview';
-import PassportView from '@/components/epics/04-project-containers/dashboard/PassportView';
+import { Season3Onboarding } from '@/components/capabilities/onboarding';
+import { DashboardOverview } from '@/components/epics/04-project-containers/dashboard';
+import { PassportView } from '@/components/epics/04-project-containers/dashboard';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

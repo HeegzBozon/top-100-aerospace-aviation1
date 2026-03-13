@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
-import FavoriteButton from '@/components/epics/01-index-engine/talent/FavoriteButton';
+import { FavoriteButton } from '@/components/epics/01-index-engine/talent';
 import { User as UserEntity } from '@/entities/User';
 import { 
   Sparkles, Search, Filter, ArrowRight, Star, 
@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ServiceFilters from '@/components/epics/01-index-engine/talent/ServiceFilters';
+import { ServiceFilters } from '@/components/epics/01-index-engine/talent';
 
 const ServiceCard = ({ service, userEmail }) => {
   const isPlatform = service.provider_type === 'platform';

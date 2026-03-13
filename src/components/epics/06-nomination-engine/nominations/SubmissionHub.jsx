@@ -13,8 +13,8 @@ import {
   AlertTriangle,
   PlusSquare
 } from 'lucide-react';
-import NominationForm from '@/components/epics/06-nomination-engine/voting/NominationForm';
-import FeedbackForm from '@/components/epics/06-nomination-engine/nominations/FeedbackForm';
+import { NominationForm } from '@/components/epics/06-nomination-engine/voting';
+import { FeedbackForm } from '@/components/epics/06-nomination-engine/nominations';
 
 const submissionTypes = [
   {

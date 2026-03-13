@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
-import Season4ScoringFramework from '@/components/epics/06-nomination-engine/scoring/Season4ScoringFramework';
-import Season3ScoringFramework from '@/components/epics/06-nomination-engine/scoring/Season3ScoringFramework';
-import LegacyScoringFramework from '@/components/epics/06-nomination-engine/scoring/LegacyScoringFramework';
+import { Season4ScoringFramework } from '@/components/epics/06-nomination-engine/scoring';
+import { Season3ScoringFramework } from '@/components/epics/06-nomination-engine/scoring';
+import { LegacyScoringFramework } from '@/components/epics/06-nomination-engine/scoring';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

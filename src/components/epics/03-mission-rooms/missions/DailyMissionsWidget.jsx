@@ -8,8 +8,8 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Calendar, Zap, Trophy, CheckCircle, Clock, Target, Brain, Rocket, Flame, Award, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
-import VotingModal from '@/components/epics/06-nomination-engine/voting/VotingModal';
-import NominationModal from '@/components/epics/06-nomination-engine/nominations/NominationModal';
+import { VotingModal } from '@/components/epics/06-nomination-engine/voting';
+import { NominationModal } from '@/components/epics/06-nomination-engine/nominations';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

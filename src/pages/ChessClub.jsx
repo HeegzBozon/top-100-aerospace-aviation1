@@ -6,9 +6,9 @@ import { createPageUrl } from '@/utils';
 import { Chess } from 'chess.js';
 import { Swords, CheckCircle2, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import ChallengeModal from '@/components/epics/03-mission-rooms/games/ChallengeModal';
-import BotSelectModal from '@/components/epics/03-mission-rooms/games/BotSelectModal';
-import LeaderboardTable from '@/components/epics/03-mission-rooms/games/LeaderboardTable';
+import { ChallengeModal } from '@/components/epics/03-mission-rooms/games';
+import { BotSelectModal } from '@/components/epics/03-mission-rooms/games';
+import { LeaderboardTable } from '@/components/epics/03-mission-rooms/games';
 import { toast } from 'sonner';
 
 // ─── Theme tokens (works in both light and dark mode) ──────────

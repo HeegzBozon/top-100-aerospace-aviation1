@@ -6,8 +6,13 @@
  * Usage: node scripts/generate-barrels.mjs
  */
 
-import { readdirSync, writeFileSync } from 'fs';
+import { readdirSync, writeFileSync, readFileSync } from 'fs';
 import { join, extname, basename, dirname } from 'path';
+
+function hasDefaultExport(filePath) {
+  const content = readFileSync(filePath, 'utf-8');
+  return content.includes('export default');
+}
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -25,7 +30,12 @@ function getFeatureDirs(base) {
       continue;
     }
     // Check if this dir contains .jsx/.js files directly (leaf feature dir)
-    const files = allEntries.filter(f => ['.jsx', '.js', '.tsx', '.ts'].includes(extname(f)) && f !== 'index.js');
+    // Only include files with export default — others can't be barrel-exported
+    const files = allEntries.filter(f => {
+      if (!['.jsx', '.js', '.tsx', '.ts'].includes(extname(f))) return false;
+      if (f === 'index.js') return false;
+      return hasDefaultExport(join(full, f));
+    });
     if (files.length > 0) results.push({ dir: full, files });
     // Always recurse to catch nested feature dirs
     results.push(...getFeatureDirs(full));

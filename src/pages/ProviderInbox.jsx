@@ -6,11 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, User as UserIcon, Loader2, ArrowLeft, StickyNote } from 'lucide-react';
-import ClientNotesPanel from '@/components/epics/01-index-engine/talent/ClientNotesPanel';
+import { ClientNotesPanel } from '@/components/epics/01-index-engine/talent';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
-import MessagingPanel from '@/components/epics/01-index-engine/talent/MessagingPanel';
+import { MessagingPanel } from '@/components/epics/01-index-engine/talent';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

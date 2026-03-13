@@ -34,9 +34,9 @@ import {
   LayoutDashboard,
   ScrollText
 } from 'lucide-react';
-import VoteLedger from '@/components/capabilities/admin/VoteLedger';
-import ResultsDashboard from '@/components/capabilities/admin/ResultsDashboard';
-import AdvancedAnalyticsPanel from '@/components/capabilities/admin/AdvancedAnalyticsPanel';
+import { VoteLedger } from '@/components/capabilities/admin';
+import { ResultsDashboard } from '@/components/capabilities/admin';
+import { AdvancedAnalyticsPanel } from '@/components/capabilities/admin';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

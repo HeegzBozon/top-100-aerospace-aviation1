@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import SubmissionHub from '@/components/epics/06-nomination-engine/nominations/SubmissionHub';
-import PairwiseVoting from '@/components/epics/06-nomination-engine/voting/PairwiseVoting';
-import RankedChoiceVoting from '@/components/epics/06-nomination-engine/voting/RankedChoiceVoting';
+import { SubmissionHub } from '@/components/epics/06-nomination-engine/nominations';
+import { PairwiseVoting } from '@/components/epics/06-nomination-engine/voting';
+import { RankedChoiceVoting } from '@/components/epics/06-nomination-engine/voting';
 import { Season } from '@/entities/Season';
 import { Nominee } from '@/entities/Nominee';
 import { Button } from '@/components/ui/button';

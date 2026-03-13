@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { CalendarDays, Map, Compass, Plane } from 'lucide-react';
-import ScheduleTab from '@/components/capabilities/calendar/ScheduleTab';
-import RoadmapTab from '@/components/capabilities/calendar/RoadmapTab';
-import StrategicThemesTab from '@/components/capabilities/calendar/StrategicThemesTab';
-import FlightPlanTab from '@/components/capabilities/calendar/FlightPlanTab';
+import { ScheduleTab } from '@/components/capabilities/calendar';
+import { RoadmapTab } from '@/components/capabilities/calendar';
+import { StrategicThemesTab } from '@/components/capabilities/calendar';
+import { FlightPlanTab } from '@/components/capabilities/calendar';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

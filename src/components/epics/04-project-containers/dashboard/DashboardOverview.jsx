@@ -3,11 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import OpportunitiesFeed from '@/components/home/OpportunitiesFeed';
 import ActivityFeed from '@/components/home/ActivityFeed';
-import DailyMissionsWidget from '@/components/epics/03-mission-rooms/missions/DailyMissionsWidget';
+import { DailyMissionsWidget } from '@/components/epics/03-mission-rooms/missions';
 import BiographerWidget from '@/components/home/BiographerWidget';
-import MyIntroRequests from '@/components/epics/01-index-engine/talent/MyIntroRequests';
-import TalentExchangeWidget from '@/components/epics/01-index-engine/profiles/TalentExchangeWidget';
-import QuickBookingsWidget from '@/components/epics/01-index-engine/profiles/QuickBookingsWidget';
+import { MyIntroRequests } from '@/components/epics/01-index-engine/talent';
+import { TalentExchangeWidget } from '@/components/epics/01-index-engine/profiles';
+import { QuickBookingsWidget } from '@/components/epics/01-index-engine/profiles';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Handshake } from 'lucide-react';
 

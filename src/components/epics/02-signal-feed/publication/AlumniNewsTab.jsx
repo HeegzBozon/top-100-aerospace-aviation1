@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { getAggregatedSpaceNews } from '@/functions/getAggregatedSpaceNews';
 import { scanHonoreesForNews } from '@/functions/scanHonoreesForNews';
-import SpaceNewsCard from '@/components/epics/02-signal-feed/publication/SpaceNewsCard';
+import { SpaceNewsCard } from '@/components/epics/02-signal-feed/publication';
 import { format, parseISO } from 'date-fns';
 
 function useDebounce(value, delay) {

@@ -6,9 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import CommunityNotesPanel from '@/components/epics/01-index-engine/profiles/CommunityNotesPanel';
-import TagManager from '@/components/epics/01-index-engine/profiles/TagManager';
-import EditSuggestionModal from '@/components/epics/01-index-engine/profiles/EditSuggestionModal';
+import { CommunityNotesPanel } from '@/components/epics/01-index-engine/profiles';
+import { TagManager } from '@/components/epics/01-index-engine/profiles';
+import { EditSuggestionModal } from '@/components/epics/01-index-engine/profiles';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

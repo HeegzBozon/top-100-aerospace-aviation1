@@ -7,7 +7,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
-import RankedChoiceVoting from '@/components/epics/06-nomination-engine/voting/RankedChoiceVoting';
+import { RankedChoiceVoting } from '@/components/epics/06-nomination-engine/voting';
 import { Nominee } from '@/entities/Nominee';
 import { Season } from '@/entities/Season';
 import { User } from '@/entities/User';

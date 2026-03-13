@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import { X, Award, Target, Users, BookOpen, Scale, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
-import CommunityNotesPanel from '@/components/epics/01-index-engine/profiles/CommunityNotesPanel';
-import EndorsementButton from '@/components/epics/01-index-engine/profiles/EndorsementButton';
+import { CommunityNotesPanel } from '@/components/epics/01-index-engine/profiles';
+import { EndorsementButton } from '@/components/epics/01-index-engine/profiles';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const brandColors = {
@@ -218,6 +218,7 @@ export default function EnhancedNomineeProfile({ nominee, onClose }) {
                 );
               })}
             </div>
+          </div>
             </TabsContent>
 
             <TabsContent value="verification" className="mt-6">

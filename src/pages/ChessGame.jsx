@@ -8,9 +8,9 @@ import { ArrowLeft, Flag, Bot, Crown, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Chess } from 'chess.js';
-import ChessBoard from '@/components/epics/03-mission-rooms/games/ChessBoard';
-import MoveHistory from '@/components/epics/03-mission-rooms/games/MoveHistory';
-import GameChatPanel from '@/components/epics/03-mission-rooms/games/GameChatPanel';
+import { ChessBoard } from '@/components/epics/03-mission-rooms/games';
+import { MoveHistory } from '@/components/epics/03-mission-rooms/games';
+import { GameChatPanel } from '@/components/epics/03-mission-rooms/games';
 import { ThemeContext } from '@/components/core/ThemeContext';
 import { toast } from 'sonner';
 

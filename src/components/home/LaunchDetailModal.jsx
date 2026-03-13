@@ -4,9 +4,9 @@ import { Rocket, MapPin, ExternalLink, Newspaper, Loader2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { getSpaceNews } from '@/functions/getSpaceNews';
-import SpaceNewsCard from '@/components/epics/02-signal-feed/publication/SpaceNewsCard';
+import { SpaceNewsCard } from '@/components/epics/02-signal-feed/publication';
 import LaunchLiveStream from './LaunchLiveStream';
-import LaunchDateTime from '@/components/epics/02-signal-feed/launches/LaunchDateTime';
+import { LaunchDateTime } from '@/components/epics/02-signal-feed/launches';
 
 export default function LaunchDetailModal({ launch, onClose }) {
   const [relatedNews, setRelatedNews] = useState([]);

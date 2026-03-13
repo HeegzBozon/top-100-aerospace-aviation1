@@ -26,12 +26,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import ServiceReviews from '@/components/epics/01-index-engine/talent/ServiceReviews';
-import ServicePackages from '@/components/epics/01-index-engine/talent/ServicePackages';
-import WaitlistButton from '@/components/epics/01-index-engine/talent/WaitlistButton';
-import ProviderTierBadge from '@/components/epics/01-index-engine/talent/ProviderTierBadge';
-import ServiceTestimonials from '@/components/epics/01-index-engine/talent/ServiceTestimonials';
-import MultiCurrencyPrice from '@/components/epics/01-index-engine/talent/MultiCurrencyPrice';
+import { ServiceReviews } from '@/components/epics/01-index-engine/talent';
+import { ServicePackages } from '@/components/epics/01-index-engine/talent';
+import { WaitlistButton } from '@/components/epics/01-index-engine/talent';
+import { ProviderTierBadge } from '@/components/epics/01-index-engine/talent';
+import { ServiceTestimonials } from '@/components/epics/01-index-engine/talent';
+import { MultiCurrencyPrice } from '@/components/epics/01-index-engine/talent';
 import { createPageUrl } from "@/utils";
 import { User as UserEntity } from '@/entities/User';
 

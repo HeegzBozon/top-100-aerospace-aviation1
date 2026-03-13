@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ExternalLink } from 'lucide-react';
 import { createPageUrl } from '@/utils';
-import NomineeCard from '@/components/epics/06-nomination-engine/voting/NomineeCard';
+import { NomineeCard } from '@/components/epics/06-nomination-engine/voting';
 
 export default function ProfilePreviewStep({ nominee, onFinish }) {
   return (

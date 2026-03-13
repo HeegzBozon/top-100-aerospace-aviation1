@@ -6,21 +6,21 @@ import { Star, Send, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // Editorial Components
-import EditorialMasthead from '@/components/epics/02-signal-feed/publication/EditorialMasthead';
-import EditorialTableOfContents from '@/components/epics/02-signal-feed/publication/EditorialTableOfContents';
-import EditorialManifesto from '@/components/epics/02-signal-feed/publication/EditorialManifesto';
-import EditorialPortraits from '@/components/epics/02-signal-feed/publication/EditorialPortraits';
-import EditorialLedger from '@/components/epics/02-signal-feed/publication/EditorialLedger';
-import SignalReport from '@/components/epics/02-signal-feed/publication/SignalReport';
-import OrbitalIndex from '@/components/epics/02-signal-feed/publication/OrbitalIndex';
-import ArchiveExport from '@/components/epics/02-signal-feed/publication/ArchiveExport';
-import EditorialClosing from '@/components/epics/02-signal-feed/publication/EditorialClosing';
-import EnhancedProfilePanel from '@/components/epics/02-signal-feed/publication/EnhancedProfilePanel';
-import ShareableCard from '@/components/epics/02-signal-feed/publication/ShareableCard';
-import CountdownLanding from '@/components/epics/02-signal-feed/publication/CountdownLanding';
-import UnauthenticatedCTA from '@/components/capabilities/public/UnauthenticatedCTA';
-import LtPerryButton from '@/components/capabilities/public/LtPerryButton';
-import AuthenticatedIntelligenceHeader from '@/components/epics/02-signal-feed/publication/AuthenticatedIntelligenceHeader';
+import { EditorialMasthead } from '@/components/epics/02-signal-feed/publication';
+import { EditorialTableOfContents } from '@/components/epics/02-signal-feed/publication';
+import { EditorialManifesto } from '@/components/epics/02-signal-feed/publication';
+import { EditorialPortraits } from '@/components/epics/02-signal-feed/publication';
+import { EditorialLedger } from '@/components/epics/02-signal-feed/publication';
+import { SignalReport } from '@/components/epics/02-signal-feed/publication';
+import { OrbitalIndex } from '@/components/epics/02-signal-feed/publication';
+import { ArchiveExport } from '@/components/epics/02-signal-feed/publication';
+import { EditorialClosing } from '@/components/epics/02-signal-feed/publication';
+import { EnhancedProfilePanel } from '@/components/epics/02-signal-feed/publication';
+import { ShareableCard } from '@/components/epics/02-signal-feed/publication';
+import { CountdownLanding } from '@/components/epics/02-signal-feed/publication';
+import { UnauthenticatedCTA } from '@/components/capabilities/public';
+import { LtPerryButton } from '@/components/capabilities/public';
+import { AuthenticatedIntelligenceHeader } from '@/components/epics/02-signal-feed/publication';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

@@ -20,4 +20,3 @@ export { default as ShareableCard } from './ShareableCard';
 export { default as SignalReport } from './SignalReport';
 export { default as SpaceNewsCard } from './SpaceNewsCard';
 export { default as StarfieldCanvas } from './StarfieldCanvas';
-export { default as countryToContinentMap } from './countryToContinentMap';

@@ -9,8 +9,8 @@ import {
 } from 'lucide-react';
 import { RoadmapItem } from '@/entities/RoadmapItem';
 import { base44 } from '@/api/base44Client';
-import CalendarView from '@/components/capabilities/calendar/CalendarView';
-import RoadmapTab from '@/components/capabilities/calendar/RoadmapTab';
+import { CalendarView } from '@/components/capabilities/calendar';
+import { RoadmapTab } from '@/components/capabilities/calendar';
 import Season4Tracker from '@/components/capabilities/comms/Season4Tracker.jsx';
 import Season4DateEditor from '@/components/capabilities/comms/Season4DateEditor.jsx';
 

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 
-import PairwiseVoting from '@/components/epics/06-nomination-engine/voting/PairwiseVoting';
+import { PairwiseVoting } from '@/components/epics/06-nomination-engine/voting';
 import { Nominee } from '@/entities/Nominee';
 import { Season } from '@/entities/Season';
 

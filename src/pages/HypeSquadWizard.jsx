@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Rocket, Award } from 'lucide-react';
-import ReviewStandingsStep from '@/components/epics/05-rapid-response-cells/hypesquad/ReviewStandingsStep';
-import ShareAppStep from '@/components/epics/05-rapid-response-cells/hypesquad/ShareAppStep';
+import { ReviewStandingsStep } from '@/components/epics/05-rapid-response-cells/hypesquad';
+import { ShareAppStep } from '@/components/epics/05-rapid-response-cells/hypesquad';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 

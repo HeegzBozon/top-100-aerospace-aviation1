@@ -6,7 +6,7 @@ import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import PerryProfileConfirmCard from '@/components/capabilities/comms/PerryProfileConfirmCard';
+import { PerryProfileConfirmCard } from '@/components/capabilities/comms';
 import { ltPerryGuest } from '@/functions/ltPerryGuest';
 import { perryProfileManager } from '@/functions/perryProfileManager';
 

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import TipViewModal from '@/components/epics/08-sponsor-commercial/tips/TipViewModal';
+import { TipViewModal } from '@/components/epics/08-sponsor-commercial/tips';
 import { ArrowUp, BookOpen, MessageSquare, Eye } from 'lucide-react';
 
 export default function TipCard({ tip, currentUserEmail, onUpvote }) {

@@ -22,10 +22,10 @@ import { format, isAfter, isBefore } from "date-fns";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import ReviewForm from '@/components/epics/01-index-engine/talent/ReviewForm';
-import CancelBookingModal from '@/components/epics/01-index-engine/talent/CancelBookingModal';
-import BookingExport from '@/components/epics/01-index-engine/talent/BookingExport';
-import RescheduleModal from '@/components/epics/01-index-engine/talent/RescheduleModal';
+import { ReviewForm } from '@/components/epics/01-index-engine/talent';
+import { CancelBookingModal } from '@/components/epics/01-index-engine/talent';
+import { BookingExport } from '@/components/epics/01-index-engine/talent';
+import { RescheduleModal } from '@/components/epics/01-index-engine/talent';
 
 const STATUS_STYLES = {
   pending: { bg: 'bg-yellow-100 text-yellow-800', label: 'Pending' },

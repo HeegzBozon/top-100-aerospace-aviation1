@@ -14,8 +14,8 @@ import {
   Search, Briefcase, Building2, MapPin, Clock, DollarSign, 
   Shield, Star, Zap, Filter, ChevronRight, Users, Sparkles, User as UserIcon, Send
 } from 'lucide-react';
-import IntroRequestModal from '@/components/epics/01-index-engine/talent/IntroRequestModal';
-import VerifiedBadge from '@/components/epics/01-index-engine/talent/VerifiedBadge';
+import { IntroRequestModal } from '@/components/epics/01-index-engine/talent';
+import { VerifiedBadge } from '@/components/epics/01-index-engine/talent';
 import {
   Select,
   SelectContent,
