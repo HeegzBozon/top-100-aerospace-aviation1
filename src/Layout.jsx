@@ -15,11 +15,42 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import CommsIconRail from "@/components/capabilities/comms/CommsIconRail";
 import Drawer from "@/components/capabilities/comms/Drawer";
 import MobileDock from "@/components/capabilities/comms/MobileDock";
+import MobileCommsView from "@/components/capabilities/comms/MobileCommsView";
+import CommsMainView from "@/components/capabilities/comms/CommsMainView";
+import NoConversationPlaceholder from "@/components/capabilities/comms/NoConversationPlaceholder";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
 import Season3ReOnboarding from "@/components/capabilities/onboarding/Season3ReOnboarding";
 import { useUnread } from "@/components/capabilities/contexts/UnreadContext";
+import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
 
-// Inner shell — has access to all contexts
+const IS_COMMS_PAGE = (name) => name === 'Comms';
+
+/**
+ * CommsSlot — replaces {children} only on the Comms page.
+ * All other pages render their children directly.
+ */
+function CommsSlot({ children, currentPageName, isMobile }) {
+  const { activeConversation } = useConversation();
+
+  if (!IS_COMMS_PAGE(currentPageName)) {
+    return <>{children}</>;
+  }
+
+  if (isMobile) {
+    return <MobileCommsView />;
+  }
+
+  if (!activeConversation) {
+    return <NoConversationPlaceholder />;
+  }
+
+  return (
+    <div className="flex h-full w-full overflow-hidden">
+      <CommsMainView onOpenMobileSidebar={() => {}} />
+    </div>
+  );
+}
+
 function AppShell({ children, currentPageName, user, showReOnboarding, onReOnboardingDone, isBare }) {
   const isMobile = useIsMobile();
   const { totalUnread } = useUnread();
@@ -34,16 +65,18 @@ function AppShell({ children, currentPageName, user, showReOnboarding, onReOnboa
         {showReOnboarding && (
           <Season3ReOnboarding onComplete={onReOnboardingDone} onSkip={onReOnboardingDone} />
         )}
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
-          {children}
+        <div className="flex-1 overflow-hidden">
+          <CommsSlot currentPageName={currentPageName} isMobile={isMobile}>
+            {children}
+          </CommsSlot>
         </div>
-        <NewYearCountdownBar />
-        <MobileDock currentPageName={currentPageName} />
+        {!IS_COMMS_PAGE(currentPageName) && <NewYearCountdownBar />}
+        {!IS_COMMS_PAGE(currentPageName) && <MobileDock currentPageName={currentPageName} />}
       </div>
     );
   }
 
-  // Desktop: icon rail + drawer sidebar + main content area
+  // Desktop
   return (
     <div className="hidden md:flex h-screen overflow-hidden bg-white">
       <CommsIconRail currentPageName={currentPageName} totalUnread={totalUnread} />
@@ -53,7 +86,9 @@ function AppShell({ children, currentPageName, user, showReOnboarding, onReOnboa
           <Season3ReOnboarding onComplete={onReOnboardingDone} onSkip={onReOnboardingDone} />
         )}
         <div className="flex-1 overflow-hidden">
-          {children}
+          <CommsSlot currentPageName={currentPageName} isMobile={isMobile}>
+            {children}
+          </CommsSlot>
         </div>
       </main>
       <NewYearCountdownBar />
