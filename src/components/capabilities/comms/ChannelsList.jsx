@@ -19,6 +19,44 @@ const CHANNEL_ICONS = {
 
 const PLATFORM_HELP_CATEGORY_NAME = "platform help";
 
+// Memoized channel item to prevent re-renders when sibling channels change
+const ChannelItem = memo(function ChannelItem({ conv, isActive, unread, onSelectConversation }) {
+  const IconComponent = conv.is_private ? Lock : (CHANNEL_ICONS[conv.icon] || Hash);
+  return (
+    <button
+      onClick={() => onSelectConversation(conv)}
+      className={cn(
+        "w-full flex items-center gap-3 pl-4 pr-2 py-2 rounded-lg transition-all relative overflow-hidden group",
+        isActive ? "text-white" : unread > 0 ? "text-white hover:bg-white/10" : "text-white/75 hover:bg-white/8 hover:text-white"
+      )}
+      style={isActive ? { background: 'linear-gradient(135deg, rgba(17,100,163,0.9), rgba(74,144,184,0.5))' } : {}}
+      aria-current={isActive ? "page" : undefined}
+    >
+      {isActive && (
+        <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-[#4a90b8]" aria-hidden="true" />
+      )}
+      <IconComponent className={cn(
+        "w-5 h-5 shrink-0 transition-colors",
+        isActive ? "text-[#90c8e8]" : conv.is_readonly ? "text-amber-400" : "text-white/50 group-hover:text-white/80"
+      )} aria-hidden="true" />
+      <span className={cn(
+        "text-[14px] truncate flex-1 text-left tracking-wide",
+        isActive ? "font-semibold" : unread > 0 ? "font-bold" : "font-medium"
+      )}>
+        {conv.name}
+      </span>
+      {unread > 0 && (
+        <span
+          className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-[11px] font-bold text-white rounded-full shrink-0 bg-[#E01E5A]"
+          aria-label={`${unread} unread`}
+        >
+          {unread}
+        </span>
+      )}
+    </button>
+  );
+});
+
 export function ChannelsList({
   channels,
   channelCategories,
@@ -32,12 +70,6 @@ export function ChannelsList({
   const { activeConversation } = useConversation();
   const { unreadCounts } = useUnread();
 
-  const getChannelIcon = (conv) => {
-    if (conv.is_private) return Lock;
-    if (conv.icon && CHANNEL_ICONS[conv.icon]) return CHANNEL_ICONS[conv.icon];
-    return Hash;
-  };
-
   // Group channels by category
   const grouped = useMemo(() => {
     const groups = {};
@@ -50,42 +82,6 @@ export function ChannelsList({
     Object.keys(groups).forEach(k => groups[k].sort((a, b) => (a.order || 0) - (b.order || 0)));
     return groups;
   }, [channels, channelCategories]);
-
-  const renderChannel = (conv) => {
-    const IconComponent = getChannelIcon(conv);
-    const isActive = activeConversation?.id === conv.id;
-    const unread = unreadCounts[conv.id] || 0;
-    return (
-      <button
-        key={conv.id}
-        onClick={() => onSelectConversation(conv)}
-        className={cn(
-          "w-full flex items-center gap-3 pl-4 pr-2 py-2 rounded-lg transition-all relative overflow-hidden group",
-          isActive ? "text-white" : unread > 0 ? "text-white hover:bg-white/10" : "text-white/75 hover:bg-white/8 hover:text-white"
-        )}
-        style={isActive ? { background: 'linear-gradient(135deg, rgba(17,100,163,0.9), rgba(74,144,184,0.5))' } : {}}
-      >
-        {isActive && (
-          <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-[#4a90b8]" />
-        )}
-        <IconComponent className={cn(
-          "w-5 h-5 shrink-0 transition-colors",
-          isActive ? "text-[#90c8e8]" : conv.is_readonly ? "text-amber-400" : "text-white/50 group-hover:text-white/80"
-        )} />
-        <span className={cn(
-          "text-[14px] truncate flex-1 text-left tracking-wide",
-          isActive ? "font-semibold" : unread > 0 ? "font-bold" : "font-medium"
-        )}>
-          {conv.name}
-        </span>
-        {unread > 0 && (
-          <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-[11px] font-bold text-white rounded-full shrink-0" style={{ background: '#E01E5A' }}>
-            {unread}
-          </span>
-        )}
-      </button>
-    );
-  };
 
   return (
     <>
