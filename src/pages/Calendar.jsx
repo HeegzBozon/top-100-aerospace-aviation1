@@ -1,0 +1,1 @@
+export { default } from "@/pages/capabilities/calendar/Calendar";
