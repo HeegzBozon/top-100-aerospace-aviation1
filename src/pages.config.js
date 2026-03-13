@@ -48,6 +48,9 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import About from './pages/About';
+import Admin from './pages/Admin';
+import Calendar from './pages/Calendar';
+import Comms from './pages/Comms';
 import Home from './pages/Home';
 import Home2 from './pages/Home2';
 import Landing from './pages/Landing';
@@ -176,14 +179,14 @@ import SponsorPitch from './pages/SponsorPitch';
 import SponsorResources from './pages/SponsorResources';
 import Sponsors from './pages/Sponsors';
 import Tips from './pages/Tips';
-import Admin from './pages/Admin';
-import Calendar from './pages/Calendar';
-import Comms from './pages/Comms';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "About": About,
+    "Admin": Admin,
+    "Calendar": Calendar,
+    "Comms": Comms,
     "Home": Home,
     "Home2": Home2,
     "Landing": Landing,
@@ -312,9 +315,6 @@ export const PAGES = {
     "SponsorResources": SponsorResources,
     "Sponsors": Sponsors,
     "Tips": Tips,
-    "Admin": Admin,
-    "Calendar": Calendar,
-    "Comms": Comms,
 }
 
 export const pagesConfig = {

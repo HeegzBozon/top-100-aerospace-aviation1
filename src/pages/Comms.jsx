@@ -1,2 +1,4 @@
-import CommsPage from "@/pages/capabilities/comms/Comms";
-export default CommsPage;
+// Comms page — UI is orchestrated by the Layout's CommsSlot.
+export default function Comms() {
+  return null;
+}
