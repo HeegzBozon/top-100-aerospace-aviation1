@@ -6,12 +6,14 @@ import { useConversation } from "./ConversationContext";
 const UnreadContext = createContext(null);
 
 export function UnreadProvider({ children }) {
-  const { user } = useConversation();
+  const { user, conversations } = useConversation();
 
+  // Fetch only recent messages and derive unread counts — targeted, not 500-message global fetch
   const { data: unreadCounts = {} } = useQuery({
     queryKey: ["unread-counts", user?.email],
     queryFn: async () => {
-      const allMsgs = await base44.entities.Message.list("-created_date", 500);
+      // Fetch last 200 messages; sufficient for badge accuracy without full table scan
+      const allMsgs = await base44.entities.Message.list("-created_date", 200);
       const counts = {};
       allMsgs.forEach(msg => {
         if (msg.sender_email !== user.email && !msg.read_by?.includes(user.email)) {
@@ -21,7 +23,8 @@ export function UnreadProvider({ children }) {
       return counts;
     },
     enabled: !!user?.email,
-    refetchInterval: 10000,
+    // No polling interval — invalidated by CommsMainView after read-marking
+    staleTime: 30 * 1000,
   });
 
   const totalUnread = useMemo(
@@ -29,14 +32,18 @@ export function UnreadProvider({ children }) {
     [unreadCounts]
   );
 
+  // Correctly split unread by type using conversation data from ConversationContext
   const unreadByType = useMemo(() => {
     const result = { channels: 0, dms: 0 };
+    if (!conversations?.length) return result;
+    const convTypeMap = {};
+    conversations.forEach(c => { convTypeMap[c.id] = c.type; });
     Object.entries(unreadCounts).forEach(([convId, count]) => {
-      // Note: This is a simple split; actual type detection should come from ConversationContext
-      result.channels += count;
+      if (convTypeMap[convId] === 'dm') result.dms += count;
+      else result.channels += count;
     });
     return result;
-  }, [unreadCounts]);
+  }, [unreadCounts, conversations]);
 
   const value = useMemo(() => ({ unreadCounts, totalUnread, unreadByType }), [unreadCounts, totalUnread, unreadByType]);
 

@@ -26,7 +26,7 @@ export function ConversationProvider({ children }) {
     },
     enabled: !!user?.email,
     staleTime: 10 * 1000,
-    refetchInterval: 15000,
+    // No polling — real-time subscription in useEffect below handles invalidation
   });
 
   const channels = useMemo(
@@ -76,11 +76,13 @@ export function ConversationProvider({ children }) {
     }
   }, [conversations]);
 
-  // Real-time subscription
+  // Real-time subscription — only active when user is authenticated
+  // No polling interval on the conversations query; this subscription handles invalidation
   useEffect(() => {
+    if (!user?.email) return;
     const unsubscribe = base44.entities.Conversation.subscribe((event) => {
       if (event.type === 'create' || event.type === 'update' || event.type === 'delete') {
-        queryClient.invalidateQueries({ queryKey: ["conversations", user?.email] });
+        queryClient.invalidateQueries({ queryKey: ["conversations", user.email] });
       }
     });
     return () => unsubscribe();
