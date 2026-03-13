@@ -692,25 +692,62 @@ export default function MessageThread({
                 </div>
                 <div className="w-px h-5 mx-1" style={{ background: 'rgba(100, 100, 100, 0.2)' }} />
                 <div className="flex items-center gap-0.5">
-                   <button
-                     type="button"
-                     className={cn(
-                       "p-1.5 rounded transition-colors",
-                       activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50"
-                     )}
-                     title="Link (⌘K)"
-                     onClick={() => {
-                       if (activeFormats.link) {
-                         quillRef.current?.getEditor().format('link', false);
-                       } else {
-                         const url = prompt('Enter URL:');
-                         if (url) quillRef.current?.getEditor().format('link', url);
-                       }
-                       updateActiveFormats();
-                     }}
-                   >
-                     <Link2 className="w-4 h-4" style={{ color: activeFormats.link ? '#fbbf24' : '#9ca3af' }} />
-                   </button>
+                   <Popover open={showLinkPopover} onOpenChange={setShowLinkPopover}>
+                     <PopoverTrigger asChild>
+                       <button
+                         type="button"
+                         className={cn(
+                           "p-1.5 rounded transition-colors",
+                           activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50"
+                         )}
+                         title="Link (⌘K)"
+                         onClick={() => {
+                           if (activeFormats.link) {
+                             quillRef.current?.getEditor().format('link', false);
+                             updateActiveFormats();
+                           } else {
+                             setLinkUrl("");
+                             setShowLinkPopover(true);
+                           }
+                         }}
+                       >
+                         <Link2 className={cn("w-4 h-4", activeFormats.link ? "text-amber-300" : "text-gray-400")} />
+                       </button>
+                     </PopoverTrigger>
+                     <PopoverContent className="w-72 p-2 bg-gray-900 border-gray-700" side="top" align="start">
+                       <div className="flex gap-2">
+                         <Input
+                           autoFocus
+                           type="url"
+                           placeholder="https://..."
+                           value={linkUrl}
+                           onChange={(e) => setLinkUrl(e.target.value)}
+                           onKeyDown={(e) => {
+                             if (e.key === 'Enter' && linkUrl.trim()) {
+                               quillRef.current?.getEditor().format('link', linkUrl.trim());
+                               updateActiveFormats();
+                               setShowLinkPopover(false);
+                             }
+                             if (e.key === 'Escape') setShowLinkPopover(false);
+                           }}
+                           className="h-8 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 text-sm"
+                         />
+                         <Button
+                           size="sm"
+                           className="h-8 px-3 bg-amber-600 hover:bg-amber-700 text-white"
+                           onClick={() => {
+                             if (linkUrl.trim()) {
+                               quillRef.current?.getEditor().format('link', linkUrl.trim());
+                               updateActiveFormats();
+                             }
+                             setShowLinkPopover(false);
+                           }}
+                         >
+                           <Check className="w-3 h-3" />
+                         </Button>
+                       </div>
+                     </PopoverContent>
+                   </Popover>
                    <button
                      type="button"
                      className={cn(
