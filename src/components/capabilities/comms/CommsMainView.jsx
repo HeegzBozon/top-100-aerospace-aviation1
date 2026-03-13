@@ -60,7 +60,7 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
   }, [activeConversation?.id, messages, user?.email, queryClient]);
 
   // Reset mark-guard when conversation changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (activeConversation?.id) {
       delete hasMarkedRef.current[activeConversation.id];
     }
