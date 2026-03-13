@@ -55,7 +55,6 @@ import MissionVisionValues from './pages/MissionVisionValues';
 import NotFound from './pages/NotFound';
 import OriginStory from './pages/OriginStory';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import Comms from './pages/Comms';
 import Admin from './pages/Admin';
 import AdminAction from './pages/AdminAction';
 import FactoryReset from './pages/FactoryReset';
@@ -189,7 +188,6 @@ export const PAGES = {
     "NotFound": NotFound,
     "OriginStory": OriginStory,
     "PrivacyPolicy": PrivacyPolicy,
-    "Comms": Comms,
     "Admin": Admin,
     "AdminAction": AdminAction,
     "FactoryReset": FactoryReset,
