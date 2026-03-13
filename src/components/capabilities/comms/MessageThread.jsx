@@ -241,7 +241,7 @@ function MessageBubble({ message, isOwn, showAvatar, currentUserEmail, onReact, 
                        </DropdownMenuItem>
                        <DropdownMenuItem
                          className="text-red-400 focus:bg-red-900/30"
-                         onClick={() => confirm("Delete this message?") && onDelete?.(message.id)}
+                         onClick={() => setShowDeleteDialog(true)}
                        >
                          <Trash2 className="w-3 h-3 mr-2" /> Delete
                        </DropdownMenuItem>
