@@ -14,7 +14,6 @@ export default function MobileCommsView({ isDarkMode = false }) {
   const theme = getMobileTheme(isDarkMode, brandColors);
   const [showNewDM, setShowNewDM] = useState(false);
 
-  // If a conversation is active, show the message thread
   if (activeConversation) {
     return <CommsMainView onOpenMobileSidebar={() => selectConversation(null)} />;
   }
@@ -44,30 +43,17 @@ export default function MobileCommsView({ isDarkMode = false }) {
     setShowNewDM(false);
   };
 
-  const headerStyle = {
-    background: isDarkMode ? "rgba(15, 29, 45, 0.95)" : "rgba(255,255,255,0.95)",
-    borderBottom: `1px solid ${theme.cardBorder}`,
-    backdropFilter: "blur(40px) saturate(180%)",
-    WebkitBackdropFilter: "blur(40px) saturate(180%)",
-  };
-
   return (
-    <div className="flex flex-col h-full overflow-hidden" style={{ background: theme.bg }}>
+    <div className="flex flex-col h-full overflow-hidden bg-white">
       {/* Header */}
-      <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3" style={headerStyle}>
-        <h1 className="text-base font-bold" style={{ color: theme.text }}>
-          Direct Messages
-        </h1>
+      <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-white/95 border-b border-gray-100 backdrop-blur-xl">
+        <h1 className="text-base font-bold text-gray-900">Direct Messages</h1>
         <button
           onClick={() => setShowNewDM(true)}
-          className="p-2 rounded-xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-          style={{
-            color: theme.text,
-            background: isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)",
-          }}
+          className="p-2 rounded-xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center bg-gray-100 hover:bg-gray-200"
           aria-label="New direct message"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-5 h-5 text-gray-700" />
         </button>
       </div>
 
@@ -75,21 +61,15 @@ export default function MobileCommsView({ isDarkMode = false }) {
       <div className="flex-1 overflow-y-auto scrollbar-hide px-3 py-3 space-y-1">
         {dms.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 py-20">
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center"
-              style={{ background: `${brandColors.skyBlue}20` }}
-            >
-              <MessageCircle className="w-8 h-8" style={{ color: brandColors.skyBlue }} />
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-blue-50">
+              <MessageCircle className="w-8 h-8 text-blue-500" />
             </div>
-            <p className="text-sm text-center" style={{ color: theme.textMuted }}>
+            <p className="text-sm text-center text-gray-500">
               No direct messages yet. Start a conversation!
             </p>
             <button
               onClick={() => setShowNewDM(true)}
-              className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white min-h-[44px]"
-              style={{
-                background: `linear-gradient(135deg, ${brandColors.skyBlue}, ${brandColors.navyDeep})`,
-              }}
+              className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white min-h-[44px] bg-gradient-to-r from-blue-500 to-blue-700"
             >
               New Message
             </button>
@@ -105,51 +85,28 @@ export default function MobileCommsView({ isDarkMode = false }) {
                 key={dm.id}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => selectConversation(dm)}
-                className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl text-left min-h-[56px] transition-colors"
-                style={{
-                  background: isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.03)",
-                  border: `1px solid ${theme.cardBorder}`,
-                }}
+                className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl text-left min-h-[56px] transition-colors bg-gray-50 border border-gray-100 hover:bg-gray-100"
               >
-                {/* Avatar */}
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-semibold text-sm shrink-0"
-                  style={{
-                    background: `linear-gradient(135deg, ${brandColors.skyBlue}, ${brandColors.navyDeep})`,
-                  }}
-                >
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-semibold text-sm shrink-0 bg-gradient-to-br from-blue-400 to-blue-700">
                   {name.charAt(0)}
                 </div>
-
-                {/* Name + Preview */}
                 <div className="flex-1 min-w-0">
-                  <span
-                    className={`block text-[15px] truncate ${unread > 0 ? "font-bold" : "font-medium"}`}
-                    style={{ color: theme.text }}
-                  >
+                  <span className={`block text-[15px] truncate text-gray-900 ${unread > 0 ? "font-bold" : "font-medium"}`}>
                     {name}
                   </span>
                   {dm.last_message_preview && (
-                    <span className="block text-xs truncate" style={{ color: theme.textMuted }}>
+                    <span className="block text-xs truncate text-gray-500">
                       {dm.last_message_preview}
                     </span>
                   )}
                 </div>
-
-                {/* Unread badge or date */}
                 {unread > 0 ? (
-                  <span
-                    className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-[11px] font-bold text-white rounded-full shrink-0"
-                    style={{ background: brandColors.roseAccent }}
-                  >
+                  <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-[11px] font-bold text-white rounded-full shrink-0 bg-rose-500">
                     {unread}
                   </span>
                 ) : dm.last_message_at ? (
-                  <span className="text-[11px] shrink-0" style={{ color: theme.textMuted }}>
-                    {new Date(dm.last_message_at).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
+                  <span className="text-[11px] shrink-0 text-gray-400">
+                    {new Date(dm.last_message_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                   </span>
                 ) : null}
               </motion.button>
