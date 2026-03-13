@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
 import { useQueryClient } from "@tanstack/react-query";
