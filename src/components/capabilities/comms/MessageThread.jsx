@@ -25,14 +25,7 @@ import RRFQuickActions from "@/components/epics/05-rapid-response-cells/rrf/RRFQ
 import RRFMessageTag from "@/components/epics/05-rapid-response-cells/rrf/RRFMessageTag";
 import CrpStepPickerButton from "./CrpStepPickerButton";
 
-const brandColors = {
-  navyDeep: '#1e3a5a',
-  skyBlue: '#4a90b8',
-  goldPrestige: '#c9a87c',
-  goldLight: '#e8d4b8',
-  roseAccent: '#d4a574',
-  cream: '#faf8f5',
-};
+import { brandColors } from "@/components/core/brandColors";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥", "🎉", "👀"];
 
