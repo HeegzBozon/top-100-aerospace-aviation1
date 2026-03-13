@@ -66,16 +66,19 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
     }
   }, [activeConversation?.id]);
 
-  const isPollChannel = activeConversation?.name?.toLowerCase().includes('poll');
-  const isWelcomeRulesChannel = activeConversation?.name?.toLowerCase().includes('welcome') &&
-    activeConversation?.name?.toLowerCase().includes('rules');
-  const isStatusChannel = activeConversation?.name?.toLowerCase().includes('status') ||
-    activeConversation?.name?.toLowerCase().includes('operations');
+  // Use channel_category enum for deterministic routing — no fragile name-string matching
+  const channelCat = activeConversation?.channel_category;
+  const isPollChannel = channelCat === 'announcements' || activeConversation?.name?.toLowerCase().includes('poll');
+  const isWelcomeRulesChannel = channelCat === 'general' && (
+    activeConversation?.name?.toLowerCase().includes('welcome') ||
+    activeConversation?.name?.toLowerCase().includes('rules')
+  );
+  const isStatusChannel = channelCat === 'support';
   const isGettingStartedChannel = activeConversation?.name?.toLowerCase().includes('getting-started') ||
     activeConversation?.name?.toLowerCase().includes('getting started');
-  const isIndexChannel = activeConversation?.name?.toLowerCase().includes('index') ||
-    activeConversation?.name?.toLowerCase().includes('top-100') ||
+  const isIndexChannel = activeConversation?.name?.toLowerCase().includes('top-100') ||
     activeConversation?.name?.toLowerCase().includes('top 100');
+  // Slack-style chat channels by name (these are specific named channels, safe to match exactly)
   const isSlackChannel = activeConversation?.name?.toLowerCase() === 'chit-chat' ||
     activeConversation?.name?.toLowerCase() === 'hangar-talk';
 
