@@ -35,23 +35,36 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
     enabled: !!activeConversation?.id && !!user?.email,
     staleTime: 5000,
     refetchInterval: 8000,
-    onSuccess: (all) => {
-      // Fire-and-forget batch read — does not block render
-      const unread = all.filter(m =>
-        m.sender_email !== user.email &&
-        !m.read_by?.includes(user.email)
-      );
-      if (unread.length > 0) {
-        Promise.all(
-          unread.map(msg =>
-            Message.update(msg.id, { read_by: [...(msg.read_by || []), user.email] })
-          )
-        ).then(() => {
-          queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
-        });
-      }
-    },
   });
+
+  // Fire-and-forget batch read-marking — runs once per conversation load, not on every refetch
+  const hasMarkedRef = React.useRef({});
+  React.useEffect(() => {
+    if (!messages.length || !user?.email || !activeConversation?.id) return;
+    const key = activeConversation.id;
+    // Only mark once per conversation session to prevent a write storm on every 8s refetch
+    if (hasMarkedRef.current[key]) return;
+    const unread = messages.filter(m =>
+      m.sender_email !== user.email &&
+      !m.read_by?.includes(user.email)
+    );
+    if (unread.length === 0) return;
+    hasMarkedRef.current[key] = true;
+    Promise.all(
+      unread.map(msg =>
+        Message.update(msg.id, { read_by: [...(msg.read_by || []), user.email] })
+      )
+    ).then(() => {
+      queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
+    });
+  }, [activeConversation?.id, messages, user?.email, queryClient]);
+
+  // Reset mark-guard when conversation changes
+  React.useEffect(() => {
+    if (activeConversation?.id) {
+      delete hasMarkedRef.current[activeConversation.id];
+    }
+  }, [activeConversation?.id]);
 
   const isPollChannel = activeConversation?.name?.toLowerCase().includes('poll');
   const isWelcomeRulesChannel = activeConversation?.name?.toLowerCase().includes('welcome') &&

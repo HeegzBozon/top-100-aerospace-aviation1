@@ -3,6 +3,7 @@ import CommsIconRail from "@/components/capabilities/comms/CommsIconRail";
 import Drawer from "@/components/capabilities/comms/Drawer";
 import CommsMainView from "@/components/capabilities/comms/CommsMainView";
 import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
+import { useUnread } from "@/components/capabilities/contexts/UnreadContext";
 import NoConversationPlaceholder from "@/components/capabilities/comms/NoConversationPlaceholder";
 import Season3ReOnboarding from "@/components/capabilities/onboarding/Season3ReOnboarding";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
