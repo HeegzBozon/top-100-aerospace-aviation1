@@ -39,7 +39,9 @@ import Demographics from './pages/epics/01-index-engine/Demographics';
 import EditProfile from './pages/epics/01-index-engine/EditProfile';
 import EmployerDashboard from './pages/epics/04-project-containers/EmployerDashboard';
 import EnterpriseResources from './pages/capabilities/resources/EnterpriseResources';
+import Endorse from './pages/epics/07-endorsement-system/Endorse';
 import EventPage from './pages/epics/03-mission-rooms/EventPage';
+import Events from './pages/epics/03-mission-rooms/Events';
 import FactoryReset from './pages/capabilities/admin/FactoryReset';
 import Feedback from './pages/capabilities/support/Feedback';
 import Festival from './pages/epics/03-mission-rooms/Festival';
@@ -47,6 +49,7 @@ import FounderApplication from './pages/capabilities/onboarding/FounderApplicati
 import FounderDashboard from './pages/epics/04-project-containers/FounderDashboard';
 import FounderResources from './pages/capabilities/resources/FounderResources';
 import FundraisingTracker from './pages/epics/04-project-containers/FundraisingTracker';
+import GamesHub from './pages/epics/03-mission-rooms/GamesHub';
 import GamesLanding from './pages/epics/03-mission-rooms/GamesLanding';
 import GatherSpace from './pages/epics/03-mission-rooms/GatherSpace';
 import GetStarted from './pages/capabilities/onboarding/GetStarted';
@@ -84,6 +87,7 @@ import PaymentCancel from './pages/epics/08-sponsor-commercial/PaymentCancel';
 import PaymentSuccess from './pages/epics/08-sponsor-commercial/PaymentSuccess';
 import PayoutDashboard from './pages/epics/08-sponsor-commercial/PayoutDashboard';
 import PayoutSettings from './pages/epics/08-sponsor-commercial/PayoutSettings';
+import Play from './pages/epics/03-mission-rooms/Play';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Profile from './pages/epics/01-index-engine/Profile';
 import ProfileView from './pages/epics/01-index-engine/ProfileView';
@@ -168,7 +172,9 @@ export const PAGES = {
     "EditProfile": EditProfile,
     "EmployerDashboard": EmployerDashboard,
     "EnterpriseResources": EnterpriseResources,
+    "Endorse": Endorse,
     "EventPage": EventPage,
+    "Events": Events,
     "FactoryReset": FactoryReset,
     "Feedback": Feedback,
     "Festival": Festival,
@@ -176,6 +182,7 @@ export const PAGES = {
     "FounderDashboard": FounderDashboard,
     "FounderResources": FounderResources,
     "FundraisingTracker": FundraisingTracker,
+    "GamesHub": GamesHub,
     "GamesLanding": GamesLanding,
     "GatherSpace": GatherSpace,
     "GetStarted": GetStarted,
@@ -213,6 +220,7 @@ export const PAGES = {
     "PaymentSuccess": PaymentSuccess,
     "PayoutDashboard": PayoutDashboard,
     "PayoutSettings": PayoutSettings,
+    "Play": Play,
     "PrivacyPolicy": PrivacyPolicy,
     "Profile": Profile,
     "ProfileView": ProfileView,
