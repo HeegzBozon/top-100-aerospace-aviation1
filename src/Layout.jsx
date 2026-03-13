@@ -19,7 +19,7 @@ import NewYearCountdownBar from "@/components/NewYearCountdownBar";
 import Season3ReOnboarding from "@/components/capabilities/onboarding/Season3ReOnboarding";
 import { useUnread } from "@/components/capabilities/contexts/UnreadContext";
 
-// Inner shell that can access context (UnreadContext etc.)
+// Inner shell — has access to all contexts
 function AppShell({ children, currentPageName, user, showReOnboarding, onReOnboardingDone, isBare }) {
   const isMobile = useIsMobile();
   const { totalUnread } = useUnread();
@@ -43,7 +43,7 @@ function AppShell({ children, currentPageName, user, showReOnboarding, onReOnboa
     );
   }
 
-  // Desktop shell — icon rail + drawer + main content
+  // Desktop: icon rail + drawer sidebar + main content area
   return (
     <div className="hidden md:flex h-screen overflow-hidden bg-white">
       <CommsIconRail currentPageName={currentPageName} totalUnread={totalUnread} />
@@ -52,7 +52,7 @@ function AppShell({ children, currentPageName, user, showReOnboarding, onReOnboa
         {showReOnboarding && (
           <Season3ReOnboarding onComplete={onReOnboardingDone} onSkip={onReOnboardingDone} />
         )}
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
+        <div className="flex-1 overflow-hidden">
           {children}
         </div>
       </main>
