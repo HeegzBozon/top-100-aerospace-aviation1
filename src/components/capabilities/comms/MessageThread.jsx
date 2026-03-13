@@ -62,6 +62,9 @@ function MessageBubble({ message, isOwn, showAvatar, currentUserEmail, onReact, 
   const [editContent, setEditContent] = useState(message.content);
   const [showReplies, setShowReplies] = useState(false);
   const [isReacted, setIsReacted] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showLinkPopover, setShowLinkPopover] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
 
   const initials = message.sender_name?.slice(0, 2).toUpperCase() ||
     message.sender_email?.slice(0, 2).toUpperCase() || "??";
