@@ -32,6 +32,7 @@ export default function CommsLayoutDesktop({
   isBare = false,
 }) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const { totalUnread } = useUnread();
 
   return (
     <div className="hidden md:flex h-screen overflow-hidden bg-white">

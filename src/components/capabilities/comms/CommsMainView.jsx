@@ -38,8 +38,8 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
   });
 
   // Fire-and-forget batch read-marking — runs once per conversation load, not on every refetch
-  const hasMarkedRef = React.useRef({});
-  React.useEffect(() => {
+  const hasMarkedRef = useRef({});
+  useEffect(() => {
     if (!messages.length || !user?.email || !activeConversation?.id) return;
     const key = activeConversation.id;
     // Only mark once per conversation session to prevent a write storm on every 8s refetch
