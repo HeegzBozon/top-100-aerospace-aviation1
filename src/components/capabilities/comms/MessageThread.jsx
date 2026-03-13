@@ -370,6 +370,8 @@ export default function MessageThread({
   const [mentionQuery, setMentionQuery] = useState("");
   const [activeFormats, setActiveFormats] = useState({});
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showLinkPopover, setShowLinkPopover] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
   const [rrfStage, setRRFStage] = useState('FORM');
   const [activeCrpStep, setActiveCrpStep] = useState(defaultCrpStep);
   const messagesEndRef = useRef(null);
