@@ -87,8 +87,16 @@ export function ChannelsList({
     <>
       {/* Uncategorized channels */}
       {(grouped['__none__'] || []).length > 0 && (
-        <div className="mb-4 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          {(grouped['__none__'] || []).map(renderChannel)}
+        <div className="mb-4 pb-4 border-b border-white/10">
+          {(grouped['__none__'] || []).map(conv => (
+            <ChannelItem
+              key={conv.id}
+              conv={conv}
+              isActive={activeConversation?.id === conv.id}
+              unread={unreadCounts[conv.id] || 0}
+              onSelectConversation={onSelectConversation}
+            />
+          ))}
         </div>
       )}
 
@@ -97,18 +105,25 @@ export function ChannelsList({
         const catChannels = grouped[cat.id] || [];
         if (catChannels.length === 0) return null;
         const isCollapsed = collapsedCategories[cat.id];
-        const isPlatformHelp = cat.name?.toLowerCase() === PLATFORM_HELP_CATEGORY_NAME;
         return (
           <div key={cat.id} className="mt-2">
             <button
               onClick={() => onToggleCategory(cat.id)}
               className="flex items-center gap-2 w-full px-3 py-2 text-[11px] font-semibold text-white/70 hover:text-white/90 transition-colors uppercase tracking-[0.13em]"
+              aria-expanded={!isCollapsed}
             >
               <span className="flex-1 text-left">{cat.name}</span>
-              {isCollapsed ? <ChevronRight className="w-4 h-4 shrink-0" /> : <ChevronDown className="w-4 h-4 shrink-0" />}
+              {isCollapsed ? <ChevronRight className="w-4 h-4 shrink-0" aria-hidden="true" /> : <ChevronDown className="w-4 h-4 shrink-0" aria-hidden="true" />}
             </button>
-            {!isCollapsed && catChannels.map(renderChannel)}
-
+            {!isCollapsed && catChannels.map(conv => (
+              <ChannelItem
+                key={conv.id}
+                conv={conv}
+                isActive={activeConversation?.id === conv.id}
+                unread={unreadCounts[conv.id] || 0}
+                onSelectConversation={onSelectConversation}
+              />
+            ))}
           </div>
         );
       })}
