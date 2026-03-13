@@ -55,6 +55,7 @@ import MissionVisionValues from './pages/MissionVisionValues';
 import NotFound from './pages/NotFound';
 import OriginStory from './pages/OriginStory';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import Comms from './pages/Comms';
 import Admin from './pages/Admin';
 import AdminAction from './pages/AdminAction';
 import FactoryReset from './pages/FactoryReset';
@@ -176,9 +177,6 @@ import SponsorPitch from './pages/SponsorPitch';
 import SponsorResources from './pages/SponsorResources';
 import Sponsors from './pages/Sponsors';
 import Tips from './pages/Tips';
-import Admin from './pages/Admin';
-import Calendar from './pages/Calendar';
-import Comms from './pages/Comms';
 import __Layout from './Layout.jsx';
 
 
@@ -191,6 +189,7 @@ export const PAGES = {
     "NotFound": NotFound,
     "OriginStory": OriginStory,
     "PrivacyPolicy": PrivacyPolicy,
+    "Comms": Comms,
     "Admin": Admin,
     "AdminAction": AdminAction,
     "FactoryReset": FactoryReset,
@@ -312,9 +311,6 @@ export const PAGES = {
     "SponsorResources": SponsorResources,
     "Sponsors": Sponsors,
     "Tips": Tips,
-    "Admin": Admin,
-    "Calendar": Calendar,
-    "Comms": Comms,
 }
 
 export const pagesConfig = {
