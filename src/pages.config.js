@@ -178,6 +178,7 @@ import Sponsors from './pages/Sponsors';
 import Tips from './pages/Tips';
 import Admin from './pages/Admin';
 import Calendar from './pages/Calendar';
+import Comms from './pages/Comms';
 import __Layout from './Layout.jsx';
 
 
@@ -313,6 +314,7 @@ export const PAGES = {
     "Tips": Tips,
     "Admin": Admin,
     "Calendar": Calendar,
+    "Comms": Comms,
 }
 
 export const pagesConfig = {
