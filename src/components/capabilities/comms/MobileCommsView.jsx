@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useState } from "react";
 import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
 import { useUnread } from "@/components/capabilities/contexts/UnreadContext";
 import CommsMainView from "./CommsMainView";
