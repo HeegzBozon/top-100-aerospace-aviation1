@@ -1,251 +1,244 @@
 /**
  * pages.config.js - Page routing configuration
+ * 
+ * This file is AUTO-GENERATED. Do not add imports or modify PAGES manually.
+ * Pages are auto-registered when you create files in the ./pages/ folder.
+ * 
+ * THE ONLY EDITABLE VALUE: mainPage
+ * This controls which page is the landing page (shown when users visit the app).
+ * 
+ * Example file structure:
+ * 
+ *   import HomePage from './pages/HomePage';
+ *   import Dashboard from './pages/Dashboard';
+ *   import Settings from './pages/Settings';
+ *   
+ *   export const PAGES = {
+ *       "HomePage": HomePage,
+ *       "Dashboard": Dashboard,
+ *       "Settings": Settings,
+ *   }
+ *   
+ *   export const pagesConfig = {
+ *       mainPage: "HomePage",
+ *       Pages: PAGES,
+ *   };
+ * 
+ * Example with Layout (wraps all pages):
  *
- * MANUALLY MAINTAINED. The @base44/vite-plugin does not auto-discover pages
- * in subdirectories — only the top-level pages/ folder is scanned.
- * When adding a new page, import it here and add it to the PAGES object.
+ *   import Home from './pages/Home';
+ *   import Settings from './pages/Settings';
+ *   import __Layout from './Layout.jsx';
  *
- * Routing keys (e.g. "Profile") determine the URL path (e.g. /Profile).
- * To change the main/landing page, update mainPage below.
+ *   export const PAGES = {
+ *       "Home": Home,
+ *       "Settings": Settings,
+ *   }
+ *
+ *   export const pagesConfig = {
+ *       mainPage: "Home",
+ *       Pages: PAGES,
+ *       Layout: __Layout,
+ *   };
+ *
+ * To change the main page from HomePage to Dashboard, use find_replace:
+ *   Old: mainPage: "HomePage",
+ *   New: mainPage: "Dashboard",
+ *
+ * The mainPage value must match a key in the PAGES object exactly.
  */
 import About from './pages/About';
-import AcceleratorHub from './pages/epics/05-rapid-response-cells/AcceleratorHub';
-import Admin from './pages/capabilities/admin/Admin';
-import AdminAction from './pages/capabilities/admin/AdminAction';
-import Afterparty from './pages/epics/03-mission-rooms/Afterparty';
-import AlumniInResearch from './pages/epics/01-index-engine/AlumniInResearch';
-import AlumniRadar from './pages/epics/01-index-engine/AlumniRadar';
-import Arcade from './pages/epics/03-mission-rooms/Arcade';
-import ArchiveLanding from './pages/epics/06-nomination-engine/ArchiveLanding';
-import Arena from './pages/epics/03-mission-rooms/Arena';
-import Article from './pages/epics/02-signal-feed/Article';
-import Articles from './pages/epics/02-signal-feed/Articles';
-import AvailabilitySettings from './pages/capabilities/onboarding/AvailabilitySettings';
-import BallotBox from './pages/epics/06-nomination-engine/BallotBox';
-import BatchNominations from './pages/epics/06-nomination-engine/BatchNominations';
-import Biographer from './pages/epics/01-index-engine/Biographer';
-import BusinessResources from './pages/capabilities/resources/BusinessResources';
-import Calendar from './pages/capabilities/calendar/Calendar';
-import CapitalExchange from './pages/epics/04-project-containers/CapitalExchange';
-import CareerResources from './pages/capabilities/resources/CareerResources';
-import ChessClub from './pages/epics/03-mission-rooms/ChessClub';
-import ChessGame from './pages/epics/03-mission-rooms/ChessGame';
-import ClaimProfile from './pages/epics/01-index-engine/ClaimProfile';
-import ClientDashboard from './pages/epics/04-project-containers/ClientDashboard';
-import Comms from './pages/capabilities/comms/Comms';
-import CompareServices from './pages/capabilities/services/CompareServices';
-import DemoDayEvent from './pages/epics/03-mission-rooms/DemoDayEvent';
-import Demographics from './pages/epics/01-index-engine/Demographics';
-import EditProfile from './pages/epics/01-index-engine/EditProfile';
-import EmployerDashboard from './pages/epics/04-project-containers/EmployerDashboard';
-import EnterpriseResources from './pages/capabilities/resources/EnterpriseResources';
-import Endorse from './pages/epics/07-endorsement-system/Endorse';
-import EventPage from './pages/epics/03-mission-rooms/EventPage';
-import Events from './pages/epics/03-mission-rooms/Events';
-import FactoryReset from './pages/capabilities/admin/FactoryReset';
-import Feedback from './pages/capabilities/support/Feedback';
-import Festival from './pages/epics/03-mission-rooms/Festival';
-import FounderApplication from './pages/capabilities/onboarding/FounderApplication';
-import FounderDashboard from './pages/epics/04-project-containers/FounderDashboard';
-import FounderResources from './pages/capabilities/resources/FounderResources';
-import FundraisingTracker from './pages/epics/04-project-containers/FundraisingTracker';
-import GamesHub from './pages/epics/03-mission-rooms/GamesHub';
-import GamesLanding from './pages/epics/03-mission-rooms/GamesLanding';
-import GatherSpace from './pages/epics/03-mission-rooms/GatherSpace';
-import GetStarted from './pages/capabilities/onboarding/GetStarted';
-import HabitWizard from './pages/epics/03-mission-rooms/HabitWizard';
-import HelpCenter from './pages/capabilities/support/HelpCenter';
 import Home from './pages/Home';
 import Home2 from './pages/Home2';
-import HonoreeResources from './pages/capabilities/resources/HonoreeResources';
-import HowWePick from './pages/epics/06-nomination-engine/HowWePick';
-import Huddle from './pages/epics/03-mission-rooms/Huddle';
-import HypeSquad from './pages/epics/05-rapid-response-cells/HypeSquad';
-import HypeSquadWizard from './pages/epics/05-rapid-response-cells/HypeSquadWizard';
-import IntelligenceDashboard from './pages/epics/04-project-containers/IntelligenceDashboard';
-import InvestorDashboard from './pages/epics/04-project-containers/InvestorDashboard';
-import InvestorOnboarding from './pages/capabilities/onboarding/InvestorOnboarding';
-import JobDetail from './pages/capabilities/services/JobDetail';
 import Landing from './pages/Landing';
-import LaunchParty from './pages/epics/02-signal-feed/LaunchParty';
-import Membership from './pages/capabilities/membership/Membership';
-import MentorPortal from './pages/epics/01-index-engine/MentorPortal';
-import MilestoneDetail from './pages/epics/05-rapid-response-cells/MilestoneDetail';
-import MissionControl from './pages/epics/03-mission-rooms/MissionControl';
 import MissionVisionValues from './pages/MissionVisionValues';
-import MyBookings from './pages/capabilities/calendar/MyBookings';
-import MyFavorites from './pages/capabilities/calendar/MyFavorites';
-import Nominations from './pages/epics/06-nomination-engine/Nominations';
-import Nominee from './pages/epics/06-nomination-engine/Nominee';
-import NomineeResources from './pages/capabilities/resources/NomineeResources';
-import NomineesByDomain from './pages/epics/06-nomination-engine/NomineesByDomain';
 import NotFound from './pages/NotFound';
 import OriginStory from './pages/OriginStory';
-import PIPlanner from './pages/epics/04-project-containers/PIPlanner';
-import Passport from './pages/epics/01-index-engine/Passport';
-import PaymentCancel from './pages/epics/08-sponsor-commercial/PaymentCancel';
-import PaymentSuccess from './pages/epics/08-sponsor-commercial/PaymentSuccess';
-import PayoutDashboard from './pages/epics/08-sponsor-commercial/PayoutDashboard';
-import PayoutSettings from './pages/epics/08-sponsor-commercial/PayoutSettings';
-import Play from './pages/epics/03-mission-rooms/Play';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import Profile from './pages/epics/01-index-engine/Profile';
-import ProfileView from './pages/epics/01-index-engine/ProfileView';
-import ProviderApplication from './pages/capabilities/onboarding/ProviderApplication';
-import ProviderDashboard from './pages/epics/04-project-containers/ProviderDashboard';
-import ProviderInbox from './pages/capabilities/services/ProviderInbox';
-import PublicProfile from './pages/epics/01-index-engine/PublicProfile';
-import Quests from './pages/epics/03-mission-rooms/Quests';
-import RadarDashboard from './pages/epics/01-index-engine/RadarDashboard';
-import RadarIntelligence from './pages/epics/01-index-engine/RadarIntelligence';
-import RaisingJupiter from './pages/epics/03-mission-rooms/RaisingJupiter';
-import RankedChoice from './pages/epics/06-nomination-engine/RankedChoice';
-import RecruitmentRun from './pages/epics/05-rapid-response-cells/RecruitmentRun';
-import ResultsCountdown from './pages/epics/06-nomination-engine/ResultsCountdown';
-import SMEPortal from './pages/epics/01-index-engine/SMEPortal';
-import SWE5TestArchitecture from './pages/epics/04-project-containers/SWE5TestArchitecture';
-import SWE6QualificationPlan from './pages/epics/04-project-containers/SWE6QualificationPlan';
-import SYS4IntegrationPlan from './pages/epics/04-project-containers/SYS4IntegrationPlan';
-import SYS5SystemValidation from './pages/epics/04-project-containers/SYS5SystemValidation';
-import Season4 from './pages/epics/03-mission-rooms/Season4';
-import ServiceCategories from './pages/capabilities/services/ServiceCategories';
-import ServiceDetail from './pages/capabilities/services/ServiceDetail';
-import ServicePackagesMarketplace from './pages/capabilities/services/ServicePackagesMarketplace';
-import ServicesLanding from './pages/capabilities/services/ServicesLanding';
-import Shop from './pages/epics/08-sponsor-commercial/Shop';
-import SignalAnalytics from './pages/epics/02-signal-feed/SignalAnalytics';
-import SignalEmbed from './pages/epics/02-signal-feed/SignalEmbed';
-import SignalEngineRoadmap from './pages/epics/02-signal-feed/SignalEngineRoadmap';
-import SignalFeed from './pages/epics/02-signal-feed/SignalFeed';
-import SignalReview from './pages/epics/02-signal-feed/SignalReview';
-import SignalSearch from './pages/epics/02-signal-feed/SignalSearch';
-import SignalTimeline from './pages/epics/02-signal-feed/SignalTimeline';
-import SpaceNews from './pages/epics/02-signal-feed/SpaceNews';
-import SponsorPitch from './pages/epics/08-sponsor-commercial/SponsorPitch';
-import SponsorResources from './pages/epics/08-sponsor-commercial/SponsorResources';
-import Sponsors from './pages/epics/08-sponsor-commercial/Sponsors';
-import StartupDirectory from './pages/epics/01-index-engine/StartupDirectory';
-import StudentResources from './pages/capabilities/resources/StudentResources';
-import TalentExchange from './pages/epics/01-index-engine/TalentExchange';
-import TalentExchangeLanding from './pages/epics/01-index-engine/TalentExchangeLanding';
-import TalentLanding from './pages/epics/01-index-engine/TalentLanding';
-import TheHangar from './pages/epics/03-mission-rooms/TheHangar';
-import Tips from './pages/epics/08-sponsor-commercial/Tips';
-import Top100Nominees2025 from './pages/epics/06-nomination-engine/Top100Nominees2025';
-import Top100OS from './pages/epics/06-nomination-engine/Top100OS';
-import Top100Women2025 from './pages/epics/06-nomination-engine/Top100Women2025';
-import TrendingSignals from './pages/epics/02-signal-feed/TrendingSignals';
-import UserProfile from './pages/epics/01-index-engine/UserProfile';
-import VotingHub from './pages/epics/06-nomination-engine/VotingHub';
+import Admin from './pages/Admin';
+import AdminAction from './pages/AdminAction';
+import FactoryReset from './pages/FactoryReset';
+import Calendar from './pages/Calendar';
+import MyBookings from './pages/MyBookings';
+import MyFavorites from './pages/MyFavorites';
+import Comms from './pages/Comms';
+import Membership from './pages/Membership';
+import AvailabilitySettings from './pages/AvailabilitySettings';
+import FounderApplication from './pages/FounderApplication';
+import GetStarted from './pages/GetStarted';
+import InvestorOnboarding from './pages/InvestorOnboarding';
+import ProviderApplication from './pages/ProviderApplication';
+import BusinessResources from './pages/BusinessResources';
+import CareerResources from './pages/CareerResources';
+import EnterpriseResources from './pages/EnterpriseResources';
+import FounderResources from './pages/FounderResources';
+import HonoreeResources from './pages/HonoreeResources';
+import NomineeResources from './pages/NomineeResources';
+import StudentResources from './pages/StudentResources';
+import CompareServices from './pages/CompareServices';
+import JobDetail from './pages/JobDetail';
+import ProviderInbox from './pages/ProviderInbox';
+import ServiceCategories from './pages/ServiceCategories';
+import ServiceDetail from './pages/ServiceDetail';
+import ServicePackagesMarketplace from './pages/ServicePackagesMarketplace';
+import ServicesLanding from './pages/ServicesLanding';
+import Feedback from './pages/Feedback';
+import HelpCenter from './pages/HelpCenter';
+import AlumniInResearch from './pages/AlumniInResearch';
+import AlumniRadar from './pages/AlumniRadar';
+import Biographer from './pages/Biographer';
+import ClaimProfile from './pages/ClaimProfile';
+import Demographics from './pages/Demographics';
+import EditProfile from './pages/EditProfile';
+import MentorPortal from './pages/MentorPortal';
+import Passport from './pages/Passport';
+import Profile from './pages/Profile';
+import ProfileView from './pages/ProfileView';
+import PublicProfile from './pages/PublicProfile';
+import RadarDashboard from './pages/RadarDashboard';
+import RadarIntelligence from './pages/RadarIntelligence';
+import SMEPortal from './pages/SMEPortal';
+import StartupDirectory from './pages/StartupDirectory';
+import TalentExchange from './pages/TalentExchange';
+import TalentExchangeLanding from './pages/TalentExchangeLanding';
+import TalentLanding from './pages/TalentLanding';
+import UserProfile from './pages/UserProfile';
+import Article from './pages/Article';
+import Articles from './pages/Articles';
+import LaunchParty from './pages/LaunchParty';
+import SignalAnalytics from './pages/SignalAnalytics';
+import SignalEmbed from './pages/SignalEmbed';
+import SignalEngineRoadmap from './pages/SignalEngineRoadmap';
+import SignalFeed from './pages/SignalFeed';
+import SignalReview from './pages/SignalReview';
+import SignalSearch from './pages/SignalSearch';
+import SignalTimeline from './pages/SignalTimeline';
+import SpaceNews from './pages/SpaceNews';
+import TrendingSignals from './pages/TrendingSignals';
+import Afterparty from './pages/Afterparty';
+import Arcade from './pages/Arcade';
+import Arena from './pages/Arena';
+import ChessClub from './pages/ChessClub';
+import ChessGame from './pages/ChessGame';
+import DemoDayEvent from './pages/DemoDayEvent';
+import EventPage from './pages/EventPage';
+import Events from './pages/Events';
+import Festival from './pages/Festival';
+import GamesHub from './pages/GamesHub';
+import GamesLanding from './pages/GamesLanding';
+import GatherSpace from './pages/GatherSpace';
+import HabitWizard from './pages/HabitWizard';
+import Huddle from './pages/Huddle';
+import MissionControl from './pages/MissionControl';
+import Play from './pages/Play';
+import Quests from './pages/Quests';
+import RaisingJupiter from './pages/RaisingJupiter';
+import Season4 from './pages/Season4';
+import TheHangar from './pages/TheHangar';
+import CapitalExchange from './pages/CapitalExchange';
+import ClientDashboard from './pages/ClientDashboard';
+import EmployerDashboard from './pages/EmployerDashboard';
+import FounderDashboard from './pages/FounderDashboard';
+import FundraisingTracker from './pages/FundraisingTracker';
+import IntelligenceDashboard from './pages/IntelligenceDashboard';
+import InvestorDashboard from './pages/InvestorDashboard';
+import PIPlanner from './pages/PIPlanner';
+import ProviderDashboard from './pages/ProviderDashboard';
+import SWE5TestArchitecture from './pages/SWE5TestArchitecture';
+import SWE6QualificationPlan from './pages/SWE6QualificationPlan';
+import SYS4IntegrationPlan from './pages/SYS4IntegrationPlan';
+import SYS5SystemValidation from './pages/SYS5SystemValidation';
+import AcceleratorHub from './pages/AcceleratorHub';
+import HypeSquad from './pages/HypeSquad';
+import HypeSquadWizard from './pages/HypeSquadWizard';
+import MilestoneDetail from './pages/MilestoneDetail';
+import RecruitmentRun from './pages/RecruitmentRun';
+import ArchiveLanding from './pages/ArchiveLanding';
+import BallotBox from './pages/BallotBox';
+import BatchNominations from './pages/BatchNominations';
+import HowWePick from './pages/HowWePick';
+import Nominations from './pages/Nominations';
+import Nominee from './pages/Nominee';
+import NomineesByDomain from './pages/NomineesByDomain';
+import RankedChoice from './pages/RankedChoice';
+import ResultsCountdown from './pages/ResultsCountdown';
+import Top100Nominees2025 from './pages/Top100Nominees2025';
+import Top100OS from './pages/Top100OS';
+import Top100Women2025 from './pages/Top100Women2025';
+import VotingHub from './pages/VotingHub';
+import Endorse from './pages/Endorse';
+import PaymentCancel from './pages/PaymentCancel';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PayoutDashboard from './pages/PayoutDashboard';
+import PayoutSettings from './pages/PayoutSettings';
+import Shop from './pages/Shop';
+import SponsorPitch from './pages/SponsorPitch';
+import SponsorResources from './pages/SponsorResources';
+import Sponsors from './pages/Sponsors';
+import Tips from './pages/Tips';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "About": About,
-    "AcceleratorHub": AcceleratorHub,
-    "Admin": Admin,
-    "AdminAction": AdminAction,
-    "Afterparty": Afterparty,
-    "AlumniInResearch": AlumniInResearch,
-    "AlumniRadar": AlumniRadar,
-    "Arcade": Arcade,
-    "ArchiveLanding": ArchiveLanding,
-    "Arena": Arena,
-    "Article": Article,
-    "Articles": Articles,
-    "AvailabilitySettings": AvailabilitySettings,
-    "BallotBox": BallotBox,
-    "BatchNominations": BatchNominations,
-    "Biographer": Biographer,
-    "BusinessResources": BusinessResources,
-    "Calendar": Calendar,
-    "CapitalExchange": CapitalExchange,
-    "CareerResources": CareerResources,
-    "ChessClub": ChessClub,
-    "ChessGame": ChessGame,
-    "ClaimProfile": ClaimProfile,
-    "ClientDashboard": ClientDashboard,
-    "Comms": Comms,
-    "CompareServices": CompareServices,
-    "DemoDayEvent": DemoDayEvent,
-    "Demographics": Demographics,
-    "EditProfile": EditProfile,
-    "EmployerDashboard": EmployerDashboard,
-    "EnterpriseResources": EnterpriseResources,
-    "Endorse": Endorse,
-    "EventPage": EventPage,
-    "Events": Events,
-    "FactoryReset": FactoryReset,
-    "Feedback": Feedback,
-    "Festival": Festival,
-    "FounderApplication": FounderApplication,
-    "FounderDashboard": FounderDashboard,
-    "FounderResources": FounderResources,
-    "FundraisingTracker": FundraisingTracker,
-    "GamesHub": GamesHub,
-    "GamesLanding": GamesLanding,
-    "GatherSpace": GatherSpace,
-    "GetStarted": GetStarted,
-    "HabitWizard": HabitWizard,
-    "HelpCenter": HelpCenter,
     "Home": Home,
     "Home2": Home2,
-    "HonoreeResources": HonoreeResources,
-    "HowWePick": HowWePick,
-    "Huddle": Huddle,
-    "HypeSquad": HypeSquad,
-    "HypeSquadWizard": HypeSquadWizard,
-    "IntelligenceDashboard": IntelligenceDashboard,
-    "InvestorDashboard": InvestorDashboard,
-    "InvestorOnboarding": InvestorOnboarding,
-    "JobDetail": JobDetail,
     "Landing": Landing,
-    "LaunchParty": LaunchParty,
-    "Membership": Membership,
-    "MentorPortal": MentorPortal,
-    "MilestoneDetail": MilestoneDetail,
-    "MissionControl": MissionControl,
     "MissionVisionValues": MissionVisionValues,
-    "MyBookings": MyBookings,
-    "MyFavorites": MyFavorites,
-    "Nominations": Nominations,
-    "Nominee": Nominee,
-    "NomineeResources": NomineeResources,
-    "NomineesByDomain": NomineesByDomain,
     "NotFound": NotFound,
     "OriginStory": OriginStory,
-    "PIPlanner": PIPlanner,
-    "Passport": Passport,
-    "PaymentCancel": PaymentCancel,
-    "PaymentSuccess": PaymentSuccess,
-    "PayoutDashboard": PayoutDashboard,
-    "PayoutSettings": PayoutSettings,
-    "Play": Play,
     "PrivacyPolicy": PrivacyPolicy,
-    "Profile": Profile,
-    "ProfileView": ProfileView,
+    "Admin": Admin,
+    "AdminAction": AdminAction,
+    "FactoryReset": FactoryReset,
+    "Calendar": Calendar,
+    "MyBookings": MyBookings,
+    "MyFavorites": MyFavorites,
+    "Comms": Comms,
+    "Membership": Membership,
+    "AvailabilitySettings": AvailabilitySettings,
+    "FounderApplication": FounderApplication,
+    "GetStarted": GetStarted,
+    "InvestorOnboarding": InvestorOnboarding,
     "ProviderApplication": ProviderApplication,
-    "ProviderDashboard": ProviderDashboard,
+    "BusinessResources": BusinessResources,
+    "CareerResources": CareerResources,
+    "EnterpriseResources": EnterpriseResources,
+    "FounderResources": FounderResources,
+    "HonoreeResources": HonoreeResources,
+    "NomineeResources": NomineeResources,
+    "StudentResources": StudentResources,
+    "CompareServices": CompareServices,
+    "JobDetail": JobDetail,
     "ProviderInbox": ProviderInbox,
-    "PublicProfile": PublicProfile,
-    "Quests": Quests,
-    "RadarDashboard": RadarDashboard,
-    "RadarIntelligence": RadarIntelligence,
-    "RaisingJupiter": RaisingJupiter,
-    "RankedChoice": RankedChoice,
-    "RecruitmentRun": RecruitmentRun,
-    "ResultsCountdown": ResultsCountdown,
-    "SMEPortal": SMEPortal,
-    "SWE5TestArchitecture": SWE5TestArchitecture,
-    "SWE6QualificationPlan": SWE6QualificationPlan,
-    "SYS4IntegrationPlan": SYS4IntegrationPlan,
-    "SYS5SystemValidation": SYS5SystemValidation,
-    "Season4": Season4,
     "ServiceCategories": ServiceCategories,
     "ServiceDetail": ServiceDetail,
     "ServicePackagesMarketplace": ServicePackagesMarketplace,
     "ServicesLanding": ServicesLanding,
-    "Shop": Shop,
+    "Feedback": Feedback,
+    "HelpCenter": HelpCenter,
+    "AlumniInResearch": AlumniInResearch,
+    "AlumniRadar": AlumniRadar,
+    "Biographer": Biographer,
+    "ClaimProfile": ClaimProfile,
+    "Demographics": Demographics,
+    "EditProfile": EditProfile,
+    "MentorPortal": MentorPortal,
+    "Passport": Passport,
+    "Profile": Profile,
+    "ProfileView": ProfileView,
+    "PublicProfile": PublicProfile,
+    "RadarDashboard": RadarDashboard,
+    "RadarIntelligence": RadarIntelligence,
+    "SMEPortal": SMEPortal,
+    "StartupDirectory": StartupDirectory,
+    "TalentExchange": TalentExchange,
+    "TalentExchangeLanding": TalentExchangeLanding,
+    "TalentLanding": TalentLanding,
+    "UserProfile": UserProfile,
+    "Article": Article,
+    "Articles": Articles,
+    "LaunchParty": LaunchParty,
     "SignalAnalytics": SignalAnalytics,
     "SignalEmbed": SignalEmbed,
     "SignalEngineRoadmap": SignalEngineRoadmap,
@@ -254,22 +247,68 @@ export const PAGES = {
     "SignalSearch": SignalSearch,
     "SignalTimeline": SignalTimeline,
     "SpaceNews": SpaceNews,
-    "SponsorPitch": SponsorPitch,
-    "SponsorResources": SponsorResources,
-    "Sponsors": Sponsors,
-    "StartupDirectory": StartupDirectory,
-    "StudentResources": StudentResources,
-    "TalentExchange": TalentExchange,
-    "TalentExchangeLanding": TalentExchangeLanding,
-    "TalentLanding": TalentLanding,
+    "TrendingSignals": TrendingSignals,
+    "Afterparty": Afterparty,
+    "Arcade": Arcade,
+    "Arena": Arena,
+    "ChessClub": ChessClub,
+    "ChessGame": ChessGame,
+    "DemoDayEvent": DemoDayEvent,
+    "EventPage": EventPage,
+    "Events": Events,
+    "Festival": Festival,
+    "GamesHub": GamesHub,
+    "GamesLanding": GamesLanding,
+    "GatherSpace": GatherSpace,
+    "HabitWizard": HabitWizard,
+    "Huddle": Huddle,
+    "MissionControl": MissionControl,
+    "Play": Play,
+    "Quests": Quests,
+    "RaisingJupiter": RaisingJupiter,
+    "Season4": Season4,
     "TheHangar": TheHangar,
-    "Tips": Tips,
+    "CapitalExchange": CapitalExchange,
+    "ClientDashboard": ClientDashboard,
+    "EmployerDashboard": EmployerDashboard,
+    "FounderDashboard": FounderDashboard,
+    "FundraisingTracker": FundraisingTracker,
+    "IntelligenceDashboard": IntelligenceDashboard,
+    "InvestorDashboard": InvestorDashboard,
+    "PIPlanner": PIPlanner,
+    "ProviderDashboard": ProviderDashboard,
+    "SWE5TestArchitecture": SWE5TestArchitecture,
+    "SWE6QualificationPlan": SWE6QualificationPlan,
+    "SYS4IntegrationPlan": SYS4IntegrationPlan,
+    "SYS5SystemValidation": SYS5SystemValidation,
+    "AcceleratorHub": AcceleratorHub,
+    "HypeSquad": HypeSquad,
+    "HypeSquadWizard": HypeSquadWizard,
+    "MilestoneDetail": MilestoneDetail,
+    "RecruitmentRun": RecruitmentRun,
+    "ArchiveLanding": ArchiveLanding,
+    "BallotBox": BallotBox,
+    "BatchNominations": BatchNominations,
+    "HowWePick": HowWePick,
+    "Nominations": Nominations,
+    "Nominee": Nominee,
+    "NomineesByDomain": NomineesByDomain,
+    "RankedChoice": RankedChoice,
+    "ResultsCountdown": ResultsCountdown,
     "Top100Nominees2025": Top100Nominees2025,
     "Top100OS": Top100OS,
     "Top100Women2025": Top100Women2025,
-    "TrendingSignals": TrendingSignals,
-    "UserProfile": UserProfile,
     "VotingHub": VotingHub,
+    "Endorse": Endorse,
+    "PaymentCancel": PaymentCancel,
+    "PaymentSuccess": PaymentSuccess,
+    "PayoutDashboard": PayoutDashboard,
+    "PayoutSettings": PayoutSettings,
+    "Shop": Shop,
+    "SponsorPitch": SponsorPitch,
+    "SponsorResources": SponsorResources,
+    "Sponsors": Sponsors,
+    "Tips": Tips,
 }
 
 export const pagesConfig = {
