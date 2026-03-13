@@ -13,7 +13,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ConversationProvider } from "@/components/capabilities/contexts/ConversationContext";
 import { UnreadProvider } from "@/components/capabilities/contexts/UnreadContext";
 import { SidebarProvider } from "@/components/capabilities/contexts/SidebarContext";
-const Admin = React.lazy(() => import("@/pages/Admin"));
+const Admin = React.lazy(() => import("@/pages/capabilities/admin/Admin"));
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);

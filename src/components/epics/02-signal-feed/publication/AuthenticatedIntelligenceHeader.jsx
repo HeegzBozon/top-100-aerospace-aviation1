@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, Radar, TrendingUp, Newspaper } from 'lucide-react';
-import RadarDashboard from '@/pages/RadarDashboard';
-import IntelligenceDashboard from '@/pages/IntelligenceDashboard';
-import SpaceNews from '@/pages/SpaceNews';
+import RadarDashboard from '@/pages/epics/01-index-engine/RadarDashboard';
+import IntelligenceDashboard from '@/pages/epics/04-project-containers/IntelligenceDashboard';
+import SpaceNews from '@/pages/epics/02-signal-feed/SpaceNews';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

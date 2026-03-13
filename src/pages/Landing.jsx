@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ProfileView from '@/pages/ProfileView';
+import ProfileView from '@/pages/epics/01-index-engine/ProfileView';
 import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import FooterInfoModal from '@/components/landing/FooterInfoModal';
 import { base44 } from '@/api/base44Client';
