@@ -548,15 +548,15 @@ export default function MessageThread({
 
       {/* Message Composer */}
       <div className={cn(
-        "md:relative md:p-4 fixed bottom-0 left-0 right-0 p-4 shadow-2xl shadow-black/60 border-t transition-all duration-300",
+        "md:relative md:p-4 fixed bottom-0 left-0 right-0 p-4 pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-black/60 border-t transition-all duration-300 backdrop-blur-xl",
         rrfStage === 'FORM'
-          ? "border-lime-600/40 bg-gradient-to-t from-black/95 via-lime-950/30 to-transparent backdrop-blur-xl"
+          ? "border-indigo-600/40 bg-gradient-to-t from-black/95 via-indigo-950/20 to-transparent"
           : rrfStage === 'STORM'
-          ? "border-orange-600/40 bg-gradient-to-t from-black/95 via-orange-950/30 to-transparent backdrop-blur-xl"
+          ? "border-[#c9a87c]/40 bg-gradient-to-t from-black/95 via-[#1e3a5a]/30 to-transparent"
           : rrfStage === 'NORM'
-          ? "border-blue-600/40 bg-gradient-to-t from-black/95 via-blue-950/30 to-transparent backdrop-blur-xl"
-          : "border-cyan-600/40 bg-gradient-to-t from-black/95 via-cyan-950/30 to-transparent backdrop-blur-xl"
-      )} style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+          ? "border-rose-600/40 bg-gradient-to-t from-black/95 via-rose-950/20 to-transparent"
+          : "border-[#c9a87c]/60 bg-gradient-to-t from-black/95 via-[#1e3a5a]/40 to-transparent"
+      )}>
         {canPost ? (
           <div className="flex flex-col">
             {replyingTo && (
