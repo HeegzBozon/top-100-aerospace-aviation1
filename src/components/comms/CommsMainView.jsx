@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import { useQueryClient } from "@tanstack/react-query";
-import { brandColors } from "@/components/core/brandColors";
+import { brandColors } from "@/components/core/brandTheme";
 import { Message } from "@/entities/Message";
 import { Conversation } from "@/entities/Conversation";
 import { Poll } from "@/entities/Poll";
