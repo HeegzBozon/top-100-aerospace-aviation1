@@ -113,14 +113,18 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
       role="region"
       aria-label="CRP Pipeline"
     >
-      {/* Always-visible milestone timeline - clickable to toggle/select stage */}
+      {/* Always-visible milestone timeline - only collapse on outer area, not dots */}
       <div
-        onClick={handleToggle}
-        className="px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
+        className="px-4 py-3"
         aria-expanded={expanded}
         aria-controls="crp-panel"
       >
-        <MilestoneTracker completedTasks={completedTasksMap} selectedStage={selectedStage} onStageSelect={setSelectedStage} />
+        <div
+          onClick={handleToggle}
+          className="cursor-pointer hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
+        >
+          <MilestoneTracker completedTasks={completedTasksMap} selectedStage={selectedStage} onStageSelect={setSelectedStage} onClickDot={(e) => e.stopPropagation()} />
+        </div>
       </div>
 
       {/* Expanded panel with CRP details */}
