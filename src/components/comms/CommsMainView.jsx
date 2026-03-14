@@ -213,12 +213,30 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
     );
   }
 
+  // Build a display name + avatar for regular DMs
+  const otherParticipantEmail = activeConversation?.participants?.find(p => p !== user?.email) || '';
+  const dmDisplayName = otherParticipantEmail.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const dmInitials = dmDisplayName.slice(0, 2).toUpperCase();
+
   return (
     <div className="flex-1 flex flex-col bg-white min-w-0 overflow-hidden">
       {/* Mobile Header - Only visible on mobile */}
       <div className="md:hidden">
         <MobileCommsHeader onBack={() => selectConversation(null)} />
       </div>
+
+      {/* DM Persona Header — desktop only, regular DMs */}
+      {activeConversation?.type === 'dm' && (
+        <div className="hidden md:flex items-center gap-3 px-5 py-3 border-b border-gray-100 bg-white shrink-0">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#1e3a5a] to-[#4a90b8] flex items-center justify-center text-white text-xs font-bold shrink-0">
+            {dmInitials}
+          </div>
+          <div className="min-w-0">
+            <p className="font-semibold text-[#1e3a5a] text-sm leading-tight truncate">{dmDisplayName}</p>
+            <p className="text-xs text-gray-400 leading-tight">{otherParticipantEmail}</p>
+          </div>
+        </div>
+      )}
 
       {/* Thread Control Center (DMs Only) */}
       {activeConversation?.type === 'dm' && (
