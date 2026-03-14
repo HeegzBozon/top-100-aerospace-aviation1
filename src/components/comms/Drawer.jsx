@@ -274,7 +274,7 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
           if (existing) {
             selectConversation(existing);
           } else {
-            const newConv = await Conversation.create({
+            const newConv = await base44.entities.Conversation.create({
               type: "dm",
               participants: [user.email, email],
             });
