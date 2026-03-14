@@ -213,6 +213,30 @@ export default function MilestoneTracker({ completedTasks = {}, onStageSelect, s
                 </div>
               </button>
 
+              {/* 4 task progress dots for this stage */}
+              <div className="flex-1 flex items-center justify-center gap-1 px-2">
+                {[1, 2, 3, 4].map((taskNum) => {
+                  const stepNum = idx * 4 + taskNum;
+                  const isTaskCompleted = completedTasks[stepNum];
+                  return (
+                    <div
+                      key={stepNum}
+                      className={cn(
+                        "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                        isTaskCompleted
+                          ? `bg-gradient-to-r shadow-lg`
+                          : "bg-white/10"
+                      )}
+                      style={isTaskCompleted ? {
+                        background: `linear-gradient(to right, ${GLOW_COLORS[idx]}, ${GLOW_COLORS[Math.min(idx + 1, GLOW_COLORS.length - 1)]})`,
+                        boxShadow: `0 0 6px ${GLOW_COLORS[idx]}80`
+                      } : {}}
+                      aria-hidden="true"
+                    />
+                  );
+                })}
+              </div>
+
               {/* Connector line after dot */}
               {idx < STAGES.length - 1 && (
                 <div
