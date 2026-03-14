@@ -463,7 +463,7 @@ export default function MessageThread({
       </a>
 
       {/* Messages - with bottom padding to prevent keyboard overlap */}
-      <div className="flex-1 overflow-y-auto scrollbar-hide px-6 py-4 space-y-4" style={{ paddingBottom: 'max(1rem, calc(env(safe-area-inset-bottom) + 280px))' }} role="log" aria-live="polite" aria-label="Message feed">
+      <div className="flex-1 overflow-y-auto scrollbar-hide px-6 py-4 space-y-4 pb-[max(1rem,calc(env(safe-area-inset-bottom)_+_280px))]" role="log" aria-live="polite" aria-label="Message feed">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-gray-900/50 border border-gray-700">
