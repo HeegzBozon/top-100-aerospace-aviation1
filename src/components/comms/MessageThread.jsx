@@ -10,6 +10,7 @@ import PollCard from "./PollCard";
 import CreatePollModal from "./CreatePollModal";
 import MentionPopover from "./MentionPopover";
 import CrpStepPickerButton from "./CrpStepPickerButton";
+import ConstellationBackground from "./ConstellationBackground";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥", "🎉", "👀"];
 
@@ -455,14 +456,15 @@ export default function MessageThread({
   };
 
   return (
-    <form className="flex flex-col h-full overflow-x-hidden" style={{ background: 'linear-gradient(135deg, #0f1d2d 0%, #152a42 50%, #1e3a5a 100%)' }} onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+    <form className="relative flex flex-col h-full overflow-x-hidden" style={{ background: 'linear-gradient(135deg, #0f1d2d 0%, #152a42 50%, #1e3a5a 100%)' }} onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+      <ConstellationBackground />
       {/* Skip to main content link */}
       <a href="#message-input" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-amber-600 focus:text-white focus:px-4 focus:py-2">
         Skip to message input
       </a>
 
       {/* Messages - with bottom padding to prevent keyboard overlap */}
-      <div className="flex-1 overflow-y-auto scrollbar-hide px-6 py-4 space-y-4 pb-[max(1rem,calc(env(safe-area-inset-bottom)_+_280px))]" role="log" aria-live="polite" aria-label="Message feed">
+      <div className="relative z-10 flex-1 overflow-y-auto scrollbar-hide px-6 py-4 space-y-4 pb-[max(1rem,calc(env(safe-area-inset-bottom)_+_280px))]" role="log" aria-live="polite" aria-label="Message feed">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-gray-900/50 border border-gray-700">
@@ -511,7 +513,7 @@ export default function MessageThread({
 
       {/* RRF Stage Navigator */}
       {!isReadonly && !isPerry && (
-        <div className="px-4 py-3 border-t border-gray-700/20 bg-gradient-to-r from-black/60 via-black/50 to-black/60 backdrop-blur-sm">
+        <div className="relative z-10 px-4 py-3 border-t border-gray-700/20 bg-gradient-to-r from-black/60 via-black/50 to-black/60 backdrop-blur-sm">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {[
               { stage: 'FORM', subtitle: 'Plant presence; No ask.' },
@@ -547,7 +549,7 @@ export default function MessageThread({
 
       {/* Message Composer */}
       <div className={cn(
-        "md:relative md:p-4 fixed bottom-0 left-0 right-0 p-4 pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-black/60 border-t transition-all duration-300 backdrop-blur-xl",
+        "relative z-10 md:relative md:p-4 fixed bottom-0 left-0 right-0 p-4 pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-black/60 border-t transition-all duration-300 backdrop-blur-xl",
         rrfStage === 'FORM'
           ? "border-indigo-600/40 bg-gradient-to-t from-black/95 via-indigo-950/20 to-transparent"
           : rrfStage === 'STORM'
