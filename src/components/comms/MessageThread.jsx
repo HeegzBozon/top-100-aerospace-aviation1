@@ -466,7 +466,7 @@ export default function MessageThread({
       </a>
 
       {/* Messages - with bottom padding to prevent keyboard overlap */}
-      <div className="relative z-10 flex-1 overflow-y-auto scrollbar-hide px-6 py-4 space-y-4 pb-[max(1rem,calc(env(safe-area-inset-bottom)_+_280px))]" role="log" aria-live="polite" aria-label="Message feed">
+      <div className="relative z-10 flex-1 overflow-y-auto px-6 py-4 space-y-4 pb-[max(1rem,calc(env(safe-area-inset-bottom)_+_280px))]" role="log" aria-live="polite" aria-label="Message feed" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-gray-900/50 border border-gray-700">
@@ -488,6 +488,14 @@ export default function MessageThread({
         ))}
 
         {rootMessages.map((msg, idx) => {
+          if (typeof document !== 'undefined') {
+            const style = document.createElement('style');
+            style.textContent = '.no-scrollbar::-webkit-scrollbar { display: none; }';
+            if (!document.head.querySelector('[data-scrollbar-hidden]')) {
+              style.setAttribute('data-scrollbar-hidden', 'true');
+              document.head.appendChild(style);
+            }
+          }
           // Check if we need to show a date chip
           const msgDate = new Date(msg.created_date);
           const prevMsg = rootMessages[idx - 1];
