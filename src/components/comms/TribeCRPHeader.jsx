@@ -63,6 +63,14 @@ export default function TribeCRPHeader({ conversation }) {
   // Find the highest completed step to determine which steps are available
   const highestCompleted = localCompleted.length ? Math.max(...localCompleted) : 0;
 
+  // Check which stages are complete for progress dots
+  const stageComplete = {
+    FORM: [1,2,3,4].every(s => localCompleted.includes(s)),
+    STORM: [5,6,7,8].every(s => localCompleted.includes(s)),
+    NORM: [9,10,11,12].every(s => localCompleted.includes(s)),
+    PERFORM: [13,14,15,16].every(s => localCompleted.includes(s)),
+  };
+
   const totalCompleted = localCompleted.length;
   const stageColor = STAGE_COLORS.FORM;
 
@@ -127,7 +135,6 @@ export default function TribeCRPHeader({ conversation }) {
             {["FORM", "STORM", "NORM", "PERFORM"].map((stage, idx) => {
               const dotPos = ((idx + 1) * 25);
               const isComplete = stageComplete[stage];
-              const isUnlocked = unlockedStages.includes(stage);
               return (
                 <div
                   key={stage}
@@ -135,12 +142,10 @@ export default function TribeCRPHeader({ conversation }) {
                     "absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 transition-all duration-300",
                     isComplete
                       ? "border-white/80 bg-white/40 shadow-lg shadow-white/50"
-                      : isUnlocked
-                      ? "border-white/50 bg-white/20"
-                      : "border-white/20 bg-white/5"
+                      : "border-white/50 bg-white/20"
                   )}
                   style={{ left: `${dotPos}%`, transform: "translate(-50%, -50%)" }}
-                  title={`${stage}: ${isComplete ? "Complete" : isUnlocked ? "Unlocked" : "Locked"}`}
+                  title={`${stage}: ${isComplete ? "Complete" : "In Progress"}`}
                   aria-hidden="true"
                 />
               );
