@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 // Sparkle animation styles
@@ -79,10 +79,10 @@ const STAGE_LABELS = ["FORM", "STORM", "NORM", "PERFORM"];
 
 export default function MilestoneTracker({ completedTasks = {} }) {
   const completedCount = Object.values(completedTasks).filter(Boolean).length;
-  const [sparkles, setSparkles] = React.useState([]);
+  const [sparkles, setSparkles] = useState([]);
 
   // Trigger sparkle burst when progress increases
-  React.useEffect(() => {
+  useEffect(() => {
     if (completedCount > 0) {
       const newSparkles = Array.from({ length: 6 }).map(() => ({
         id: Math.random(),
