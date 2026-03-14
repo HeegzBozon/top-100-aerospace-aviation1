@@ -274,7 +274,7 @@ export default function PerryDMThread({ user, crpCurrentStep, crpCompletedSteps 
           <div className="flex items-start justify-between gap-2">
             <p className="font-semibold">How to use Lt. Perry</p>
             <button onClick={() => setShowInfo(false)} className="p-1 rounded-lg hover:bg-amber-100 transition-colors text-amber-700">
-              ×
+              &times;
             </button>
           </div>
           <ul className="list-disc pl-4 space-y-1 text-amber-800">
