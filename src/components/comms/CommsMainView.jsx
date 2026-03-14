@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import { useQueryClient } from "@tanstack/react-query";
-import { brandColors } from "@/components/core/brandTheme";
 import { Message } from "@/entities/Message";
 import { Conversation } from "@/entities/Conversation";
 import { Poll } from "@/entities/Poll";
@@ -11,17 +10,12 @@ import WelcomeRulesLanding from "./WelcomeRulesLanding";
 import CommsOverview from "./CommsOverview";
 import GettingStartedLanding from "./GettingStartedLanding";
 import IndexLanding from "./IndexLanding";
-import PostFeed from "@/components/forum/PostFeed";
 import ChannelPostFeed from "./ChannelPostFeed";
 import MobileCommsHeader from "./MobileCommsHeader";
-import { createPageUrl } from "@/utils";
 import { Link2, Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
 import MobileSearch from "./MobileSearch";
 import PerryDMThread from "./PerryDMThread";
 import YouDMThread from "./YouDMThread";
-import PerryRRFRouter from "@/components/chat/PerryRRFRouter";
 import ThreadControlCenter from "./ThreadControlCenter";
 
 export default function CommsMainView({ onOpenMobileSidebar }) {
@@ -195,13 +189,10 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
         {/* Empty State */}
         <div className="flex-1 flex items-center justify-center px-6">
           <div className="text-center max-w-xs">
-            <div
-              className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center"
-              style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}15, ${brandColors.roseAccent}15)` }}
-            >
-              <Link2 className="w-10 h-10" style={{ color: brandColors.goldPrestige }} />
+            <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#c9a87c]/10 to-[#d4a574]/10">
+              <Link2 className="w-10 h-10 text-[#c9a87c]" />
             </div>
-            <h3 className="text-lg font-bold mb-2" style={{ color: brandColors.navyDeep }}>
+            <h3 className="text-lg font-bold mb-2 text-[#1e3a5a]">
               Welcome to Connect
             </h3>
             <p className="text-sm mb-5 text-gray-500">
