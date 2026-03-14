@@ -572,14 +572,14 @@ export default function MessageThread({
             {/* Message Editor */}
             <fieldset
               className={cn(
-                "rounded-xl overflow-hidden border-2 transition-all duration-300 w-full",
+                "rounded-xl overflow-hidden border-2 transition-all duration-300 w-full bg-gray-950",
                 rrfStage === 'FORM'
-                  ? "focus-within:ring-2 focus-within:ring-lime-500/40 focus-within:shadow-xl focus-within:shadow-lime-500/20 border-lime-600/40 bg-gradient-to-br from-lime-950/10 via-gray-950 to-gray-950"
+                  ? "border-indigo-600/40 focus-within:ring-2 focus-within:ring-indigo-500/40 focus-within:shadow-xl focus-within:shadow-indigo-500/10"
                   : rrfStage === 'STORM'
-                  ? "focus-within:ring-2 focus-within:ring-orange-500/40 focus-within:shadow-xl focus-within:shadow-orange-500/20 border-orange-600/40 bg-gradient-to-br from-orange-950/10 via-gray-950 to-gray-950"
+                  ? "border-[#c9a87c]/40 focus-within:ring-2 focus-within:ring-[#c9a87c]/30 focus-within:shadow-xl focus-within:shadow-[#c9a87c]/10"
                   : rrfStage === 'NORM'
-                  ? "focus-within:ring-2 focus-within:ring-blue-500/40 focus-within:shadow-xl focus-within:shadow-blue-500/20 border-blue-600/40 bg-gradient-to-br from-blue-950/10 via-gray-950 to-gray-950"
-                  : "focus-within:ring-2 focus-within:ring-cyan-500/40 focus-within:shadow-xl focus-within:shadow-cyan-500/20 border-cyan-600/40 bg-gradient-to-br from-cyan-950/10 via-gray-950 to-gray-950"
+                  ? "border-rose-600/40 focus-within:ring-2 focus-within:ring-rose-500/40 focus-within:shadow-xl focus-within:shadow-rose-500/10"
+                  : "border-[#c9a87c]/60 focus-within:ring-2 focus-within:ring-[#c9a87c]/50 focus-within:shadow-xl focus-within:shadow-[#c9a87c]/20"
               )}
               aria-label="Message formatting and input"
             >
