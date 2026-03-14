@@ -90,7 +90,7 @@ const SPECTRUM_GRADIENTS = [
 
 const GLOW_COLORS = ["#6366f1","#a855f7","#8b5cf6","#d946ef","#ec4899","#f43f5e","#ef4444","#f97316","#f59e0b","#facc15","#84cc16","#22c55e","#10b981","#14b8a6","#06b6d4","#3b82f6","#6366f1"];
 
-export default function MilestoneTracker({ completedTasks = {} }) {
+export default function MilestoneTracker({ completedTasks = {}, onStageSelect, selectedStage }) {
   const completedCount = Object.values(completedTasks).filter(Boolean).length;
   const completedStages = new Set(Object.entries(completedTasks).filter(([_, isCompleted]) => isCompleted).map(([step]) => {
     const stepNum = Number(step);
@@ -143,14 +143,53 @@ export default function MilestoneTracker({ completedTasks = {} }) {
         </div>
       </div>
 
-      {/* Unified progress bar flowing through 4 stage dots - full width distribution */}
-      <div className="flex items-center gap-0 w-full">
+      {/* Unified progress bar flowing through 4 stage dots - equal distribution */}
+      <div className="flex items-center w-full">
         {STAGES.map((stageItem, idx) => {
           const isStageCompleted = completedStages.has(stageItem.stage);
           const isLast = idx === STAGES.length - 1;
+          const isSelected = selectedStage === stageItem.stage;
 
           return (
             <React.Fragment key={stageItem.stage}>
+              {/* Stage dot - clickable */}
+              <div className="flex-1 flex justify-start">
+                <button
+                  onClick={() => onStageSelect?.(stageItem.stage)}
+                  className="relative group flex-shrink-0"
+                  aria-label={`${stageItem.name}${isStageCompleted ? " (completed)" : ""}`}
+                >
+                  <div
+                    className={cn(
+                      "w-5 h-5 rounded-full flex items-center justify-center border-2 transition-all duration-300 cursor-pointer",
+                      isStageCompleted
+                        ? cn(STAGE_DOT_ACTIVE[stageItem.stage], "bounce-in group-hover:pulse-glow")
+                        : "border-white/20 bg-white/5 group-hover:border-white/40 group-hover:bg-white/10",
+                      isSelected && "ring-2 ring-offset-1 ring-rose-400/60"
+                    )}
+                  >
+                    {isStageCompleted && (
+                      <div className={cn("w-2 h-2 rounded-full animate-pulse", {
+                        "bg-indigo-300":  stageItem.stage === "FORM",
+                        "bg-amber-400":   stageItem.stage === "STORM",
+                        "bg-rose-300":    stageItem.stage === "NORM",
+                        "bg-yellow-300":  stageItem.stage === "PERFORM",
+                      })} />
+                    )}
+                  </div>
+
+                  {/* Tooltip */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-30"
+                  >
+                    <div className="rounded px-2 py-1 text-xs font-semibold whitespace-nowrap bg-gradient-to-r from-rose-900/90 to-amber-900/90 border border-rose-400/40 text-rose-100 backdrop-blur-sm">
+                      {stageItem.name}
+                    </div>
+                  </div>
+                </button>
+              </div>
+
               {/* Connector line with spectrum gradient */}
               {!isLast && (
                 <div
@@ -176,39 +215,6 @@ export default function MilestoneTracker({ completedTasks = {} }) {
                   )}
                 </div>
               )}
-
-              {/* Stage dot */}
-              <div className="relative group flex-shrink-0">
-                <div
-                  role="img"
-                  aria-label={`${stageItem.name}${isStageCompleted ? " (completed)" : ""}`}
-                  className={cn(
-                    "w-5 h-5 rounded-full flex items-center justify-center border-2 transition-all duration-300 cursor-default",
-                    isStageCompleted
-                      ? cn(STAGE_DOT_ACTIVE[stageItem.stage], "bounce-in group-hover:pulse-glow")
-                      : "border-white/20 bg-white/5 group-hover:border-white/40 group-hover:bg-white/10"
-                  )}
-                >
-                  {isStageCompleted && (
-                    <div className={cn("w-2 h-2 rounded-full animate-pulse", {
-                      "bg-indigo-300":  stageItem.stage === "FORM",
-                      "bg-amber-400":   stageItem.stage === "STORM",
-                      "bg-rose-300":    stageItem.stage === "NORM",
-                      "bg-yellow-300":  stageItem.stage === "PERFORM",
-                    })} />
-                  )}
-                </div>
-
-                {/* Tooltip with rose-gold styling */}
-                <div
-                  aria-hidden="true"
-                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-30"
-                >
-                  <div className="rounded px-2 py-1 text-xs font-semibold whitespace-nowrap bg-gradient-to-r from-rose-900/90 to-amber-900/90 border border-rose-400/40 text-rose-100 backdrop-blur-sm">
-                    {stageItem.name}
-                  </div>
-                </div>
-              </div>
             </React.Fragment>
           );
         })}
