@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, Users, Star, Sparkles, Rocket, Award, ArrowRight, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { NominationHistoryFeed } from '@/components/epics/06-nomination-engine/nominations';
-import { InlineNominationForm } from '@/components/epics/06-nomination-engine/nominations';
+import NominationHistoryFeed from '@/components/nominations/NominationHistoryFeed';
+import InlineNominationForm from '@/components/nominations/InlineNominationForm';
 import { base44 } from '@/api/base44Client';
 
 const brandColors = {

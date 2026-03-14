@@ -12,7 +12,7 @@ import {
   Sparkles, Star, Loader2 
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ServicePackageCard } from '@/components/epics/01-index-engine/talent';
+import ServicePackageCard from '@/components/talent/ServicePackageCard';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

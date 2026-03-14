@@ -11,11 +11,11 @@ import {
   Building2, Briefcase, Users, Eye, FileText, Plus, 
   Settings, BarChart3, CheckCircle, Clock, AlertCircle, Inbox
 } from 'lucide-react';
-import { EmployerOnboarding } from '@/components/epics/01-index-engine/talent';
-import { JobPostForm } from '@/components/epics/01-index-engine/talent';
-import { ApplicationsList } from '@/components/epics/01-index-engine/talent';
-import { FeatureJobButton } from '@/components/epics/01-index-engine/talent';
-import { IntroRequestsDashboard } from '@/components/epics/01-index-engine/talent';
+import EmployerOnboarding from '@/components/talent/EmployerOnboarding';
+import JobPostForm from '@/components/talent/JobPostForm';
+import ApplicationsList from '@/components/talent/ApplicationsList';
+import FeatureJobButton from '@/components/talent/FeatureJobButton';
+import IntroRequestsDashboard from '@/components/talent/IntroRequestsDashboard';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

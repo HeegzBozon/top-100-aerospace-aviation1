@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { PartyPopper, Sparkles, Calendar, Vote } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
-import { VotingModal } from '@/components/epics/06-nomination-engine/voting';
+import VotingModal from '@/components/voting/VotingModal';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

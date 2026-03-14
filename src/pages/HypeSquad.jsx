@@ -8,13 +8,13 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 // HypeSquad Components
-import { HypeScoreRing } from '@/components/epics/05-rapid-response-cells/hypesquad';
-import { HypeLevelBadge } from '@/components/epics/05-rapid-response-cells/hypesquad';
-import { ProfileCompletionChecklist } from '@/components/epics/05-rapid-response-cells/hypesquad';
-import { AmbassadorStats } from '@/components/epics/05-rapid-response-cells/hypesquad';
-import { LevelProgressCard } from '@/components/epics/05-rapid-response-cells/hypesquad';
-import { SocialShareTools } from '@/components/epics/05-rapid-response-cells/hypesquad';
-import { WeeklyMissions } from '@/components/epics/05-rapid-response-cells/hypesquad';
+import HypeScoreRing from '@/components/hypesquad/HypeScoreRing';
+import HypeLevelBadge from '@/components/hypesquad/HypeLevelBadge';
+import ProfileCompletionChecklist from '@/components/hypesquad/ProfileCompletionChecklist';
+import AmbassadorStats from '@/components/hypesquad/AmbassadorStats';
+import LevelProgressCard from '@/components/hypesquad/LevelProgressCard';
+import SocialShareTools from '@/components/hypesquad/SocialShareTools';
+import WeeklyMissions from '@/components/hypesquad/WeeklyMissions';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

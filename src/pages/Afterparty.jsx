@@ -5,7 +5,7 @@ import { Achievement } from '@/entities/Achievement';
 import { User } from '@/entities/User';
 import { Photo } from '@/entities/Photo';
 import { Send, PartyPopper, MessageCircle, ExternalLink, Users, Calendar, Award, Camera, UploadCloud, MapPin, User as UserIcon, Loader2, Check } from "lucide-react";
-import PhotoUploadForm from "@/components/epics/03-mission-rooms/events/PhotoUploadForm";
+import PhotoUploadForm from "@/components/afterparty/PhotoUploadForm";
 import { Button } from "@/components/ui/button";
 import { progressQuest } from '@/functions/progressQuest';
 

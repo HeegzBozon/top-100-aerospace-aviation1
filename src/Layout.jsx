@@ -10,9 +10,9 @@ import { PUBLIC_PAGES } from "@/components/core/appConfig";
 import CommsLayoutMobile from "@/components/layout/CommsLayoutMobile";
 import CommsLayoutDesktop from "@/components/layout/CommsLayoutDesktop";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ConversationProvider } from "@/components/capabilities/contexts/ConversationContext";
-import { UnreadProvider } from "@/components/capabilities/contexts/UnreadContext";
-import { SidebarProvider } from "@/components/capabilities/contexts/SidebarContext";
+import { ConversationProvider } from "@/components/contexts/ConversationContext";
+import { UnreadProvider } from "@/components/contexts/UnreadContext";
+import { SidebarProvider } from "@/components/contexts/SidebarContext";
 const Admin = React.lazy(() => import("@/pages/Admin"));
 
 export default function Layout({ children, currentPageName }) {

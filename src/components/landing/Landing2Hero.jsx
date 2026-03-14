@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import NominationModal from "@/components/epics/06-nomination-engine/nominations/NominationModal";
+import NominationModal from "@/components/nominations/NominationModal";
 import { getUpcomingLaunches } from "@/functions/getUpcomingLaunches";
 import HeroSlideReorderPanel from "@/components/landing/HeroSlideReorderPanel";
 

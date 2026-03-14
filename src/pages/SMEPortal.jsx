@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { SMEEvaluationWizard } from '@/components/epics/01-index-engine/talent';
+import SMEEvaluationWizard from '@/components/sme/SMEEvaluationWizard';
 import { motion } from 'framer-motion';
 
 const brandColors = {

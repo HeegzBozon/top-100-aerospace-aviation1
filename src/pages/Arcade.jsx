@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Gamepad2, Rocket, Target, ArrowLeft, Trophy, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import GalagaGame from "@/components/epics/03-mission-rooms/games/arcade/GalagaGame";
-import AsteroidsGame from "@/components/epics/03-mission-rooms/games/arcade/AsteroidsGame";
-import MissileCommandGame from "@/components/epics/03-mission-rooms/games/arcade/MissileCommandGame";
+import GalagaGame from "@/components/games/arcade/GalagaGame";
+import AsteroidsGame from "@/components/games/arcade/AsteroidsGame";
+import MissileCommandGame from "@/components/games/arcade/MissileCommandGame";
 
 const brandColors = {
   navyDeep: '#1e3a5a',

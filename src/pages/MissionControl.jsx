@@ -4,14 +4,14 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Plane, Target, Trophy, Star, Volume2, VolumeX, Zap, Rocket, Radio, Globe, Layout, Briefcase, Sparkles, Box, Shield, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { GameProvider, useGame } from '@/components/epics/03-mission-rooms/games/GameContext';
-import { RunwayToOrbit } from '@/components/epics/03-mission-rooms/games';
+import { GameProvider, useGame } from '@/components/games/GameContext';
+import RunwayToOrbit from '@/components/games/RunwayToOrbit';
 import FounderDashboard from './FounderDashboard';
 import InvestorDashboard from './InvestorDashboard';
 import EmployerDashboard from './EmployerDashboard';
 import ProviderDashboard from './ProviderDashboard';
 
-import { Season3ReOnboarding } from '@/components/capabilities/onboarding';
+import Season3ReOnboarding from '@/components/onboarding/Season3ReOnboarding';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

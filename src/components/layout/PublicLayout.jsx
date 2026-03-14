@@ -2,9 +2,9 @@ import React from "react";
 import TopNav from "@/components/TopNav";
 import Landing2Sidebar from "@/components/landing/Landing2Sidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import DesktopDock from "@/components/capabilities/dock/DesktopDock";
+import DesktopDock from "@/components/dock/DesktopDock";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
-import Season3ReOnboarding from "@/components/capabilities/onboarding/Season3ReOnboarding";
+import Season3ReOnboarding from "@/components/onboarding/Season3ReOnboarding";
 
 export default function PublicLayout({
   children,

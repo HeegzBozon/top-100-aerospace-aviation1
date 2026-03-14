@@ -2,18 +2,18 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { useProfileResolution } from '@/components/capabilities/hooks/useProfileResolution';
+import { useProfileResolution } from '@/components/hooks/useProfileResolution';
 import { Loader2, Crown, Briefcase, Building, MapPin, Linkedin, Link as LinkIcon, Trophy, Sparkles, Star, Globe, Award, Quote, Mail, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 
-import { NomineeCareerHistorySection } from '@/components/epics/01-index-engine/profiles';
-import { NomineeContributionsSection } from '@/components/epics/01-index-engine/profiles';
-import { NomineeNewsSection } from '@/components/epics/01-index-engine/profiles';
-import { StartupPitch } from '@/components/epics/01-index-engine/profiles';
-import { ProviderServicesList } from '@/components/epics/01-index-engine/profiles';
+import NomineeCareerHistorySection from '@/components/profile/NomineeCareerHistorySection';
+import NomineeContributionsSection from '@/components/profile/NomineeContributionsSection';
+import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
+import StartupPitch from '@/components/profile/StartupPitch';
+import ProviderServicesList from '@/components/profile/ProviderServicesList';
 
 const brandColors = {
     navyDeep: '#1e3a5a',

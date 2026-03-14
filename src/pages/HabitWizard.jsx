@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { User } from '@/entities/User';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import { BallotBoxStep } from '@/components/epics/05-rapid-response-cells/rituals';
+import BallotBoxStep from '@/components/rituals/BallotBoxStep';
 
 export default function HabitWizard() {
   const [currentUser, setCurrentUser] = useState(null);

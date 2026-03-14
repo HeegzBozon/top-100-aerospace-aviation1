@@ -5,10 +5,10 @@ import { Loader2, Download, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { UnifiedProfileEditor } from '@/components/epics/04-project-containers/dashboard';
-import { NomineeContributionsSection } from '@/components/epics/01-index-engine/profiles';
-import { NomineeCareerHistorySection } from '@/components/epics/01-index-engine/profiles';
-import { NomineeNewsSection } from '@/components/epics/01-index-engine/profiles';
+import UnifiedProfileEditor from '@/components/dashboard/UnifiedProfileEditor';
+import NomineeContributionsSection from '@/components/profile/NomineeContributionsSection';
+import NomineeCareerHistorySection from '@/components/profile/NomineeCareerHistorySection';
+import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
 
 const brandColors = {
   cream: '#faf8f5',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { GameProvider, useGame } from '@/components/epics/03-mission-rooms/games/GameContext';
-import { MissionBriefing } from '@/components/epics/03-mission-rooms/games/recruitment';
-import { PuzzleEngine } from '@/components/epics/03-mission-rooms/games/recruitment';
+import { GameProvider, useGame } from '@/components/games/GameContext';
+import MissionBriefing from '@/components/games/recruitment/MissionBriefing';
+import PuzzleEngine from '@/components/games/recruitment/PuzzleEngine';
 import { GameMission } from '@/entities/GameMission';
 import { Nominee } from '@/entities/Nominee';
 import { motion, AnimatePresence } from 'framer-motion';

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import CommsIconRail from "@/components/capabilities/comms/CommsIconRail";
-import Drawer from "@/components/capabilities/comms/Drawer";
-import CommsMainView from "@/components/capabilities/comms/CommsMainView";
-import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
-import NoConversationPlaceholder from "@/components/capabilities/comms/NoConversationPlaceholder";
-import Season3ReOnboarding from "@/components/capabilities/onboarding/Season3ReOnboarding";
+import CommsIconRail from "@/components/comms/CommsIconRail";
+import Drawer from "@/components/comms/Drawer";
+import CommsMainView from "@/components/comms/CommsMainView";
+import { useConversation } from "@/components/contexts/ConversationContext";
+import NoConversationPlaceholder from "@/components/comms/NoConversationPlaceholder";
+import Season3ReOnboarding from "@/components/onboarding/Season3ReOnboarding";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
 
 function CommsAwareContent({ children, currentPageName }) {

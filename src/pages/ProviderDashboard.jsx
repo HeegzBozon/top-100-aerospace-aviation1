@@ -24,15 +24,15 @@ import {
   MessageCircle,
   CreditCard
 } from "lucide-react";
-import { IntroRequestsDashboard } from '@/components/epics/01-index-engine/talent';
-import { QuickServiceForm } from '@/components/epics/01-index-engine/talent';
-import { ProviderAnalytics } from '@/components/epics/01-index-engine/talent';
-import { IntroAnalytics } from '@/components/epics/01-index-engine/talent';
-import { ReferralWidget } from '@/components/epics/01-index-engine/talent';
-import { ProviderTierBadge } from '@/components/epics/01-index-engine/talent';
-import { ProviderReviewsManager } from '@/components/epics/01-index-engine/talent';
-import { EarningsReport } from '@/components/epics/01-index-engine/talent';
-import { ServiceAnalyticsWidget } from '@/components/epics/01-index-engine/talent';
+import IntroRequestsDashboard from '@/components/talent/IntroRequestsDashboard';
+import QuickServiceForm from '@/components/talent/QuickServiceForm';
+import ProviderAnalytics from '@/components/talent/ProviderAnalytics';
+import IntroAnalytics from '@/components/talent/IntroAnalytics';
+import ReferralWidget from '@/components/talent/ReferralWidget';
+import ProviderTierBadge from '@/components/talent/ProviderTierBadge';
+import ProviderReviewsManager from '@/components/talent/ProviderReviewsManager';
+import EarningsReport from '@/components/talent/EarningsReport';
+import ServiceAnalyticsWidget from '@/components/talent/ServiceAnalyticsWidget';
 import { format, isAfter, isBefore, startOfDay, endOfDay, addDays } from "date-fns";
 
 export default function ProviderDashboard() {

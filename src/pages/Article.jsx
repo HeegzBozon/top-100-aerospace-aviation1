@@ -19,9 +19,9 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from "@/components/ui/use-toast";
-import { ArticleEditor } from '@/components/epics/01-index-engine/knowledge';
-import { ArticleHistory } from '@/components/epics/01-index-engine/knowledge';
-import { DiscussionPanel } from '@/components/epics/01-index-engine/knowledge';
+import ArticleEditor from '@/components/wiki/ArticleEditor';
+import ArticleHistory from '@/components/wiki/ArticleHistory';
+import DiscussionPanel from '@/components/wiki/DiscussionPanel';
 
 export default function ArticlePage() {
   const [article, setArticle] = useState(null);

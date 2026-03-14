@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { TipEntry } from '@/entities/TipEntry';
 import { User } from '@/entities/User';
-import { TipCard } from '@/components/epics/08-sponsor-commercial/tips';
-import { TipForm } from '@/components/epics/08-sponsor-commercial/tips';
+import TipCard from '@/components/tips/TipCard';
+import TipForm from '@/components/tips/TipForm';
 import { Button } from '@/components/ui/button';
 import { Plus, Filter, Loader2, BookOpen } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

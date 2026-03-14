@@ -6,21 +6,21 @@ import { Star, Send, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // Editorial Components
-import { EditorialMasthead } from '@/components/epics/02-signal-feed/publication';
-import { EditorialTableOfContents } from '@/components/epics/02-signal-feed/publication';
-import { EditorialManifesto } from '@/components/epics/02-signal-feed/publication';
-import { EditorialPortraits } from '@/components/epics/02-signal-feed/publication';
-import { EditorialLedger } from '@/components/epics/02-signal-feed/publication';
-import { SignalReport } from '@/components/epics/02-signal-feed/publication';
-import { OrbitalIndex } from '@/components/epics/02-signal-feed/publication';
-import { ArchiveExport } from '@/components/epics/02-signal-feed/publication';
-import { EditorialClosing } from '@/components/epics/02-signal-feed/publication';
-import { EnhancedProfilePanel } from '@/components/epics/02-signal-feed/publication';
-import { ShareableCard } from '@/components/epics/02-signal-feed/publication';
-import { CountdownLanding } from '@/components/epics/02-signal-feed/publication';
-import { UnauthenticatedCTA } from '@/components/capabilities/public';
-import { LtPerryButton } from '@/components/capabilities/public';
-import { AuthenticatedIntelligenceHeader } from '@/components/epics/02-signal-feed/publication';
+import EditorialMasthead from '@/components/publication/EditorialMasthead';
+import EditorialTableOfContents from '@/components/publication/EditorialTableOfContents';
+import EditorialManifesto from '@/components/publication/EditorialManifesto';
+import EditorialPortraits from '@/components/publication/EditorialPortraits';
+import EditorialLedger from '@/components/publication/EditorialLedger';
+import SignalReport from '@/components/publication/SignalReport';
+import OrbitalIndex from '@/components/publication/OrbitalIndex';
+import ArchiveExport from '@/components/publication/ArchiveExport';
+import EditorialClosing from '@/components/publication/EditorialClosing';
+import EnhancedProfilePanel from '@/components/publication/EnhancedProfilePanel';
+import ShareableCard from '@/components/publication/ShareableCard';
+import CountdownLanding from '@/components/publication/CountdownLanding';
+import UnauthenticatedCTA from '@/components/public/UnauthenticatedCTA';
+import LtPerryButton from '@/components/public/LtPerryButton';
+import AuthenticatedIntelligenceHeader from '@/components/publication/AuthenticatedIntelligenceHeader';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

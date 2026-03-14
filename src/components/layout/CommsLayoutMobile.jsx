@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
-import MobileHomeView from "@/components/capabilities/comms/MobileHomeView";
-import MobileCommsView from "@/components/capabilities/comms/MobileCommsView";
-import Season3ReOnboarding from "@/components/capabilities/onboarding/Season3ReOnboarding";
+import { useConversation } from "@/components/contexts/ConversationContext";
+import MobileHomeView from "@/components/comms/MobileHomeView";
+import MobileCommsView from "@/components/comms/MobileCommsView";
+import Season3ReOnboarding from "@/components/onboarding/Season3ReOnboarding";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
-import MobileDock from "@/components/capabilities/comms/MobileDock";
+import MobileDock from "@/components/comms/MobileDock";
 
 function MobileCommsContent({
   children,

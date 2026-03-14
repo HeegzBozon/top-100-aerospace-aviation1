@@ -6,8 +6,8 @@ import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
 import Landing2FeaturedSection from '@/components/landing/Landing2FeaturedSection';
 
 import TrendingSection from '@/components/landing/TrendingSection';
-import { CalendarView } from '@/components/capabilities/calendar';
-import { GetStartedView } from '@/components/capabilities/onboarding';
+import CalendarView from '@/components/calendar/CalendarView';
+import GetStartedView from '@/components/onboarding/GetStartedView';
 import HeroHeader from '@/components/home/HeroHeader';
 import AerospaceDashboardSection from '@/components/home/AerospaceDashboardSection';
 import IndustrySpotlight from '@/components/home/IndustrySpotlight';
@@ -21,7 +21,7 @@ import DomainExplorer from '@/components/home/DomainExplorer';
 import TopOriginals from '@/components/home/TopOriginals';
 
 import ErrorBoundary from '@/components/core/ErrorBoundary';
-import HomeSectionReorderPopover, { loadSectionConfig, DEFAULT_SECTIONS } from '@/components/capabilities/admin/HomeSectionReorderPopover';
+import HomeSectionReorderPopover, { loadSectionConfig, DEFAULT_SECTIONS } from '@/components/admin/HomeSectionReorderPopover';
 
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';

@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import UserProfileTrigger from '@/components/UserProfileTrigger';
-import { NotificationCenter } from '@/components/capabilities/comms';
+import NotificationCenter from '@/components/notifications/NotificationCenter';
 
 import { brandColors } from "@/components/core/brandTheme";
 

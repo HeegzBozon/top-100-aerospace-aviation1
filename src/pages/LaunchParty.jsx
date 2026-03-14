@@ -3,10 +3,10 @@ import { Rocket, AlertCircle, Loader2, MapPin } from 'lucide-react';
 import { getUpcomingLaunches } from '@/functions/getUpcomingLaunches';
 import { Button } from '@/components/ui/button';
 import LaunchDetailModal from '@/components/home/LaunchDetailModal';
-import { LaunchListItem } from '@/components/epics/02-signal-feed/launches';
-import { LaunchCalendarView } from '@/components/epics/02-signal-feed/launches';
-import { LaunchDateTime } from '@/components/epics/02-signal-feed/launches';
-import { LaunchTheatre } from '@/components/epics/02-signal-feed/launches';
+import LaunchListItem from '@/components/launches/LaunchListItem';
+import LaunchCalendarView from '@/components/launches/LaunchCalendarView';
+import LaunchDateTime from '@/components/launches/LaunchDateTime';
+import LaunchTheatre from '@/components/launches/LaunchTheatre';
 
 const PAGE_SIZE = 10;
 

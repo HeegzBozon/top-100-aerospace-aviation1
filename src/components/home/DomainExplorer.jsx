@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Rocket, Plane, Globe, GraduationCap, Scale, Briefcase, Microscope, Heart } from 'lucide-react';
-import { brandColors as BRAND_COLORS } from '@/components/core/brandTheme';
+import { BRAND_COLORS } from '@/components/core/brandConstants';
 import { createPageUrl } from '@/utils';
 
 const DOMAINS = [

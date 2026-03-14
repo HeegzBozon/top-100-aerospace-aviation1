@@ -13,12 +13,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { StandingsCore } from '@/components/epics/03-mission-rooms/games';
-import { NomineeQuickView } from '@/components/epics/01-index-engine/discovery';
-import { EngagementCTA } from '@/components/epics/03-mission-rooms/games';
-import { RcvBallotManager } from '@/components/epics/03-mission-rooms/games';
-import { VotingModal } from '@/components/epics/06-nomination-engine/voting';
-import { NominationModal } from '@/components/epics/06-nomination-engine/nominations';
+import StandingsCore from '@/components/arena/StandingsCore';
+import NomineeQuickView from '@/components/standings/NomineeQuickView';
+import EngagementCTA from '@/components/arena/EngagementCTA';
+import RcvBallotManager from '@/components/arena/RcvBallotManager';
+import VotingModal from '@/components/voting/VotingModal';
+import NominationModal from '@/components/nominations/NominationModal';
 import { motion } from 'framer-motion';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 

@@ -9,9 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
-import { BiographerPromptEngine } from '@/components/epics/01-index-engine/profiles';
-import { BiographerTimeline } from '@/components/epics/01-index-engine/profiles';
-import { BiographerAssembly } from '@/components/epics/01-index-engine/profiles';
+import BiographerPromptEngine from '@/components/biographer/BiographerPromptEngine';
+import BiographerTimeline from '@/components/biographer/BiographerTimeline';
+import BiographerAssembly from '@/components/biographer/BiographerAssembly';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

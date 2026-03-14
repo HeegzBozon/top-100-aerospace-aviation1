@@ -7,10 +7,10 @@ import { Award, Users, Calendar, ArrowRight, Sparkles, Trophy, Star, Plane, Comp
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
-import { ScheduleTab } from '@/components/capabilities/calendar';
-import { RoadmapTab } from '@/components/capabilities/calendar';
-import { StrategicThemesTab } from '@/components/capabilities/calendar';
-import { FlightPlanTab } from '@/components/capabilities/calendar';
+import ScheduleTab from '@/components/calendar/ScheduleTab';
+import RoadmapTab from '@/components/calendar/RoadmapTab';
+import StrategicThemesTab from '@/components/calendar/StrategicThemesTab';
+import FlightPlanTab from '@/components/calendar/FlightPlanTab';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

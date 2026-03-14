@@ -7,8 +7,8 @@ import {
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { VotingModal } from '@/components/epics/06-nomination-engine/voting';
-import { NominationModal } from '@/components/epics/06-nomination-engine/nominations';
+import VotingModal from '@/components/voting/VotingModal';
+import NominationModal from '@/components/nominations/NominationModal';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

@@ -7,7 +7,7 @@ import { ArrowRight, Sparkles, MessageCircle, Bot, Loader2 } from 'lucide-react'
 import { base44 } from '@/api/base44Client';
 import { brandColors } from '@/components/core/brandTheme';
 
-const LtPerryChat = lazy(() => import('@/components/capabilities/comms/LtPerryChat'));
+const LtPerryChat = lazy(() => import('@/components/chat/LtPerryChat'));
 
 export default function LandingHeroSection({ user, onFooterLinkClick }) {
   const [isChatOpen, setIsChatOpen] = useState(false);
