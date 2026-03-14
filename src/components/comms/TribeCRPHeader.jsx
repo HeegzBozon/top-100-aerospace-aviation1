@@ -46,6 +46,7 @@ const SPECTRUM_GRADIENTS = [
 
 export default function TribeCRPHeader({ conversation, isExpanded = false, onToggleExpand }) {
   const [expanded, setExpanded] = useState(isExpanded);
+  const [selectedStage, setSelectedStage] = useState("FORM");
   const { theme } = useCommsTheme();
   const queryClient = useQueryClient();
 
@@ -112,15 +113,15 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
       role="region"
       aria-label="CRP Pipeline"
     >
-      {/* Always-visible milestone timeline - clickable to toggle */}
-      <button
+      {/* Always-visible milestone timeline - clickable to toggle/select stage */}
+      <div
         onClick={handleToggle}
-        className="w-full px-4 py-3 text-left hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
+        className="px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
         aria-expanded={expanded}
         aria-controls="crp-panel"
       >
-        <MilestoneTracker completedTasks={completedTasksMap} />
-      </button>
+        <MilestoneTracker completedTasks={completedTasksMap} selectedStage={selectedStage} onStageSelect={setSelectedStage} />
+      </div>
 
       {/* Expanded panel with CRP details */}
       {expanded && (
@@ -128,7 +129,7 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
           <div className="h-px bg-white/5" aria-hidden="true" />
           <CRPPipeline
             completedTasks={completedTasksMap}
-            initialStage={localStage}
+            initialStage={selectedStage}
             onToggleStep={handleToggleStep}
           />
         </div>
