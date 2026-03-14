@@ -32,7 +32,7 @@ function RailIcon({ iconName, className }) {
   return <Icon className={className} />;
 }
 
-function NavItem({ item, isActive, onClick }) {
+function NavItem({ item, isActive, onClick, unreadCount = 0 }) {
   const url = item.query ? `${item.page}?${item.query}` : item.page;
   return (
     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full">
@@ -61,6 +61,14 @@ function NavItem({ item, isActive, onClick }) {
         >
           {item.label}
         </span>
+        {unreadCount > 0 && (
+          <span
+            className="absolute top-2 right-2 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-black text-white rounded-full ring-2 ring-[#0f1a2a]"
+            style={{ background: brandColors.roseAccent }}
+          >
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
+        )}
       </Link>
     </motion.div>
   );
@@ -104,14 +112,12 @@ export default function CommsIconRail({ currentPageName, totalUnread }) {
             key={item.label}
             item={item}
             isActive={currentPageName === item.page}
+            unreadCount={item.label === "Comms" ? totalUnread : 0}
             onClick={() => {
               if (item.page !== "Comms" && selectConversation) selectConversation(null);
             }}
           />
         ))}
-
-        {/* Unread badge on Comms item */}
-        {/* Note: badge is handled inside NavItem via totalUnread prop — adding here for awareness */}
 
         {/* Global Search */}
         <GlobalSearch />
