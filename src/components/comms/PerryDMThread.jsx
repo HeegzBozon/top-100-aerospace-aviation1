@@ -9,6 +9,7 @@ import 'react-quill/dist/quill.snow.css';
 import PerryProfileConfirmCard from '@/components/chat/PerryProfileConfirmCard';
 import { ltPerryGuest } from '@/functions/ltPerryGuest';
 import { perryProfileManager } from '@/functions/perryProfileManager';
+import { cn } from '@/lib/utils';
 
 const AGENT_NAME = 'ltPerryProfile';
 
@@ -35,14 +36,14 @@ function PerryMessageBubble({ message, showAvatar }) {
   const time = message.created_at ? format(new Date(message.created_at), 'h:mm a') : '';
 
   return (
-    <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
+    <div className={cn("flex gap-2.5 group", isUser && "flex-row-reverse")}>
       {showAvatar ? (
         isUser ? (
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-300 to-slate-400 shrink-0 flex items-center justify-center text-[11px] font-bold text-white shadow-sm">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1e3a5a] to-[#2a4a6a] shrink-0 flex items-center justify-center text-[10px] font-bold text-white shadow-sm ring-1 ring-white/20 mt-1">
             ME
           </div>
         ) : (
-          <div className="w-8 h-8 rounded-lg shrink-0 overflow-hidden shadow-sm ring-1 ring-amber-400/30 bg-gradient-to-br from-[#0a1628] to-[#1a2f5a]">
+          <div className="w-8 h-8 rounded-full shrink-0 overflow-hidden shadow-md ring-2 ring-amber-400/40 bg-gradient-to-br from-[#0a1628] to-[#1a2f5a] mt-1">
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/6cfeb5817_generated_image.png"
               alt="Lt. Perry"
@@ -55,28 +56,29 @@ function PerryMessageBubble({ message, showAvatar }) {
         <div className="w-8 shrink-0" />
       )}
 
-      <div className={`flex flex-col max-w-[78%] ${isUser ? 'items-end' : ''}`}>
+      <div className={cn("flex flex-col max-w-[78%]", isUser && "items-end")}>
         {showAvatar && (
-          <div className={`flex items-center gap-2 mb-1 ${isUser ? 'flex-row-reverse' : ''}`}>
-            <span className="text-[12px] font-semibold text-slate-700">
+          <div className={cn("flex items-center gap-1.5 mb-1.5", isUser && "flex-row-reverse")}>
+            <span className="text-[11px] font-semibold text-gray-500">
               {isUser ? 'You' : 'Lt. Perry'}
             </span>
-            {time && <span className="text-[10px] text-gray-400">{time}</span>}
+            {time && <span className="text-[10px] text-gray-300">{time}</span>}
           </div>
         )}
-        <div className={`rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
+        <div className={cn(
+          "rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm",
           isUser
-            ? 'bg-gradient-to-br from-[#c9a87c] to-[#b8956b] text-white rounded-tr-sm'
-            : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
-        }`}>
+            ? "bg-[#1e3a5a] text-white rounded-tr-sm"
+            : "bg-white border border-gray-100 text-gray-800 rounded-tl-sm shadow-sm"
+        )}>
           {isUser ? (
             <p className="leading-relaxed">{message.content}</p>
           ) : (
             <ReactMarkdown
-              className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>p]:leading-relaxed"
+              className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>p]:leading-relaxed [&_a]:text-blue-500 [&_a]:underline"
               components={{
                 a: ({ children, ...props }) => (
-                  <a {...props} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{children}</a>
+                  <a {...props} target="_blank" rel="noopener noreferrer">{children}</a>
                 ),
               }}
             >
@@ -84,6 +86,11 @@ function PerryMessageBubble({ message, showAvatar }) {
             </ReactMarkdown>
           )}
         </div>
+        {!showAvatar && time && (
+          <span className="text-[10px] text-gray-300 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity px-1">
+            {time}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -260,38 +267,32 @@ export default function PerryDMThread({ user, crpCurrentStep, crpCompletedSteps 
   };
 
   return (
-    <div className="flex flex-col h-full overflow-x-hidden overflow-hidden" style={{ background: 'linear-gradient(180deg, #faf8f5 0%, #fff 100%)' }}>
-       {/* Info Panel - positioned above messages */}
-       {showInfo && (
-         <div className="shrink-0 mx-5 mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
-           <div className="flex items-start justify-between gap-2">
-             <p className="font-semibold">How to use:</p>
-             <button
-               onClick={() => setShowInfo(false)}
-               className="p-1 rounded-lg hover:bg-amber-100 transition-colors shrink-0 text-amber-900 hover:text-amber-950"
-             >
-               ×
-             </button>
-           </div>
-           <ul className="list-disc pl-4 space-y-1 text-amber-800">
-             <li>Ask about updating your profile (bio, career history, socials)</li>
-             <li>Request info about the platform, voting, or nominations</li>
-             <li>Get help with nominations and voting strategies</li>
-           </ul>
-           <p className="font-semibold mt-2">Limitations:</p>
-           <ul className="list-disc pl-4 space-y-1 text-amber-800">
-             <li>Context window: Last 6 messages in conversation</li>
-             <li>Profile changes require your confirmation before applying</li>
-             <li>Not all platform features can be modified via chat</li>
-           </ul>
-         </div>
-       )}
+    <div className="flex flex-col h-full overflow-x-hidden overflow-hidden bg-gradient-to-b from-[#faf8f5] to-white">
+      {/* Info Panel */}
+      {showInfo && (
+        <div className="shrink-0 mx-4 mt-3 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
+          <div className="flex items-start justify-between gap-2">
+            <p className="font-semibold">How to use Lt. Perry</p>
+            <button onClick={() => setShowInfo(false)} className="p-1 rounded-lg hover:bg-amber-100 transition-colors text-amber-700">
+              ×
+            </button>
+          </div>
+          <ul className="list-disc pl-4 space-y-1 text-amber-800">
+            <li>Update your profile (bio, career history, socials)</li>
+            <li>Platform help — voting, nominations, quests</li>
+            <li>Profile changes need your confirmation before saving</li>
+          </ul>
+        </div>
+      )}
 
-       {/* Messages - with bottom padding to prevent keyboard overlap */}
-      <div className="flex-1 overflow-y-auto scrollbar-hide px-5 py-4 space-y-3 min-h-0" style={{ paddingBottom: 'max(1rem, calc(env(safe-area-inset-bottom) + 280px))' }}>
+      {/* Messages */}
+      <div
+        className="flex-1 overflow-y-auto scrollbar-hide px-4 py-5 space-y-4 min-h-0"
+        style={{ paddingBottom: 'max(1rem, calc(env(safe-area-inset-bottom) + 100px))' }}
+      >
         {isInitializing ? (
           <div className="flex items-center justify-center h-full">
-            <div className="flex gap-1">
+            <div className="flex gap-1.5">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce [animation-delay:0ms]" />
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce [animation-delay:150ms]" />
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce [animation-delay:300ms]" />
@@ -304,7 +305,6 @@ export default function PerryDMThread({ user, crpCurrentStep, crpCompletedSteps 
               const prevMsg = messages[idx - 1];
               const prevDate = prevMsg?.created_at ? new Date(prevMsg.created_at) : null;
               const showDateChip = msgDate && (idx === 0 || (prevDate && !isSameDay(prevDate, msgDate)));
-
               return (
                 <React.Fragment key={idx}>
                   {showDateChip && <DateChip date={msg.created_at} />}
@@ -326,15 +326,15 @@ export default function PerryDMThread({ user, crpCurrentStep, crpCompletedSteps 
             )}
 
             {isLoading && (
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-lg shrink-0 overflow-hidden ring-1 ring-amber-400/30 bg-gradient-to-br from-[#0a1628] to-[#1a2f5a] shadow-sm">
+              <div className="flex gap-2.5">
+                <div className="w-8 h-8 rounded-full shrink-0 overflow-hidden ring-2 ring-amber-400/40 bg-gradient-to-br from-[#0a1628] to-[#1a2f5a] shadow-sm mt-1">
                   <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/6cfeb5817_generated_image.png" alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                 </div>
                 <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
                   <div className="flex gap-1 items-center h-4">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0ms]" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:150ms]" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:300ms]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce [animation-delay:0ms]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce [animation-delay:150ms]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce [animation-delay:300ms]" />
                   </div>
                 </div>
               </div>
@@ -344,38 +344,41 @@ export default function PerryDMThread({ user, crpCurrentStep, crpCompletedSteps 
         <div ref={bottomRef} />
       </div>
 
-      {/* Input - Fixed on mobile only */}
-      <div className="md:relative md:px-3 md:py-2 md:border-t md:border-gray-100 md:bg-white fixed bottom-0 left-0 right-0 px-3 py-2 border-t border-gray-100 bg-white" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        <fieldset className="rounded-lg overflow-hidden border border-gray-200 bg-white w-full" disabled={isLoading || isInitializing || isSubmittingAction}>
+      {/* Composer */}
+      <div
+        className="md:relative md:px-4 md:pb-4 md:pt-2 md:border-t md:border-gray-100 md:bg-white fixed bottom-0 left-0 right-0 px-4 pb-4 pt-2 border-t border-gray-100 bg-white"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}
+      >
+        <div className={cn(
+          "flex items-end gap-2 rounded-2xl border bg-gray-50 overflow-hidden transition-all duration-200",
+          "focus-within:bg-white focus-within:border-gray-300 focus-within:shadow-md",
+          (isLoading || isInitializing || isSubmittingAction) ? "opacity-60 pointer-events-none" : "border-gray-200"
+        )}>
           <ReactQuill
             ref={quillRef}
             value={inputValue}
             onChange={setInputValue}
             onFocus={() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' })}
+            onKeyDown={handleKeyDown}
             modules={{ toolbar: false }}
             formats={['bold', 'italic', 'underline', 'link']}
             placeholder="Message Lt. Perry…"
-            className="[&_.ql-container]:border-0 [&_.ql-editor]:min-h-[50px] [&_.ql-editor]:max-h-[150px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-3 [&_.ql-editor]:py-2 [&_.ql-editor.ql-blank::before]:text-gray-400 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-700 [&_.ql-editor]:bg-transparent"
-            style={{ fontSize: '15px' }}
+            className="flex-1 [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[44px] [&_.ql-editor]:max-h-[120px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-4 [&_.ql-editor]:py-3 [&_.ql-editor.ql-blank::before]:text-gray-400 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-700 [&_.ql-editor]:bg-transparent [&_.ql-editor]:text-[15px] [&_.ql-editor]:leading-relaxed"
           />
-          <div className="flex items-center justify-end px-3 py-2 border-t border-gray-100 bg-gray-50">
-            <Button
-              onClick={handleSend}
-              disabled={!inputValue.replace(/<[^>]*>/g, '').trim() || isLoading || isInitializing || isSubmittingAction}
-              aria-label="Send message"
-              size="sm"
-              className="h-8 px-4 rounded-lg border-0"
-              style={{
-                background: inputValue.replace(/<[^>]*>/g, '').trim()
-                  ? 'rgb(30, 58, 90)'
-                  : 'rgba(30, 58, 90, 0.3)',
-                color: '#fff',
-              }}
-            >
-              <Send className="w-4 h-4" />
-            </Button>
-          </div>
-        </fieldset>
+          <button
+            onClick={handleSend}
+            disabled={!inputValue.replace(/<[^>]*>/g, '').trim() || isLoading || isInitializing || isSubmittingAction}
+            aria-label="Send message"
+            className={cn(
+              "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mr-2 mb-2 transition-all duration-200",
+              inputValue.replace(/<[^>]*>/g, '').trim()
+                ? "bg-[#1e3a5a] text-white hover:bg-[#2a4a6a] shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            )}
+          >
+            <Send className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </div>
   );
