@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import ProfileView from '@/pages/epics/01-index-engine/ProfileView';
+import ProfileView from '@/pages/ProfileView';
 
 export default function UserProfile() {
   const navigate = useNavigate();

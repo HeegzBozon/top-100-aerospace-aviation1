@@ -1,111 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { createPageUrl } from "@/utils";
-import { base44 } from "@/api/base44Client";
+import { User } from '@/entities/User';
 import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 
 import { getAutoTheme, getCSSVariables, themes } from "@/components/core/brandTheme";
 import { ThemeProvider } from "@/components/core/ThemeContext";
 import { PUBLIC_PAGES } from "@/components/core/appConfig";
+import CommsLayoutMobile from "@/components/layout/CommsLayoutMobile";
+import CommsLayoutDesktop from "@/components/layout/CommsLayoutDesktop";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { ConversationProvider } from "@/components/capabilities/contexts/ConversationContext";
 import { UnreadProvider } from "@/components/capabilities/contexts/UnreadContext";
 import { SidebarProvider } from "@/components/capabilities/contexts/SidebarContext";
-import { useIsMobile } from "@/hooks/use-mobile";
-
-import CommsIconRail from "@/components/capabilities/comms/CommsIconRail";
-import Drawer from "@/components/capabilities/comms/Drawer";
-import MobileDock from "@/components/capabilities/comms/MobileDock";
-import MobileCommsView from "@/components/capabilities/comms/MobileCommsView";
-import CommsMainView from "@/components/capabilities/comms/CommsMainView";
-import NoConversationPlaceholder from "@/components/capabilities/comms/NoConversationPlaceholder";
-import NewYearCountdownBar from "@/components/NewYearCountdownBar";
-import Season3ReOnboarding from "@/components/capabilities/onboarding/Season3ReOnboarding";
-import { useUnread } from "@/components/capabilities/contexts/UnreadContext";
-import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
-
-const IS_COMMS_PAGE = (name) => name === 'Comms';
-
-/**
- * CommsSlot — replaces {children} only on the Comms page.
- * All other pages render their children directly.
- */
-function CommsSlot({ children, currentPageName, isMobile }) {
-  const { activeConversation } = useConversation();
-
-  if (!IS_COMMS_PAGE(currentPageName)) {
-    return <>{children}</>;
-  }
-
-  if (isMobile) {
-    return <MobileCommsView />;
-  }
-
-  if (!activeConversation) {
-    return <NoConversationPlaceholder />;
-  }
-
-  return (
-    <div className="flex h-full w-full overflow-hidden">
-      <CommsMainView onOpenMobileSidebar={() => {}} />
-    </div>
-  );
-}
-
-function AppShell({ children, currentPageName, user, showReOnboarding, onReOnboardingDone, isBare }) {
-  const isMobile = useIsMobile();
-  const { totalUnread } = useUnread();
-
-  if (isBare) {
-    return <div className="min-h-screen">{children}</div>;
-  }
-
-  if (isMobile) {
-    return (
-      <div className="h-screen overflow-hidden flex flex-col md:hidden">
-        {showReOnboarding && (
-          <Season3ReOnboarding onComplete={onReOnboardingDone} onSkip={onReOnboardingDone} />
-        )}
-        <div className="flex-1 overflow-hidden">
-          <CommsSlot currentPageName={currentPageName} isMobile={isMobile}>
-            {children}
-          </CommsSlot>
-        </div>
-        {!IS_COMMS_PAGE(currentPageName) && <NewYearCountdownBar />}
-        {!IS_COMMS_PAGE(currentPageName) && <MobileDock currentPageName={currentPageName} />}
-      </div>
-    );
-  }
-
-  // Desktop
-  return (
-    <div className="hidden md:flex h-screen overflow-hidden bg-white">
-      <CommsIconRail currentPageName={currentPageName} totalUnread={totalUnread} />
-      <Drawer currentPageName={currentPageName} user={user} />
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {showReOnboarding && (
-          <Season3ReOnboarding onComplete={onReOnboardingDone} onSkip={onReOnboardingDone} />
-        )}
-        <div className="flex-1 overflow-hidden">
-          <CommsSlot currentPageName={currentPageName} isMobile={isMobile}>
-            {children}
-          </CommsSlot>
-        </div>
-      </main>
-      <NewYearCountdownBar />
-    </div>
-  );
-}
+const Admin = React.lazy(() => import("@/pages/Admin"));
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [authStatus, setAuthStatus] = useState('checking');
   const [showReOnboarding, setShowReOnboarding] = useState(false);
   const [initialThemeMode, setInitialThemeMode] = useState('auto');
+  const isMobile = useIsMobile();
 
+  // --- Auth ---
   useEffect(() => {
     const handleAuth = async () => {
       try {
-        const currentUser = await base44.auth.me();
+        const currentUser = await User.me();
         setUser(currentUser);
         if (currentUser.theme_mode) setInitialThemeMode(currentUser.theme_mode);
         if (currentPageName === 'MissionControl' && !currentUser.season3_reonboarding_seen) {
@@ -124,17 +45,20 @@ export default function Layout({ children, currentPageName }) {
     handleAuth();
   }, [currentPageName]);
 
+  // --- Vibrate on load ---
   useEffect(() => {
     if ('vibrate' in navigator) navigator.vibrate(100);
   }, []);
 
+  // --- Re-onboarding handler ---
   const handleReOnboardingDone = async () => {
     setShowReOnboarding(false);
     if (user) {
-      try { await base44.auth.updateMe({ season3_reonboarding_seen: true }); } catch { }
+      try { await User.updateMyUserData({ season3_reonboarding_seen: true }); } catch { }
     }
   };
 
+  // --- Loading state (before ThemeProvider is ready) ---
   if (authStatus === 'checking') {
     const themeVars = themes[getAutoTheme()] || themes.brand;
     return (
@@ -149,7 +73,12 @@ export default function Layout({ children, currentPageName }) {
 
   const isNotFoundPage = currentPageName === 'NotFound';
   const isLandingPage = currentPageName === 'Landing';
+  const isPublicIndexPage = currentPageName === 'Top100Women2025';
   const isUnauthHome = currentPageName === 'Home' && !user;
+
+  // Use Comms layout for all "App" pages, including the public index
+  const useCommsLayout = (!!user || isPublicIndexPage) && !isNotFoundPage && !isLandingPage;
+
   const isBare = isLandingPage || isUnauthHome || isNotFoundPage;
 
   return (
@@ -158,15 +87,29 @@ export default function Layout({ children, currentPageName }) {
         <UnreadProvider>
           <SidebarProvider>
             <Toaster />
-            <AppShell
-              currentPageName={currentPageName}
-              user={user}
-              showReOnboarding={showReOnboarding}
-              onReOnboardingDone={handleReOnboardingDone}
-              isBare={isBare}
-            >
-              {children}
-            </AppShell>
+            {isMobile ? (
+              <CommsLayoutMobile
+                currentPageName={currentPageName}
+                user={user}
+                showReOnboarding={showReOnboarding}
+                onReOnboardingComplete={handleReOnboardingDone}
+                onReOnboardingSkip={handleReOnboardingDone}
+                isBare={isBare}
+              >
+                {children}
+              </CommsLayoutMobile>
+            ) : (
+              <CommsLayoutDesktop
+                currentPageName={currentPageName}
+                user={user}
+                showReOnboarding={showReOnboarding}
+                onReOnboardingComplete={handleReOnboardingDone}
+                onReOnboardingSkip={handleReOnboardingDone}
+                isBare={isBare}
+              >
+                {children}
+              </CommsLayoutDesktop>
+            )}
           </SidebarProvider>
         </UnreadProvider>
       </ConversationProvider>

@@ -6,10 +6,10 @@ import { Plane, Target, Trophy, Star, Volume2, VolumeX, Zap, Rocket, Radio, Glob
 import { Button } from '@/components/ui/button';
 import { GameProvider, useGame } from '@/components/epics/03-mission-rooms/games/GameContext';
 import { RunwayToOrbit } from '@/components/epics/03-mission-rooms/games';
-import FounderDashboard from '../04-project-containers/FounderDashboard';
-import InvestorDashboard from '../04-project-containers/InvestorDashboard';
-import EmployerDashboard from '../04-project-containers/EmployerDashboard';
-import ProviderDashboard from '../04-project-containers/ProviderDashboard';
+import FounderDashboard from './FounderDashboard';
+import InvestorDashboard from './InvestorDashboard';
+import EmployerDashboard from './EmployerDashboard';
+import ProviderDashboard from './ProviderDashboard';
 
 import { Season3ReOnboarding } from '@/components/capabilities/onboarding';
 

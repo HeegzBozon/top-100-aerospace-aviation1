@@ -26,6 +26,7 @@ export default function FactoryReset() {
                 setMessage(error.message || 'Failed to perform factory reset.');
             }
         };
+
         performReset();
     }, []);
 
@@ -45,11 +46,13 @@ export default function FactoryReset() {
                         </div>
                     </>
                 )}
+                
                 {status === 'success' && (
                     <>
                         <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
                         <h2 className="text-xl font-bold text-[var(--text)] mb-2">Factory Reset Complete!</h2>
                         <p className="text-[var(--muted)] mb-4">{message}</p>
+                        
                         {summary && (
                             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-left">
                                 <h3 className="font-semibold text-green-800 mb-2">Reset Summary:</h3>
@@ -63,6 +66,7 @@ export default function FactoryReset() {
                                 </ul>
                             </div>
                         )}
+                        
                         <Link to={createPageUrl('Admin')}>
                             <Button className="bg-[var(--accent)] hover:bg-[var(--accent-2)] text-white">
                                 Return to Admin Panel
@@ -70,13 +74,17 @@ export default function FactoryReset() {
                         </Link>
                     </>
                 )}
+                
                 {status === 'error' && (
                     <>
                         <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
                         <h2 className="text-xl font-bold text-[var(--text)] mb-2">Factory Reset Failed</h2>
                         <p className="text-red-600 mb-6">{message}</p>
+                        
                         <Link to={createPageUrl('Admin')}>
-                            <Button variant="outline">Return to Admin Panel</Button>
+                            <Button variant="outline" className="mr-3">
+                                Return to Admin Panel
+                            </Button>
                         </Link>
                     </>
                 )}

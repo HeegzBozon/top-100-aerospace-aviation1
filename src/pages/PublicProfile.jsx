@@ -1,4 +1,4 @@
-import ProfileView from '@/pages/epics/01-index-engine/ProfileView';
+import ProfileView from '@/pages/ProfileView';
 
 export default function PublicProfile() {
   return <ProfileView />;

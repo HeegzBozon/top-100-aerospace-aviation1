@@ -2,21 +2,10 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
 import { Send, Smile, MoreHorizontal, Pencil, Trash2, MessageSquare, X, Check, BarChart3, Bold, Italic, Underline, Strikethrough, Link2, List, ListOrdered, Code, AtSign, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import ReactQuill from "react-quill";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import PollCard from "./PollCard";
 import CreatePollModal from "./CreatePollModal";
 import MentionPopover from "./MentionPopover";
@@ -25,7 +14,14 @@ import RRFQuickActions from "@/components/epics/05-rapid-response-cells/rrf/RRFQ
 import RRFMessageTag from "@/components/epics/05-rapid-response-cells/rrf/RRFMessageTag";
 import CrpStepPickerButton from "./CrpStepPickerButton";
 
-import { brandColors } from "@/components/core/brandColors";
+const brandColors = {
+  navyDeep: '#1e3a5a',
+  skyBlue: '#4a90b8',
+  goldPrestige: '#c9a87c',
+  goldLight: '#e8d4b8',
+  roseAccent: '#d4a574',
+  cream: '#faf8f5',
+};
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥", "🎉", "👀"];
 
@@ -62,7 +58,6 @@ function MessageBubble({ message, isOwn, showAvatar, currentUserEmail, onReact, 
   const [editContent, setEditContent] = useState(message.content);
   const [showReplies, setShowReplies] = useState(false);
   const [isReacted, setIsReacted] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const initials = message.sender_name?.slice(0, 2).toUpperCase() ||
     message.sender_email?.slice(0, 2).toUpperCase() || "??";
@@ -239,7 +234,7 @@ function MessageBubble({ message, isOwn, showAvatar, currentUserEmail, onReact, 
                        </DropdownMenuItem>
                        <DropdownMenuItem
                          className="text-red-400 focus:bg-red-900/30"
-                         onClick={() => setShowDeleteDialog(true)}
+                         onClick={() => confirm("Delete this message?") && onDelete?.(message.id)}
                        >
                          <Trash2 className="w-3 h-3 mr-2" /> Delete
                        </DropdownMenuItem>
@@ -305,29 +300,6 @@ function MessageBubble({ message, isOwn, showAvatar, currentUserEmail, onReact, 
           />
         ))}
       </div>
-
-      {/* Accessible delete confirmation dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="bg-gray-900 border-gray-700">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Delete message?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
-              This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-800 border-gray-700 text-gray-200 hover:bg-gray-700">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white"
-              onClick={() => onDelete?.(message.id)}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
@@ -370,8 +342,6 @@ export default function MessageThread({
   const [mentionQuery, setMentionQuery] = useState("");
   const [activeFormats, setActiveFormats] = useState({});
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [showLinkPopover, setShowLinkPopover] = useState(false);
-  const [linkUrl, setLinkUrl] = useState("");
   const [rrfStage, setRRFStage] = useState('FORM');
   const [activeCrpStep, setActiveCrpStep] = useState(defaultCrpStep);
   const messagesEndRef = useRef(null);
@@ -692,62 +662,25 @@ export default function MessageThread({
                 </div>
                 <div className="w-px h-5 mx-1" style={{ background: 'rgba(100, 100, 100, 0.2)' }} />
                 <div className="flex items-center gap-0.5">
-                   <Popover open={showLinkPopover} onOpenChange={setShowLinkPopover}>
-                     <PopoverTrigger asChild>
-                       <button
-                         type="button"
-                         className={cn(
-                           "p-1.5 rounded transition-colors",
-                           activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50"
-                         )}
-                         title="Link (⌘K)"
-                         onClick={() => {
-                           if (activeFormats.link) {
-                             quillRef.current?.getEditor().format('link', false);
-                             updateActiveFormats();
-                           } else {
-                             setLinkUrl("");
-                             setShowLinkPopover(true);
-                           }
-                         }}
-                       >
-                         <Link2 className={cn("w-4 h-4", activeFormats.link ? "text-amber-300" : "text-gray-400")} />
-                       </button>
-                     </PopoverTrigger>
-                     <PopoverContent className="w-72 p-2 bg-gray-900 border-gray-700" side="top" align="start">
-                       <div className="flex gap-2">
-                         <Input
-                           autoFocus
-                           type="url"
-                           placeholder="https://..."
-                           value={linkUrl}
-                           onChange={(e) => setLinkUrl(e.target.value)}
-                           onKeyDown={(e) => {
-                             if (e.key === 'Enter' && linkUrl.trim()) {
-                               quillRef.current?.getEditor().format('link', linkUrl.trim());
-                               updateActiveFormats();
-                               setShowLinkPopover(false);
-                             }
-                             if (e.key === 'Escape') setShowLinkPopover(false);
-                           }}
-                           className="h-8 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 text-sm"
-                         />
-                         <Button
-                           size="sm"
-                           className="h-8 px-3 bg-amber-600 hover:bg-amber-700 text-white"
-                           onClick={() => {
-                             if (linkUrl.trim()) {
-                               quillRef.current?.getEditor().format('link', linkUrl.trim());
-                               updateActiveFormats();
-                             }
-                             setShowLinkPopover(false);
-                           }}
-                         >
-                           <Check className="w-3 h-3" />
-                         </Button>
-                       </div>
-                     </PopoverContent>
-                   </Popover>
+                   <button
+                     type="button"
+                     className={cn(
+                       "p-1.5 rounded transition-colors",
+                       activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50"
+                     )}
+                     title="Link (⌘K)"
+                     onClick={() => {
+                       if (activeFormats.link) {
+                         quillRef.current?.getEditor().format('link', false);
+                       } else {
+                         const url = prompt('Enter URL:');
+                         if (url) quillRef.current?.getEditor().format('link', url);
+                       }
+                       updateActiveFormats();
+                     }}
+                   >
+                     <Link2 className="w-4 h-4" style={{ color: activeFormats.link ? '#fbbf24' : '#9ca3af' }} />
+                   </button>
                    <button
                      type="button"
                      className={cn(

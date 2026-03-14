@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
 import { useQueryClient } from "@tanstack/react-query";
@@ -35,50 +35,34 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
     enabled: !!activeConversation?.id && !!user?.email,
     staleTime: 5000,
     refetchInterval: 8000,
+    onSuccess: (all) => {
+      // Fire-and-forget batch read — does not block render
+      const unread = all.filter(m =>
+        m.sender_email !== user.email &&
+        !m.read_by?.includes(user.email)
+      );
+      if (unread.length > 0) {
+        Promise.all(
+          unread.map(msg =>
+            Message.update(msg.id, { read_by: [...(msg.read_by || []), user.email] })
+          )
+        ).then(() => {
+          queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
+        });
+      }
+    },
   });
 
-  // Fire-and-forget batch read-marking — runs once per conversation load, not on every refetch
-  const hasMarkedRef = useRef({});
-  useEffect(() => {
-    if (!messages.length || !user?.email || !activeConversation?.id) return;
-    const key = activeConversation.id;
-    // Only mark once per conversation session to prevent a write storm on every 8s refetch
-    if (hasMarkedRef.current[key]) return;
-    const unread = messages.filter(m =>
-      m.sender_email !== user.email &&
-      !m.read_by?.includes(user.email)
-    );
-    if (unread.length === 0) return;
-    hasMarkedRef.current[key] = true;
-    Promise.all(
-      unread.map(msg =>
-        Message.update(msg.id, { read_by: [...(msg.read_by || []), user.email] })
-      )
-    ).then(() => {
-      queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
-    });
-  }, [activeConversation?.id, messages, user?.email, queryClient]);
-
-  // Reset mark-guard when conversation changes
-  useEffect(() => {
-    if (activeConversation?.id) {
-      delete hasMarkedRef.current[activeConversation.id];
-    }
-  }, [activeConversation?.id]);
-
-  // Use channel_category enum for deterministic routing — no fragile name-string matching
-  const channelCat = activeConversation?.channel_category;
-  const isPollChannel = channelCat === 'announcements' || activeConversation?.name?.toLowerCase().includes('poll');
-  const isWelcomeRulesChannel = channelCat === 'general' && (
-    activeConversation?.name?.toLowerCase().includes('welcome') ||
-    activeConversation?.name?.toLowerCase().includes('rules')
-  );
-  const isStatusChannel = channelCat === 'support';
+  const isPollChannel = activeConversation?.name?.toLowerCase().includes('poll');
+  const isWelcomeRulesChannel = activeConversation?.name?.toLowerCase().includes('welcome') &&
+    activeConversation?.name?.toLowerCase().includes('rules');
+  const isStatusChannel = activeConversation?.name?.toLowerCase().includes('status') ||
+    activeConversation?.name?.toLowerCase().includes('operations');
   const isGettingStartedChannel = activeConversation?.name?.toLowerCase().includes('getting-started') ||
     activeConversation?.name?.toLowerCase().includes('getting started');
-  const isIndexChannel = activeConversation?.name?.toLowerCase().includes('top-100') ||
+  const isIndexChannel = activeConversation?.name?.toLowerCase().includes('index') ||
+    activeConversation?.name?.toLowerCase().includes('top-100') ||
     activeConversation?.name?.toLowerCase().includes('top 100');
-  // Slack-style chat channels by name (these are specific named channels, safe to match exactly)
   const isSlackChannel = activeConversation?.name?.toLowerCase() === 'chit-chat' ||
     activeConversation?.name?.toLowerCase() === 'hangar-talk';
 

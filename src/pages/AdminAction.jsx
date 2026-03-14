@@ -24,6 +24,7 @@ export default function AdminAction() {
                 setMessage(error.message || 'Failed to reset scores.');
             }
         };
+
         performReset();
     }, []);
 
@@ -55,7 +56,7 @@ export default function AdminAction() {
                         <p className="text-[var(--muted)]">{message}</p>
                     </>
                 )}
-                <Link to={createPageUrl('Admin?tab=engine_tuning')} className="mt-6 inline-block">
+                 <Link to={createPageUrl('Admin?tab=engine_tuning')} className="mt-6 inline-block">
                     <Button variant="outline">Back to Admin Panel</Button>
                 </Link>
             </div>
