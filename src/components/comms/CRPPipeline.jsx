@@ -95,10 +95,11 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
     <div className="space-y-3" role="region" aria-label="CRP pipeline stages">
       {/* Stage Selector Tabs */}
       <div
-        className="flex gap-1 overflow-x-auto scrollbar-hide"
-        role="tablist"
-        aria-label="Pipeline stages"
-      >
+         className="flex gap-1 overflow-x-auto"
+         role="tablist"
+         aria-label="Pipeline stages"
+         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+       >
         {STAGE_KEYS.map((stage) => {
           const isActive = selectedStage === stage;
           const s = CRP_STAGES[stage];
@@ -133,18 +134,12 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
           config.bg, config.border
         )}
       >
-        {/* Panel header + progress */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className={cn("text-xs font-bold uppercase tracking-wide", config.headerText)}>
-              {selectedStage}
-            </p>
-            <p className="text-xs text-white/40">{config.label}</p>
-          </div>
-          <span className={cn("text-xs font-bold tabular-nums", config.headerText)}>
-            {completedCount}/{config.tasks.length}
-          </span>
-        </div>
+        {/* Progress count */}
+         <div className="flex justify-end">
+           <span className={cn("text-xs font-bold tabular-nums", config.headerText)}>
+             {completedCount}/{config.tasks.length}
+           </span>
+         </div>
 
         {/* Progress bar */}
         <div
