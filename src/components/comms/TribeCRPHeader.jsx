@@ -77,7 +77,7 @@ export default function TribeCRPHeader({ conversation }) {
               aria-hidden="true"
               className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-amber-200 font-bold text-base border-2 border-amber-400/60 bg-amber-400/10"
             >
-              ◆
+              &#9670;
             </motion.div>
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-widest text-amber-300/50 leading-none mb-0.5">
