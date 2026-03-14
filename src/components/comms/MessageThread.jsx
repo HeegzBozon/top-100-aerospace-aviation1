@@ -834,7 +834,7 @@ export default function MessageThread({
                   )}
                   {!isPerry && (
                     <>
-                      <div className="w-px h-5 mx-1" style={{ background: 'rgba(255,255,255,0.15)' }} />
+                      <div className="w-px h-5 mx-1 bg-white/10" />
                       <CrpStepPickerButton
                         activeCrpStep={activeCrpStep}
                         onSelect={setActiveCrpStep}
