@@ -143,58 +143,81 @@ export default function MilestoneTracker({ completedTasks = {}, onStageSelect, s
         </div>
       </div>
 
-      {/* Unified progress bar flowing through 4 stage dots - equal distribution */}
-      <div className="flex items-center w-full">
+      {/* Unified progress bar flowing through 4 stage dots - equal distribution with continuous gradient */}
+      <div className="flex items-center w-full gap-0">
         {STAGES.map((stageItem, idx) => {
           const isStageCompleted = completedStages.has(stageItem.stage);
-          const isLast = idx === STAGES.length - 1;
           const isSelected = selectedStage === stageItem.stage;
+          const stageIndex = Array.from(completedStages).indexOf(stageItem.stage);
+          const isFutureStage = stageIndex === -1 ? false : stageIndex < Array.from(completedStages).length;
 
           return (
             <React.Fragment key={stageItem.stage}>
-              {/* Stage dot - clickable */}
-              <div className="flex-1 flex justify-start">
-                <button
-                  onClick={() => onStageSelect?.(stageItem.stage)}
-                  className="relative group flex-shrink-0"
-                  aria-label={`${stageItem.name}${isStageCompleted ? " (completed)" : ""}`}
-                >
-                  <div
-                    className={cn(
-                      "w-5 h-5 rounded-full flex items-center justify-center border-2 transition-all duration-300 cursor-pointer",
-                      isStageCompleted
-                        ? cn(STAGE_DOT_ACTIVE[stageItem.stage], "bounce-in group-hover:pulse-glow")
-                        : "border-white/20 bg-white/5 group-hover:border-white/40 group-hover:bg-white/10",
-                      isSelected && "ring-2 ring-offset-1 ring-rose-400/60"
-                    )}
-                  >
-                    {isStageCompleted && (
-                      <div className={cn("w-2 h-2 rounded-full animate-pulse", {
-                        "bg-indigo-300":  stageItem.stage === "FORM",
-                        "bg-amber-400":   stageItem.stage === "STORM",
-                        "bg-rose-300":    stageItem.stage === "NORM",
-                        "bg-yellow-300":  stageItem.stage === "PERFORM",
-                      })} />
-                    )}
-                  </div>
-
-                  {/* Tooltip */}
-                  <div
-                    aria-hidden="true"
-                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-30"
-                  >
-                    <div className="rounded px-2 py-1 text-xs font-semibold whitespace-nowrap bg-gradient-to-r from-rose-900/90 to-amber-900/90 border border-rose-400/40 text-rose-100 backdrop-blur-sm">
-                      {stageItem.name}
-                    </div>
-                  </div>
-                </button>
-              </div>
-
-              {/* Connector line with spectrum gradient */}
-              {!isLast && (
+              {/* Connector line before dot with continuous spectrum gradient */}
+              {idx > 0 && (
                 <div
                   aria-hidden="true"
-                  className="flex-1 h-2 bg-black/20 transition-all duration-700 overflow-hidden"
+                  className="flex-1 h-2 transition-all duration-700 overflow-hidden rounded-l-full"
+                  style={{
+                    background: isStageCompleted
+                      ? `linear-gradient(to right, ${GLOW_COLORS[idx - 1]}, ${GLOW_COLORS[idx]})`
+                      : "rgba(255, 255, 255, 0.1)"
+                  }}
+                >
+                  {isStageCompleted && (
+                    <div
+                      className="h-full transition-all duration-700 bg-gradient-to-r"
+                      style={{
+                        background: `linear-gradient(to right, ${GLOW_COLORS[idx - 1]}, ${GLOW_COLORS[idx]})`,
+                        width: "100%",
+                        boxShadow: `0 0 12px rgba(255, 255, 255, 0.3)`
+                      }}
+                    />
+                  )}
+                </div>
+              )}
+
+              {/* Stage dot - clickable */}
+              <button
+                onClick={() => onStageSelect?.(stageItem.stage)}
+                className="relative group flex-shrink-0 z-10"
+                aria-label={`${stageItem.name}${isStageCompleted ? " (completed)" : ""}`}
+              >
+                <div
+                  className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center border-2 transition-all duration-300 cursor-pointer",
+                    isStageCompleted
+                      ? cn(STAGE_DOT_ACTIVE[stageItem.stage], "bounce-in group-hover:pulse-glow")
+                      : "border-white/20 bg-white/5 group-hover:border-white/40 group-hover:bg-white/10",
+                    isSelected && "ring-2 ring-offset-1 ring-rose-400/60"
+                  )}
+                >
+                  {isStageCompleted && (
+                    <div className={cn("w-2 h-2 rounded-full animate-pulse", {
+                      "bg-indigo-300":  stageItem.stage === "FORM",
+                      "bg-amber-400":   stageItem.stage === "STORM",
+                      "bg-rose-300":    stageItem.stage === "NORM",
+                      "bg-yellow-300":  stageItem.stage === "PERFORM",
+                    })} />
+                  )}
+                </div>
+
+                {/* Tooltip */}
+                <div
+                  aria-hidden="true"
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-30"
+                >
+                  <div className="rounded px-2 py-1 text-xs font-semibold whitespace-nowrap bg-gradient-to-r from-rose-900/90 to-amber-900/90 border border-rose-400/40 text-rose-100 backdrop-blur-sm">
+                    {stageItem.name}
+                  </div>
+                </div>
+              </button>
+
+              {/* Connector line after dot */}
+              {idx < STAGES.length - 1 && (
+                <div
+                  aria-hidden="true"
+                  className="flex-1 h-2 transition-all duration-700 overflow-hidden rounded-r-full"
                   style={{
                     background: isStageCompleted
                       ? `linear-gradient(to right, ${GLOW_COLORS[idx]}, ${GLOW_COLORS[idx + 1]})`
@@ -203,13 +226,11 @@ export default function MilestoneTracker({ completedTasks = {}, onStageSelect, s
                 >
                   {isStageCompleted && (
                     <div
-                      className={cn(
-                        "h-full transition-all duration-700 bg-gradient-to-r rounded-full",
-                        SPECTRUM_GRADIENTS[idx * 4]
-                      )}
+                      className="h-full transition-all duration-700"
                       style={{
+                        background: `linear-gradient(to right, ${GLOW_COLORS[idx]}, ${GLOW_COLORS[idx + 1]})`,
                         width: "100%",
-                        boxShadow: `0 0 12px ${GLOW_COLORS[idx]}60`
+                        boxShadow: `0 0 12px rgba(255, 255, 255, 0.3)`
                       }}
                     />
                   )}

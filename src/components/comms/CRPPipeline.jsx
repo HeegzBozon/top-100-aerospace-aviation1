@@ -93,36 +93,7 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
 
   return (
     <div className="space-y-3" role="region" aria-label="CRP pipeline stages">
-      {/* Stage Selector Tabs */}
-      <div
-         className="flex gap-1 overflow-x-auto"
-         role="tablist"
-         aria-label="Pipeline stages"
-         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-       >
-        {STAGE_KEYS.map((stage) => {
-          const isActive = selectedStage === stage;
-          const s = CRP_STAGES[stage];
-          return (
-            <button
-              key={stage}
-              role="tab"
-              aria-selected={isActive}
-              aria-controls={`crp-panel-${stage}`}
-              onClick={() => setSelectedStage(stage)}
-              className={cn(
-                "flex-1 min-w-0 px-2 py-1.5 rounded-md whitespace-nowrap text-xs font-bold",
-                "border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60",
-                isActive
-                  ? cn(s.activeBtnBg, s.activeBtnBorder, s.headerText)
-                  : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white/60"
-              )}
-            >
-              {stage}
-            </button>
-          );
-        })}
-      </div>
+
 
       {/* Stage Panel */}
       <div
