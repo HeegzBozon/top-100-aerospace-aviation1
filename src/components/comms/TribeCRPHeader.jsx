@@ -1,21 +1,17 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { ChevronDown } from "lucide-react";
 import CRPPipeline from "./CRPPipeline";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
-function stageForStep(step) {
-  if (step <= 4)  return "FORM";
-  if (step <= 8)  return "STORM";
-  if (step <= 12) return "NORM";
-  return "PERFORM";
-}
+const STAGES = ["FORM", "STORM", "NORM", "PERFORM"];
 
 const STAGE_COLORS = {
-  FORM:    { pill: "border-indigo-500/40 text-indigo-300 bg-indigo-500/10", bar: "bg-indigo-400/30" },
-  STORM:   { pill: "border-amber-500/40 text-amber-300 bg-amber-500/10",   bar: "bg-amber-400/30" },
-  NORM:    { pill: "border-rose-500/40 text-rose-300 bg-rose-500/10",       bar: "bg-rose-400/30" },
-  PERFORM: { pill: "border-amber-400/40 text-amber-200 bg-amber-400/10",   bar: "bg-amber-300/30" },
+  FORM:    { dot: "border-indigo-400 bg-indigo-500/40 shadow-indigo-400/50", text: "text-indigo-300" },
+  STORM:   { dot: "border-amber-400 bg-amber-500/40 shadow-amber-400/60", text: "text-amber-300" },
+  NORM:    { dot: "border-rose-300 bg-rose-400/40 shadow-rose-400/50", text: "text-rose-300" },
+  PERFORM: { dot: "border-yellow-300 bg-yellow-400/30 shadow-yellow-300/50", text: "text-amber-200" },
 };
 
 const PROGRESS_WIDTHS = ["w-0","w-[6%]","w-[13%]","w-[19%]","w-[25%]","w-[31%]","w-[38%]","w-[44%]","w-[50%]","w-[56%]","w-[63%]","w-[69%]","w-[75%]","w-[81%]","w-[88%]","w-[94%]","w-full"];
@@ -42,6 +38,7 @@ const SPECTRUM_GRADIENTS = [
 ];
 
 export default function TribeCRPHeader({ conversation }) {
+  const [expanded, setExpanded] = useState(false);
   const { theme } = useCommsTheme();
   const queryClient = useQueryClient();
 
@@ -55,17 +52,17 @@ export default function TribeCRPHeader({ conversation }) {
     setLocalCompleted((conversation?.crp_completed_steps || []).map(Number));
   }, [conversation?.crp_completed_steps]);
 
-  const localStage = localCompleted.length
-    ? stageForStep(Math.max(...localCompleted))
-    : "FORM";
-
-  const completedCount = localCompleted.length;
-  const stageColor = STAGE_COLORS[localStage] || STAGE_COLORS.FORM;
-
   const completedTasksMap = localCompleted.reduce((acc, s) => {
     acc[s] = true;
     return acc;
   }, {});
+
+  // Calculate completed stages (4 tasks per stage)
+  const completedStages = STAGES.filter((_, idx) => {
+    const start = idx * 4 + 1;
+    const end = (idx + 1) * 4;
+    return Array.from({ length: 4 }, (_, i) => start + i).every(step => localCompleted.includes(step));
+  });
 
   const updateConversation = useMutation({
     mutationFn: (patch) => base44.entities.Conversation.update(conversation.id, patch),
@@ -103,13 +100,49 @@ export default function TribeCRPHeader({ conversation }) {
       role="region"
       aria-label="CRP Pipeline"
     >
-      <div id="crp-panel" className="px-4 pb-4 pt-4 space-y-4">
-        <CRPPipeline
-          completedTasks={completedTasksMap}
-          initialStage="FORM"
-          onToggleStep={handleToggleStep}
+      {/* Collapsible Header with Stage Dots */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+        aria-expanded={expanded}
+        aria-controls="crp-panel"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-semibold text-white">CRP Pipeline</span>
+          <div className="flex items-center gap-2">
+            {STAGES.map((stage, idx) => {
+              const isCompleted = completedStages.includes(stage);
+              return (
+                <div
+                  key={stage}
+                  className={`w-3 h-3 rounded-full border-2 transition-all ${
+                    isCompleted
+                      ? `${STAGE_COLORS[stage].dot} shadow-lg`
+                      : "border-white/20 bg-white/5"
+                  }`}
+                  title={stage}
+                />
+              );
+            })}
+          </div>
+        </div>
+        <ChevronDown
+          className={`w-4 h-4 text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`}
+          aria-hidden="true"
         />
-      </div>
+      </button>
+
+      {/* Expandable Panel */}
+      {expanded && (
+        <div id="crp-panel" className="px-4 pb-4 pt-1 space-y-4 border-t border-white/5">
+          <div className="h-px bg-white/5" aria-hidden="true" />
+          <CRPPipeline
+            completedTasks={completedTasksMap}
+            initialStage="FORM"
+            onToggleStep={handleToggleStep}
+          />
+        </div>
+      )}
     </div>
   );
 }
