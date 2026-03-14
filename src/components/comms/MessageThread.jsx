@@ -756,18 +756,18 @@ export default function MessageThread({
                            className={cn(
                              "px-2.5 py-1 text-xs font-medium rounded border transition-all duration-200",
                              rrfStage === 'FORM'
-                               ? "border-lime-600/40 text-lime-300 hover:bg-lime-600/20"
+                               ? "border-indigo-600/40 text-indigo-300 hover:bg-indigo-600/20"
                                : rrfStage === 'STORM'
-                               ? "border-orange-600/40 text-orange-300 hover:bg-orange-600/20"
+                               ? "border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10"
                                : rrfStage === 'NORM'
-                               ? "border-blue-600/40 text-blue-300 hover:bg-blue-600/20"
-                               : "border-cyan-600/40 text-cyan-300 hover:bg-cyan-600/20"
+                               ? "border-rose-600/40 text-rose-300 hover:bg-rose-600/20"
+                               : "border-[#c9a87c]/60 text-[#e8d4b8] hover:bg-[#c9a87c]/15"
                            )}
                          >
                            {action.label}
                          </button>
                        ))}
-                       <div className="w-px h-5 mx-1" style={{ background: 'rgba(255,255,255,0.3)' }} />
+                       <div className="w-px h-5 mx-1 bg-white/20" />
                      </>
                    )}
                    <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
