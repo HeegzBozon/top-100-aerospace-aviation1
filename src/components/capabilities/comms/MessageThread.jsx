@@ -769,7 +769,7 @@ export default function MessageThread({
                            {action.label}
                          </button>
                        ))}
-                       <div className="w-px h-5 mx-1" style={{ background: 'rgba(255,255,255,0.3)' }} />
+                       <div className="w-px h-5 mx-1 bg-white/20" />
                      </>
                    )}
                    <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
