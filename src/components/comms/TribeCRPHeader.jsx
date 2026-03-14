@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Conversation } from "@/entities/Conversation";
+import { base44 } from "@/api/base44Client";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CRPPipeline from "./CRPPipeline";
@@ -21,44 +21,61 @@ const STAGE_COLORS = {
   PERFORM: { pill: "border-amber-400/40 text-amber-200 bg-amber-400/10",   bar: "bg-amber-300/30" },
 };
 
+const PROGRESS_WIDTHS = ["w-0","w-[6%]","w-[13%]","w-[19%]","w-[25%]","w-[31%]","w-[38%]","w-[44%]","w-[50%]","w-[56%]","w-[63%]","w-[69%]","w-[75%]","w-[81%]","w-[88%]","w-[94%]","w-full"];
+
 export default function TribeCRPHeader({ conversation }) {
   const [expanded, setExpanded] = useState(true);
-  const queryClient = useQueryClient();
   const { theme } = useCommsTheme();
+  const queryClient = useQueryClient();
 
-  // Coerce all stored steps to numbers to prevent string/number comparison mismatch
-  const completedSteps = (conversation?.crp_completed_steps || []).map(Number);
-  const currentStage   = conversation?.rrf_stage || "FORM";
-  const completedCount = completedSteps.length;
-  const stageColor = STAGE_COLORS[currentStage] || STAGE_COLORS.FORM;
+  // --- Optimistic local state so clicks update instantly ---
+  const [localCompleted, setLocalCompleted] = useState(
+    () => (conversation?.crp_completed_steps || []).map(Number)
+  );
 
-  const completedTasksMap = completedSteps.reduce((acc, s) => {
+  // Sync when the conversation prop changes (e.g. after remote refresh)
+  useEffect(() => {
+    setLocalCompleted((conversation?.crp_completed_steps || []).map(Number));
+  }, [conversation?.crp_completed_steps]);
+
+  const localStage = localCompleted.length
+    ? stageForStep(Math.max(...localCompleted))
+    : "FORM";
+
+  const completedCount = localCompleted.length;
+  const stageColor = STAGE_COLORS[localStage] || STAGE_COLORS.FORM;
+
+  const completedTasksMap = localCompleted.reduce((acc, s) => {
     acc[s] = true;
     return acc;
   }, {});
 
   const updateConversation = useMutation({
-    mutationFn: (patch) => Conversation.update(conversation.id, patch),
+    mutationFn: (patch) => base44.entities.Conversation.update(conversation.id, patch),
     onSuccess: () => {
-      queryClient.invalidateQueries(["conversations"]);
-      queryClient.invalidateQueries(["conversation", conversation.id]);
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
     },
   });
 
   const handleToggleStep = useCallback((step) => {
     const stepNum = Number(step);
-    const isCompleted = completedSteps.includes(stepNum);
+    const isCompleted = localCompleted.includes(stepNum);
     const nextCompleted = isCompleted
-      ? completedSteps.filter(s => s !== stepNum)
-      : [...completedSteps, stepNum];
+      ? localCompleted.filter(s => s !== stepNum)
+      : [...localCompleted, stepNum];
     const maxCompleted = nextCompleted.length ? Math.max(...nextCompleted) : 0;
     const nextStage = maxCompleted > 0 ? stageForStep(maxCompleted) : "FORM";
+
+    // Optimistic update first
+    setLocalCompleted(nextCompleted);
+
+    // Then persist
     updateConversation.mutate({
       crp_completed_steps: nextCompleted,
       crp_current_step: maxCompleted + 1,
       rrf_stage: nextStage,
     });
-  }, [completedSteps, updateConversation]);
+  }, [localCompleted, updateConversation]);
 
   if (!conversation) return null;
 
@@ -82,23 +99,7 @@ export default function TribeCRPHeader({ conversation }) {
             className={cn(
               "absolute inset-y-0 left-0 rounded-full transition-all duration-500",
               stageColor.bar,
-              completedCount === 0  && "w-0",
-              completedCount === 1  && "w-[6%]",
-              completedCount === 2  && "w-[13%]",
-              completedCount === 3  && "w-[19%]",
-              completedCount === 4  && "w-[25%]",
-              completedCount === 5  && "w-[31%]",
-              completedCount === 6  && "w-[38%]",
-              completedCount === 7  && "w-[44%]",
-              completedCount === 8  && "w-[50%]",
-              completedCount === 9  && "w-[56%]",
-              completedCount === 10 && "w-[63%]",
-              completedCount === 11 && "w-[69%]",
-              completedCount === 12 && "w-[75%]",
-              completedCount === 13 && "w-[81%]",
-              completedCount === 14 && "w-[88%]",
-              completedCount === 15 && "w-[94%]",
-              completedCount === 16 && "w-full",
+              PROGRESS_WIDTHS[Math.min(completedCount, 16)]
             )}
           />
         </div>
@@ -108,7 +109,7 @@ export default function TribeCRPHeader({ conversation }) {
           "shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border",
           stageColor.pill
         )}>
-          {currentStage}
+          {localStage}
         </span>
 
         {/* Step count */}
@@ -124,15 +125,12 @@ export default function TribeCRPHeader({ conversation }) {
 
       {/* Expanded panel */}
       {expanded && (
-        <div
-          id="crp-panel"
-          className="px-4 pb-4 pt-1 space-y-4 border-t border-white/5"
-        >
+        <div id="crp-panel" className="px-4 pb-4 pt-1 space-y-4 border-t border-white/5">
           <MilestoneTracker completedTasks={completedTasksMap} />
           <div className="h-px bg-white/5" aria-hidden="true" />
           <CRPPipeline
             completedTasks={completedTasksMap}
-            initialStage={currentStage}
+            initialStage={localStage}
             onToggleStep={handleToggleStep}
           />
         </div>
