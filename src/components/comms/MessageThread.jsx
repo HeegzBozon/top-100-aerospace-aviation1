@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
-import { Send, Smile, MoreHorizontal, Pencil, Trash2, MessageSquare, X, Check, BarChart3, Bold, Italic, Underline, Strikethrough, Link2, List, ListOrdered, Code, AtSign } from "lucide-react";
+import { Send, Smile, MoreHorizontal, Pencil, Trash2, MessageSquare, X, Check, BarChart3, Bold, Italic, Underline, Strikethrough, Link2, List, ListOrdered, Code, AtSign, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import ReactQuill from "react-quill";
@@ -440,6 +440,11 @@ export default function MessageThread({
     }
   };
 
+  const sendDirectMessage = (type) => {
+    const messages = { wave: '👋', nudge: '💬 nudge', poke: '🚀 poke' };
+    onSendMessage(messages[type]);
+  };
+
   // Separate root messages and replies
   const rootMessages = messages.filter(m => !m.parent_id);
   const repliesMap = messages.reduce((acc, m) => {
@@ -758,25 +763,66 @@ export default function MessageThread({
                    )}
                    {!isPerry && (
                      <>
-                       {stageTemplates[rrfStage].map((action, idx) => (
-                         <button
-                           key={`${rrfStage}-${idx}`}
-                           type="button"
-                           onClick={() => handleQuickAction(action.template)}
-                           className={cn(
-                             "px-2.5 py-1 text-xs font-medium rounded border transition-all duration-200",
-                             rrfStage === 'FORM'
-                               ? "border-indigo-600/40 text-indigo-300 hover:bg-indigo-600/20"
-                               : rrfStage === 'STORM'
-                               ? "border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10"
-                               : rrfStage === 'NORM'
-                               ? "border-rose-600/40 text-rose-300 hover:bg-rose-600/20"
-                               : "border-[#c9a87c]/60 text-[#e8d4b8] hover:bg-[#c9a87c]/15"
-                           )}
-                         >
-                           {action.label}
-                         </button>
-                       ))}
+                       <Popover>
+                         <PopoverTrigger asChild>
+                           <button
+                             type="button"
+                             className={cn(
+                               "px-2.5 py-1 text-xs font-medium rounded border transition-all duration-200",
+                               rrfStage === 'FORM'
+                                 ? "border-indigo-600/40 text-indigo-300 hover:bg-indigo-600/20"
+                                 : rrfStage === 'STORM'
+                                 ? "border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10"
+                                 : rrfStage === 'NORM'
+                                 ? "border-rose-600/40 text-rose-300 hover:bg-rose-600/20"
+                                 : "border-[#c9a87c]/60 text-[#e8d4b8] hover:bg-[#c9a87c]/15"
+                             )}
+                           >
+                             Quick Actions
+                           </button>
+                         </PopoverTrigger>
+                         <PopoverContent className="w-auto p-2 bg-gray-900 border-gray-700" side="top" align="start">
+                           <div className="flex flex-col gap-1">
+                             {stageTemplates[rrfStage].map((action, idx) => (
+                               <button
+                                 key={`${rrfStage}-${idx}`}
+                                 type="button"
+                                 onClick={() => {
+                                   handleQuickAction(action.template);
+                                 }}
+                                 className="text-left px-3 py-2 text-xs font-medium rounded hover:bg-gray-800 transition-colors"
+                               >
+                                 {action.label}
+                               </button>
+                             ))}
+                           </div>
+                         </PopoverContent>
+                       </Popover>
+                       <div className="w-px h-5 mx-1 bg-white/20" />
+                       <button
+                         type="button"
+                         onClick={() => sendDirectMessage('wave')}
+                         className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
+                         title="Send a wave"
+                       >
+                         <span className="text-lg">👋</span>
+                       </button>
+                       <button
+                         type="button"
+                         onClick={() => sendDirectMessage('nudge')}
+                         className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
+                         title="Send a nudge"
+                       >
+                         <span className="text-lg">💬</span>
+                       </button>
+                       <button
+                         type="button"
+                         onClick={() => sendDirectMessage('poke')}
+                         className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
+                         title="Send a poke"
+                       >
+                         <span className="text-lg">🚀</span>
+                       </button>
                        <div className="w-px h-5 mx-1 bg-white/20" />
                      </>
                    )}
