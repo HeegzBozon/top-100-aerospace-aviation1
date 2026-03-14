@@ -77,6 +77,31 @@ const STAGE_ICON_COLOR = {
 // Stage label widths: 4 groups of 4 steps each = 25% each
 const STAGE_LABELS = ["FORM", "STORM", "NORM", "PERFORM"];
 
+// Spectrum gradient fills aligned with milestone progress
+const SPECTRUM_GRADIENT_WIDTHS = ["w-0","w-[6%]","w-[13%]","w-[19%]","w-[25%]","w-[31%]","w-[38%]","w-[44%]","w-[50%]","w-[56%]","w-[63%]","w-[69%]","w-[75%]","w-[81%]","w-[88%]","w-[94%]","w-full"];
+
+const SPECTRUM_GRADIENTS = [
+  "from-indigo-500 via-indigo-500 to-indigo-500",
+  "from-indigo-500 via-purple-500 to-indigo-500",
+  "from-purple-500 via-violet-500 to-purple-500",
+  "from-violet-500 via-fuchsia-500 to-violet-500",
+  "from-fuchsia-500 via-pink-500 to-fuchsia-500",
+  "from-pink-500 via-rose-500 to-pink-500",
+  "from-rose-500 via-red-500 to-rose-500",
+  "from-red-500 via-orange-500 to-red-500",
+  "from-orange-500 via-amber-500 to-orange-500",
+  "from-amber-500 via-yellow-400 to-amber-500",
+  "from-yellow-400 via-lime-400 to-yellow-400",
+  "from-lime-400 via-green-500 to-lime-400",
+  "from-green-500 via-emerald-500 to-green-500",
+  "from-emerald-500 via-teal-500 to-emerald-500",
+  "from-teal-500 via-cyan-500 to-teal-500",
+  "from-cyan-500 via-blue-500 to-cyan-500",
+  "from-blue-500 via-indigo-500 to-blue-500",
+];
+
+const GLOW_COLORS = ["#6366f1","#a855f7","#8b5cf6","#d946ef","#ec4899","#f43f5e","#ef4444","#f97316","#f59e0b","#facc15","#84cc16","#22c55e","#10b981","#14b8a6","#06b6d4","#3b82f6","#6366f1"];
+
 export default function MilestoneTracker({ completedTasks = {} }) {
   const completedCount = Object.values(completedTasks).filter(Boolean).length;
   const [sparkles, setSparkles] = useState([]);
@@ -123,68 +148,75 @@ export default function MilestoneTracker({ completedTasks = {} }) {
         </div>
       </div>
 
-      {/* Step dots row */}
-      <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide pb-0.5">
-        {MILESTONES.map((milestone, idx) => {
-          const isCompleted = !!completedTasks[milestone.step];
-          const isLast = idx === MILESTONES.length - 1;
+      {/* Unified progress bar + dots */}
+      <div className="relative">
+        {/* Spectrum gradient background bar */}
+        <div className="absolute inset-0 h-2 rounded-full bg-black/20 overflow-hidden shadow-lg shadow-black/40">
+          <div
+            className={cn(
+              "h-full rounded-full transition-all duration-700 bg-gradient-to-r",
+              SPECTRUM_GRADIENTS[Math.min(completedCount, 16)],
+              SPECTRUM_GRADIENT_WIDTHS[Math.min(completedCount, 16)]
+            )}
+            style={{
+              boxShadow: completedCount > 0 ? `0 0 16px ${GLOW_COLORS[Math.min(completedCount, 16)]}40` : "none"
+            }}
+          />
+        </div>
 
-          return (
-            <React.Fragment key={milestone.step}>
-              {/* Dot with animations */}
-              <div className="relative group flex-shrink-0">
-                <div
-                  role="img"
-                  aria-label={`Step ${milestone.step}: ${milestone.name}${isCompleted ? " (completed)" : ""}`}
-                  className={cn(
-                    "w-5 h-5 rounded-full flex items-center justify-center border-2 transition-all duration-300 cursor-default",
-                    isCompleted
-                      ? cn(STAGE_DOT_ACTIVE[milestone.stage], "bounce-in group-hover:pulse-glow")
-                      : "border-white/20 bg-white/5 group-hover:border-white/40 group-hover:bg-white/10"
-                  )}
-                >
-                  {isCompleted && (
-                    <div className={cn("w-2 h-2 rounded-full animate-pulse", {
-                      "bg-indigo-300":  milestone.stage === "FORM",
-                      "bg-amber-400":   milestone.stage === "STORM",
-                      "bg-rose-300":    milestone.stage === "NORM",
-                      "bg-yellow-300":  milestone.stage === "PERFORM",
-                    })} />
-                  )}
-                </div>
+        {/* Step dots row overlaid on progress */}
+        <div className="relative flex items-center gap-0 overflow-x-auto scrollbar-hide py-2">
+          {MILESTONES.map((milestone, idx) => {
+            const isCompleted = !!completedTasks[milestone.step];
+            const isLast = idx === MILESTONES.length - 1;
 
-                {/* Tooltip with rose-gold styling */}
-                <div
-                  aria-hidden="true"
-                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-10"
-                >
-                  <div className="rounded px-2 py-1 text-xs font-semibold whitespace-nowrap bg-gradient-to-r from-rose-900/90 to-amber-900/90 border border-rose-400/40 text-rose-100 backdrop-blur-sm">
-                    {milestone.step}. {milestone.name}
+            return (
+              <React.Fragment key={milestone.step}>
+                {/* Dot with animations - overlaid on progress bar */}
+                <div className="relative group flex-shrink-0">
+                  <div
+                    role="img"
+                    aria-label={`Step ${milestone.step}: ${milestone.name}${isCompleted ? " (completed)" : ""}`}
+                    className={cn(
+                      "w-5 h-5 rounded-full flex items-center justify-center border-2 transition-all duration-300 cursor-default relative z-20 ring-2 ring-black/30",
+                      isCompleted
+                        ? cn(STAGE_DOT_ACTIVE[milestone.stage], "bounce-in group-hover:pulse-glow")
+                        : "border-white/20 bg-white/5 group-hover:border-white/40 group-hover:bg-white/10"
+                    )}
+                  >
+                    {isCompleted && (
+                      <div className={cn("w-2 h-2 rounded-full animate-pulse", {
+                        "bg-indigo-300":  milestone.stage === "FORM",
+                        "bg-amber-400":   milestone.stage === "STORM",
+                        "bg-rose-300":    milestone.stage === "NORM",
+                        "bg-yellow-300":  milestone.stage === "PERFORM",
+                      })} />
+                    )}
+                  </div>
+
+                  {/* Tooltip with rose-gold styling */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-30"
+                  >
+                    <div className="rounded px-2 py-1 text-xs font-semibold whitespace-nowrap bg-gradient-to-r from-rose-900/90 to-amber-900/90 border border-rose-400/40 text-rose-100 backdrop-blur-sm">
+                      {milestone.step}. {milestone.name}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Connector */}
-              {!isLast && (
-                <div
-                  aria-hidden="true"
-                  className={cn(
-                    "flex-1 h-px min-w-0 transition-colors duration-300",
-                    isCompleted
-                      ? milestone.stage === "FORM"    ? "bg-indigo-400/50"
-                      : milestone.stage === "STORM"   ? "bg-amber-500/50"
-                      : milestone.stage === "NORM"    ? "bg-rose-400/50"
-                      : "bg-amber-300/50"
-                      : "bg-white/10"
-                  )}
-                />
-              )}
-            </React.Fragment>
-          );
-        })}
+                {/* Connector - hidden since progress bar does this */}
+                {!isLast && (
+                  <div
+                    aria-hidden="true"
+                    className="flex-1 h-px min-w-0 opacity-0"
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
       </div>
-
-
     </div>
   );
 }
