@@ -162,8 +162,7 @@ export default function MobileCommsView({ isDarkMode = false }) {
         onClose={() => setShowNewDM(false)}
         onCreateDM={handleCreateDM}
         onCreateChannel={async ({ name, description, is_private }) => {
-          const { Conversation } = await import("@/entities/Conversation");
-          const newConv = await Conversation.create({
+          const newConv = await base44.entities.Conversation.create({
             type: "channel",
             name,
             description,
