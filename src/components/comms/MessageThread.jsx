@@ -11,6 +11,7 @@ import CreatePollModal from "./CreatePollModal";
 import MentionPopover from "./MentionPopover";
 import CrpStepPickerButton from "./CrpStepPickerButton";
 import ConstellationBackground from "./ConstellationBackground";
+import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥", "🎉", "👀"];
 
@@ -320,6 +321,7 @@ export default function MessageThread({
   isPerry = false,
   defaultCrpStep = null,
 }) {
+  const { mode, theme } = useCommsTheme();
   const canPost = !isReadonly || currentUserRole === 'admin';
   const [newMessage, setNewMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
@@ -456,8 +458,8 @@ export default function MessageThread({
   };
 
   return (
-    <form className="relative flex flex-col h-full overflow-x-hidden" style={{ background: 'linear-gradient(135deg, #0f1d2d 0%, #152a42 50%, #1e3a5a 100%)' }} onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
-      <ConstellationBackground />
+    <form className="relative flex flex-col h-full overflow-x-hidden" style={{ background: theme.bg }} onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+      {theme.constellations && <ConstellationBackground />}
       {/* Skip to main content link */}
       <a href="#message-input" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-amber-600 focus:text-white focus:px-4 focus:py-2">
         Skip to message input
