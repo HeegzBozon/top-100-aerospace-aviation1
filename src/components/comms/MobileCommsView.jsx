@@ -35,7 +35,6 @@ export default function MobileCommsView({ isDarkMode = false }) {
     if (existing) {
       selectConversation(existing);
     } else {
-      const { Conversation } = await import("@/entities/Conversation");
       const newConv = await Conversation.create({
         type: "dm",
         participants: [user.email, email],
