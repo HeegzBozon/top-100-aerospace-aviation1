@@ -72,7 +72,7 @@ const CRP_STAGES = {
 
 const STAGE_KEYS = ["FORM", "STORM", "NORM", "PERFORM"];
 
-export default function CRPPipeline({ completedTasks: externalCompleted, initialStage, onToggleStep, unlockedStages = [] }) {
+export default function CRPPipeline({ completedTasks: externalCompleted, initialStage, onToggleStep, highestCompleted = 0 }) {
   const isControlled = !!onToggleStep;
   const [selectedStage, setSelectedStage] = useState(initialStage || "FORM");
   const [internalCompleted, setInternalCompleted] = useState({});
@@ -84,13 +84,15 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
   const totalCompleted = Object.values(completedTasks).filter(Boolean).length;
   const progressPct = Math.round((totalCompleted / totalSteps) * 100);
   const stageCompletedCount = config.tasks.filter(t => completedTasks[t.step]).length;
-  const isStageUnlocked = unlockedStages.length === 0 || unlockedStages.includes(selectedStage);
 
   const toggleTask = (step) => {
-    if (isControlled) {
-      onToggleStep(step);
-    } else {
-      setInternalCompleted(prev => ({ ...prev, [step]: !prev[step] }));
+    // Only allow completing the next sequential step
+    if (step === highestCompleted + 1 || completedTasks[step]) {
+      if (isControlled) {
+        onToggleStep(step);
+      } else {
+        setInternalCompleted(prev => ({ ...prev, [step]: !prev[step] }));
+      }
     }
   };
 
@@ -101,13 +103,11 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
       {/* Stage tabs */}
       <div className="flex gap-2 border-b border-white/10">
         {STAGE_KEYS.map(stage => {
-          const isUnlocked = unlockedStages.length === 0 || unlockedStages.includes(stage);
           const isActive = selectedStage === stage;
           return (
             <button
               key={stage}
-              onClick={() => isUnlocked && setSelectedStage(stage)}
-              disabled={!isUnlocked}
+              onClick={() => setSelectedStage(stage)}
               className={cn(
                 "px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200",
                 isActive
@@ -117,11 +117,10 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
                       "border-rose-400 text-rose-300": stage === "NORM",
                       "border-yellow-300 text-yellow-200": stage === "PERFORM",
                     })
-                  : "text-white/50 hover:text-white/70",
-                !isUnlocked && "opacity-40 cursor-not-allowed"
+                  : "text-white/50 hover:text-white/70"
               )}
             >
-              {stage} {!isUnlocked && "🔒"}
+              {stage}
             </button>
           );
         })}
@@ -169,36 +168,41 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
         <div className="grid grid-cols-4 gap-1.5">
           {config.tasks.map((task) => {
             const isCompleted = !!completedTasks[task.step];
+            const isAvailable = task.step === highestCompleted + 1 || isCompleted;
             return (
               <button
                 key={task.step}
                 onClick={() => toggleTask(task.step)}
+                disabled={!isAvailable}
                 aria-pressed={isCompleted}
-                aria-label={`${task.name}${isCompleted ? ", completed" : ""}`}
+                aria-label={`${task.name}${isCompleted ? ", completed" : isAvailable ? "" : ", locked"}`}
                 title={task.desc}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 p-2 rounded-md",
                   "border min-h-[44px] transition-all duration-300",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60",
-                  "hover:scale-105 active:scale-95",
                   isCompleted
-                    ? cn(config.bg, "border-white/30 shadow-lg", {
+                    ? cn(config.bg, "border-white/30 shadow-lg hover:scale-105 active:scale-95 cursor-pointer", {
                       "shadow-indigo-500/20": selectedStage === "FORM",
                       "shadow-amber-500/20": selectedStage === "STORM",
                       "shadow-rose-500/20": selectedStage === "NORM",
                       "shadow-amber-400/20": selectedStage === "PERFORM",
                     })
-                    : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
+                    : isAvailable
+                    ? "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 hover:scale-105 active:scale-95 cursor-pointer"
+                    : "bg-white/5 border-white/10 opacity-40 cursor-not-allowed"
                 )}
               >
                 {isCompleted ? (
                   <CheckCircle2 className={cn("w-3.5 h-3.5 shrink-0 animate-pulse", config.icon)} aria-hidden="true" />
+                ) : isAvailable ? (
+                  <Circle className="w-3.5 h-3.5 shrink-0 text-white/50" aria-hidden="true" />
                 ) : (
-                  <Circle className="w-3.5 h-3.5 shrink-0 text-white/30" aria-hidden="true" />
+                  <Circle className="w-3.5 h-3.5 shrink-0 text-white/20" aria-hidden="true" />
                 )}
                 <p className={cn(
                   "text-xs font-semibold leading-tight text-center break-words w-full transition-all duration-300",
-                  isCompleted ? "text-white/40 line-through" : "text-white/80 group-hover:text-white/100"
+                  isCompleted ? "text-white/40 line-through" : isAvailable ? "text-white/80" : "text-white/30"
                 )}>
                   {task.name}
                 </p>
