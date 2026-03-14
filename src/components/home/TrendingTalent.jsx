@@ -2,7 +2,7 @@ import React from 'react';
 import { Flame, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { createPageUrl } from '@/utils';
-import { brandColors as BRAND_COLORS } from '@/components/core/brandTheme';
+import { BRAND_COLORS } from '@/components/core/brandConstants';
 
 function InitialsAvatar({ name }) {
   const initials = (name || '?')

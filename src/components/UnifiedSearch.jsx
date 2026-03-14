@@ -7,7 +7,11 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import { brandColors } from '@/components/core/brandTheme';
+
+const brandColors = {
+  navyDeep: '#1e3a5a',
+  goldPrestige: '#c9a87c',
+};
 
 export default function UnifiedSearch({ isOpen, onClose }) {
   const [query, setQuery] = useState('');

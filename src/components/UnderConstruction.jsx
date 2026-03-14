@@ -1,10 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Construction, Wrench, Hammer, Sparkles } from 'lucide-react';
-import { brandColors } from '@/components/core/brandTheme';
 
-const festiveRed = '#c41e3a';
-const festiveGreen = '#165b33';
+const brandColors = {
+  navyDeep: '#1e3a5a',
+  goldPrestige: '#c9a87c',
+  cream: '#faf8f5',
+  festiveRed: '#c41e3a',
+  festiveGreen: '#165b33',
+};
 
 export default function UnderConstruction({ variant = 'overlay' }) {
   if (variant === 'banner') {
@@ -14,7 +18,7 @@ export default function UnderConstruction({ variant = 'overlay' }) {
         animate={{ y: 0, opacity: 1 }}
         className="relative overflow-hidden py-3 px-6 mb-4 rounded-xl shadow-lg"
         style={{
-          background: `linear-gradient(135deg, ${festiveRed}, ${brandColors.goldPrestige})`,
+          background: `linear-gradient(135deg, ${brandColors.festiveRed}, ${brandColors.goldPrestige})`,
         }}
       >
         <div className="flex items-center justify-center gap-3 text-white">
@@ -43,7 +47,7 @@ export default function UnderConstruction({ variant = 'overlay' }) {
         animate={{ scale: 1, rotate: 0 }}
         className="absolute top-4 right-4 z-50 px-4 py-2 rounded-lg shadow-xl"
         style={{
-          background: `linear-gradient(135deg, ${festiveRed}, ${brandColors.goldPrestige})`,
+          background: `linear-gradient(135deg, ${brandColors.festiveRed}, ${brandColors.goldPrestige})`,
           transform: 'rotate(12deg)',
         }}
       >
@@ -92,7 +96,7 @@ export default function UnderConstruction({ variant = 'overlay' }) {
           <motion.div
             className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6"
             style={{
-              background: `linear-gradient(135deg, ${festiveRed}, ${brandColors.goldPrestige})`,
+              background: `linear-gradient(135deg, ${brandColors.festiveRed}, ${brandColors.goldPrestige})`,
               boxShadow: `0 0 40px ${brandColors.goldPrestige}60`,
             }}
             animate={{
@@ -129,13 +133,13 @@ export default function UnderConstruction({ variant = 'overlay' }) {
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
             >
-              <Wrench className="w-8 h-8" style={{ color: festiveRed }} />
+              <Wrench className="w-8 h-8" style={{ color: brandColors.festiveRed }} />
             </motion.div>
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
             >
-              <Sparkles className="w-8 h-8" style={{ color: festiveGreen }} />
+              <Sparkles className="w-8 h-8" style={{ color: brandColors.festiveGreen }} />
             </motion.div>
           </div>
 
@@ -145,7 +149,7 @@ export default function UnderConstruction({ variant = 'overlay' }) {
         </div>
 
         {/* Festive Border Lights */}
-        <div className="absolute top-0 left-0 right-0 h-2 flex justify-around" style={{ background: `linear-gradient(90deg, ${festiveRed}, ${festiveGreen}, ${festiveRed})` }}>
+        <div className="absolute top-0 left-0 right-0 h-2 flex justify-around" style={{ background: `linear-gradient(90deg, ${brandColors.festiveRed}, ${brandColors.festiveGreen}, ${brandColors.festiveRed})` }}>
           {[...Array(20)].map((_, i) => (
             <motion.div
               key={i}

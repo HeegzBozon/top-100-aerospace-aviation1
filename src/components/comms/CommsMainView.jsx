@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import { useQueryClient } from "@tanstack/react-query";
-import { brandColors } from "@/components/core/brandTheme";
+import { brandColors } from "@/components/core/brandColors";
 import { Message } from "@/entities/Message";
 import { Conversation } from "@/entities/Conversation";
 import { Poll } from "@/entities/Poll";
@@ -35,24 +35,23 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
     enabled: !!activeConversation?.id && !!user?.email,
     staleTime: 5000,
     refetchInterval: 8000,
+    onSuccess: (all) => {
+      // Fire-and-forget batch read — does not block render
+      const unread = all.filter(m =>
+        m.sender_email !== user.email &&
+        !m.read_by?.includes(user.email)
+      );
+      if (unread.length > 0) {
+        Promise.all(
+          unread.map(msg =>
+            Message.update(msg.id, { read_by: [...(msg.read_by || []), user.email] })
+          )
+        ).then(() => {
+          queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
+        });
+      }
+    },
   });
-
-  // TanStack Query v5: mark unread messages as read via useEffect (onSuccess is deprecated)
-  React.useEffect(() => {
-    if (!messages.length || !user?.email) return;
-    const unread = messages.filter(m =>
-      m.sender_email !== user.email &&
-      !m.read_by?.includes(user.email)
-    );
-    if (unread.length === 0) return;
-    Promise.all(
-      unread.map(msg =>
-        Message.update(msg.id, { read_by: [...(msg.read_by || []), user.email] })
-      )
-    ).then(() => {
-      queryClient.invalidateQueries({ queryKey: ["unread-counts"] });
-    });
-  }, [messages, user?.email]);
 
   const isPollChannel = activeConversation?.name?.toLowerCase().includes('poll');
   const isWelcomeRulesChannel = activeConversation?.name?.toLowerCase().includes('welcome') &&

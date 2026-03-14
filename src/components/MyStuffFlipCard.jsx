@@ -14,7 +14,12 @@ import {
   RotateCw,
   Users
 } from 'lucide-react';
-import { brandColors } from '@/components/core/brandTheme';
+
+const brandColors = {
+  navyDeep: '#1e3a5a',
+  goldPrestige: '#c9a87c',
+  cream: '#faf8f5',
+};
 
 const myStuffItems = [
   { icon: CheckSquare, label: 'Nominations', href: 'VotingHub' },

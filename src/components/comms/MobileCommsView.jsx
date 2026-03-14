@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import { useUnread } from "@/components/contexts/UnreadContext";
 import CommsMainView from "./CommsMainView";
@@ -35,7 +34,8 @@ export default function MobileCommsView({ isDarkMode = false }) {
     if (existing) {
       selectConversation(existing);
     } else {
-      const newConv = await base44.entities.Conversation.create({
+      const { Conversation } = await import("@/entities/Conversation");
+      const newConv = await Conversation.create({
         type: "dm",
         participants: [user.email, email],
       });
@@ -163,7 +163,8 @@ export default function MobileCommsView({ isDarkMode = false }) {
         onClose={() => setShowNewDM(false)}
         onCreateDM={handleCreateDM}
         onCreateChannel={async ({ name, description, is_private }) => {
-          const newConv = await base44.entities.Conversation.create({
+          const { Conversation } = await import("@/entities/Conversation");
+          const newConv = await Conversation.create({
             type: "channel",
             name,
             description,

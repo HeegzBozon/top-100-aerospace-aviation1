@@ -27,7 +27,12 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import MyStuffFlipCard from '@/components/MyStuffFlipCard';
 import MobileProfileFlipCard from '@/components/MobileProfileFlipCard';
-import { brandColors } from '@/components/core/brandTheme';
+
+const brandColors = {
+  navyDeep: '#1e3a5a',
+  goldPrestige: '#c9a87c',
+  cream: '#faf8f5',
+};
 
 export default function UserProfileModal({ isOpen, onClose, user }) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
