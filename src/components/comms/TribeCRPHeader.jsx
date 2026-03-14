@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CRPPipeline from "./CRPPipeline";
 import MilestoneTracker from "./MilestoneTracker";
+import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
 function stageForStep(step) {
   if (step <= 4)  return "FORM";
@@ -23,6 +24,7 @@ const STAGE_COLORS = {
 export default function TribeCRPHeader({ conversation }) {
   const [expanded, setExpanded] = useState(true);
   const queryClient = useQueryClient();
+  const { theme } = useCommsTheme();
 
   // Coerce all stored steps to numbers to prevent string/number comparison mismatch
   const completedSteps = (conversation?.crp_completed_steps || []).map(Number);
@@ -62,7 +64,8 @@ export default function TribeCRPHeader({ conversation }) {
 
   return (
     <div
-      className="border-b border-white/10 bg-gradient-to-r from-[#0f1f33]/80 to-[#1e3a5a]/60 backdrop-blur-sm"
+      style={{ background: theme.crpBg, borderColor: theme.crpBorder }}
+      className="border-b backdrop-blur-sm"
       role="region"
       aria-label="CRP Pipeline"
     >
