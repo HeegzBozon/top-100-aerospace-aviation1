@@ -354,12 +354,12 @@ export default function PerryDMThread({ user, crpCurrentStep, crpCompletedSteps 
           "focus-within:bg-white focus-within:border-gray-300 focus-within:shadow-md",
           (isLoading || isInitializing || isSubmittingAction) ? "opacity-60 pointer-events-none" : "border-gray-200"
         )}>
+          <div onKeyDown={handleKeyDown} className="flex-1">
           <ReactQuill
             ref={quillRef}
             value={inputValue}
             onChange={setInputValue}
             onFocus={() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' })}
-            onKeyDown={handleKeyDown}
             modules={{ toolbar: false }}
             formats={['bold', 'italic', 'underline', 'link']}
             placeholder="Message Lt. Perry…"
