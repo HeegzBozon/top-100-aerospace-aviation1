@@ -7,12 +7,12 @@ import { ChannelsList } from "./ChannelsList";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
-import { Plus, X, Sun, Moon } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
 export default function Drawer({ currentPageName, onMobileClose, user }) {
-  const { mode, theme, toggleMode } = useCommsTheme();
+  const { theme } = useCommsTheme();
   const {
     channels,
     dms,
@@ -85,17 +85,6 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
           alt="TOP 100 Aerospace & Aviation"
           className="w-48 h-48 object-contain"
         />
-
-        {/* Theme toggle */}
-        <button
-          onClick={toggleMode}
-          className="absolute top-3 right-3 p-1.5 rounded-lg transition-all duration-200 hover:scale-110"
-          style={{ background: 'rgba(201,168,124,0.15)', color: '#c9a87c' }}
-          aria-label={`Switch to ${theme.label}`}
-          title={theme.label}
-        >
-          {mode === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </button>
 
         {/* Close button for mobile */}
         {onMobileClose && (
