@@ -363,8 +363,9 @@ export default function PerryDMThread({ user, crpCurrentStep, crpCompletedSteps 
             modules={{ toolbar: false }}
             formats={['bold', 'italic', 'underline', 'link']}
             placeholder="Message Lt. Perry…"
-            className="flex-1 [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[44px] [&_.ql-editor]:max-h-[120px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-4 [&_.ql-editor]:py-3 [&_.ql-editor.ql-blank::before]:text-gray-400 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-700 [&_.ql-editor]:bg-transparent [&_.ql-editor]:text-[15px] [&_.ql-editor]:leading-relaxed"
+            className="[&_.ql-container]:border-0 [&_.ql-editor]:min-h-[44px] [&_.ql-editor]:max-h-[120px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-4 [&_.ql-editor]:py-3 [&_.ql-editor.ql-blank::before]:text-gray-400 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-700 [&_.ql-editor]:bg-transparent [&_.ql-editor]:text-[15px] [&_.ql-editor]:leading-relaxed"
           />
+          </div>
           <button
             onClick={handleSend}
             disabled={!inputValue.replace(/<[^>]*>/g, '').trim() || isLoading || isInitializing || isSubmittingAction}
