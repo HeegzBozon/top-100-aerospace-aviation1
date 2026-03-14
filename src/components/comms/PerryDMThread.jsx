@@ -286,10 +286,7 @@ export default function PerryDMThread({ user, crpCurrentStep, crpCompletedSteps 
       )}
 
       {/* Messages */}
-      <div
-        className="flex-1 overflow-y-auto scrollbar-hide px-4 py-5 space-y-4 min-h-0"
-        style={{ paddingBottom: 'max(1rem, calc(env(safe-area-inset-bottom) + 100px))' }}
-      >
+      <div className="flex-1 overflow-y-auto scrollbar-hide px-4 py-5 space-y-4 min-h-0 pb-28">
         {isInitializing ? (
           <div className="flex items-center justify-center h-full">
             <div className="flex gap-1.5">
@@ -345,10 +342,7 @@ export default function PerryDMThread({ user, crpCurrentStep, crpCompletedSteps 
       </div>
 
       {/* Composer */}
-      <div
-        className="md:relative md:px-4 md:pb-4 md:pt-2 md:border-t md:border-gray-100 md:bg-white fixed bottom-0 left-0 right-0 px-4 pb-4 pt-2 border-t border-gray-100 bg-white"
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}
-      >
+      <div className="md:relative md:px-4 md:pb-4 md:pt-2 md:border-t md:border-gray-100 md:bg-white fixed bottom-0 left-0 right-0 px-4 pb-safe-bottom border-t border-gray-100 bg-white safe-area-bottom">
         <div className={cn(
           "flex items-end gap-2 rounded-2xl border bg-gray-50 overflow-hidden transition-all duration-200",
           "focus-within:bg-white focus-within:border-gray-300 focus-within:shadow-md",
