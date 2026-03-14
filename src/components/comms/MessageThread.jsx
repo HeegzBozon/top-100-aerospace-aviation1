@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
-import { Send, Smile, MoreHorizontal, Pencil, Trash2, MessageSquare, X, Check, BarChart3, Bold, Italic, Underline, Strikethrough, Link2, List, ListOrdered, Code, AtSign, ChevronDown } from "lucide-react";
+import { Send, Smile, MoreHorizontal, Pencil, Trash2, MessageSquare, X, Check, BarChart3, Bold, Italic, Underline, Strikethrough, Link2, List, ListOrdered, Code, AtSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import ReactQuill from "react-quill";
@@ -9,19 +9,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import PollCard from "./PollCard";
 import CreatePollModal from "./CreatePollModal";
 import MentionPopover from "./MentionPopover";
-import RRFStageSelector from "@/components/rrf/RRFStageSelector";
-import RRFQuickActions from "@/components/rrf/RRFQuickActions";
-import RRFMessageTag from "@/components/rrf/RRFMessageTag";
 import CrpStepPickerButton from "./CrpStepPickerButton";
-
-const brandColors = {
-  navyDeep: '#1e3a5a',
-  skyBlue: '#4a90b8',
-  goldPrestige: '#c9a87c',
-  goldLight: '#e8d4b8',
-  roseAccent: '#d4a574',
-  cream: '#faf8f5',
-};
+import { brandColors } from "@/components/core/brandTheme";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥", "🎉", "👀"];
 
