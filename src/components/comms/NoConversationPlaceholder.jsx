@@ -2,6 +2,7 @@ import React from "react";
 import { MessageSquare, Users, Zap, Star } from "lucide-react";
 import { brandColors } from "@/components/core/brandTheme";
 import ConstellationBackground from "./ConstellationBackground";
+import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
 const cultureCards = [
   {
