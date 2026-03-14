@@ -138,17 +138,7 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
         </div>
       </div>
 
-      {/* Expanded panel with CRP details */}
-      {expanded && (
-        <div id="crp-panel" className="px-4 pb-4 pt-1 space-y-4 border-t border-white/5">
-          <div className="h-px bg-white/5" aria-hidden="true" />
-          <CRPPipeline
-            completedTasks={completedTasksMap}
-            initialStage={selectedStage}
-            onToggleStep={handleToggleStep}
-          />
-        </div>
-      )}
+
 
 
     </div>
