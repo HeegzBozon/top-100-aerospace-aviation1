@@ -5,7 +5,6 @@ import NewConversationModal from "./NewConversationModal";
 import ChannelManagerModal from "./ChannelManagerModal";
 import { ChannelsList } from "./ChannelsList";
 import { base44 } from "@/api/base44Client";
-import { Conversation } from "@/entities/Conversation";
 import { useQuery } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
 import { Plus, X } from "lucide-react";

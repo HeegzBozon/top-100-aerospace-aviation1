@@ -6,7 +6,6 @@ import NewConversationModal from "./NewConversationModal";
 import { Plus, MessageCircle } from "lucide-react";
 import { brandColors } from "@/components/core/brandTheme";
 import { getMobileTheme } from "@/components/core/commsUtils";
-import { Conversation } from "@/entities/Conversation";
 import { motion } from "framer-motion";
 
 export default function MobileCommsView({ isDarkMode = false }) {
