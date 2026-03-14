@@ -728,8 +728,7 @@ export default function MessageThread({
 
               {/* Bottom Action Bar */}
               <div
-                className="flex items-center justify-between px-3 py-2 border-t"
-                style={{ borderColor: 'rgba(100, 100, 100, 0.2)' }}
+                className="flex items-center justify-between px-3 py-2 border-t border-white/10"
                 role="toolbar"
                 aria-label="Message formatting options"
               >
