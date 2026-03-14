@@ -46,7 +46,7 @@ export default function MilestoneTracker({ completedTasks = {} }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <p className="text-xs font-bold uppercase tracking-wider text-amber-300/60">
-          Pipeline Progress
+          Relationship Building Progress
         </p>
         <p className="text-xs font-bold tabular-nums text-amber-300/80">
           {completedCount}/16
