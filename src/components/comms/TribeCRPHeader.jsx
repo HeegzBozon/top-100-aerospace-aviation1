@@ -112,50 +112,14 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
       role="region"
       aria-label="CRP Pipeline"
     >
-      {/* Collapsed bar — always visible */}
-      <button
-        onClick={handleToggle}
-        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
-        aria-expanded={expanded}
-        aria-controls="crp-panel"
-      >
-        {/* Progress bar track with spectrum gradient */}
-        <div className="relative flex-1 h-2 rounded-full bg-black/20 overflow-hidden shadow-lg shadow-black/40">
-          <div
-            className={cn(
-              "absolute inset-y-0 left-0 rounded-full transition-all duration-700 bg-gradient-to-r",
-              SPECTRUM_GRADIENTS[Math.min(completedCount, 16)],
-              PROGRESS_WIDTHS[Math.min(completedCount, 16)]
-            )}
-            style={{
-              boxShadow: completedCount > 0 ? `0 0 16px ${["#6366f1","#a855f7","#8b5cf6","#d946ef","#ec4899","#f43f5e","#ef4444","#f97316","#f59e0b","#facc15","#84cc16","#22c55e","#10b981","#14b8a6","#06b6d4","#3b82f6","#6366f1"][Math.min(completedCount, 16)]}40` : "none"
-            }}
-          />
-        </div>
+      {/* Always-visible milestone timeline */}
+      <div className="px-4 py-3">
+        <MilestoneTracker completedTasks={completedTasksMap} />
+      </div>
 
-        {/* Stage pill */}
-        <span className={cn(
-          "shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border",
-          stageColor.pill
-        )}>
-          {localStage}
-        </span>
-
-        {/* Step count */}
-        <span className="shrink-0 text-[10px] font-bold tabular-nums text-white/40">
-          {completedCount}/16
-        </span>
-
-        <ChevronDown
-          className={cn("w-3.5 h-3.5 text-white/30 transition-transform duration-300 shrink-0", expanded && "rotate-180")}
-          aria-hidden="true"
-        />
-      </button>
-
-      {/* Expanded panel */}
+      {/* Expanded panel with CRP details */}
       {expanded && (
         <div id="crp-panel" className="px-4 pb-4 pt-1 space-y-4 border-t border-white/5">
-          <MilestoneTracker completedTasks={completedTasksMap} />
           <div className="h-px bg-white/5" aria-hidden="true" />
           <CRPPipeline
             completedTasks={completedTasksMap}
@@ -164,6 +128,20 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
           />
         </div>
       )}
+
+      {/* Toggle button - now a small footer */}
+      <button
+        onClick={handleToggle}
+        className="w-full flex items-center justify-between px-4 py-2 text-xs border-t border-white/5 hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
+        aria-expanded={expanded}
+        aria-controls="crp-panel"
+      >
+        <span className="text-white/40">{localStage} • {completedCount}/16</span>
+        <ChevronDown
+          className={cn("w-3.5 h-3.5 text-white/30 transition-transform duration-300", expanded && "rotate-180")}
+          aria-hidden="true"
+        />
+      </button>
     </div>
   );
 }
