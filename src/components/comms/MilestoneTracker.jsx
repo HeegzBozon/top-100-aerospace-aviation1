@@ -114,12 +114,7 @@ export default function MilestoneTracker({ completedTasks = {} }) {
         })}
       </div>
 
-      {/* Stage labels — evenly spaced under their 4 dots each */}
-      <div aria-hidden="true" className="grid grid-cols-4 text-xs font-bold uppercase tracking-wider text-amber-300/50">
-        {STAGE_LABELS.map(label => (
-          <span key={label} className="truncate">{label}</span>
-        ))}
-      </div>
+
     </div>
   );
 }
