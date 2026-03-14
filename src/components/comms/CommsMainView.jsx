@@ -18,9 +18,11 @@ import MobileSearch from "./MobileSearch";
 import PerryDMThread from "./PerryDMThread";
 import YouDMThread from "./YouDMThread";
 import ThreadControlCenter from "./ThreadControlCenter";
+import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
 export default function CommsMainView({ onOpenMobileSidebar }) {
   const { user, activeConversation, selectConversation } = useConversation();
+  const { theme } = useCommsTheme();
   const queryClient = useQueryClient();
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -211,7 +213,7 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
   const dmInitials = dmDisplayName.slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f1d2d 0%, #152a42 50%, #1e3a5a 100%)' }}>
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: theme.bg }}>
       {/* Mobile Header - Only visible on mobile */}
       <div className="md:hidden">
         <MobileCommsHeader onBack={() => selectConversation(null)} />
@@ -219,7 +221,7 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
 
       {/* DM Persona Header — desktop only, regular DMs */}
       {activeConversation?.type === 'dm' && (
-        <div className="hidden md:flex items-center gap-4 px-5 py-3.5 border-b border-white/8 bg-gradient-to-r from-[#0d1e33] via-[#111f35] to-[#0d1e33] shrink-0">
+        <div className="hidden md:flex items-center gap-4 px-5 py-3.5 border-b shrink-0" style={{ background: theme.headerBg, borderColor: theme.headerBorder }}>
           {/* Avatar with glow ring */}
           <div className="relative shrink-0">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e3a5a] to-[#4a90b8] flex items-center justify-center text-white text-sm font-bold ring-2 ring-amber-400/20 shadow-lg shadow-amber-400/10">
