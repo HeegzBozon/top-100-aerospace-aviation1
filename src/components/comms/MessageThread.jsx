@@ -29,17 +29,14 @@ function DateChip({ date }) {
   }
 
   return (
-     <div className="flex items-center justify-center my-6" role="presentation" aria-label={`Messages from ${label}`}>
-       <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(201, 168, 124, 0.2), transparent)' }} />
-       <div
-         className="px-5 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 mx-4 border"
-         style={{ background: 'rgba(201, 168, 124, 0.08)', borderColor: 'rgba(201, 168, 124, 0.2)', color: 'rgba(201, 168, 124, 0.6)' }}
-       >
-         {label}
-       </div>
-       <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(201, 168, 124, 0.2), transparent)' }} />
-     </div>
-   );
+    <div className="flex items-center justify-center my-6" role="presentation" aria-label={`Messages from ${label}`}>
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#c9a87c]/20 to-transparent" />
+      <div className="px-5 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 mx-4 border border-[#c9a87c]/20 bg-[#c9a87c]/8 text-[#c9a87c]/60">
+        {label}
+      </div>
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#c9a87c]/20 to-transparent" />
+    </div>
+  );
 }
 
 function MessageBubble({ message, isOwn, showAvatar, currentUserEmail, onReact, onEdit, onDelete, onReply, replies = [], isThread = false }) {
