@@ -74,7 +74,10 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
   return (
     <div className="h-full flex flex-col text-white w-full md:w-72 border-r" style={{ background: 'linear-gradient(180deg, #0f1f33 0%, #1a2f47 100%)', borderColor: 'rgba(201, 168, 124, 0.15)' }}>
       {/* Header */}
-      <div className="px-4 py-6 md:py-8 border-b flex flex-col items-center backdrop-blur-sm" style={{ background: 'rgba(201, 168, 124, 0.08)', borderColor: 'rgba(201, 168, 124, 0.2)' }}>
+      <div className="relative px-4 py-6 md:py-8 border-b flex flex-col items-center backdrop-blur-sm overflow-hidden" style={{ background: 'rgba(201, 168, 124, 0.08)', borderColor: 'rgba(201, 168, 124, 0.2)' }}>
+        {/* Subtle grid pattern overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.07]" style={{ backgroundImage: 'linear-gradient(rgba(201,168,124,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,124,0.6) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(201,168,124,0.06) 0%, transparent 70%)' }} />
         <img
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/5ece7f59b_TOP100AerospaceAviationlogo.png"
           alt="TOP 100 Aerospace & Aviation"

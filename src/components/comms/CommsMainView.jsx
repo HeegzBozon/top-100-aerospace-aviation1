@@ -211,7 +211,7 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
   const dmInitials = dmDisplayName.slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex-1 flex flex-col bg-gradient-to-b from-[#0f1f33] to-black/90 min-w-0 overflow-hidden">
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f1d2d 0%, #152a42 50%, #1e3a5a 100%)' }}>
       {/* Mobile Header - Only visible on mobile */}
       <div className="md:hidden">
         <MobileCommsHeader onBack={() => selectConversation(null)} />
