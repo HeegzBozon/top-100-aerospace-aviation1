@@ -1,13 +1,11 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import CRPPipeline from "./CRPPipeline";
 import MilestoneTracker from "./MilestoneTracker";
 
-const STAGE_ORDER = ["FORM", "STORM", "NORM", "PERFORM"];
-
-// Derive which stage a given step belongs to
 function stageForStep(step) {
   if (step <= 4)  return "FORM";
   if (step <= 8)  return "STORM";
@@ -15,13 +13,22 @@ function stageForStep(step) {
   return "PERFORM";
 }
 
+const STAGE_COLORS = {
+  FORM:    { pill: "border-indigo-500/40 text-indigo-300 bg-indigo-500/10", bar: "bg-indigo-400/30" },
+  STORM:   { pill: "border-amber-500/40 text-amber-300 bg-amber-500/10",   bar: "bg-amber-400/30" },
+  NORM:    { pill: "border-rose-500/40 text-rose-300 bg-rose-500/10",       bar: "bg-rose-400/30" },
+  PERFORM: { pill: "border-amber-400/40 text-amber-200 bg-amber-400/10",   bar: "bg-amber-300/30" },
+};
+
 export default function TribeCRPHeader({ conversation }) {
+  const [expanded, setExpanded] = useState(false);
   const queryClient = useQueryClient();
 
   const completedSteps = conversation?.crp_completed_steps || [];
   const currentStage   = conversation?.rrf_stage || "FORM";
+  const completedCount = completedSteps.length;
+  const stageColor = STAGE_COLORS[currentStage] || STAGE_COLORS.FORM;
 
-  // Build the completedTasks map expected by MilestoneTracker / CRPPipeline
   const completedTasksMap = completedSteps.reduce((acc, s) => {
     acc[s] = true;
     return acc;
@@ -40,11 +47,8 @@ export default function TribeCRPHeader({ conversation }) {
     const nextCompleted = isCompleted
       ? completedSteps.filter(s => s !== step)
       : [...completedSteps, step];
-
-    // Auto-advance rrf_stage to match the highest completed step's stage
     const maxCompleted = nextCompleted.length ? Math.max(...nextCompleted) : 0;
     const nextStage = maxCompleted > 0 ? stageForStep(maxCompleted) : "FORM";
-
     updateConversation.mutate({
       crp_completed_steps: nextCompleted,
       crp_current_step: maxCompleted + 1,
@@ -55,60 +59,60 @@ export default function TribeCRPHeader({ conversation }) {
   if (!conversation) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
-      className="relative overflow-clip rounded-2xl p-4 md:p-5 bg-gradient-to-br from-[#1e3a5a] to-[#0f1f33]"
+    <div
+      className="border-b border-white/10 bg-gradient-to-r from-[#0f1f33]/80 to-[#1e3a5a]/60 backdrop-blur-sm"
       role="region"
-      aria-label="Tribe CRP Pipeline"
+      aria-label="CRP Pipeline"
     >
-      {/* Decorative glows */}
-      <div aria-hidden="true" className="absolute -top-10 -right-10 w-48 h-48 rounded-full blur-3xl opacity-10 pointer-events-none bg-amber-400" />
-      <div aria-hidden="true" className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full blur-3xl opacity-5 pointer-events-none bg-amber-200" />
-
-      <div className="relative z-10 space-y-4">
-        {/* Header row */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <motion.div
-              animate={{ scale: [1, 1.04, 1] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              aria-hidden="true"
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-amber-200 font-bold text-base border-2 border-amber-400/60 bg-amber-400/10"
-            >
-              &#9670;
-            </motion.div>
-            <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-widest text-amber-300/50 leading-none mb-0.5">
-                16-Step Pipeline
-              </p>
-              <h2 className="text-sm font-bold text-white leading-snug truncate">
-                Continuous Relationship
-              </h2>
-            </div>
-          </div>
-
-          {/* Stage pill */}
-          <div className="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide border border-amber-400/30 text-amber-300 bg-amber-400/10">
-            {currentStage}
-          </div>
+      {/* Collapsed bar — always visible */}
+      <button
+        onClick={() => setExpanded(v => !v)}
+        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
+        aria-expanded={expanded}
+        aria-controls="crp-panel"
+      >
+        {/* Progress bar track */}
+        <div className="relative flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+          <div
+            className={cn("absolute inset-y-0 left-0 rounded-full transition-all duration-500", stageColor.bar)}
+            style={{ width: `${Math.round((completedCount / 16) * 100)}%` }}
+          />
         </div>
 
-        <div className="h-px bg-amber-400/10" aria-hidden="true" />
+        {/* Stage pill */}
+        <span className={cn(
+          "shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border",
+          stageColor.pill
+        )}>
+          {currentStage}
+        </span>
 
-        {/* Live milestone tracker */}
-        <MilestoneTracker completedTasks={completedTasksMap} />
+        {/* Step count */}
+        <span className="shrink-0 text-[10px] font-bold tabular-nums text-white/40">
+          {completedCount}/16
+        </span>
 
-        <div className="h-px bg-amber-400/10" aria-hidden="true" />
-
-        {/* Live interactive CRP pipeline */}
-        <CRPPipeline
-          completedTasks={completedTasksMap}
-          initialStage={currentStage}
-          onToggleStep={handleToggleStep}
+        <ChevronDown
+          className={cn("w-3.5 h-3.5 text-white/30 transition-transform duration-300 shrink-0", expanded && "rotate-180")}
+          aria-hidden="true"
         />
-      </div>
-    </motion.div>
+      </button>
+
+      {/* Expanded panel */}
+      {expanded && (
+        <div
+          id="crp-panel"
+          className="px-4 pb-4 pt-1 space-y-4 border-t border-white/5"
+        >
+          <MilestoneTracker completedTasks={completedTasksMap} />
+          <div className="h-px bg-white/5" aria-hidden="true" />
+          <CRPPipeline
+            completedTasks={completedTasksMap}
+            initialStage={currentStage}
+            onToggleStep={handleToggleStep}
+          />
+        </div>
+      )}
+    </div>
   );
 }
