@@ -10,7 +10,6 @@ import PollCard from "./PollCard";
 import CreatePollModal from "./CreatePollModal";
 import MentionPopover from "./MentionPopover";
 import CrpStepPickerButton from "./CrpStepPickerButton";
-import { brandColors } from "@/components/core/brandTheme";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥", "🎉", "👀"];
 
@@ -353,7 +352,7 @@ export default function MessageThread({
       const lastAtIndex = beforeCursor.lastIndexOf('@');
       if (lastAtIndex >= 0) {
         editor.deleteText(lastAtIndex, range.index - lastAtIndex);
-        editor.insertText(lastAtIndex, `@${user.full_name || user.email?.split('@')[0]} `, { bold: true, color: brandColors.skyBlue });
+        editor.insertText(lastAtIndex, `@${user.full_name || user.email?.split('@')[0]} `, { bold: true, color: '#4a90b8' });
       }
     }
     setShowMentionPopover(false);
@@ -734,7 +733,7 @@ export default function MessageThread({
                 <div className="flex items-center gap-1 flex-wrap">
                    {!isPerry && activeCrpStep && (
                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/15 border border-amber-400/30 text-amber-300">
-                       ◆ Step {activeCrpStep}
+                       &#9670; Step {activeCrpStep}
                        <button
                          type="button"
                          onClick={() => setActiveCrpStep(null)}
