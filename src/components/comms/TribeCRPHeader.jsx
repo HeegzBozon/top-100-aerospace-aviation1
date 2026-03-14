@@ -106,6 +106,14 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
     onToggleExpand?.();
   };
 
+  const handleDotClick = () => {
+    // Dots only expand, never collapse
+    if (!expanded) {
+      setExpanded(true);
+      onToggleExpand?.();
+    }
+  };
+
   return (
     <div
       style={{ background: theme.crpBg, borderColor: theme.crpBorder }}
@@ -113,7 +121,7 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
       role="region"
       aria-label="CRP Pipeline"
     >
-      {/* Always-visible milestone timeline - only collapse on outer area, not dots */}
+      {/* Always-visible milestone timeline - only collapse on outer area, dots expand only */}
       <div
         className="px-4 py-3"
         aria-expanded={expanded}
@@ -123,7 +131,10 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
           onClick={handleToggle}
           className="cursor-pointer hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
         >
-          <MilestoneTracker completedTasks={completedTasksMap} selectedStage={selectedStage} onStageSelect={setSelectedStage} onClickDot={(e) => e.stopPropagation()} />
+          <MilestoneTracker completedTasks={completedTasksMap} selectedStage={selectedStage} onStageSelect={setSelectedStage} onClickDot={(e) => {
+            e.stopPropagation();
+            handleDotClick();
+          }} />
         </div>
       </div>
 

@@ -117,32 +117,6 @@ export default function MilestoneTracker({ completedTasks = {}, onStageSelect, s
 
   return (
     <div className="space-y-2" role="group" aria-label="4-stage pipeline progress">
-      {/* Header with sparkle container */}
-      <div className="flex items-center justify-between relative">
-        <p className="text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-rose-300 to-amber-300 bg-clip-text text-transparent">
-          Relationship Building Progress
-        </p>
-        <div className="relative">
-          <p className="text-xs font-bold tabular-nums text-rose-300 drop-shadow-lg">
-            {completedStages.size}/4
-          </p>
-          {sparkles.map(sparkle => (
-            <div
-              key={sparkle.id}
-              className="sparkle absolute pointer-events-none text-rose-300"
-              style={{
-                left: `${sparkle.left}%`,
-                top: `${sparkle.top}px`,
-                '--tx': `${(Math.random() - 0.5) * 60}px`,
-                '--ty': `${(Math.random() - 0.5) * 60}px`,
-              }}
-            >
-              ✨
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Unified progress bar flowing through 4 stage dots - equal distribution with continuous gradient */}
       <div className="flex items-center w-full gap-0">
         {STAGES.map((stageItem, idx) => {
