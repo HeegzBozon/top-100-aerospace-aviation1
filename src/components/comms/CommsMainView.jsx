@@ -211,7 +211,7 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
   const dmInitials = dmDisplayName.slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex-1 flex flex-col bg-white min-w-0 overflow-hidden">
+    <div className="flex-1 flex flex-col bg-[#0a1628] min-w-0 overflow-hidden">
       {/* Mobile Header - Only visible on mobile */}
       <div className="md:hidden">
         <MobileCommsHeader onBack={() => selectConversation(null)} />
@@ -219,13 +219,23 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
 
       {/* DM Persona Header — desktop only, regular DMs */}
       {activeConversation?.type === 'dm' && (
-        <div className="hidden md:flex items-center gap-3 px-5 py-3 border-b border-gray-100 bg-white shrink-0">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#1e3a5a] to-[#4a90b8] flex items-center justify-center text-white text-xs font-bold shrink-0">
-            {dmInitials}
+        <div className="hidden md:flex items-center gap-4 px-5 py-3.5 border-b border-white/8 bg-gradient-to-r from-[#0d1e33] via-[#111f35] to-[#0d1e33] shrink-0">
+          {/* Avatar with glow ring */}
+          <div className="relative shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e3a5a] to-[#4a90b8] flex items-center justify-center text-white text-sm font-bold ring-2 ring-amber-400/20 shadow-lg shadow-amber-400/10">
+              {dmInitials}
+            </div>
+            {/* Online indicator */}
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0d1e33] shadow-sm shadow-emerald-400/50" />
           </div>
-          <div className="min-w-0">
-            <p className="font-semibold text-[#1e3a5a] text-sm leading-tight truncate">{dmDisplayName}</p>
-            <p className="text-xs text-gray-400 leading-tight">{otherParticipantEmail}</p>
+          <div className="min-w-0 flex-1">
+            <p className="font-bold text-white text-sm leading-tight truncate tracking-tight">{dmDisplayName}</p>
+            <p className="text-[11px] text-white/35 leading-tight truncate font-mono">{otherParticipantEmail}</p>
+          </div>
+          {/* Ambient decoration */}
+          <div className="shrink-0 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400/40 animate-pulse" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-white/20">Direct</span>
           </div>
         </div>
       )}

@@ -21,7 +21,7 @@ const STAGE_COLORS = {
 };
 
 export default function TribeCRPHeader({ conversation }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const queryClient = useQueryClient();
 
   const completedSteps = conversation?.crp_completed_steps || [];
