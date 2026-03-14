@@ -80,8 +80,11 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
   const completedTasks = isControlled ? (externalCompleted || {}) : internalCompleted;
 
   const config = CRP_STAGES[selectedStage];
-  const completedCount = config.tasks.filter(t => completedTasks[t.step]).length;
-  const progressPct = Math.round((completedCount / config.tasks.length) * 100);
+  // Track total progress across ALL 16 steps, not just current stage
+  const totalSteps = 16;
+  const totalCompleted = Object.values(completedTasks).filter(Boolean).length;
+  const progressPct = Math.round((totalCompleted / totalSteps) * 100);
+  const stageCompletedCount = config.tasks.filter(t => completedTasks[t.step]).length;
 
   const toggleTask = (step) => {
     if (isControlled) {
@@ -105,25 +108,31 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
           config.bg, config.border
         )}
       >
-        {/* Progress count */}
-         <div className="flex justify-end">
+        {/* Progress count - shows both stage and total */}
+         <div className="flex justify-end gap-3">
            <span className={cn("text-xs font-bold tabular-nums", config.headerText)}>
-             {completedCount}/{config.tasks.length}
+             {stageCompletedCount}/{config.tasks.length}
+           </span>
+           <span className="text-xs font-bold tabular-nums text-white/40">
+             {totalCompleted}/16
            </span>
          </div>
 
-        {/* Progress bar */}
+        {/* Progress bar - continuous across all 16 steps with spectrum gradient */}
         <div
-          className="w-full h-1 rounded-full bg-white/10 overflow-hidden"
+          className="w-full h-2 rounded-full bg-white/10 overflow-hidden"
           role="progressbar"
           aria-valuenow={progressPct}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-label={`${selectedStage} progress`}
+          aria-label="Total CRP progress"
         >
           <div
-            className={cn("h-full rounded-full transition-all duration-500", config.bar)}
-            style={{ width: `${progressPct}%` }}
+            className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-indigo-400 via-rose-400 to-amber-300"
+            style={{ 
+              width: `${progressPct}%`,
+              boxShadow: `0 0 12px rgba(255, 255, 255, 0.2)`
+            }}
           />
         </div>
 
