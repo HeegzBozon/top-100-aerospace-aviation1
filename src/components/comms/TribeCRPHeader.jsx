@@ -112,10 +112,15 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
       role="region"
       aria-label="CRP Pipeline"
     >
-      {/* Always-visible milestone timeline */}
-      <div className="px-4 py-3">
+      {/* Always-visible milestone timeline - clickable to toggle */}
+      <button
+        onClick={handleToggle}
+        className="w-full px-4 py-3 text-left hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
+        aria-expanded={expanded}
+        aria-controls="crp-panel"
+      >
         <MilestoneTracker completedTasks={completedTasksMap} />
-      </div>
+      </button>
 
       {/* Expanded panel with CRP details */}
       {expanded && (
@@ -129,19 +134,7 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
         </div>
       )}
 
-      {/* Toggle button - now a small footer */}
-      <button
-        onClick={handleToggle}
-        className="w-full flex items-center justify-between px-4 py-2 text-xs border-t border-white/5 hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
-        aria-expanded={expanded}
-        aria-controls="crp-panel"
-      >
-        <span className="text-white/40">{localStage} • {completedCount}/16</span>
-        <ChevronDown
-          className={cn("w-3.5 h-3.5 text-white/30 transition-transform duration-300", expanded && "rotate-180")}
-          aria-hidden="true"
-        />
-      </button>
+
     </div>
   );
 }
