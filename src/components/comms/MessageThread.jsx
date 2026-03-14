@@ -330,7 +330,6 @@ export default function MessageThread({
   const [mentionQuery, setMentionQuery] = useState("");
   const [activeFormats, setActiveFormats] = useState({});
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [rrfStage, setRRFStage] = useState('FORM');
   const [activeCrpStep, setActiveCrpStep] = useState(defaultCrpStep);
   const messagesEndRef = useRef(null);
   const quillRef = useRef(null);
@@ -526,57 +525,17 @@ export default function MessageThread({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* RRF Stage Navigator */}
-      {!isReadonly && !isPerry && (
-        <div className="relative z-10 px-4 py-3 border-t border-gray-700/20 bg-gradient-to-r from-black/60 via-black/50 to-black/60 backdrop-blur-sm">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {[
-              { stage: 'FORM', subtitle: 'Plant presence; No ask.' },
-              { stage: 'STORM', subtitle: 'Probe. Reopen. Research.' },
-              { stage: 'NORM', subtitle: 'Propose shared outcome.' },
-              { stage: 'PERFORM', subtitle: 'Execute. Close. Transact.' }
-            ].map(({ stage, subtitle }) => (
-              <button
-                key={stage}
-                onClick={() => setRRFStage(stage)}
-                className={cn(
-                    "px-3 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider border-2 transition-all duration-300 group",
-                    rrfStage === stage
-                      ? stage === 'FORM'
-                        ? "border-indigo-500/80 bg-gradient-to-br from-indigo-600/30 to-indigo-700/10 text-indigo-300 shadow-lg shadow-indigo-500/10"
-                        : stage === 'STORM'
-                        ? "border-amber-500/80 bg-gradient-to-br from-amber-600/30 to-amber-700/10 text-amber-300 shadow-lg shadow-amber-500/10"
-                        : stage === 'NORM'
-                        ? "border-rose-500/80 bg-gradient-to-br from-rose-600/30 to-rose-700/10 text-rose-300 shadow-lg shadow-rose-500/10"
-                        : "border-amber-400/80 bg-gradient-to-br from-amber-500/20 to-amber-600/10 text-amber-200 shadow-lg shadow-amber-400/10"
-                      : "border-gray-700/40 bg-transparent text-gray-600 hover:border-gray-600/60 hover:text-gray-400 hover:bg-gray-900/20"
-                  )}
-              >
-                <div className="leading-tight">{stage}</div>
-                {rrfStage === stage && (
-                  <div className="text-[10px] opacity-80 leading-tight mt-1 text-current">{subtitle}</div>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+
 
       {/* Message Composer */}
       <div className={cn(
-        "relative z-10 md:relative md:p-4 fixed bottom-0 left-0 right-0 p-4 pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-black/60 border-t transition-all duration-300 backdrop-blur-xl",
-        rrfStage === 'FORM'
-          ? "border-indigo-600/40 bg-gradient-to-t from-black/95 via-indigo-950/20 to-transparent"
-          : rrfStage === 'STORM'
-          ? "border-[#c9a87c]/40 bg-gradient-to-t from-black/95 via-[#1e3a5a]/30 to-transparent"
-          : rrfStage === 'NORM'
-          ? "border-rose-600/40 bg-gradient-to-t from-black/95 via-rose-950/20 to-transparent"
-          : "border-[#c9a87c]/60 bg-gradient-to-t from-black/95 via-[#1e3a5a]/40 to-transparent"
+        "relative z-10 md:relative md:p-4 fixed bottom-0 left-0 right-0 p-4 pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-rose-500/20 border-t transition-all duration-300 backdrop-blur-xl",
+        "border-rose-500/40 bg-gradient-to-t from-black/98 via-rose-950/15 to-transparent"
       )}>
         {canPost ? (
           <div className="flex flex-col">
             {replyingTo && (
-              <div className="flex items-center gap-2 text-xs mb-2 px-3 py-2 rounded-t-xl bg-gradient-to-r from-amber-600/10 to-[#c9a87c]/5 border border-amber-500/20 backdrop-blur-sm animate-in slide-in-from-top-2 duration-300 text-amber-400">
+              <div className="flex items-center gap-2 text-xs mb-2 px-3 py-2 rounded-t-xl bg-gradient-to-r from-rose-600/20 to-pink-600/10 border border-rose-400/30 backdrop-blur-sm animate-in slide-in-from-top-2 duration-300 text-rose-200">
                 <MessageSquare className="w-3 h-3" />
                 <span>Replying to <strong>{replyingTo.sender_name || replyingTo.sender_email?.split("@")[0]}</strong></span>
                 <button onClick={() => setReplyingTo(null)} className="ml-auto hover:opacity-70 transition-opacity hover:scale-110 active:scale-95">
@@ -589,18 +548,12 @@ export default function MessageThread({
             <fieldset
               className={cn(
                 "rounded-xl overflow-hidden border-2 transition-all duration-300 w-full bg-gray-950",
-                rrfStage === 'FORM'
-                  ? "border-indigo-600/40 focus-within:ring-2 focus-within:ring-indigo-500/40 focus-within:shadow-xl focus-within:shadow-indigo-500/10"
-                  : rrfStage === 'STORM'
-                  ? "border-[#c9a87c]/40 focus-within:ring-2 focus-within:ring-[#c9a87c]/30 focus-within:shadow-xl focus-within:shadow-[#c9a87c]/10"
-                  : rrfStage === 'NORM'
-                  ? "border-rose-600/40 focus-within:ring-2 focus-within:ring-rose-500/40 focus-within:shadow-xl focus-within:shadow-rose-500/10"
-                  : "border-[#c9a87c]/60 focus-within:ring-2 focus-within:ring-[#c9a87c]/50 focus-within:shadow-xl focus-within:shadow-[#c9a87c]/20"
+                "border-rose-500/40 focus-within:ring-2 focus-within:ring-rose-400/60 focus-within:shadow-2xl focus-within:shadow-rose-500/30"
               )}
               aria-label="Message formatting and input"
             >
               {/* Formatting Toolbar with Active States - Mobile Optimized */}
-              <div className="flex items-center gap-1 px-2 sm:px-3 py-2 border-b border-white/10 overflow-x-auto scrollbar-hide">
+              <div className="flex items-center gap-1 px-2 sm:px-3 py-2 border-b border-rose-500/20 overflow-x-auto scrollbar-hide bg-gradient-to-r from-rose-950/10 to-pink-950/10">
                 <div className="flex items-center gap-0.5 shrink-0">
                   <button
                     type="button"
@@ -779,7 +732,7 @@ export default function MessageThread({
 
               {/* Bottom Action Bar */}
               <div
-                className="flex items-center justify-between gap-2 px-2 sm:px-3 py-2 border-t border-white/10 flex-wrap sm:flex-nowrap"
+                className="flex items-center justify-between gap-2 px-2 sm:px-3 py-2 border-t border-rose-500/20 bg-gradient-to-r from-rose-950/10 to-pink-950/10 flex-wrap sm:flex-nowrap"
                 role="toolbar"
                 aria-label="Message actions"
               >
@@ -918,7 +871,7 @@ export default function MessageThread({
                        onClick={handleSend}
                        disabled={!newMessage.replace(/<[^>]*>/g, '').trim() || isLoading}
                        size="sm"
-                       className="rounded-lg px-4 h-10 sm:h-8 sm:px-3 border-0 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 font-medium"
+                       className="rounded-lg px-4 h-10 sm:h-8 sm:px-3 border-0 bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:via-pink-500 hover:to-rose-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-xl hover:shadow-rose-500/50 active:scale-95 font-medium"
                        aria-label="Send message"
                      >
                        <Send className={cn("w-4 h-4 transition-transform duration-300 sm:mr-2", isLoading && "animate-spin")} aria-hidden="true" />
