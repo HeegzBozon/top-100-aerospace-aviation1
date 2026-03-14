@@ -14,14 +14,6 @@ import RRFQuickActions from "@/components/epics/05-rapid-response-cells/rrf/RRFQ
 import RRFMessageTag from "@/components/epics/05-rapid-response-cells/rrf/RRFMessageTag";
 import CrpStepPickerButton from "./CrpStepPickerButton";
 
-const brandColors = {
-  navyDeep: '#1e3a5a',
-  skyBlue: '#4a90b8',
-  goldPrestige: '#c9a87c',
-  goldLight: '#e8d4b8',
-  roseAccent: '#d4a574',
-  cream: '#faf8f5',
-};
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥", "🎉", "👀"];
 
@@ -41,14 +33,11 @@ function DateChip({ date }) {
 
   return (
      <div className="flex items-center justify-center my-6" role="presentation" aria-label={`Messages from ${label}`}>
-       <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(201, 168, 124, 0.2), transparent)' }} />
-       <div
-         className="px-5 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 mx-4 border"
-         style={{ background: 'rgba(201, 168, 124, 0.08)', borderColor: 'rgba(201, 168, 124, 0.2)', color: 'rgba(201, 168, 124, 0.6)' }}
-       >
+       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#c9a87c]/20 to-transparent" />
+       <div className="px-5 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 mx-4 border border-[#c9a87c]/20 bg-[#c9a87c]/8 text-[#c9a87c]/60">
          {label}
        </div>
-       <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(201, 168, 124, 0.2), transparent)' }} />
+       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#c9a87c]/20 to-transparent" />
      </div>
    );
 }
@@ -367,7 +356,7 @@ export default function MessageThread({
       const lastAtIndex = beforeCursor.lastIndexOf('@');
       if (lastAtIndex >= 0) {
         editor.deleteText(lastAtIndex, range.index - lastAtIndex);
-        editor.insertText(lastAtIndex, `@${user.full_name || user.email?.split('@')[0]} `, { bold: true, color: brandColors.skyBlue });
+        editor.insertText(lastAtIndex, `@${user.full_name || user.email?.split('@')[0]} `, { bold: true, color: '#4a90b8' });
       }
     }
     setShowMentionPopover(false);
@@ -470,14 +459,14 @@ export default function MessageThread({
   };
 
   return (
-    <form className="flex flex-col h-full overflow-x-hidden" style={{ background: 'linear-gradient(180deg, rgba(15, 31, 51, 0.6) 0%, rgba(0, 0, 0, 0.8) 100%)' }} onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+    <form className="flex flex-col h-full overflow-x-hidden bg-gradient-to-b from-[#0f1f33]/60 to-black/80" onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
       {/* Skip to main content link */}
       <a href="#message-input" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-amber-600 focus:text-white focus:px-4 focus:py-2">
         Skip to message input
       </a>
 
       {/* Messages - with bottom padding to prevent keyboard overlap */}
-      <div className="flex-1 overflow-y-auto scrollbar-hide px-6 py-4 space-y-4" style={{ paddingBottom: 'max(1rem, calc(env(safe-area-inset-bottom) + 280px))' }} role="log" aria-live="polite" aria-label="Message feed">
+      <div className="flex-1 overflow-y-auto scrollbar-hide px-6 py-4 space-y-4 pb-[max(1rem,calc(env(safe-area-inset-bottom)_+_280px))]" role="log" aria-live="polite" aria-label="Message feed">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-gray-900/50 border border-gray-700">
@@ -564,17 +553,17 @@ export default function MessageThread({
       <div className={cn(
         "md:relative md:p-4 fixed bottom-0 left-0 right-0 p-4 shadow-2xl shadow-black/60 border-t transition-all duration-300",
         rrfStage === 'FORM'
-          ? "border-lime-600/40 bg-gradient-to-t from-black/95 via-lime-950/30 to-transparent backdrop-blur-xl"
+          ? "border-indigo-600/40 bg-gradient-to-t from-black/95 via-indigo-950/20 to-transparent"
           : rrfStage === 'STORM'
-          ? "border-orange-600/40 bg-gradient-to-t from-black/95 via-orange-950/30 to-transparent backdrop-blur-xl"
+          ? "border-[#c9a87c]/40 bg-gradient-to-t from-black/95 via-[#1e3a5a]/30 to-transparent"
           : rrfStage === 'NORM'
-          ? "border-blue-600/40 bg-gradient-to-t from-black/95 via-blue-950/30 to-transparent backdrop-blur-xl"
-          : "border-cyan-600/40 bg-gradient-to-t from-black/95 via-cyan-950/30 to-transparent backdrop-blur-xl"
-      )} style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+          ? "border-rose-600/40 bg-gradient-to-t from-black/95 via-rose-950/20 to-transparent"
+          : "border-[#c9a87c]/60 bg-gradient-to-t from-black/95 via-[#1e3a5a]/40 to-transparent"
+      )}>
         {canPost ? (
           <div className="flex flex-col">
             {replyingTo && (
-              <div className="flex items-center gap-2 text-xs mb-2 px-3 py-2 rounded-t-xl bg-gradient-to-r from-amber-600/10 to-orange-600/5 border border-amber-500/20 backdrop-blur-sm animate-in slide-in-from-top-2 duration-300" style={{ color: '#fbbf24' }}>
+              <div className="flex items-center gap-2 text-xs mb-2 px-3 py-2 rounded-t-xl bg-gradient-to-r from-amber-600/10 to-[#c9a87c]/5 border border-amber-500/20 backdrop-blur-sm animate-in slide-in-from-top-2 duration-300 text-amber-400">
                 <MessageSquare className="w-3 h-3" />
                 <span>Replying to <strong>{replyingTo.sender_name || replyingTo.sender_email?.split("@")[0]}</strong></span>
                 <button onClick={() => setReplyingTo(null)} className="ml-auto hover:opacity-70 transition-opacity hover:scale-110 active:scale-95">
@@ -588,20 +577,17 @@ export default function MessageThread({
               className={cn(
                 "rounded-xl overflow-hidden border-2 transition-all duration-300 w-full",
                 rrfStage === 'FORM'
-                  ? "focus-within:ring-2 focus-within:ring-lime-500/40 focus-within:shadow-xl focus-within:shadow-lime-500/20 border-lime-600/40 bg-gradient-to-br from-lime-950/10 via-gray-950 to-gray-950"
+                  ? "border-indigo-600/40 focus-within:ring-2 focus-within:ring-indigo-500/40 focus-within:shadow-xl focus-within:shadow-indigo-500/10"
                   : rrfStage === 'STORM'
-                  ? "focus-within:ring-2 focus-within:ring-orange-500/40 focus-within:shadow-xl focus-within:shadow-orange-500/20 border-orange-600/40 bg-gradient-to-br from-orange-950/10 via-gray-950 to-gray-950"
+                  ? "border-[#c9a87c]/40 focus-within:ring-2 focus-within:ring-[#c9a87c]/30 focus-within:shadow-xl focus-within:shadow-[#c9a87c]/10"
                   : rrfStage === 'NORM'
-                  ? "focus-within:ring-2 focus-within:ring-blue-500/40 focus-within:shadow-xl focus-within:shadow-blue-500/20 border-blue-600/40 bg-gradient-to-br from-blue-950/10 via-gray-950 to-gray-950"
-                  : "focus-within:ring-2 focus-within:ring-cyan-500/40 focus-within:shadow-xl focus-within:shadow-cyan-500/20 border-cyan-600/40 bg-gradient-to-br from-cyan-950/10 via-gray-950 to-gray-950"
+                  ? "border-rose-600/40 focus-within:ring-2 focus-within:ring-rose-500/40 focus-within:shadow-xl focus-within:shadow-rose-500/10"
+                  : "border-[#c9a87c]/60 focus-within:ring-2 focus-within:ring-[#c9a87c]/50 focus-within:shadow-xl focus-within:shadow-[#c9a87c]/20"
               )}
               aria-label="Message formatting and input"
             >
               {/* Formatting Toolbar with Active States */}
-              <div
-                className="flex items-center gap-1 px-3 py-2 border-b"
-                style={{ borderColor: 'rgba(100, 100, 100, 0.2)' }}
-              >
+              <div className="flex items-center gap-1 px-3 py-2 border-b border-white/10">
                 <div className="flex items-center gap-0.5">
                   <button
                     type="button"
@@ -660,14 +646,11 @@ export default function MessageThread({
                     <Strikethrough className={cn("w-4 h-4 transition-all duration-200", activeFormats.strike ? "text-amber-200 scale-110" : "text-gray-400")} />
                   </button>
                 </div>
-                <div className="w-px h-5 mx-1" style={{ background: 'rgba(100, 100, 100, 0.2)' }} />
+                <div className="w-px h-5 mx-1 bg-white/10" />
                 <div className="flex items-center gap-0.5">
                    <button
                      type="button"
-                     className={cn(
-                       "p-1.5 rounded transition-colors",
-                       activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50"
-                     )}
+                     className={cn("p-1.5 rounded transition-colors", activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                      title="Link (⌘K)"
                      onClick={() => {
                        if (activeFormats.link) {
@@ -679,51 +662,42 @@ export default function MessageThread({
                        updateActiveFormats();
                      }}
                    >
-                     <Link2 className="w-4 h-4" style={{ color: activeFormats.link ? '#fbbf24' : '#9ca3af' }} />
+                     <Link2 className={cn("w-4 h-4", activeFormats.link ? "text-amber-300" : "text-gray-400")} />
                    </button>
                    <button
                      type="button"
-                     className={cn(
-                       "p-1.5 rounded transition-colors",
-                       activeFormats.list === 'ordered' ? "bg-amber-500/40" : "hover:bg-gray-700/50"
-                     )}
+                     className={cn("p-1.5 rounded transition-colors", activeFormats.list === 'ordered' ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                      title="Numbered List"
                      onClick={() => {
                        quillRef.current?.getEditor().format('list', activeFormats.list === 'ordered' ? false : 'ordered');
                        updateActiveFormats();
                      }}
                    >
-                     <ListOrdered className="w-4 h-4" style={{ color: activeFormats.list === 'ordered' ? '#fbbf24' : '#9ca3af' }} />
+                     <ListOrdered className={cn("w-4 h-4", activeFormats.list === 'ordered' ? "text-amber-300" : "text-gray-400")} />
                    </button>
                    <button
                      type="button"
-                     className={cn(
-                       "p-1.5 rounded transition-colors",
-                       activeFormats.list === 'bullet' ? "bg-amber-500/40" : "hover:bg-gray-700/50"
-                     )}
+                     className={cn("p-1.5 rounded transition-colors", activeFormats.list === 'bullet' ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                      title="Bullet List"
                      onClick={() => {
                        quillRef.current?.getEditor().format('list', activeFormats.list === 'bullet' ? false : 'bullet');
                        updateActiveFormats();
                      }}
                    >
-                     <List className="w-4 h-4" style={{ color: activeFormats.list === 'bullet' ? '#fbbf24' : '#9ca3af' }} />
+                     <List className={cn("w-4 h-4", activeFormats.list === 'bullet' ? "text-amber-300" : "text-gray-400")} />
                    </button>
                 </div>
-                <div className="w-px h-5 mx-1" style={{ background: 'rgba(100, 100, 100, 0.2)' }} />
+                <div className="w-px h-5 mx-1 bg-white/10" />
                 <button
                    type="button"
-                   className={cn(
-                     "p-1.5 rounded transition-colors",
-                     activeFormats['code-block'] ? "bg-amber-500/40" : "hover:bg-gray-700/50"
-                   )}
+                   className={cn("p-1.5 rounded transition-colors", activeFormats['code-block'] ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                    title="Code Block"
                    onClick={() => {
                      quillRef.current?.getEditor().format('code-block', !activeFormats['code-block']);
                      updateActiveFormats();
                    }}
                  >
-                   <Code className="w-4 h-4" style={{ color: activeFormats['code-block'] ? '#fbbf24' : '#9ca3af' }} />
+                   <Code className={cn("w-4 h-4", activeFormats['code-block'] ? "text-amber-300" : "text-gray-400")} />
                  </button>
               </div>
 
@@ -742,8 +716,7 @@ export default function MessageThread({
                    modules={{ toolbar: false }}
                    formats={quillFormats}
                    placeholder={replyingTo ? "Write a reply..." : "Message #channel"}
-                   className="[&_.ql-container]:border-0 [&_.ql-editor]:min-h-[60px] [&_.ql-editor]:max-h-[150px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-3 [&_.ql-editor]:py-2 [&_.ql-editor.ql-blank::before]:text-gray-600 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-100 [&_.ql-editor]:bg-transparent"
-                    style={{ fontSize: '15px' }}
+                   className="text-[15px] [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[60px] [&_.ql-editor]:max-h-[150px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-3 [&_.ql-editor]:py-2 [&_.ql-editor.ql-blank::before]:text-gray-600 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-100 [&_.ql-editor]:bg-transparent"
                  />
 
                 {/* Mention Popover */}
@@ -757,15 +730,14 @@ export default function MessageThread({
 
               {/* Bottom Action Bar */}
               <div
-                className="flex items-center justify-between px-3 py-2 border-t"
-                style={{ borderColor: 'rgba(100, 100, 100, 0.2)' }}
+                className="flex items-center justify-between px-3 py-2 border-t border-white/10"
                 role="toolbar"
                 aria-label="Message formatting options"
               >
                 <div className="flex items-center gap-1 flex-wrap">
                    {!isPerry && activeCrpStep && (
                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/15 border border-amber-400/30 text-amber-300">
-                       ◆ Step {activeCrpStep}
+                       &#9670; Step {activeCrpStep}
                        <button
                          type="button"
                          onClick={() => setActiveCrpStep(null)}
@@ -786,12 +758,12 @@ export default function MessageThread({
                            className={cn(
                              "px-2.5 py-1 text-xs font-medium rounded border transition-all duration-200",
                              rrfStage === 'FORM'
-                               ? "border-lime-600/40 text-lime-300 hover:bg-lime-600/20"
+                               ? "border-indigo-600/40 text-indigo-300 hover:bg-indigo-600/20"
                                : rrfStage === 'STORM'
-                               ? "border-orange-600/40 text-orange-300 hover:bg-orange-600/20"
+                               ? "border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10"
                                : rrfStage === 'NORM'
-                               ? "border-blue-600/40 text-blue-300 hover:bg-blue-600/20"
-                               : "border-cyan-600/40 text-cyan-300 hover:bg-cyan-600/20"
+                               ? "border-rose-600/40 text-rose-300 hover:bg-rose-600/20"
+                               : "border-[#c9a87c]/60 text-[#e8d4b8] hover:bg-[#c9a87c]/15"
                            )}
                          >
                            {action.label}
@@ -851,7 +823,7 @@ export default function MessageThread({
                   </button>
                   {isPollChannel && (
                     <>
-                      <div className="w-px h-5 mx-1" style={{ background: 'rgba(255,255,255,0.3)' }} />
+                      <div className="w-px h-5 mx-1 bg-white/20" />
                       <button
                         type="button"
                         className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 hover:scale-110 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
@@ -864,7 +836,7 @@ export default function MessageThread({
                   )}
                   {!isPerry && (
                     <>
-                      <div className="w-px h-5 mx-1" style={{ background: 'rgba(255,255,255,0.15)' }} />
+                      <div className="w-px h-5 mx-1 bg-white/10" />
                       <CrpStepPickerButton
                         activeCrpStep={activeCrpStep}
                         onSelect={setActiveCrpStep}
