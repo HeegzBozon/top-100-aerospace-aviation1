@@ -1,10 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 import CRPPipeline from "./CRPPipeline";
-import MilestoneTracker from "./MilestoneTracker";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
 function stageForStep(step) {
@@ -44,9 +41,7 @@ const SPECTRUM_GRADIENTS = [
   "from-blue-500 via-indigo-500 to-blue-500",          // 16/16 - blue-indigo
 ];
 
-export default function TribeCRPHeader({ conversation, isExpanded = false, onToggleExpand }) {
-  const [expanded, setExpanded] = useState(isExpanded);
-  const [selectedStage, setSelectedStage] = useState("FORM");
+export default function TribeCRPHeader({ conversation }) {
   const { theme } = useCommsTheme();
   const queryClient = useQueryClient();
 
@@ -101,19 +96,6 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
 
   if (!conversation) return null;
 
-  const handleToggle = () => {
-    setExpanded(v => !v);
-    onToggleExpand?.();
-  };
-
-  const handleDotClick = () => {
-    // Dots only expand, never collapse
-    if (!expanded) {
-      setExpanded(true);
-      onToggleExpand?.();
-    }
-  };
-
   return (
     <div
       style={{ background: theme.crpBg, borderColor: theme.crpBorder }}
@@ -121,35 +103,13 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
       role="region"
       aria-label="CRP Pipeline"
     >
-      {/* Always-visible milestone timeline - only collapse on outer area, dots expand only */}
-      <div
-        className="px-4 py-3"
-        aria-expanded={expanded}
-        aria-controls="crp-panel"
-      >
-        <div
-          onClick={handleToggle}
-          className="cursor-pointer hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
-        >
-          <MilestoneTracker completedTasks={completedTasksMap} selectedStage={selectedStage} onStageSelect={setSelectedStage} onClickDot={(e) => {
-            e.stopPropagation();
-            handleDotClick();
-          }} />
-        </div>
+      <div id="crp-panel" className="px-4 pb-4 pt-4 space-y-4">
+        <CRPPipeline
+          completedTasks={completedTasksMap}
+          initialStage="FORM"
+          onToggleStep={handleToggleStep}
+        />
       </div>
-
-      {/* Expanded panel with CRP details */}
-      {expanded && (
-        <div id="crp-panel" className="px-4 pb-4 pt-1 space-y-4 border-t border-white/5">
-          <div className="h-px bg-white/5" aria-hidden="true" />
-          <CRPPipeline
-            completedTasks={completedTasksMap}
-            initialStage={selectedStage}
-            onToggleStep={handleToggleStep}
-          />
-        </div>
-      )}
-
     </div>
   );
 }
