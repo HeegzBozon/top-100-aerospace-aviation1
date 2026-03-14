@@ -712,7 +712,32 @@ export default function MessageThread({
                  >
                    <Code className={cn("w-4 h-4", activeFormats['code-block'] ? "text-amber-300" : "text-gray-400")} />
                  </button>
-              </div>
+                 <div className="w-px h-5 mx-1 bg-white/10" />
+                 <button
+                   type="button"
+                   onClick={() => sendDirectMessage('wave')}
+                   className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
+                   title="Send a wave"
+                 >
+                   <span className="text-lg">👋</span>
+                 </button>
+                 <button
+                   type="button"
+                   onClick={() => sendDirectMessage('nudge')}
+                   className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
+                   title="Send a nudge"
+                 >
+                   <span className="text-lg">💬</span>
+                 </button>
+                 <button
+                   type="button"
+                   onClick={() => sendDirectMessage('poke')}
+                   className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
+                   title="Send a poke"
+                 >
+                   <span className="text-lg">🚀</span>
+                 </button>
+                </div>
 
               {/* Text Input Area */}
               <div className="relative" onKeyDown={handleKeyDown}>
@@ -781,8 +806,8 @@ export default function MessageThread({
                              Quick Actions
                            </button>
                          </PopoverTrigger>
-                         <PopoverContent className="w-auto p-2 bg-gray-900 border-gray-700" side="top" align="start">
-                           <div className="flex flex-col gap-1">
+                         <PopoverContent className="w-auto p-2 bg-slate-900 border-slate-700" side="top" align="start">
+                           <div className="flex flex-col gap-0.5">
                              {stageTemplates[rrfStage].map((action, idx) => (
                                <button
                                  key={`${rrfStage}-${idx}`}
@@ -790,7 +815,7 @@ export default function MessageThread({
                                  onClick={() => {
                                    handleQuickAction(action.template);
                                  }}
-                                 className="text-left px-3 py-2 text-xs font-medium rounded hover:bg-gray-800 transition-colors"
+                                 className="text-left px-3 py-2 text-xs font-medium rounded text-slate-100 hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-amber-500"
                                >
                                  {action.label}
                                </button>
@@ -798,31 +823,6 @@ export default function MessageThread({
                            </div>
                          </PopoverContent>
                        </Popover>
-                       <div className="w-px h-5 mx-1 bg-white/20" />
-                       <button
-                         type="button"
-                         onClick={() => sendDirectMessage('wave')}
-                         className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
-                         title="Send a wave"
-                       >
-                         <span className="text-lg">👋</span>
-                       </button>
-                       <button
-                         type="button"
-                         onClick={() => sendDirectMessage('nudge')}
-                         className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
-                         title="Send a nudge"
-                       >
-                         <span className="text-lg">💬</span>
-                       </button>
-                       <button
-                         type="button"
-                         onClick={() => sendDirectMessage('poke')}
-                         className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
-                         title="Send a poke"
-                       >
-                         <span className="text-lg">🚀</span>
-                       </button>
                        <div className="w-px h-5 mx-1 bg-white/20" />
                      </>
                    )}
