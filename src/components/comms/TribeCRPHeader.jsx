@@ -24,7 +24,8 @@ export default function TribeCRPHeader({ conversation }) {
   const [expanded, setExpanded] = useState(true);
   const queryClient = useQueryClient();
 
-  const completedSteps = conversation?.crp_completed_steps || [];
+  // Coerce all stored steps to numbers to prevent string/number comparison mismatch
+  const completedSteps = (conversation?.crp_completed_steps || []).map(Number);
   const currentStage   = conversation?.rrf_stage || "FORM";
   const completedCount = completedSteps.length;
   const stageColor = STAGE_COLORS[currentStage] || STAGE_COLORS.FORM;
@@ -43,10 +44,11 @@ export default function TribeCRPHeader({ conversation }) {
   });
 
   const handleToggleStep = useCallback((step) => {
-    const isCompleted = completedSteps.includes(step);
+    const stepNum = Number(step);
+    const isCompleted = completedSteps.includes(stepNum);
     const nextCompleted = isCompleted
-      ? completedSteps.filter(s => s !== step)
-      : [...completedSteps, step];
+      ? completedSteps.filter(s => s !== stepNum)
+      : [...completedSteps, stepNum];
     const maxCompleted = nextCompleted.length ? Math.max(...nextCompleted) : 0;
     const nextStage = maxCompleted > 0 ? stageForStep(maxCompleted) : "FORM";
     updateConversation.mutate({
