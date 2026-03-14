@@ -17,7 +17,7 @@ import MobileSearch from "./MobileSearch";
 
 import PerryDMThread from "./PerryDMThread";
 import YouDMThread from "./YouDMThread";
-import ThreadControlCenter from "./ThreadControlCenter";
+import TribeCRPHeader from "./TribeCRPHeader";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
 export default function CommsMainView({ onOpenMobileSidebar }) {
@@ -25,6 +25,7 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
   const { theme } = useCommsTheme();
   const queryClient = useQueryClient();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [crpExpanded, setCrpExpanded] = useState(false);
 
   const { data: messages = [], isLoading: msgsLoading } = useQuery({
     queryKey: ["messages", activeConversation?.id],
@@ -219,32 +220,45 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
         <MobileCommsHeader onBack={() => selectConversation(null)} />
       </div>
 
-      {/* DM Persona Header — desktop only, regular DMs */}
+      {/* Unified Header with CRP Module */}
       {activeConversation?.type === 'dm' && (
-        <div className="hidden md:flex items-center gap-4 px-5 py-3.5 border-b shrink-0" style={{ background: theme.headerBg, borderColor: theme.headerBorder }}>
-          {/* Avatar with glow ring */}
-          <div className="relative shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e3a5a] to-[#4a90b8] flex items-center justify-center text-white text-sm font-bold ring-2 ring-amber-400/20 shadow-lg shadow-amber-400/10">
-              {dmInitials}
+        <div className="hidden md:flex flex-col shrink-0" style={{ background: theme.headerBg, borderColor: theme.headerBorder }}>
+          {/* DM Persona Header */}
+          <div className="flex items-center gap-4 px-5 py-3.5 border-b" style={{ borderColor: theme.headerBorder }}>
+            {/* Avatar with glow ring */}
+            <div className="relative shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e3a5a] to-[#4a90b8] flex items-center justify-center text-white text-sm font-bold ring-2 ring-amber-400/20 shadow-lg shadow-amber-400/10">
+                {dmInitials}
+              </div>
+              {/* Online indicator */}
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0d1e33] shadow-sm shadow-emerald-400/50" />
             </div>
-            {/* Online indicator */}
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0d1e33] shadow-sm shadow-emerald-400/50" />
+            <div className="min-w-0 flex-1">
+              <p className="font-bold text-white text-sm leading-tight truncate tracking-tight">{dmDisplayName}</p>
+              <p className="text-[11px] text-white/35 leading-tight truncate font-mono">{otherParticipantEmail}</p>
+            </div>
+            {/* Ambient decoration */}
+            <div className="shrink-0 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400/40 animate-pulse" />
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-white/20">Direct</span>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="font-bold text-white text-sm leading-tight truncate tracking-tight">{dmDisplayName}</p>
-            <p className="text-[11px] text-white/35 leading-tight truncate font-mono">{otherParticipantEmail}</p>
-          </div>
-          {/* Ambient decoration */}
-          <div className="shrink-0 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400/40 animate-pulse" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-white/20">Direct</span>
+
+          {/* CRP Module */}
+          <div
+            className="border-t"
+            style={{ borderColor: theme.headerBorder }}
+            onClick={() => setCrpExpanded(!crpExpanded)}
+            role="region"
+            aria-label="CRP Pipeline Module"
+          >
+            <TribeCRPHeader
+              conversation={activeConversation}
+              isExpanded={crpExpanded}
+              onToggleExpand={() => setCrpExpanded(!crpExpanded)}
+            />
           </div>
         </div>
-      )}
-
-      {/* Thread Control Center (DMs Only) */}
-      {activeConversation?.type === 'dm' && (
-        <ThreadControlCenter conversation={activeConversation} currentUserEmail={user?.email} />
       )}
 
       {/* Special landing pages for specific channels */}
