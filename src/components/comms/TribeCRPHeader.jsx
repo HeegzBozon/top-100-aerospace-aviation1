@@ -42,30 +42,39 @@ const SPECTRUM_GRADIENTS = [
 ];
 
 export default function TribeCRPHeader({ conversation }) {
+  const [expanded, setExpanded] = useState(false);
   const { theme } = useCommsTheme();
   const queryClient = useQueryClient();
 
-  // --- Optimistic local state so clicks update instantly ---
   const [localCompleted, setLocalCompleted] = useState(
     () => (conversation?.crp_completed_steps || []).map(Number)
   );
 
-  // Sync when the conversation prop changes (e.g. after remote refresh)
   useEffect(() => {
     setLocalCompleted((conversation?.crp_completed_steps || []).map(Number));
   }, [conversation?.crp_completed_steps]);
-
-  const localStage = localCompleted.length
-    ? stageForStep(Math.max(...localCompleted))
-    : "FORM";
-
-  const completedCount = localCompleted.length;
-  const stageColor = STAGE_COLORS[localStage] || STAGE_COLORS.FORM;
 
   const completedTasksMap = localCompleted.reduce((acc, s) => {
     acc[s] = true;
     return acc;
   }, {});
+
+  // Check which stages are complete
+  const stageComplete = {
+    FORM: localCompleted.some(s => s >= 1 && s <= 4) && [1,2,3,4].every(s => localCompleted.includes(s)),
+    STORM: localCompleted.some(s => s >= 5 && s <= 8) && [5,6,7,8].every(s => localCompleted.includes(s)),
+    NORM: localCompleted.some(s => s >= 9 && s <= 12) && [9,10,11,12].every(s => localCompleted.includes(s)),
+    PERFORM: localCompleted.some(s => s >= 13 && s <= 16) && [13,14,15,16].every(s => localCompleted.includes(s)),
+  };
+
+  // Unlock stages based on completion
+  const unlockedStages = ["FORM"];
+  if (stageComplete.FORM) unlockedStages.push("STORM");
+  if (stageComplete.STORM) unlockedStages.push("NORM");
+  if (stageComplete.NORM) unlockedStages.push("PERFORM");
+
+  const totalCompleted = localCompleted.length;
+  const stageColor = STAGE_COLORS.FORM;
 
   const updateConversation = useMutation({
     mutationFn: (patch) => base44.entities.Conversation.update(conversation.id, patch),
@@ -83,10 +92,7 @@ export default function TribeCRPHeader({ conversation }) {
     const maxCompleted = nextCompleted.length ? Math.max(...nextCompleted) : 0;
     const nextStage = maxCompleted > 0 ? stageForStep(maxCompleted) : "FORM";
 
-    // Optimistic update first
     setLocalCompleted(nextCompleted);
-
-    // Then persist
     updateConversation.mutate({
       crp_completed_steps: nextCompleted,
       crp_current_step: maxCompleted + 1,
@@ -103,13 +109,73 @@ export default function TribeCRPHeader({ conversation }) {
       role="region"
       aria-label="CRP Pipeline"
     >
-      <div id="crp-panel" className="px-4 pb-4 pt-4 space-y-4">
-        <CRPPipeline
-          completedTasks={completedTasksMap}
-          initialStage="FORM"
-          onToggleStep={handleToggleStep}
-        />
-      </div>
+      {/* Header - always visible, clickable to toggle */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full px-4 py-3 hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
+        aria-expanded={expanded}
+        aria-controls="crp-expanded-panel"
+      >
+        <div className="flex items-center justify-between">
+          <span className={cn("text-xs font-bold uppercase tracking-wider", stageColor.pill)}>
+            Progress: {totalCompleted}/16
+          </span>
+          <span className="text-xs text-white/50">{expanded ? "▼" : "▶"}</span>
+        </div>
+
+        {/* Progress bar with stage dots */}
+        <div className="mt-3 space-y-2">
+          <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden relative">
+            <div
+              className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-indigo-400 via-rose-400 to-amber-300"
+              style={{ 
+                width: `${Math.round((totalCompleted / 16) * 100)}%`,
+                boxShadow: `0 0 12px rgba(255, 255, 255, 0.2)`
+              }}
+            />
+            {/* Stage dots on progress bar */}
+            {["FORM", "STORM", "NORM", "PERFORM"].map((stage, idx) => {
+              const dotPos = ((idx + 1) * 25);
+              const isComplete = stageComplete[stage];
+              const isUnlocked = unlockedStages.includes(stage);
+              return (
+                <div
+                  key={stage}
+                  className={cn(
+                    "absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 transition-all duration-300",
+                    isComplete
+                      ? "border-white/80 bg-white/40 shadow-lg shadow-white/50"
+                      : isUnlocked
+                      ? "border-white/50 bg-white/20"
+                      : "border-white/20 bg-white/5"
+                  )}
+                  style={{ left: `${dotPos}%`, transform: "translate(-50%, -50%)" }}
+                  title={`${stage}: ${isComplete ? "Complete" : isUnlocked ? "Unlocked" : "Locked"}`}
+                  aria-hidden="true"
+                />
+              );
+            })}
+          </div>
+          <div className="flex justify-between text-[10px] text-white/40">
+            <span>FORM</span>
+            <span>STORM</span>
+            <span>NORM</span>
+            <span>PERFORM</span>
+          </div>
+        </div>
+      </button>
+
+      {/* Expanded panel */}
+      {expanded && (
+        <div id="crp-expanded-panel" className="px-4 pb-4 pt-1 space-y-4 border-t border-white/5">
+          <CRPPipeline
+            completedTasks={completedTasksMap}
+            initialStage="FORM"
+            onToggleStep={handleToggleStep}
+            unlockedStages={unlockedStages}
+          />
+        </div>
+      )}
     </div>
   );
 }

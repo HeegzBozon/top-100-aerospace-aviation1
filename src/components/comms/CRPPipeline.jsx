@@ -72,7 +72,7 @@ const CRP_STAGES = {
 
 const STAGE_KEYS = ["FORM", "STORM", "NORM", "PERFORM"];
 
-export default function CRPPipeline({ completedTasks: externalCompleted, initialStage, onToggleStep }) {
+export default function CRPPipeline({ completedTasks: externalCompleted, initialStage, onToggleStep, unlockedStages = [] }) {
   const isControlled = !!onToggleStep;
   const [selectedStage, setSelectedStage] = useState(initialStage || "FORM");
   const [internalCompleted, setInternalCompleted] = useState({});
@@ -80,11 +80,11 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
   const completedTasks = isControlled ? (externalCompleted || {}) : internalCompleted;
 
   const config = CRP_STAGES[selectedStage];
-  // Track total progress across ALL 16 steps, not just current stage
   const totalSteps = 16;
   const totalCompleted = Object.values(completedTasks).filter(Boolean).length;
   const progressPct = Math.round((totalCompleted / totalSteps) * 100);
   const stageCompletedCount = config.tasks.filter(t => completedTasks[t.step]).length;
+  const isStageUnlocked = unlockedStages.length === 0 || unlockedStages.includes(selectedStage);
 
   const toggleTask = (step) => {
     if (isControlled) {
@@ -97,6 +97,35 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
   return (
     <div className="space-y-3" role="region" aria-label="CRP pipeline stages">
 
+
+      {/* Stage tabs */}
+      <div className="flex gap-2 border-b border-white/10">
+        {STAGE_KEYS.map(stage => {
+          const isUnlocked = unlockedStages.length === 0 || unlockedStages.includes(stage);
+          const isActive = selectedStage === stage;
+          return (
+            <button
+              key={stage}
+              onClick={() => isUnlocked && setSelectedStage(stage)}
+              disabled={!isUnlocked}
+              className={cn(
+                "px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200",
+                isActive
+                  ? cn("border-b-2 pb-1.5", {
+                      "border-indigo-400 text-indigo-300": stage === "FORM",
+                      "border-amber-400 text-amber-300": stage === "STORM",
+                      "border-rose-400 text-rose-300": stage === "NORM",
+                      "border-yellow-300 text-yellow-200": stage === "PERFORM",
+                    })
+                  : "text-white/50 hover:text-white/70",
+                !isUnlocked && "opacity-40 cursor-not-allowed"
+              )}
+            >
+              {stage} {!isUnlocked && "🔒"}
+            </button>
+          );
+        })}
+      </div>
 
       {/* Stage Panel */}
       <div
