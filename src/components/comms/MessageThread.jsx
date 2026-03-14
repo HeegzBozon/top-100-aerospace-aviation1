@@ -112,7 +112,7 @@ function MessageBubble({ message, isOwn, showAvatar, currentUserEmail, onReact, 
             )}
             {crp_step && (
               <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-400/15 border border-amber-400/30 text-amber-300 shrink-0">
-                ◆ {crp_step}
+                &#9670; {crp_step}
               </span>
             )}
             <span className="text-gray-500 shrink-0">
