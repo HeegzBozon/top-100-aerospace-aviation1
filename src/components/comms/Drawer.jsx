@@ -7,10 +7,12 @@ import { ChannelsList } from "./ChannelsList";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
 export default function Drawer({ currentPageName, onMobileClose, user }) {
+  const { mode, theme, toggleMode } = useCommsTheme();
   const {
     channels,
     dms,
@@ -72,9 +74,9 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
   };
 
   return (
-    <div className="h-full flex flex-col text-white w-full md:w-72 border-r" style={{ background: 'linear-gradient(180deg, #0f1f33 0%, #1a2f47 100%)', borderColor: 'rgba(201, 168, 124, 0.15)' }}>
+    <div className="h-full flex flex-col w-full md:w-72 border-r" style={{ background: theme.drawerBg, borderColor: theme.drawerBorder, color: mode === 'light' ? '#1e3a5a' : 'white' }}>
       {/* Header */}
-      <div className="relative px-4 py-6 md:py-8 border-b flex flex-col items-center backdrop-blur-sm overflow-hidden" style={{ background: 'rgba(201, 168, 124, 0.08)', borderColor: 'rgba(201, 168, 124, 0.2)' }}>
+      <div className="relative px-4 py-6 md:py-8 border-b flex flex-col items-center backdrop-blur-sm overflow-hidden" style={{ background: theme.drawerHeaderBg, borderColor: theme.drawerHeaderBorder }}>
         {/* Subtle grid pattern overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.18]" style={{ backgroundImage: 'linear-gradient(rgba(201,168,124,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,124,0.8) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(201,168,124,0.06) 0%, transparent 70%)' }} />
@@ -84,11 +86,22 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
           className="w-48 h-48 object-contain"
         />
 
+        {/* Theme toggle */}
+        <button
+          onClick={toggleMode}
+          className="absolute top-3 right-3 p-1.5 rounded-lg transition-all duration-200 hover:scale-110"
+          style={{ background: 'rgba(201,168,124,0.15)', color: '#c9a87c' }}
+          aria-label={`Switch to ${theme.label}`}
+          title={theme.label}
+        >
+          {mode === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+
         {/* Close button for mobile */}
         {onMobileClose && (
           <button
             onClick={onMobileClose}
-            className="absolute top-4 right-4 md:hidden p-1.5 hover:bg-gray-800 rounded transition-colors"
+            className="absolute top-4 left-4 md:hidden p-1.5 hover:bg-gray-800 rounded transition-colors"
             aria-label="Close drawer"
           >
             <X className="w-5 h-5" />
