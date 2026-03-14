@@ -179,6 +179,8 @@ import SponsorPitch from './pages/SponsorPitch';
 import SponsorResources from './pages/SponsorResources';
 import Sponsors from './pages/Sponsors';
 import Tips from './pages/Tips';
+import AdminAction from './pages/AdminAction';
+import FactoryReset from './pages/FactoryReset';
 import __Layout from './Layout.jsx';
 
 
@@ -315,6 +317,8 @@ export const PAGES = {
     "SponsorResources": SponsorResources,
     "Sponsors": Sponsors,
     "Tips": Tips,
+    "AdminAction": AdminAction,
+    "FactoryReset": FactoryReset,
 }
 
 export const pagesConfig = {
