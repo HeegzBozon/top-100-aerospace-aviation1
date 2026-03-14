@@ -60,19 +60,8 @@ export default function TribeCRPHeader({ conversation }) {
     return acc;
   }, {});
 
-  // Check which stages are complete
-  const stageComplete = {
-    FORM: localCompleted.some(s => s >= 1 && s <= 4) && [1,2,3,4].every(s => localCompleted.includes(s)),
-    STORM: localCompleted.some(s => s >= 5 && s <= 8) && [5,6,7,8].every(s => localCompleted.includes(s)),
-    NORM: localCompleted.some(s => s >= 9 && s <= 12) && [9,10,11,12].every(s => localCompleted.includes(s)),
-    PERFORM: localCompleted.some(s => s >= 13 && s <= 16) && [13,14,15,16].every(s => localCompleted.includes(s)),
-  };
-
-  // Unlock stages based on completion
-  const unlockedStages = ["FORM"];
-  if (stageComplete.FORM) unlockedStages.push("STORM");
-  if (stageComplete.STORM) unlockedStages.push("NORM");
-  if (stageComplete.NORM) unlockedStages.push("PERFORM");
+  // Find the highest completed step to determine which steps are available
+  const highestCompleted = localCompleted.length ? Math.max(...localCompleted) : 0;
 
   const totalCompleted = localCompleted.length;
   const stageColor = STAGE_COLORS.FORM;
@@ -173,7 +162,7 @@ export default function TribeCRPHeader({ conversation }) {
             completedTasks={completedTasksMap}
             initialStage="FORM"
             onToggleStep={handleToggleStep}
-            unlockedStages={unlockedStages}
+            highestCompleted={highestCompleted}
           />
         </div>
       )}
