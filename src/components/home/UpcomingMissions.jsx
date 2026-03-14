@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Loader2, Calendar } from 'lucide-react';
-import { BRAND_COLORS } from '@/components/core/brandConstants';
+import { brandColors as BRAND_COLORS } from '@/components/core/brandTheme';
 
 export default function UpcomingMissions() {
   const [missions, setMissions] = useState([]);
