@@ -750,46 +750,7 @@ export default function MessageThread({
                         </button>
                       </span>
                     )}
-                   {!isPerry && (
-                     <>
-                       <Popover>
-                         <PopoverTrigger asChild>
-                           <button
-                             type="button"
-                             className={cn(
-                               "px-2.5 py-1 text-xs font-medium rounded border transition-all duration-200",
-                               rrfStage === 'FORM'
-                                 ? "border-indigo-600/40 text-indigo-300 hover:bg-indigo-600/20"
-                                 : rrfStage === 'STORM'
-                                 ? "border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10"
-                                 : rrfStage === 'NORM'
-                                 ? "border-rose-600/40 text-rose-300 hover:bg-rose-600/20"
-                                 : "border-[#c9a87c]/60 text-[#e8d4b8] hover:bg-[#c9a87c]/15"
-                             )}
-                           >
-                             Quick Actions
-                           </button>
-                         </PopoverTrigger>
-                         <PopoverContent className="w-auto p-2 bg-slate-900 border-slate-700" side="top" align="start">
-                           <div className="flex flex-col gap-0.5">
-                             {stageTemplates[rrfStage].map((action, idx) => (
-                               <button
-                                 key={`${rrfStage}-${idx}`}
-                                 type="button"
-                                 onClick={() => {
-                                   handleQuickAction(action.template);
-                                 }}
-                                 className="text-left px-3 py-2 text-xs font-medium rounded text-slate-100 hover:bg-slate-700 transition-colors focus-visible:outline-2 focus-visible:outline-amber-500"
-                               >
-                                 {action.label}
-                               </button>
-                             ))}
-                           </div>
-                         </PopoverContent>
-                       </Popover>
-                       <div className="w-px h-5 mx-1 bg-white/20" />
-                     </>
-                   )}
+
                    <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
                      <PopoverTrigger asChild>
                        <button 
@@ -853,17 +814,7 @@ export default function MessageThread({
                       </button>
                     </>
                   )}
-                  {!isPerry && (
-                    <>
-                      <div className="w-px h-5 mx-1 bg-white/10 hidden sm:block" />
-                      <div className="hidden sm:block">
-                        <CrpStepPickerButton
-                          activeCrpStep={activeCrpStep}
-                          onSelect={setActiveCrpStep}
-                        />
-                      </div>
-                    </>
-                  )}
+
                   </div>
 
                 <div className="flex items-center gap-2 ml-auto shrink-0">
