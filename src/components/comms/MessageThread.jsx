@@ -584,10 +584,7 @@ export default function MessageThread({
               aria-label="Message formatting and input"
             >
               {/* Formatting Toolbar with Active States */}
-              <div
-                className="flex items-center gap-1 px-3 py-2 border-b"
-                style={{ borderColor: 'rgba(100, 100, 100, 0.2)' }}
-              >
+              <div className="flex items-center gap-1 px-3 py-2 border-b border-white/10">
                 <div className="flex items-center gap-0.5">
                   <button
                     type="button"
