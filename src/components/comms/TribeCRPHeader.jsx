@@ -23,8 +23,8 @@ const STAGE_COLORS = {
 
 const PROGRESS_WIDTHS = ["w-0","w-[6%]","w-[13%]","w-[19%]","w-[25%]","w-[31%]","w-[38%]","w-[44%]","w-[50%]","w-[56%]","w-[63%]","w-[69%]","w-[75%]","w-[81%]","w-[88%]","w-[94%]","w-full"];
 
-export default function TribeCRPHeader({ conversation }) {
-  const [expanded, setExpanded] = useState(true);
+export default function TribeCRPHeader({ conversation, isExpanded = false, onToggleExpand }) {
+  const [expanded, setExpanded] = useState(isExpanded);
   const { theme } = useCommsTheme();
   const queryClient = useQueryClient();
 
@@ -79,16 +79,21 @@ export default function TribeCRPHeader({ conversation }) {
 
   if (!conversation) return null;
 
+  const handleToggle = () => {
+    setExpanded(v => !v);
+    onToggleExpand?.();
+  };
+
   return (
     <div
       style={{ background: theme.crpBg, borderColor: theme.crpBorder }}
-      className="border-b backdrop-blur-sm"
+      className="backdrop-blur-sm"
       role="region"
       aria-label="CRP Pipeline"
     >
       {/* Collapsed bar — always visible */}
       <button
-        onClick={() => setExpanded(v => !v)}
+        onClick={handleToggle}
         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
         aria-expanded={expanded}
         aria-controls="crp-panel"
