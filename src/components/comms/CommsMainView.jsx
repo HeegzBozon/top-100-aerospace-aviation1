@@ -222,9 +222,9 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
 
       {/* Unified Header with CRP Module */}
       {activeConversation?.type === 'dm' && (
-        <div className="hidden md:flex flex-col shrink-0" style={{ background: theme.headerBg, borderColor: theme.headerBorder }}>
+        <div className="hidden md:flex flex-col shrink-0 border-b" style={{ background: theme.headerBg, borderColor: theme.headerBorder }}>
           {/* DM Persona Header */}
-          <div className="flex items-center gap-4 px-5 py-3.5 border-b" style={{ borderColor: theme.headerBorder }}>
+          <div className="flex items-center gap-4 px-5 py-3.5">
             {/* Avatar with glow ring */}
             <div className="relative shrink-0">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e3a5a] to-[#4a90b8] flex items-center justify-center text-white text-sm font-bold ring-2 ring-amber-400/20 shadow-lg shadow-amber-400/10">
@@ -246,8 +246,6 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
 
           {/* CRP Module */}
           <div
-            className="border-t"
-            style={{ borderColor: theme.headerBorder }}
             onClick={() => setCrpExpanded(!crpExpanded)}
             role="region"
             aria-label="CRP Pipeline Module"
