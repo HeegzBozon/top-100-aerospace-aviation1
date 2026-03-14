@@ -18,11 +18,11 @@ const PROFILE_KEYWORDS = /update.*profile|edit.*profile|change.*bio|update.*bio|
 // ── Date chip ───────────────────────────────────────────────────────────────
 function DateChip({ date }) {
   const d = new Date(date);
-  let label = isToday(d) ? 'Today' : isYesterday(d) ? 'Yesterday' : format(d, 'EEEE, MMMM do');
+  const label = isToday(d) ? 'Today' : isYesterday(d) ? 'Yesterday' : format(d, 'EEEE, MMMM do');
   return (
     <div className="flex items-center justify-center my-4">
       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-      <span className="mx-4 px-4 py-1 rounded-full text-[11px] font-semibold text-slate-500 bg-white border border-slate-100 shadow-sm">
+      <span className="mx-4 px-4 py-1 rounded-full text-[11px] font-semibold text-gray-400 bg-white border border-gray-100 shadow-sm">
         {label}
       </span>
       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
