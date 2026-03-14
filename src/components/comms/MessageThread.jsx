@@ -455,7 +455,7 @@ export default function MessageThread({
   };
 
   return (
-    <form className="flex flex-col h-full overflow-x-hidden bg-gradient-to-b from-[#0f1f33]/60 to-black/80" onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+    <form className="flex flex-col h-full overflow-x-hidden" style={{ background: 'linear-gradient(135deg, #0f1d2d 0%, #152a42 50%, #1e3a5a 100%)' }} onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
       {/* Skip to main content link */}
       <a href="#message-input" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-amber-600 focus:text-white focus:px-4 focus:py-2">
         Skip to message input
