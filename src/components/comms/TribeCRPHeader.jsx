@@ -23,6 +23,27 @@ const STAGE_COLORS = {
 
 const PROGRESS_WIDTHS = ["w-0","w-[6%]","w-[13%]","w-[19%]","w-[25%]","w-[31%]","w-[38%]","w-[44%]","w-[50%]","w-[56%]","w-[63%]","w-[69%]","w-[75%]","w-[81%]","w-[88%]","w-[94%]","w-full"];
 
+// Vibrant spectrum gradient — high contrast, changes through progression
+const SPECTRUM_GRADIENTS = [
+  "from-indigo-500 via-indigo-500 to-indigo-500",      // 0/16 - indigo
+  "from-indigo-500 via-purple-500 to-indigo-500",      // 1/16
+  "from-purple-500 via-violet-500 to-purple-500",      // 2/16
+  "from-violet-500 via-fuchsia-500 to-violet-500",     // 3/16
+  "from-fuchsia-500 via-pink-500 to-fuchsia-500",      // 4/16 - pink
+  "from-pink-500 via-rose-500 to-pink-500",            // 5/16
+  "from-rose-500 via-red-500 to-rose-500",             // 6/16
+  "from-red-500 via-orange-500 to-red-500",            // 7/16 - red-orange
+  "from-orange-500 via-amber-500 to-orange-500",       // 8/16 - orange
+  "from-amber-500 via-yellow-400 to-amber-500",        // 9/16
+  "from-yellow-400 via-lime-400 to-yellow-400",        // 10/16
+  "from-lime-400 via-green-500 to-lime-400",           // 11/16
+  "from-green-500 via-emerald-500 to-green-500",       // 12/16 - green
+  "from-emerald-500 via-teal-500 to-emerald-500",      // 13/16
+  "from-teal-500 via-cyan-500 to-teal-500",            // 14/16
+  "from-cyan-500 via-blue-500 to-cyan-500",            // 15/16
+  "from-blue-500 via-indigo-500 to-blue-500",          // 16/16 - blue-indigo
+];
+
 export default function TribeCRPHeader({ conversation, isExpanded = false, onToggleExpand }) {
   const [expanded, setExpanded] = useState(isExpanded);
   const { theme } = useCommsTheme();
@@ -98,14 +119,17 @@ export default function TribeCRPHeader({ conversation, isExpanded = false, onTog
         aria-expanded={expanded}
         aria-controls="crp-panel"
       >
-        {/* Progress bar track */}
-        <div className="relative flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+        {/* Progress bar track with spectrum gradient */}
+        <div className="relative flex-1 h-2 rounded-full bg-black/20 overflow-hidden shadow-lg shadow-black/40">
           <div
             className={cn(
-              "absolute inset-y-0 left-0 rounded-full transition-all duration-500",
-              stageColor.bar,
+              "absolute inset-y-0 left-0 rounded-full transition-all duration-700 bg-gradient-to-r",
+              SPECTRUM_GRADIENTS[Math.min(completedCount, 16)],
               PROGRESS_WIDTHS[Math.min(completedCount, 16)]
             )}
+            style={{
+              boxShadow: completedCount > 0 ? `0 0 16px ${["#6366f1","#a855f7","#8b5cf6","#d946ef","#ec4899","#f43f5e","#ef4444","#f97316","#f59e0b","#facc15","#84cc16","#22c55e","#10b981","#14b8a6","#06b6d4","#3b82f6","#6366f1"][Math.min(completedCount, 16)]}40` : "none"
+            }}
           />
         </div>
 
