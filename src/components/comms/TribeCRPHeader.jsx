@@ -74,8 +74,27 @@ export default function TribeCRPHeader({ conversation }) {
         {/* Progress bar track */}
         <div className="relative flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
           <div
-            className={cn("absolute inset-y-0 left-0 rounded-full transition-all duration-500", stageColor.bar)}
-            style={{ width: `${Math.round((completedCount / 16) * 100)}%` }}
+            className={cn(
+              "absolute inset-y-0 left-0 rounded-full transition-all duration-500",
+              stageColor.bar,
+              completedCount === 0  && "w-0",
+              completedCount === 1  && "w-[6%]",
+              completedCount === 2  && "w-[13%]",
+              completedCount === 3  && "w-[19%]",
+              completedCount === 4  && "w-[25%]",
+              completedCount === 5  && "w-[31%]",
+              completedCount === 6  && "w-[38%]",
+              completedCount === 7  && "w-[44%]",
+              completedCount === 8  && "w-[50%]",
+              completedCount === 9  && "w-[56%]",
+              completedCount === 10 && "w-[63%]",
+              completedCount === 11 && "w-[69%]",
+              completedCount === 12 && "w-[75%]",
+              completedCount === 13 && "w-[81%]",
+              completedCount === 14 && "w-[88%]",
+              completedCount === 15 && "w-[94%]",
+              completedCount === 16 && "w-full",
+            )}
           />
         </div>
 
