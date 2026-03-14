@@ -90,7 +90,7 @@ const SPECTRUM_GRADIENTS = [
 
 const GLOW_COLORS = ["#6366f1","#a855f7","#8b5cf6","#d946ef","#ec4899","#f43f5e","#ef4444","#f97316","#f59e0b","#facc15","#84cc16","#22c55e","#10b981","#14b8a6","#06b6d4","#3b82f6","#6366f1"];
 
-export default function MilestoneTracker({ completedTasks = {}, onStageSelect, selectedStage }) {
+export default function MilestoneTracker({ completedTasks = {}, onStageSelect, selectedStage, onClickDot }) {
   const completedCount = Object.values(completedTasks).filter(Boolean).length;
   const completedStages = new Set(Object.entries(completedTasks).filter(([_, isCompleted]) => isCompleted).map(([step]) => {
     const stepNum = Number(step);
@@ -179,7 +179,11 @@ export default function MilestoneTracker({ completedTasks = {}, onStageSelect, s
 
               {/* Stage dot - clickable */}
               <button
-                onClick={() => onStageSelect?.(stageItem.stage)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClickDot?.(e);
+                  onStageSelect?.(stageItem.stage);
+                }}
                 className="relative group flex-shrink-0 z-10"
                 aria-label={`${stageItem.name}${isStageCompleted ? " (completed)" : ""}`}
               >

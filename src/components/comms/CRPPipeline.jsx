@@ -140,21 +140,27 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
                 title={task.desc}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 p-2 rounded-md",
-                  "border min-h-[44px] transition-colors duration-200",
+                  "border min-h-[44px] transition-all duration-300",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60",
+                  "hover:scale-105 active:scale-95",
                   isCompleted
-                    ? "bg-white/10 border-white/25"
+                    ? cn(config.bg, "border-white/30 shadow-lg", {
+                      "shadow-indigo-500/20": selectedStage === "FORM",
+                      "shadow-amber-500/20": selectedStage === "STORM",
+                      "shadow-rose-500/20": selectedStage === "NORM",
+                      "shadow-amber-400/20": selectedStage === "PERFORM",
+                    })
                     : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
                 )}
               >
                 {isCompleted ? (
-                  <CheckCircle2 className={cn("w-3.5 h-3.5 shrink-0", config.icon)} aria-hidden="true" />
+                  <CheckCircle2 className={cn("w-3.5 h-3.5 shrink-0 animate-pulse", config.icon)} aria-hidden="true" />
                 ) : (
                   <Circle className="w-3.5 h-3.5 shrink-0 text-white/30" aria-hidden="true" />
                 )}
                 <p className={cn(
-                  "text-xs font-semibold leading-tight text-center break-words w-full",
-                  isCompleted ? "text-white/40 line-through" : "text-white/80"
+                  "text-xs font-semibold leading-tight text-center break-words w-full transition-all duration-300",
+                  isCompleted ? "text-white/40 line-through" : "text-white/80 group-hover:text-white/100"
                 )}>
                   {task.name}
                 </p>
