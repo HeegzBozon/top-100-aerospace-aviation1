@@ -238,18 +238,19 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
       )}
 
       {/* Special landing pages for specific channels */}
-      {isWelcomeRulesChannel ? (
-        <WelcomeRulesLanding />
-      ) : isStatusChannel ? (
-        <CommsOverview />
-      ) : isGettingStartedChannel ? (
-        <GettingStartedLanding />
-      ) : isIndexChannel ? (
-        <IndexLanding />
-      ) : isPostFeedChannel ? (
-        <ChannelPostFeed conversation={activeConversation} currentUser={user} />
-      ) : (
-        <MessageThread
+      {activeConversation?.type === 'channel' && (
+        isWelcomeRulesChannel ? (
+          <WelcomeRulesLanding />
+        ) : isStatusChannel ? (
+          <CommsOverview />
+        ) : isGettingStartedChannel ? (
+          <GettingStartedLanding />
+        ) : isIndexChannel ? (
+          <IndexLanding />
+        ) : isPostFeedChannel ? (
+          <ChannelPostFeed conversation={activeConversation} currentUser={user} />
+        ) : (
+          <MessageThread
            messages={messages}
            currentUserEmail={user?.email}
            currentUserRole={user?.role}
@@ -289,11 +290,12 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
              queryClient.invalidateQueries(["polls", activeConversation?.id]);
            }}
            isLoading={sendMessageMutation.isPending}
-         />
-      )}
+           />
+           )
+           )}
 
-      {/* Mobile Search - no dock inside open DM (iOS-native pattern) */}
-      <MobileSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
-    </div>
-  );
-}
+           {/* Mobile Search - no dock inside open DM (iOS-native pattern) */}
+           <MobileSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
+           </div>
+           );
+           }
