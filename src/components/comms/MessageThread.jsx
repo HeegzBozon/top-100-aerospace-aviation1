@@ -643,14 +643,11 @@ export default function MessageThread({
                     <Strikethrough className={cn("w-4 h-4 transition-all duration-200", activeFormats.strike ? "text-amber-200 scale-110" : "text-gray-400")} />
                   </button>
                 </div>
-                <div className="w-px h-5 mx-1" style={{ background: 'rgba(100, 100, 100, 0.2)' }} />
+                <div className="w-px h-5 mx-1 bg-white/10" />
                 <div className="flex items-center gap-0.5">
                    <button
                      type="button"
-                     className={cn(
-                       "p-1.5 rounded transition-colors",
-                       activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50"
-                     )}
+                     className={cn("p-1.5 rounded transition-colors", activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                      title="Link (⌘K)"
                      onClick={() => {
                        if (activeFormats.link) {
@@ -662,51 +659,42 @@ export default function MessageThread({
                        updateActiveFormats();
                      }}
                    >
-                     <Link2 className="w-4 h-4" style={{ color: activeFormats.link ? '#fbbf24' : '#9ca3af' }} />
+                     <Link2 className={cn("w-4 h-4", activeFormats.link ? "text-amber-300" : "text-gray-400")} />
                    </button>
                    <button
                      type="button"
-                     className={cn(
-                       "p-1.5 rounded transition-colors",
-                       activeFormats.list === 'ordered' ? "bg-amber-500/40" : "hover:bg-gray-700/50"
-                     )}
+                     className={cn("p-1.5 rounded transition-colors", activeFormats.list === 'ordered' ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                      title="Numbered List"
                      onClick={() => {
                        quillRef.current?.getEditor().format('list', activeFormats.list === 'ordered' ? false : 'ordered');
                        updateActiveFormats();
                      }}
                    >
-                     <ListOrdered className="w-4 h-4" style={{ color: activeFormats.list === 'ordered' ? '#fbbf24' : '#9ca3af' }} />
+                     <ListOrdered className={cn("w-4 h-4", activeFormats.list === 'ordered' ? "text-amber-300" : "text-gray-400")} />
                    </button>
                    <button
                      type="button"
-                     className={cn(
-                       "p-1.5 rounded transition-colors",
-                       activeFormats.list === 'bullet' ? "bg-amber-500/40" : "hover:bg-gray-700/50"
-                     )}
+                     className={cn("p-1.5 rounded transition-colors", activeFormats.list === 'bullet' ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                      title="Bullet List"
                      onClick={() => {
                        quillRef.current?.getEditor().format('list', activeFormats.list === 'bullet' ? false : 'bullet');
                        updateActiveFormats();
                      }}
                    >
-                     <List className="w-4 h-4" style={{ color: activeFormats.list === 'bullet' ? '#fbbf24' : '#9ca3af' }} />
+                     <List className={cn("w-4 h-4", activeFormats.list === 'bullet' ? "text-amber-300" : "text-gray-400")} />
                    </button>
                 </div>
-                <div className="w-px h-5 mx-1" style={{ background: 'rgba(100, 100, 100, 0.2)' }} />
+                <div className="w-px h-5 mx-1 bg-white/10" />
                 <button
                    type="button"
-                   className={cn(
-                     "p-1.5 rounded transition-colors",
-                     activeFormats['code-block'] ? "bg-amber-500/40" : "hover:bg-gray-700/50"
-                   )}
+                   className={cn("p-1.5 rounded transition-colors", activeFormats['code-block'] ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                    title="Code Block"
                    onClick={() => {
                      quillRef.current?.getEditor().format('code-block', !activeFormats['code-block']);
                      updateActiveFormats();
                    }}
                  >
-                   <Code className="w-4 h-4" style={{ color: activeFormats['code-block'] ? '#fbbf24' : '#9ca3af' }} />
+                   <Code className={cn("w-4 h-4", activeFormats['code-block'] ? "text-amber-300" : "text-gray-400")} />
                  </button>
               </div>
 
