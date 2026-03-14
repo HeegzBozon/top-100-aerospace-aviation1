@@ -46,7 +46,7 @@ import { RailItemManager } from '@/components/capabilities/admin';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
 
-export default function Admin() {
+export default function AdminPage() {
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
