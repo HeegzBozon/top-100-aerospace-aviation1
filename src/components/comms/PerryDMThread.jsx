@@ -273,8 +273,8 @@ export default function PerryDMThread({ user, crpCurrentStep, crpCompletedSteps 
         <div className="shrink-0 mx-4 mt-3 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
           <div className="flex items-start justify-between gap-2">
             <p className="font-semibold">How to use Lt. Perry</p>
-            <button onClick={() => setShowInfo(false)} className="p-1 rounded-lg hover:bg-amber-100 transition-colors text-amber-700">
-              &times;
+            <button onClick={() => setShowInfo(false)} className="p-1.5 rounded-lg hover:bg-amber-100 transition-colors text-amber-700" aria-label="Dismiss">
+              <CloseIcon className="w-3.5 h-3.5" />
             </button>
           </div>
           <ul className="list-disc pl-4 space-y-1 text-amber-800">
