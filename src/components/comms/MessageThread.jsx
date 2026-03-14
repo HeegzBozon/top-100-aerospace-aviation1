@@ -821,7 +821,7 @@ export default function MessageThread({
                   </button>
                   {isPollChannel && (
                     <>
-                      <div className="w-px h-5 mx-1" style={{ background: 'rgba(255,255,255,0.3)' }} />
+                      <div className="w-px h-5 mx-1 bg-white/20" />
                       <button
                         type="button"
                         className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 hover:scale-110 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
