@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { Conversation } from "@/entities/Conversation";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CRPPipeline from "./CRPPipeline";
@@ -35,7 +35,7 @@ export default function TribeCRPHeader({ conversation }) {
   }, {});
 
   const updateConversation = useMutation({
-    mutationFn: (patch) => base44.entities.Conversation.update(conversation.id, patch),
+    mutationFn: (patch) => Conversation.update(conversation.id, patch),
     onSuccess: () => {
       queryClient.invalidateQueries(["conversations"]);
       queryClient.invalidateQueries(["conversation", conversation.id]);
