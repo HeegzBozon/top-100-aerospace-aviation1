@@ -148,8 +148,8 @@ export default function MilestoneTracker({ completedTasks = {} }) {
         </div>
       </div>
 
-      {/* Unified progress bar flowing through dots */}
-      <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide">
+      {/* Unified progress bar flowing through dots - full width distribution */}
+      <div className="flex items-center gap-0 w-full">
         {MILESTONES.map((milestone, idx) => {
           const isCompleted = !!completedTasks[milestone.step];
           const isLast = idx === MILESTONES.length - 1;
@@ -163,7 +163,7 @@ export default function MilestoneTracker({ completedTasks = {} }) {
               {!isLast && (
                 <div
                   aria-hidden="true"
-                  className="flex-1 h-2 min-w-0 bg-black/20 transition-all duration-700 overflow-hidden"
+                  className="flex-1 h-2 bg-black/20 transition-all duration-700 overflow-hidden"
                   style={{
                     background: isInProgress 
                       ? `linear-gradient(to right, ${GLOW_COLORS[Math.min(completedCount, 16)]}, ${GLOW_COLORS[Math.min(completedCount + 1, 16)]})`
