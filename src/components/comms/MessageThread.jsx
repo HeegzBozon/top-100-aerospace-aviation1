@@ -599,72 +599,77 @@ export default function MessageThread({
               )}
               aria-label="Message formatting and input"
             >
-              {/* Formatting Toolbar with Active States */}
-              <div className="flex items-center gap-1 px-3 py-2 border-b border-white/10">
-                <div className="flex items-center gap-0.5">
+              {/* Formatting Toolbar with Active States - Mobile Optimized */}
+              <div className="flex items-center gap-1 px-2 sm:px-3 py-2 border-b border-white/10 overflow-x-auto scrollbar-hide">
+                <div className="flex items-center gap-0.5 shrink-0">
                   <button
                     type="button"
                     className={cn(
-                       "p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95",
+                       "min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 active:scale-95",
                        activeFormats.bold ? "bg-gradient-to-r from-amber-600/50 to-amber-500/30 shadow-lg shadow-amber-500/20" : "hover:bg-gray-700/50"
                      )}
                      title="Bold (⌘B)"
+                     aria-label="Bold text"
                      onClick={() => {
                        quillRef.current?.getEditor().format('bold', !activeFormats.bold);
                        updateActiveFormats();
                      }}
                     >
-                     <Bold className={cn("w-4 h-4 transition-all duration-200", activeFormats.bold ? "text-amber-200 scale-110" : "text-gray-400")} />
+                     <Bold className={cn("w-4 h-4 transition-all duration-200", activeFormats.bold ? "text-amber-200 scale-110" : "text-gray-400")} aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     className={cn(
-                      "p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95",
+                      "min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 active:scale-95",
                       activeFormats.italic ? "bg-gradient-to-r from-amber-600/50 to-amber-500/30 shadow-lg shadow-amber-500/20" : "hover:bg-gray-700/50"
                     )}
                     title="Italic (⌘I)"
+                    aria-label="Italic text"
                     onClick={() => {
                       quillRef.current?.getEditor().format('italic', !activeFormats.italic);
                       updateActiveFormats();
                     }}
                   >
-                    <Italic className={cn("w-4 h-4 transition-all duration-200", activeFormats.italic ? "text-amber-200 scale-110" : "text-gray-400")} />
+                    <Italic className={cn("w-4 h-4 transition-all duration-200", activeFormats.italic ? "text-amber-200 scale-110" : "text-gray-400")} aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     className={cn(
-                      "p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95",
+                      "min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 active:scale-95",
                       activeFormats.underline ? "bg-gradient-to-r from-amber-600/50 to-amber-500/30 shadow-lg shadow-amber-500/20" : "hover:bg-gray-700/50"
                     )}
                     title="Underline (⌘U)"
+                    aria-label="Underline text"
                     onClick={() => {
                       quillRef.current?.getEditor().format('underline', !activeFormats.underline);
                       updateActiveFormats();
                     }}
                   >
-                    <Underline className={cn("w-4 h-4 transition-all duration-200", activeFormats.underline ? "text-amber-200 scale-110" : "text-gray-400")} />
+                    <Underline className={cn("w-4 h-4 transition-all duration-200", activeFormats.underline ? "text-amber-200 scale-110" : "text-gray-400")} aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     className={cn(
-                      "p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95",
+                      "min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 active:scale-95",
                       activeFormats.strike ? "bg-gradient-to-r from-amber-600/50 to-amber-500/30 shadow-lg shadow-amber-500/20" : "hover:bg-gray-700/50"
                     )}
                     title="Strikethrough"
+                    aria-label="Strikethrough text"
                     onClick={() => {
                       quillRef.current?.getEditor().format('strike', !activeFormats.strike);
                       updateActiveFormats();
                     }}
                   >
-                    <Strikethrough className={cn("w-4 h-4 transition-all duration-200", activeFormats.strike ? "text-amber-200 scale-110" : "text-gray-400")} />
+                    <Strikethrough className={cn("w-4 h-4 transition-all duration-200", activeFormats.strike ? "text-amber-200 scale-110" : "text-gray-400")} aria-hidden="true" />
                   </button>
                 </div>
-                <div className="w-px h-5 mx-1 bg-white/10" />
-                <div className="flex items-center gap-0.5">
+                <div className="w-px h-5 mx-0.5 bg-white/10 shrink-0" />
+                <div className="hidden sm:flex items-center gap-0.5 shrink-0">
                    <button
                      type="button"
-                     className={cn("p-1.5 rounded transition-colors", activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
+                     className={cn("min-h-10 min-w-10 p-1.5 rounded transition-colors active:scale-95", activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                      title="Link (⌘K)"
+                     aria-label="Insert link"
                      onClick={() => {
                        if (activeFormats.link) {
                          quillRef.current?.getEditor().format('link', false);
@@ -675,69 +680,75 @@ export default function MessageThread({
                        updateActiveFormats();
                      }}
                    >
-                     <Link2 className={cn("w-4 h-4", activeFormats.link ? "text-amber-300" : "text-gray-400")} />
+                     <Link2 className={cn("w-4 h-4", activeFormats.link ? "text-amber-300" : "text-gray-400")} aria-hidden="true" />
                    </button>
                    <button
                      type="button"
-                     className={cn("p-1.5 rounded transition-colors", activeFormats.list === 'ordered' ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
+                     className={cn("min-h-10 min-w-10 p-1.5 rounded transition-colors active:scale-95", activeFormats.list === 'ordered' ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                      title="Numbered List"
+                     aria-label="Numbered list"
                      onClick={() => {
                        quillRef.current?.getEditor().format('list', activeFormats.list === 'ordered' ? false : 'ordered');
                        updateActiveFormats();
                      }}
                    >
-                     <ListOrdered className={cn("w-4 h-4", activeFormats.list === 'ordered' ? "text-amber-300" : "text-gray-400")} />
+                     <ListOrdered className={cn("w-4 h-4", activeFormats.list === 'ordered' ? "text-amber-300" : "text-gray-400")} aria-hidden="true" />
                    </button>
                    <button
                      type="button"
-                     className={cn("p-1.5 rounded transition-colors", activeFormats.list === 'bullet' ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
+                     className={cn("min-h-10 min-w-10 p-1.5 rounded transition-colors active:scale-95", activeFormats.list === 'bullet' ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                      title="Bullet List"
+                     aria-label="Bullet list"
                      onClick={() => {
                        quillRef.current?.getEditor().format('list', activeFormats.list === 'bullet' ? false : 'bullet');
                        updateActiveFormats();
                      }}
                    >
-                     <List className={cn("w-4 h-4", activeFormats.list === 'bullet' ? "text-amber-300" : "text-gray-400")} />
+                     <List className={cn("w-4 h-4", activeFormats.list === 'bullet' ? "text-amber-300" : "text-gray-400")} aria-hidden="true" />
                    </button>
                 </div>
-                <div className="w-px h-5 mx-1 bg-white/10" />
+                <div className="w-px h-5 mx-0.5 bg-white/10 shrink-0 hidden sm:block" />
                 <button
                    type="button"
-                   className={cn("p-1.5 rounded transition-colors", activeFormats['code-block'] ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
+                   className={cn("min-h-10 min-w-10 p-1.5 rounded transition-colors active:scale-95 hidden sm:inline-flex", activeFormats['code-block'] ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
                    title="Code Block"
+                   aria-label="Code block"
                    onClick={() => {
                      quillRef.current?.getEditor().format('code-block', !activeFormats['code-block']);
                      updateActiveFormats();
                    }}
                  >
-                   <Code className={cn("w-4 h-4", activeFormats['code-block'] ? "text-amber-300" : "text-gray-400")} />
+                   <Code className={cn("w-4 h-4", activeFormats['code-block'] ? "text-amber-300" : "text-gray-400")} aria-hidden="true" />
                  </button>
-                 <div className="w-px h-5 mx-1 bg-white/10" />
-                 <button
-                   type="button"
-                   onClick={() => sendDirectMessage('wave')}
-                   className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
-                   title="Send a wave"
-                 >
-                   <span className="text-lg">👋</span>
-                 </button>
-                 <button
-                   type="button"
-                   onClick={() => sendDirectMessage('nudge')}
-                   className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
-                   title="Send a nudge"
-                 >
-                   <span className="text-lg">💬</span>
-                 </button>
-                 <button
-                   type="button"
-                   onClick={() => sendDirectMessage('poke')}
-                   className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
-                   title="Send a poke"
-                 >
-                   <span className="text-lg">🚀</span>
-                 </button>
-                </div>
+                  <div className="w-px h-5 mx-0.5 bg-white/10 shrink-0" />
+                  <button
+                    type="button"
+                    onClick={() => sendDirectMessage('wave')}
+                    className="min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
+                    title="Send a wave"
+                    aria-label="Send wave"
+                  >
+                    <span className="text-lg" aria-hidden="true">👋</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => sendDirectMessage('nudge')}
+                    className="min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
+                    title="Send a nudge"
+                    aria-label="Send nudge"
+                  >
+                    <span className="text-lg" aria-hidden="true">💬</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => sendDirectMessage('poke')}
+                    className="min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
+                    title="Send a poke"
+                    aria-label="Send poke"
+                  >
+                    <span className="text-lg" aria-hidden="true">🚀</span>
+                  </button>
+               </div>
 
               {/* Text Input Area */}
               <div className="relative" onKeyDown={handleKeyDown}>
@@ -754,8 +765,8 @@ export default function MessageThread({
                    modules={{ toolbar: false }}
                    formats={quillFormats}
                    placeholder={replyingTo ? "Write a reply..." : "Message #channel"}
-                   className="text-[15px] [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[60px] [&_.ql-editor]:max-h-[150px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-3 [&_.ql-editor]:py-2 [&_.ql-editor.ql-blank::before]:text-gray-600 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-100 [&_.ql-editor]:bg-transparent"
-                 />
+                   className="text-base sm:text-[15px] [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[80px] sm:[&_.ql-editor]:min-h-[60px] [&_.ql-editor]:max-h-[150px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-3 [&_.ql-editor]:py-3 sm:[&_.ql-editor]:py-2 [&_.ql-editor.ql-blank::before]:text-gray-600 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-100 [&_.ql-editor]:bg-transparent"
+                  />
 
                 {/* Mention Popover */}
                 <MentionPopover
@@ -768,24 +779,24 @@ export default function MessageThread({
 
               {/* Bottom Action Bar */}
               <div
-                className="flex items-center justify-between px-3 py-2 border-t border-white/10"
+                className="flex items-center justify-between gap-2 px-2 sm:px-3 py-2 border-t border-white/10 flex-wrap sm:flex-nowrap"
                 role="toolbar"
-                aria-label="Message formatting options"
+                aria-label="Message actions"
               >
-                <div className="flex items-center gap-1 flex-wrap">
+                <div className="flex items-center gap-1 flex-wrap min-w-0">
                    {!isPerry && activeCrpStep && (
-                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/15 border border-amber-400/30 text-amber-300">
-                       &#9670; Step {activeCrpStep}
-                       <button
-                         type="button"
-                         onClick={() => setActiveCrpStep(null)}
-                         className="hover:text-white transition-colors ml-0.5"
-                         aria-label="Remove step tag"
-                       >
-                         <X className="w-2.5 h-2.5" />
-                       </button>
-                     </span>
-                   )}
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/15 border border-amber-400/30 text-amber-300 shrink-0">
+                        &#9670; Step {activeCrpStep}
+                        <button
+                          type="button"
+                          onClick={() => setActiveCrpStep(null)}
+                          className="hover:text-white transition-colors ml-0.5 min-h-8 min-w-8 flex items-center justify-center"
+                          aria-label="Remove step tag"
+                        >
+                          <X className="w-2.5 h-2.5" aria-hidden="true" />
+                        </button>
+                      </span>
+                    )}
                    {!isPerry && (
                      <>
                        <Popover>
@@ -830,7 +841,7 @@ export default function MessageThread({
                      <PopoverTrigger asChild>
                        <button 
                          type="button" 
-                         className="p-1.5 rounded hover:bg-gray-700/50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+                         className="min-h-10 min-w-10 p-1.5 rounded hover:bg-gray-700/50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 shrink-0"
                          aria-label="Open emoji picker"
                        >
                          <Smile className="w-4 h-4 text-gray-400" aria-hidden="true" />
@@ -860,7 +871,7 @@ export default function MessageThread({
                   </Popover>
                   <button
                     type="button"
-                    className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 hover:scale-110 active:scale-95"
+                    className="min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
                     aria-label="Mention someone (@ symbol)"
                     onClick={() => {
                       const editor = quillRef.current?.getEditor();
@@ -877,39 +888,43 @@ export default function MessageThread({
                   </button>
                   {isPollChannel && (
                     <>
-                      <div className="w-px h-5 mx-1 bg-white/20" />
+                      <div className="w-px h-5 mx-1 bg-white/20 hidden sm:block" />
                       <button
                         type="button"
-                        className="p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 hover:scale-110 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+                        className="min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 shrink-0"
                         title="Create poll"
+                        aria-label="Create poll"
                         onClick={() => setShowPollModal(true)}
                       >
-                        <BarChart3 className="w-4 h-4 text-gray-400 transition-colors hover:text-amber-300" />
+                        <BarChart3 className="w-4 h-4 text-gray-400 transition-colors hover:text-amber-300" aria-hidden="true" />
                       </button>
                     </>
                   )}
                   {!isPerry && (
                     <>
-                      <div className="w-px h-5 mx-1 bg-white/10" />
-                      <CrpStepPickerButton
-                        activeCrpStep={activeCrpStep}
-                        onSelect={setActiveCrpStep}
-                      />
+                      <div className="w-px h-5 mx-1 bg-white/10 hidden sm:block" />
+                      <div className="hidden sm:block">
+                        <CrpStepPickerButton
+                          activeCrpStep={activeCrpStep}
+                          onSelect={setActiveCrpStep}
+                        />
+                      </div>
                     </>
                   )}
                   </div>
 
-                <div className="flex items-center gap-1">
-                  <Button
-                      onClick={handleSend}
-                      disabled={!newMessage.replace(/<[^>]*>/g, '').trim() || isLoading}
-                      size="sm"
-                      className="rounded-lg px-3 h-8 border-0 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 hover:scale-105"
-                      aria-label="Send message"
-                    >
-                      <Send className={cn("w-4 h-4 transition-transform duration-300", isLoading && "animate-spin")} aria-hidden="true" />
-                    </Button>
-                </div>
+                <div className="flex items-center gap-2 ml-auto shrink-0">
+                   <Button
+                       onClick={handleSend}
+                       disabled={!newMessage.replace(/<[^>]*>/g, '').trim() || isLoading}
+                       size="sm"
+                       className="rounded-lg px-4 h-10 sm:h-8 sm:px-3 border-0 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 font-medium"
+                       aria-label="Send message"
+                     >
+                       <Send className={cn("w-4 h-4 transition-transform duration-300 sm:mr-2", isLoading && "animate-spin")} aria-hidden="true" />
+                       <span className="hidden sm:inline">Send</span>
+                     </Button>
+                 </div>
                 </div>
                 </fieldset>
 
