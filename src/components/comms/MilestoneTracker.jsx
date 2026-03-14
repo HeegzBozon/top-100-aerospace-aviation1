@@ -32,23 +32,11 @@ if (typeof document !== 'undefined' && !document.getElementById('milestone-spark
   document.head.appendChild(style);
 }
 
-const MILESTONES = [
-  { step: 1,  stage: "FORM",    name: "Hypothesize" },
-  { step: 2,  stage: "FORM",    name: "Collaborate" },
-  { step: 3,  stage: "FORM",    name: "Architect" },
-  { step: 4,  stage: "FORM",    name: "Synthesize" },
-  { step: 5,  stage: "STORM",   name: "Develop" },
-  { step: 6,  stage: "STORM",   name: "Build" },
-  { step: 7,  stage: "STORM",   name: "Test" },
-  { step: 8,  stage: "STORM",   name: "Stage" },
-  { step: 9,  stage: "NORM",    name: "Deploy" },
-  { step: 10, stage: "NORM",    name: "Verify" },
-  { step: 11, stage: "NORM",    name: "Monitor" },
-  { step: 12, stage: "NORM",    name: "Respond" },
-  { step: 13, stage: "PERFORM", name: "Release" },
-  { step: 14, stage: "PERFORM", name: "Stabilize" },
-  { step: 15, stage: "PERFORM", name: "Measure" },
-  { step: 16, stage: "PERFORM", name: "Learn" },
+const STAGES = [
+  { stage: "FORM",    name: "Form" },
+  { stage: "STORM",   name: "Storm" },
+  { stage: "NORM",    name: "Norm" },
+  { stage: "PERFORM", name: "Perform" },
 ];
 
 // Rose-gold + vibrant spectrum for completed dots
@@ -104,6 +92,13 @@ const GLOW_COLORS = ["#6366f1","#a855f7","#8b5cf6","#d946ef","#ec4899","#f43f5e"
 
 export default function MilestoneTracker({ completedTasks = {} }) {
   const completedCount = Object.values(completedTasks).filter(Boolean).length;
+  const completedStages = new Set(Object.entries(completedTasks).filter(([_, isCompleted]) => isCompleted).map(([step]) => {
+    const stepNum = Number(step);
+    if (stepNum <= 4) return "FORM";
+    if (stepNum <= 8) return "STORM";
+    if (stepNum <= 12) return "NORM";
+    return "PERFORM";
+  }));
   const [sparkles, setSparkles] = useState([]);
 
   // Trigger sparkle burst when progress increases
@@ -121,7 +116,7 @@ export default function MilestoneTracker({ completedTasks = {} }) {
   }, [completedCount]);
 
   return (
-    <div className="space-y-2" role="group" aria-label="16-step pipeline progress">
+    <div className="space-y-2" role="group" aria-label="4-stage pipeline progress">
       {/* Header with sparkle container */}
       <div className="flex items-center justify-between relative">
         <p className="text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-rose-300 to-amber-300 bg-clip-text text-transparent">
@@ -129,7 +124,7 @@ export default function MilestoneTracker({ completedTasks = {} }) {
         </p>
         <div className="relative">
           <p className="text-xs font-bold tabular-nums text-rose-300 drop-shadow-lg">
-            {completedCount}/16
+            {completedStages.size}/4
           </p>
           {sparkles.map(sparkle => (
             <div
@@ -148,61 +143,58 @@ export default function MilestoneTracker({ completedTasks = {} }) {
         </div>
       </div>
 
-      {/* Unified progress bar flowing through dots - full width distribution */}
+      {/* Unified progress bar flowing through 4 stage dots - full width distribution */}
       <div className="flex items-center gap-0 w-full">
-        {MILESTONES.map((milestone, idx) => {
-          const isCompleted = !!completedTasks[milestone.step];
-          const isLast = idx === MILESTONES.length - 1;
-          const progressPercentage = (completedCount / 16) * 100;
-          const stepPercentage = ((idx + 1) / 16) * 100;
-          const isInProgress = progressPercentage >= (idx * (100/16));
+        {STAGES.map((stageItem, idx) => {
+          const isStageCompleted = completedStages.has(stageItem.stage);
+          const isLast = idx === STAGES.length - 1;
 
           return (
-            <React.Fragment key={milestone.step}>
+            <React.Fragment key={stageItem.stage}>
               {/* Connector line with spectrum gradient */}
               {!isLast && (
                 <div
                   aria-hidden="true"
                   className="flex-1 h-2 bg-black/20 transition-all duration-700 overflow-hidden"
                   style={{
-                    background: isInProgress 
-                      ? `linear-gradient(to right, ${GLOW_COLORS[Math.min(completedCount, 16)]}, ${GLOW_COLORS[Math.min(completedCount + 1, 16)]})`
+                    background: isStageCompleted
+                      ? `linear-gradient(to right, ${GLOW_COLORS[idx]}, ${GLOW_COLORS[idx + 1]})`
                       : "rgba(255, 255, 255, 0.1)"
                   }}
                 >
-                  {completedCount > idx && (
+                  {isStageCompleted && (
                     <div
                       className={cn(
                         "h-full transition-all duration-700 bg-gradient-to-r rounded-full",
-                        SPECTRUM_GRADIENTS[Math.min(completedCount, 16)]
+                        SPECTRUM_GRADIENTS[idx * 4]
                       )}
                       style={{
-                        width: completedCount >= idx + 1 ? "100%" : "0%",
-                        boxShadow: `0 0 12px ${GLOW_COLORS[Math.min(completedCount, 16)]}60`
+                        width: "100%",
+                        boxShadow: `0 0 12px ${GLOW_COLORS[idx]}60`
                       }}
                     />
                   )}
                 </div>
               )}
 
-              {/* Milestone dot */}
+              {/* Stage dot */}
               <div className="relative group flex-shrink-0">
                 <div
                   role="img"
-                  aria-label={`Step ${milestone.step}: ${milestone.name}${isCompleted ? " (completed)" : ""}`}
+                  aria-label={`${stageItem.name}${isStageCompleted ? " (completed)" : ""}`}
                   className={cn(
                     "w-5 h-5 rounded-full flex items-center justify-center border-2 transition-all duration-300 cursor-default",
-                    isCompleted
-                      ? cn(STAGE_DOT_ACTIVE[milestone.stage], "bounce-in group-hover:pulse-glow")
+                    isStageCompleted
+                      ? cn(STAGE_DOT_ACTIVE[stageItem.stage], "bounce-in group-hover:pulse-glow")
                       : "border-white/20 bg-white/5 group-hover:border-white/40 group-hover:bg-white/10"
                   )}
                 >
-                  {isCompleted && (
+                  {isStageCompleted && (
                     <div className={cn("w-2 h-2 rounded-full animate-pulse", {
-                      "bg-indigo-300":  milestone.stage === "FORM",
-                      "bg-amber-400":   milestone.stage === "STORM",
-                      "bg-rose-300":    milestone.stage === "NORM",
-                      "bg-yellow-300":  milestone.stage === "PERFORM",
+                      "bg-indigo-300":  stageItem.stage === "FORM",
+                      "bg-amber-400":   stageItem.stage === "STORM",
+                      "bg-rose-300":    stageItem.stage === "NORM",
+                      "bg-yellow-300":  stageItem.stage === "PERFORM",
                     })} />
                   )}
                 </div>
@@ -213,7 +205,7 @@ export default function MilestoneTracker({ completedTasks = {} }) {
                   className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-30"
                 >
                   <div className="rounded px-2 py-1 text-xs font-semibold whitespace-nowrap bg-gradient-to-r from-rose-900/90 to-amber-900/90 border border-rose-400/40 text-rose-100 backdrop-blur-sm">
-                    {milestone.step}. {milestone.name}
+                    {stageItem.name}
                   </div>
                 </div>
               </div>
