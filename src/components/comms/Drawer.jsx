@@ -74,7 +74,7 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
   };
 
   return (
-    <div className="h-full flex flex-col w-full md:w-72 border-r" style={{ background: theme.drawerBg, borderColor: theme.drawerBorder, color: mode === 'light' ? '#1e3a5a' : 'white' }}>
+    <div className="h-full flex flex-col w-full md:w-72 border-r" style={{ background: theme.drawerBg, borderColor: theme.drawerBorder, color: 'white' }}>
       {/* Header */}
       <div className="relative px-4 py-6 md:py-8 border-b flex flex-col items-center backdrop-blur-sm overflow-hidden" style={{ background: theme.drawerHeaderBg, borderColor: theme.drawerHeaderBorder }}>
         {/* Subtle grid pattern overlay */}
