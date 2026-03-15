@@ -937,26 +937,6 @@ export default function MessageThread({
                   >
                     <AtSign className="w-4 h-4 text-gray-400 transition-colors hover:text-amber-300" aria-hidden="true" />
                   </button>
-                  <div className="w-px h-5 mx-0.5 bg-white/10 shrink-0" />
-                  <button
-                    type="button"
-                    onClick={() => setShowTodos(v => !v)}
-                    className={cn(
-                      "min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 active:scale-95 shrink-0 relative",
-                      showTodos ? "bg-emerald-500/20 hover:bg-emerald-500/30" : "hover:bg-gray-700/50"
-                    )}
-                    title="Action items"
-                    aria-label="Toggle action items"
-                    aria-pressed={showTodos}
-                  >
-                    <CheckSquare className={cn("w-4 h-4 transition-colors", showTodos ? "text-emerald-300" : "text-gray-400")} aria-hidden="true" />
-                    {pendingCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center rounded-full text-[9px] font-bold bg-emerald-500 text-white tabular-nums">
-                        {pendingCount}
-                      </span>
-                    )}
-                  </button>
-
                   {isPollChannel && (
                     <>
                       <div className="w-px h-5 mx-1 bg-white/20 hidden sm:block" />
