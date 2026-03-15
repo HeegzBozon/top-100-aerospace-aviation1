@@ -945,8 +945,8 @@ export default function MessageThread({
                   onClose={() => setShowPollModal(false)}
                   onCreate={onCreatePoll}
                 />
-                </div>{/* flex flex-col */}
-                </div>{/* rounded-2xl wrapper */}
+                </div>
+                </div>
                 )}
 
                 {!canPost && (
