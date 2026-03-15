@@ -946,16 +946,20 @@ export default function MessageThread({
                 onCreate={onCreatePoll}
                 />
                 </div>
-            ) : (
-            <div
-              className="text-center py-3 text-sm rounded-lg bg-amber-600/20 border border-amber-600/40 text-amber-100"
-              role="status"
-              aria-label="Read-only channel"
-            >
-              📢 This is a read-only announcements channel
-            </div>
-            )}
-            </div>
-            </form>
+                </div>
+                </div>
+                )}
+
+                {!canPost && (
+                <div
+                className="text-center py-3 text-sm rounded-lg bg-amber-600/20 border border-amber-600/40 text-amber-100"
+                role="status"
+                aria-label="Read-only channel"
+                >
+                📢 This is a read-only announcements channel
+                </div>
+                )}
+                </div>
+                </form>
             );
             }
