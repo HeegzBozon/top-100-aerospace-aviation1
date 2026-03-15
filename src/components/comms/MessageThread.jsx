@@ -736,7 +736,7 @@ export default function MessageThread({
                 role="toolbar"
                 aria-label="Message actions"
               >
-                <div className="flex items-center gap-1 flex-wrap min-w-0">
+                <div className="flex items-center gap-0.5 sm:gap-1 min-w-0 overflow-x-auto scrollbar-hide">
                    {!isPerry && activeCrpStep && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/15 border border-amber-400/30 text-amber-300 shrink-0">
                         &#9670; Step {activeCrpStep}
