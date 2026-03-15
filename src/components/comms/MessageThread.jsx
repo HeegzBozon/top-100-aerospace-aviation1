@@ -492,7 +492,7 @@ export default function MessageThread({
       </a>
 
       {/* Messages - flex-1 so it fills remaining space; composer is below in normal flow */}
-      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto px-3 sm:px-5 py-3 sm:py-4 space-y-3 sm:space-y-4" role="log" aria-live="polite" aria-label="Message feed" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div ref={scrollContainerRef} className="relative z-10 flex-1 min-h-0 overflow-y-auto px-3 sm:px-5 py-3 sm:py-4 space-y-3 sm:space-y-4" role="log" aria-live="polite" aria-label="Message feed" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-gray-900/50 border border-gray-700">
