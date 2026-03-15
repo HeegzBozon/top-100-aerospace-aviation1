@@ -485,7 +485,7 @@ export default function MessageThread({
   };
 
   return (
-    <form className="relative flex flex-col h-full overflow-hidden" style={{ background: theme.bg }} onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+    <form className="relative flex flex-col h-full overflow-hidden" onSubmit={(e) => { e.preventDefault(); handleSend(); }} data-theme-bg={theme.bg}>
       {theme.constellations && <ConstellationBackground />}
       {/* Skip to main content link */}
       <a href="#message-input" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-amber-600 focus:text-white focus:px-4 focus:py-2">
