@@ -915,7 +915,7 @@ export default function MessageThread({
                 aria-label="Send message"
                 className="ml-auto min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
               >
-                <Send className={cn("w-5 h-5 transition-transform duration-200", !newMessage.replace(/<[^>]*>/g, '').trim() ? "" : "text-white rotate-0", isLoading && "animate-spin")} aria-hidden="true" />
+                <Send className={cn("w-5 h-5 transition-transform duration-200", newMessage.trim() ? "text-white" : "", isLoading && "animate-spin")} aria-hidden="true" />
               </button>
             </div>
 
