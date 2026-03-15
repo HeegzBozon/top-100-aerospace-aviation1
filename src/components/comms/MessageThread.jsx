@@ -397,6 +397,21 @@ export default function MessageThread({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Collapse composer on scroll up/down, expand on focus
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const handleScroll = () => {
+      const st = el.scrollTop;
+      if (Math.abs(st - lastScrollTop.current) > 10) {
+        setIsComposerCollapsed(true);
+      }
+      lastScrollTop.current = st;
+    };
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleSend = () => {
     const text = newMessage.replace(/<[^>]*>/g, '').trim();
     if (!text) return;
