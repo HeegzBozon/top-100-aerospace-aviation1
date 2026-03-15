@@ -21,12 +21,12 @@ export default function MobileCommsHeader({ onBack }) {
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="sticky top-0 z-20 px-3 py-2.5"
+      className="sticky top-0 z-20 px-3 py-2.5 shrink-0"
       style={{
-        background: 'rgba(250, 248, 245, 0.7)',
+        background: isDm ? 'rgba(13, 30, 51, 0.92)' : 'rgba(250, 248, 245, 0.85)',
         backdropFilter: 'blur(40px) saturate(180%)',
         WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-        borderBottom: '1px solid rgba(30, 58, 90, 0.1)',
+        borderBottom: isDm ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(30, 58, 90, 0.1)',
       }}
     >
       <div className="flex items-center justify-between gap-3">
