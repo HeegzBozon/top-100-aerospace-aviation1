@@ -383,7 +383,6 @@ export default function MessageThread({
   useEffect(() => {
     if (isComposerCollapsed) {
       quillRef.current?.blur();
-      setTextareaActive(false);
     }
   }, [isComposerCollapsed]);
 
@@ -801,7 +800,6 @@ export default function MessageThread({
                 type="button"
                 aria-label="Mention someone"
                 onClick={() => {
-                  setTextareaActive(true);
                   setNewMessage(prev => prev + '@');
                   setShowMentionPopover(true);
                   setMentionQuery("");
