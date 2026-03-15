@@ -332,6 +332,9 @@ export default function MessageThread({
   const [activeFormats, setActiveFormats] = useState({});
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [activeCrpStep, setActiveCrpStep] = useState(defaultCrpStep);
+  const [showTodos, setShowTodos] = useState(false);
+  const { todos, addTodo, toggleTodo, deleteTodo, pendingCount } = useTodos(conversationId);
+  const [todoDraft, setTodoDraft] = useState("");
   const messagesEndRef = useRef(null);
   const quillRef = useRef(null);
 
