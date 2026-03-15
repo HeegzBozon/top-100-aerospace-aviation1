@@ -546,7 +546,7 @@ export default function MessageThread({
 
 
       {/* Message Composer */}
-      <div className="relative z-10 shrink-0 mx-2 mb-[calc(env(safe-area-inset-bottom,0px)+8px)] sm:mx-4 sm:mb-4">
+      <div className="relative z-10 shrink-0 mx-2 mb-[calc(env(safe-area-inset-bottom,0px)+20px)] sm:mx-4 sm:mb-4">
 
         {/* ── iMessage-style composer row — + pill always visible ── */}
         {canPost && isComposerCollapsed && (
