@@ -765,7 +765,7 @@ export default function MessageThread({
                 </PopoverContent>
               </Popover>
 
-              {/* Formatting toggle */}
+              {/* Formatting toggle — wraps selection with markdown syntax */}
               <Popover>
                 <PopoverTrigger asChild>
                   <button
@@ -779,34 +779,30 @@ export default function MessageThread({
                 <PopoverContent side="top" align="start" className="w-auto p-2 bg-gray-900 border border-white/10 rounded-xl shadow-xl">
                   <div className="flex items-center gap-0.5">
                     {[
-                      { format: 'bold', Icon: Bold, label: 'Bold' },
-                      { format: 'italic', Icon: Italic, label: 'Italic' },
-                      { format: 'underline', Icon: Underline, label: 'Underline' },
-                      { format: 'strike', Icon: Strikethrough, label: 'Strikethrough' },
-                    ].map(({ format, Icon, label }) => (
-                      <button
-                        key={format}
-                        type="button"
-                        aria-label={label}
-                        aria-pressed={!!activeFormats[format]}
-                        onClick={() => { quillRef.current?.getEditor().format(format, !activeFormats[format]); updateActiveFormats(); }}
-                        className={cn("min-w-[36px] min-h-[36px] flex items-center justify-center rounded transition-all active:scale-95", activeFormats[format] ? "bg-white/20 text-white" : "text-gray-400 hover:bg-white/10 hover:text-white")}
-                      >
-                        <Icon className="w-4 h-4" aria-hidden="true" />
-                      </button>
-                    ))}
-                    <div className="w-px h-5 mx-1 bg-white/10" />
-                    {[
-                      { format: 'list', value: 'ordered', Icon: ListOrdered, label: 'Ordered list' },
-                      { format: 'list', value: 'bullet', Icon: List, label: 'Bullet list' },
-                      { format: 'code-block', value: true, Icon: Code, label: 'Code block' },
-                    ].map(({ format, value, Icon, label }) => (
+                      { marker: '**', Icon: Bold, label: 'Bold' },
+                      { marker: '_', Icon: Italic, label: 'Italic' },
+                      { marker: '`', Icon: Code, label: 'Code' },
+                      { marker: '~~', Icon: Strikethrough, label: 'Strikethrough' },
+                    ].map(({ marker, Icon, label }) => (
                       <button
                         key={label}
                         type="button"
                         aria-label={label}
-                        onClick={() => { quillRef.current?.getEditor().format(format, activeFormats[format] === value ? false : value); updateActiveFormats(); }}
-                        className={cn("min-w-[36px] min-h-[36px] flex items-center justify-center rounded transition-all active:scale-95", activeFormats[format] === value ? "bg-white/20 text-white" : "text-gray-400 hover:bg-white/10 hover:text-white")}
+                        onClick={() => {
+                          const el = quillRef.current;
+                          if (!el) return;
+                          const start = el.selectionStart;
+                          const end = el.selectionEnd;
+                          const selected = newMessage.slice(start, end);
+                          const wrapped = `${marker}${selected}${marker}`;
+                          const next = newMessage.slice(0, start) + wrapped + newMessage.slice(end);
+                          setNewMessage(next);
+                          setTimeout(() => {
+                            el.focus();
+                            el.setSelectionRange(start + marker.length, end + marker.length);
+                          }, 0);
+                        }}
+                        className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95"
                       >
                         <Icon className="w-4 h-4" aria-hidden="true" />
                       </button>
