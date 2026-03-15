@@ -112,7 +112,7 @@ export default function TribeCRPHeader({ conversation, expanded: externalExpande
     >
       {/* Header - always visible, clickable to toggle */}
       <button
-        onClick={() => setExpanded(!expanded)}
+        onClick={toggleExpanded}
         className="w-full px-4 py-3 hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/50"
         aria-expanded={expanded}
         aria-controls="crp-expanded-panel"
