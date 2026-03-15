@@ -839,54 +839,24 @@ export default function MessageThread({
                 </PopoverContent>
               </Popover>
 
-              {/* Emoji picker */}
-              <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    aria-label="Open emoji picker"
-                    className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
-                  >
-                    <Smile className="w-5 h-5" aria-hidden="true" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-2" side="top" align="start">
-                  <div className="flex gap-1">
-                    {REACTION_EMOJIS.map(emoji => (
-                      <button
-                        key={emoji}
-                        type="button"
-                        onClick={() => {
-                          setNewMessage(prev => prev + emoji);
-                          setShowEmojiPicker(false);
-                          quillRef.current?.focus();
-                        }}
-                        className="hover:bg-gray-100 rounded p-1 text-lg transition-transform hover:scale-125"
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
-                </PopoverContent>
-              </Popover>
-
               {/* @ mention */}
               <button
                 type="button"
                 aria-label="Mention someone"
                 onClick={() => {
+                  setTextareaActive(true);
                   setNewMessage(prev => prev + '@');
                   setShowMentionPopover(true);
                   setMentionQuery("");
-                  quillRef.current?.focus();
+                  setTimeout(() => quillRef.current?.focus(), 0);
                 }}
                 className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
               >
                 <AtSign className="w-5 h-5" aria-hidden="true" />
               </button>
 
-              {/* Slash commands / poll */}
-              {isPollChannel ? (
+              {/* Poll button (poll channels only) */}
+              {isPollChannel && (
                 <button
                   type="button"
                   aria-label="Create poll"
@@ -895,15 +865,40 @@ export default function MessageThread({
                 >
                   <BarChart3 className="w-5 h-5" aria-hidden="true" />
                 </button>
-              ) : (
-                <button
-                  type="button"
-                  aria-label="Slash commands"
-                  className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30 border border-gray-600 rounded-md"
-                >
-                  <span className="text-sm font-semibold leading-none">/</span>
-                </button>
               )}
+
+              {/* Wave / Nudge / Poke */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Send a wave, nudge, or poke"
+                    className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
+                  >
+                    <Hand className="w-5 h-5" aria-hidden="true" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent side="top" align="start" className="w-auto p-1.5 bg-gray-900 border border-white/10 rounded-xl shadow-xl">
+                  <div className="flex items-center gap-1">
+                    {[
+                      { type: 'wave', label: 'Wave 👋', icon: Hand },
+                      { type: 'nudge', label: 'Nudge 💬', icon: Zap },
+                      { type: 'poke', label: 'Poke 🚀', icon: Rocket },
+                    ].map(({ type, label, icon: Icon }) => (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => sendDirectMessage(type)}
+                        className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all active:scale-95 text-xs font-medium"
+                        aria-label={label}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span>{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
 
               {/* Send button — right-aligned */}
               <button
