@@ -699,8 +699,8 @@ export default function MessageThread({
               <textarea
                 ref={quillRef}
                 id="message-input"
-                value={newMessage.replace(/<[^>]*>/g, '')}
-                onChange={e => setNewMessage(e.target.value)}
+                value={newMessage}
+                onChange={e => handleTextChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 onFocus={() => { setIsComposerCollapsed(false); messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
                 placeholder={replyingTo ? "Write a reply..." : "Message…"}
