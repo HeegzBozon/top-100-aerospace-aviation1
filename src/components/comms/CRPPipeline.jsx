@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, Lock } from "lucide-react";
 
 const CRP_STAGES = {
   FORM: {
