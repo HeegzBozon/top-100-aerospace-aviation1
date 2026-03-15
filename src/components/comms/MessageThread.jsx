@@ -612,11 +612,7 @@ export default function MessageThread({
               <AudioLines className="w-4 h-4 text-gray-500 shrink-0" />
             </button>
           </motion.div>
-        )}
-
-        {/* ── Expanded Slack-style composer ── */}
-
-        {canPost && !isComposerCollapsed && (
+          ) : canPost && !isComposerCollapsed ? (
           <motion.div
             key="expanded"
             initial={{ opacity: 0, y: 12, scale: 0.98 }}
