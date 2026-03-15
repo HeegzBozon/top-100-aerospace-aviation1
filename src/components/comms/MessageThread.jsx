@@ -911,7 +911,7 @@ export default function MessageThread({
               <button
                 type="button"
                 onClick={handleSend}
-                disabled={!newMessage.replace(/<[^>]*>/g, '').trim() || isLoading}
+                disabled={!newMessage.trim() || isLoading}
                 aria-label="Send message"
                 className="ml-auto min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
               >
