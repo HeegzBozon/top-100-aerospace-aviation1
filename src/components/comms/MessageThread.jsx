@@ -877,11 +877,10 @@ export default function MessageThread({
                 type="button"
                 aria-label="Mention someone"
                 onClick={() => {
-                  const editor = quillRef.current?.getEditor();
-                  const range = editor?.getSelection(true);
-                  if (editor && range) { editor.insertText(range.index, '@'); editor.setSelection(range.index + 1); }
+                  setNewMessage(prev => prev + '@');
                   setShowMentionPopover(true);
                   setMentionQuery("");
+                  quillRef.current?.focus();
                 }}
                 className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
               >
