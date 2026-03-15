@@ -342,6 +342,16 @@ export default function MessageThread({
   const scrollContainerRef = useRef(null);
   const lastScrollTop = useRef(0);
 
+  // Suppress iOS keyboard accessory bar on the Quill contenteditable
+  useEffect(() => {
+    const editor = quillRef.current?.getEditor();
+    if (!editor) return;
+    const el = editor.root;
+    el.setAttribute('autocorrect', 'off');
+    el.setAttribute('spellcheck', 'false');
+    el.setAttribute('inputmode', 'text');
+  }, []);
+
   // Track formatting state
   const updateActiveFormats = useCallback(() => {
     if (quillRef.current) {
