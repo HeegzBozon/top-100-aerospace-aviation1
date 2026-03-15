@@ -549,13 +549,43 @@ export default function MessageThread({
 
 
 
-      {/* Message Composer — stays at the bottom of the flex column; keyboard pushes it up naturally on mobile */}
-      <div className={cn(
-        "relative z-10 shrink-0 mx-2 mb-[calc(env(safe-area-inset-bottom,0px)+8px)] sm:mx-4 sm:mb-4 rounded-2xl overflow-hidden shadow-2xl shadow-rose-500/20 border transition-all duration-300 backdrop-blur-xl",
-        "border-rose-500/40 bg-gradient-to-t from-black/98 via-rose-950/15 to-black/80"
-      )}>
-        {canPost ? (
-          <div className="flex flex-col">
+      {/* Message Composer */}
+      <div className="relative z-10 shrink-0 mx-2 mb-[calc(env(safe-area-inset-bottom,0px)+8px)] sm:mx-4 sm:mb-4">
+
+        {/* ── Collapsed / iMessage pill ── */}
+        {canPost && isComposerCollapsed && (
+          <div className="flex items-center gap-2">
+            {/* + button */}
+            <button
+              type="button"
+              aria-label="More options"
+              onClick={() => setIsComposerCollapsed(false)}
+              className="w-11 h-11 shrink-0 rounded-full bg-gray-800 border border-white/10 flex items-center justify-center hover:bg-gray-700 active:scale-95 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-400"
+            >
+              <Plus className="w-5 h-5 text-white/80" />
+            </button>
+
+            {/* Pill input */}
+            <button
+              type="button"
+              aria-label="Tap to compose message"
+              onClick={() => setIsComposerCollapsed(false)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setIsComposerCollapsed(false); }}
+              className="flex-1 flex items-center justify-between h-11 px-4 rounded-full bg-gray-800 border border-white/10 hover:border-white/20 active:scale-[0.98] transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-400 cursor-text"
+            >
+              <span className="text-sm text-gray-500 select-none">Message…</span>
+              <AudioLines className="w-4 h-4 text-gray-500 shrink-0" />
+            </button>
+          </div>
+        )}
+
+        {/* ── Expanded full composer ── */}
+        {canPost && !isComposerCollapsed && (
+        <div className={cn(
+          "rounded-2xl overflow-hidden shadow-2xl shadow-rose-500/20 border transition-all duration-300 backdrop-blur-xl",
+          "border-rose-500/40 bg-gradient-to-t from-black/98 via-rose-950/15 to-black/80"
+        )}>
+        <div className="flex flex-col">
             {replyingTo && (
               <div className="flex items-center gap-2 text-xs mb-2 px-3 py-2 rounded-t-xl bg-gradient-to-r from-rose-600/20 to-pink-600/10 border border-rose-400/30 backdrop-blur-sm animate-in slide-in-from-top-2 duration-300 text-rose-200">
                 <MessageSquare className="w-3 h-3" />
