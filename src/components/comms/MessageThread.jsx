@@ -677,11 +677,8 @@ export default function MessageThread({
                 value={newMessage}
                 onChange={e => handleTextChange(e.target.value)}
                 onKeyDown={handleKeyDown}
-                onClick={() => setTextareaActive(true)}
-                readOnly={!textareaActive}
                 placeholder={replyingTo ? "Write a reply..." : "Message…"}
                 rows={1}
-                inputMode={textareaActive ? "text" : "none"}
                 enterKeyHint="send"
                 autoCorrect="off"
                 autoCapitalize="sentences"
