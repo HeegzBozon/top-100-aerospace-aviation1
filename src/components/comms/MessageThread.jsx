@@ -538,7 +538,7 @@ export default function MessageThread({
               <div className="flex items-center gap-2 text-xs mb-2 px-3 py-2 rounded-t-xl bg-gradient-to-r from-rose-600/20 to-pink-600/10 border border-rose-400/30 backdrop-blur-sm animate-in slide-in-from-top-2 duration-300 text-rose-200">
                 <MessageSquare className="w-3 h-3" />
                 <span>Replying to <strong>{replyingTo.sender_name || replyingTo.sender_email?.split("@")[0]}</strong></span>
-                <button onClick={() => setReplyingTo(null)} className="ml-auto hover:opacity-70 transition-opacity hover:scale-110 active:scale-95">
+                <button onClick={() => setReplyingTo(null)} className="ml-auto min-w-[44px] min-h-[44px] flex items-center justify-center hover:opacity-70 transition-opacity active:scale-95" aria-label="Cancel reply">
                   <X className="w-3 h-3" />
                 </button>
               </div>
