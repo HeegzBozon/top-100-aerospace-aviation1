@@ -737,19 +737,37 @@ export default function MessageThread({
                 aria-label="Message actions"
               >
                 <div className="flex items-center gap-0.5 sm:gap-1 min-w-0 overflow-x-auto scrollbar-hide">
-                   {!isPerry && activeCrpStep && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/15 border border-amber-400/30 text-amber-300 shrink-0">
-                        &#9670; Step {activeCrpStep}
-                        <button
-                          type="button"
-                          onClick={() => setActiveCrpStep(null)}
-                          className="hover:text-white transition-colors ml-0.5 min-h-8 min-w-8 flex items-center justify-center"
-                          aria-label="Remove step tag"
-                        >
-                          <X className="w-2.5 h-2.5" aria-hidden="true" />
-                        </button>
-                      </span>
-                    )}
+
+                   {/* Quick actions — wave/nudge/poke on all sizes */}
+                   <button
+                     type="button"
+                     onClick={() => sendDirectMessage('wave')}
+                     className="flex min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
+                     title="Send a wave"
+                     aria-label="Send wave"
+                   >
+                     <span className="text-lg" aria-hidden="true">👋</span>
+                   </button>
+                   <button
+                     type="button"
+                     onClick={() => sendDirectMessage('nudge')}
+                     className="flex min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
+                     title="Send a nudge"
+                     aria-label="Send nudge"
+                   >
+                     <span className="text-lg" aria-hidden="true">💬</span>
+                   </button>
+                   <button
+                     type="button"
+                     onClick={() => sendDirectMessage('poke')}
+                     className="flex min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
+                     title="Send a poke"
+                     aria-label="Send poke"
+                   >
+                     <span className="text-lg" aria-hidden="true">🚀</span>
+                   </button>
+
+                   <div className="w-px h-5 mx-0.5 bg-white/10 shrink-0" />
 
                    <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
                      <PopoverTrigger asChild>
