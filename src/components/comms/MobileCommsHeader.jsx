@@ -196,6 +196,14 @@ export default function MobileCommsHeader({ onBack }) {
         )}
       </AnimatePresence>
 
+      {/* Action Items Panel */}
+      <ConversationTodoPanel
+        open={todosOpen}
+        onClose={() => setTodosOpen(false)}
+        conversationId={activeConversation?.id}
+        isDm={isDm}
+      />
+
       {/* Tuckman Info Panel */}
       <TuckmanInfoPanel
         open={tuckmanOpen}
