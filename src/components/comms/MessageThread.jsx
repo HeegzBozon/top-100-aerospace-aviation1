@@ -814,7 +814,7 @@ export default function MessageThread({
                    value={newMessage}
                    onChange={handleTextChange}
                    onChangeSelection={updateActiveFormats}
-                   onFocus={() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                   onFocus={() => { setIsComposerCollapsed(false); messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
                    modules={{ toolbar: false }}
                    formats={quillFormats}
                    placeholder={replyingTo ? "Write a reply..." : "Message #channel"}
