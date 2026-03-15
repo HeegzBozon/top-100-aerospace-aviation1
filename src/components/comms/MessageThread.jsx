@@ -424,9 +424,9 @@ export default function MessageThread({
   }, []);
 
   const handleSend = () => {
-    const text = newMessage.replace(/<[^>]*>/g, '').trim();
+    const text = newMessage.trim();
     if (!text) return;
-    onSendMessage(newMessage, replyingTo?.id, null, activeCrpStep);
+    onSendMessage(text, replyingTo?.id, null, activeCrpStep);
     setNewMessage("");
     setReplyingTo(null);
     setActiveCrpStep(null);
