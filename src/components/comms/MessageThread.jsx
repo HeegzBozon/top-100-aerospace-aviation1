@@ -941,13 +941,13 @@ export default function MessageThread({
 
                 {/* Poll Creation Modal */}
                 <CreatePollModal
-                open={showPollModal}
-                onClose={() => setShowPollModal(false)}
-                onCreate={onCreatePoll}
+                  open={showPollModal}
+                  onClose={() => setShowPollModal(false)}
+                  onCreate={onCreatePoll}
                 />
-                </div>
-                </div>
-                </div>
+                </div>{/* flex flex-col */}
+                </div>{/* rounded-2xl wrapper */}
+                </div>{/* canPost && !isComposerCollapsed */}
                 )}
 
                 {!canPost && (
@@ -959,7 +959,7 @@ export default function MessageThread({
                 📢 This is a read-only announcements channel
                 </div>
                 )}
-                </div>
+                </div>{/* outer composer wrapper */}
                 </form>
-            );
-            }
+                );
+                }
