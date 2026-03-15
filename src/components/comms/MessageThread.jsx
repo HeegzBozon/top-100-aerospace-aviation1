@@ -462,15 +462,15 @@ export default function MessageThread({
   };
 
   return (
-    <form className="relative flex flex-col h-full overflow-x-hidden" style={{ background: theme.bg }} onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+    <form className="relative flex flex-col h-full overflow-hidden" style={{ background: theme.bg }} onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
       {theme.constellations && <ConstellationBackground />}
       {/* Skip to main content link */}
       <a href="#message-input" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-amber-600 focus:text-white focus:px-4 focus:py-2">
         Skip to message input
       </a>
 
-      {/* Messages - with bottom padding to prevent keyboard overlap */}
-      <div className="relative z-10 flex-1 overflow-y-auto px-6 py-4 space-y-4 pb-[max(1rem,calc(env(safe-area-inset-bottom)_+_280px))]" role="log" aria-live="polite" aria-label="Message feed" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      {/* Messages - flex-1 so it fills remaining space; composer is below in normal flow */}
+      <div className="relative z-10 flex-1 overflow-y-auto px-4 py-4 space-y-4" role="log" aria-live="polite" aria-label="Message feed" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-gray-900/50 border border-gray-700">
