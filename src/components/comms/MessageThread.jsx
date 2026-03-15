@@ -673,35 +673,7 @@ export default function MessageThread({
                  >
                    <Code className={cn("w-4 h-4", activeFormats['code-block'] ? "text-amber-300" : "text-gray-400")} aria-hidden="true" />
                  </button>
-                  <div className="w-px h-5 mx-0.5 bg-white/10 shrink-0 hidden sm:block" />
-                  <button
-                    type="button"
-                    onClick={() => sendDirectMessage('wave')}
-                    className="hidden sm:flex min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
-                    title="Send a wave"
-                    aria-label="Send wave"
-                  >
-                    <span className="text-lg" aria-hidden="true">👋</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => sendDirectMessage('nudge')}
-                    className="hidden sm:flex min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
-                    title="Send a nudge"
-                    aria-label="Send nudge"
-                  >
-                    <span className="text-lg" aria-hidden="true">💬</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => sendDirectMessage('poke')}
-                    className="hidden sm:flex min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
-                    title="Send a poke"
-                    aria-label="Send poke"
-                  >
-                    <span className="text-lg" aria-hidden="true">🚀</span>
-                  </button>
-               </div>
+                  </div>
 
               {/* Text Input Area */}
               <div className="relative" onKeyDown={handleKeyDown}>
