@@ -4,6 +4,7 @@ import { Send, Smile, MoreHorizontal, Pencil, Trash2, MessageSquare, X, Check, B
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import ReactQuill from "react-quill";
+import { useRef as _useRef } from "react"; // keep for inline textarea ref
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import PollCard from "./PollCard";
