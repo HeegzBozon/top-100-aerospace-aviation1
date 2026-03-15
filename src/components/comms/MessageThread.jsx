@@ -859,10 +859,9 @@ export default function MessageThread({
                         key={emoji}
                         type="button"
                         onClick={() => {
-                          const editor = quillRef.current?.getEditor();
-                          const range = editor?.getSelection(true);
-                          if (editor && range) { editor.insertText(range.index, emoji); editor.setSelection(range.index + emoji.length); }
+                          setNewMessage(prev => prev + emoji);
                           setShowEmojiPicker(false);
+                          quillRef.current?.focus();
                         }}
                         className="hover:bg-gray-100 rounded p-1 text-lg transition-transform hover:scale-125"
                       >
