@@ -62,14 +62,15 @@ Deno.serve(async (req) => {
           });
 
         if (response.ok) {
-          results.push({ launch: launch.title, status: 'posted' });
+          results.push({ launch: launch.title, orgPage: author, status: 'posted' });
         } else {
-          results.push({ launch: launch.title, status: 'failed', error: await response.text() });
+          results.push({ launch: launch.title, orgPage: author, status: 'failed', error: await response.text() });
         }
-      } catch (error) {
+        }
+        } catch (error) {
         results.push({ launch: launch.title, status: 'error', error: error.message });
-      }
-    }
+        }
+        }
 
     return Response.json({ posted: results });
   } catch (error) {
