@@ -30,31 +30,36 @@ Deno.serve(async (req) => {
     // Get LinkedIn connection
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('linkedin');
 
+    // Get org pages (in production, fetch from user settings or admin config)
+    const orgPageUrns = ['urn:li:organization:YOUR_ORG_ID']; // TODO: make configurable
+
     // Post each launch to LinkedIn
     const results = [];
     for (const launch of upcomingLaunches) {
       const postContent = generateLaunchPost(launch);
       
       try {
-        const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            author: 'urn:li:person:me',
-            lifecycleState: 'PUBLISHED',
-            specificContent: {
-              'com.linkedin.ugc.PublishText': {
-                text: postContent,
+        // Post to org pages
+        for (const author of orgPageUrns) {
+          const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              author,
+              lifecycleState: 'PUBLISHED',
+              specificContent: {
+                'com.linkedin.ugc.PublishText': {
+                  text: postContent,
+                },
               },
-            },
-            visibility: {
-              'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
-            },
-          }),
-        });
+              visibility: {
+                'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
+              },
+            }),
+          });
 
         if (response.ok) {
           results.push({ launch: launch.title, status: 'posted' });
