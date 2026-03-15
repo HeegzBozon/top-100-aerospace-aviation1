@@ -169,6 +169,18 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
           />
         </div>
 
+        {/* Locked stage hint */}
+        {isStageLocked && (
+          <div className="flex items-start gap-2 px-3 py-2.5 rounded-md bg-white/5 border border-white/10">
+            <Lock className="w-3.5 h-3.5 shrink-0 text-white/40 mt-0.5" aria-hidden="true" />
+            <p className="text-xs text-white/40 leading-snug">
+              Complete all steps in{" "}
+              <span className="font-semibold text-white/60">{prevStageKey}</span>{" "}
+              to unlock this stage. Steps must be completed sequentially.
+            </p>
+          </div>
+        )}
+
         {/* Task grid */}
         <div className="grid grid-cols-4 gap-1.5">
           {config.tasks.map((task) => {
