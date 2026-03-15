@@ -13,6 +13,8 @@ export default function MobileCommsHeader({ onBack }) {
   const { activeConversation, user } = useConversation();
   const [crpOpen, setCrpOpen] = useState(false);
   const [tuckmanOpen, setTuckmanOpen] = useState(false);
+  const [todosOpen, setTodosOpen] = useState(false);
+  const { pendingCount } = useTodos(activeConversation?.id);
 
   // Live conversation data so CRP progress stays fresh after step toggles
   const { data: liveConversation } = useQuery({
