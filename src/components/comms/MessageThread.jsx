@@ -335,7 +335,8 @@ export default function MessageThread({
   const [showTodos, setShowTodos] = useState(false);
   const { todos, addTodo, toggleTodo, deleteTodo, pendingCount } = useTodos(conversationId);
   const [todoDraft, setTodoDraft] = useState("");
-  const [isComposerCollapsed, setIsComposerCollapsed] = useState(true);
+  const [isComposerCollapsed, setIsComposerCollapsed] = useState(false);
+  const [textareaActive, setTextareaActive] = useState(false);
   const [showPlusMenu, setShowPlusMenu] = useState(false);
   const messagesEndRef = useRef(null);
   const quillRef = useRef(null);
