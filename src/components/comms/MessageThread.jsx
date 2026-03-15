@@ -629,83 +629,28 @@ export default function MessageThread({
           </div>
         )}
 
-        {/* ── Expanded full composer ── */}
+        {/* ── Expanded Slack-style composer ── */}
         {canPost && !isComposerCollapsed && (
-        <div className="flex items-end gap-2">
-          {/* + button stays visible */}
-          <Popover open={showPlusMenu} onOpenChange={setShowPlusMenu}>
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                aria-label="More options"
-                aria-expanded={showPlusMenu}
-                className="w-11 h-11 shrink-0 rounded-full bg-gray-800 border border-white/10 flex items-center justify-center hover:bg-gray-700 active:scale-95 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-400 self-end mb-0.5"
-              >
-                <Plus className={cn("w-5 h-5 text-white/80 transition-transform duration-200", showPlusMenu && "rotate-45")} />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent
-              side="top"
-              align="start"
-              className="w-64 p-0 bg-gray-900/95 border border-white/10 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden"
-              sideOffset={10}
-            >
-              <div className="py-2" role="menu" aria-label="Composer options">
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => { setShowPlusMenu(false); setShowTodos(true); }}
-                  className="w-full flex items-center gap-4 px-4 py-3.5 hover:bg-white/8 active:bg-white/12 transition-colors text-left"
-                >
-                  <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center shrink-0">
-                    <CheckSquare className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-white">Action Items</p>
-                    <p className="text-xs text-white/40">Manage todos for this chat</p>
-                  </div>
-                  {pendingCount > 0 && (
-                    <span className="ml-auto text-xs font-bold bg-emerald-500 text-white rounded-full px-2 py-0.5 tabular-nums">{pendingCount}</span>
-                  )}
-                </button>
-                <div className="mx-4 h-px bg-white/8" />
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => { setShowPlusMenu(false); }}
-                  className="w-full flex items-center gap-4 px-4 py-3.5 hover:bg-white/8 active:bg-white/12 transition-colors text-left"
-                >
-                  <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
-                    <CalendarPlus className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-white">Schedule</p>
-                    <p className="text-xs text-white/40">Set a reminder or meeting</p>
-                  </div>
-                </button>
-              </div>
-            </PopoverContent>
-          </Popover>
-
-          {/* Composer panel */}
-          <div className={cn(
-            "flex-1 rounded-2xl overflow-hidden shadow-2xl shadow-rose-500/20 border transition-all duration-300 backdrop-blur-xl",
-            "border-rose-500/40 bg-gradient-to-t from-black/98 via-rose-950/15 to-black/80"
-          )}>
-        <div className="flex flex-col">
+          <div className="rounded-2xl bg-[#1a1d21] border border-white/10 overflow-hidden">
+            {/* Reply banner */}
             {replyingTo && (
-              <div className="flex items-center gap-2 text-xs mb-2 px-3 py-2 rounded-t-xl bg-gradient-to-r from-rose-600/20 to-pink-600/10 border border-rose-400/30 backdrop-blur-sm animate-in slide-in-from-top-2 duration-300 text-rose-200">
-                <MessageSquare className="w-3 h-3" />
-                <span>Replying to <strong>{replyingTo.sender_name || replyingTo.sender_email?.split("@")[0]}</strong></span>
-                <button onClick={() => setReplyingTo(null)} className="ml-auto min-w-[44px] min-h-[44px] flex items-center justify-center hover:opacity-70 transition-opacity active:scale-95" aria-label="Cancel reply">
-                  <X className="w-3 h-3" />
+              <div className="flex items-center gap-2 text-xs px-3 py-2 border-b border-white/8 bg-white/5 text-gray-400">
+                <MessageSquare className="w-3 h-3 shrink-0" aria-hidden="true" />
+                <span>Replying to <strong className="text-gray-200">{replyingTo.sender_name || replyingTo.sender_email?.split("@")[0]}</strong></span>
+                <button
+                  type="button"
+                  onClick={() => setReplyingTo(null)}
+                  className="ml-auto min-w-[44px] min-h-[44px] flex items-center justify-center rounded hover:bg-white/10 transition-colors active:scale-95"
+                  aria-label="Cancel reply"
+                >
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
             )}
 
             {/* Inline Todo Panel */}
             {showTodos && (
-              <div className="mb-2 rounded-xl border border-emerald-500/20 bg-emerald-950/20 overflow-hidden">
+              <div className="border-b border-white/8">
                 <div className="flex items-center justify-between px-3 py-2 border-b border-emerald-500/15">
                   <div className="flex items-center gap-2">
                     <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
@@ -751,291 +696,226 @@ export default function MessageThread({
               </div>
             )}
 
-            {/* Message Editor */}
-            <fieldset
-              className={cn(
-                "rounded-xl overflow-hidden border-2 transition-all duration-300 w-full bg-gray-950",
-                "border-rose-500/40 focus-within:ring-2 focus-within:ring-rose-400/60 focus-within:shadow-2xl focus-within:shadow-rose-500/30"
-              )}
-              aria-label="Message formatting and input"
-            >
-              {/* Formatting Toolbar — condensed on mobile, full on sm+ */}
-              <div className="flex items-center gap-1 px-2 sm:px-3 py-1.5 border-b border-rose-500/20 overflow-x-auto scrollbar-hide bg-gradient-to-r from-rose-950/10 to-pink-950/10">
-                <div className="flex items-center gap-0.5 shrink-0">
+            {/* Text input area */}
+            <div className="relative" onKeyDown={handleKeyDown}>
+              <label htmlFor="message-input" className="sr-only">
+                Message input. {replyingTo ? `Replying to ${replyingTo.sender_name || replyingTo.sender_email?.split('@')[0]}. P` : 'P'}ress Enter to send, Shift+Enter for new line.
+              </label>
+              <ReactQuill
+                ref={quillRef}
+                id="message-input"
+                value={newMessage}
+                onChange={handleTextChange}
+                onChangeSelection={updateActiveFormats}
+                onFocus={() => { setIsComposerCollapsed(false); messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
+                modules={{ toolbar: false }}
+                formats={quillFormats}
+                placeholder={replyingTo ? "Write a reply..." : "Message…"}
+                className="text-base [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[52px] [&_.ql-editor]:max-h-[160px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-4 [&_.ql-editor]:py-3.5 [&_.ql-editor.ql-blank::before]:text-gray-500 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-100 [&_.ql-editor]:bg-transparent [&_.ql-editor]:text-base"
+              />
+              <MentionPopover
+                isOpen={showMentionPopover}
+                searchQuery={mentionQuery}
+                onSelect={handleMentionSelect}
+                currentUserEmail={currentUserEmail}
+              />
+            </div>
+
+            {/* Bottom toolbar — Slack style */}
+            <div className="flex items-center px-2 py-1.5 gap-1" role="toolbar" aria-label="Message actions">
+              {/* + button */}
+              <Popover open={showPlusMenu} onOpenChange={setShowPlusMenu}>
+                <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className={cn(
-                       "min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 active:scale-95",
-                       activeFormats.bold ? "bg-gradient-to-r from-amber-600/50 to-amber-500/30 shadow-lg shadow-amber-500/20" : "hover:bg-gray-700/50"
-                     )}
-                     title="Bold (⌘B)"
-                     aria-label="Bold text"
-                     onClick={() => {
-                       quillRef.current?.getEditor().format('bold', !activeFormats.bold);
-                       updateActiveFormats();
-                     }}
+                    aria-label="More options"
+                    aria-expanded={showPlusMenu}
+                    className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
+                  >
+                    <Plus className={cn("w-5 h-5 transition-transform duration-200", showPlusMenu && "rotate-45")} />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  side="top"
+                  align="start"
+                  className="w-64 p-0 bg-gray-900/95 border border-white/10 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden"
+                  sideOffset={8}
+                >
+                  <div className="py-2" role="menu" aria-label="Composer options">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => { setShowPlusMenu(false); setShowTodos(true); }}
+                      className="w-full flex items-center gap-4 px-4 py-3.5 hover:bg-white/8 active:bg-white/12 transition-colors text-left"
                     >
-                     <Bold className={cn("w-4 h-4 transition-all duration-200", activeFormats.bold ? "text-amber-200 scale-110" : "text-gray-400")} aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    className={cn(
-                      "min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 active:scale-95",
-                      activeFormats.italic ? "bg-gradient-to-r from-amber-600/50 to-amber-500/30 shadow-lg shadow-amber-500/20" : "hover:bg-gray-700/50"
-                    )}
-                    title="Italic (⌘I)"
-                    aria-label="Italic text"
-                    onClick={() => {
-                      quillRef.current?.getEditor().format('italic', !activeFormats.italic);
-                      updateActiveFormats();
-                    }}
-                  >
-                    <Italic className={cn("w-4 h-4 transition-all duration-200", activeFormats.italic ? "text-amber-200 scale-110" : "text-gray-400")} aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    className={cn(
-                      "min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 active:scale-95",
-                      activeFormats.underline ? "bg-gradient-to-r from-amber-600/50 to-amber-500/30 shadow-lg shadow-amber-500/20" : "hover:bg-gray-700/50"
-                    )}
-                    title="Underline (⌘U)"
-                    aria-label="Underline text"
-                    onClick={() => {
-                      quillRef.current?.getEditor().format('underline', !activeFormats.underline);
-                      updateActiveFormats();
-                    }}
-                  >
-                    <Underline className={cn("w-4 h-4 transition-all duration-200", activeFormats.underline ? "text-amber-200 scale-110" : "text-gray-400")} aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    className={cn(
-                      "min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 focus-visible:outline-2 focus-visible:outline-amber-500 active:scale-95",
-                      activeFormats.strike ? "bg-gradient-to-r from-amber-600/50 to-amber-500/30 shadow-lg shadow-amber-500/20" : "hover:bg-gray-700/50"
-                    )}
-                    title="Strikethrough"
-                    aria-label="Strikethrough text"
-                    onClick={() => {
-                      quillRef.current?.getEditor().format('strike', !activeFormats.strike);
-                      updateActiveFormats();
-                    }}
-                  >
-                    <Strikethrough className={cn("w-4 h-4 transition-all duration-200", activeFormats.strike ? "text-amber-200 scale-110" : "text-gray-400")} aria-hidden="true" />
-                  </button>
-                </div>
-                <div className="w-px h-5 mx-0.5 bg-white/10 shrink-0" />
-                <div className="hidden sm:flex items-center gap-0.5 shrink-0">
-                   <button
-                     type="button"
-                     className={cn("min-h-10 min-w-10 p-1.5 rounded transition-colors active:scale-95", activeFormats.link ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
-                     title="Link (⌘K)"
-                     aria-label="Insert link"
-                     onClick={() => {
-                       if (activeFormats.link) {
-                         quillRef.current?.getEditor().format('link', false);
-                       } else {
-                         const url = prompt('Enter URL:');
-                         if (url) quillRef.current?.getEditor().format('link', url);
-                       }
-                       updateActiveFormats();
-                     }}
-                   >
-                     <Link2 className={cn("w-4 h-4", activeFormats.link ? "text-amber-300" : "text-gray-400")} aria-hidden="true" />
-                   </button>
-                   <button
-                     type="button"
-                     className={cn("min-h-10 min-w-10 p-1.5 rounded transition-colors active:scale-95", activeFormats.list === 'ordered' ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
-                     title="Numbered List"
-                     aria-label="Numbered list"
-                     onClick={() => {
-                       quillRef.current?.getEditor().format('list', activeFormats.list === 'ordered' ? false : 'ordered');
-                       updateActiveFormats();
-                     }}
-                   >
-                     <ListOrdered className={cn("w-4 h-4", activeFormats.list === 'ordered' ? "text-amber-300" : "text-gray-400")} aria-hidden="true" />
-                   </button>
-                   <button
-                     type="button"
-                     className={cn("min-h-10 min-w-10 p-1.5 rounded transition-colors active:scale-95", activeFormats.list === 'bullet' ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
-                     title="Bullet List"
-                     aria-label="Bullet list"
-                     onClick={() => {
-                       quillRef.current?.getEditor().format('list', activeFormats.list === 'bullet' ? false : 'bullet');
-                       updateActiveFormats();
-                     }}
-                   >
-                     <List className={cn("w-4 h-4", activeFormats.list === 'bullet' ? "text-amber-300" : "text-gray-400")} aria-hidden="true" />
-                   </button>
-                </div>
-                <div className="w-px h-5 mx-0.5 bg-white/10 shrink-0 hidden sm:block" />
-                <button
-                   type="button"
-                   className={cn("min-h-10 min-w-10 p-1.5 rounded transition-colors active:scale-95 hidden sm:inline-flex", activeFormats['code-block'] ? "bg-amber-500/40" : "hover:bg-gray-700/50")}
-                   title="Code Block"
-                   aria-label="Code block"
-                   onClick={() => {
-                     quillRef.current?.getEditor().format('code-block', !activeFormats['code-block']);
-                     updateActiveFormats();
-                   }}
-                 >
-                   <Code className={cn("w-4 h-4", activeFormats['code-block'] ? "text-amber-300" : "text-gray-400")} aria-hidden="true" />
-                 </button>
-                <div className="w-px h-5 mx-0.5 bg-white/10 shrink-0" />
-                <button
-                  type="button"
-                  onClick={() => sendDirectMessage('wave')}
-                  className="flex min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
-                  title="Send a wave"
-                  aria-label="Send wave"
-                >
-                  <span className="text-lg leading-none" aria-hidden="true">👋</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sendDirectMessage('nudge')}
-                  className="flex min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
-                  title="Send a nudge"
-                  aria-label="Send nudge"
-                >
-                  <span className="text-lg leading-none" aria-hidden="true">💬</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sendDirectMessage('poke')}
-                  className="flex min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
-                  title="Send a poke"
-                  aria-label="Send poke"
-                >
-                  <span className="text-lg leading-none" aria-hidden="true">🚀</span>
-                </button>
-                  </div>
-
-              {/* Text Input Area */}
-              <div className="relative" onKeyDown={handleKeyDown}>
-                <label htmlFor="message-input" className="sr-only">
-                    Message input. {replyingTo ? `Replying to ${replyingTo.sender_name || replyingTo.sender_email?.split('@')[0]}. P` : 'P'}ress Enter to send, Shift+Enter for new line.
-                  </label>
-                  <ReactQuill
-                   ref={quillRef}
-                   id="message-input"
-                   value={newMessage}
-                   onChange={handleTextChange}
-                   onChangeSelection={updateActiveFormats}
-                   onFocus={() => { setIsComposerCollapsed(false); messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
-                   modules={{ toolbar: false }}
-                   formats={quillFormats}
-                   placeholder={replyingTo ? "Write a reply..." : "Message #channel"}
-                   className="text-base [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[44px] sm:[&_.ql-editor]:min-h-[56px] [&_.ql-editor]:max-h-[120px] sm:[&_.ql-editor]:max-h-[150px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-3 [&_.ql-editor]:py-2.5 [&_.ql-editor.ql-blank::before]:text-gray-600 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-100 [&_.ql-editor]:bg-transparent"
-                  />
-
-                {/* Mention Popover */}
-                <MentionPopover
-                  isOpen={showMentionPopover}
-                  searchQuery={mentionQuery}
-                  onSelect={handleMentionSelect}
-                  currentUserEmail={currentUserEmail}
-                />
-              </div>
-
-              {/* Bottom Action Bar */}
-              <div
-                className="flex items-center justify-between gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 border-t border-rose-500/20 bg-gradient-to-r from-rose-950/10 to-pink-950/10 flex-nowrap"
-                role="toolbar"
-                aria-label="Message actions"
-              >
-                <div className="flex items-center gap-0.5 sm:gap-1 min-w-0 overflow-x-auto scrollbar-hide">
-
-                   <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
-                     <PopoverTrigger asChild>
-                       <button 
-                         type="button" 
-                         className="min-h-10 min-w-10 p-1.5 rounded hover:bg-gray-700/50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 shrink-0"
-                         aria-label="Open emoji picker"
-                       >
-                         <Smile className="w-4 h-4 text-gray-400" aria-hidden="true" />
-                       </button>
-                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-2" side="top" align="start">
-                      <div className="flex gap-1">
-                        {REACTION_EMOJIS.map(emoji => (
-                          <button
-                            key={emoji}
-                            onClick={() => {
-                              const editor = quillRef.current?.getEditor();
-                              const range = editor?.getSelection(true);
-                              if (editor && range) {
-                                editor.insertText(range.index, emoji);
-                                editor.setSelection(range.index + emoji.length);
-                              }
-                              setShowEmojiPicker(false);
-                            }}
-                            className="hover:bg-gray-100 rounded p-1 text-lg transition-transform hover:scale-125"
-                          >
-                            {emoji}
-                          </button>
-                        ))}
+                      <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center shrink-0">
+                        <CheckSquare className="w-5 h-5 text-white" />
                       </div>
-                    </PopoverContent>
-                  </Popover>
+                      <div>
+                        <p className="text-sm font-medium text-white">Action Items</p>
+                        <p className="text-xs text-white/40">Manage todos for this chat</p>
+                      </div>
+                      {pendingCount > 0 && (
+                        <span className="ml-auto text-xs font-bold bg-emerald-500 text-white rounded-full px-2 py-0.5 tabular-nums">{pendingCount}</span>
+                      )}
+                    </button>
+                    <div className="mx-4 h-px bg-white/8" />
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => setShowPlusMenu(false)}
+                      className="w-full flex items-center gap-4 px-4 py-3.5 hover:bg-white/8 active:bg-white/12 transition-colors text-left"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                        <CalendarPlus className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white">Schedule</p>
+                        <p className="text-xs text-white/40">Set a reminder or meeting</p>
+                      </div>
+                    </button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Formatting toggle */}
+              <Popover>
+                <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className="min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 active:scale-95 shrink-0"
-                    aria-label="Mention someone (@ symbol)"
-                    onClick={() => {
-                      const editor = quillRef.current?.getEditor();
-                      const range = editor?.getSelection(true);
-                      if (editor && range) {
-                        editor.insertText(range.index, '@');
-                        editor.setSelection(range.index + 1);
-                      }
-                      setShowMentionPopover(true);
-                      setMentionQuery("");
-                    }}
+                    aria-label="Text formatting"
+                    className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30 text-sm font-semibold"
                   >
-                    <AtSign className="w-4 h-4 text-gray-400 transition-colors hover:text-amber-300" aria-hidden="true" />
+                    Aa
                   </button>
-                  {isPollChannel && (
-                    <>
-                      <div className="w-px h-5 mx-1 bg-white/20 hidden sm:block" />
+                </PopoverTrigger>
+                <PopoverContent side="top" align="start" className="w-auto p-2 bg-gray-900 border border-white/10 rounded-xl shadow-xl">
+                  <div className="flex items-center gap-0.5">
+                    {[
+                      { format: 'bold', Icon: Bold, label: 'Bold' },
+                      { format: 'italic', Icon: Italic, label: 'Italic' },
+                      { format: 'underline', Icon: Underline, label: 'Underline' },
+                      { format: 'strike', Icon: Strikethrough, label: 'Strikethrough' },
+                    ].map(({ format, Icon, label }) => (
                       <button
+                        key={format}
                         type="button"
-                        className="min-h-10 min-w-10 p-1.5 rounded transition-all duration-200 hover:bg-gray-700/50 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 shrink-0"
-                        title="Create poll"
-                        aria-label="Create poll"
-                        onClick={() => setShowPollModal(true)}
+                        aria-label={label}
+                        aria-pressed={!!activeFormats[format]}
+                        onClick={() => { quillRef.current?.getEditor().format(format, !activeFormats[format]); updateActiveFormats(); }}
+                        className={cn("min-w-[36px] min-h-[36px] flex items-center justify-center rounded transition-all active:scale-95", activeFormats[format] ? "bg-white/20 text-white" : "text-gray-400 hover:bg-white/10 hover:text-white")}
                       >
-                        <BarChart3 className="w-4 h-4 text-gray-400 transition-colors hover:text-amber-300" aria-hidden="true" />
+                        <Icon className="w-4 h-4" aria-hidden="true" />
                       </button>
-                    </>
-                  )}
-
+                    ))}
+                    <div className="w-px h-5 mx-1 bg-white/10" />
+                    {[
+                      { format: 'list', value: 'ordered', Icon: ListOrdered, label: 'Ordered list' },
+                      { format: 'list', value: 'bullet', Icon: List, label: 'Bullet list' },
+                      { format: 'code-block', value: true, Icon: Code, label: 'Code block' },
+                    ].map(({ format, value, Icon, label }) => (
+                      <button
+                        key={label}
+                        type="button"
+                        aria-label={label}
+                        onClick={() => { quillRef.current?.getEditor().format(format, activeFormats[format] === value ? false : value); updateActiveFormats(); }}
+                        className={cn("min-w-[36px] min-h-[36px] flex items-center justify-center rounded transition-all active:scale-95", activeFormats[format] === value ? "bg-white/20 text-white" : "text-gray-400 hover:bg-white/10 hover:text-white")}
+                      >
+                        <Icon className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                    ))}
                   </div>
+                </PopoverContent>
+              </Popover>
 
-                <div className="flex items-center gap-2 ml-auto shrink-0">
-                   <Button
-                       onClick={handleSend}
-                       disabled={!newMessage.replace(/<[^>]*>/g, '').trim() || isLoading}
-                       size="sm"
-                       className="rounded-xl min-w-[44px] min-h-[44px] px-3 sm:px-4 border-0 bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:via-pink-500 hover:to-rose-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-xl hover:shadow-rose-500/50 active:scale-95 font-medium"
-                       aria-label="Send message"
-                     >
-                       <Send className={cn("w-4 h-4 transition-transform duration-300 sm:mr-2", isLoading && "animate-spin")} aria-hidden="true" />
-                       <span className="hidden sm:inline">Send</span>
-                     </Button>
-                 </div>
-                </div>
-                </fieldset>
+              {/* Emoji picker */}
+              <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Open emoji picker"
+                    className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
+                  >
+                    <Smile className="w-5 h-5" aria-hidden="true" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-2" side="top" align="start">
+                  <div className="flex gap-1">
+                    {REACTION_EMOJIS.map(emoji => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        onClick={() => {
+                          const editor = quillRef.current?.getEditor();
+                          const range = editor?.getSelection(true);
+                          if (editor && range) { editor.insertText(range.index, emoji); editor.setSelection(range.index + emoji.length); }
+                          setShowEmojiPicker(false);
+                        }}
+                        className="hover:bg-gray-100 rounded p-1 text-lg transition-transform hover:scale-125"
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
 
-                {/* Poll Creation Modal */}
-                <CreatePollModal
-                  open={showPollModal}
-                  onClose={() => setShowPollModal(false)}
-                  onCreate={onCreatePoll}
-                />
-                </div>
-                </div>
-                </div>
-                )}
+              {/* @ mention */}
+              <button
+                type="button"
+                aria-label="Mention someone"
+                onClick={() => {
+                  const editor = quillRef.current?.getEditor();
+                  const range = editor?.getSelection(true);
+                  if (editor && range) { editor.insertText(range.index, '@'); editor.setSelection(range.index + 1); }
+                  setShowMentionPopover(true);
+                  setMentionQuery("");
+                }}
+                className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
+              >
+                <AtSign className="w-5 h-5" aria-hidden="true" />
+              </button>
+
+              {/* Slash commands / poll */}
+              {isPollChannel ? (
+                <button
+                  type="button"
+                  aria-label="Create poll"
+                  onClick={() => setShowPollModal(true)}
+                  className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
+                >
+                  <BarChart3 className="w-5 h-5" aria-hidden="true" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  aria-label="Slash commands"
+                  className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded text-gray-400 hover:bg-white/10 hover:text-white transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30 border border-gray-600 rounded-md"
+                >
+                  <span className="text-sm font-semibold leading-none">/</span>
+                </button>
+              )}
+
+              {/* Send button — right-aligned */}
+              <button
+                type="button"
+                onClick={handleSend}
+                disabled={!newMessage.replace(/<[^>]*>/g, '').trim() || isLoading}
+                aria-label="Send message"
+                className="ml-auto min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30"
+              >
+                <Send className={cn("w-5 h-5 transition-transform duration-200", !newMessage.replace(/<[^>]*>/g, '').trim() ? "" : "text-white rotate-0", isLoading && "animate-spin")} aria-hidden="true" />
+              </button>
+            </div>
+
+            {/* Poll Creation Modal */}
+            <CreatePollModal
+              open={showPollModal}
+              onClose={() => setShowPollModal(false)}
+              onCreate={onCreatePoll}
+            />
+          </div>
+        )}
 
                 {!canPost && (
                 <div
