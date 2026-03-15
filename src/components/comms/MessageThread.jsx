@@ -552,8 +552,8 @@ export default function MessageThread({
               )}
               aria-label="Message formatting and input"
             >
-              {/* Formatting Toolbar with Active States - Mobile Optimized */}
-              <div className="flex items-center gap-1 px-2 sm:px-3 py-2 border-b border-rose-500/20 overflow-x-auto scrollbar-hide bg-gradient-to-r from-rose-950/10 to-pink-950/10">
+              {/* Formatting Toolbar — condensed on mobile, full on sm+ */}
+              <div className="flex items-center gap-1 px-2 sm:px-3 py-1.5 border-b border-rose-500/20 overflow-x-auto scrollbar-hide bg-gradient-to-r from-rose-950/10 to-pink-950/10">
                 <div className="flex items-center gap-0.5 shrink-0">
                   <button
                     type="button"
