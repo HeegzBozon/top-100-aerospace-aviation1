@@ -947,7 +947,6 @@ export default function MessageThread({
                 />
                 </div>{/* flex flex-col */}
                 </div>{/* rounded-2xl wrapper */}
-                </div>{/* canPost && !isComposerCollapsed */}
                 )}
 
                 {!canPost && (
