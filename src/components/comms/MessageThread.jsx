@@ -958,7 +958,7 @@ export default function MessageThread({
                 📢 This is a read-only announcements channel
                 </div>
                 )}
-                </div>{/* outer composer wrapper */}
+                </div>
                 </form>
                 );
                 }
