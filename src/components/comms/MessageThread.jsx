@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
-import { Send, Smile, MoreHorizontal, Pencil, Trash2, MessageSquare, X, Check, BarChart3, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Code, AtSign, CheckSquare, Plus, AudioLines, CalendarPlus, Hand, Zap, Rocket } from "lucide-react";
+import { Send, Smile, MoreHorizontal, Pencil, Trash2, MessageSquare, X, Check, BarChart3, Bold, Italic, Strikethrough, Code, AtSign, CheckSquare, Plus, AudioLines, CalendarPlus, Hand, Zap, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import ReactQuill from "react-quill";
@@ -291,17 +291,6 @@ function MessageBubble({ message, isOwn, showAvatar, currentUserEmail, onReact, 
     </div>
   );
 }
-
-const quillModules = {
-  toolbar: [
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-    ['link'],
-    ['clean']
-  ]
-};
-
-const quillFormats = ['bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'link', 'code-block', 'color'];
 
 export default function MessageThread({
   messages,
