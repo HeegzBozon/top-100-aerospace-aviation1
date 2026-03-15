@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('linkedin');
 
     // Get org pages (in production, fetch from user settings or admin config)
-    const orgPageUrns = ['urn:li:organization:YOUR_ORG_ID']; // TODO: make configurable
+    const orgPageUrns = ['urn:li:organization:110252945'];
 
     // Post each launch to LinkedIn
     const results = [];
