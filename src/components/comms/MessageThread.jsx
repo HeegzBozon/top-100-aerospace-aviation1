@@ -531,8 +531,8 @@ export default function MessageThread({
 
         {/* ── Animated composer states ── */}
         <AnimatePresence mode="wait">
-        {/* ── iMessage-style composer row — + pill always visible ── */}
-        {canPost && isComposerCollapsed && (
+          {/* ── iMessage-style composer row — + pill always visible ── */}
+          {canPost && isComposerCollapsed ? (
           <motion.div
             key="collapsed"
             initial={{ opacity: 0, y: 8 }}
