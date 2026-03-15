@@ -4,6 +4,7 @@ import { useConversation } from "@/components/contexts/ConversationContext";
 import { brandColors } from "@/components/core/brandColors";
 import { motion, AnimatePresence } from "framer-motion";
 import TribeCRPHeader from "./TribeCRPHeader";
+import TuckmanInfoPanel from "./TuckmanInfoPanel";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 
