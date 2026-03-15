@@ -887,7 +887,7 @@ export default function MessageThread({
               onClose={() => setShowPollModal(false)}
               onCreate={onCreatePoll}
             />
-          </div>
+          </motion.div>
         )}
 
                 {!canPost && (
