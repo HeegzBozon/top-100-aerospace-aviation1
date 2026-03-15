@@ -895,7 +895,7 @@ export default function MessageThread({
               onCreate={onCreatePoll}
             />
           </motion.div>
-        )}
+          ) : null}
         </AnimatePresence>
 
                 {!canPost && (
