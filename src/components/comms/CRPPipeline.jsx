@@ -85,6 +85,11 @@ export default function CRPPipeline({ completedTasks: externalCompleted, initial
   const progressPct = Math.round((totalCompleted / totalSteps) * 100);
   const stageCompletedCount = config.tasks.filter(t => completedTasks[t.step]).length;
 
+  // Determine if the entire selected stage is locked (none of its steps are reachable)
+  const stageFirstStep = config.tasks[0].step;
+  const isStageLocked = stageFirstStep > highestCompleted + 1;
+  const prevStageKey = STAGE_KEYS[STAGE_KEYS.indexOf(selectedStage) - 1];
+
   const toggleTask = (step) => {
     // Only allow completing the next sequential step
     if (step === highestCompleted + 1 || completedTasks[step]) {
