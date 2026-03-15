@@ -908,7 +908,6 @@ export default function MessageThread({
             </div>
             )}
             </div>
-            </div>
             </form>
             );
             }
