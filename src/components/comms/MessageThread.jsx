@@ -601,12 +601,19 @@ export default function MessageThread({
               <span className="text-sm text-gray-500 select-none">Message…</span>
               <AudioLines className="w-4 h-4 text-gray-500 shrink-0" />
             </button>
-          </div>
+          </motion.div>
         )}
 
         {/* ── Expanded Slack-style composer ── */}
         {canPost && !isComposerCollapsed && (
-          <div className="rounded-2xl bg-[#1a1d21] border border-white/10 overflow-hidden">
+          <motion.div
+            key="expanded"
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="rounded-2xl bg-[#1a1d21] border border-white/10 overflow-hidden"
+          >
             {/* Reply banner */}
             {replyingTo && (
               <div className="flex items-center gap-2 text-xs px-3 py-2 border-b border-white/8 bg-white/5 text-gray-400">
