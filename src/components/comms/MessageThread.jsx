@@ -539,7 +539,7 @@ export default function MessageThread({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 -mb-4"
           >
             {/* + button — iMessage-style popover */}
             <Popover open={showPlusMenu} onOpenChange={setShowPlusMenu}>
