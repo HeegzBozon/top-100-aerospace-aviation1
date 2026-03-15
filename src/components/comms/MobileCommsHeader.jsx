@@ -128,17 +128,23 @@ export default function MobileCommsHeader({ onBack }) {
           )}
         </motion.button>
 
-        {/* Right Button */}
+        {/* Right Button — Tuckman info toggle */}
         <motion.button
           whileTap={{ scale: 0.95 }}
+          onClick={() => setTuckmanOpen(o => !o)}
           className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
           style={{
-            background: isDm ? 'rgba(255,255,255,0.1)' : 'rgba(255, 255, 255, 0.5)',
-            border: isDm ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(255, 255, 255, 0.6)',
+            background: tuckmanOpen
+              ? (isDm ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)')
+              : (isDm ? 'rgba(255,255,255,0.1)' : 'rgba(255, 255, 255, 0.5)'),
+            border: tuckmanOpen
+              ? '1px solid rgba(99,102,241,0.5)'
+              : (isDm ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(255, 255, 255, 0.6)'),
           }}
-          aria-label="Help"
+          aria-label="Tuckman stages info"
+          aria-expanded={tuckmanOpen}
         >
-          <HelpCircle className="w-5 h-5" style={{ color: isDm ? 'rgba(255,255,255,0.7)' : brandColors.navyDeep }} />
+          <HelpCircle className="w-5 h-5" style={{ color: tuckmanOpen ? 'rgb(165,180,252)' : (isDm ? 'rgba(255,255,255,0.7)' : brandColors.navyDeep) }} />
         </motion.button>
       </div>
 
