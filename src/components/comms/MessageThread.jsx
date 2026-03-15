@@ -631,10 +631,67 @@ export default function MessageThread({
 
         {/* ── Expanded full composer ── */}
         {canPost && !isComposerCollapsed && (
-        <div className={cn(
-          "rounded-2xl overflow-hidden shadow-2xl shadow-rose-500/20 border transition-all duration-300 backdrop-blur-xl",
-          "border-rose-500/40 bg-gradient-to-t from-black/98 via-rose-950/15 to-black/80"
-        )}>
+        <div className="flex items-end gap-2">
+          {/* + button stays visible */}
+          <Popover open={showPlusMenu} onOpenChange={setShowPlusMenu}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                aria-label="More options"
+                aria-expanded={showPlusMenu}
+                className="w-11 h-11 shrink-0 rounded-full bg-gray-800 border border-white/10 flex items-center justify-center hover:bg-gray-700 active:scale-95 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-400 self-end mb-0.5"
+              >
+                <Plus className={cn("w-5 h-5 text-white/80 transition-transform duration-200", showPlusMenu && "rotate-45")} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              side="top"
+              align="start"
+              className="w-64 p-0 bg-gray-900/95 border border-white/10 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden"
+              sideOffset={10}
+            >
+              <div className="py-2" role="menu" aria-label="Composer options">
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => { setShowPlusMenu(false); setShowTodos(true); }}
+                  className="w-full flex items-center gap-4 px-4 py-3.5 hover:bg-white/8 active:bg-white/12 transition-colors text-left"
+                >
+                  <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center shrink-0">
+                    <CheckSquare className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">Action Items</p>
+                    <p className="text-xs text-white/40">Manage todos for this chat</p>
+                  </div>
+                  {pendingCount > 0 && (
+                    <span className="ml-auto text-xs font-bold bg-emerald-500 text-white rounded-full px-2 py-0.5 tabular-nums">{pendingCount}</span>
+                  )}
+                </button>
+                <div className="mx-4 h-px bg-white/8" />
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => { setShowPlusMenu(false); }}
+                  className="w-full flex items-center gap-4 px-4 py-3.5 hover:bg-white/8 active:bg-white/12 transition-colors text-left"
+                >
+                  <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                    <CalendarPlus className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">Schedule</p>
+                    <p className="text-xs text-white/40">Set a reminder or meeting</p>
+                  </div>
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          {/* Composer panel */}
+          <div className={cn(
+            "flex-1 rounded-2xl overflow-hidden shadow-2xl shadow-rose-500/20 border transition-all duration-300 backdrop-blur-xl",
+            "border-rose-500/40 bg-gradient-to-t from-black/98 via-rose-950/15 to-black/80"
+          )}>
         <div className="flex flex-col">
             {replyingTo && (
               <div className="flex items-center gap-2 text-xs mb-2 px-3 py-2 rounded-t-xl bg-gradient-to-r from-rose-600/20 to-pink-600/10 border border-rose-400/30 backdrop-blur-sm animate-in slide-in-from-top-2 duration-300 text-rose-200">
