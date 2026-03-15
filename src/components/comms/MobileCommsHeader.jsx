@@ -30,7 +30,8 @@ export default function MobileCommsHeader({ onBack }) {
   const memberCount = isDm ? 2 : (activeConversation.member_count || 1);
   const tabCount = activeConversation.tab_count || 0;
 
-  const completedSteps = activeConversation?.crp_completed_steps?.length || 0;
+  const conversation = liveConversation || activeConversation;
+  const completedSteps = conversation?.crp_completed_steps?.length || 0;
   const crpSubtitle = `${memberCount} member${memberCount > 1 ? 's' : ''}${tabCount > 0 ? ` · ${tabCount} tabs` : ''}`;
 
   return (
