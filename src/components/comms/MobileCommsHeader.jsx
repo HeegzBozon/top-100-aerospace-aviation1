@@ -131,10 +131,34 @@ export default function MobileCommsHeader({ onBack }) {
           )}
         </motion.button>
 
+        {/* Todo button */}
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { setTodosOpen(o => !o); setTuckmanOpen(false); }}
+          className="relative w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+          style={{
+            background: todosOpen
+              ? 'rgba(16,185,129,0.2)'
+              : (isDm ? 'rgba(255,255,255,0.1)' : 'rgba(255, 255, 255, 0.5)'),
+            border: todosOpen
+              ? '1px solid rgba(16,185,129,0.4)'
+              : (isDm ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(255, 255, 255, 0.6)'),
+          }}
+          aria-label="Action items"
+          aria-expanded={todosOpen}
+        >
+          <CheckSquare className="w-5 h-5" style={{ color: todosOpen ? 'rgb(110,231,183)' : (isDm ? 'rgba(255,255,255,0.7)' : brandColors.navyDeep) }} />
+          {pendingCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-[15px] px-0.5 flex items-center justify-center rounded-full text-[9px] font-bold bg-emerald-500 text-white tabular-nums">
+              {pendingCount}
+            </span>
+          )}
+        </motion.button>
+
         {/* Right Button — Tuckman info toggle */}
         <motion.button
           whileTap={{ scale: 0.95 }}
-          onClick={() => setTuckmanOpen(o => !o)}
+          onClick={() => { setTuckmanOpen(o => !o); setTodosOpen(false); }}
           className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
           style={{
             background: tuckmanOpen
