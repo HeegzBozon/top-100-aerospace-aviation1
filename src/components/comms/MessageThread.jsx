@@ -532,9 +532,8 @@ export default function MessageThread({
 
 
       {/* Message Composer — stays at the bottom of the flex column; keyboard pushes it up naturally on mobile */}
-      <div className="relative z-10 shrink-0 px-2 pt-2 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] sm:px-4 sm:pt-3 sm:pb-4">
       <div className={cn(
-        "relative rounded-2xl overflow-hidden shadow-2xl shadow-rose-500/20 border transition-all duration-300 backdrop-blur-xl",
+        "relative z-10 shrink-0 mx-2 mb-[calc(env(safe-area-inset-bottom,0px)+8px)] sm:mx-4 sm:mb-4 rounded-2xl overflow-hidden shadow-2xl shadow-rose-500/20 border transition-all duration-300 backdrop-blur-xl",
         "border-rose-500/40 bg-gradient-to-t from-black/98 via-rose-950/15 to-black/80"
       )}>
         {canPost ? (
