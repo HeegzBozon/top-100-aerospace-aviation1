@@ -1033,7 +1033,8 @@ export default function MessageThread({
                   onCreate={onCreatePoll}
                 />
                 </div>
-                </div>
+                </div>{/* composer panel */}
+                </div>{/* flex items-end gap-2 row */}
                 )}
 
                 {!canPost && (
