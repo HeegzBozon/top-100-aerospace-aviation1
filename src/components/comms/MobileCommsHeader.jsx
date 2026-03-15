@@ -83,9 +83,27 @@ export default function MobileCommsHeader({ onBack }) {
               <div className="text-sm font-semibold truncate" style={{ color: isDm ? 'rgba(255,255,255,0.95)' : brandColors.navyDeep }}>
                 {displayName}
               </div>
-              <div className="text-xs truncate" style={{ color: isDm ? 'rgba(201,168,124,0.7)' : brandColors.skyBlue }}>
-                {crpSubtitle}
-              </div>
+              {isDm ? (
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  {/* Micro progress bar */}
+                  <div className="relative h-1.5 rounded-full overflow-hidden" style={{ width: 64, background: 'rgba(255,255,255,0.1)' }}>
+                    <motion.div
+                      className="absolute inset-y-0 left-0 rounded-full"
+                      style={{ background: 'linear-gradient(90deg, #6366f1, #ec4899, #f59e0b)' }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((completedSteps / 16) * 100)}%` }}
+                      transition={{ duration: 0.6, ease: 'easeOut' }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-semibold tabular-nums" style={{ color: 'rgba(201,168,124,0.65)' }}>
+                    {completedSteps}/16
+                  </span>
+                </div>
+              ) : (
+                <div className="text-xs truncate" style={{ color: brandColors.skyBlue }}>
+                  {crpSubtitle}
+                </div>
+              )}
             </div>
           </div>
           {isDm && (
