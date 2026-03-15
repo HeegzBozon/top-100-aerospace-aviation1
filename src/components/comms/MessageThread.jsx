@@ -565,7 +565,7 @@ export default function MessageThread({
 
         {/* ── iMessage-style composer row — + pill always visible ── */}
         {canPost && isComposerCollapsed && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pb-3">
             {/* + button — iMessage-style popover */}
             <Popover open={showPlusMenu} onOpenChange={setShowPlusMenu}>
               <PopoverTrigger asChild>
