@@ -822,7 +822,7 @@ export default function MessageThread({
                        onClick={handleSend}
                        disabled={!newMessage.replace(/<[^>]*>/g, '').trim() || isLoading}
                        size="sm"
-                       className="rounded-lg px-4 h-10 sm:h-8 sm:px-3 border-0 bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:via-pink-500 hover:to-rose-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-xl hover:shadow-rose-500/50 active:scale-95 font-medium"
+                       className="rounded-xl min-w-[44px] min-h-[44px] px-3 sm:px-4 border-0 bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 hover:from-rose-500 hover:via-pink-500 hover:to-rose-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-xl hover:shadow-rose-500/50 active:scale-95 font-medium"
                        aria-label="Send message"
                      >
                        <Send className={cn("w-4 h-4 transition-transform duration-300 sm:mr-2", isLoading && "animate-spin")} aria-hidden="true" />
