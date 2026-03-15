@@ -522,6 +522,8 @@ export default function MessageThread({
       {/* Message Composer */}
       <div className="relative z-10 shrink-0 mx-2 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] sm:mx-4 sm:pb-4 pt-1">
 
+        {/* ── Animated composer states ── */}
+        <AnimatePresence mode="wait">
         {/* ── iMessage-style composer row — + pill always visible ── */}
         {canPost && isComposerCollapsed && (
           <motion.div
