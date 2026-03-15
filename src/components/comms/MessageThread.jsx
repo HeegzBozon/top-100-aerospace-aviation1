@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
 import { Send, Smile, MoreHorizontal, Pencil, Trash2, MessageSquare, X, Check, BarChart3, Bold, Italic, Strikethrough, Code, AtSign, CheckSquare, Plus, AudioLines, CalendarPlus, Hand, Zap, Rocket } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import ReactQuill from "react-quill";
