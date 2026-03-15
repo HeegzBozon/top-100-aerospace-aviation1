@@ -892,6 +892,7 @@ export default function MessageThread({
             />
           </motion.div>
         )}
+        </AnimatePresence>
 
                 {!canPost && (
                 <div
