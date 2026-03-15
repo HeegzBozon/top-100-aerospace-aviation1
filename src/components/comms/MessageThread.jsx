@@ -519,11 +519,18 @@ export default function MessageThread({
 
 
       {/* Message Composer */}
-      <div className="relative z-10 shrink-0 mx-2 mb-[calc(env(safe-area-inset-bottom,0px)+30px)] sm:mx-4 sm:mb-4">
+      <div className="relative z-10 shrink-0 mx-2 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] sm:mx-4 sm:pb-4 pt-1">
 
         {/* ── iMessage-style composer row — + pill always visible ── */}
         {canPost && isComposerCollapsed && (
-          <div className="flex items-center gap-2 pb-3">
+          <motion.div
+            key="collapsed"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="flex items-center gap-2"
+          >
             {/* + button — iMessage-style popover */}
             <Popover open={showPlusMenu} onOpenChange={setShowPlusMenu}>
               <PopoverTrigger asChild>
