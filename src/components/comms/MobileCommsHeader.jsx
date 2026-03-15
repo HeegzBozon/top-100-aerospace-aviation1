@@ -4,10 +4,21 @@ import { useConversation } from "@/components/contexts/ConversationContext";
 import { brandColors } from "@/components/core/brandColors";
 import { motion, AnimatePresence } from "framer-motion";
 import TribeCRPHeader from "./TribeCRPHeader";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 
 export default function MobileCommsHeader({ onBack }) {
   const { activeConversation, user } = useConversation();
   const [crpOpen, setCrpOpen] = useState(false);
+
+  // Live conversation data so CRP progress stays fresh after step toggles
+  const { data: liveConversation } = useQuery({
+    queryKey: ["conversation", activeConversation?.id],
+    queryFn: () => base44.entities.Conversation.filter({ id: activeConversation.id }, null, 1).then(r => r[0]),
+    enabled: !!activeConversation?.id && activeConversation?.type === 'dm',
+    staleTime: 3000,
+    refetchInterval: 8000,
+  });
 
   if (!activeConversation) return null;
 
