@@ -702,11 +702,12 @@ export default function MessageThread({
                 value={newMessage}
                 onChange={e => handleTextChange(e.target.value)}
                 onKeyDown={handleKeyDown}
-                onFocus={() => { setIsComposerCollapsed(false); messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
                 placeholder={replyingTo ? "Write a reply..." : "Message…"}
                 rows={1}
                 inputMode="text"
+                enterKeyHint="send"
                 autoCorrect="off"
+                autoCapitalize="sentences"
                 autoComplete="off"
                 spellCheck={false}
                 className="w-full min-h-[52px] max-h-[160px] resize-none overflow-auto bg-transparent px-4 py-3.5 text-base text-gray-100 placeholder-gray-500 focus:outline-none"
