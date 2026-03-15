@@ -364,6 +364,13 @@ export default function MessageThread({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Scroll to bottom when composer expands so messages stay visible
+  useEffect(() => {
+    if (!isComposerCollapsed) {
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+    }
+  }, [isComposerCollapsed]);
+
   // Collapse composer on scroll and blur textarea to dismiss iOS keyboard
   useEffect(() => {
     const el = scrollContainerRef.current;
