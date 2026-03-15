@@ -553,7 +553,7 @@ export default function MessageThread({
       {/* Message Composer */}
       <div className="relative z-10 shrink-0 mx-2 mb-[calc(env(safe-area-inset-bottom,0px)+8px)] sm:mx-4 sm:mb-4">
 
-        {/* ── Collapsed / iMessage pill ── */}
+        {/* ── iMessage-style composer row — + pill always visible ── */}
         {canPost && isComposerCollapsed && (
           <div className="flex items-center gap-2">
             {/* + button — iMessage-style popover */}
