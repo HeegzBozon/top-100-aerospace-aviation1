@@ -373,30 +373,21 @@ export default function MessageThread({
     quillRef.current?.focus();
   };
 
-  // Handle @ detection
-  const handleTextChange = (content, delta, source, editor) => {
-    setNewMessage(content);
-    updateActiveFormats();
-
-    // Check for @ mentions
-    const text = editor.getText();
-    const selection = editor.getSelection();
-    if (selection) {
-      const beforeCursor = text.slice(0, selection.index);
-      const lastAtIndex = beforeCursor.lastIndexOf('@');
-      const lastSpaceIndex = beforeCursor.lastIndexOf(' ');
-
-      if (lastAtIndex > lastSpaceIndex && lastAtIndex >= 0) {
-        const query = beforeCursor.slice(lastAtIndex + 1);
-        if (!query.includes('\n')) {
-          setMentionQuery(query);
-          setShowMentionPopover(true);
-          return;
-        }
+  // Handle @ detection for textarea
+  const handleTextChange = useCallback((text) => {
+    setNewMessage(text);
+    const lastAt = text.lastIndexOf('@');
+    const lastSpace = text.lastIndexOf(' ');
+    if (lastAt > lastSpace && lastAt >= 0) {
+      const query = text.slice(lastAt + 1);
+      if (!query.includes('\n')) {
+        setMentionQuery(query);
+        setShowMentionPopover(true);
+        return;
       }
     }
     setShowMentionPopover(false);
-  };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
