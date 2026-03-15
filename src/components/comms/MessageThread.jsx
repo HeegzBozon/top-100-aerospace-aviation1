@@ -329,7 +329,6 @@ export default function MessageThread({
   const [showPollModal, setShowPollModal] = useState(false);
   const [showMentionPopover, setShowMentionPopover] = useState(false);
   const [mentionQuery, setMentionQuery] = useState("");
-  const [activeFormats, setActiveFormats] = useState({});
   const [activeCrpStep, setActiveCrpStep] = useState(defaultCrpStep);
   const [showTodos, setShowTodos] = useState(false);
   const { todos, addTodo, toggleTodo, deleteTodo, pendingCount } = useTodos(conversationId);
@@ -342,24 +341,7 @@ export default function MessageThread({
   const scrollContainerRef = useRef(null);
   const lastScrollTop = useRef(0);
 
-  // Suppress iOS keyboard accessory bar on the Quill contenteditable
-  useEffect(() => {
-    const editor = quillRef.current?.getEditor();
-    if (!editor) return;
-    const el = editor.root;
-    el.setAttribute('autocorrect', 'off');
-    el.setAttribute('spellcheck', 'false');
-    el.setAttribute('inputmode', 'text');
-  }, []);
 
-  // Track formatting state
-  const updateActiveFormats = useCallback(() => {
-    if (quillRef.current) {
-      const editor = quillRef.current.getEditor();
-      const format = editor.getFormat();
-      setActiveFormats(format);
-    }
-  }, []);
 
   // Handle mention insertion
   const handleMentionSelect = (user) => {
@@ -450,13 +432,8 @@ export default function MessageThread({
   };
 
   const handleQuickAction = (template) => {
-    const editor = quillRef.current?.getEditor();
-    if (editor) {
-      const range = editor.getSelection(true) || { index: 0 };
-      editor.insertText(range.index, template);
-      editor.setSelection(range.index + template.length);
-      editor.focus();
-    }
+    setNewMessage(prev => prev + template);
+    setTimeout(() => quillRef.current?.focus(), 0);
   };
 
   const handleKeyDown = (e) => {
