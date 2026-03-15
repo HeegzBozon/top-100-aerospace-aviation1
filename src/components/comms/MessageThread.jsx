@@ -732,7 +732,7 @@ export default function MessageThread({
 
               {/* Bottom Action Bar */}
               <div
-                className="flex items-center justify-between gap-2 px-2 sm:px-3 py-2 border-t border-rose-500/20 bg-gradient-to-r from-rose-950/10 to-pink-950/10 flex-wrap sm:flex-nowrap"
+                className="flex items-center justify-between gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 border-t border-rose-500/20 bg-gradient-to-r from-rose-950/10 to-pink-950/10 flex-nowrap"
                 role="toolbar"
                 aria-label="Message actions"
               >
