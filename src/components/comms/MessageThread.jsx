@@ -718,7 +718,7 @@ export default function MessageThread({
                    modules={{ toolbar: false }}
                    formats={quillFormats}
                    placeholder={replyingTo ? "Write a reply..." : "Message #channel"}
-                   className="text-base sm:text-[15px] [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[80px] sm:[&_.ql-editor]:min-h-[60px] [&_.ql-editor]:max-h-[150px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-3 [&_.ql-editor]:py-3 sm:[&_.ql-editor]:py-2 [&_.ql-editor.ql-blank::before]:text-gray-600 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-100 [&_.ql-editor]:bg-transparent"
+                   className="text-base [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[44px] sm:[&_.ql-editor]:min-h-[56px] [&_.ql-editor]:max-h-[120px] sm:[&_.ql-editor]:max-h-[150px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-3 [&_.ql-editor]:py-2.5 [&_.ql-editor.ql-blank::before]:text-gray-600 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-100 [&_.ql-editor]:bg-transparent"
                   />
 
                 {/* Mention Popover */}
