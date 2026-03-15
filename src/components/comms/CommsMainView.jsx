@@ -214,7 +214,7 @@ export default function CommsMainView({ onOpenMobileSidebar }) {
   const dmInitials = dmDisplayName.slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: theme.bg }}>
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden min-h-0" style={{ background: theme.bg }}>
       {/* Mobile Header - Only visible on mobile */}
       <div className="md:hidden">
         <MobileCommsHeader onBack={() => selectConversation(null)} />
