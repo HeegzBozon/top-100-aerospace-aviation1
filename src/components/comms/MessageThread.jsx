@@ -363,20 +363,14 @@ export default function MessageThread({
 
   // Handle mention insertion
   const handleMentionSelect = (user) => {
-    const editor = quillRef.current?.getEditor();
-    if (editor) {
-      const range = editor.getSelection(true);
-      // Find and delete the @ and any text after it
-      const text = editor.getText();
-      const beforeCursor = text.slice(0, range.index);
-      const lastAtIndex = beforeCursor.lastIndexOf('@');
-      if (lastAtIndex >= 0) {
-        editor.deleteText(lastAtIndex, range.index - lastAtIndex);
-        editor.insertText(lastAtIndex, `@${user.full_name || user.email?.split('@')[0]} `, { bold: true, color: '#4a90b8' });
-      }
-    }
+    const mention = `@${user.full_name || user.email?.split('@')[0]} `;
+    setNewMessage(prev => {
+      const lastAt = prev.lastIndexOf('@');
+      return lastAt >= 0 ? prev.slice(0, lastAt) + mention : prev + mention;
+    });
     setShowMentionPopover(false);
     setMentionQuery("");
+    quillRef.current?.focus();
   };
 
   // Handle @ detection
