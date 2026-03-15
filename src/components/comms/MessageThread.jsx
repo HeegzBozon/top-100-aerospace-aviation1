@@ -527,10 +527,10 @@ export default function MessageThread({
 
 
 
-      {/* Message Composer */}
+      {/* Message Composer — stays at the bottom of the flex column; keyboard pushes it up naturally on mobile */}
       <div className={cn(
-        "relative z-10 md:relative md:p-4 fixed bottom-0 left-0 right-0 p-4 pb-[env(safe-area-inset-bottom)] shadow-2xl shadow-rose-500/20 border-t transition-all duration-300 backdrop-blur-xl",
-        "border-rose-500/40 bg-gradient-to-t from-black/98 via-rose-950/15 to-transparent"
+        "relative z-10 shrink-0 p-2 sm:p-4 pb-[env(safe-area-inset-bottom,0px)] shadow-2xl shadow-rose-500/20 border-t transition-all duration-300 backdrop-blur-xl",
+        "border-rose-500/40 bg-gradient-to-t from-black/98 via-rose-950/15 to-black/80"
       )}>
         {canPost ? (
           <div className="flex flex-col">
