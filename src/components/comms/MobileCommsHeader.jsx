@@ -168,6 +168,12 @@ export default function MobileCommsHeader({ onBack }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Tuckman Info Panel */}
+      <TuckmanInfoPanel
+        open={tuckmanOpen}
+        onClose={() => setTuckmanOpen(false)}
+      />
     </motion.div>
   );
 }
