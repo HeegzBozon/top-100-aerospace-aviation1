@@ -706,23 +706,25 @@ export default function MessageThread({
               </div>
             )}
 
-            {/* Text input area */}
-            <div className="relative" onKeyDown={handleKeyDown}>
+            {/* Text input area — native textarea to suppress iOS accessory bar */}
+            <div className="relative">
               <label htmlFor="message-input" className="sr-only">
                 Message input. {replyingTo ? `Replying to ${replyingTo.sender_name || replyingTo.sender_email?.split('@')[0]}. P` : 'P'}ress Enter to send, Shift+Enter for new line.
               </label>
-              <ReactQuill
+              <textarea
                 ref={quillRef}
                 id="message-input"
-                value={newMessage}
-                onChange={handleTextChange}
-                onChangeSelection={updateActiveFormats}
+                value={newMessage.replace(/<[^>]*>/g, '')}
+                onChange={e => setNewMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
                 onFocus={() => { setIsComposerCollapsed(false); messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
-                modules={{ toolbar: false }}
-                formats={quillFormats}
                 placeholder={replyingTo ? "Write a reply..." : "Message…"}
-                className="text-base [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[52px] [&_.ql-editor]:max-h-[160px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-4 [&_.ql-editor]:py-3.5 [&_.ql-editor.ql-blank::before]:text-gray-500 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-100 [&_.ql-editor]:bg-transparent [&_.ql-editor]:text-base"
-
+                rows={1}
+                inputMode="text"
+                autoCorrect="off"
+                autoComplete="off"
+                spellCheck={false}
+                className="w-full min-h-[52px] max-h-[160px] resize-none overflow-auto bg-transparent px-4 py-3.5 text-base text-gray-100 placeholder-gray-500 focus:outline-none"
               />
               <MentionPopover
                 isOpen={showMentionPopover}
