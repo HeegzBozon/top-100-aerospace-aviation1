@@ -393,7 +393,7 @@ export default function MessageThread({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Collapse composer on scroll up/down, expand on focus
+  // Collapse composer on scroll and blur textarea to dismiss iOS keyboard
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
@@ -401,12 +401,20 @@ export default function MessageThread({
       const st = el.scrollTop;
       if (Math.abs(st - lastScrollTop.current) > 10) {
         setIsComposerCollapsed(true);
+        quillRef.current?.blur();
       }
       lastScrollTop.current = st;
     };
     el.addEventListener('scroll', handleScroll, { passive: true });
     return () => el.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Blur textarea when composer collapses to prevent iOS keyboard from staying open
+  useEffect(() => {
+    if (isComposerCollapsed) {
+      quillRef.current?.blur();
+    }
+  }, [isComposerCollapsed]);
 
   const handleSend = () => {
     const text = newMessage.trim();
