@@ -12,6 +12,7 @@ import MentionPopover from "./MentionPopover";
 import CrpStepPickerButton from "./CrpStepPickerButton";
 import ConstellationBackground from "./ConstellationBackground";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
+import { useTodos } from "./ConversationTodoPanel";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥", "🎉", "👀"];
 
