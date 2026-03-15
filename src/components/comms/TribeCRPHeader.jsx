@@ -42,8 +42,11 @@ const SPECTRUM_GRADIENTS = [
   "from-blue-500 via-indigo-500 to-blue-500",          // 16/16 - blue-indigo
 ];
 
-export default function TribeCRPHeader({ conversation }) {
-  const [expanded, setExpanded] = useState(false);
+export default function TribeCRPHeader({ conversation, expanded: externalExpanded, onToggleExpand }) {
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  const isControlledExpand = externalExpanded !== undefined;
+  const expanded = isControlledExpand ? externalExpanded : internalExpanded;
+  const toggleExpanded = isControlledExpand ? onToggleExpand : () => setInternalExpanded(v => !v);
   const { theme } = useCommsTheme();
   const queryClient = useQueryClient();
 
