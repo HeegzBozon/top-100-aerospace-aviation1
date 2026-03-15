@@ -152,7 +152,11 @@ export default function MobileCommsHeader({ onBack }) {
             className="overflow-hidden"
             style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
           >
-            <TribeCRPHeader conversation={activeConversation} />
+            <TribeCRPHeader
+              conversation={conversation}
+              expanded={crpOpen}
+              onToggleExpand={() => setCrpOpen(o => !o)}
+            />
           </motion.div>
         )}
       </AnimatePresence>
