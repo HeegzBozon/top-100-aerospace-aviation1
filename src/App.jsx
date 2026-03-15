@@ -66,6 +66,14 @@ const AuthenticatedApp = () => {
 };
 
 
+// Prevent iOS Safari auto-zoom on input focus by enforcing maximum-scale=1
+if (typeof document !== 'undefined') {
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+  if (viewportMeta) {
+    viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+  }
+}
+
 function App() {
 
   return (
