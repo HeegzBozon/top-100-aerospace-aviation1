@@ -11,6 +11,7 @@ import { base44 } from "@/api/base44Client";
 export default function MobileCommsHeader({ onBack }) {
   const { activeConversation, user } = useConversation();
   const [crpOpen, setCrpOpen] = useState(false);
+  const [tuckmanOpen, setTuckmanOpen] = useState(false);
 
   // Live conversation data so CRP progress stays fresh after step toggles
   const { data: liveConversation } = useQuery({
