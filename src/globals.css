@@ -167,11 +167,11 @@ section, article, main, aside, nav, header, footer {
 
 /* ===== iOS INPUT FIX ===== */
 /* Prevents iOS Safari from auto-zooming when focusing any input, including Quill */
-@media screen and (max-width: 768px) {
-  input, select, textarea,
-  .ql-editor {
-    font-size: 16px !important;
-  }
+input, select, textarea,
+.ql-editor,
+.ql-container,
+[contenteditable] {
+  font-size: 16px !important;
 }
 
 /* ===== REDUCED MOTION ===== */
