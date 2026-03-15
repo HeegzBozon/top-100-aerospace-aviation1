@@ -615,6 +615,7 @@ export default function MessageThread({
         )}
 
         {/* ── Expanded Slack-style composer ── */}
+
         {canPost && !isComposerCollapsed && (
           <motion.div
             key="expanded"
