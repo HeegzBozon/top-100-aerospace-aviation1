@@ -548,6 +548,54 @@ export default function MessageThread({
               </div>
             )}
 
+            {/* Inline Todo Panel */}
+            {showTodos && (
+              <div className="mb-2 rounded-xl border border-emerald-500/20 bg-emerald-950/20 overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 border-b border-emerald-500/15">
+                  <div className="flex items-center gap-2">
+                    <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-300/70">Action Items</span>
+                    {pendingCount > 0 && (
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 tabular-nums">{pendingCount}</span>
+                    )}
+                  </div>
+                  <button type="button" onClick={() => setShowTodos(false)} className="min-w-[32px] min-h-[32px] flex items-center justify-center rounded hover:bg-white/10 transition-colors" aria-label="Close action items">
+                    <X className="w-3.5 h-3.5 text-white/40" />
+                  </button>
+                </div>
+                <div className="px-3 py-2 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={todoDraft}
+                      onChange={e => setTodoDraft(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTodo(todoDraft); setTodoDraft(""); } }}
+                      placeholder="Add an action item…"
+                      className="flex-1 min-h-[40px] px-3 py-1.5 rounded-lg text-xs bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-emerald-500/50 transition-all"
+                    />
+                    <button type="button" onClick={() => { addTodo(todoDraft); setTodoDraft(""); }} disabled={!todoDraft.trim()} className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-emerald-500/20 border border-emerald-500/30 hover:bg-emerald-500/30 disabled:opacity-30 transition-all active:scale-95">
+                      <CheckSquare className="w-4 h-4 text-emerald-300" />
+                    </button>
+                  </div>
+                  {todos.length > 0 && (
+                    <ul className="space-y-1 max-h-36 overflow-y-auto scrollbar-hide">
+                      {todos.map(todo => (
+                        <li key={todo.id} className="flex items-center gap-2 group/item">
+                          <button type="button" onClick={() => toggleTodo(todo.id)} className="shrink-0 min-w-[32px] min-h-[32px] flex items-center justify-center rounded hover:bg-white/5 active:scale-95">
+                            {todo.done ? <CheckSquare className="w-3.5 h-3.5 text-emerald-400" /> : <span className="w-3.5 h-3.5 rounded border border-white/25 block" />}
+                          </button>
+                          <span className={cn("flex-1 text-xs leading-snug", todo.done ? "line-through text-white/25" : "text-white/65")}>{todo.text}</span>
+                          <button type="button" onClick={() => deleteTodo(todo.id)} className="shrink-0 min-w-[28px] min-h-[28px] flex items-center justify-center rounded opacity-0 group-hover/item:opacity-100 hover:bg-red-500/15 transition-all active:scale-95">
+                            <Trash2 className="w-3 h-3 text-red-400/60" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Message Editor */}
             <fieldset
               className={cn(
