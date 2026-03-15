@@ -712,14 +712,7 @@ export default function MessageThread({
                 formats={quillFormats}
                 placeholder={replyingTo ? "Write a reply..." : "Message…"}
                 className="text-base [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[52px] [&_.ql-editor]:max-h-[160px] [&_.ql-editor]:overflow-auto [&_.ql-editor]:px-4 [&_.ql-editor]:py-3.5 [&_.ql-editor.ql-blank::before]:text-gray-500 [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-editor]:text-gray-100 [&_.ql-editor]:bg-transparent [&_.ql-editor]:text-base"
-                onReady={(editor) => {
-                  const el = editor.root;
-                  el.setAttribute('autocorrect', 'off');
-                  el.setAttribute('autocapitalize', 'sentences');
-                  el.setAttribute('spellcheck', 'false');
-                  el.setAttribute('inputmode', 'text');
-                  el.setAttribute('data-enable-grammarly', 'false');
-                }}
+
               />
               <MentionPopover
                 isOpen={showMentionPopover}
