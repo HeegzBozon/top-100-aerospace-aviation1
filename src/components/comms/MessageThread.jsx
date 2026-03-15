@@ -414,6 +414,7 @@ export default function MessageThread({
   useEffect(() => {
     if (isComposerCollapsed) {
       quillRef.current?.blur();
+      setTextareaActive(false);
     }
   }, [isComposerCollapsed]);
 
