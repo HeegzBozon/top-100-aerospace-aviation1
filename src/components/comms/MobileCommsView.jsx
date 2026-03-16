@@ -16,7 +16,7 @@ export default function MobileCommsView({ isDarkMode = false, onComposerActiveCh
 
   // If a conversation is active, show the message thread
   if (activeConversation) {
-    return <CommsMainView onOpenMobileSidebar={() => selectConversation(null)} />;
+    return <CommsMainView onOpenMobileSidebar={() => selectConversation(null)} onComposerActiveChange={onComposerActiveChange} />;
   }
 
   const getDisplayName = (email) => {
