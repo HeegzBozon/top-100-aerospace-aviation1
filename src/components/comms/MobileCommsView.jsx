@@ -131,7 +131,7 @@ export default function MobileCommsView({ isDarkMode = false, onComposerActiveCh
                   </span>
                   {dm.last_message_preview && (
                     <span className="block text-xs truncate" style={{ color: theme.textMuted }}>
-                      {dm.last_message_preview}
+                      {dm.last_message_preview || "No messages yet"}
                     </span>
                   )}
                 </div>
