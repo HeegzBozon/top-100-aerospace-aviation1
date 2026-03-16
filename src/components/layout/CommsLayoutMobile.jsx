@@ -32,7 +32,7 @@ function MobileCommsContent({
       )}
 
       {!isBare && !!user && currentPageName?.toLowerCase() === 'comms' ? (
-        <MobileCommsView isDarkMode={isDarkMode} />
+        <MobileCommsView isDarkMode={isDarkMode} onComposerActiveChange={setComposerActive} />
       ) : !isBare && !!user && currentPageName?.toLowerCase() === 'home' ? (
         <MobileHomeView
           isDarkMode={isDarkMode}
