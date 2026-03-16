@@ -80,7 +80,7 @@ export default function Layout({ children, currentPageName }) {
   // Use Comms layout for all "App" pages, including the public index
   const useCommsLayout = (!!user || isPublicIndexPage) && !isNotFoundPage && !isLandingPage;
 
-  const isBare = isLandingPage || isUnauthHome || isNotFoundPage;
+  const isBare = isLandingPage || isNotFoundPage;
 
   return (
     <ThemeProvider initialMode={initialThemeMode}>
