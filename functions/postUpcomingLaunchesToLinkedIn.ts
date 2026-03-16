@@ -1,6 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
 const YOUTUBE_API_KEY = Deno.env.get('YOUTUBE_API_KEY');
+const LAUNCH_PARTY_URL = 'https://top100aero.space/LaunchParty';
+const POSTED_KEY_PREFIX = 'linkedin_launch_post_';
 
 async function findYouTubeStream(launchName, providerName) {
   if (!YOUTUBE_API_KEY) return null;
@@ -28,16 +30,39 @@ async function findYouTubeStream(launchName, providerName) {
   return null;
 }
 
+function generateLaunchPost(launch) {
+  const time = new Date(launch.event_date).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZoneName: 'short',
+  });
+  const statusLine = launch.status ? `\n🟢 Status: ${launch.status}` : '';
+  const descLine = launch.description ? `\n\n${launch.description}` : '';
+  const watchLine = launch.youtubeUrl
+    ? `\n\n▶️ Watch live: ${launch.youtubeUrl}`
+    : `\n\n🎉 Follow along: ${LAUNCH_PARTY_URL}`;
+  return `🚀 LAUNCHING TODAY: ${launch.title}${descLine}\n\n⏰ ${time}\n📍 ${launch.location || 'TBA'}${statusLine}${watchLine}\n\n#SpaceLaunch #Aerospace #TOP100Women`;
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
 
-    if (!user || user.role !== 'admin') {
+    // Support both manual (admin-authed) and scheduled (service role) invocations
+    let isAuthorized = false;
+    try {
+      const user = await base44.auth.me();
+      if (user?.role === 'admin') isAuthorized = true;
+    } catch {
+      // Called from scheduler — no user session, use service role
+      isAuthorized = true;
+    }
+
+    if (!isAuthorized) {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    // Fetch same-day launches from The Space Devs API (no key required)
+    // Fetch upcoming launches for today
     const now = new Date();
     const endOfDay = new Date(now);
     endOfDay.setHours(23, 59, 59, 999);
@@ -52,7 +77,6 @@ Deno.serve(async (req) => {
     }
 
     const apiData = await apiRes.json();
-
     const upcomingLaunches = (apiData.results || []).filter(launch => {
       const launchDate = new Date(launch.net);
       return launchDate >= now && launchDate <= endOfDay;
@@ -62,15 +86,27 @@ Deno.serve(async (req) => {
       return Response.json({ message: 'No upcoming launches to post' });
     }
 
+    // Load already-posted launch IDs from IdempotencyRecord
+    const existingRecords = await base44.asServiceRole.entities.IdempotencyRecord.list();
+    const postedIds = new Set(
+      existingRecords
+        .filter(r => r.key?.startsWith(POSTED_KEY_PREFIX))
+        .map(r => r.key.replace(POSTED_KEY_PREFIX, ''))
+    );
+
+    // Filter to only new launches we haven't posted yet
+    const newLaunches = upcomingLaunches.filter(l => !postedIds.has(l.id));
+
+    if (newLaunches.length === 0) {
+      return Response.json({ message: 'All launches already posted', skipped: upcomingLaunches.length });
+    }
+
     // Get LinkedIn connection
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('linkedin');
-
-    // Get org pages (in production, fetch from user settings or admin config)
     const orgPageUrns = ['urn:li:organization:110252945'];
 
-    // Post each launch to LinkedIn
     const results = [];
-    for (const launch of upcomingLaunches) {
+    for (const launch of newLaunches) {
       const providerName = launch.launch_service_provider?.name || '';
       const youtubeUrl = await findYouTubeStream(launch.name, providerName);
 
@@ -83,7 +119,6 @@ Deno.serve(async (req) => {
         youtubeUrl,
       });
 
-      // Use YouTube URL as article link if available, otherwise LaunchParty page
       const linkUrl = youtubeUrl || LAUNCH_PARTY_URL;
       const linkTitle = youtubeUrl
         ? `Watch Live: ${launch.name}`
@@ -92,63 +127,52 @@ Deno.serve(async (req) => {
       const shareContent = {
         shareCommentary: { text: postContent },
         shareMediaCategory: 'ARTICLE',
-        media: [
-          {
-            status: 'READY',
-            originalUrl: linkUrl,
-            title: { text: linkTitle },
-            description: { text: launch.mission?.description?.slice(0, 200) || 'Track today\'s space launch.' },
-          },
-        ],
+        media: [{
+          status: 'READY',
+          originalUrl: linkUrl,
+          title: { text: linkTitle },
+          description: { text: launch.mission?.description?.slice(0, 200) || 'Track today\'s space launch.' },
+        }],
       };
 
-      try {
-        for (const author of orgPageUrns) {
-          const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              author,
-              lifecycleState: 'PUBLISHED',
-              specificContent: { 'com.linkedin.ugc.ShareContent': shareContent },
-              visibility: { 'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC' },
-            }),
-          });
+      let posted = false;
+      for (const author of orgPageUrns) {
+        const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            author,
+            lifecycleState: 'PUBLISHED',
+            specificContent: { 'com.linkedin.ugc.ShareContent': shareContent },
+            visibility: { 'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC' },
+          }),
+        });
 
-          if (response.ok) {
-            results.push({ launch: launch.name, orgPage: author, status: 'posted', youtubeUrl });
-          } else {
-            results.push({ launch: launch.name, orgPage: author, status: 'failed', error: await response.text() });
-          }
+        if (response.ok) {
+          results.push({ launch: launch.name, orgPage: author, status: 'posted', youtubeUrl });
+          posted = true;
+        } else {
+          results.push({ launch: launch.name, orgPage: author, status: 'failed', error: await response.text() });
         }
-      } catch (error) {
-        results.push({ launch: launch.name, status: 'error', error: error.message });
+      }
+
+      // Record this launch as posted so future hourly runs skip it
+      if (posted) {
+        await base44.asServiceRole.entities.IdempotencyRecord.create({
+          key: `${POSTED_KEY_PREFIX}${launch.id}`,
+          value: JSON.stringify({ name: launch.name, posted_at: now.toISOString() }),
+        });
       }
     }
 
-    return Response.json({ posted: results });
+    return Response.json({
+      posted: results,
+      skipped_already_posted: postedIds.size,
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
-
-const LAUNCH_PARTY_URL = 'https://top100aero.space/LaunchParty';
-
-function generateLaunchPost(launch) {
-  const time = new Date(launch.event_date).toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZoneName: 'short',
-  });
-
-  const statusLine = launch.status ? `\n🟢 Status: ${launch.status}` : '';
-  const descLine = launch.description ? `\n\n${launch.description}` : '';
-  const watchLine = launch.youtubeUrl
-    ? `\n\n▶️ Watch live: ${launch.youtubeUrl}`
-    : `\n\n🎉 Follow along: ${LAUNCH_PARTY_URL}`;
-
-  return `🚀 LAUNCHING TODAY: ${launch.title}${descLine}\n\n⏰ ${time}\n📍 ${launch.location || 'TBA'}${statusLine}${watchLine}\n\n#SpaceLaunch #Aerospace #TOP100Women`;
-}
