@@ -103,7 +103,7 @@ export default function NoConversationPlaceholder() {
             <img 
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/a2c16e1a2_Gemini_Generated_Image_chl0uochl0uochl0-removebg-preview.png"
               alt="TOP 100 Rapid Response Network & Framework"
-              className="h-60 object-contain"
+              className="h-screen max-h-96 object-contain"
             />
           </div>
 
