@@ -17,6 +17,7 @@ export const PUBLIC_PAGES = [
   'Top100Women2025',
   'ArchiveLanding',
   'GetStarted',
+  'LaunchParty',
 ];
 
 // Quick Access Items Configuration for Mobile Home
