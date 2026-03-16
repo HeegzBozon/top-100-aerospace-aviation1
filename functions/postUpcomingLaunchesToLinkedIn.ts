@@ -42,7 +42,12 @@ Deno.serve(async (req) => {
     // Post each launch to LinkedIn
     const results = [];
     for (const launch of upcomingLaunches) {
-      const postContent = generateLaunchPost(launch);
+      const postContent = generateLaunchPost({
+        title: launch.name,
+        description: launch.mission?.description || '',
+        event_date: launch.net,
+        location: launch.pad?.location?.name || launch.pad?.name || 'TBA',
+      });
       
       try {
         // Post to org pages
