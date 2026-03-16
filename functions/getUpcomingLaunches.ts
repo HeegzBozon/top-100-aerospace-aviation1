@@ -6,10 +6,6 @@ let cacheTs = 0;
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-
     const body = await req.json().catch(() => ({}));
     const limit = Math.min(body.limit || 10, 20);
     const offset = body.offset || 0;
