@@ -15,7 +15,7 @@ function CommsAwareContent({ children, currentPageName }) {
   }
 
   if (currentPageName === 'Comms') {
-    return <NoConversationPlaceholder />;
+    return <CommsHeroCarousel />;
   }
 
   return <div className="flex-1 overflow-y-auto scrollbar-hide">{children}</div>;
