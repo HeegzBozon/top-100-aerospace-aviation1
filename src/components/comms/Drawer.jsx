@@ -99,9 +99,35 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
       </div>
 
       {/* Conditional content based on page */}
-      {isCommsPage ? (
-        <>
-          {/* RRF Stage Filter (Comms only) */}
+       {isCommsPage ? (
+         <>
+           {/* Auth gate for Comms */}
+           {!user ? (
+             <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 text-center">
+               <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mb-4">
+                 <Plus className="w-6 h-6 text-amber-400" />
+               </div>
+               <h3 className="text-lg font-bold text-white mb-2">Sign in to message</h3>
+               <p className="text-sm text-white/60 mb-6">Connect with other aerospace professionals in real-time.</p>
+               <div className="flex flex-col gap-2 w-full">
+                 <button
+                   onClick={() => base44.auth.redirectToLogin()}
+                   className="w-full px-4 py-2.5 rounded-lg font-medium text-white transition-all"
+                   style={{ background: 'linear-gradient(135deg, #4a90b8, #2d5a8c)' }}
+                 >
+                   Sign In
+                 </button>
+                 <button
+                   onClick={() => base44.auth.redirectToLogin()}
+                   className="w-full px-4 py-2.5 rounded-lg font-medium text-white/80 border border-white/20 hover:bg-white/5 transition-all"
+                 >
+                   Create Account
+                 </button>
+               </div>
+             </div>
+           ) : (
+             <>
+               {/* RRF Stage Filter (Comms only) */}
           <div className="px-4 py-4 border-b backdrop-blur-sm" style={{ background: 'rgba(201, 168, 124, 0.05)', borderColor: 'rgba(201, 168, 124, 0.15)' }}>
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: 'rgba(201, 168, 124, 0.5)' }}>Filter by stage</p>
             <div className="flex gap-2 flex-wrap">
