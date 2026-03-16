@@ -146,6 +146,9 @@ function generateLaunchPost(launch) {
 
   const statusLine = launch.status ? `\n🟢 Status: ${launch.status}` : '';
   const descLine = launch.description ? `\n\n${launch.description}` : '';
+  const watchLine = launch.youtubeUrl
+    ? `\n\n▶️ Watch live: ${launch.youtubeUrl}`
+    : `\n\n🎉 Follow along: ${LAUNCH_PARTY_URL}`;
 
-  return `🚀 LAUNCHING TODAY: ${launch.title}${descLine}\n\n⏰ ${time}\n📍 ${launch.location || 'TBA'}${statusLine}\n\n🎉 Follow along: ${LAUNCH_PARTY_URL}\n\n#SpaceLaunch #Aerospace #TOP100Women`;
+  return `🚀 LAUNCHING TODAY: ${launch.title}${descLine}\n\n⏰ ${time}\n📍 ${launch.location || 'TBA'}${statusLine}${watchLine}\n\n#SpaceLaunch #Aerospace #TOP100Women`;
 }
