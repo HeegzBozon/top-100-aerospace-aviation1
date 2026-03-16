@@ -48,6 +48,7 @@ Deno.serve(async (req) => {
         description: launch.mission?.description || '',
         event_date: launch.net,
         location: launch.pad?.location?.name || launch.pad?.name || 'TBA',
+        status: launch.status?.name || null,
       });
       
       try {
