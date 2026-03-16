@@ -116,7 +116,7 @@ export default function CommsIconRail({ currentPageName, totalUnread }) {
         const enabled = data.filter(i =>
           i.is_enabled !== false &&
           i.is_desktop !== false &&
-          !HIDDEN_LABELS.has(i.label?.toLowerCase())
+          (!AUTH_ONLY_LABELS.has(i.label?.toLowerCase()) || !!user)
         );
         const sorted = [...enabled].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
         setRailItems(sorted.filter(i => !i.is_more_item));
