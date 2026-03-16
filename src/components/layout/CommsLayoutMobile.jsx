@@ -19,7 +19,8 @@ function MobileCommsContent({
 
 }) {
   const { activeConversation } = useConversation();
-  const showDock = !isBare && !!user && !activeConversation;
+  const [composerActive, setComposerActive] = useState(false);
+  const showDock = !isBare && !!user && !activeConversation || (!isBare && !!user && activeConversation && !composerActive);
 
   return (
     <>
