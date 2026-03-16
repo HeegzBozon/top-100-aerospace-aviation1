@@ -91,12 +91,17 @@ Deno.serve(async (req) => {
   }
 });
 
+const LAUNCH_PARTY_URL = 'https://app.top100women.com/LaunchParty';
+
 function generateLaunchPost(launch) {
-  const date = new Date(launch.event_date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
+  const time = new Date(launch.event_date).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZoneName: 'short',
   });
 
-  return `🚀 Upcoming Launch: ${launch.title}\n\n${launch.description || ''}\n\n📅 ${date}\n📍 ${launch.location || 'TBA'}\n\n#Launch #Innovation #SpaceIndustry`;
+  const statusLine = launch.status ? `\n🟢 Status: ${launch.status}` : '';
+  const descLine = launch.description ? `\n\n${launch.description}` : '';
+
+  return `🚀 LAUNCHING TODAY: ${launch.title}${descLine}\n\n⏰ ${time}\n📍 ${launch.location || 'TBA'}${statusLine}\n\n🎉 Follow along: ${LAUNCH_PARTY_URL}\n\n#SpaceLaunch #Aerospace #TOP100Women`;
 }
