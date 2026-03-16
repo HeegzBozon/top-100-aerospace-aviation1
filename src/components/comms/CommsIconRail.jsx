@@ -18,11 +18,12 @@ import { brandColors } from "@/components/layout/navConfig";
 
 
 
-const HIDDEN_LABELS = new Set(['comms', 'saved', 'bookmark', 'bookmarks']);
+const AUTH_ONLY_LABELS = new Set(['comms', 'saved', 'bookmark', 'bookmarks']);
 
 // Static fallbacks synchronized with CORE_NAV_ITEMS
 const FALLBACK_RAIL = [
   { icon: "Home", label: "Home", page: "Home" },
+  { icon: "MessageCircle", label: "Comms", page: "Comms" },
   { icon: "CircuitBoard", label: "Index", page: "Top100Women2025" },
 ];
 
