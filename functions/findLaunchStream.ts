@@ -1,5 +1,3 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
-
 const YOUTUBE_API_KEY = Deno.env.get('YOUTUBE_API_KEY');
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 min
 const streamCache = new Map(); // launchId -> { url, ts }
