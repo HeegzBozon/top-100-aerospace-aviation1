@@ -20,7 +20,7 @@ import YouDMThread from "./YouDMThread";
 import TribeCRPHeader from "./TribeCRPHeader";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
-export default function CommsMainView({ onOpenMobileSidebar }) {
+export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveChange }) {
   const { user, activeConversation, selectConversation } = useConversation();
   const { theme } = useCommsTheme();
   const queryClient = useQueryClient();
