@@ -97,21 +97,28 @@ export default function NoConversationPlaceholder() {
       <div className="relative z-10 max-w-2xl mx-auto w-full px-6 py-10 flex flex-col gap-10">
 
         {/* ── Hero ── */}
-        <div className="flex flex-col items-center text-center gap-3">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-1"
-            style={{ background: "linear-gradient(135deg, #1e3a5a 0%, #4a90b8 100%)", boxShadow: "0 0 32px rgba(74,144,184,0.25)" }}>
-            <Rocket className="w-7 h-7 text-white" />
+        <div className="flex flex-col items-center text-center gap-4">
+          {/* Logos */}
+          <div className="flex items-center justify-center gap-6 mb-2">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/a2c16e1a2_Gemini_Generated_Image_chl0uochl0uochl0-removebg-preview.png"
+              alt="TOP 100 Rapid Response Network & Framework"
+              className="h-20 object-contain"
+            />
           </div>
+
           <h1 className="text-2xl font-bold tracking-tight text-white">
-            TOP 100 OS
+            Comms is Our Rapid Response Network
           </h1>
           <p className="text-sm text-white/50 max-w-sm leading-relaxed">
             A relationship infrastructure for the aerospace community — where the best ideas surface faster,
             the best people find each other, and the best collaborations emerge naturally.
           </p>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-400/20 bg-amber-400/8 mt-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-[11px] font-semibold uppercase tracking-widest text-amber-300/70">Active Product Architecture · v1.0</span>
+
+          {/* Roadmap badge */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-400/25 bg-amber-400/12 mt-1">
+            <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-amber-300/80">Under Construction · Work in Progress · Prototype</span>
           </div>
         </div>
 
