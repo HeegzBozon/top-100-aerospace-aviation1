@@ -71,16 +71,38 @@ Deno.serve(async (req) => {
     // Post each launch to LinkedIn
     const results = [];
     for (const launch of upcomingLaunches) {
+      const providerName = launch.launch_service_provider?.name || '';
+      const youtubeUrl = await findYouTubeStream(launch.name, providerName);
+
       const postContent = generateLaunchPost({
         title: launch.name,
         description: launch.mission?.description || '',
         event_date: launch.net,
         location: launch.pad?.location?.name || launch.pad?.name || 'TBA',
         status: launch.status?.name || null,
+        youtubeUrl,
       });
-      
+
+      // Use YouTube URL as article link if available, otherwise LaunchParty page
+      const linkUrl = youtubeUrl || LAUNCH_PARTY_URL;
+      const linkTitle = youtubeUrl
+        ? `Watch Live: ${launch.name}`
+        : `Launch Party – TOP 100 Women in Aerospace`;
+
+      const shareContent = {
+        shareCommentary: { text: postContent },
+        shareMediaCategory: 'ARTICLE',
+        media: [
+          {
+            status: 'READY',
+            originalUrl: linkUrl,
+            title: { text: linkTitle },
+            description: { text: launch.mission?.description?.slice(0, 200) || 'Track today\'s space launch.' },
+          },
+        ],
+      };
+
       try {
-        // Post to org pages
         for (const author of orgPageUrns) {
           const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
             method: 'POST',
@@ -91,28 +113,21 @@ Deno.serve(async (req) => {
             body: JSON.stringify({
               author,
               lifecycleState: 'PUBLISHED',
-              specificContent: {
-                'com.linkedin.ugc.ShareContent': {
-                  shareCommentary: { text: postContent },
-                  shareMediaCategory: 'NONE',
-                },
-              },
-              visibility: {
-                'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
-              },
+              specificContent: { 'com.linkedin.ugc.ShareContent': shareContent },
+              visibility: { 'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC' },
             }),
           });
 
-        if (response.ok) {
-          results.push({ launch: launch.title, orgPage: author, status: 'posted' });
-        } else {
-          results.push({ launch: launch.title, orgPage: author, status: 'failed', error: await response.text() });
+          if (response.ok) {
+            results.push({ launch: launch.name, orgPage: author, status: 'posted', youtubeUrl });
+          } else {
+            results.push({ launch: launch.name, orgPage: author, status: 'failed', error: await response.text() });
+          }
         }
-        }
-        } catch (error) {
-        results.push({ launch: launch.title, status: 'error', error: error.message });
-        }
-        }
+      } catch (error) {
+        results.push({ launch: launch.name, status: 'error', error: error.message });
+      }
+    }
 
     return Response.json({ posted: results });
   } catch (error) {
