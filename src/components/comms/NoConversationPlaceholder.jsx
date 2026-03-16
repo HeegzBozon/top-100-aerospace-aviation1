@@ -241,9 +241,28 @@ export default function NoConversationPlaceholder() {
           </p>
         </section>
 
+        {/* Roadmap Timeline */}
+        <section>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-3">Release Roadmap</p>
+          <div className="space-y-2">
+            <div className="rounded-lg p-3 border" style={{ background: "rgba(16,185,129,0.08)", borderColor: "rgba(16,185,129,0.25)" }}>
+              <p className="text-xs font-semibold text-emerald-200 mb-0.5">MVP (May 20, 2026)</p>
+              <p className="text-[11px] text-white/40">Domain networks, 1:1 messaging, Community Feed, Basic Mission Rooms</p>
+            </div>
+            <div className="rounded-lg p-3 border" style={{ background: "rgba(59,130,246,0.08)", borderColor: "rgba(59,130,246,0.25)" }}>
+              <p className="text-xs font-semibold text-blue-200 mb-0.5">v1.5 (June–July 2026)</p>
+              <p className="text-[11px] text-white/40">Mission Rooms fully functional, Domain digests, Relationship timeline, Reputation tracking</p>
+            </div>
+            <div className="rounded-lg p-3 border" style={{ background: "rgba(168,85,247,0.08)", borderColor: "rgba(168,85,247,0.25)" }}>
+              <p className="text-xs font-semibold text-purple-200 mb-0.5">v2.0+ (August 2026+)</p>
+              <p className="text-[11px] text-white/40">Conference templates, Schedule integration, GPS navigation, AI peer suggestions</p>
+            </div>
+          </div>
+        </section>
+
         {/* Footer */}
         <p className="text-center text-[10px] text-white/20 pb-2">
-          TOP 100 OS · Messaging & Networking Platform Architecture · v1.0 · March 2026
+          TOP 100 OS Rapid Response Network & Framework · Messaging & Networking Platform Architecture · v1.0 · March 2026
         </p>
 
       </div>
