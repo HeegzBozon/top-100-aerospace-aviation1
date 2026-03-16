@@ -8,7 +8,7 @@ import { brandColors } from "@/components/core/brandTheme";
 import { getMobileTheme } from "@/components/core/commsUtils";
 import { motion } from "framer-motion";
 
-export default function MobileCommsView({ isDarkMode = false }) {
+export default function MobileCommsView({ isDarkMode = false, onComposerActiveChange }) {
   const { user, dms, activeConversation, selectConversation } = useConversation();
   const { unreadCounts } = useUnread();
   const theme = getMobileTheme(isDarkMode, brandColors);
