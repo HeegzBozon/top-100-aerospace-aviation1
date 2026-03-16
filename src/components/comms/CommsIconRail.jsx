@@ -18,7 +18,7 @@ import { brandColors } from "@/components/layout/navConfig";
 
 
 
-const AUTH_ONLY_LABELS = new Set(['comms', 'saved', 'bookmark', 'bookmarks']);
+const AUTH_ONLY_LABELS = new Set(['saved', 'bookmark', 'bookmarks']);
 
 // Static fallbacks synchronized with CORE_NAV_ITEMS
 const FALLBACK_RAIL = [
