@@ -46,10 +46,6 @@ async function searchYouTubeStream(query) {
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-
     if (!YOUTUBE_API_KEY) {
       return Response.json({ error: 'YOUTUBE_API_KEY not configured' }, { status: 503 });
     }
