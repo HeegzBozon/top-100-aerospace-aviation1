@@ -1,75 +1,223 @@
-import React from "react";
-import { MessageSquare, Users, Zap, Star } from "lucide-react";
-import { brandColors } from "@/components/core/brandTheme";
+import React, { useState } from "react";
+import {
+  Rocket, Globe2, MessageSquare, Radio,
+  Layers, Zap, Users, Star, ChevronRight, Clock
+} from "lucide-react";
 import ConstellationBackground from "./ConstellationBackground";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
-const cultureCards = [
-  { icon: MessageSquare, color: brandColors.skyBlue,      title: "Start a Conversation", desc: "Pick a channel or DM from the sidebar." },
-  { icon: Users,         color: brandColors.goldPrestige, title: "Build Together",        desc: "Channels are your team's heartbeat." },
-  { icon: Zap,           color: brandColors.roseAccent,   title: "Move Fast",             desc: "Ideas shared here become momentum." },
-  { icon: Star,          color: brandColors.navyDeep,     title: "Culture Starts Here",   desc: "Every message is part of the story." },
+const LAYERS = [
+  {
+    badge: "Layer 0",
+    icon: Clock,
+    color: "#e07b54",
+    title: "Mission Rooms",
+    subtitle: "Time-Bound Activation",
+    desc: "Temporary, structured spaces organized around a specific event or moment. Teams go Forming → Performing in 48 hours.",
+    examples: ["SpaceX launch analysis", "Senate ITAR debate", "Farnborough Airshow"],
+  },
+  {
+    badge: "Layer 1",
+    icon: Globe2,
+    color: "#4a90b8",
+    title: "Domain Networks",
+    subtitle: "Expertise-Based Peer Groups",
+    desc: "Persistent peer groups across 8 disciplines — Space, Aviation, Engineering, Policy, and more. Each domain has a champion.",
+    examples: ["Space", "Aviation", "Policy", "Academia"],
+  },
+  {
+    badge: "Layer 2",
+    icon: MessageSquare,
+    color: "#c9a87c",
+    title: "Direct Messaging",
+    subtitle: "1:1 with Persistent Memory",
+    desc: "Relationships don't evaporate. Every conversation is preserved and searchable. Relationship timelines. Mutual connections surfaced.",
+    examples: ["Persistent threads", "Relationship timeline", "Quick actions"],
+  },
+  {
+    badge: "Layer 3",
+    icon: Radio,
+    color: "#8b5cf6",
+    title: "Community Feed",
+    subtitle: "Reputation-Weighted Signals",
+    desc: "Institutional moments, performance narratives, authority pieces. Ranked by reputation tier and engagement — not algorithms.",
+    examples: ["Institutional moments", "Domain spotlights", "Calls to action"],
+  },
+];
+
+const FRAMEWORKS = [
+  {
+    icon: Layers,
+    color: "#4a90b8",
+    title: "Dunbar's Number",
+    tagline: "Nested Trust Layers",
+    blurb: "Trust scales through concentric layers. Each layer certifies the one below it.",
+  },
+  {
+    icon: Zap,
+    color: "#e07b54",
+    title: "Rapid Response",
+    tagline: "Triggered Activation",
+    blurb: "Pre-positioned response cells activate on trigger events. Peer analysis surfaces within hours.",
+  },
+  {
+    icon: Star,
+    color: "#c9a87c",
+    title: "Super Communicators",
+    tagline: "Peer-Driven Leadership",
+    blurb: "Domain champions and peer mentors operate at institutional quality as the platform scales.",
+  },
+  {
+    icon: Users,
+    color: "#10b981",
+    title: "Tuckman's Lifecycle",
+    tagline: "Bounded Team Maturity",
+    blurb: "Every Mission Room applies Tuckman deliberately. Communities are self-moderating.",
+  },
 ];
 
 export default function NoConversationPlaceholder() {
-  const { mode, theme } = useCommsTheme();
-  const isLight = mode === "light";
+  const { theme } = useCommsTheme();
+  const [activeLayer, setActiveLayer] = useState(0);
+  const layer = LAYERS[activeLayer];
 
   return (
     <div
-      className="relative flex-1 flex flex-col items-center justify-center h-full overflow-hidden"
+      className="relative flex-1 flex flex-col h-full overflow-y-auto"
       style={{ background: theme.bg }}
     >
       {theme.constellations && <ConstellationBackground />}
 
-      {/* Subtle radial glow */}
+      {/* Ambient glow */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse at 50% 40%, rgba(201,168,124,0.08) 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(ellipse at 50% 20%, rgba(201,168,124,0.07) 0%, transparent 65%)" }}
       />
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center text-center px-8 max-w-xl">
-        <div
-          className="mb-6 w-16 h-16 rounded-2xl flex items-center justify-center"
-          style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})` }}
-        >
-          <MessageSquare className="w-8 h-8 text-white" />
+      <div className="relative z-10 max-w-2xl mx-auto w-full px-6 py-10 flex flex-col gap-10">
+
+        {/* ── Hero ── */}
+        <div className="flex flex-col items-center text-center gap-3">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-1"
+            style={{ background: "linear-gradient(135deg, #1e3a5a 0%, #4a90b8 100%)", boxShadow: "0 0 32px rgba(74,144,184,0.25)" }}>
+            <Rocket className="w-7 h-7 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-white">
+            TOP 100 OS
+          </h1>
+          <p className="text-sm text-white/50 max-w-sm leading-relaxed">
+            A relationship infrastructure for the aerospace community — where the best ideas surface faster,
+            the best people find each other, and the best collaborations emerge naturally.
+          </p>
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-400/20 bg-amber-400/8 mt-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-amber-300/70">Active Product Architecture · v1.0</span>
+          </div>
         </div>
 
-        <h2
-          className="text-2xl font-bold mb-2"
-          style={{ color: isLight ? brandColors.navyDeep : brandColors.goldLight }}
-        >
-          Welcome to Comms
-        </h2>
-        <p
-          className="text-sm leading-relaxed mb-10"
-          style={{ color: isLight ? "rgba(30,58,90,0.6)" : "rgba(255,255,255,0.5)" }}
-        >
-          Your hub for real conversations, shared ideas, and the culture we're building together. Select a channel or DM to dive in.
-        </p>
+        {/* ── Communication Layers ── */}
+        <section>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-3">Communication Layers</p>
 
-        <div className="grid grid-cols-2 gap-3 w-full">
-          {cultureCards.map(({ icon: Icon, color, title, desc }) => (
-            <div
-              key={title}
-              className="flex flex-col items-start gap-2 rounded-xl p-4 text-left"
-              style={{
-                background: isLight ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.05)",
-                border: isLight ? "1px solid rgba(30,58,90,0.12)" : "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${color}22` }}>
-                <Icon className="w-3.5 h-3.5" style={{ color }} />
+          {/* Layer tab strip */}
+          <div className="flex gap-1.5 mb-4 flex-wrap">
+            {LAYERS.map((l, i) => (
+              <button
+                key={l.badge}
+                onClick={() => setActiveLayer(i)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+                style={{
+                  background: activeLayer === i ? `${l.color}22` : "rgba(255,255,255,0.04)",
+                  borderColor: activeLayer === i ? `${l.color}60` : "rgba(255,255,255,0.08)",
+                  color: activeLayer === i ? l.color : "rgba(255,255,255,0.45)",
+                }}
+                aria-pressed={activeLayer === i}
+              >
+                {l.badge}
+              </button>
+            ))}
+          </div>
+
+          {/* Active layer card */}
+          <div
+            className="rounded-2xl p-5 border transition-all duration-300"
+            style={{ background: `${layer.color}10`, borderColor: `${layer.color}30` }}
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: `${layer.color}20`, border: `1px solid ${layer.color}40` }}>
+                <layer.icon className="w-5 h-5" style={{ color: layer.color }} />
               </div>
-              <div>
-                <p className="text-xs font-semibold" style={{ color: isLight ? brandColors.navyDeep : brandColors.goldLight }}>{title}</p>
-                <p className="text-xs mt-0.5" style={{ color: isLight ? "rgba(30,58,90,0.5)" : "rgba(255,255,255,0.4)" }}>{desc}</p>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                  <span className="text-base font-bold text-white">{layer.title}</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                    style={{ background: `${layer.color}20`, color: layer.color }}>
+                    {layer.subtitle}
+                  </span>
+                </div>
+                <p className="text-sm text-white/55 leading-relaxed mb-3">{layer.desc}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {layer.examples.map(ex => (
+                    <span key={ex} className="text-[11px] px-2 py-0.5 rounded border text-white/40"
+                      style={{ borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)" }}>
+                      {ex}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        </section>
+
+        {/* ── Four Frameworks ── */}
+        <section>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-3">Four Unified Frameworks</p>
+          <div className="grid grid-cols-2 gap-3">
+            {FRAMEWORKS.map(({ icon: Icon, color, title, tagline, blurb }) => (
+              <div
+                key={title}
+                className="rounded-xl p-4 border flex flex-col gap-2.5"
+                style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                    style={{ background: `${color}20` }}>
+                    <Icon className="w-3.5 h-3.5" style={{ color }} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white leading-tight">{title}</p>
+                    <p className="text-[10px] font-medium" style={{ color }}>{tagline}</p>
+                  </div>
+                </div>
+                <p className="text-[11px] text-white/40 leading-relaxed">{blurb}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Get Started CTA ── */}
+        <section
+          className="rounded-2xl p-5 border flex flex-col sm:flex-row items-start sm:items-center gap-4"
+          style={{ background: "rgba(201,168,124,0.06)", borderColor: "rgba(201,168,124,0.2)" }}
+        >
+          <div className="flex-1">
+            <p className="text-sm font-bold text-amber-200 mb-0.5">Select a channel to get started</p>
+            <p className="text-xs text-white/40 leading-relaxed">
+              Pick a Domain Network, open a DM, or join a Mission Room from the sidebar to begin.
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5 text-amber-300 shrink-0">
+            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 -ml-2.5 opacity-50" />
+          </div>
+        </section>
+
+        {/* Footer */}
+        <p className="text-center text-[10px] text-white/20 pb-2">
+          TOP 100 OS · Messaging & Networking Platform Architecture · v1.0 · March 2026
+        </p>
+
       </div>
     </div>
   );
