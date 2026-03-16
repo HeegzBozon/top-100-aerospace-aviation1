@@ -1,5 +1,33 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
+const YOUTUBE_API_KEY = Deno.env.get('YOUTUBE_API_KEY');
+
+async function findYouTubeStream(launchName, providerName) {
+  if (!YOUTUBE_API_KEY) return null;
+  const queries = [
+    `${launchName} launch live stream`,
+    `${providerName} ${launchName} live`,
+    `${providerName} launch webcast`,
+  ].filter(q => q.trim().length > 3);
+
+  for (const q of queries) {
+    for (const eventType of ['live', 'upcoming']) {
+      const params = new URLSearchParams({
+        part: 'snippet', q, type: 'video', eventType,
+        maxResults: '3', order: 'relevance', key: YOUTUBE_API_KEY,
+      });
+      const res = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const videoId = data.items?.[0]?.id?.videoId;
+      if (videoId) return `https://www.youtube.com/watch?v=${videoId}`;
+    }
+  }
+  return null;
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
