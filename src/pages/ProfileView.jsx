@@ -160,20 +160,20 @@ export default function ProfileView({ userId: propUserId = null }) {
 
 
                         {/* General Info / Links */}
-                        {(user?.linkedin_url || nominee?.linkedin_profile_url || user?.personal_website_url || nominee?.website_url) && (
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card rounded-2xl p-4 material-shadow bg-white/70 space-y-2">
-                                <h3 className="text-[10px] uppercase tracking-widest font-bold mb-3" style={{ color: brandColors.goldPrestige }}>Connect</h3>
-                                {(user?.linkedin_url || nominee?.linkedin_profile_url) && (
-                                    <LinkButton href={user?.linkedin_url || nominee?.linkedin_profile_url} icon={Linkedin}>LinkedIn Profile</LinkButton>
-                                )}
-                                {(user?.personal_website_url || nominee?.website_url) && (
-                                    <LinkButton href={user?.personal_website_url || nominee?.website_url} icon={ExternalLink}>Website</LinkButton>
-                                )}
-                                {(user?.email || nominee?.nominee_email) && (
-                                    <LinkButton href={`mailto:${user?.email || nominee?.nominee_email}`} icon={Mail}>Email</LinkButton>
-                                )}
-                            </motion.div>
-                        )}
+                         {(user?.linkedin_url || nominee?.linkedin_profile_url || user?.personal_website_url || nominee?.website_url) && (
+                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card rounded-2xl p-4 material-shadow bg-white/70 space-y-2">
+                                 <h3 className="text-[10px] uppercase tracking-widest font-bold mb-3" style={{ color: brandColors.goldPrestige }}>Connect</h3>
+                                 {(user?.linkedin_url || nominee?.linkedin_profile_url) && (
+                                     <LinkButton href={user?.linkedin_url || nominee?.linkedin_profile_url} icon={Linkedin}>LinkedIn Profile</LinkButton>
+                                 )}
+                                 {(user?.personal_website_url || nominee?.website_url) && (
+                                     <LinkButton href={user?.personal_website_url || nominee?.website_url} icon={ExternalLink}>Website</LinkButton>
+                                 )}
+                                 {viewer?.email === (user?.email || nominee?.nominee_email) && (user?.email || nominee?.nominee_email) && (
+                                     <LinkButton href={`mailto:${user?.email || nominee?.nominee_email}`} icon={Mail}>Email</LinkButton>
+                                 )}
+                             </motion.div>
+                         )}
                     </div>
 
                     {/* Right Column: Composite Detailed Content */}
