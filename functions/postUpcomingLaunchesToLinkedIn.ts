@@ -9,9 +9,10 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    // Fetch upcoming launches from The Space Devs API (no key required)
+    // Fetch same-day launches from The Space Devs API (no key required)
     const now = new Date();
-    const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
 
     const apiRes = await fetch('https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=20&mode=normal', {
       headers: { 'Accept': 'application/json' },
@@ -26,7 +27,7 @@ Deno.serve(async (req) => {
 
     const upcomingLaunches = (apiData.results || []).filter(launch => {
       const launchDate = new Date(launch.net);
-      return launchDate >= now && launchDate <= weekFromNow;
+      return launchDate >= now && launchDate <= endOfDay;
     });
 
     if (upcomingLaunches.length === 0) {
