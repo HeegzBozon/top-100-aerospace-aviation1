@@ -9,17 +9,24 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    // Fetch upcoming launches from next 7 days
+    // Fetch upcoming launches from space news API
     const now = new Date();
     const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     
-    const launches = await base44.entities.Event.filter({
-      event_type: 'launch',
-      status: 'upcoming',
+    const spaceNewsRes = await fetch('https://api.spacenewsapi.com/v1/launches', {
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('SPACE_NEWS_API_KEY')}`,
+      },
     });
-
-    const upcomingLaunches = launches.filter(launch => {
-      const launchDate = new Date(launch.event_date);
+    
+    if (!spaceNewsRes.ok) {
+      return Response.json({ error: 'Failed to fetch space news API' }, { status: 500 });
+    }
+    
+    const spaceNewsData = await spaceNewsRes.json();
+    
+    const upcomingLaunches = (spaceNewsData.results || []).filter(launch => {
+      const launchDate = new Date(launch.net);
       return launchDate >= now && launchDate <= weekFromNow;
     });
 
