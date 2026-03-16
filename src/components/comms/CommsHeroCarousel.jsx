@@ -216,9 +216,16 @@ export default function CommsHeroCarousel() {
         </button>
       </div>
 
-      {/* Slide Counter - Top right */}
-      <div className="absolute top-6 sm:top-8 md:top-10 right-6 sm:right-8 md:right-10 z-20 text-xs sm:text-sm font-semibold text-white/60">
-        {activeIndex + 1} / {SLIDES.length}
+      {/* Autoplay Status - Top right */}
+      <div className="absolute top-6 sm:top-8 md:top-10 right-6 sm:right-8 md:right-10 z-20 flex flex-col items-end gap-2">
+        <div className="text-xs sm:text-sm font-semibold text-white/60">
+          {activeIndex + 1} / {SLIDES.length}
+        </div>
+        {!autoplay && (
+          <div className="text-xs px-2 py-1 rounded bg-amber-500/20 border border-amber-500/40 text-amber-200">
+            Paused
+          </div>
+        )}
       </div>
     </div>
   );
