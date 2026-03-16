@@ -230,26 +230,7 @@ export default function NoConversationPlaceholder() {
           </div>
         </section>
 
-        {/* ── Download Whitepaper ── */}
-        <section
-          className="rounded-2xl p-5 border flex flex-col gap-2"
-          style={{ background: "rgba(74,144,184,0.06)", borderColor: "rgba(74,144,184,0.2)" }}
-        >
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-blue-300/70">Learn More</span>
-          </div>
-          <a
-            href="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/23d4ee06e_TOP100_Messaging_Platform_Whitepaper_20260314docx.pdf"
-            download
-            className="flex items-center justify-between px-4 py-2.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-200 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
-          >
-            <span className="text-sm font-semibold">Download Whitepaper</span>
-            <Download className="w-4 h-4" />
-          </a>
-          <p className="text-[11px] text-white/30">
-            Full architecture, frameworks, and implementation roadmap (v1.0 · March 2026)
-          </p>
-        </section>
+
 
         {/* Roadmap Timeline */}
         <section>
