@@ -62,8 +62,9 @@ Deno.serve(async (req) => {
               author,
               lifecycleState: 'PUBLISHED',
               specificContent: {
-                'com.linkedin.ugc.PublishText': {
-                  text: postContent,
+                'com.linkedin.ugc.ShareContent': {
+                  shareCommentary: { text: postContent },
+                  shareMediaCategory: 'NONE',
                 },
               },
               visibility: {
