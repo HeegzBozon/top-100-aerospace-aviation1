@@ -311,6 +311,7 @@ export default function MessageThread({
   conversationId,
   isPerry = false,
   defaultCrpStep = null,
+  onComposerActiveChange,
 }) {
   const { mode, theme } = useCommsTheme();
   const canPost = !isReadonly || currentUserRole === 'admin';
