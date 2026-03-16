@@ -279,6 +279,7 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
            conversationId={activeConversation.id}
            isPerry={false}
            defaultCrpStep={activeConversation?.crp_current_step || null}
+           onComposerActiveChange={onComposerActiveChange}
            onSendMessage={(content, parentId, rrfStage, crpStep) => sendMessageMutation.mutate({ content, parentId, rrfStage, crpStep })}
            onReactToMessage={async (msgId, reactions) => {
              await Message.update(msgId, { reactions });
