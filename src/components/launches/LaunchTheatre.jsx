@@ -310,21 +310,12 @@ export default function LaunchTheatre({ launch, onScrollDown }) {
               </div>
             </div>
           ) : imageUrl ? (
-            <div className="w-full max-w-2xl aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative">
-              <img src={imageUrl} alt={launch.name} className="w-full h-full object-cover opacity-70" loading="eager" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center space-y-2">
-                  <Rocket className="w-12 h-12 text-[#c9a87c] mx-auto opacity-80" />
-                  <p className="text-white/50 text-sm">No stream available yet</p>
-                </div>
-              </div>
+            <div className="w-full max-w-2xl aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+              <img src={imageUrl} alt={launch.name} className="w-full h-full object-cover opacity-80" loading="eager" />
             </div>
           ) : (
             <div className="w-full max-w-2xl aspect-video rounded-2xl border border-white/10 flex items-center justify-center bg-white/5">
-              <div className="text-center space-y-3">
-                <Rocket className="w-16 h-16 text-[#c9a87c] mx-auto opacity-60" />
-                <p className="text-white/40 text-sm">Stream coming soon</p>
-              </div>
+              <Rocket className="w-16 h-16 text-[#c9a87c] opacity-60" />
             </div>
           )}
         </div>
