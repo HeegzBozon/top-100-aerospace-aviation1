@@ -9,23 +9,22 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    // Fetch upcoming launches from space news API
+    // Fetch upcoming launches from The Space Devs API (no key required)
     const now = new Date();
     const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    
-    const spaceNewsRes = await fetch('https://api.spacenewsapi.com/v1/launches', {
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('SPACE_NEWS_API_KEY')}`,
-      },
+
+    const apiRes = await fetch('https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=20&mode=normal', {
+      headers: { 'Accept': 'application/json' },
+      signal: AbortSignal.timeout(10000),
     });
-    
-    if (!spaceNewsRes.ok) {
-      return Response.json({ error: 'Failed to fetch space news API' }, { status: 500 });
+
+    if (!apiRes.ok) {
+      return Response.json({ error: `Space Devs API error: ${apiRes.status}` }, { status: 500 });
     }
-    
-    const spaceNewsData = await spaceNewsRes.json();
-    
-    const upcomingLaunches = (spaceNewsData.results || []).filter(launch => {
+
+    const apiData = await apiRes.json();
+
+    const upcomingLaunches = (apiData.results || []).filter(launch => {
       const launchDate = new Date(launch.net);
       return launchDate >= now && launchDate <= weekFromNow;
     });
