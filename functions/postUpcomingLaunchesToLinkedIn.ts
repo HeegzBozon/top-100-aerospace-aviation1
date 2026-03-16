@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
   }
 });
 
-const LAUNCH_PARTY_URL = 'https://app.top100women.com/LaunchParty';
+const LAUNCH_PARTY_URL = 'https://top100aero.space/LaunchParty';
 
 function generateLaunchPost(launch) {
   const time = new Date(launch.event_date).toLocaleTimeString('en-US', {
