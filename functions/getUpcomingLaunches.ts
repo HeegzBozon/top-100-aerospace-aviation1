@@ -1,5 +1,3 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
-
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 min
 let cache = null;
 let cacheTs = 0;
