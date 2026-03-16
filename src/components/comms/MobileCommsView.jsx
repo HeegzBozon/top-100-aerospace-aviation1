@@ -121,7 +121,7 @@ export default function MobileCommsView({ isDarkMode = false, onComposerActiveCh
                   {name.charAt(0)}
                 </div>
 
-                {/* Name + Preview */}
+                {/* Name + Preview (no email) */}
                 <div className="flex-1 min-w-0">
                   <span
                     className={`block text-[15px] truncate ${unread > 0 ? "font-bold" : "font-medium"}`}
@@ -131,7 +131,7 @@ export default function MobileCommsView({ isDarkMode = false, onComposerActiveCh
                   </span>
                   {dm.last_message_preview && (
                     <span className="block text-xs truncate" style={{ color: theme.textMuted }}>
-                      {dm.last_message_preview || "No messages yet"}
+                      {dm.last_message_preview}
                     </span>
                   )}
                 </div>
