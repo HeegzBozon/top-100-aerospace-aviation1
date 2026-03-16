@@ -116,10 +116,20 @@ export default function NoConversationPlaceholder() {
           </p>
 
           {/* Roadmap badge */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-400/25 bg-amber-400/12 mt-1">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-400/25 bg-amber-400/12 mt-2 mb-4">
             <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
             <span className="text-[11px] font-semibold uppercase tracking-widest text-amber-300/80">Under Construction · Work in Progress · Prototype</span>
           </div>
+
+          {/* Download Whitepaper - Top position */}
+          <a
+            href="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/23d4ee06e_TOP100_Messaging_Platform_Whitepaper_20260314docx.pdf"
+            download
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-200 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 text-sm font-semibold"
+          >
+            <Download className="w-4 h-4" />
+            Download Whitepaper
+          </a>
         </div>
 
         {/* ── Communication Layers ── */}
