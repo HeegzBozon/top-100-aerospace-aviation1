@@ -175,7 +175,7 @@ export default function CommsIconRail({ currentPageName, totalUnread }) {
 
       {/* Main Nav Items */}
       <div className="flex-1 flex flex-col items-center gap-0.5 w-full px-2">
-        {(railItems.length ? railItems : FALLBACK_RAIL).map((item) => {
+        {(railItems.length ? railItems : FALLBACK_RAIL.filter(i => !AUTH_ONLY_LABELS.has(i.label?.toLowerCase()) || !!user)).map((item) => {
           const isActive = currentPageName === item.page;
           const url = item.query ? `${item.page}?${item.query}` : item.page;
           return (
