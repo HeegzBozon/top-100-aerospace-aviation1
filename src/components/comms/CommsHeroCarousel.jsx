@@ -141,6 +141,11 @@ export default function CommsHeroCarousel() {
                   {item.desc}
                 </p>
 
+                {/* Details from Whitepaper */}
+                <p className="text-xs sm:text-sm md:text-base text-white/60 max-w-lg mx-auto leading-relaxed italic">
+                  {item.details}
+                </p>
+
                 {/* Examples */}
                 <div className="flex flex-wrap gap-2 justify-center pt-4">
                   {item.examples.map((ex) => (
