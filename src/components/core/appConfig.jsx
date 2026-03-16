@@ -18,6 +18,7 @@ export const PUBLIC_PAGES = [
   'ArchiveLanding',
   'GetStarted',
   'LaunchParty',
+  'Comms',
 ];
 
 // Quick Access Items Configuration for Mobile Home
