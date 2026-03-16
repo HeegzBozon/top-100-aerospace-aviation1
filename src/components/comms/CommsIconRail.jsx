@@ -112,7 +112,11 @@ export default function CommsIconRail({ currentPageName, totalUnread }) {
   useEffect(() => {
     base44.entities.RailItem.list()
       .then((data) => {
-        const enabled = data.filter(i => i.is_enabled !== false && i.is_desktop !== false);
+        const enabled = data.filter(i =>
+          i.is_enabled !== false &&
+          i.is_desktop !== false &&
+          !HIDDEN_LABELS.has(i.label?.toLowerCase())
+        );
         const sorted = [...enabled].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
         setRailItems(sorted.filter(i => !i.is_more_item));
         setMoreItems(sorted.filter(i => i.is_more_item));
