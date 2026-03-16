@@ -76,9 +76,24 @@ export default function CommsHeroCarousel() {
     setActiveIndex(index);
   };
 
+  const toggleAutoplay = () => {
+    setAutoplay(!autoplay);
+  };
+
   return (
     <div className="relative w-full h-full overflow-hidden" style={{ background: theme.bg }}>
       {theme.constellations && <ConstellationBackground />}
+
+      {/* Persistent Download Button - Top Left */}
+      <a
+        href="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/ba3dc1afc_TOP100_Messaging_Platform_Whitepaper_20260314docx.pdf"
+        download
+        className="absolute top-6 sm:top-8 md:top-10 left-6 sm:left-8 md:left-10 z-20 inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-200 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 text-xs sm:text-sm font-semibold"
+        title="Download TOP 100 OS Whitepaper"
+      >
+        <Download className="w-4 h-4" />
+        <span className="hidden sm:inline">Whitepaper</span>
+      </a>
 
       {/* Slides Container */}
       <div className="relative w-full h-full">
