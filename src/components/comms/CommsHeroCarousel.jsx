@@ -165,12 +165,10 @@ export default function CommsHeroCarousel() {
       </div>
 
       {/* Navigation - Bottom centered */}
-      <div className="absolute bottom-6 sm:bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 sm:gap-6">
+      <div className="absolute bottom-6 sm:bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 sm:gap-4 md:gap-6">
         {/* Previous Button */}
         <button
           onClick={goToPrevious}
-          onMouseEnter={() => setAutoplay(false)}
-          onMouseLeave={() => setTimeout(() => setAutoplay(true), 100)}
           className="p-2 sm:p-3 rounded-full border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50"
           aria-label="Previous slide"
         >
@@ -183,8 +181,6 @@ export default function CommsHeroCarousel() {
             <button
               key={idx}
               onClick={() => goToSlide(idx)}
-              onMouseEnter={() => setAutoplay(false)}
-              onMouseLeave={() => setTimeout(() => setAutoplay(true), 100)}
               className={`transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50 rounded-full ${
                 idx === activeIndex
                   ? "w-2.5 h-2.5 sm:w-3 sm:h-3 bg-white"
@@ -196,11 +192,23 @@ export default function CommsHeroCarousel() {
           ))}
         </div>
 
+        {/* Pause/Play Button */}
+        <button
+          onClick={toggleAutoplay}
+          className="p-2 sm:p-3 rounded-full border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50"
+          aria-label={autoplay ? "Pause autoplay" : "Resume autoplay"}
+          title={autoplay ? "Pause autoplay" : "Resume autoplay"}
+        >
+          {autoplay ? (
+            <Pause className="w-5 h-5 sm:w-6 sm:h-6" />
+          ) : (
+            <Play className="w-5 h-5 sm:w-6 sm:h-6" />
+          )}
+        </button>
+
         {/* Next Button */}
         <button
           onClick={goToNext}
-          onMouseEnter={() => setAutoplay(false)}
-          onMouseLeave={() => setTimeout(() => setAutoplay(true), 100)}
           className="p-2 sm:p-3 rounded-full border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50"
           aria-label="Next slide"
         >
