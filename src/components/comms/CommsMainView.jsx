@@ -247,7 +247,6 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
             </div>
             <div className="min-w-0 flex-1">
               <p className="font-bold text-white text-sm leading-tight truncate tracking-tight">{dmDisplayName}</p>
-              <p className="text-[11px] text-white/35 leading-tight truncate font-mono">{otherParticipantEmail}</p>
             </div>
             {/* Ambient decoration */}
             <div className="shrink-0 flex items-center gap-1.5">
