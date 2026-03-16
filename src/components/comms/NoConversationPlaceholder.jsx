@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   Rocket, Globe2, MessageSquare, Radio,
-  Layers, Zap, Users, Star, ChevronRight, Clock
+  Layers, Zap, Users, Star, ChevronRight, Clock, Download, AlertCircle
 } from "lucide-react";
 import ConstellationBackground from "./ConstellationBackground";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
