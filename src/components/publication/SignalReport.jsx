@@ -185,60 +185,6 @@ export default function SignalReport({ nominees = [] }) {
         </div>
       </motion.div>
 
-      {/* Top Performers — live, no Coming Soon */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="p-6 rounded-2xl border"
-        style={{
-          background: `linear-gradient(135deg, ${brand.navyDeep}05, ${brand.goldPrestige}10)`,
-          borderColor: brand.goldPrestige
-        }}
-      >
-        <SectionHeader
-          icon={Sparkles}
-          title="Highest Signal Strength"
-          subtitle="Leading voices of the 2025 cohort"
-        />
-        <div className="grid gap-3">
-          {analytics.topPerformers.map((nominee, i) => (
-            <div key={nominee.id}
-              className="flex items-center gap-4 p-3 rounded-lg"
-              style={{ background: 'white' }}>
-              <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                style={{ background: brand.goldPrestige, color: 'white' }}>
-                {i + 1}
-              </span>
-              <div className="w-10 h-10 rounded-full overflow-hidden border-2 flex-shrink-0"
-                style={{ borderColor: brand.goldLight }}>
-                {nominee.avatar_url || nominee.photo_url ? (
-                  <img src={nominee.avatar_url || nominee.photo_url} alt={nominee.name}
-                    className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-sm font-bold"
-                    style={{ background: brand.goldLight, color: brand.navyDeep }}>
-                    {nominee.name?.charAt(0)}
-                  </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold truncate" style={{ color: brand.navyDeep }}>{nominee.name}</p>
-                <p className="text-sm truncate" style={{ color: brand.skyBlue }}>
-                  {nominee.title || nominee.company}
-                </p>
-              </div>
-              <div className="text-right flex-shrink-0">
-                <p className="font-bold" style={{ color: brand.goldPrestige }}>
-                  {(nominee.aura_score || nominee.elo_rating || 0).toLocaleString()}
-                </p>
-                <p className="text-xs" style={{ color: brand.navyDeep }}>Signal</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
       {/* Footer */}
       <motion.div
         initial={{ opacity: 0 }}
