@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Dot } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, Pause, Download } from "lucide-react";
 import ConstellationBackground from "./ConstellationBackground";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 
@@ -10,7 +10,8 @@ const SLIDES = [
     color: "#e07b54",
     title: "Mission Rooms",
     subtitle: "Time-Bound Activation",
-    desc: "Temporary, structured spaces for rapid response around specific events.",
+    desc: "Temporary, structured spaces organized around specific events. Teams go Forming → Performing in 48 hours because the endpoint is clear.",
+    details: "Examples: SpaceX Starship analysis, Senate ITAR debates, Farnborough Airshow navigation, Academia workforce recruitment sprints.",
     examples: ["SpaceX launches", "Senate debates", "Airshows"],
   },
   {
@@ -19,7 +20,8 @@ const SLIDES = [
     color: "#4a90b8",
     title: "Domain Networks",
     subtitle: "Expertise-Based Peer Groups",
-    desc: "Persistent peer groups across 8 disciplines with dedicated domain champions.",
+    desc: "Persistent peer groups organized by professional domain. Eight domains: Space, Aviation, Aerospace Engineering, Academia, Policy, Healthcare, Consulting, Communication.",
+    details: "Each domain has a champion who curates weekly digests, facilitates peer Q&A, and flags moments to leadership.",
     examples: ["Space", "Aviation", "Policy", "Academia"],
   },
   {
@@ -28,7 +30,8 @@ const SLIDES = [
     color: "#c9a87c",
     title: "Direct Messaging",
     subtitle: "1:1 with Persistent Memory",
-    desc: "Conversations preserved and searchable with persistent relationship timelines.",
+    desc: "Unlike Slack or WhatsApp, relationships don't evaporate. Every conversation is preserved, searchable, with persistent relationship timelines.",
+    details: "Quick action buttons, mutual connections surfaced, relationship context always available for future reference.",
     examples: ["Persistent threads", "Relationship timeline", "Quick actions"],
   },
   {
@@ -37,7 +40,8 @@ const SLIDES = [
     color: "#8b5cf6",
     title: "Community Feed",
     subtitle: "Reputation-Weighted Signals",
-    desc: "Institutional moments ranked by reputation and engagement, not algorithms.",
+    desc: "Institutional moments, performance narratives, authority pieces, and domain spotlights. Ranked by reputation tier and engagement, not algorithms.",
+    details: "Calls to action, community highlights, and signals that surface the best ideas at institutional quality.",
     examples: ["Institutional moments", "Domain spotlights", "CTAs"],
   },
 ];
