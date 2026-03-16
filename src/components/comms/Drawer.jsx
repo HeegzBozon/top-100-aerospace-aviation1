@@ -268,13 +268,15 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
         })}
 
             {filteredDMs.length === 0 && selectedStage && (
-              <div className="py-8 text-center">
-                <p className="text-sm" style={{ color: 'rgba(201, 168, 124, 0.4)' }}>No conversations in {selectedStage} stage</p>
-              </div>
+               <div className="py-8 text-center">
+                 <p className="text-sm" style={{ color: 'rgba(201, 168, 124, 0.4)' }}>No conversations in {selectedStage} stage</p>
+               </div>
+             )}
+            </div>
+             </>
             )}
-          </div>
-        </>
-      ) : (
+            </>
+            ) : (
         /* Default channels view for all other pages */
         <div className="flex-1 overflow-y-auto scrollbar-hide px-3 py-3">
           <ChannelsList
