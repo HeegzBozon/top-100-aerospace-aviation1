@@ -29,6 +29,16 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
   const [searchOpen, setSearchOpen] = useState(false);
   const [crpExpanded, setCrpExpanded] = useState(false);
 
+  // Auth gate: show sign-in CTA if no user
+  if (!user) {
+    return (
+      <CommsAuthGate
+        onSignIn={() => base44.auth.redirectToLogin()}
+        onSignUp={() => base44.auth.redirectToLogin()}
+      />
+    );
+  }
+
   const { data: messages = [], isLoading: msgsLoading } = useQuery({
     queryKey: ["messages", activeConversation?.id],
     queryFn: () => Message.filter({ conversation_id: activeConversation.id }, "created_date", 200),
