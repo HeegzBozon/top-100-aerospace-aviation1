@@ -690,8 +690,10 @@ export default function MessageThread({
                 autoCapitalize="sentences"
                 autoComplete="off"
                 spellCheck={false}
+                onFocus={() => onComposerActiveChange?.(true)}
+                onBlur={() => onComposerActiveChange?.(false)}
                 className="w-full min-h-[52px] max-h-[160px] resize-none overflow-auto bg-gray-900/80 px-4 py-3.5 text-base text-gray-100 placeholder-gray-500 focus:outline-none cursor-text"
-              />
+                />
               <MentionPopover
                 isOpen={showMentionPopover}
                 searchQuery={mentionQuery}
