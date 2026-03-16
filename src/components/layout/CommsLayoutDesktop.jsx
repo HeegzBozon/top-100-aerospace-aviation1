@@ -34,7 +34,7 @@ export default function CommsLayoutDesktop({
 
   return (
     <div className="hidden md:flex h-screen overflow-hidden bg-white">
-      {!isBare && !!user && (
+      {!isBare && (
         <>
           {mobileSidebarOpen && (
             <div
@@ -45,17 +45,19 @@ export default function CommsLayoutDesktop({
 
           <CommsIconRail currentPageName={currentPageName} totalUnread={0} />
 
-          <div className={`
-            fixed md:relative inset-y-0 left-0 z-50 md:z-auto
-            ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-            transition-transform duration-300 ease-out
-          `}>
-            <Drawer
-              currentPageName={currentPageName}
-              onMobileClose={() => setMobileSidebarOpen(false)}
-              user={user}
-            />
-          </div>
+          {!!user && (
+            <div className={`
+              fixed md:relative inset-y-0 left-0 z-50 md:z-auto
+              ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+              transition-transform duration-300 ease-out
+            `}>
+              <Drawer
+                currentPageName={currentPageName}
+                onMobileClose={() => setMobileSidebarOpen(false)}
+                user={user}
+              />
+            </div>
+          )}
         </>
       )}
 
