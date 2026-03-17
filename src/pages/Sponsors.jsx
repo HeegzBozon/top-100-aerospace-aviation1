@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import SponsorCard from '@/components/sponsors/SponsorCard';
 import { 
   Loader2, Award, TrendingUp, Users, Globe, Target, CheckCircle, 
-  BarChart3, Rocket, Mail, ArrowRight, Trophy, Zap
+  BarChart3, Rocket, Mail, ArrowRight, Trophy, Zap, Calendar
 } from 'lucide-react';
 
 const brandColors = {
