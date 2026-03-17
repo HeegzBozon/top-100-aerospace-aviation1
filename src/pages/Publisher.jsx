@@ -64,7 +64,6 @@ export default function Publisher() {
           <Button
             onClick={() => handleCompose()}
             className="gap-2 bg-indigo-600 hover:bg-indigo-700 min-h-[44px]"
-            disabled={channels.filter(c => c.is_active && c.connection_status === "connected").length === 0}
           >
             <PlusCircle className="w-4 h-4" />
             <span>New Post</span>
