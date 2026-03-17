@@ -77,6 +77,8 @@ Deno.serve(async (req) => {
         result = await publishToLinkedIn({ ...ch, access_token: liveToken }, post);
       } else if (ch.platform === 'instagram') {
         result = await publishToInstagram({ ...ch, access_token: liveToken }, post);
+      } else if (ch.platform === 'threads') {
+        result = await publishToThreads({ ...ch, access_token: liveToken }, post);
       } else {
         result = {
           channel_id: channelId,
