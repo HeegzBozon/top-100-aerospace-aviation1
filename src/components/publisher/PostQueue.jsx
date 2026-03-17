@@ -147,6 +147,7 @@ function PlatformColumn({ platform, posts, channels, onEdit, onDelete, onCancel,
                 onDelete={slots[slotIdx] ? () => onDelete(slots[slotIdx].id) : undefined}
                 onCancel={slots[slotIdx] ? () => onCancel(slots[slotIdx].id) : undefined}
                 onRefresh={onRefresh}
+                onCreatePost={!slots[slotIdx] ? onNewPost : undefined}
               />
             ))}
           </div>
