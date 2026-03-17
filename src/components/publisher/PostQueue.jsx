@@ -12,16 +12,8 @@ import { format, isToday, isTomorrow } from "date-fns";
 import { PLATFORM_CONFIG, POST_STATUS_CONFIG } from "./publisherConfig";
 import { publishNow } from "@/functions/publishNow";
 
-const LANE_ORDER = ["scheduled", "draft", "publishing", "published", "failed"];
+const PLATFORMS = ["linkedin", "instagram", "threads"];
 const ROLLING_WINDOW = 12;
-
-const LANE_ACCENT = {
-  scheduled: "bg-indigo-500",
-  draft:      "bg-slate-400",
-  publishing: "bg-amber-500",
-  published:  "bg-emerald-500",
-  failed:     "bg-red-500",
-};
 
 export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPost }) {
   const deleteMutation = useMutation({
@@ -34,14 +26,23 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
     onSuccess: onRefresh,
   });
 
-  const laneMap = useMemo(() => {
+  // Map platform -> posts that target at least one channel of that platform
+  const platformPostMap = useMemo(() => {
     const map = {};
-    LANE_ORDER.forEach(s => { map[s] = []; });
-    posts.forEach(p => {
-      if (map[p.status]) map[p.status].push(p);
+    PLATFORMS.forEach(p => { map[p] = []; });
+
+    posts.forEach(post => {
+      const postPlatforms = new Set(
+        (post.channel_ids || [])
+          .map(id => channels.find(c => c.id === id)?.platform)
+          .filter(Boolean)
+      );
+      postPlatforms.forEach(platform => {
+        if (map[platform]) map[platform].push(post);
+      });
     });
     return map;
-  }, [posts]);
+  }, [posts, channels]);
 
   if (posts.length === 0) {
     return (
@@ -59,73 +60,61 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
   }
 
   return (
-    <div className="space-y-3">
-      {LANE_ORDER.map(status => (
-        laneMap[status].length > 0 && (
-          <SwimLaneTable
-            key={status}
-            status={status}
-            posts={laneMap[status]}
-            channels={channels}
-            onEdit={onEdit}
-            onDelete={(id) => deleteMutation.mutate(id)}
-            onCancel={(id) => updateMutation.mutate({ id, data: { status: "cancelled" } })}
-            onRefresh={onRefresh}
-          />
-        )
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {PLATFORMS.map(platform => (
+        <PlatformColumn
+          key={platform}
+          platform={platform}
+          posts={platformPostMap[platform]}
+          channels={channels}
+          onEdit={onEdit}
+          onDelete={(id) => deleteMutation.mutate(id)}
+          onCancel={(id) => updateMutation.mutate({ id, data: { status: "cancelled" } })}
+          onRefresh={onRefresh}
+        />
       ))}
     </div>
   );
 }
 
-function SwimLaneTable({ status, posts, channels, onEdit, onDelete, onCancel, onRefresh }) {
+function PlatformColumn({ platform, posts, channels, onEdit, onDelete, onCancel, onRefresh }) {
   const [visible, setVisible] = useState(ROLLING_WINDOW);
-  const cfg = POST_STATUS_CONFIG[status];
-  const accent = LANE_ACCENT[status];
+  const cfg = PLATFORM_CONFIG[platform];
   const shown = posts.slice(0, visible);
   const hasMore = posts.length > visible;
   const canCollapse = visible > ROLLING_WINDOW;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      {/* Lane Header */}
-      <div className={`flex items-center gap-3 px-4 py-2.5 border-b border-slate-100`}>
-        <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${accent}`} />
-        <span className="font-semibold text-sm text-slate-800 capitalize">{cfg?.label || status}</span>
-        <span className="text-xs text-slate-400 font-medium">{posts.length} post{posts.length !== 1 ? "s" : ""}</span>
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col">
+      {/* Column Header */}
+      <div className={`flex items-center gap-2.5 px-4 py-3 border-b border-slate-100 ${cfg?.bg || "bg-slate-50"}`}>
+        {cfg && <cfg.Icon className={`w-4 h-4 ${cfg.color}`} />}
+        <span className="font-semibold text-sm text-slate-800 capitalize">{cfg?.label || platform}</span>
+        <span className="ml-auto text-xs text-slate-400 font-medium">{posts.length} post{posts.length !== 1 ? "s" : ""}</span>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="border-b border-slate-100 bg-slate-50/60">
-              <th className="text-left px-4 py-2 font-medium text-slate-500 w-8">#</th>
-              <th className="text-left px-4 py-2 font-medium text-slate-500">Content</th>
-              <th className="text-left px-4 py-2 font-medium text-slate-500 w-28">Channels</th>
-              <th className="text-left px-4 py-2 font-medium text-slate-500 w-32">Scheduled</th>
-              <th className="text-left px-4 py-2 font-medium text-slate-500 w-20">Media</th>
-              <th className="px-4 py-2 w-10" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {shown.map((post, idx) => (
-              <PostRow
-                key={post.id}
-                post={post}
-                index={idx + 1}
-                channels={channels}
-                onEdit={() => onEdit(post)}
-                onDelete={() => onDelete(post.id)}
-                onCancel={() => onCancel(post.id)}
-                onPublishNow={onRefresh}
-              />
-            ))}
-          </tbody>
-        </table>
+      {/* Rows */}
+      <div className="flex-1 divide-y divide-slate-50">
+        {shown.length === 0 ? (
+          <p className="text-center text-xs text-slate-400 py-10">No posts for {platform}</p>
+        ) : (
+          shown.map((post, idx) => (
+            <PostRow
+              key={post.id}
+              post={post}
+              index={idx + 1}
+              platform={platform}
+              channels={channels}
+              onEdit={() => onEdit(post)}
+              onDelete={() => onDelete(post.id)}
+              onCancel={() => onCancel(post.id)}
+              onPublishNow={onRefresh}
+            />
+          ))
+        )}
       </div>
 
-      {/* Pagination footer */}
+      {/* Pagination */}
       {(hasMore || canCollapse) && (
         <div className="flex items-center gap-3 px-4 py-2 border-t border-slate-100 bg-slate-50/40">
           {hasMore && (
@@ -134,7 +123,7 @@ function SwimLaneTable({ status, posts, channels, onEdit, onDelete, onCancel, on
               className="flex items-center gap-1 text-xs text-slate-500 hover:text-indigo-600 transition-colors font-medium"
             >
               <ChevronDown className="w-3.5 h-3.5" />
-              Show next {Math.min(ROLLING_WINDOW, posts.length - visible)}
+              {Math.min(ROLLING_WINDOW, posts.length - visible)} more
             </button>
           )}
           {canCollapse && (
@@ -142,8 +131,7 @@ function SwimLaneTable({ status, posts, channels, onEdit, onDelete, onCancel, on
               onClick={() => setVisible(ROLLING_WINDOW)}
               className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 transition-colors ml-auto"
             >
-              <ChevronUp className="w-3.5 h-3.5" />
-              Collapse
+              <ChevronUp className="w-3.5 h-3.5" /> Collapse
             </button>
           )}
         </div>
@@ -162,12 +150,10 @@ function PostRow({ post, index, channels, onEdit, onDelete, onCancel, onPublishN
     onPublishNow?.();
   };
 
-  const postChannels = (post.channel_ids || [])
-    .map(id => channels.find(c => c.id === id))
-    .filter(Boolean);
+  const statusCfg = POST_STATUS_CONFIG[post.status] || POST_STATUS_CONFIG.draft;
 
   const scheduledLabel = useMemo(() => {
-    if (!post.scheduled_at) return "—";
+    if (!post.scheduled_at) return null;
     const d = new Date(post.scheduled_at);
     if (isToday(d)) return `Today ${format(d, "h:mm a")}`;
     if (isTomorrow(d)) return `Tomorrow ${format(d, "h:mm a")}`;
@@ -175,89 +161,67 @@ function PostRow({ post, index, channels, onEdit, onDelete, onCancel, onPublishN
   }, [post.scheduled_at]);
 
   return (
-    <tr className="hover:bg-slate-50/60 transition-colors group">
+    <div className="group flex items-start gap-2 px-4 py-3 hover:bg-slate-50/60 transition-colors">
       {/* Index */}
-      <td className="px-4 py-2.5 text-slate-300 font-mono">{index}</td>
+      <span className="text-[10px] text-slate-300 font-mono mt-0.5 w-4 shrink-0">{index}</span>
 
-      {/* Content */}
-      <td className="px-4 py-2.5 max-w-xs">
-        <p className="text-slate-700 line-clamp-2 leading-relaxed">{post.content}</p>
-      </td>
+      {/* Body */}
+      <div className="flex-1 min-w-0">
+        <p className="text-xs text-slate-700 line-clamp-2 leading-relaxed">{post.content}</p>
 
-      {/* Channels */}
-      <td className="px-4 py-2.5">
-        <div className="flex -space-x-1.5">
-          {postChannels.slice(0, 5).map(ch => {
-            const cfg = PLATFORM_CONFIG[ch.platform];
-            return (
-              <div
-                key={ch.id}
-                title={ch.channel_name}
-                className={`w-5 h-5 rounded-full border border-white flex items-center justify-center ${cfg?.bg || "bg-slate-100"}`}
-              >
-                {cfg && <cfg.Icon className={`w-2.5 h-2.5 ${cfg.color}`} />}
-              </div>
-            );
-          })}
-          {postChannels.length > 5 && (
-            <div className="w-5 h-5 rounded-full border border-white bg-slate-100 flex items-center justify-center text-[9px] font-bold text-slate-500">
-              +{postChannels.length - 5}
-            </div>
+        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+          {/* Status pill */}
+          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${statusCfg.bg} ${statusCfg.color}`}>
+            {statusCfg.label}
+          </span>
+
+          {/* Schedule time */}
+          {scheduledLabel && post.status === "scheduled" && (
+            <span className="flex items-center gap-0.5 text-[10px] text-indigo-500 font-medium">
+              <Clock className="w-2.5 h-2.5" /> {scheduledLabel}
+            </span>
+          )}
+
+          {/* Media count */}
+          {post.media_urls?.length > 0 && (
+            <span className="text-[10px] text-slate-400">📎 {post.media_urls.length}</span>
           )}
         </div>
-      </td>
+      </div>
 
-      {/* Scheduled */}
-      <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">
-        {post.status === "scheduled" && post.scheduled_at ? (
-          <span className="flex items-center gap-1 text-indigo-500 font-medium">
-            <Clock className="w-3 h-3 shrink-0" /> {scheduledLabel}
-          </span>
-        ) : (
-          <span className="text-slate-300">—</span>
-        )}
-      </td>
-
-      {/* Media */}
-      <td className="px-4 py-2.5 text-slate-400">
-        {post.media_urls?.length > 0 ? `📎 ${post.media_urls.length}` : "—"}
-      </td>
-
-      {/* Actions */}
-      <td className="px-4 py-2.5">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-7 h-7 min-w-[28px] min-h-[28px] opacity-0 group-hover:opacity-100 transition-opacity"
-              aria-label="Post actions"
-            >
-              <MoreVertical className="w-3.5 h-3.5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {(post.status === "draft" || post.status === "scheduled" || post.status === "failed") && (
-              <DropdownMenuItem onClick={handlePublishNow} disabled={publishing} className="gap-2 text-indigo-600 font-medium">
-                <Zap className="w-4 h-4" /> {publishing ? "Publishing…" : "Publish Now"}
-              </DropdownMenuItem>
-            )}
-            {(post.status === "draft" || post.status === "scheduled") && (
-              <DropdownMenuItem onClick={onEdit} className="gap-2">
-                <Edit2 className="w-4 h-4" /> Edit
-              </DropdownMenuItem>
-            )}
-            {post.status === "scheduled" && (
-              <DropdownMenuItem onClick={onCancel} className="gap-2 text-amber-600">
-                <XCircle className="w-4 h-4" /> Cancel
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem onClick={onDelete} className="gap-2 text-red-600">
-              <Trash2 className="w-4 h-4" /> Delete
+      {/* Action menu */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-7 h-7 min-w-[28px] min-h-[28px] shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label="Post actions"
+          >
+            <MoreVertical className="w-3.5 h-3.5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {(post.status === "draft" || post.status === "scheduled" || post.status === "failed") && (
+            <DropdownMenuItem onClick={handlePublishNow} disabled={publishing} className="gap-2 text-indigo-600 font-medium">
+              <Zap className="w-4 h-4" /> {publishing ? "Publishing…" : "Publish Now"}
             </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </td>
-    </tr>
+          )}
+          {(post.status === "draft" || post.status === "scheduled") && (
+            <DropdownMenuItem onClick={onEdit} className="gap-2">
+              <Edit2 className="w-4 h-4" /> Edit
+            </DropdownMenuItem>
+          )}
+          {post.status === "scheduled" && (
+            <DropdownMenuItem onClick={onCancel} className="gap-2 text-amber-600">
+              <XCircle className="w-4 h-4" /> Cancel
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem onClick={onDelete} className="gap-2 text-red-600">
+            <Trash2 className="w-4 h-4" /> Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }
