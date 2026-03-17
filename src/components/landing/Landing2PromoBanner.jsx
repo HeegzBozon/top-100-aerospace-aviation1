@@ -64,9 +64,6 @@ export default function Landing2PromoBanner() {
             <p className="font-bold text-xs md:text-sm" style={{ color: iconColor, fontFamily: "'Montserrat', sans-serif" }}>
               {label}
             </p>
-            <p className="text-xs mt-0.5 truncate" style={{ color: brandColors.navyDeep, fontFamily: "'Montserrat', sans-serif" }}>
-              {sub}
-            </p>
           </div>
           <ArrowRight className="w-4 h-4 md:w-5 md:h-5 shrink-0" style={{ color: iconColor }} />
         </Link>
