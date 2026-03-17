@@ -1,0 +1,171 @@
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+
+/**
+ * publishNow
+ * Called from the frontend to immediately publish a single post.
+ * Payload: { post_id: string }
+ * Auth: requires authenticated user who owns the post.
+ */
+Deno.serve(async (req) => {
+  try {
+    const base44 = createClientFromRequest(req);
+
+    const user = await base44.auth.me();
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { post_id } = await req.json();
+    if (!post_id) {
+      return Response.json({ error: 'post_id is required' }, { status: 400 });
+    }
+
+    // Fetch the post and verify ownership
+    const posts = await base44.entities.ScheduledPost.filter({ id: post_id });
+    const post = posts[0];
+
+    if (!post) {
+      return Response.json({ error: 'Post not found' }, { status: 404 });
+    }
+    if (post.user_email !== user.email && user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    if (!['draft', 'scheduled', 'failed'].includes(post.status)) {
+      return Response.json({ error: `Cannot publish a post with status: ${post.status}` }, { status: 400 });
+    }
+
+    // Mark publishing
+    await base44.asServiceRole.entities.ScheduledPost.update(post_id, { status: 'publishing' });
+
+    const publishResults = [];
+    let anyFailed = false;
+
+    for (const channelId of (post.channel_ids || [])) {
+      const channels = await base44.asServiceRole.entities.SocialChannel.filter({ id: channelId });
+      const ch = channels[0];
+
+      if (!ch || ch.connection_status !== 'connected' || !ch.access_token) {
+        publishResults.push({
+          channel_id: channelId,
+          platform: ch?.platform || 'unknown',
+          status: 'failed',
+          error: 'Channel not connected or missing token',
+        });
+        anyFailed = true;
+        continue;
+      }
+
+      let result;
+      if (ch.platform === 'linkedin') {
+        result = await publishToLinkedIn(ch, post);
+      } else {
+        result = {
+          channel_id: channelId,
+          platform: ch.platform,
+          status: 'failed',
+          error: `Platform "${ch.platform}" not yet supported`,
+        };
+        anyFailed = true;
+      }
+
+      publishResults.push(result);
+      if (result.status !== 'published') anyFailed = true;
+
+      if (result.status === 'published') {
+        await base44.asServiceRole.entities.SocialChannel.update(channelId, {
+          post_count: (ch.post_count || 0) + 1,
+          last_used_at: new Date().toISOString(),
+        });
+      }
+    }
+
+    const finalStatus = anyFailed
+      ? (publishResults.some(r => r.status === 'published') ? 'published' : 'failed')
+      : 'published';
+
+    await base44.asServiceRole.entities.ScheduledPost.update(post_id, {
+      status: finalStatus,
+      publish_results: publishResults,
+      published_at: finalStatus === 'published' ? new Date().toISOString() : null,
+      error_message: anyFailed
+        ? publishResults.filter(r => r.error).map(r => `[${r.platform}] ${r.error}`).join('; ')
+        : null,
+    });
+
+    return Response.json({ status: finalStatus, results: publishResults });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+});
+
+// ─── LinkedIn Publisher ────────────────────────────────────────────────────────
+
+async function publishToLinkedIn(channel, post) {
+  try {
+    const token = channel.access_token;
+    const isOrg = channel.channel_type === 'business';
+    const authorUrn = isOrg
+      ? `urn:li:organization:${channel.platform_user_id}`
+      : `urn:li:person:${channel.platform_user_id}`;
+
+    const mediaUrls = post.media_urls || [];
+
+    const specificContent = {
+      'com.linkedin.ugc.ShareContent': {
+        shareCommentary: { text: post.content },
+        shareMediaCategory: mediaUrls.length > 0 ? 'IMAGE' : 'NONE',
+        ...(mediaUrls.length > 0 && {
+          media: mediaUrls.slice(0, 9).map(url => ({
+            status: 'READY',
+            originalUrl: url,
+          })),
+        }),
+      },
+    };
+
+    const body = {
+      author: authorUrn,
+      lifecycleState: 'PUBLISHED',
+      specificContent,
+      visibility: {
+        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
+      },
+    };
+
+    const res = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'X-Restli-Protocol-Version': '2.0.0',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      return {
+        channel_id: channel.id,
+        platform: 'linkedin',
+        status: 'failed',
+        error: `LinkedIn API ${res.status}: ${errText.slice(0, 200)}`,
+      };
+    }
+
+    const data = await res.json();
+    return {
+      channel_id: channel.id,
+      platform: 'linkedin',
+      status: 'published',
+      post_id: data.id || null,
+      published_at: new Date().toISOString(),
+    };
+  } catch (err) {
+    return {
+      channel_id: channel.id,
+      platform: 'linkedin',
+      status: 'failed',
+      error: err.message,
+    };
+  }
+}
