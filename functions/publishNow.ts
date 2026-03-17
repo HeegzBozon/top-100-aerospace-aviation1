@@ -117,6 +117,81 @@ Deno.serve(async (req) => {
   }
 });
 
+// ─── Instagram Publisher ───────────────────────────────────────────────────────
+
+async function publishToInstagram(channel, post) {
+  try {
+    const token = channel.access_token;
+    const igUserId = channel.platform_user_id;
+    const mediaUrls = post.media_urls || [];
+    const caption = post.content || '';
+
+    let mediaId;
+
+    if (mediaUrls.length > 1) {
+      const childIds = await Promise.all(
+        mediaUrls.slice(0, 10).map(async (url) => {
+          const r = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_url: url, is_carousel_item: true, access_token: token }),
+          });
+          const d = await r.json();
+          return d.id;
+        })
+      );
+      const containerRes = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ media_type: 'CAROUSEL', children: childIds.join(','), caption, access_token: token }),
+      });
+      const containerData = await containerRes.json();
+      mediaId = containerData.id;
+    } else if (mediaUrls.length === 1) {
+      const r = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image_url: mediaUrls[0], caption, access_token: token }),
+      });
+      const d = await r.json();
+      mediaId = d.id;
+    } else {
+      return {
+        channel_id: channel.id,
+        platform: 'instagram',
+        status: 'failed',
+        error: 'Instagram requires at least one media URL',
+      };
+    }
+
+    if (!mediaId) {
+      return { channel_id: channel.id, platform: 'instagram', status: 'failed', error: 'Failed to create media container' };
+    }
+
+    const publishRes = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media_publish`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ creation_id: mediaId, access_token: token }),
+    });
+
+    if (!publishRes.ok) {
+      const err = await publishRes.text();
+      return { channel_id: channel.id, platform: 'instagram', status: 'failed', error: `Instagram API ${publishRes.status}: ${err.slice(0, 200)}` };
+    }
+
+    const publishData = await publishRes.json();
+    return {
+      channel_id: channel.id,
+      platform: 'instagram',
+      status: 'published',
+      post_id: publishData.id || null,
+      published_at: new Date().toISOString(),
+    };
+  } catch (err) {
+    return { channel_id: channel.id, platform: 'instagram', status: 'failed', error: err.message };
+  }
+}
+
 // ─── LinkedIn Publisher ────────────────────────────────────────────────────────
 
 async function publishToLinkedIn(channel, post) {
