@@ -304,7 +304,7 @@ export default function SponsorsPage() {
                 </div>
             </section>
 
-            {/* Sponsorship Tiers */}
+            {/* Sponsorship Tracks */}
             <section id="tiers" className="py-20" style={{ background: 'white' }}>
                 <div className="max-w-7xl mx-auto px-4">
                     <motion.div
@@ -313,84 +313,104 @@ export default function SponsorsPage() {
                         viewport={{ once: true }}
                         className="text-center mb-16"
                     >
-                        <div className="inline-block mb-4">
-                            <div className="px-4 py-2 rounded-full" style={{ background: `${brandColors.goldPrestige}20`, color: brandColors.goldPrestige }}>
-                                <span className="font-bold">🚀 Founding Partner Benefits Available</span>
-                            </div>
-                        </div>
-                        <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ 
+                        <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ 
                             color: brandColors.navyDeep,
                             fontFamily: "'Playfair Display', Georgia, serif"
                         }}>
-                            Partnership Tiers
+                            The Sponsor Parallel Track
                         </h2>
-                        <p className="text-xl" style={{ color: brandColors.navyDeep + '80' }}>
-                            Choose the partnership level that aligns with your goals
+                        <p className="text-lg max-w-2xl mx-auto" style={{ color: brandColors.navyDeep + '80' }}>
+                            Sponsors run alongside — not inside — the annual cycle. Choose one of three sponsorship objects:
                         </p>
                     </motion.div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {sponsorshipTiers.map((tier, index) => (
+                    <div className="grid md:grid-cols-3 gap-6 mb-12">
+                        {sponsorshipTracks.map((track, index) => (
                             <motion.div
-                                key={index}
+                                key={track.id}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
                                 viewport={{ once: true }}
-                                className="relative rounded-2xl p-8 border-2 transition-all hover:scale-105 cursor-pointer"
+                                className="relative rounded-3xl p-8 border-2 transition-all hover:shadow-lg"
                                 style={{ 
-                                    borderColor: tier.popular ? tier.color : brandColors.navyDeep + '20',
-                                    background: tier.popular ? `linear-gradient(135deg, ${tier.color}05, white)` : 'white',
-                                    boxShadow: tier.popular ? `0 10px 40px ${tier.color}30` : 'none'
+                                    borderColor: track.borderColor,
+                                    background: track.bgColor
                                 }}
-                                onClick={() => setSelectedTier(tier.name)}
                             >
-                                {tier.popular && (
-                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-sm font-bold text-white" style={{ background: tier.color }}>
+                                {track.popular && (
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-sm font-bold text-white" style={{ background: track.color }}>
                                         Most Popular
                                     </div>
                                 )}
                                 
                                 <div className="mb-6">
-                                    <div className="w-14 h-14 rounded-xl mb-4 flex items-center justify-center" style={{ background: `${tier.color}20` }}>
-                                        <tier.icon className="w-7 h-7" style={{ color: tier.color }} />
+                                    <div className="w-12 h-12 rounded-xl mb-4 flex items-center justify-center" style={{ background: `${track.color}30` }}>
+                                        <track.icon className="w-6 h-6" style={{ color: track.color }} />
                                     </div>
-                                    <h3 className="text-2xl font-bold mb-2" style={{ color: brandColors.navyDeep }}>
-                                        {tier.name}
+                                    <h3 className="text-2xl font-bold mb-1" style={{ color: track.color, fontFamily: "'Playfair Display', Georgia, serif" }}>
+                                        {track.title}
                                     </h3>
-                                    <div className="text-3xl font-bold" style={{ color: tier.color }}>
-                                        {tier.price}
-                                    </div>
-                                    <div className="text-sm" style={{ color: brandColors.navyDeep + '60' }}>
-                                        per year
-                                    </div>
+                                    {track.subtitle && (
+                                        <p className="text-sm mb-3" style={{ color: track.color }}>
+                                            {track.subtitle}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <ul className="space-y-3 mb-8">
-                                    {tier.benefits.map((benefit, idx) => (
-                                        <li key={idx} className="flex items-start gap-2">
-                                            <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: tier.color }} />
-                                            <span className="text-sm" style={{ color: brandColors.navyDeep + '90' }}>
-                                                {benefit}
-                                            </span>
+                                    {track.benefits.map((benefit, idx) => (
+                                        <li key={idx} className="text-sm" style={{ color: brandColors.navyDeep }}>
+                                            {benefit}
                                         </li>
                                     ))}
                                 </ul>
 
-                                <Button
-                                    className="w-full"
-                                    style={{ 
-                                        background: tier.popular ? tier.color : 'transparent',
-                                        color: tier.popular ? 'white' : tier.color,
-                                        border: tier.popular ? 'none' : `2px solid ${tier.color}`
-                                    }}
-                                    onClick={() => window.location.href = `mailto:partners@top100aerospace.com?subject=${tier.name}%20Partnership%20Inquiry`}
-                                >
-                                    Get Started
-                                </Button>
+                                <div className="pt-6 border-t-2" style={{ borderColor: track.borderColor }}>
+                                    <p className="font-bold text-lg mb-3" style={{ color: track.color, fontFamily: "'Playfair Display', Georgia, serif" }}>
+                                        {track.priceNote && `${track.priceNote}: `}{track.price}
+                                    </p>
+                                    <Button
+                                        className="w-full text-white font-semibold"
+                                        style={{ background: track.color }}
+                                        onClick={() => setShowChatModal(true)}
+                                    >
+                                        Learn More
+                                    </Button>
+                                </div>
                             </motion.div>
                         ))}
                     </div>
+
+                    {/* Actor Types */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mt-16 pt-12 border-t-2"
+                        style={{ borderColor: brandColors.navyDeep + '20' }}
+                    >
+                        <p className="text-lg font-semibold mb-6" style={{ color: brandColors.navyDeep + '80' }}>
+                            Any of these actors can sponsor any of the three objects:
+                        </p>
+                        <div className="flex flex-wrap gap-4 justify-center">
+                            {sponsorActors.map((actor, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    viewport={{ once: true }}
+                                    className="px-6 py-3 rounded-full border-2"
+                                    style={{ borderColor: brandColors.navyDeep + '30', background: 'white' }}
+                                >
+                                    <p className="font-semibold" style={{ color: brandColors.navyDeep }}>
+                                        {actor}
+                                    </p>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </motion.div>
                 </div>
             </section>
 
