@@ -107,7 +107,7 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
   );
 }
 
-function PlatformColumn({ platform, posts, channels, onEdit, onDelete, onCancel, onRefresh }) {
+function PlatformColumn({ platform, posts, channels, onEdit, onDelete, onCancel, onRefresh, onNewPost }) {
   const [page, setPage] = useState(0); // page * ROLLING_WINDOW = offset
   const cfg = PLATFORM_CONFIG[platform];
 
