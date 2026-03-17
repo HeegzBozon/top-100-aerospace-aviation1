@@ -7,7 +7,6 @@ import PostQueue from "@/components/publisher/PostQueue";
 import ChannelManager from "@/components/publisher/ChannelManager";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { POST_STATUS_CONFIG } from "@/components/publisher/publisherConfig";
 
 export default function Publisher() {
   const [composerOpen, setComposerOpen] = useState(false);
@@ -21,12 +20,12 @@ export default function Publisher() {
 
   if (user && user.role !== "admin") {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0b1120] flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
-            <Radio className="w-5 h-5 text-white/30" />
+            <Radio className="w-5 h-5 text-[#c9a87c]/40" />
           </div>
-          <p className="text-white/40 text-sm font-medium tracking-wide">RESTRICTED ACCESS</p>
+          <p className="text-[#e8dcc8]/40 text-sm font-medium tracking-widest uppercase">Restricted Access</p>
         </div>
       </div>
     );
@@ -56,92 +55,104 @@ export default function Publisher() {
     refetchPosts();
   };
 
-  // Derived stats
   const scheduled = posts.filter(p => p.status === "scheduled").length;
   const drafts = posts.filter(p => p.status === "draft").length;
   const published = posts.filter(p => p.status === "published").length;
   const connected = channels.filter(c => c.connection_status === "connected").length;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-screen" style={{background: "linear-gradient(160deg, #0b1120 0%, #101828 40%, #0f1a2e 70%, #14101e 100%)"}}>
 
-      {/* Top bar */}
-      <div className="border-b border-white/[0.06] bg-[#0d0d14]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0">
-              <Radio className="w-4 h-4 text-indigo-400" />
-            </div>
+      {/* Hero header */}
+      <div className="relative overflow-hidden border-b border-white/[0.06]">
+        {/* Subtle gradient glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-20 -left-20 w-96 h-96 rounded-full opacity-10" style={{background: "radial-gradient(circle, #1a3a6b 0%, transparent 70%)"}} />
+          <div className="absolute -top-10 right-20 w-64 h-64 rounded-full opacity-8" style={{background: "radial-gradient(circle, #c9a87c 0%, transparent 70%)"}} />
+        </div>
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-base font-semibold text-white tracking-tight leading-none">Signal Publisher</h1>
-              <p className="text-xs text-white/35 mt-0.5 tracking-wide">BROADCAST CONTROL</p>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[10px] tracking-[0.2em] font-semibold uppercase" style={{color: "#c9a87c"}}>Signal Publisher</span>
+                <span className="w-1 h-1 rounded-full bg-[#c9a87c]/40" />
+                <span className="text-[10px] tracking-[0.15em] text-white/25 uppercase">Broadcast Control</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{background: "linear-gradient(135deg, #e8dcc8 0%, #c9a87c 50%, #e8dcc8 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"}}>
+                Your Editorial Command
+              </h1>
+              <p className="text-sm text-white/35 mt-1.5 max-w-sm">Craft, schedule, and broadcast your story across every channel.</p>
             </div>
+
+            <Button
+              onClick={() => handleCompose()}
+              className="shrink-0 gap-2 min-h-[44px] rounded-xl font-semibold text-sm border-0 shadow-lg transition-all hover:scale-[1.02]"
+              style={{background: "linear-gradient(135deg, #c9a87c 0%, #b8935c 100%)", color: "#0b1120", boxShadow: "0 8px 24px rgba(201,168,124,0.25)"}}
+            >
+              <Pen className="w-3.5 h-3.5" />
+              Compose
+            </Button>
           </div>
 
-          <Button
-            onClick={() => handleCompose()}
-            className="gap-2 bg-indigo-500 hover:bg-indigo-400 text-white border-0 min-h-[44px] rounded-xl font-medium text-sm shadow-lg shadow-indigo-500/20 transition-all"
-          >
-            <Pen className="w-3.5 h-3.5" />
-            Compose
-          </Button>
+          {/* Stats row */}
+          <div className="flex items-center gap-6 mt-6 pt-5 border-t border-white/[0.05] overflow-x-auto scrollbar-hide">
+            <StatPill icon={Clock} label="Scheduled" value={scheduled} accent="#7b9fd4" />
+            <StatPill icon={Layers} label="Drafts" value={drafts} accent="rgba(232,220,200,0.45)" />
+            <StatPill icon={TrendingUp} label="Published" value={published} accent="#6dbf8a" />
+            <StatPill icon={Zap} label="Live Channels" value={connected} accent="#c9a87c" />
+          </div>
         </div>
       </div>
 
-      {/* Stats strip */}
-      <div className="border-b border-white/[0.04] bg-[#0d0d14]/60">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-6 overflow-x-auto scrollbar-hide">
-          <StatPill icon={Clock} label="Scheduled" value={scheduled} color="text-indigo-400" />
-          <StatPill icon={Layers} label="Drafts" value={drafts} color="text-white/50" />
-          <StatPill icon={TrendingUp} label="Published" value={published} color="text-emerald-400" />
-          <StatPill icon={Zap} label="Channels" value={connected} color="text-amber-400" />
-        </div>
-      </div>
-
-      {/* Main */}
+      {/* Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
         <Tabs defaultValue="queue">
-          <TabsList className="mb-6 bg-white/[0.04] border border-white/[0.06] rounded-xl p-1 h-auto gap-1">
-            <TabsTrigger
-              value="queue"
-              className="gap-2 rounded-lg px-4 py-2 text-sm text-white/50 data-[state=active]:bg-white/[0.08] data-[state=active]:text-white data-[state=active]:shadow-none transition-all"
-            >
-              <Layers className="w-3.5 h-3.5" />
-              Queue
-            </TabsTrigger>
-            <TabsTrigger
-              value="calendar"
-              className="gap-2 rounded-lg px-4 py-2 text-sm text-white/50 data-[state=active]:bg-white/[0.08] data-[state=active]:text-white data-[state=active]:shadow-none transition-all"
-            >
-              <CalendarDays className="w-3.5 h-3.5" />
-              Calendar
-            </TabsTrigger>
-            <TabsTrigger
-              value="channels"
-              className="gap-2 rounded-lg px-4 py-2 text-sm text-white/50 data-[state=active]:bg-white/[0.08] data-[state=active]:text-white data-[state=active]:shadow-none transition-all"
-            >
-              <Radio className="w-3.5 h-3.5" />
-              Channels
-              {channels.length > 0 && (
-                <span className="bg-indigo-500/30 text-indigo-300 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                  {channels.length}
-                </span>
-              )}
-            </TabsTrigger>
+          <TabsList className="mb-6 h-auto p-1 rounded-xl border border-white/[0.07]" style={{background: "rgba(255,255,255,0.04)"}}>
+            {[
+              { value: "queue", icon: Layers, label: "Queue" },
+              { value: "calendar", icon: CalendarDays, label: "Calendar" },
+              { value: "channels", icon: Radio, label: "Channels", badge: channels.length },
+            ].map(({ value, icon: Icon, label, badge }) => (
+              <TabsTrigger
+                key={value}
+                value={value}
+                className="gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all data-[state=active]:shadow-none"
+                style={{"--tw-text-opacity": 1}}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {label}
+                {badge > 0 && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{background: "rgba(201,168,124,0.2)", color: "#c9a87c"}}>
+                    {badge}
+                  </span>
+                )}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
           <TabsContent value="queue">
-            <DarkPostQueue posts={posts} channels={channels} onEdit={handleCompose} onRefresh={refetchPosts} onNewPost={() => handleCompose()} />
+            <PostQueue
+              posts={posts}
+              channels={channels}
+              onEdit={handleCompose}
+              onRefresh={refetchPosts}
+              onNewPost={() => handleCompose()}
+            />
           </TabsContent>
 
           <TabsContent value="calendar">
-            <CalendarPlaceholder count={scheduled} />
+            <div className="rounded-2xl border border-white/[0.06] p-16 text-center" style={{background: "rgba(255,255,255,0.02)"}}>
+              <div className="w-14 h-14 rounded-2xl border border-white/[0.06] flex items-center justify-center mx-auto mb-5" style={{background: "rgba(255,255,255,0.03)"}}>
+                <CalendarDays className="w-6 h-6 text-white/20" />
+              </div>
+              <p className="text-white/40 font-medium text-sm">Calendar view — coming soon</p>
+              {scheduled > 0 && <p className="text-white/20 text-xs mt-1.5">{scheduled} post{scheduled !== 1 ? "s" : ""} queued</p>}
+            </div>
           </TabsContent>
 
           <TabsContent value="channels">
-            <div className="[&_*]:!bg-transparent [&_.bg-white]:!bg-white/[0.04] [&_.bg-slate-50]:!bg-white/[0.02] [&_.border-slate-200]:!border-white/10 [&_.text-slate-900]:!text-white [&_.text-slate-800]:!text-white/90 [&_.text-slate-700]:!text-white/75 [&_.text-slate-600]:!text-white/60 [&_.text-slate-500]:!text-white/40 [&_.text-slate-400]:!text-white/30">
-              <ChannelManager channels={channels} onRefresh={refetchChannels} userEmail={user?.email} />
-            </div>
+            <ChannelManager channels={channels} onRefresh={refetchChannels} userEmail={user?.email} />
           </TabsContent>
         </Tabs>
       </div>
@@ -158,56 +169,12 @@ export default function Publisher() {
   );
 }
 
-function StatPill({ icon: Icon, label, value, color }) {
+function StatPill({ icon: Icon, label, value, accent }) {
   return (
-    <div className="flex items-center gap-2 shrink-0">
-      <Icon className={`w-3.5 h-3.5 ${color}`} />
-      <span className={`text-sm font-semibold ${color}`}>{value}</span>
-      <span className="text-xs text-white/25 font-medium tracking-wide">{label.toUpperCase()}</span>
-    </div>
-  );
-}
-
-function CalendarPlaceholder({ count }) {
-  return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-16 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mx-auto mb-5">
-        <CalendarDays className="w-6 h-6 text-white/20" />
-      </div>
-      <p className="text-white/40 font-medium text-sm">Calendar view — coming soon</p>
-      {count > 0 && <p className="text-white/20 text-xs mt-1.5">{count} post{count !== 1 ? "s" : ""} in the queue</p>}
-    </div>
-  );
-}
-
-// Dark-themed PostQueue wrapper — passes through with dark overrides via className cascade
-function DarkPostQueue({ posts, channels, onEdit, onRefresh, onNewPost }) {
-  return (
-    <div className="
-      [&_.bg-white]:!bg-[#111118]
-      [&_.bg-slate-50]:!bg-[#0f0f15]
-      [&_.bg-slate-50\/80]:!bg-white/[0.02]
-      [&_.bg-white\/80]:!bg-[#111118]
-      [&_.border-slate-200]:!border-white/[0.07]
-      [&_.border-slate-100]:!border-white/[0.05]
-      [&_.border-b]:border-b
-      [&_.text-slate-900]:!text-white
-      [&_.text-slate-800]:!text-white/90
-      [&_.text-slate-700]:!text-white/75
-      [&_.text-slate-600]:!text-white/60
-      [&_.text-slate-500]:!text-white/40
-      [&_.text-slate-400]:!text-white/30
-      [&_.text-slate-300]:!text-white/20
-      [&_.rounded-xl]:rounded-xl
-      [&_button:not(.bg-indigo-600):not(.bg-emerald-600)]:hover:!bg-white/[0.06]
-    ">
-      <PostQueue
-        posts={posts}
-        channels={channels}
-        onEdit={onEdit}
-        onRefresh={onRefresh}
-        onNewPost={onNewPost}
-      />
+    <div className="flex items-center gap-2.5 shrink-0">
+      <Icon className="w-3.5 h-3.5" style={{color: accent}} />
+      <span className="text-lg font-bold leading-none" style={{color: accent}}>{value}</span>
+      <span className="text-[11px] text-white/25 font-medium tracking-wider uppercase">{label}</span>
     </div>
   );
 }
