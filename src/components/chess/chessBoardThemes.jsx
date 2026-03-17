@@ -43,7 +43,7 @@ export const DEFAULT_PIECE_SET = 'cburnett';
 export function getLichessPieceUrl(type, color, pieceSet = 'cburnett') {
   const pieces = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
   const colorCode = color === 'w' ? 'w' : 'b';
-  const base = `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/${pieceSet}`;
+  const base = `https://lichess1.org/assets/piece/${pieceSet}`;
   return `${base}/${colorCode}${pieces[type.toLowerCase()]}.svg`;
 }
 
