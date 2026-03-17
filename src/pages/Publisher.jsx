@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Pen, Layers, CalendarDays, Radio, Zap, TrendingUp, Clock, FlaskConical } from "lucide-react";
+import { Pen, Layers, CalendarDays, Radio, Zap, TrendingUp, Clock, FlaskConical, Users } from "lucide-react";
 import PostComposer from "@/components/publisher/PostComposer.jsx";
 import PostQueue from "@/components/publisher/PostQueue";
 import PublisherCalendar from "@/components/publisher/PublisherCalendar";
 import EditorialKanban from "@/components/publisher/EditorialKanban";
+import CommunityFeed from "@/components/publisher/CommunityFeed";
 import ChannelManager from "@/components/publisher/ChannelManager";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
