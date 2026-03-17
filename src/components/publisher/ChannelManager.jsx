@@ -39,9 +39,12 @@ export default function ChannelManager({ channels, onRefresh, userEmail }) {
             <h2 className="font-semibold text-slate-900">Connected Channels</h2>
             <p className="text-sm text-slate-500 mt-0.5">{connected.length} of {channels.length} active</p>
           </div>
-          <Button onClick={() => setShowAdd(true)} size="sm" className="gap-2 min-h-[44px]">
-            <Plus className="w-4 h-4" /> Add Channel
-          </Button>
+          <div className="flex items-center gap-2">
+            <LinkedInConnectButton onConnected={() => onRefresh()} />
+            <Button onClick={() => setShowAdd(true)} size="sm" variant="outline" className="gap-2 min-h-[44px]">
+              <Plus className="w-4 h-4" /> Manual
+            </Button>
+          </div>
         </div>
 
         {channels.length === 0 ? (
