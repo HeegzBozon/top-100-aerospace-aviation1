@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { X, Wand2, PencilLine } from "lucide-react";
 import { scriptBuilder } from "@/functions/scriptBuilder";
-import ComposerStepUpload from "./ComposerStepUpload";
-import ComposerStepReview from "./ComposerStepReview";
+import ComposerStepUpload from "./ComposerStepUpload.jsx";
+import ComposerStepReview from "./ComposerStepReview.jsx";
 import SinglePostForm from "./SinglePostForm.jsx";
 
 // Step IDs
