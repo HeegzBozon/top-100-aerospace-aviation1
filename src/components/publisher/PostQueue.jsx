@@ -204,10 +204,13 @@ function PostSlot({ slotIndex, slotLabel, heroStep, post, channels, onEdit, onDe
 
   return (
     <div className={`group flex items-start gap-2 px-3 py-2.5 border-b border-slate-50 transition-colors ${post ? "hover:bg-slate-50/60" : "bg-slate-50/30"}`}>
-      {/* Slot label */}
-      <span className={`text-[9px] px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${labelStyle}`}>
-        {slotLabel}
-      </span>
+      {/* Slot label + hero step */}
+      <div className="flex flex-col items-start gap-0.5 shrink-0 mt-0.5 w-16">
+        <span className={`text-[9px] px-1.5 py-0.5 rounded ${labelStyle}`}>
+          {slotLabel}
+        </span>
+        <span className="text-[8px] text-slate-400 leading-tight">{heroStep}</span>
+      </div>
 
       {/* Content or empty state */}
       {post ? (
