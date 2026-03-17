@@ -183,11 +183,11 @@ export default function SponsorsPage() {
                             <Button
                                 size="lg"
                                 variant="outline"
-                                onClick={() => setShowChatModal(true)}
                                 className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10"
+                                onClick={() => window.location.href = 'mailto:partners@top100aerospace.com'}
                             >
-                                <Sparkles className="mr-2 w-5 h-5" />
-                                Let's Chat
+                                <Mail className="mr-2 w-5 h-5" />
+                                Contact
                             </Button>
                         </div>
                     </motion.div>
