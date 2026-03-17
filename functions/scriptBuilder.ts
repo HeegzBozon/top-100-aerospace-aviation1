@@ -116,11 +116,11 @@ Return a JSON object with this exact schema:
       },
     });
 
-    // result is already a parsed object when response_json_schema is set
-    console.log('[scriptBuilder] raw result type:', typeof result, JSON.stringify(result)?.slice(0, 500));
-    const posts = Array.isArray(result?.posts) ? result.posts : [];
+    // InvokeLLM with response_json_schema wraps output under result.response
+    const parsed = result?.response ?? result;
+    const posts = Array.isArray(parsed?.posts) ? parsed.posts : [];
     console.log('[scriptBuilder] generated', posts.length, 'posts');
-    return Response.json({ posts, debug_result: result });
+    return Response.json({ posts });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
