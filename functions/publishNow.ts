@@ -44,20 +44,29 @@ Deno.serve(async (req) => {
       const channels = await base44.asServiceRole.entities.SocialChannel.filter({ id: channelId });
       const ch = channels[0];
 
-      if (!ch || ch.connection_status !== 'connected' || !ch.access_token) {
+      if (!ch || ch.connection_status !== 'connected') {
         publishResults.push({
           channel_id: channelId,
           platform: ch?.platform || 'unknown',
           status: 'failed',
-          error: 'Channel not connected or missing token',
+          error: 'Channel not connected',
         });
         anyFailed = true;
         continue;
       }
 
+      // Always resolve a fresh token from the connector at publish time
+      let liveToken = ch.access_token;
+      if (ch.platform === 'linkedin') {
+        try {
+          const conn = await base44.asServiceRole.connectors.getConnection('linkedin');
+          if (conn?.accessToken) liveToken = conn.accessToken;
+        } catch (_) { /* fall back to stored token */ }
+      }
+
       let result;
       if (ch.platform === 'linkedin') {
-        result = await publishToLinkedIn(ch, post);
+        result = await publishToLinkedIn({ ...ch, access_token: liveToken }, post);
       } else {
         result = {
           channel_id: channelId,
