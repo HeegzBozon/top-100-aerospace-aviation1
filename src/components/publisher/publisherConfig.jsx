@@ -27,7 +27,6 @@ export const PLATFORM_CONFIG = {
 export const MAX_CHANNELS_PER_TYPE = {
   linkedin: 3, // 1 personal + 2 business
   instagram: 2,
-  threads: 2,
 };
 
 export const POST_STATUS_CONFIG = {
