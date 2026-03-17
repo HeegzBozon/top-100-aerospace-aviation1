@@ -260,7 +260,13 @@ function PostSlot({ slotIndex, slotLabel, post, channels, onEdit, onDelete, onCa
           </DropdownMenu>
         </>
       ) : (
-        <p className="text-[10px] text-slate-300 italic mt-0.5">Empty slot</p>
+        <button
+          onClick={onCreatePost}
+          className="flex-1 text-left text-[10px] text-slate-300 italic hover:text-indigo-400 hover:underline transition-colors mt-0.5 min-h-[20px]"
+          aria-label="Create post for this slot"
+        >
+          + Create post
+        </button>
       )}
     </div>
   );
