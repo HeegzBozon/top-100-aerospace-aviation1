@@ -117,9 +117,10 @@ Return a JSON object with this exact schema:
     });
 
     // result is already a parsed object when response_json_schema is set
+    console.log('[scriptBuilder] raw result type:', typeof result, JSON.stringify(result)?.slice(0, 500));
     const posts = Array.isArray(result?.posts) ? result.posts : [];
     console.log('[scriptBuilder] generated', posts.length, 'posts');
-    return Response.json({ posts });
+    return Response.json({ posts, debug_result: result });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
