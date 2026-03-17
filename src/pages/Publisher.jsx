@@ -114,6 +114,7 @@ export default function Publisher() {
             {[
               { value: "queue", icon: Layers, label: "Queue" },
               { value: "calendar", icon: CalendarDays, label: "Calendar" },
+              { value: "rd", icon: FlaskConical, label: "R&D" },
               { value: "channels", icon: Radio, label: "Channels", badge: channels.length },
             ].map(({ value, icon: Icon, label, badge }) => (
               <TabsTrigger
@@ -150,6 +151,10 @@ export default function Publisher() {
               onEditPost={handleCompose}
               onNewPost={() => handleCompose()}
             />
+          </TabsContent>
+
+          <TabsContent value="rd">
+            <EditorialKanban userEmail={user?.email} />
           </TabsContent>
 
           <TabsContent value="channels">
