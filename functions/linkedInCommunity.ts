@@ -18,10 +18,17 @@ Deno.serve(async (req) => {
 
     // ── GET POSTS ──────────────────────────────────────────────────────────────
     if (action === 'get_posts') {
-      // Fetch recent posts for the member
+      // Use the newer /rest/posts API (LinkedIn Marketing Developer Platform)
+      // author_urn should be e.g. urn:li:person:xxxx or urn:li:organization:xxxx
+      const encodedAuthor = encodeURIComponent(author_urn);
       const postsRes = await fetch(
-        `https://api.linkedin.com/v2/ugcPosts?q=authors&authors=List(${encodeURIComponent(author_urn)})&count=20&sortBy=LAST_MODIFIED`,
-        { headers }
+        `https://api.linkedin.com/rest/posts?q=author&author=${encodedAuthor}&count=20&sortBy=LAST_MODIFIED`,
+        {
+          headers: {
+            ...headers,
+            'LinkedIn-Version': '202401',
+          }
+        }
       );
       if (!postsRes.ok) {
         const err = await postsRes.text();
