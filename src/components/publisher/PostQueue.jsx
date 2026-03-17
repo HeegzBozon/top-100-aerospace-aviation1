@@ -21,11 +21,27 @@ const SLOT_LABELS = Array.from({ length: ROLLING_WINDOW }, (_, i) => {
   return pos === 3 ? "Hook" : "Jab";
 });
 
+// 12 steps of the Hero's Journey mapped to each slot
+const HERO_STEPS = [
+  "Ordinary World",
+  "Call to Adventure",
+  "Refusal of the Call",
+  "Meeting the Mentor",
+  "Crossing the Threshold",
+  "Tests, Allies & Enemies",
+  "Approach the Inmost Cave",
+  "The Ordeal",
+  "Reward",
+  "The Road Back",
+  "Resurrection",
+  "Return with the Elixir",
+];
+
 // Group indices into sections of 4 (JJJH)
 const SECTIONS = [
-  { label: "Section 1", slots: [0, 1, 2, 3] },
-  { label: "Section 2", slots: [4, 5, 6, 7] },
-  { label: "Section 3", slots: [8, 9, 10, 11] },
+  { label: "Act I — Departure", slots: [0, 1, 2, 3] },
+  { label: "Act II — Initiation", slots: [4, 5, 6, 7] },
+  { label: "Act III — Return", slots: [8, 9, 10, 11] },
 ];
 
 const SLOT_LABEL_STYLES = {
