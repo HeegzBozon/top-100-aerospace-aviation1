@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
       media: [{
         status: 'READY',
         originalUrl: LAUNCH_PARTY_URL,
-        title: { text: 'Launch Party – TOP 100 Women in Aerospace' },
+        title: { text: 'Launch Party powered by TOP 100 Aerospace & Aviation' },
         description: { text: launch.mission?.description?.slice(0, 200) || 'Track upcoming space launches live.' },
       }],
     };
