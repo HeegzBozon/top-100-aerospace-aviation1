@@ -21,68 +21,66 @@ const brandColors = {
     cream: '#faf8f5',
 };
 
-const sponsorshipTiers = [
+const sponsorshipTracks = [
     {
-        name: 'Bronze',
-        price: '$5,000',
-        color: '#cd7f32',
-        icon: Star,
-        benefits: [
-            'Logo on website footer',
-            'Social media recognition (1 post)',
-            'Mention in quarterly newsletter',
-            'Community member access'
-        ]
-    },
-    {
-        name: 'Silver',
-        price: '$15,000',
-        color: '#c0c0c0',
+        id: 'fellow',
+        title: 'Sponsor a Fellow or Alumni',
+        subtitle: '',
+        price: '$5K – $30K / cycle',
+        priceNote: 'Entry',
+        color: '#8b7fbf',
+        bgColor: '#eeedfe',
+        borderColor: '#c9c0e8',
         icon: Award,
         benefits: [
-            'All Bronze benefits',
-            'Logo on sponsor page with link',
-            'Social media features (4 posts/year)',
-            '2 complimentary event tickets',
-            'Quarterly performance report',
-            'Job postings in talent exchange'
+            'Named visibility boost',
+            'Authority Piece underwrite',
+            'Time Capsule patronage',
+            'Fellow Accelerator Program'
         ]
     },
     {
-        name: 'Gold',
-        price: '$35,000',
-        color: '#ffd700',
+        id: 'initiative',
+        title: 'Sponsor an Initiative or Mission',
+        subtitle: '',
+        price: '$7.5K – $75K / event',
+        priceNote: 'Entry',
+        color: '#b8860b',
+        bgColor: '#faeeda',
+        borderColor: '#e5c89b',
+        icon: Rocket,
+        benefits: [
+            'Mission Room underwrite',
+            'Rapid Response Cell activation',
+            'Project Container funding',
+            'Annual cycle co-sponsorship'
+        ]
+    },
+    {
+        id: 'institution',
+        title: 'Sponsor the Institution (Patron)',
+        subtitle: 'Patron of record',
+        price: '$10K – $150K / year',
+        priceNote: '',
+        color: '#a74242',
+        bgColor: '#faece7',
+        borderColor: '#e5bfb8',
         icon: Trophy,
         popular: true,
         benefits: [
-            'All Silver benefits',
-            'Premium logo placement',
-            'Dedicated sponsor spotlight article',
-            'Speaking opportunity at annual event',
-            '5 complimentary event tickets',
-            'Exclusive networking sessions',
-            'Monthly analytics dashboard',
-            'Co-branded content opportunities'
-        ]
-    },
-    {
-        name: 'Platinum',
-        price: '$75,000+',
-        color: '#e5e4e2',
-        icon: Sparkles,
-        benefits: [
-            'All Gold benefits',
-            'Title sponsorship of major events',
-            'Executive advisory board seat',
-            'Custom activation opportunities',
-            '10 complimentary event tickets',
-            'Keynote speaking slot',
-            'Premium booth space at events',
-            'Dedicated account manager',
-            'First access to new initiatives',
-            'Custom research & insights reports'
+            'Bronze — visibility',
+            'Silver — mentorship integration',
+            'Gold — workforce activation',
+            'Platinum — full residency'
         ]
     }
+];
+
+const sponsorActors = [
+    'Corporations',
+    'Fellows & Alumni',
+    'Community members',
+    'Boosters (nominators)'
 ];
 
 const impactMetrics = [
