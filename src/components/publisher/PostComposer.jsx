@@ -83,7 +83,7 @@ export default function PostComposer({ channels, editingPost, userEmail, onClose
                 </div>
                 <div>
                   <p className="font-semibold text-slate-800">Script Builder</p>
-                  <p className="text-sm text-slate-500 mt-0.5">Upload content, let AI generate up to 12 posts mapped to JJJH + AIDA + Hero's Journey.</p>
+                  <p className="text-sm text-slate-500 mt-0.5">Upload content and let AI generate up to 12 posts mapped to JJJH + AIDA + Hero's Journey.</p>
                 </div>
               </button>
 
