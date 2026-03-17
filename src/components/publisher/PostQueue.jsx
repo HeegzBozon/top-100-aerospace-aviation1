@@ -191,6 +191,11 @@ function PostCard({ post, channels, onEdit, onDelete, onCancel, onPublishNow }) 
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {(post.status === "draft" || post.status === "scheduled" || post.status === "failed") && (
+              <DropdownMenuItem onClick={handlePublishNow} disabled={publishing} className="gap-2 text-indigo-600 font-medium">
+                <Zap className="w-4 h-4" /> {publishing ? "Publishing…" : "Publish Now"}
+              </DropdownMenuItem>
+            )}
             {(post.status === "draft" || post.status === "scheduled") && (
               <DropdownMenuItem onClick={onEdit} className="gap-2">
                 <Edit2 className="w-4 h-4" /> Edit
