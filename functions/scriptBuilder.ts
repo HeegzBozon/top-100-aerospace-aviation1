@@ -108,13 +108,18 @@ Return a JSON object with this exact schema:
                 hook_line: { type: 'string' },
                 notes: { type: 'string' },
               },
+              required: ['slot', 'hero_step', 'jjjh', 'aida', 'content', 'hook_line', 'notes'],
             },
           },
         },
+        required: ['posts'],
       },
     });
 
-    return Response.json({ posts: result.posts || [] });
+    // result is already a parsed object when response_json_schema is set
+    const posts = Array.isArray(result?.posts) ? result.posts : [];
+    console.log('[scriptBuilder] generated', posts.length, 'posts');
+    return Response.json({ posts });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
