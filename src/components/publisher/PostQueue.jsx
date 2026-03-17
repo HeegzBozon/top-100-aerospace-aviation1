@@ -143,6 +143,7 @@ function PlatformColumn({ platform, posts, channels, onEdit, onDelete, onCancel,
                 key={slotIdx}
                 slotIndex={slotIdx}
                 slotLabel={SLOT_LABELS[slotIdx]}
+                heroStep={HERO_STEPS[slotIdx]}
                 post={slots[slotIdx]}
                 channels={channels}
                 onEdit={slots[slotIdx] ? () => onEdit(slots[slotIdx]) : undefined}
