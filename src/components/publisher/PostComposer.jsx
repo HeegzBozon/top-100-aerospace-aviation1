@@ -3,7 +3,7 @@ import { X, Wand2, PencilLine } from "lucide-react";
 import { scriptBuilder } from "@/functions/scriptBuilder";
 import ComposerStepUpload from "./ComposerStepUpload";
 import ComposerStepReview from "./ComposerStepReview";
-import SinglePostForm from "./SinglePostForm";
+import SinglePostForm from "./SinglePostForm.jsx";
 
 // Step IDs
 const STEP_MODE   = "mode";    // choose: script builder vs single post
