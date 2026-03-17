@@ -6,12 +6,9 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import SponsorCard from '@/components/sponsors/SponsorCard';
-import PartnershipChatModal from '@/components/sponsors/PartnershipChatModal';
-import BookMeetingModal from '@/components/sponsors/BookMeetingModal';
 import { 
   Loader2, Award, TrendingUp, Users, Globe, Target, CheckCircle, 
-  BarChart3, Rocket, Mail, Calendar, ArrowRight, Star, Trophy, 
-  Sparkles, Zap
+  BarChart3, Rocket, Mail, ArrowRight, Trophy, Zap
 } from 'lucide-react';
 
 const brandColors = {
