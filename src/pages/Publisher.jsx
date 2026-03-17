@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Pen, Layers, CalendarDays, Radio, Zap, TrendingUp, Clock } from "lucide-react";
 import PostComposer from "@/components/publisher/PostComposer.jsx";
 import PostQueue from "@/components/publisher/PostQueue";
+import PublisherCalendar from "@/components/publisher/PublisherCalendar";
 import ChannelManager from "@/components/publisher/ChannelManager";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
