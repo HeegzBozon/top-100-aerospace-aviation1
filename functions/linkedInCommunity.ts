@@ -41,10 +41,11 @@ Deno.serve(async (req) => {
     // ── GET SOCIAL ACTIONS (reactions + comments) for a post ──────────────────
     if (action === 'get_activity') {
       const encodedUrn = encodeURIComponent(post_urn);
+      const restHeaders = { ...headers, 'LinkedIn-Version': '202401' };
 
       const [commentsRes, reactionsRes] = await Promise.all([
-        fetch(`https://api.linkedin.com/v2/socialActions/${encodedUrn}/comments?count=50`, { headers }),
-        fetch(`https://api.linkedin.com/v2/socialActions/${encodedUrn}/likes?count=50`, { headers }),
+        fetch(`https://api.linkedin.com/rest/socialActions/${encodedUrn}/comments?count=50`, { headers: restHeaders }),
+        fetch(`https://api.linkedin.com/rest/socialActions/${encodedUrn}/likes?count=50`, { headers: restHeaders }),
       ]);
 
       const comments  = commentsRes.ok  ? (await commentsRes.json()).elements  || [] : [];
