@@ -15,6 +15,24 @@ import { publishNow } from "@/functions/publishNow";
 const PLATFORMS = ["linkedin", "instagram", "threads"];
 const ROLLING_WINDOW = 12;
 
+// Jab, Jab, Jab, Hook pattern — repeating across 12 slots
+const SLOT_LABELS = Array.from({ length: ROLLING_WINDOW }, (_, i) => {
+  const pos = i % 4; // 0=Jab,1=Jab,2=Jab,3=Hook
+  return pos === 3 ? "Hook" : "Jab";
+});
+
+// Group indices into sections of 4 (JJJH)
+const SECTIONS = [
+  { label: "Section 1", slots: [0, 1, 2, 3] },
+  { label: "Section 2", slots: [4, 5, 6, 7] },
+  { label: "Section 3", slots: [8, 9, 10, 11] },
+];
+
+const SLOT_LABEL_STYLES = {
+  Jab:  "bg-blue-50 text-blue-500 border border-blue-100",
+  Hook: "bg-amber-50 text-amber-600 border border-amber-200 font-bold",
+};
+
 export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPost }) {
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.ScheduledPost.delete(id),
@@ -26,7 +44,7 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
     onSuccess: onRefresh,
   });
 
-  // Map platform -> posts that target at least one channel of that platform
+  // Map platform -> posts (ordered by scheduled_at, then created_date)
   const platformPostMap = useMemo(() => {
     const map = {};
     PLATFORMS.forEach(p => { map[p] = []; });
@@ -41,6 +59,17 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
         if (map[platform]) map[platform].push(post);
       });
     });
+
+    // Sort each platform's posts by scheduled_at asc, nulls last
+    PLATFORMS.forEach(p => {
+      map[p].sort((a, b) => {
+        if (!a.scheduled_at && !b.scheduled_at) return 0;
+        if (!a.scheduled_at) return 1;
+        if (!b.scheduled_at) return -1;
+        return new Date(a.scheduled_at) - new Date(b.scheduled_at);
+      });
+    });
+
     return map;
   }, [posts, channels]);
 
@@ -78,150 +107,160 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
 }
 
 function PlatformColumn({ platform, posts, channels, onEdit, onDelete, onCancel, onRefresh }) {
-  const [visible, setVisible] = useState(ROLLING_WINDOW);
+  const [page, setPage] = useState(0); // page * ROLLING_WINDOW = offset
   const cfg = PLATFORM_CONFIG[platform];
-  const shown = posts.slice(0, visible);
-  const hasMore = posts.length > visible;
-  const canCollapse = visible > ROLLING_WINDOW;
+
+  const offset = page * ROLLING_WINDOW;
+  const totalPages = Math.max(1, Math.ceil(posts.length / ROLLING_WINDOW));
+
+  // Always exactly 12 slots; fill with null for empties
+  const slots = useMemo(() => {
+    return Array.from({ length: ROLLING_WINDOW }, (_, i) => posts[offset + i] || null);
+  }, [posts, offset]);
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col">
       {/* Column Header */}
       <div className={`flex items-center gap-2.5 px-4 py-3 border-b border-slate-100 ${cfg?.bg || "bg-slate-50"}`}>
         {cfg && <cfg.Icon className={`w-4 h-4 ${cfg.color}`} />}
-        <span className="font-semibold text-sm text-slate-800 capitalize">{cfg?.label || platform}</span>
+        <span className="font-semibold text-sm text-slate-800">{cfg?.label || platform}</span>
         <span className="ml-auto text-xs text-slate-400 font-medium">{posts.length} post{posts.length !== 1 ? "s" : ""}</span>
       </div>
 
-      {/* Rows */}
-      <div className="flex-1 divide-y divide-slate-50">
-        {shown.length === 0 ? (
-          <p className="text-center text-xs text-slate-400 py-10">No posts for {platform}</p>
-        ) : (
-          shown.map((post, idx) => (
-            <PostRow
-              key={post.id}
-              post={post}
-              index={idx + 1}
-              platform={platform}
-              channels={channels}
-              onEdit={() => onEdit(post)}
-              onDelete={() => onDelete(post.id)}
-              onCancel={() => onCancel(post.id)}
-              onPublishNow={onRefresh}
-            />
-          ))
-        )}
+      {/* Sections */}
+      <div className="flex-1 divide-y divide-slate-100">
+        {SECTIONS.map((section, sIdx) => (
+          <div key={section.label}>
+            {/* Section label */}
+            <div className="px-4 py-1.5 bg-slate-50/80 border-b border-slate-100">
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{section.label}</span>
+            </div>
+            {/* 4 slots */}
+            {section.slots.map((slotIdx) => (
+              <PostSlot
+                key={slotIdx}
+                slotIndex={slotIdx}
+                slotLabel={SLOT_LABELS[slotIdx]}
+                post={slots[slotIdx]}
+                channels={channels}
+                onEdit={slots[slotIdx] ? () => onEdit(slots[slotIdx]) : undefined}
+                onDelete={slots[slotIdx] ? () => onDelete(slots[slotIdx].id) : undefined}
+                onCancel={slots[slotIdx] ? () => onCancel(slots[slotIdx].id) : undefined}
+                onRefresh={onRefresh}
+              />
+            ))}
+          </div>
+        ))}
       </div>
 
-      {/* Pagination */}
-      {(hasMore || canCollapse) && (
-        <div className="flex items-center gap-3 px-4 py-2 border-t border-slate-100 bg-slate-50/40">
-          {hasMore && (
-            <button
-              onClick={() => setVisible(v => v + ROLLING_WINDOW)}
-              className="flex items-center gap-1 text-xs text-slate-500 hover:text-indigo-600 transition-colors font-medium"
-            >
-              <ChevronDown className="w-3.5 h-3.5" />
-              {Math.min(ROLLING_WINDOW, posts.length - visible)} more
-            </button>
-          )}
-          {canCollapse && (
-            <button
-              onClick={() => setVisible(ROLLING_WINDOW)}
-              className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 transition-colors ml-auto"
-            >
-              <ChevronUp className="w-3.5 h-3.5" /> Collapse
-            </button>
-          )}
+      {/* Pagination footer */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-2 border-t border-slate-100 bg-slate-50/40">
+          <button
+            onClick={() => setPage(p => Math.max(0, p - 1))}
+            disabled={page === 0}
+            className="text-xs text-slate-500 hover:text-indigo-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 font-medium"
+          >
+            <ChevronUp className="w-3.5 h-3.5" /> Prev
+          </button>
+          <span className="text-[10px] text-slate-400">{page + 1} / {totalPages}</span>
+          <button
+            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+            disabled={page === totalPages - 1}
+            className="text-xs text-slate-500 hover:text-indigo-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 font-medium"
+          >
+            Next <ChevronDown className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
     </div>
   );
 }
 
-function PostRow({ post, index, channels, onEdit, onDelete, onCancel, onPublishNow }) {
+function PostSlot({ slotIndex, slotLabel, post, channels, onEdit, onDelete, onCancel, onRefresh }) {
   const [publishing, setPublishing] = useState(false);
+  const labelStyle = SLOT_LABEL_STYLES[slotLabel];
 
   const handlePublishNow = async () => {
     setPublishing(true);
     await publishNow({ post_id: post.id });
     setPublishing(false);
-    onPublishNow?.();
+    onRefresh?.();
   };
 
-  const statusCfg = POST_STATUS_CONFIG[post.status] || POST_STATUS_CONFIG.draft;
+  const statusCfg = post ? (POST_STATUS_CONFIG[post.status] || POST_STATUS_CONFIG.draft) : null;
 
   const scheduledLabel = useMemo(() => {
-    if (!post.scheduled_at) return null;
+    if (!post?.scheduled_at) return null;
     const d = new Date(post.scheduled_at);
     if (isToday(d)) return `Today ${format(d, "h:mm a")}`;
     if (isTomorrow(d)) return `Tomorrow ${format(d, "h:mm a")}`;
     return format(d, "MMM d, h:mm a");
-  }, [post.scheduled_at]);
+  }, [post?.scheduled_at]);
 
   return (
-    <div className="group flex items-start gap-2 px-4 py-3 hover:bg-slate-50/60 transition-colors">
-      {/* Index */}
-      <span className="text-[10px] text-slate-300 font-mono mt-0.5 w-4 shrink-0">{index}</span>
+    <div className={`group flex items-start gap-2 px-3 py-2.5 border-b border-slate-50 transition-colors ${post ? "hover:bg-slate-50/60" : "bg-slate-50/30"}`}>
+      {/* Slot label */}
+      <span className={`text-[9px] px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${labelStyle}`}>
+        {slotLabel}
+      </span>
 
-      {/* Body */}
-      <div className="flex-1 min-w-0">
-        <p className="text-xs text-slate-700 line-clamp-2 leading-relaxed">{post.content}</p>
+      {/* Content or empty state */}
+      {post ? (
+        <>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-slate-700 line-clamp-2 leading-relaxed">{post.content}</p>
+            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+              <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${statusCfg.bg} ${statusCfg.color}`}>
+                {statusCfg.label}
+              </span>
+              {scheduledLabel && post.status === "scheduled" && (
+                <span className="flex items-center gap-0.5 text-[9px] text-indigo-500 font-medium">
+                  <Clock className="w-2 h-2" /> {scheduledLabel}
+                </span>
+              )}
+              {post.media_urls?.length > 0 && (
+                <span className="text-[9px] text-slate-400">📎 {post.media_urls.length}</span>
+              )}
+            </div>
+          </div>
 
-        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-          {/* Status pill */}
-          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${statusCfg.bg} ${statusCfg.color}`}>
-            {statusCfg.label}
-          </span>
-
-          {/* Schedule time */}
-          {scheduledLabel && post.status === "scheduled" && (
-            <span className="flex items-center gap-0.5 text-[10px] text-indigo-500 font-medium">
-              <Clock className="w-2.5 h-2.5" /> {scheduledLabel}
-            </span>
-          )}
-
-          {/* Media count */}
-          {post.media_urls?.length > 0 && (
-            <span className="text-[10px] text-slate-400">📎 {post.media_urls.length}</span>
-          )}
-        </div>
-      </div>
-
-      {/* Action menu */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-7 h-7 min-w-[28px] min-h-[28px] shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-            aria-label="Post actions"
-          >
-            <MoreVertical className="w-3.5 h-3.5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {(post.status === "draft" || post.status === "scheduled" || post.status === "failed") && (
-            <DropdownMenuItem onClick={handlePublishNow} disabled={publishing} className="gap-2 text-indigo-600 font-medium">
-              <Zap className="w-4 h-4" /> {publishing ? "Publishing…" : "Publish Now"}
-            </DropdownMenuItem>
-          )}
-          {(post.status === "draft" || post.status === "scheduled") && (
-            <DropdownMenuItem onClick={onEdit} className="gap-2">
-              <Edit2 className="w-4 h-4" /> Edit
-            </DropdownMenuItem>
-          )}
-          {post.status === "scheduled" && (
-            <DropdownMenuItem onClick={onCancel} className="gap-2 text-amber-600">
-              <XCircle className="w-4 h-4" /> Cancel
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem onClick={onDelete} className="gap-2 text-red-600">
-            <Trash2 className="w-4 h-4" /> Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-6 h-6 min-w-[24px] min-h-[24px] shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Post actions"
+              >
+                <MoreVertical className="w-3 h-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {(post.status === "draft" || post.status === "scheduled" || post.status === "failed") && (
+                <DropdownMenuItem onClick={handlePublishNow} disabled={publishing} className="gap-2 text-indigo-600 font-medium">
+                  <Zap className="w-4 h-4" /> {publishing ? "Publishing…" : "Publish Now"}
+                </DropdownMenuItem>
+              )}
+              {(post.status === "draft" || post.status === "scheduled") && (
+                <DropdownMenuItem onClick={onEdit} className="gap-2">
+                  <Edit2 className="w-4 h-4" /> Edit
+                </DropdownMenuItem>
+              )}
+              {post.status === "scheduled" && (
+                <DropdownMenuItem onClick={onCancel} className="gap-2 text-amber-600">
+                  <XCircle className="w-4 h-4" /> Cancel
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={onDelete} className="gap-2 text-red-600">
+                <Trash2 className="w-4 h-4" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </>
+      ) : (
+        <p className="text-[10px] text-slate-300 italic mt-0.5">Empty slot</p>
+      )}
     </div>
   );
 }
