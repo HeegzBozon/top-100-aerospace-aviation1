@@ -73,21 +73,6 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
     return map;
   }, [posts, channels]);
 
-  if (posts.length === 0) {
-    return (
-      <div className="bg-white rounded-xl border border-slate-200 py-20 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mx-auto mb-4">
-          <Send className="w-8 h-8 text-indigo-400" />
-        </div>
-        <p className="font-semibold text-slate-700 text-lg">Your queue is empty</p>
-        <p className="text-sm text-slate-500 mt-1">Create your first post to get started</p>
-        <Button onClick={onNewPost} className="mt-5 gap-2 bg-indigo-600 hover:bg-indigo-700 min-h-[44px]">
-          <PlusCircle className="w-4 h-4" /> Create Post
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {PLATFORMS.map(platform => (
