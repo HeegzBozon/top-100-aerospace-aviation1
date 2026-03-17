@@ -110,26 +110,18 @@ async function publishToLinkedIn(channel, post) {
     const mediaUrls = post.media_urls || [];
     let specificContent;
 
-    if (mediaUrls.length > 0) {
-      // Image share (single)
-      specificContent = {
-        com.linkedin.ugc.ShareContent: {
-          shareCommentary: { text: post.content },
-          shareMediaCategory: 'IMAGE',
+    specificContent = {
+      'com.linkedin.ugc.ShareContent': {
+        shareCommentary: { text: post.content },
+        shareMediaCategory: mediaUrls.length > 0 ? 'IMAGE' : 'NONE',
+        ...(mediaUrls.length > 0 && {
           media: mediaUrls.slice(0, 9).map(url => ({
             status: 'READY',
             originalUrl: url,
           })),
-        },
-      };
-    } else {
-      specificContent = {
-        'com.linkedin.ugc.ShareContent': {
-          shareCommentary: { text: post.content },
-          shareMediaCategory: 'NONE',
-        },
-      };
-    }
+        }),
+      },
+    };
 
     const body = {
       author: authorUrn,
