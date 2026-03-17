@@ -1,4 +1,4 @@
-import { Linkedin, Instagram } from "lucide-react";
+import { Linkedin, Instagram, MessageCircle } from "lucide-react";
 
 export const PLATFORM_CONFIG = {
   linkedin: {
