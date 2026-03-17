@@ -6,7 +6,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {
-  Edit2, Trash2, MoreVertical, Send, PlusCircle, Clock, XCircle, Zap, ChevronDown
+  Edit2, Trash2, MoreVertical, Send, PlusCircle, Clock, XCircle, Zap, ChevronDown, ChevronUp
 } from "lucide-react";
 import { format, isToday, isTomorrow } from "date-fns";
 import { PLATFORM_CONFIG, POST_STATUS_CONFIG } from "./publisherConfig";
@@ -15,20 +15,12 @@ import { publishNow } from "@/functions/publishNow";
 const LANE_ORDER = ["scheduled", "draft", "publishing", "published", "failed"];
 const ROLLING_WINDOW = 12;
 
-const LANE_COLORS = {
-  scheduled: "border-indigo-300 bg-indigo-50/40",
-  draft:      "border-slate-300 bg-slate-50/40",
-  publishing: "border-amber-300 bg-amber-50/40",
-  published:  "border-emerald-300 bg-emerald-50/40",
-  failed:     "border-red-300 bg-red-50/40",
-};
-
-const LANE_HEADER_COLORS = {
-  scheduled: "bg-indigo-100 text-indigo-700",
-  draft:      "bg-slate-100 text-slate-600",
-  publishing: "bg-amber-100 text-amber-700",
-  published:  "bg-emerald-100 text-emerald-700",
-  failed:     "bg-red-100 text-red-600",
+const LANE_ACCENT = {
+  scheduled: "bg-indigo-500",
+  draft:      "bg-slate-400",
+  publishing: "bg-amber-500",
+  published:  "bg-emerald-500",
+  failed:     "bg-red-500",
 };
 
 export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPost }) {
@@ -67,10 +59,10 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
   }
 
   return (
-    <div className="overflow-x-auto pb-4">
-      <div className="flex gap-4 min-w-max">
-        {LANE_ORDER.map(status => (
-          <SwimLane
+    <div className="space-y-3">
+      {LANE_ORDER.map(status => (
+        laneMap[status].length > 0 && (
+          <SwimLaneTable
             key={status}
             status={status}
             posts={laneMap[status]}
@@ -80,63 +72,87 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
             onCancel={(id) => updateMutation.mutate({ id, data: { status: "cancelled" } })}
             onRefresh={onRefresh}
           />
-        ))}
-      </div>
+        )
+      ))}
     </div>
   );
 }
 
-function SwimLane({ status, posts, channels, onEdit, onDelete, onCancel, onRefresh }) {
+function SwimLaneTable({ status, posts, channels, onEdit, onDelete, onCancel, onRefresh }) {
   const [visible, setVisible] = useState(ROLLING_WINDOW);
   const cfg = POST_STATUS_CONFIG[status];
-  const headerCls = LANE_HEADER_COLORS[status];
-  const laneCls = LANE_COLORS[status];
+  const accent = LANE_ACCENT[status];
   const shown = posts.slice(0, visible);
   const hasMore = posts.length > visible;
+  const canCollapse = visible > ROLLING_WINDOW;
 
   return (
-    <div className={`flex flex-col w-72 shrink-0 rounded-xl border-2 ${laneCls} overflow-hidden`}>
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       {/* Lane Header */}
-      <div className={`flex items-center justify-between px-3 py-2.5 ${headerCls}`}>
-        <span className="font-semibold text-sm capitalize">{cfg?.label || status}</span>
-        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-white/60">
-          {posts.length}
-        </span>
+      <div className={`flex items-center gap-3 px-4 py-2.5 border-b border-slate-100`}>
+        <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${accent}`} />
+        <span className="font-semibold text-sm text-slate-800 capitalize">{cfg?.label || status}</span>
+        <span className="text-xs text-slate-400 font-medium">{posts.length} post{posts.length !== 1 ? "s" : ""}</span>
       </div>
 
-      {/* Cards */}
-      <div className="flex flex-col gap-2 p-2 overflow-y-auto max-h-[70vh]">
-        {shown.length === 0 ? (
-          <p className="text-center text-xs text-slate-400 py-6">No posts</p>
-        ) : (
-          shown.map(post => (
-            <PostCard
-              key={post.id}
-              post={post}
-              channels={channels}
-              onEdit={() => onEdit(post)}
-              onDelete={() => onDelete(post.id)}
-              onCancel={() => onCancel(post.id)}
-              onPublishNow={onRefresh}
-            />
-          ))
-        )}
-
-        {hasMore && (
-          <button
-            onClick={() => setVisible(v => v + ROLLING_WINDOW)}
-            className="flex items-center justify-center gap-1 text-xs text-slate-500 hover:text-slate-700 py-2 border border-dashed border-slate-300 rounded-lg transition-colors"
-          >
-            <ChevronDown className="w-3.5 h-3.5" />
-            Show more ({posts.length - visible})
-          </button>
-        )}
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="border-b border-slate-100 bg-slate-50/60">
+              <th className="text-left px-4 py-2 font-medium text-slate-500 w-8">#</th>
+              <th className="text-left px-4 py-2 font-medium text-slate-500">Content</th>
+              <th className="text-left px-4 py-2 font-medium text-slate-500 w-28">Channels</th>
+              <th className="text-left px-4 py-2 font-medium text-slate-500 w-32">Scheduled</th>
+              <th className="text-left px-4 py-2 font-medium text-slate-500 w-20">Media</th>
+              <th className="px-4 py-2 w-10" />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-50">
+            {shown.map((post, idx) => (
+              <PostRow
+                key={post.id}
+                post={post}
+                index={idx + 1}
+                channels={channels}
+                onEdit={() => onEdit(post)}
+                onDelete={() => onDelete(post.id)}
+                onCancel={() => onCancel(post.id)}
+                onPublishNow={onRefresh}
+              />
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      {/* Pagination footer */}
+      {(hasMore || canCollapse) && (
+        <div className="flex items-center gap-3 px-4 py-2 border-t border-slate-100 bg-slate-50/40">
+          {hasMore && (
+            <button
+              onClick={() => setVisible(v => v + ROLLING_WINDOW)}
+              className="flex items-center gap-1 text-xs text-slate-500 hover:text-indigo-600 transition-colors font-medium"
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+              Show next {Math.min(ROLLING_WINDOW, posts.length - visible)}
+            </button>
+          )}
+          {canCollapse && (
+            <button
+              onClick={() => setVisible(ROLLING_WINDOW)}
+              className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 transition-colors ml-auto"
+            >
+              <ChevronUp className="w-3.5 h-3.5" />
+              Collapse
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
-function PostCard({ post, channels, onEdit, onDelete, onCancel, onPublishNow }) {
+function PostRow({ post, index, channels, onEdit, onDelete, onCancel, onPublishNow }) {
   const [publishing, setPublishing] = useState(false);
 
   const handlePublishNow = async () => {
@@ -151,7 +167,7 @@ function PostCard({ post, channels, onEdit, onDelete, onCancel, onPublishNow }) 
     .filter(Boolean);
 
   const scheduledLabel = useMemo(() => {
-    if (!post.scheduled_at) return null;
+    if (!post.scheduled_at) return "—";
     const d = new Date(post.scheduled_at);
     if (isToday(d)) return `Today ${format(d, "h:mm a")}`;
     if (isTomorrow(d)) return `Tomorrow ${format(d, "h:mm a")}`;
@@ -159,32 +175,64 @@ function PostCard({ post, channels, onEdit, onDelete, onCancel, onPublishNow }) 
   }, [post.scheduled_at]);
 
   return (
-    <article className="bg-white rounded-lg border border-slate-200 p-3 shadow-sm hover:shadow-md transition-shadow">
-      {/* Channel Icons Row */}
-      <div className="flex items-center justify-between mb-2">
+    <tr className="hover:bg-slate-50/60 transition-colors group">
+      {/* Index */}
+      <td className="px-4 py-2.5 text-slate-300 font-mono">{index}</td>
+
+      {/* Content */}
+      <td className="px-4 py-2.5 max-w-xs">
+        <p className="text-slate-700 line-clamp-2 leading-relaxed">{post.content}</p>
+      </td>
+
+      {/* Channels */}
+      <td className="px-4 py-2.5">
         <div className="flex -space-x-1.5">
-          {postChannels.slice(0, 4).map(ch => {
+          {postChannels.slice(0, 5).map(ch => {
             const cfg = PLATFORM_CONFIG[ch.platform];
             return (
               <div
                 key={ch.id}
                 title={ch.channel_name}
-                className={`w-6 h-6 rounded-full border border-white flex items-center justify-center ${cfg?.bg || "bg-slate-100"}`}
+                className={`w-5 h-5 rounded-full border border-white flex items-center justify-center ${cfg?.bg || "bg-slate-100"}`}
               >
-                {cfg && <cfg.Icon className={`w-3 h-3 ${cfg.color}`} />}
+                {cfg && <cfg.Icon className={`w-2.5 h-2.5 ${cfg.color}`} />}
               </div>
             );
           })}
-          {postChannels.length > 4 && (
-            <div className="w-6 h-6 rounded-full border border-white bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500">
-              +{postChannels.length - 4}
+          {postChannels.length > 5 && (
+            <div className="w-5 h-5 rounded-full border border-white bg-slate-100 flex items-center justify-center text-[9px] font-bold text-slate-500">
+              +{postChannels.length - 5}
             </div>
           )}
         </div>
+      </td>
 
+      {/* Scheduled */}
+      <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">
+        {post.status === "scheduled" && post.scheduled_at ? (
+          <span className="flex items-center gap-1 text-indigo-500 font-medium">
+            <Clock className="w-3 h-3 shrink-0" /> {scheduledLabel}
+          </span>
+        ) : (
+          <span className="text-slate-300">—</span>
+        )}
+      </td>
+
+      {/* Media */}
+      <td className="px-4 py-2.5 text-slate-400">
+        {post.media_urls?.length > 0 ? `📎 ${post.media_urls.length}` : "—"}
+      </td>
+
+      {/* Actions */}
+      <td className="px-4 py-2.5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="w-7 h-7 min-w-[28px] min-h-[28px]" aria-label="Post actions">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-7 h-7 min-w-[28px] min-h-[28px] opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label="Post actions"
+            >
               <MoreVertical className="w-3.5 h-3.5" />
             </Button>
           </DropdownMenuTrigger>
@@ -209,23 +257,7 @@ function PostCard({ post, channels, onEdit, onDelete, onCancel, onPublishNow }) 
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-
-      {/* Content */}
-      <p className="text-xs text-slate-700 line-clamp-3 leading-relaxed">{post.content}</p>
-
-      {post.media_urls?.length > 0 && (
-        <p className="text-[10px] text-slate-400 mt-1.5">
-          📎 {post.media_urls.length} media
-        </p>
-      )}
-
-      {/* Footer */}
-      {scheduledLabel && post.status === "scheduled" && (
-        <div className="flex items-center gap-1 mt-2 text-[10px] text-indigo-500 font-medium">
-          <Clock className="w-3 h-3" /> {scheduledLabel}
-        </div>
-      )}
-    </article>
+      </td>
+    </tr>
   );
 }
