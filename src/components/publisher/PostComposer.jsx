@@ -1,79 +1,66 @@
-import React, { useState, useMemo } from "react";
-import { base44 } from "@/api/base44Client";
-import { useMutation } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { X, Send, Clock, Linkedin, Instagram, MessageCircle, AlertTriangle, Image, CheckSquare, Square } from "lucide-react";
-import { PLATFORM_CONFIG } from "./publisherConfig";
-import { format } from "date-fns";
+import React, { useState } from "react";
+import { X, Wand2, PencilLine } from "lucide-react";
+import { scriptBuilder } from "@/functions/scriptBuilder";
+import ComposerStepUpload from "./ComposerStepUpload";
+import ComposerStepReview from "./ComposerStepReview";
+import SinglePostForm from "./SinglePostForm";
+
+// Step IDs
+const STEP_MODE   = "mode";    // choose: script builder vs single post
+const STEP_UPLOAD = "upload";  // source material + options
+const STEP_LOADING= "loading"; // AI generating
+const STEP_REVIEW = "review";  // review + approve each post
+const STEP_SINGLE = "single";  // legacy single-post form
 
 export default function PostComposer({ channels, editingPost, userEmail, onClose }) {
-  const connectedChannels = channels.filter(c => c.connection_status === "connected" && c.is_active);
+  const [step, setStep] = useState(editingPost ? STEP_SINGLE : STEP_MODE);
+  const [context, setContext] = useState(null);
+  const [generatedPosts, setGeneratedPosts] = useState([]);
+  const [loadingError, setLoadingError] = useState("");
 
-  const [content, setContent] = useState(editingPost?.content || "");
-  const [selectedChannelIds, setSelectedChannelIds] = useState(editingPost?.channel_ids || []);
-  const [scheduledAt, setScheduledAt] = useState(editingPost?.scheduled_at ? editingPost.scheduled_at.slice(0, 16) : "");
-  const [mediaUrls, setMediaUrls] = useState((editingPost?.media_urls || []).join("\n"));
-
-  const isEditing = !!editingPost;
-
-  // Compute per-platform char limits based on selected channels
-  const charWarnings = useMemo(() => {
-    const warnings = [];
-    selectedChannelIds.forEach(id => {
-      const ch = channels.find(c => c.id === id);
-      if (!ch) return;
-      const limit = PLATFORM_CONFIG[ch.platform]?.maxChars;
-      if (limit && content.length > limit) {
-        warnings.push(`${ch.channel_name}: exceeds ${limit} char limit (${content.length - limit} over)`);
-      }
-    });
-    return warnings;
-  }, [content, selectedChannelIds, channels]);
-
-  const saveMutation = useMutation({
-    mutationFn: (data) => isEditing
-      ? base44.entities.ScheduledPost.update(editingPost.id, data)
-      : base44.entities.ScheduledPost.create(data),
-    onSuccess: onClose,
-  });
-
-  const handleToggleChannel = (channelId) => {
-    setSelectedChannelIds(prev =>
-      prev.includes(channelId) ? prev.filter(id => id !== channelId) : [...prev, channelId]
-    );
+  const handleUploadNext = async (uploadContext) => {
+    setContext(uploadContext);
+    setStep(STEP_LOADING);
+    setLoadingError("");
+    try {
+      const res = await scriptBuilder({
+        raw_content: uploadContext.rawContent,
+        title: uploadContext.title,
+        objective: uploadContext.objective,
+        platform: uploadContext.platform,
+        post_count: uploadContext.postCount,
+      });
+      if (!res?.data?.posts?.length) throw new Error("No posts returned.");
+      setGeneratedPosts(res.data.posts);
+      setStep(STEP_REVIEW);
+    } catch (e) {
+      setLoadingError(e?.response?.data?.error || e.message || "AI generation failed.");
+      setStep(STEP_UPLOAD);
+    }
   };
 
-  const handleSave = (asDraft = false) => {
-    const urlList = mediaUrls.split("\n").map(u => u.trim()).filter(Boolean);
-    saveMutation.mutate({
-      user_email: userEmail,
-      content,
-      channel_ids: selectedChannelIds,
-      media_urls: urlList,
-      media_type: urlList.length === 0 ? "text" : urlList.length > 1 ? "carousel" : "image",
-      scheduled_at: scheduledAt ? new Date(scheduledAt).toISOString() : null,
-      status: asDraft ? "draft" : scheduledAt ? "scheduled" : "draft",
-    });
-  };
+  const handleDone = () => onClose();
 
-  const canPublish = content.trim() && selectedChannelIds.length > 0 && charWarnings.length === 0;
+  const stepTitle = {
+    [STEP_MODE]:    "New Post",
+    [STEP_UPLOAD]:  "Script Builder — Source",
+    [STEP_LOADING]: "Generating Script…",
+    [STEP_REVIEW]:  "Review & Approve Posts",
+    [STEP_SINGLE]:  editingPost ? "Edit Post" : "New Post",
+  }[step] || "Composer";
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-0 sm:p-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Post composer"
+      aria-label={stepTitle}
     >
       <div className="bg-white w-full sm:max-w-2xl sm:rounded-2xl shadow-2xl flex flex-col max-h-[95vh] overflow-hidden">
+
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <h2 className="font-semibold text-slate-900 text-lg">
-            {isEditing ? "Edit Post" : "New Post"}
-          </h2>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
+          <h2 className="font-semibold text-slate-900 text-lg">{stepTitle}</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
@@ -83,140 +70,85 @@ export default function PostComposer({ channels, editingPost, userEmail, onClose
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-5">
-          {/* Channel Selection */}
-          <div>
-            <Label className="mb-2 block">Publish to <span className="text-red-500">*</span></Label>
-            {connectedChannels.length === 0 ? (
-              <div className="border border-amber-200 bg-amber-50 rounded-lg p-3 text-sm text-amber-700 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                No connected channels. Add channels in the Channels tab first.
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {connectedChannels.map(channel => {
-                  const cfg = PLATFORM_CONFIG[channel.platform];
-                  const isSelected = selectedChannelIds.includes(channel.id);
-                  return (
-                    <button
-                      key={channel.id}
-                      type="button"
-                      onClick={() => handleToggleChannel(channel.id)}
-                      className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left min-h-[56px] ${
-                        isSelected
-                          ? "border-indigo-500 bg-indigo-50"
-                          : "border-slate-200 hover:border-slate-300 bg-white"
-                      }`}
-                      aria-pressed={isSelected}
-                    >
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${cfg?.bg}`}>
-                        {cfg && <cfg.Icon className={`w-4 h-4 ${cfg.color}`} />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-800 truncate">{channel.channel_name}</p>
-                        <p className="text-xs text-slate-500 capitalize">{channel.channel_type} · {channel.platform}</p>
-                      </div>
-                      {isSelected
-                        ? <CheckSquare className="w-4 h-4 text-indigo-500 shrink-0" />
-                        : <Square className="w-4 h-4 text-slate-300 shrink-0" />
-                      }
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+        <div className="flex-1 overflow-y-auto p-5">
 
-          {/* Content */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <Label htmlFor="content">Content <span className="text-red-500">*</span></Label>
-              <span className={`text-xs font-mono ${content.length > 500 ? "text-amber-600" : "text-slate-400"}`}>
-                {content.length} chars
-              </span>
+          {/* Step: Mode Selection */}
+          {step === STEP_MODE && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-2">
+              <button
+                onClick={() => setStep(STEP_UPLOAD)}
+                className="flex flex-col items-start gap-3 p-5 rounded-2xl border-2 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all text-left group min-h-[140px]"
+              >
+                <div className="w-11 h-11 rounded-xl bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+                  <Wand2 className="w-5 h-5 text-indigo-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-800">Script Builder</p>
+                  <p className="text-sm text-slate-500 mt-0.5">Upload content, let AI generate up to 12 posts mapped to JJJH + AIDA + Hero's Journey.</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setStep(STEP_SINGLE)}
+                className="flex flex-col items-start gap-3 p-5 rounded-2xl border-2 border-slate-200 hover:border-slate-400 hover:bg-slate-50 transition-all text-left group min-h-[140px]"
+              >
+                <div className="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+                  <PencilLine className="w-5 h-5 text-slate-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-800">Single Post</p>
+                  <p className="text-sm text-slate-500 mt-0.5">Write and schedule one post manually to any connected channel.</p>
+                </div>
+              </button>
             </div>
-            <Textarea
-              id="content"
-              placeholder="What do you want to share?"
-              value={content}
-              onChange={e => setContent(e.target.value)}
-              className="min-h-[140px] resize-none text-sm"
+          )}
+
+          {/* Step: Upload / Configure */}
+          {step === STEP_UPLOAD && (
+            <ComposerStepUpload
+              channels={channels}
+              onNext={handleUploadNext}
             />
-            {charWarnings.length > 0 && (
-              <div className="mt-2 space-y-1">
-                {charWarnings.map((w, i) => (
-                  <p key={i} className="text-xs text-amber-600 flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" /> {w}
-                  </p>
-                ))}
+          )}
+
+          {/* Step: Loading */}
+          {step === STEP_LOADING && (
+            <div className="flex flex-col items-center justify-center py-16 gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center animate-pulse">
+                <Wand2 className="w-7 h-7 text-indigo-600" />
               </div>
-            )}
-          </div>
+              <div className="text-center space-y-1">
+                <p className="font-semibold text-slate-800">Generating your script…</p>
+                <p className="text-sm text-slate-500">Claude is mapping your content to JJJH + AIDA + Hero's Journey.</p>
+                <p className="text-xs text-slate-400">This takes ~10–20 seconds.</p>
+              </div>
+              {loadingError && (
+                <p className="text-sm text-red-500 text-center mt-2 max-w-sm">{loadingError}</p>
+              )}
+            </div>
+          )}
 
-          {/* Media URLs */}
-          <div>
-            <Label htmlFor="media_urls" className="flex items-center gap-2 mb-2">
-              <Image className="w-4 h-4" /> Media URLs
-              <span className="text-xs text-slate-400 font-normal">(one per line, must be public)</span>
-            </Label>
-            <Textarea
-              id="media_urls"
-              placeholder={"https://example.com/image1.jpg\nhttps://example.com/image2.jpg"}
-              value={mediaUrls}
-              onChange={e => setMediaUrls(e.target.value)}
-              className="min-h-[72px] resize-none text-sm font-mono text-xs"
+          {/* Step: Review */}
+          {step === STEP_REVIEW && (
+            <ComposerStepReview
+              posts={generatedPosts}
+              context={context}
+              userEmail={userEmail}
+              onBack={() => setStep(STEP_UPLOAD)}
+              onDone={handleDone}
             />
-          </div>
+          )}
 
-          {/* Schedule */}
-          <div>
-            <Label htmlFor="scheduled_at" className="flex items-center gap-2 mb-2">
-              <Clock className="w-4 h-4" /> Schedule
-              <span className="text-xs text-slate-400 font-normal">(leave blank to save as draft)</span>
-            </Label>
-            <input
-              id="scheduled_at"
-              type="datetime-local"
-              value={scheduledAt}
-              onChange={e => setScheduledAt(e.target.value)}
-              min={new Date().toISOString().slice(0, 16)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[44px]"
+          {/* Step: Single post */}
+          {step === STEP_SINGLE && (
+            <SinglePostForm
+              channels={channels}
+              editingPost={editingPost}
+              userEmail={userEmail}
+              onClose={onClose}
+              onBack={!editingPost ? () => setStep(STEP_MODE) : undefined}
             />
-            {scheduledAt && (
-              <p className="text-xs text-slate-500 mt-1">
-                Will publish on {format(new Date(scheduledAt), "MMM d, yyyy 'at' h:mm a")}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-4 border-t border-slate-100 bg-slate-50">
-          <div className="flex items-center gap-2">
-            {selectedChannelIds.length > 0 && (
-              <span className="text-xs text-slate-500">
-                Posting to <strong>{selectedChannelIds.length}</strong> channel{selectedChannelIds.length !== 1 ? "s" : ""}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => handleSave(true)}
-              disabled={!content.trim() || saveMutation.isPending}
-              className="min-h-[44px]"
-            >
-              Save Draft
-            </Button>
-            <Button
-              onClick={() => handleSave(false)}
-              disabled={!canPublish || saveMutation.isPending}
-              className="gap-2 bg-indigo-600 hover:bg-indigo-700 min-h-[44px]"
-            >
-              <Send className="w-4 h-4" />
-              {scheduledAt ? "Schedule" : "Queue Post"}
-            </Button>
-          </div>
+          )}
         </div>
       </div>
     </div>
