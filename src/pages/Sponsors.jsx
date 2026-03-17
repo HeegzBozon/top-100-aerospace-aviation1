@@ -114,10 +114,6 @@ const valuePropositions = [
 ];
 
 export default function SponsorsPage() {
-    const [selectedTier, setSelectedTier] = useState(null);
-    const [showChatModal, setShowChatModal] = useState(false);
-    const [showBookingModal, setShowBookingModal] = useState(false);
-    
     const { data: sponsors, isLoading } = useQuery({
         queryKey: ['sponsors'],
         queryFn: () => base44.entities.Sponsor.list({
