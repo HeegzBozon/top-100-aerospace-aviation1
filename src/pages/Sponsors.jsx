@@ -461,41 +461,18 @@ export default function SponsorsPage() {
                         <p className="text-xl text-white/80 mb-10">
                             Join the coalition of organizations shaping the future of aerospace and aviation.
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button
-                                size="lg"
-                                onClick={() => setShowChatModal(true)}
-                                className="text-lg px-8 py-6"
-                                style={{ background: brandColors.goldPrestige, color: 'white' }}
-                            >
-                                <Sparkles className="mr-2 w-5 h-5" />
-                                Let's Chat
-                            </Button>
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                onClick={() => setShowBookingModal(true)}
-                                className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10"
-                            >
-                                <Calendar className="mr-2 w-5 h-5" />
-                                Book Meeting
-                            </Button>
-                        </div>
+                        <Button
+                            size="lg"
+                            className="text-lg px-8 py-6"
+                            style={{ background: brandColors.goldPrestige, color: 'white' }}
+                            onClick={() => window.location.href = 'mailto:partners@top100aerospace.com?subject=Partnership%20Inquiry'}
+                        >
+                            <Mail className="mr-2 w-5 h-5" />
+                            Get in Touch
+                        </Button>
                     </motion.div>
                 </div>
             </section>
-
-            {/* Partnership Chat Modal */}
-            <PartnershipChatModal 
-                isOpen={showChatModal} 
-                onClose={() => setShowChatModal(false)} 
-            />
-
-            {/* Book Meeting Modal */}
-            <BookMeetingModal 
-                isOpen={showBookingModal} 
-                onClose={() => setShowBookingModal(false)} 
-            />
         </div>
     );
 }
