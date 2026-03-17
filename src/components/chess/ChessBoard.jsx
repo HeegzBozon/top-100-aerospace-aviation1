@@ -1,21 +1,19 @@
-import { useState, useMemo, useCallback, useContext } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Chess } from 'chess.js';
-import ChessPiece from './ChessPiece';
-import { ThemeContext } from '@/components/core/ThemeContext';
-import { BOARD_THEMES } from './chessBoardThemes';
+import { Chessboard } from 'react-chessboard';
 
-const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+const PIECE_PACKAGER_URL = 'https://deverac.github.io/piece-packager/out';
 
-export default function ChessBoard({ fen, playerColor, onMove, disabled, boardTheme = 'classic', pieceSet = 'cburnett' }) {
-  const { mode } = useContext(ThemeContext) || { mode: 'dark' };
-  const theme = BOARD_THEMES[boardTheme] || BOARD_THEMES.classic;
-  const isDark = mode === 'dark';
+export default function ChessBoard({ fen, playerColor = 'white', onMove, disabled = false, pieceSet = 'cburnett' }) {
   const [selected, setSelected] = useState(null);
-  const [legalTargets, setLegalTargets] = useState([]);
 
   const chess = useMemo(() => {
     const c = new Chess();
-    if (fen) { try { c.load(fen); } catch {} }
+    if (fen) {
+      try {
+        c.load(fen);
+      } catch {}
+    }
     return c;
   }, [fen]);
 
@@ -24,109 +22,117 @@ export default function ChessBoard({ fen, playerColor, onMove, disabled, boardTh
     return chess.turn() === (playerColor === 'white' ? 'w' : 'b');
   }, [chess, playerColor, disabled]);
 
-  const getBoardArray = useCallback(() => {
-    const board = chess.board();
-    if (playerColor === 'black') {
-      return board.slice().reverse().map(row => row.slice().reverse());
-    }
-    return board;
-  }, [chess, playerColor]);
+  const getLegalMoves = useCallback(
+    (square) => {
+      return chess.moves({ square, verbose: true }).map((m) => m.to);
+    },
+    [chess]
+  );
 
-  const squareFromCoords = useCallback((rowIdx, colIdx) => {
-    const file = playerColor === 'black' ? FILES[7 - colIdx] : FILES[colIdx];
-    const rank = playerColor === 'black' ? rowIdx + 1 : 8 - rowIdx;
-    return `${file}${rank}`;
-  }, [playerColor]);
+  const handleSquareClick = useCallback(
+    (square) => {
+      if (!isMyTurn) return;
 
-  const handleSquareClick = useCallback((rowIdx, colIdx) => {
-    if (!isMyTurn) return;
-    const square = squareFromCoords(rowIdx, colIdx);
-    const piece = chess.get(square);
+      const piece = chess.get(square);
 
-    if (selected) {
-      if (legalTargets.includes(square)) {
-        // Handle promotion
-        const movingPiece = chess.get(selected);
-        const isPromotion = movingPiece?.type === 'p' && (square[1] === '8' || square[1] === '1');
-        onMove({ from: selected, to: square, promotion: isPromotion ? 'q' : undefined });
+      if (selected === square) {
         setSelected(null);
-        setLegalTargets([]);
-      } else if (piece && piece.color === chess.turn()) {
-        setSelected(square);
-        const moves = chess.moves({ square, verbose: true });
-        setLegalTargets(moves.map(m => m.to));
-      } else {
-        setSelected(null);
-        setLegalTargets([]);
+        return;
       }
-    } else {
+
+      if (selected) {
+        const legalMoves = getLegalMoves(selected);
+        if (legalMoves.includes(square)) {
+          const movingPiece = chess.get(selected);
+          const isPromotion =
+            movingPiece?.type === 'p' &&
+            (square[1] === '8' || square[1] === '1');
+
+          onMove({
+            from: selected,
+            to: square,
+            promotion: isPromotion ? 'q' : undefined,
+          });
+
+          setSelected(null);
+          return;
+        }
+      }
+
       if (piece && piece.color === chess.turn()) {
         setSelected(square);
-        const moves = chess.moves({ square, verbose: true });
-        setLegalTargets(moves.map(m => m.to));
+      } else {
+        setSelected(null);
+      }
+    },
+    [chess, selected, isMyTurn, getLegalMoves, onMove]
+  );
+
+  const customSquareStyles = useMemo(() => {
+    const styles = {};
+
+    if (selected) {
+      styles[selected] = {
+        backgroundColor: 'rgba(212, 165, 116, 0.5)',
+      };
+
+      const legalMoves = getLegalMoves(selected);
+      legalMoves.forEach((square) => {
+        styles[square] = {
+          backgroundColor: 'rgba(212, 165, 116, 0.3)',
+          borderRadius: '50%',
+        };
+      });
+    }
+
+    if (chess.inCheck()) {
+      const kingSquare = chess.board().flat().find((piece) => piece?.type === 'k' && piece?.color === chess.turn());
+      if (kingSquare) {
+        const square = Object.entries(chess.board()).find(
+          ([, row]) => row.includes(kingSquare)
+        );
+        if (square) {
+          styles[square] = {
+            backgroundColor: 'rgba(220, 38, 38, 0.6)',
+          };
+        }
       }
     }
-  }, [chess, selected, legalTargets, isMyTurn, squareFromCoords, onMove]);
 
-  const boardArray = getBoardArray();
+    return styles;
+  }, [selected, chess, getLegalMoves]);
+
+  const customPieces = useMemo(() => {
+    const pieces = {};
+    const pieceTypes = ['K', 'Q', 'R', 'B', 'N', 'P'];
+
+    pieceTypes.forEach((type) => {
+      ['w', 'b'].forEach((color) => {
+        const key = `${color}${type}`;
+        pieces[key] = ({ squareWidth }) => (
+          <img
+            src={`${PIECE_PACKAGER_URL}/${pieceSet}.svg#${color}${type.toLowerCase()}`}
+            alt={key}
+            style={{ width: squareWidth, height: squareWidth }}
+          />
+        );
+      });
+    });
+
+    return pieces;
+  }, [pieceSet]);
 
   return (
-    <div className="w-full aspect-square" role="grid" aria-label="Chess board">
-      {boardArray.map((row, rowIdx) => (
-        <div key={rowIdx} className="flex w-full" style={{ height: '12.5%' }}>
-          {row.map((cell, colIdx) => {
-            const square = squareFromCoords(rowIdx, colIdx);
-            const isLightSquare = (rowIdx + colIdx) % 2 === 0;
-            const isSelected = selected === square;
-            const isTarget = legalTargets.includes(square);
-            const isInCheck = chess.inCheck() && cell?.type === 'k' && cell?.color === chess.turn();
-
-            let bgColor;
-            if (isLightSquare) {
-              bgColor = isSelected ? '#d4a574' : isInCheck ? 'rgba(244, 63, 94, 0.6)' : theme.sqLight;
-            } else {
-              bgColor = isSelected ? '#d4a574' : isInCheck ? 'rgba(220, 38, 38, 0.6)' : theme.sqDark;
-            }
-
-            return (
-              <button
-                key={colIdx}
-                className="relative flex items-center justify-center w-[12.5%] h-full transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4a574] focus-visible:ring-inset"
-                style={{ backgroundColor: bgColor }}
-                onClick={() => handleSquareClick(rowIdx, colIdx)}
-                aria-label={`${square}${cell ? ` ${cell.color === 'w' ? 'white' : 'black'} ${cell.type}` : ''}`}
-                aria-pressed={isSelected}
-              >
-                {/* Legal move indicator */}
-                {isTarget && (
-                  <span className={`absolute pointer-events-none z-10 ${
-                    cell
-                      ? 'inset-0 border-4 border-white/30'
-                      : 'w-2.5 h-2.5 rounded-full bg-white/40'
-                  }`} />
-                )}
-                {cell && <ChessPiece piece={cell} boardTheme={boardTheme} pieceSet={pieceSet} />}
-                {/* Rank labels */}
-                {colIdx === 0 && (
-                  <span className={`absolute top-1 left-1 text-[9px] font-bold leading-none tracking-tight ${
-                    isLightSquare ? 'text-[#1a3a52]/50' : 'text-[#e8dcc8]/50'
-                  }`}>
-                    {squareFromCoords(rowIdx, colIdx)[1]}
-                  </span>
-                )}
-                {/* File labels */}
-                {rowIdx === 7 && (
-                  <span className={`absolute bottom-1 right-1 text-[9px] font-bold leading-none tracking-tight ${
-                    isLightSquare ? 'text-[#1a3a52]/50' : 'text-[#e8dcc8]/50'
-                  }`}>
-                    {squareFromCoords(rowIdx, colIdx)[0]}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      ))}
+    <div className="w-full max-w-2xl mx-auto">
+      <Chessboard
+        position={fen || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'}
+        onSquareClick={handleSquareClick}
+        boardWidth={Math.min(window.innerWidth - 32, 600)}
+        boardOrientation={playerColor}
+        customSquareStyles={customSquareStyles}
+        customPieces={customPieces}
+        arePiecesDraggable={false}
+      />
     </div>
   );
 }
