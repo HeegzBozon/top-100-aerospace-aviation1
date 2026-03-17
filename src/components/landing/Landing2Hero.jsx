@@ -134,6 +134,12 @@ export default function Landing2Hero({ user }) {
     }
   };
 
+  // "Nominate Now" slide goes to Nominations page directly
+  const getSlideLink = (s) => {
+    if (s.ctaLink === "nominate") return createPageUrl("Nominations");
+    return createPageUrl(s.ctaLink);
+  };
+
   return (
     <div className="relative">
       {/* Main Hero Carousel */}
