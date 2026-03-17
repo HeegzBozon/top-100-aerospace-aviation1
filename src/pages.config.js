@@ -172,6 +172,7 @@ import Top100Women2025 from './pages/Top100Women2025';
 import TrendingSignals from './pages/TrendingSignals';
 import UserProfile from './pages/UserProfile';
 import VotingHub from './pages/VotingHub';
+import Publisher from './pages/Publisher';
 import __Layout from './Layout.jsx';
 
 
