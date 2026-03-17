@@ -119,6 +119,73 @@ Deno.serve(async (req) => {
   }
 });
 
+// ─── Threads Publisher ────────────────────────────────────────────────────────
+
+async function publishToThreads(channel, post) {
+  try {
+    const token = channel.access_token;
+    const userId = channel.platform_user_id;
+    const mediaUrls = post.media_urls || [];
+    const text = post.content || '';
+
+    const params = { text, access_token: token };
+    if (mediaUrls.length === 1) {
+      params.media_type = 'IMAGE';
+      params.image_url = mediaUrls[0];
+    } else if (mediaUrls.length > 1) {
+      params.media_type = 'CAROUSEL';
+      const childIds = await Promise.all(
+        mediaUrls.slice(0, 10).map(async (url) => {
+          const r = await fetch(`https://graph.threads.net/v1.0/${userId}/threads`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ media_type: 'IMAGE', image_url: url, is_carousel_item: true, access_token: token }),
+          });
+          const d = await r.json();
+          return d.id;
+        })
+      );
+      params.children = childIds.join(',');
+    } else {
+      params.media_type = 'TEXT';
+    }
+
+    const containerRes = await fetch(`https://graph.threads.net/v1.0/${userId}/threads`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    const containerData = await containerRes.json();
+    const containerId = containerData.id;
+
+    if (!containerId) {
+      return { channel_id: channel.id, platform: 'threads', status: 'failed', error: 'Failed to create Threads container' };
+    }
+
+    const publishRes = await fetch(`https://graph.threads.net/v1.0/${userId}/threads_publish`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ creation_id: containerId, access_token: token }),
+    });
+
+    if (!publishRes.ok) {
+      const err = await publishRes.text();
+      return { channel_id: channel.id, platform: 'threads', status: 'failed', error: `Threads API ${publishRes.status}: ${err.slice(0, 200)}` };
+    }
+
+    const publishData = await publishRes.json();
+    return {
+      channel_id: channel.id,
+      platform: 'threads',
+      status: 'published',
+      post_id: publishData.id || null,
+      published_at: new Date().toISOString(),
+    };
+  } catch (err) {
+    return { channel_id: channel.id, platform: 'threads', status: 'failed', error: err.message };
+  }
+}
+
 // ─── Instagram Publisher ───────────────────────────────────────────────────────
 
 async function publishToInstagram(channel, post) {
