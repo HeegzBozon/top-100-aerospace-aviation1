@@ -181,7 +181,7 @@ function PlatformColumn({ platform, posts, channels, onEdit, onDelete, onCancel,
   );
 }
 
-function PostSlot({ slotIndex, slotLabel, post, channels, onEdit, onDelete, onCancel, onRefresh, onCreatePost }) {
+function PostSlot({ slotIndex, slotLabel, heroStep, post, channels, onEdit, onDelete, onCancel, onRefresh, onCreatePost }) {
   const [publishing, setPublishing] = useState(false);
   const labelStyle = SLOT_LABEL_STYLES[slotLabel];
 
