@@ -108,6 +108,15 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
 }
 
 function PostCard({ post, channels, onEdit, onDelete, onCancel, onPublishNow }) {
+  const [publishing, setPublishing] = useState(false);
+
+  const handlePublishNow = async () => {
+    setPublishing(true);
+    await publishNow({ post_id: post.id });
+    setPublishing(false);
+    onPublishNow?.();
+  };
+
   const statusCfg = POST_STATUS_CONFIG[post.status] || POST_STATUS_CONFIG.draft;
   const postChannels = (post.channel_ids || [])
     .map(id => channels.find(c => c.id === id))
