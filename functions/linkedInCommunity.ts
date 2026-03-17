@@ -59,6 +59,7 @@ Deno.serve(async (req) => {
       if (!reply_text?.trim()) return Response.json({ error: 'Reply text required' }, { status: 400 });
 
       const encodedUrn = encodeURIComponent(post_urn);
+      const restHeaders = { ...headers, 'LinkedIn-Version': '202401' };
       const payload = {
         actor: author_urn,
         message: { text: reply_text.trim() },
@@ -66,8 +67,8 @@ Deno.serve(async (req) => {
       };
 
       const res = await fetch(
-        `https://api.linkedin.com/v2/socialActions/${encodedUrn}/comments`,
-        { method: 'POST', headers, body: JSON.stringify(payload) }
+        `https://api.linkedin.com/rest/socialActions/${encodedUrn}/comments`,
+        { method: 'POST', headers: restHeaders, body: JSON.stringify(payload) }
       );
 
       if (!res.ok) {
@@ -80,14 +81,15 @@ Deno.serve(async (req) => {
     // ── REACT TO POST ──────────────────────────────────────────────────────────
     if (action === 'react') {
       const encodedUrn = encodeURIComponent(post_urn);
+      const restHeaders = { ...headers, 'LinkedIn-Version': '202401' };
       const payload = {
         actor: author_urn,
         reactionType: reaction_type || 'LIKE',
       };
 
       const res = await fetch(
-        `https://api.linkedin.com/v2/socialActions/${encodedUrn}/likes`,
-        { method: 'POST', headers, body: JSON.stringify(payload) }
+        `https://api.linkedin.com/rest/socialActions/${encodedUrn}/likes`,
+        { method: 'POST', headers: restHeaders, body: JSON.stringify(payload) }
       );
 
       if (!res.ok) {
@@ -99,10 +101,12 @@ Deno.serve(async (req) => {
 
     // ── GET PROFILE URN ────────────────────────────────────────────────────────
     if (action === 'get_me') {
-      const res = await fetch('https://api.linkedin.com/v2/me', { headers });
+      // Use userinfo endpoint (OpenID Connect) — works with openid + profile scopes
+      const res = await fetch('https://api.linkedin.com/v2/userinfo', { headers });
       if (!res.ok) return Response.json({ error: 'Profile fetch failed' }, { status: res.status });
       const data = await res.json();
-      return Response.json({ urn: `urn:li:person:${data.id}`, profile: data });
+      // sub is the person ID in OpenID Connect response
+      return Response.json({ urn: `urn:li:person:${data.sub}`, profile: data });
     }
 
     return Response.json({ error: 'Unknown action' }, { status: 400 });
