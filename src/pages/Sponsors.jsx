@@ -373,7 +373,7 @@ export default function SponsorsPage() {
                                     <Button
                                         className="w-full text-white font-semibold"
                                         style={{ background: track.color }}
-                                        onClick={() => setShowChatModal(true)}
+                                        onClick={() => window.location.href = `mailto:partners@top100aerospace.com?subject=Sponsor%20${track.id.replace('-', '%20')}`}
                                     >
                                         Learn More
                                     </Button>
