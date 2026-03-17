@@ -1,34 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
-const YOUTUBE_API_KEY = Deno.env.get('YOUTUBE_API_KEY');
 const LAUNCH_PARTY_URL = 'https://top100aero.space/LaunchParty';
 const POSTED_KEY_PREFIX = 'linkedin_launch_post_';
-
-async function findYouTubeStream(launchName, providerName) {
-  if (!YOUTUBE_API_KEY) return null;
-  const queries = [
-    `${launchName} launch live stream`,
-    `${providerName} ${launchName} live`,
-    `${providerName} launch webcast`,
-  ].filter(q => q.trim().length > 3);
-
-  for (const q of queries) {
-    for (const eventType of ['live', 'upcoming']) {
-      const params = new URLSearchParams({
-        part: 'snippet', q, type: 'video', eventType,
-        maxResults: '3', order: 'relevance', key: YOUTUBE_API_KEY,
-      });
-      const res = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`, {
-        signal: AbortSignal.timeout(5000),
-      });
-      if (!res.ok) continue;
-      const data = await res.json();
-      const videoId = data.items?.[0]?.id?.videoId;
-      if (videoId) return `https://www.youtube.com/watch?v=${videoId}`;
-    }
-  }
-  return null;
-}
 
 function generateLaunchPost(launch) {
   const time = new Date(launch.event_date).toLocaleTimeString('en-US', {
@@ -38,10 +11,7 @@ function generateLaunchPost(launch) {
   });
   const statusLine = launch.status ? `\n🟢 Status: ${launch.status}` : '';
   const descLine = launch.description ? `\n\n${launch.description}` : '';
-  const watchLine = launch.youtubeUrl
-    ? `\n\n▶️ Watch live: ${launch.youtubeUrl}`
-    : `\n\n🎉 Follow along: ${LAUNCH_PARTY_URL}`;
-  return `🚀 LAUNCHING TODAY: ${launch.title}${descLine}\n\n⏰ ${time}\n📍 ${launch.location || 'TBA'}${statusLine}${watchLine}\n\n#SpaceLaunch #Aerospace #TOP100Women`;
+  return `🚀 LAUNCHING TODAY: ${launch.title}${descLine}\n\n⏰ ${time}\n📍 ${launch.location || 'TBA'}${statusLine}\n\n🎉 Follow along: ${LAUNCH_PARTY_URL}\n\n#SpaceLaunch #Aerospace #TOP100Women`;
 }
 
 Deno.serve(async (req) => {
@@ -107,31 +77,22 @@ Deno.serve(async (req) => {
 
     const results = [];
     for (const launch of newLaunches) {
-      const providerName = launch.launch_service_provider?.name || '';
-      const youtubeUrl = await findYouTubeStream(launch.name, providerName);
-
       const postContent = generateLaunchPost({
         title: launch.name,
         description: launch.mission?.description || '',
         event_date: launch.net,
         location: launch.pad?.location?.name || launch.pad?.name || 'TBA',
         status: launch.status?.name || null,
-        youtubeUrl,
       });
-
-      const linkUrl = youtubeUrl || LAUNCH_PARTY_URL;
-      const linkTitle = youtubeUrl
-        ? `Watch Live: ${launch.name}`
-        : `Launch Party – TOP 100 Women in Aerospace`;
 
       const shareContent = {
         shareCommentary: { text: postContent },
         shareMediaCategory: 'ARTICLE',
         media: [{
           status: 'READY',
-          originalUrl: linkUrl,
-          title: { text: linkTitle },
-          description: { text: launch.mission?.description?.slice(0, 200) || 'Track today\'s space launch.' },
+          originalUrl: LAUNCH_PARTY_URL,
+          title: { text: `Launch Party – TOP 100 Women in Aerospace` },
+          description: { text: launch.mission?.description?.slice(0, 200) || 'Track today\'s space launch live.' },
         }],
       };
 
@@ -152,7 +113,7 @@ Deno.serve(async (req) => {
         });
 
         if (response.ok) {
-          results.push({ launch: launch.name, orgPage: author, status: 'posted', youtubeUrl });
+          results.push({ launch: launch.name, orgPage: author, status: 'posted', link: LAUNCH_PARTY_URL });
           posted = true;
         } else {
           results.push({ launch: launch.name, orgPage: author, status: 'failed', error: await response.text() });
