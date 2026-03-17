@@ -21,6 +21,16 @@ export const PLATFORM_CONFIG = {
     supportsVideo: true,
     supportsCarousel: true,
   },
+  threads: {
+    label: "Threads",
+    Icon: MessageCircle,
+    color: "text-slate-800",
+    bg: "bg-slate-100",
+    maxChars: 500,
+    supportsImages: true,
+    supportsVideo: true,
+    supportsCarousel: true,
+  },
 };
 
 // Maximum number of connected channels per platform
