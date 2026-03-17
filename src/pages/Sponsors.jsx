@@ -434,12 +434,12 @@ export default function SponsorsPage() {
                         </p>
                         <Button
                             size="lg"
-                            onClick={() => setShowChatModal(true)}
                             className="text-lg px-8 py-6"
                             style={{ background: brandColors.goldPrestige, color: 'white' }}
+                            onClick={() => window.location.href = 'mailto:partners@top100aerospace.com?subject=Custom%20Sponsorship%20Inquiry'}
                         >
-                            Let's Chat
-                            <Sparkles className="ml-2 w-5 h-5" />
+                            Contact Us
+                            <Mail className="ml-2 w-5 h-5" />
                         </Button>
                     </motion.div>
                 </div>
