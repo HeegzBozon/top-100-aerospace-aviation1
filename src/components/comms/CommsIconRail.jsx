@@ -220,6 +220,32 @@ export default function CommsIconRail({ currentPageName, totalUnread }) {
           );
         })}
 
+        {/* Admin-only: Publisher */}
+        {user?.role === 'admin' && (
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full">
+            <Link
+              to={createPageUrl('Publisher')}
+              className="flex flex-col items-center gap-1 py-3 px-1 rounded-xl transition-all relative group"
+              title="Publisher"
+            >
+              <div className={cn(
+                "w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300",
+                currentPageName === 'Publisher'
+                  ? "bg-[var(--accent)] text-white shadow-[0_0_20px_rgba(201,168,124,0.3)]"
+                  : "text-white/60 group-hover:bg-white/10 group-hover:text-white"
+              )}>
+                <Send className="w-5 h-5" />
+              </div>
+              <span className={cn(
+                "text-[9px] font-bold uppercase tracking-wider transition-opacity duration-300",
+                currentPageName === 'Publisher' ? "text-white opacity-100" : "text-white/40 group-hover:opacity-80"
+              )}>
+                Publish
+              </span>
+            </Link>
+          </motion.div>
+        )}
+
         {/* Search in main rail */}
         <Popover open={searchOpen} onOpenChange={setSearchOpen}>
           <PopoverTrigger asChild>
