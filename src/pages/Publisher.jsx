@@ -143,13 +143,12 @@ export default function Publisher() {
           </TabsContent>
 
           <TabsContent value="calendar">
-            <div className="rounded-2xl border border-white/[0.06] p-16 text-center" style={{background: "rgba(255,255,255,0.02)"}}>
-              <div className="w-14 h-14 rounded-2xl border border-white/[0.06] flex items-center justify-center mx-auto mb-5" style={{background: "rgba(255,255,255,0.03)"}}>
-                <CalendarDays className="w-6 h-6 text-white/20" />
-              </div>
-              <p className="text-white/40 font-medium text-sm">Calendar view — coming soon</p>
-              {scheduled > 0 && <p className="text-white/20 text-xs mt-1.5">{scheduled} post{scheduled !== 1 ? "s" : ""} queued</p>}
-            </div>
+            <PublisherCalendar
+              posts={posts}
+              channels={channels}
+              onEditPost={handleCompose}
+              onNewPost={() => handleCompose()}
+            />
           </TabsContent>
 
           <TabsContent value="channels">
