@@ -64,9 +64,19 @@ Deno.serve(async (req) => {
         } catch (_) { /* fall back to stored token */ }
       }
 
+      // Resolve fresh Instagram token if needed
+      if (ch.platform === 'instagram') {
+        try {
+          const conn = await base44.asServiceRole.connectors.getConnection('instagram');
+          if (conn?.accessToken) liveToken = conn.accessToken;
+        } catch (_) { /* fall back to stored token */ }
+      }
+
       let result;
       if (ch.platform === 'linkedin') {
         result = await publishToLinkedIn({ ...ch, access_token: liveToken }, post);
+      } else if (ch.platform === 'instagram') {
+        result = await publishToInstagram({ ...ch, access_token: liveToken }, post);
       } else {
         result = {
           channel_id: channelId,
