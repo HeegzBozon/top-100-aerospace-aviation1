@@ -54,9 +54,12 @@ export default function ChannelManager({ channels, onRefresh, userEmail }) {
             </div>
             <p className="font-medium text-slate-700">No channels connected yet</p>
             <p className="text-sm text-slate-500 mt-1">Add your first LinkedIn, Instagram, or Threads account</p>
-            <Button onClick={() => setShowAdd(true)} className="mt-4 gap-2">
-              <Plus className="w-4 h-4" /> Add Your First Channel
-            </Button>
+            <div className="mt-4 flex items-center gap-2 justify-center flex-wrap">
+              <LinkedInConnectButton onConnected={() => onRefresh()} />
+              <Button onClick={() => setShowAdd(true)} variant="outline" className="gap-2">
+                <Plus className="w-4 h-4" /> Manual
+              </Button>
+            </div>
           </div>
         ) : (
           <ul className="divide-y divide-slate-100">
