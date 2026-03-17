@@ -11,8 +11,9 @@ import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
-import { Plus, Trash2, RefreshCw, CheckCircle2, AlertCircle, Clock, Linkedin, Instagram } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { PLATFORM_CONFIG, MAX_CHANNELS_PER_TYPE } from "./publisherConfig";
+import LinkedInConnectButton from "./LinkedInConnectButton";
 
 export default function ChannelManager({ channels, onRefresh, userEmail }) {
   const [showAdd, setShowAdd] = useState(false);
