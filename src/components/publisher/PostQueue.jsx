@@ -100,6 +100,7 @@ export default function PostQueue({ posts, channels, onEdit, onRefresh, onNewPos
           onDelete={(id) => deleteMutation.mutate(id)}
           onCancel={(id) => updateMutation.mutate({ id, data: { status: "cancelled" } })}
           onRefresh={onRefresh}
+          onNewPost={onNewPost}
         />
       ))}
     </div>
