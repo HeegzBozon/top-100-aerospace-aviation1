@@ -302,6 +302,7 @@ export const PAGES = {
     "TrendingSignals": TrendingSignals,
     "UserProfile": UserProfile,
     "VotingHub": VotingHub,
+    "Publisher": Publisher,
 }
 
 export const pagesConfig = {
