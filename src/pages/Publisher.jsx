@@ -18,6 +18,16 @@ export default function Publisher() {
     staleTime: 5 * 60 * 1000,
   });
 
+  if (user && user.role !== "admin") {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-slate-500 font-medium">Access restricted to admins.</p>
+        </div>
+      </div>
+    );
+  }
+
   const { data: channels = [], refetch: refetchChannels } = useQuery({
     queryKey: ["social-channels", user?.email],
     queryFn: () => base44.entities.SocialChannel.filter({ user_email: user.email }, "-created_date", 20),
