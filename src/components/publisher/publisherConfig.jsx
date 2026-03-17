@@ -1,4 +1,4 @@
-import { Linkedin, Instagram, MessageCircle } from "lucide-react";
+import { Linkedin, Instagram } from "lucide-react";
 
 export const PLATFORM_CONFIG = {
   linkedin: {
@@ -17,16 +17,6 @@ export const PLATFORM_CONFIG = {
     color: "text-pink-600",
     bg: "bg-pink-50",
     maxChars: 2200,
-    supportsImages: true,
-    supportsVideo: true,
-    supportsCarousel: true,
-  },
-  threads: {
-    label: "Threads",
-    Icon: MessageCircle,
-    color: "text-slate-800",
-    bg: "bg-slate-100",
-    maxChars: 500,
     supportsImages: true,
     supportsVideo: true,
     supportsCarousel: true,
