@@ -2,17 +2,16 @@ import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {
-  Edit2, Trash2, MoreVertical, Send, PlusCircle, Clock, CheckCircle2,
-  AlertCircle, FileText, XCircle
+  Edit2, Trash2, MoreVertical, Send, PlusCircle, Clock, XCircle, Zap
 } from "lucide-react";
 import { format, isToday, isTomorrow } from "date-fns";
 import { PLATFORM_CONFIG, POST_STATUS_CONFIG } from "./publisherConfig";
+import { publishNow } from "@/functions/publishNow";
 
 const STATUS_TABS = ["all", "scheduled", "draft", "published", "failed"];
 
