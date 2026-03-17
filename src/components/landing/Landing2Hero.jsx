@@ -166,8 +166,8 @@ export default function Landing2Hero({ user }) {
             </h1>
             <p className="text-sm md:text-xl font-medium mb-2 md:mb-3" style={{ color: brandColors.goldLight, fontFamily: "'Playfair Display', Georgia, serif" }}>{slide.subtitle}</p>
             <p className="text-white/70 mb-4 md:mb-6 text-xs md:text-sm lg:text-base line-clamp-2 md:line-clamp-none" style={{ fontFamily: "'Montserrat', sans-serif" }}>{slide.description}</p>
-            {slide.ctaLink === "auth" || slide.ctaLink === "nominate" ? (
-              <Button 
+            {slide.ctaLink === "auth" ? (
+              <Button
                 onClick={handleCTA}
                 className="text-white font-semibold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm"
                 style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
@@ -176,8 +176,8 @@ export default function Landing2Hero({ user }) {
                 <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-1.5 md:ml-2" />
               </Button>
             ) : (
-              <Link to={createPageUrl(slide.ctaLink)}>
-                <Button 
+              <Link to={getSlideLink(slide)}>
+                <Button
                   className="text-white font-semibold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm"
                   style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
                 >
