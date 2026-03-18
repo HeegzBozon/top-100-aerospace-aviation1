@@ -44,9 +44,9 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-gradient-to-br from-slate-800/80 to-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 mb-8 shadow-2xl"
+          className="bg-gradient-to-br from-[#1e3a5a]/80 to-[#1e3a5a]/40 backdrop-blur-xl border border-[#2a4f7c]/50 rounded-2xl p-8 mb-8 shadow-2xl"
         >
-          <h2 className="text-xl font-bold text-white mb-4">Your Responses Summary</h2>
+          <h2 className="text-xl font-bold text-[#faf8f5] mb-4">Your Responses Summary</h2>
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {Object.entries(formData).map(([key, value]) => {
               if (!value || typeof value !== 'string') return null;
@@ -56,10 +56,10 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
                   key={key}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="p-3 bg-slate-900/50 rounded-lg border border-slate-700/30 hover:border-blue-500/30 transition-colors"
+                  className="p-3 bg-[#0f1f35]/50 rounded-lg border border-[#2a4f7c]/30 hover:border-[#c9a87c]/30 transition-colors"
                 >
-                  <p className="text-xs font-bold text-blue-400 mb-1">Q{qNum}</p>
-                  <p className="text-sm text-slate-300 line-clamp-2">{value}</p>
+                  <p className="text-xs font-bold text-[#c9a87c] mb-1">Q{qNum}</p>
+                  <p className="text-sm text-[#c9a87c]/70 line-clamp-2">{value}</p>
                 </motion.div>
               );
             })}
