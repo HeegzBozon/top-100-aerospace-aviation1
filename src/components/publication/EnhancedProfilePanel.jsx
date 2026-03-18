@@ -95,6 +95,20 @@ function ModalChrome({ rank, onClose }) {
   );
 }
 
+// ─── Reusable share button for slides 1–3 ────────────────────────────────
+function SlideShareButton({ nominee, onClose, onShare }) {
+  return (
+    <button
+      onClick={(e) => { e.stopPropagation(); if (onShare) { onClose(); onShare(nominee); } }}
+      className="mt-4 w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-semibold text-sm transition-all hover:scale-[1.02] hover:shadow-lg"
+      style={{ background: `linear-gradient(135deg,${b.gold},${b.rose})`, color: 'white' }}
+    >
+      <Share2 className="w-4 h-4" />
+      Share This Achievement
+    </button>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // SLIDE 1 — Attention: Full-bleed hero, name, six-word story
 // ═══════════════════════════════════════════════════════════════════════════
