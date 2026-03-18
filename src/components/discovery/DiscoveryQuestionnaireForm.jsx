@@ -137,10 +137,10 @@ export default function DiscoveryQuestionnaireForm({ sectionId, formData, setFor
                   />
                 )}
 
-                <label className="flex items-center justify-center w-full p-4 border-2 border-dashed border-slate-600/50 rounded-lg cursor-pointer hover:border-blue-500/50 transition-colors group/upload">
+                <label className="flex items-center justify-center w-full p-4 border-2 border-dashed border-[#2a4f7c]/50 rounded-lg cursor-pointer hover:border-[#c9a87c]/50 transition-colors group/upload">
                   <div className="flex flex-col items-center gap-2">
-                    <Upload className="w-4 h-4 text-slate-500 group-hover/upload:text-blue-400" />
-                    <span className="text-xs text-slate-400 group-hover/upload:text-slate-300">Click to upload or drag & drop</span>
+                    <Upload className="w-4 h-4 text-[#c9a87c]/50 group-hover/upload:text-[#c9a87c]" />
+                    <span className="text-xs text-[#c9a87c]/40 group-hover/upload:text-[#c9a87c]">Click to upload or drag & drop</span>
                   </div>
                   <input
                     type="file"
