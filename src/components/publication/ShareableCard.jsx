@@ -246,46 +246,208 @@ export default function ShareableCard({ nominee, rank, onClose }) {
   const shareText = `Congratulations to ${nominee.name} — named to the TOP 100 Women in Aerospace & Aviation 2025! #TOP100Aerospace #WomenInAviation`;
 
   const handleDownload = async () => {
-    if (!cardRef.current) return;
     setIsExporting(true);
-
-    // Clone the card and mount it directly on body (outside any overflow:hidden container)
-    // so html2canvas captures it without clipping
-    const clone = cardRef.current.cloneNode(true);
-    clone.style.position = 'fixed';
-    clone.style.top = '-9999px';
-    clone.style.left = '-9999px';
-    clone.style.zIndex = '-1';
-    document.body.appendChild(clone);
-
     try {
-      // Wait for all images in the clone to load
-      const images = Array.from(clone.querySelectorAll('img'));
-      await Promise.all(
-        images.map(img =>
-          img.complete
-            ? Promise.resolve()
-            : new Promise(resolve => { img.onload = resolve; img.onerror = resolve; })
-        )
-      );
+      const W = 700, H = 390, SCALE = 2;
+      const canvas = document.createElement('canvas');
+      canvas.width = W * SCALE;
+      canvas.height = H * SCALE;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(SCALE, SCALE);
 
-      const canvas = await html2canvas(clone, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: b.navyDark,
-        imageTimeout: 15000,
-        logging: false,
-        width: clone.offsetWidth,
-        height: clone.offsetHeight,
-      });
+      // ── Background gradient ──
+      const bg = ctx.createLinearGradient(0, 0, W, H);
+      bg.addColorStop(0,    b.navyDark);
+      bg.addColorStop(0.45, '#162840');
+      bg.addColorStop(1,    '#1d3d68');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
 
+      // ── Top gold accent bar ──
+      const bar = ctx.createLinearGradient(0, 0, W, 0);
+      bar.addColorStop(0,    'transparent');
+      bar.addColorStop(0.2,  b.gold + 'e6');
+      bar.addColorStop(0.5,  b.goldLight);
+      bar.addColorStop(0.8,  b.gold + 'e6');
+      bar.addColorStop(1,    'transparent');
+      ctx.fillStyle = bar;
+      ctx.fillRect(0, 0, W, 3);
+
+      // ── Vertical gold rule ──
+      const rule = ctx.createLinearGradient(0, 40, 0, H - 40);
+      rule.addColorStop(0,   'transparent');
+      rule.addColorStop(0.3, b.gold + '80');
+      rule.addColorStop(0.7, b.gold + 'b3');
+      rule.addColorStop(1,   'transparent');
+      ctx.fillStyle = rule;
+      ctx.fillRect(220, 40, 1, H - 80);
+
+      // ── Photo circle ──
+      const cx = 110, cy = H / 2 - 10, r = 68;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.clip();
+      if (photoDataUrl && photoDataUrl.startsWith('data:')) {
+        const photo = new Image();
+        photo.src = photoDataUrl;
+        ctx.drawImage(photo, cx - r, cy - r, r * 2, r * 2);
+      } else {
+        ctx.fillStyle = b.navyMid;
+        ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+        ctx.fillStyle = b.goldLight;
+        ctx.font = 'bold 48px Georgia';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(nominee.name?.charAt(0) || '?', cx, cy);
+      }
+      ctx.restore();
+
+      // Photo ring
+      ctx.strokeStyle = b.gold + 'b3';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // ── Wreath overlay ──
+      if (wreathDataUrl && wreathDataUrl.startsWith('data:')) {
+        const wreath = new Image();
+        wreath.src = wreathDataUrl;
+        const wr = r + 16;
+        ctx.drawImage(wreath, cx - wr, cy - wr, wr * 2, wr * 2);
+      }
+
+      // ── Country chip ──
+      if (nominee.country) {
+        ctx.font = '600 11px system-ui';
+        const chipText = `📍 ${nominee.country}`;
+        const chipW = ctx.measureText(chipText).width + 20;
+        const chipX = cx - chipW / 2;
+        const chipY = cy + r + 16;
+        ctx.fillStyle = b.sky + '33';
+        ctx.strokeStyle = b.sky + '59';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(chipX, chipY, chipW, 22, 11);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = b.sky;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(chipText, cx, chipY + 11);
+      }
+
+      // ── RIGHT: content ──
+      const rx = 240, ry = 28, maxW = W - rx - 20;
+
+      // Rank badge
+      ctx.font = '900 10px system-ui';
+      const badgeText = `${rank ? `#${rank} · ` : ''}TOP 100 WOMEN IN AEROSPACE 2025`;
+      const badgeW = ctx.measureText(badgeText).width + 28;
+      const badgeGrad = ctx.createLinearGradient(rx, 0, rx + badgeW, 0);
+      badgeGrad.addColorStop(0, b.goldDeep);
+      badgeGrad.addColorStop(0.6, b.gold);
+      badgeGrad.addColorStop(1, b.goldLight);
+      ctx.fillStyle = badgeGrad;
+      ctx.beginPath();
+      ctx.roundRect(rx, ry, badgeW, 22, 11);
+      ctx.fill();
+      ctx.fillStyle = b.navyDark;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.letterSpacing = '0.18em';
+      ctx.fillText(badgeText, rx + 14, ry + 11);
+      ctx.letterSpacing = '0';
+
+      // Name
+      ctx.font = 'bold 32px Georgia, serif';
+      ctx.fillStyle = b.cream;
+      ctx.textBaseline = 'top';
+      let textY = ry + 34;
+      // Truncate name to fit
+      let nameText = nominee.name || '';
+      while (ctx.measureText(nameText).width > maxW && nameText.length > 1) {
+        nameText = nameText.slice(0, -1);
+      }
+      if (nameText !== nominee.name) nameText += '…';
+      ctx.fillText(nameText, rx, textY);
+      textY += 40;
+
+      // Title + company
+      const titleStr = [nominee.title || nominee.professional_role, nominee.company].filter(Boolean).join(' · ');
+      if (titleStr) {
+        ctx.font = '600 12px system-ui';
+        ctx.fillStyle = b.goldLight;
+        let t = titleStr;
+        while (ctx.measureText(t).width > maxW && t.length > 1) t = t.slice(0, -1);
+        if (t !== titleStr) t += '…';
+        ctx.fillText(t, rx, textY);
+        textY += 18;
+      }
+
+      // Gold rule
+      ctx.fillStyle = b.gold + 'e6';
+      ctx.fillRect(rx, textY + 6, 48, 1);
+      textY += 20;
+
+      // Bio (3 lines max)
+      const bio = nominee.description || nominee.bio;
+      if (bio) {
+        ctx.font = '12px system-ui';
+        ctx.fillStyle = b.cream + 'd9';
+        const words = bio.split(' ');
+        let line = '', lineCount = 0;
+        for (const word of words) {
+          const test = line ? `${line} ${word}` : word;
+          if (ctx.measureText(test).width > maxW) {
+            if (lineCount >= 2) { ctx.fillText(line + '…', rx, textY); break; }
+            ctx.fillText(line, rx, textY);
+            textY += 18; lineCount++;
+            line = word;
+          } else {
+            line = test;
+          }
+        }
+        if (lineCount < 3 && line) { ctx.fillText(line, rx, textY); textY += 18; }
+        textY += 4;
+      }
+
+      // Six-word story
+      if (nominee.six_word_story) {
+        ctx.font = 'italic 11px Georgia, serif';
+        ctx.fillStyle = b.goldLight + 'cc';
+        ctx.fillText(`"${nominee.six_word_story}"`, rx, textY + 4);
+      }
+
+      // ── Footer bar ──
+      const footerGrad = ctx.createLinearGradient(0, 0, W, 0);
+      footerGrad.addColorStop(0, b.navyDark + 'f0');
+      footerGrad.addColorStop(1, b.navyDark + 'cc');
+      ctx.fillStyle = footerGrad;
+      ctx.fillRect(0, H - 34, W, 34);
+      ctx.strokeStyle = b.gold + '4d';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, H - 34); ctx.lineTo(W, H - 34);
+      ctx.stroke();
+
+      ctx.font = '900 9px system-ui';
+      ctx.fillStyle = b.gold;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.fillText('TOP 100 AEROSPACE & AVIATION', 24, H - 17);
+      ctx.font = '9px system-ui';
+      ctx.fillStyle = b.cream + '73';
+      ctx.textAlign = 'right';
+      ctx.fillText('The Orbital Edition · 2025', W - 24, H - 17);
+
+      // ── Download ──
       const link = document.createElement('a');
-      link.download = `TOP100-${nominee.name?.replace(/\s+/g, '-')}-2025.png`;
+      link.download = `TOP100-${(nominee.name || 'honoree').replace(/\s+/g, '-')}-2025.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } finally {
-      document.body.removeChild(clone);
       setIsExporting(false);
     }
   };
