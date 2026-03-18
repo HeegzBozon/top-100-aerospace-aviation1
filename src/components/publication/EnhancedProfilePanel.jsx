@@ -117,42 +117,27 @@ function Slide1({ nominee, onClose, onShare }) {
 
   return (
     <div className="relative flex flex-col h-full" style={{ background: b.navy }}>
-      {/* Hero photo */}
-      <div className="relative overflow-hidden" style={{ height: '52%' }}>
-        {photo
-          ? <img src={photo} alt={nominee.name} className="absolute inset-0 w-full h-full object-cover object-top" />
-          : <div className="absolute inset-0" style={{ background: `linear-gradient(160deg,${b.navyMid},${b.sky})` }} />
-        }
-        {/* Layered overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/90" />
-        <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${b.navy} 0%, transparent 50%)` }} />
-        <DotPattern opacity={0.06} id="s1dots" />
-
+      {/* Hero photo — full bleed, wreath floats at bottom edge */}
+      <div className="relative overflow-visible" style={{ height: '52%' }}>
+        <div className="absolute inset-0 overflow-hidden rounded-t-3xl">
+          {photo
+            ? <img src={photo} alt={nominee.name} className="absolute inset-0 w-full h-full object-cover object-top" />
+            : <div className="absolute inset-0" style={{ background: `linear-gradient(160deg,${b.navyMid},${b.sky})` }} />
+          }
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${b.navy} 0%, transparent 55%)` }} />
+          <DotPattern opacity={0.06} id="s1dots" />
+        </div>
+        {/* Wreath centred at the bottom edge, half-overlapping text area */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-28 h-28 pointer-events-none z-20">
+          <img src={WREATH_URL} alt="" className="w-full h-full object-contain drop-shadow-xl" />
+        </div>
       </div>
 
       {/* Bottom text block */}
       <div className="relative z-10 px-7 pb-4 pt-0">
-        {/* Wreath + circular photo: photo centered inside wreath opening */}
-        <div className="flex justify-center -mt-16 mb-3">
-          <div className="relative w-36 h-36">
-            {/* Circular photo behind the wreath */}
-            <div className="absolute inset-[13%] rounded-full overflow-hidden border-2 border-white/30 shadow-xl"
-              style={{ background: b.goldLight, zIndex: 0 }}>
-              {photo
-                ? <img src={photo} alt={nominee.name} className="w-full h-full object-cover object-top" />
-                : <div className="w-full h-full flex items-center justify-center text-3xl font-bold"
-                    style={{ color: b.navy, background: b.goldLight }}>{nominee.name?.charAt(0)}</div>
-              }
-            </div>
-            {/* Wreath on top */}
-            <img
-              src={WREATH_URL}
-              alt=""
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none"
-              style={{ zIndex: 1 }}
-            />
-          </div>
-        </div>
+        {/* Spacer to clear wreath overlap */}
+        <div className="h-16" />
 
         {/* Publication badge */}
         <div className="flex items-center gap-2 mb-3">
