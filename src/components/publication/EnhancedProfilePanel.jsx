@@ -255,6 +255,8 @@ function Slide2({ nominee }) {
             </div>
           </div>
         )}
+
+        <SlideShareButton nominee={nominee} onClose={onClose} onShare={onShare} />
       </div>
     </div>
   );
