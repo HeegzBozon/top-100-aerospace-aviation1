@@ -217,7 +217,7 @@ export default function ShareableCard({ nominee, rank, onClose }) {
   const [photoDataUrl, setPhotoDataUrl] = useState(null);
 
   // Pre-convert photo to data URL so html2canvas can capture it
-  React.useEffect(() => {
+  useEffect(() => {
     const src = nominee.avatar_url || nominee.photo_url;
     if (!src) return;
     const img = new Image();
