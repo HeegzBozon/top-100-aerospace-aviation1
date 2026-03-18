@@ -117,27 +117,27 @@ function Slide1({ nominee, onClose, onShare }) {
 
   return (
     <div className="relative flex flex-col h-full" style={{ background: b.navy }}>
-      {/* Hero photo — full bleed, wreath floats at bottom edge */}
-      <div className="relative overflow-visible" style={{ height: '52%' }}>
-        <div className="absolute inset-0 overflow-hidden rounded-t-3xl">
-          {photo
-            ? <img src={photo} alt={nominee.name} className="absolute inset-0 w-full h-full object-cover object-top" />
-            : <div className="absolute inset-0" style={{ background: `linear-gradient(160deg,${b.navyMid},${b.sky})` }} />
-          }
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
-          <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${b.navy} 0%, transparent 55%)` }} />
-          <DotPattern opacity={0.06} id="s1dots" />
-        </div>
-        {/* Wreath centred at the bottom edge, half-overlapping text area */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-28 h-28 pointer-events-none z-20">
-          <img src={WREATH_URL} alt="" className="w-full h-full object-contain drop-shadow-xl" />
+      {/* Hero photo — full bleed with large wreath integrated at bottom */}
+      <div className="relative overflow-hidden" style={{ height: '55%' }}>
+        {photo
+          ? <img src={photo} alt={nominee.name} className="absolute inset-0 w-full h-full object-cover object-top" />
+          : <div className="absolute inset-0" style={{ background: `linear-gradient(160deg,${b.navyMid},${b.sky})` }} />
+        }
+        {/* Dark fade from top */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent" />
+        {/* Navy fade consuming the bottom 45% — wreath sits within this zone */}
+        <div className="absolute bottom-0 left-0 right-0" style={{ height: '55%', background: `linear-gradient(to top, ${b.navy} 30%, transparent 100%)` }} />
+        <DotPattern opacity={0.06} id="s1dots" />
+        {/* Large wreath anchored to bottom, full-width feel */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[30%] w-48 h-48 pointer-events-none z-20">
+          <img src={WREATH_URL} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.5))' }} />
         </div>
       </div>
 
       {/* Bottom text block */}
       <div className="relative z-10 px-7 pb-4 pt-0">
         {/* Spacer to clear wreath overlap */}
-        <div className="h-16" />
+        <div className="h-14" />
 
         {/* Publication badge */}
         <div className="flex items-center gap-2 mb-3">
