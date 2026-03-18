@@ -175,6 +175,7 @@ export default function ChessGame() {
               aria-label="Choose board theme"
             >
               <option value="classic">Classic</option>
+              <option value="top100">TOP 100</option>
               <option value="deepSpace">Deep Space</option>
               <option value="lichess">Lichess</option>
             </select>
