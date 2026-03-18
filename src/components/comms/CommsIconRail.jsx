@@ -5,7 +5,7 @@ import {
   Home, Trophy, Compass, Calendar, MessageCircle, Users,
   Bookmark, MoreHorizontal, Plus, Settings, User,
   Smile, ChevronRight, Hash, Briefcase, Gamepad2, Video, ShieldCheck,
-  Search, Rocket, X, Clock, ArrowUp, ArrowDown, Send
+  Search, Rocket, X, Clock, ArrowUp, ArrowDown, Send, Lightbulb
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
