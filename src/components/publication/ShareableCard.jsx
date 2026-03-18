@@ -105,7 +105,7 @@ const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl, wreathDataU
 
       {/* ── RIGHT: Content column ── */}
       <div className="absolute top-0 bottom-0 flex flex-col justify-center"
-        style={{ left: 236, right: 28, paddingTop: 24, paddingBottom: 44 }}>
+        style={{ left: 236, right: 28, paddingTop: 16, paddingBottom: 48 }}>
 
         {/* Rank badge */}
         <div style={{ marginBottom: 12 }}>
