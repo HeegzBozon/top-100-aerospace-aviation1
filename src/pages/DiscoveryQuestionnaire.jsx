@@ -120,10 +120,10 @@ export default function DiscoveryQuestionnaire() {
                 onClick={() => handleSectionClick(idx)}
                 className={`aspect-square rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
                   idx === currentStep
-                    ? 'bg-gradient-to-br from-blue-500 to-purple-500 text-white scale-110'
+                    ? 'bg-gradient-to-br from-[#c9a87c] to-[#d4a090] text-[#1e3a5a] scale-110'
                     : idx < currentStep
-                    ? 'bg-green-500/30 text-green-300 border border-green-500/50'
-                    : 'bg-slate-700/50 text-slate-400 border border-slate-600/50 hover:border-slate-500'
+                    ? 'bg-[#4a90b8]/30 text-[#e8d4b8] border border-[#4a90b8]/50'
+                    : 'bg-[#2a4f7c]/50 text-[#c9a87c]/60 border border-[#2a4f7c]/50 hover:border-[#2a4f7c]'
                 }`}
                 aria-label={`Section ${s.id}: ${s.title}`}
               >
