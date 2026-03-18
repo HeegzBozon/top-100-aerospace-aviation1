@@ -227,6 +227,10 @@ function Slide1({ nominee, onClose, onShare }) {
 function Slide2({ nominee, onClose, onShare }) {
   const bio = nominee.bio || nominee.description;
   const photo = nominee.avatar_url || nominee.photo_url;
+  const [bioExpanded, setBioExpanded] = useState(false);
+  const BIO_THRESHOLD = 180; // chars before we truncate
+  const isLongBio = bio && bio.length > BIO_THRESHOLD;
+  const displayBio = isLongBio && !bioExpanded ? bio.slice(0, BIO_THRESHOLD).trimEnd() + '…' : bio;
 
   return (
     <div className="flex flex-col h-full overflow-y-auto" style={{ background: b.cream }}>
