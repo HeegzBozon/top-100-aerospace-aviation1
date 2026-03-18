@@ -165,9 +165,10 @@ const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl, wreathDataU
         {/* Six-word story */}
         {nominee.six_word_story && (
           <p style={{
-            margin: '10px 0 0', fontSize: 12,
+            margin: '8px 0 0', fontSize: 11,
             fontStyle: 'italic', color: `${b.goldLight}cc`,
             fontFamily: 'Georgia, serif',
+            flexShrink: 0,
           }}>
             "{nominee.six_word_story}"
           </p>
