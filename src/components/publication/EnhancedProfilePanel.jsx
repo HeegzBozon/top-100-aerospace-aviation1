@@ -132,7 +132,7 @@ function Slide1({ nominee, onClose, onShare }) {
         <div className="absolute inset-0 flex items-end justify-center pb-0">
           <div className="relative w-80 h-80">
             {/* Circular headshot sits inside the wreath opening */}
-            <div className="absolute inset-[13%] rounded-full overflow-hidden shadow-2xl" style={{ boxShadow: `0 0 0 3px ${b.gold}60, 0 8px 32px rgba(0,0,0,0.6)` }}>
+            <div className="absolute inset-[11%] rounded-full overflow-hidden shadow-2xl" style={{ boxShadow: `0 0 0 4px ${b.gold}80, 0 12px 40px rgba(0,0,0,0.7)` }}>
               {photo
                 ? <img src={photo} alt={nominee.name} className="w-full h-full object-cover object-top" />
                 : <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-white" style={{ background: b.navyMid }}>{nominee.name?.charAt(0)}</div>
