@@ -543,7 +543,7 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
                 transition={{ type: 'spring', damping: 32, stiffness: 340 }}
                 className="absolute inset-0"
               >
-                <SlideComponent nominee={nominee} rank={rank} onClose={onClose} onShare={onShare} onNext={next} />
+                <SlideComponent nominee={nominee} rank={rank} onClose={onClose} onShare={onShare} onNext={next} onNextNominee={onNextNominee} hasNextNominee={hasNextNominee} />
               </motion.div>
             </AnimatePresence>
           </div>
