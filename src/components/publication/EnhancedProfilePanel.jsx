@@ -123,7 +123,7 @@ function Slide1({ nominee }) {
       </div>
 
       {/* Bottom text block */}
-      <div className="relative z-10 px-7 pb-6 pt-4">
+      <div className="relative z-10 px-7 pb-4 pt-4">
         {/* Publication badge */}
         <div className="flex items-center gap-2 mb-3">
           <div className="h-px flex-1" style={{ background: `linear-gradient(to right,${b.gold},transparent)` }} />
