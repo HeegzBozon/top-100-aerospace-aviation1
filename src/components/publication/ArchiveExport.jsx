@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Download, Loader2, CheckCircle, BookOpen, Database, Lock, CreditCard, Heart } from 'lucide-react';
 
