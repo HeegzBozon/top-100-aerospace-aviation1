@@ -45,16 +45,11 @@ const HonoreeCard = React.forwardRef(({ nominee, rank }, ref) => {
       }} />
 
       {/* ── Dot-grid texture ── */}
-      <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.045 }}>
-        <svg width="100%" height="100%">
-          <defs>
-            <pattern id="sc-dots" width="18" height="18" patternUnits="userSpaceOnUse">
-              <circle cx="1.5" cy="1.5" r="1" fill="white" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#sc-dots)" />
-        </svg>
-      </div>
+      <div className="absolute inset-0 pointer-events-none" style={{
+        opacity: 0.07,
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)',
+        backgroundSize: '18px 18px',
+      }} />
 
       {/* ── Elegant top accent bar ── */}
       <div className="absolute top-0 left-0 right-0" style={{ height: 3,
