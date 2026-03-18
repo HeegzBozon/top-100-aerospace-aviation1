@@ -237,11 +237,7 @@ export default function ChessGame() {
                 ringColor: isMyTurn && game.status === 'active' ? 'rgba(212, 165, 116, 0.4)' : 'rgba(255, 255, 255, 0.05)',
                 boxShadow: isMyTurn && game.status === 'active' ? '0 0 30px rgba(212, 165, 116, 0.2)' : '0 20px 40px rgba(0, 0, 0, 0.4)'
               }}>
-              {submitting && (
-                <div className="absolute inset-0 z-20 bg-black/40 flex items-center justify-center backdrop-blur-sm">
-                  <div className="w-8 h-8 border-2 border-[#d4a574]/40 border-t-[#d4a574] rounded-full animate-spin" />
-                </div>
-              )}
+
               <ChessBoard
                 fen={game.current_fen}
                 playerColor={myColor}
