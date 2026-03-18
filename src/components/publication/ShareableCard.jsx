@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Linkedin, Link2, Check, Loader2, X, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
