@@ -158,7 +158,7 @@ export default function DiscoveryQuestionnaire() {
         </div>
 
         {/* Save prompt */}
-        <p className="text-center text-xs text-slate-500 mt-6">Your responses are auto-saved as you go.</p>
+        <p className="text-center text-xs text-[#c9a87c]/40 mt-6">Your responses are auto-saved as you go.</p>
       </div>
     </div>
   );
