@@ -30,12 +30,12 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
           className="text-center mb-12"
         >
           <div className="flex justify-center mb-4">
-            <div className="relative w-16 h-16 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center shadow-2xl">
-              <CheckCircle className="w-8 h-8 text-white" />
+            <div className="relative w-16 h-16 bg-gradient-to-br from-[#c9a87c] to-[#d4a090] rounded-full flex items-center justify-center shadow-2xl">
+              <CheckCircle className="w-8 h-8 text-[#1e3a5a]" />
             </div>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">All Set!</h1>
-          <p className="text-slate-400 max-w-lg mx-auto">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#faf8f5] mb-2">All Set!</h1>
+          <p className="text-[#c9a87c]/60 max-w-lg mx-auto">
             Your questionnaire is complete. We have everything we need to get started. Download a copy for your records, or we'll have it on file.
           </p>
         </motion.div>
