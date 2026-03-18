@@ -355,10 +355,14 @@ export default function ShareableCard({ nominee, rank, onClose }) {
       // ── RIGHT: content ──
       const rx = 240, ry = 28, maxW = W - rx - 20;
 
-      // Rank badge
+      // Rank badge — measure without letterSpacing to get accurate width
       ctx.font = '900 10px system-ui';
+      ctx.letterSpacing = '0';
       const badgeText = `${rank ? `#${rank} · ` : ''}TOP 100 WOMEN IN AEROSPACE 2025`;
-      const badgeW = ctx.measureText(badgeText).width + 28;
+      const badgeTextW = ctx.measureText(badgeText).width;
+      // letterSpacing adds ~0.18em per character ≈ 1.8px per char at 10px
+      const letterSpacingExtra = badgeText.length * 1.8;
+      const badgeW = badgeTextW + letterSpacingExtra + 28;
       const badgeGrad = ctx.createLinearGradient(rx, 0, rx + badgeW, 0);
       badgeGrad.addColorStop(0, b.goldDeep);
       badgeGrad.addColorStop(0.6, b.gold);
