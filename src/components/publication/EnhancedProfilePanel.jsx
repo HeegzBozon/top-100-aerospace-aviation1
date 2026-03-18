@@ -170,13 +170,15 @@ function Slide1({ nominee }) {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="mt-4 px-4 py-3 rounded-2xl flex items-start gap-2"
+            className="mt-3 px-4 py-3 rounded-2xl flex items-start gap-2"
             style={{ background: `linear-gradient(135deg,${b.gold}22,${b.rose}18)`, border: `1px solid ${b.gold}30` }}
           >
             <Sparkles className="w-4 h-4 shrink-0 mt-0.5" style={{ color: b.gold }} />
             <p className="italic text-sm leading-snug text-white/90">"{nominee.six_word_story}"</p>
           </motion.div>
         )}
+
+        <SlideShareButton onClose={onClose} onShare={onShare} nominee={nominee} />
       </div>
     </div>
   );
