@@ -283,7 +283,16 @@ function Slide2({ nominee, onClose, onShare }) {
         {bio && (
           <div className="relative pl-5 border-l-2" style={{ borderColor: `${b.gold}50` }}>
             <Quote className="w-6 h-6 mb-1.5" style={{ color: `${b.gold}50` }} />
-            <p className="text-sm leading-relaxed" style={{ color: `${b.navy}cc` }}>{bio}</p>
+            <p className="text-sm leading-relaxed" style={{ color: `${b.navy}cc` }}>{displayBio}</p>
+            {isLongBio && (
+              <button
+                onClick={() => setBioExpanded(v => !v)}
+                className="mt-2 text-xs font-bold tracking-wide transition-opacity hover:opacity-70"
+                style={{ color: b.goldDeep }}
+              >
+                {bioExpanded ? 'Show less ↑' : 'Read more ↓'}
+              </button>
+            )}
           </div>
         )}
 
