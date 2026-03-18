@@ -141,21 +141,22 @@ export default function ChessBoard({ fen, playerColor = 'white', onMove, disable
 
   const customPieces = useMemo(() => {
     const pieces = {};
-    const pieceTypes = ['K', 'Q', 'R', 'B', 'N', 'P'];
-
-    pieceTypes.forEach((type) => {
+    ['K', 'Q', 'R', 'B', 'N', 'P'].forEach((type) => {
       ['w', 'b'].forEach((color) => {
         const key = `${color}${type}`;
+        const src = getLichessPieceUrl(color, type, pieceSet);
         pieces[key] = ({ squareWidth }) => (
           <img
-            src={`${PIECE_PACKAGER_URL}/${pieceSet}.svg#${color}${type.toLowerCase()}`}
+            src={src}
             alt={key}
-            style={{ width: squareWidth, height: squareWidth }}
+            width={squareWidth}
+            height={squareWidth}
+            draggable={false}
+            className="select-none pointer-events-none"
           />
         );
       });
     });
-
     return pieces;
   }, [pieceSet]);
 
