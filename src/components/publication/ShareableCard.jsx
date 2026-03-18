@@ -249,9 +249,19 @@ export default function ShareableCard({ nominee, rank, onClose }) {
   const handleDownload = async () => {
     if (!cardRef.current) return;
     setIsExporting(true);
+
+    // Clone the card and mount it directly on body (outside any overflow:hidden container)
+    // so html2canvas captures it without clipping
+    const clone = cardRef.current.cloneNode(true);
+    clone.style.position = 'fixed';
+    clone.style.top = '-9999px';
+    clone.style.left = '-9999px';
+    clone.style.zIndex = '-1';
+    document.body.appendChild(clone);
+
     try {
-      // Wait for all images inside the card to fully load
-      const images = Array.from(cardRef.current.querySelectorAll('img'));
+      // Wait for all images in the clone to load
+      const images = Array.from(clone.querySelectorAll('img'));
       await Promise.all(
         images.map(img =>
           img.complete
@@ -260,19 +270,23 @@ export default function ShareableCard({ nominee, rank, onClose }) {
         )
       );
 
-      const canvas = await html2canvas(cardRef.current, {
+      const canvas = await html2canvas(clone, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: b.navyDark,
         imageTimeout: 15000,
         logging: false,
+        width: clone.offsetWidth,
+        height: clone.offsetHeight,
       });
+
       const link = document.createElement('a');
       link.download = `TOP100-${nominee.name?.replace(/\s+/g, '-')}-2025.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } finally {
+      document.body.removeChild(clone);
       setIsExporting(false);
     }
   };
