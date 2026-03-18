@@ -112,7 +112,7 @@ function SlideShareButton({ nominee, onClose, onShare }) {
 // ═══════════════════════════════════════════════════════════════════════════
 // SLIDE 1 — Attention: Full-bleed hero, name, six-word story
 // ═══════════════════════════════════════════════════════════════════════════
-function Slide1({ nominee }) {
+function Slide1({ nominee, onClose, onShare }) {
   const photo = nominee.avatar_url || nominee.photo_url;
 
   return (
