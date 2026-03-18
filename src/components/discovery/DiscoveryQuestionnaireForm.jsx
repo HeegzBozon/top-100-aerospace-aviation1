@@ -157,12 +157,12 @@ export default function DiscoveryQuestionnaireForm({ sectionId, formData, setFor
                 </label>
 
                 {uploadedFiles[q.id] && (
-                  <div className="flex items-center justify-between px-3 py-2 bg-green-500/10 border border-green-500/30 rounded-lg">
-                    <span className="text-xs text-green-300">{uploadedFiles[q.id].name}</span>
+                  <div className="flex items-center justify-between px-3 py-2 bg-[#4a90b8]/10 border border-[#4a90b8]/30 rounded-lg">
+                    <span className="text-xs text-[#e8d4b8]">{uploadedFiles[q.id].name}</span>
                     <button
                       type="button"
                       onClick={() => removeFile(q.id)}
-                      className="text-green-400 hover:text-red-400 transition-colors"
+                      className="text-[#4a90b8] hover:text-[#d4a090] transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
