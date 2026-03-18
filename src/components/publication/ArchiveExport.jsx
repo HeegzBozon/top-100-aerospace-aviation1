@@ -85,176 +85,79 @@ export default function ArchiveExport({ nominees, title = "TOP 100 Women in Aero
     }
   }, [user]);
 
-  const generatePDF = async () => {
+  const generatePDF = () => {
     setExporting('pdf');
 
     try {
-      const { jsPDF } = await import(/* @vite-ignore */ 'jspdf');
-      const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>TOP 100 Women in Aerospace 2025</title><style>
+        @page { size: A4; margin: 20mm; }
+        body { font-family: Helvetica, Arial, sans-serif; color: #1e3a5a; }
+        .cover { background: #1e3a5a; color: #faf8f5; padding: 60mm 20mm; text-align: center; page-break-after: always; min-height: 200mm; }
+        .cover h1 { font-size: 32pt; margin: 0 0 8mm; letter-spacing: 4px; }
+        .cover h2 { font-size: 16pt; margin: 0 0 12mm; font-weight: 300; }
+        .cover .edition { color: #c9a87c; font-size: 14pt; }
+        .cover .year { font-size: 28pt; color: #c9a87c; margin-top: 8mm; }
+        .gold-bar { height: 3px; background: #c9a87c; margin: 8mm 0; }
+        .toc { page-break-after: always; }
+        .toc h2 { font-size: 18pt; border-bottom: 2px solid #c9a87c; padding-bottom: 4mm; margin-bottom: 6mm; }
+        .toc-row { display: flex; gap: 4mm; padding: 2mm 0; border-bottom: 1px solid #eee; font-size: 9pt; }
+        .toc-rank { color: #c9a87c; font-weight: bold; width: 10mm; flex-shrink: 0; }
+        .toc-name { flex: 1; font-weight: bold; }
+        .toc-role { flex: 2; color: #666; }
+        .honoree { page-break-inside: avoid; margin-bottom: 12mm; padding-bottom: 8mm; border-bottom: 1px solid #e8d4b8; }
+        .honoree-header { background: #1e3a5a; color: #faf8f5; padding: 4mm 6mm; margin-bottom: 4mm; display: flex; align-items: center; gap: 4mm; }
+        .honoree-rank { color: #c9a87c; font-size: 14pt; font-weight: bold; }
+        .honoree-name { font-size: 14pt; font-weight: bold; }
+        .honoree-title { color: #4a90b8; font-weight: bold; font-size: 10pt; }
+        .honoree-company { color: #666; font-size: 9pt; }
+        .honoree-location { color: #999; font-size: 9pt; margin-top: 2mm; }
+        .six-word { border-left: 3px solid #c9a87c; padding-left: 4mm; font-style: italic; color: #1e3a5a; margin: 3mm 0; font-size: 10pt; }
+        .bio { font-size: 9pt; color: #444; line-height: 1.6; margin-top: 3mm; }
+        .footer { text-align: center; color: #999; font-size: 8pt; margin-top: 4mm; }
+      </style></head><body>
+        <div class="cover">
+          <h1>TOP 100</h1>
+          <div class="gold-bar"></div>
+          <h2>WOMEN IN AEROSPACE &amp; AVIATION</h2>
+          <div class="edition">The Orbital Edition</div>
+          <div class="year">2025</div>
+          <div class="gold-bar"></div>
+          <div style="color:#aaa;font-size:9pt;margin-top:20mm">Official Publication Archive</div>
+        </div>
+        <div class="toc">
+          <h2>Directory of Honorees</h2>
+          ${nominees.slice(0, 100).map((n, i) => `
+            <div class="toc-row">
+              <span class="toc-rank">${String(i + 1).padStart(3, '0')}</span>
+              <span class="toc-name">${n.name || 'Unknown'}</span>
+              <span class="toc-role">${(n.title || n.professional_role || '').substring(0, 50)}</span>
+            </div>`).join('')}
+        </div>
+        ${nominees.slice(0, 100).map((n, i) => `
+          <div class="honoree">
+            <div class="honoree-header">
+              <span class="honoree-rank">#${String(i + 1).padStart(3, '0')}</span>
+              <span class="honoree-name">${(n.name || 'Unknown').toUpperCase()}</span>
+            </div>
+            ${n.title || n.professional_role ? `<div class="honoree-title">${n.title || n.professional_role}</div>` : ''}
+            ${n.company ? `<div class="honoree-company">${n.company}</div>` : ''}
+            ${n.country ? `<div class="honoree-location">📍 ${n.country}${n.industry ? ` · ${n.industry}` : ''}</div>` : ''}
+            ${n.six_word_story ? `<div class="six-word">"${n.six_word_story}"</div>` : ''}
+            ${n.bio ? `<div class="bio">${n.bio.substring(0, 600)}</div>` : ''}
+            <div class="footer">TOP 100 Women in Aerospace &amp; Aviation 2025 · The Orbital Edition</div>
+          </div>`).join('')}
+      </body></html>`;
 
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const margin = 20;
-      let y = margin;
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, '_blank');
+      if (win) {
+        win.onload = () => {
+          win.print();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+        };
+      }
 
-      // Helper functions
-      const addPage = () => {
-        doc.addPage();
-        y = margin;
-      };
-
-      const checkPageBreak = (requiredSpace) => {
-        if (y + requiredSpace > pageHeight - margin) {
-          addPage();
-          return true;
-        }
-        return false;
-      };
-
-      // Cover Page
-      doc.setFillColor(30, 58, 90); // navyDeep
-      doc.rect(0, 0, pageWidth, pageHeight, 'F');
-
-      // Gold bar
-      doc.setFillColor(201, 168, 124); // goldPrestige
-      doc.rect(0, 60, pageWidth, 3, 'F');
-
-      // Title
-      doc.setTextColor(250, 248, 245); // cream
-      doc.setFontSize(28);
-      doc.setFont('helvetica', 'bold');
-      doc.text('TOP 100', pageWidth / 2, 100, { align: 'center' });
-      doc.setFontSize(18);
-      doc.text('WOMEN IN AEROSPACE & AVIATION', pageWidth / 2, 115, { align: 'center' });
-
-      doc.setTextColor(201, 168, 124); // goldPrestige
-      doc.setFontSize(14);
-      doc.text('The Orbital Edition', pageWidth / 2, 135, { align: 'center' });
-      doc.setFontSize(24);
-      doc.text('2025', pageWidth / 2, 150, { align: 'center' });
-
-      // Footer
-      doc.setTextColor(150, 150, 150);
-      doc.setFontSize(10);
-      doc.text('Official Publication Archive', pageWidth / 2, pageHeight - 30, { align: 'center' });
-
-      // Table of Contents
-      addPage();
-      doc.setFillColor(250, 248, 245);
-      doc.rect(0, 0, pageWidth, pageHeight, 'F');
-
-      doc.setTextColor(30, 58, 90);
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Directory of Honorees', margin, y + 10);
-      y += 25;
-
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-
-      nominees.slice(0, 100).forEach((nominee, i) => {
-        checkPageBreak(8);
-        doc.setTextColor(30, 58, 90);
-        doc.text(`${String(i + 1).padStart(3, '0')}`, margin, y);
-        doc.text(nominee.name || 'Unknown', margin + 15, y);
-        doc.setTextColor(100, 100, 100);
-        const role = (nominee.title || nominee.professional_role || '').substring(0, 40);
-        doc.text(role, margin + 80, y);
-        y += 6;
-      });
-
-      // Honoree Pages
-      nominees.slice(0, 100).forEach((nominee, index) => {
-        addPage();
-
-        // Background
-        doc.setFillColor(250, 248, 245);
-        doc.rect(0, 0, pageWidth, pageHeight, 'F');
-
-        // Header stripe
-        doc.setFillColor(30, 58, 90);
-        doc.rect(0, 0, pageWidth, 40, 'F');
-
-        // Gold accent
-        doc.setFillColor(201, 168, 124);
-        doc.rect(0, 40, pageWidth, 2, 'F');
-
-        // Rank badge
-        doc.setTextColor(201, 168, 124);
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`#${String(index + 1).padStart(3, '0')}`, margin, 20);
-
-        // Name in header
-        doc.setTextColor(250, 248, 245);
-        doc.setFontSize(16);
-        doc.text((nominee.name || 'Unknown').toUpperCase(), margin, 32);
-
-        y = 55;
-
-        // Title & Company
-        doc.setTextColor(74, 144, 184); // skyBlue
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text(nominee.title || nominee.professional_role || '', margin, y);
-        y += 7;
-
-        if (nominee.company) {
-          doc.setTextColor(100, 100, 100);
-          doc.setFont('helvetica', 'normal');
-          doc.text(nominee.company, margin, y);
-          y += 7;
-        }
-
-        if (nominee.country) {
-          doc.setTextColor(150, 150, 150);
-          doc.setFontSize(10);
-          doc.text(`📍 ${nominee.country}`, margin, y);
-          y += 10;
-        }
-
-        // Six word story
-        if (nominee.six_word_story) {
-          y += 5;
-          doc.setDrawColor(201, 168, 124);
-          doc.line(margin, y, pageWidth - margin, y);
-          y += 8;
-
-          doc.setTextColor(30, 58, 90);
-          doc.setFontSize(11);
-          doc.setFont('helvetica', 'italic');
-          doc.text(`"${nominee.six_word_story}"`, margin, y);
-          y += 10;
-        }
-
-        // Bio
-        if (nominee.bio) {
-          y += 5;
-          doc.setTextColor(60, 60, 60);
-          doc.setFontSize(10);
-          doc.setFont('helvetica', 'normal');
-
-          const bioLines = doc.splitTextToSize(nominee.bio, pageWidth - margin * 2);
-          bioLines.slice(0, 15).forEach(line => {
-            checkPageBreak(6);
-            doc.text(line, margin, y);
-            y += 5;
-          });
-        }
-
-        // Footer
-        doc.setTextColor(150, 150, 150);
-        doc.setFontSize(8);
-        doc.text('TOP 100 Women in Aerospace & Aviation 2025 · The Orbital Edition', margin, pageHeight - 15);
-        doc.text(`Page ${index + 3}`, pageWidth - margin, pageHeight - 15, { align: 'right' });
-      });
-
-      // Save
-      doc.save('TOP100-Women-Aerospace-2025-Archive.pdf');
       setCompleted('pdf');
       setTimeout(() => setCompleted(null), 3000);
     } catch (error) {
