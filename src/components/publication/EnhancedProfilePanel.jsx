@@ -485,6 +485,11 @@ const slideVariants = {
 export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare }) {
   const [slide, setSlide] = useState(0);
   const [dir, setDir] = useState(1);
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(u => setCurrentUserEmail(u?.email ?? null)).catch(() => {});
+  }, []);
 
   const goTo = useCallback((i) => {
     setDir(i > slide ? 1 : -1);
