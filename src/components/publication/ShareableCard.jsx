@@ -47,7 +47,7 @@ const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl, wreathDataU
       {/* ── Dot-grid texture ── */}
       <div className="absolute inset-0 pointer-events-none" style={{
         opacity: 0.07,
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.8) 1px, transparent 0)',
         backgroundSize: '18px 18px',
       }} />
 
