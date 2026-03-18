@@ -80,15 +80,15 @@ export default function DiscoveryQuestionnaire() {
 
         {/* Progress bar */}
         <div className="mb-8 sm:mb-12">
-          <div className="w-full h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div className="w-full h-1 bg-[#2a4f7c]/30 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5 }}
-              className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+              className="h-full bg-gradient-to-r from-[#c9a87c] to-[#d4a090]"
             />
           </div>
-          <p className="text-xs text-slate-500 mt-2">{Math.round(progress)}% complete</p>
+          <p className="text-xs text-[#c9a87c]/50 mt-2">{Math.round(progress)}% complete</p>
         </div>
 
         {/* Form container */}
