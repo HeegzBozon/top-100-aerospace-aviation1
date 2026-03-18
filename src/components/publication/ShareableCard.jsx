@@ -318,6 +318,21 @@ export default function ShareableCard({ nominee, rank, onClose }) {
         ctx.drawImage(wreath, cx - wr, cy - wr, wr * 2, wr * 2);
       }
 
+      // ── Rounded rect helper ──
+      const roundRect = (x, y, w, h, rad) => {
+        ctx.beginPath();
+        ctx.moveTo(x + rad, y);
+        ctx.lineTo(x + w - rad, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + rad);
+        ctx.lineTo(x + w, y + h - rad);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - rad, y + h);
+        ctx.lineTo(x + rad, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - rad);
+        ctx.lineTo(x, y + rad);
+        ctx.quadraticCurveTo(x, y, x + rad, y);
+        ctx.closePath();
+      };
+
       // ── Country chip ──
       if (nominee.country) {
         ctx.font = '600 11px system-ui';
@@ -328,8 +343,7 @@ export default function ShareableCard({ nominee, rank, onClose }) {
         ctx.fillStyle = b.sky + '33';
         ctx.strokeStyle = b.sky + '59';
         ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(chipX, chipY, chipW, 22, 11);
+        roundRect(chipX, chipY, chipW, 22, 11);
         ctx.fill();
         ctx.stroke();
         ctx.fillStyle = b.sky;
