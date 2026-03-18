@@ -104,7 +104,7 @@ function Slide1({ nominee }) {
   return (
     <div className="relative flex flex-col h-full" style={{ background: b.navy }}>
       {/* Hero photo */}
-      <div className="relative flex-1 min-h-0 overflow-hidden">
+      <div className="relative overflow-hidden" style={{ height: '52%' }}>
         {photo
           ? <img src={photo} alt={nominee.name} className="absolute inset-0 w-full h-full object-cover object-top" />
           : <div className="absolute inset-0" style={{ background: `linear-gradient(160deg,${b.navyMid},${b.sky})` }} />
