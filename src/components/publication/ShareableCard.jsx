@@ -84,8 +84,12 @@ const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl, wreathDataU
               </div>
             )}
           </div>
-          {/* Wreath on top — loaded as data URL so html2canvas can capture it */}
-          {/* Wreath is decorative; skipped in export to avoid CORS issues */}
+          {/* Wreath on top — rendered as data URL so html2canvas captures it */}
+          {wreathDataUrl && (
+            <img src={wreathDataUrl} alt="" aria-hidden
+              className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+              style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }} />
+          )}
         </div>
 
         {/* Country chip */}
