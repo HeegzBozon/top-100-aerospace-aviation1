@@ -140,7 +140,7 @@ export default function DiscoveryQuestionnaire() {
             whileTap={{ scale: 0.95 }}
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-700/50 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-600/50 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#2a4f7c]/50 text-[#c9a87c] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#2a4f7c]/70 transition-colors text-sm font-medium"
           >
             <ChevronLeft className="w-4 h-4" />
             Back
@@ -150,7 +150,7 @@ export default function DiscoveryQuestionnaire() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleNext}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 transition-all text-sm font-bold shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#c9a87c] to-[#d4a090] text-[#1e3a5a] hover:from-[#e8d4b8] hover:to-[#d4a090] transition-all text-sm font-bold shadow-lg hover:shadow-xl"
           >
             {currentStep === SECTIONS.length - 1 ? 'Review' : 'Next'}
             {currentStep < SECTIONS.length - 1 && <ChevronRight className="w-4 h-4" />}
