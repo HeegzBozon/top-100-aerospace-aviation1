@@ -89,7 +89,7 @@ export default function ArchiveExport({ nominees, title = "TOP 100 Women in Aero
     setExporting('pdf');
 
     try {
-      const { jsPDF } = await import('jspdf');
+      const { jsPDF } = await import(/* @vite-ignore */ 'jspdf');
       const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
