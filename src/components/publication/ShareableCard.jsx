@@ -20,7 +20,7 @@ const WREATH_URL = 'https://media.base44.com/images/public/68996845be6727838fdb8
 
 // ─── Exportable card (1200×630 social OG ratio) ───────────────────────────────
 const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl, wreathDataUrl }, ref) => {
-  const photo = photoDataUrl || nominee.avatar_url || nominee.photo_url;
+  const photo = photoDataUrl;
   const bio   = nominee.description || nominee.bio;
 
   return (
