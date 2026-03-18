@@ -518,6 +518,11 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
     base44.auth.me().then(u => setCurrentUserEmail(u?.email ?? null)).catch(() => {});
   }, []);
 
+  useEffect(() => {
+    setSlide(0);
+    setDir(1);
+  }, [nominee?.id]);
+
   const goTo = useCallback((i) => {
     setDir(i > slide ? 1 : -1);
     setSlide(i);
