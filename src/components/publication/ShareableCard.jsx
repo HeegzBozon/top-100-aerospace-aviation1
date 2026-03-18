@@ -75,7 +75,7 @@ const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl }, ref) => {
             boxShadow: `0 0 0 2.5px ${b.gold}70, 0 8px 28px rgba(0,0,0,0.75)`
           }}>
             {photo ? (
-              <img src={photo} alt={nominee.name} crossOrigin="anonymous"
+              <img src={photo} alt={nominee.name}
                 className="w-full h-full object-cover object-top" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-4xl font-bold"
