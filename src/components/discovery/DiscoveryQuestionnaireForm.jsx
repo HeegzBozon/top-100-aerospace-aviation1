@@ -100,10 +100,10 @@ export default function DiscoveryQuestionnaireForm({ sectionId, formData, setFor
           <div className="relative bg-[#1e3a5a]/50 backdrop-blur border border-[#2a4f7c]/50 rounded-lg p-5 hover:border-[#2a4f7c]/70 transition-colors">
             <label className="block mb-3">
               <span className="flex items-start gap-2 mb-2">
-                <span className="text-white font-medium text-sm leading-snug">
+                <span className="text-[#faf8f5] font-medium text-sm leading-snug">
                   {q.question}
                 </span>
-                {q.required && <span className="text-red-400 text-xs font-bold mt-0.5">*</span>}
+                {q.required && <span className="text-[#d4a090] text-xs font-bold mt-0.5">*</span>}
               </span>
             </label>
 
