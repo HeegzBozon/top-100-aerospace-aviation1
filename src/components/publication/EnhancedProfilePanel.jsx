@@ -569,19 +569,36 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
 
               <SlideProgress total={SLIDES.length} current={slide} onGo={goTo} />
 
-              <button
-                onClick={next}
-                disabled={isLast}
-                aria-label="Next slide"
-                className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 hover:scale-110 active:scale-95"
-                style={{
-                  background: isLast ? 'transparent' : `linear-gradient(135deg,${b.gold},${b.rose})`,
-                  color: 'white',
-                  boxShadow: isLast ? 'none' : `0 4px 12px ${b.gold}40`
-                }}
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+              {isLast && hasNextNominee ? (
+                <motion.button
+                  onClick={onNextNominee}
+                  aria-label="Next honoree"
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                  className="flex items-center gap-1 px-3 py-2 rounded-full text-[11px] font-black tracking-wide"
+                  style={{
+                    background: `linear-gradient(135deg,${b.gold},${b.rose})`,
+                    color: 'white',
+                    boxShadow: `0 4px 12px ${b.gold}40`,
+                  }}
+                >
+                  Next <ChevronRight className="w-4 h-4" />
+                </motion.button>
+              ) : (
+                <button
+                  onClick={next}
+                  disabled={isLast}
+                  aria-label="Next slide"
+                  className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 hover:scale-110 active:scale-95"
+                  style={{
+                    background: isLast ? 'transparent' : `linear-gradient(135deg,${b.gold},${b.rose})`,
+                    color: 'white',
+                    boxShadow: isLast ? 'none' : `0 4px 12px ${b.gold}40`
+                  }}
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
             </div>
           </div>
         </motion.div>
