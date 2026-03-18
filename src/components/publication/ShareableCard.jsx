@@ -364,8 +364,7 @@ export default function ShareableCard({ nominee, rank, onClose }) {
       badgeGrad.addColorStop(0.6, b.gold);
       badgeGrad.addColorStop(1, b.goldLight);
       ctx.fillStyle = badgeGrad;
-      ctx.beginPath();
-      ctx.roundRect(rx, ry, badgeW, 22, 11);
+      roundRect(rx, ry, badgeW, 22, 11);
       ctx.fill();
       ctx.fillStyle = b.navyDark;
       ctx.textAlign = 'left';
