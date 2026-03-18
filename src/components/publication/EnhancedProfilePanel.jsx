@@ -118,40 +118,37 @@ function Slide1({ nominee, onClose, onShare }) {
   return (
     <div className="relative flex flex-col h-full" style={{ background: b.navy }}>
       {/* Hero — full bleed background + centered wreath framing circular headshot */}
-      <div className="relative overflow-hidden" style={{ height: '55%' }}>
-        {/* Full-bleed background photo (blurred/darkened) */}
+      <div className="relative overflow-hidden" style={{ height: '58%' }}>
+        {/* Full-bleed background: photo blurred, tinted navy, not crushed to black */}
         {photo
-          ? <img src={photo} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover object-top scale-110 blur-sm brightness-50" />
+          ? <img src={photo} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover object-top scale-125 blur-lg" style={{ filter: 'blur(14px) brightness(0.35) saturate(1.4)' }} />
           : <div className="absolute inset-0" style={{ background: `linear-gradient(160deg,${b.navyMid},${b.sky})` }} />
         }
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-black/60" />
-        <DotPattern opacity={0.05} id="s1dots" />
+        {/* Navy color wash so BG reads as on-brand, not generic dark */}
+        <div className="absolute inset-0" style={{ background: `linear-gradient(160deg, ${b.navy}cc 0%, ${b.navyMid}99 50%, ${b.sky}44 100%)` }} />
+        <DotPattern opacity={0.07} id="s1dots" />
 
-        {/* Centered wreath + circular photo */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-52 h-52">
-            {/* Circular headshot */}
-            <div className="absolute inset-[14%] rounded-full overflow-hidden ring-2 ring-white/20 shadow-2xl">
+        {/* Wreath + circular photo — pushed lower so it meets the text zone */}
+        <div className="absolute inset-0 flex items-end justify-center pb-4">
+          <div className="relative w-56 h-56">
+            {/* Circular headshot sits inside the wreath opening */}
+            <div className="absolute inset-[13%] rounded-full overflow-hidden shadow-2xl" style={{ boxShadow: `0 0 0 3px ${b.gold}60, 0 8px 32px rgba(0,0,0,0.6)` }}>
               {photo
                 ? <img src={photo} alt={nominee.name} className="w-full h-full object-cover object-top" />
                 : <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-white" style={{ background: b.navyMid }}>{nominee.name?.charAt(0)}</div>
               }
             </div>
-            {/* Wreath frames the photo */}
-            <img
-              src={WREATH_URL}
-              alt=""
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none drop-shadow-2xl"
-            />
+            {/* Wreath frames the photo — rendered on top */}
+            <img src={WREATH_URL} alt="" className="absolute inset-0 w-full h-full object-contain pointer-events-none" style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }} />
           </div>
         </div>
 
-        {/* Bottom navy fade into text area */}
-        <div className="absolute bottom-0 left-0 right-0 h-16" style={{ background: `linear-gradient(to top, ${b.navy}, transparent)` }} />
+        {/* Smooth navy fade up into text section */}
+        <div className="absolute bottom-0 left-0 right-0 h-24" style={{ background: `linear-gradient(to top, ${b.navy} 0%, transparent 100%)` }} />
       </div>
 
       {/* Bottom text block */}
-      <div className="relative z-10 px-7 pb-4 pt-3">
+      <div className="relative z-10 px-7 pb-4 pt-2">
 
         {/* Publication badge */}
         <div className="flex items-center gap-2 mb-3">
