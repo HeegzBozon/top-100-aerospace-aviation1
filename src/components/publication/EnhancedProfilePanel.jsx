@@ -460,6 +460,33 @@ function Slide4({ nominee, onClose, onShare, onNextNominee, hasNextNominee }) {
           ))}
 
           <ShareCTA nominee={nominee} onClose={onClose} onShare={onShare} />
+
+          {/* Next honoree teaser */}
+          {hasNextNominee && (
+            <motion.button
+              onClick={onNextNominee}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="w-full flex items-center justify-between px-5 py-3.5 rounded-2xl group"
+              style={{
+                background: `linear-gradient(135deg,${b.navy}08,${b.gold}10)`,
+                border: `1px dashed ${b.gold}40`,
+              }}
+            >
+              <span className="text-xs font-bold tracking-wide" style={{ color: `${b.navy}80` }}>
+                Continue exploring
+              </span>
+              <motion.span
+                className="flex items-center gap-1 text-xs font-black"
+                style={{ color: b.goldDeep }}
+                animate={{ x: [0, 5, 0] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                Next Honoree <ChevronRight className="w-3.5 h-3.5" />
+              </motion.span>
+            </motion.button>
+          )}
         </div>
 
         <p className="text-center text-[9px] font-semibold tracking-[0.15em] uppercase mt-5"
