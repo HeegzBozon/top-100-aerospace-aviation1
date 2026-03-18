@@ -183,6 +183,8 @@ export default function ChessBoard({ fen, playerColor = 'white', onMove, disable
     return pieces;
   }, [pieceSet]);
 
+  const theme = BOARD_THEMES[boardTheme] || BOARD_THEMES.classic;
+
   return (
     <div className="w-full max-w-2xl mx-auto">
       <Chessboard
@@ -192,6 +194,8 @@ export default function ChessBoard({ fen, playerColor = 'white', onMove, disable
         boardOrientation={playerColor}
         customSquareStyles={customSquareStyles}
         customPieces={customPieces}
+        customLightSquareStyle={theme.lightSquare}
+        customDarkSquareStyle={theme.darkSquare}
         arePiecesDraggable={false}
       />
     </div>
