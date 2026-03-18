@@ -2,7 +2,44 @@ import { useState, useMemo, useCallback } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 
-const PIECE_PACKAGER_URL = 'https://deverac.github.io/piece-packager/out';
+// Lichess CDN — reliable piece images for all standard sets
+const LICHESS_PIECE_URL = 'https://lichess1.org/assets/piece';
+
+// Maps piece set names to their Lichess CDN folder names
+const PIECE_SET_MAP = {
+  cburnett: 'cburnett',
+  merida: 'merida',
+  alpha: 'alpha',
+  pirouetti: 'pirouetti',
+  chessnut: 'chessnut',
+  chess7: 'chess7',
+  reillycraig: 'reillycraig',
+  fantasy: 'fantasy',
+  spatial: 'spatial',
+  california: 'california',
+  pixel: 'pixel',
+  maestro: 'maestro',
+  fresca: 'fresca',
+  cardinal: 'cardinal',
+  gioco: 'gioco',
+  tatiana: 'tatiana',
+  staunty: 'staunty',
+  dubrovny: 'dubrovny',
+  icpieces: 'icpieces',
+  mpchess: 'mpchess',
+};
+
+const PIECE_FILE_NAMES = {
+  wK: 'wK', wQ: 'wQ', wR: 'wR', wB: 'wB', wN: 'wN', wP: 'wP',
+  bK: 'bK', bQ: 'bQ', bR: 'bR', bB: 'bB', bN: 'bN', bP: 'bP',
+};
+
+function getLichessPieceUrl(color, type, pieceSet) {
+  const folder = PIECE_SET_MAP[pieceSet] || 'cburnett';
+  const colorChar = color === 'w' ? 'w' : 'b';
+  const typeChar = type.toUpperCase();
+  return `${LICHESS_PIECE_URL}/${folder}/${colorChar}${typeChar}.svg`;
+}
 
 export default function ChessBoard({ fen, playerColor = 'white', onMove, disabled = false, pieceSet = 'cburnett' }) {
   const [selected, setSelected] = useState(null);
