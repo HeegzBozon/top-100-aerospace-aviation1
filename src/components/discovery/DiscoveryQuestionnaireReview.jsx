@@ -71,7 +71,7 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onBack}
-            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-slate-600/50 transition-colors font-medium"
+            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#2a4f7c]/50 text-[#c9a87c] hover:bg-[#2a4f7c]/70 transition-colors font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
             Go Back
@@ -81,14 +81,14 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleDownload}
-            className="flex items-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600 transition-all font-bold shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-[#c9a87c] to-[#d4a090] text-[#1e3a5a] hover:from-[#e8d4b8] hover:to-[#d4a090] transition-all font-bold shadow-lg hover:shadow-xl"
           >
             <Download className="w-4 h-4" />
             Download Responses
           </motion.button>
         </div>
 
-        <p className="text-center text-xs text-slate-500 mt-8">
+        <p className="text-center text-xs text-[#c9a87c]/40 mt-8">
           Questions? Reply to your onboarding email and we'll walk you through anything you need.
         </p>
       </div>
