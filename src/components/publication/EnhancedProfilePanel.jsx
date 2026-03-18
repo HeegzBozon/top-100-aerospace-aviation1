@@ -265,7 +265,7 @@ function Slide2({ nominee, onClose, onShare }) {
 // ═══════════════════════════════════════════════════════════════════════════
 // SLIDE 3 — Desire: Why follow, proudest achievement
 // ═══════════════════════════════════════════════════════════════════════════
-function Slide3({ nominee }) {
+function Slide3({ nominee, onClose, onShare }) {
   return (
     <div className="flex flex-col h-full overflow-y-auto" style={{ background: b.cream }}>
       {/* Header */}
