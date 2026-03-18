@@ -201,7 +201,7 @@ function Slide1({ nominee, onClose, onShare }) {
 // ═══════════════════════════════════════════════════════════════════════════
 // SLIDE 2 — Interest: Story / bio, context tags
 // ═══════════════════════════════════════════════════════════════════════════
-function Slide2({ nominee }) {
+function Slide2({ nominee, onClose, onShare }) {
   const bio = nominee.bio || nominee.description;
 
   return (
