@@ -132,18 +132,25 @@ function Slide1({ nominee, onClose, onShare }) {
 
       {/* Bottom text block */}
       <div className="relative z-10 px-7 pb-4 pt-0">
-        {/* Wreath + circular photo sitting at the boundary */}
+        {/* Wreath + circular photo: photo centered inside wreath opening */}
         <div className="flex justify-center -mt-16 mb-3">
-          <div className="relative w-32 h-32">
-            <img src={WREATH_URL} alt="" className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10" />
-            <div className="absolute inset-[14%] rounded-full overflow-hidden border-2 border-white/30 shadow-xl z-0"
-              style={{ background: b.goldLight }}>
+          <div className="relative w-36 h-36">
+            {/* Circular photo behind the wreath */}
+            <div className="absolute inset-[13%] rounded-full overflow-hidden border-2 border-white/30 shadow-xl"
+              style={{ background: b.goldLight, zIndex: 0 }}>
               {photo
                 ? <img src={photo} alt={nominee.name} className="w-full h-full object-cover object-top" />
                 : <div className="w-full h-full flex items-center justify-center text-3xl font-bold"
                     style={{ color: b.navy, background: b.goldLight }}>{nominee.name?.charAt(0)}</div>
               }
             </div>
+            {/* Wreath on top */}
+            <img
+              src={WREATH_URL}
+              alt=""
+              className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+              style={{ zIndex: 1 }}
+            />
           </div>
         </div>
 
