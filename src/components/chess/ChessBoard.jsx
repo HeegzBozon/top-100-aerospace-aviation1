@@ -62,6 +62,10 @@ const BOARD_THEMES = {
     lightSquare: { backgroundColor: '#dee3e6' },
     darkSquare:  { backgroundColor: '#8ca2ad' },
   },
+  top100: {
+    lightSquare: { backgroundColor: '#e8d4b8' },
+    darkSquare:  { backgroundColor: '#1e3a5a' },
+  },
 };
 
 export default function ChessBoard({ fen, playerColor = 'white', onMove, disabled = false, pieceSet = 'cburnett', boardTheme = 'classic' }) {
