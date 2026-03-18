@@ -118,7 +118,7 @@ function Slide1({ nominee, onClose, onShare }) {
   return (
     <div className="relative flex flex-col h-full" style={{ background: b.navy }}>
       {/* Hero — full bleed background + centered wreath framing circular headshot */}
-      <div className="relative overflow-hidden" style={{ height: '58%' }}>
+      <div className="relative overflow-hidden" style={{ height: '62%' }}>
         {/* Full-bleed background: photo blurred, tinted navy, not crushed to black */}
         {photo
           ? <img src={photo} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover object-top scale-125 blur-lg" style={{ filter: 'blur(14px) brightness(0.35) saturate(1.4)' }} />
