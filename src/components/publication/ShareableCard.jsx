@@ -214,6 +214,24 @@ export default function ShareableCard({ nominee, rank, onClose }) {
   const cardRef   = useRef(null);
   const [isExporting, setIsExporting] = useState(false);
   const [copied, setCopied]           = useState(false);
+  const [photoDataUrl, setPhotoDataUrl] = useState(null);
+
+  // Pre-convert photo to data URL so html2canvas can capture it
+  React.useEffect(() => {
+    const src = nominee.avatar_url || nominee.photo_url;
+    if (!src) return;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      try { setPhotoDataUrl(canvas.toDataURL('image/jpeg')); } catch { setPhotoDataUrl(src); }
+    };
+    img.onerror = () => setPhotoDataUrl(src);
+    img.src = src;
+  }, [nominee.avatar_url, nominee.photo_url]);
 
   const shareUrl  = `${window.location.origin}/Top100Women2025`;
   const shareText = `Congratulations to ${nominee.name} — named to the TOP 100 Women in Aerospace & Aviation 2025! #TOP100Aerospace #WomenInAviation`;
