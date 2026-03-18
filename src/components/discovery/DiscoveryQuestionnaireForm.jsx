@@ -113,7 +113,7 @@ export default function DiscoveryQuestionnaireForm({ sectionId, formData, setFor
                 value={formData[q.id] || ''}
                 onChange={(e) => handleChange(q.id, e.target.value)}
                 placeholder="Type your answer..."
-                className="bg-slate-900/50 border-slate-600/50 text-white placeholder:text-slate-500 focus:border-blue-500/50 focus:ring-blue-500/20"
+                className="bg-[#0f1f35]/50 border-[#2a4f7c]/50 text-[#faf8f5] placeholder:text-[#c9a87c]/50 focus:border-[#c9a87c]/50 focus:ring-[#c9a87c]/20"
               />
             )}
 
