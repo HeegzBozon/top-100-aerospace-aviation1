@@ -96,8 +96,8 @@ export default function DiscoveryQuestionnaireForm({ sectionId, formData, setFor
           transition={{ delay: idx * 0.08 }}
           className="relative group"
         >
-          <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="relative bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-lg p-5 hover:border-slate-600/50 transition-colors">
+          <div className="absolute -inset-3 bg-gradient-to-r from-[#c9a87c]/10 to-[#d4a090]/10 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative bg-[#1e3a5a]/50 backdrop-blur border border-[#2a4f7c]/50 rounded-lg p-5 hover:border-[#2a4f7c]/70 transition-colors">
             <label className="block mb-3">
               <span className="flex items-start gap-2 mb-2">
                 <span className="text-white font-medium text-sm leading-snug">
