@@ -19,7 +19,7 @@ const b = {
 const WREATH_URL = 'https://media.base44.com/images/public/68996845be6727838fdb822e/fa0298ddb_Gemini_Generated_Image_s3pahzs3pahzs3pa-removebg-preview.png';
 
 // ─── Exportable card (1200×630 social OG ratio) ───────────────────────────────
-const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl }, ref) => {
+const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl, wreathDataUrl }, ref) => {
   const photo = photoDataUrl || nominee.avatar_url || nominee.photo_url;
   const bio   = nominee.description || nominee.bio;
 
