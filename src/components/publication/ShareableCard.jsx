@@ -74,7 +74,7 @@ const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl, wreathDataU
             inset: '12%',
             boxShadow: `0 0 0 2.5px ${b.gold}70, 0 8px 28px rgba(0,0,0,0.75)`
           }}>
-            {photo ? (
+            {photo && photo.startsWith('data:') ? (
               <img src={photo} alt={nominee.name}
                 className="w-full h-full object-cover object-top" />
             ) : (
