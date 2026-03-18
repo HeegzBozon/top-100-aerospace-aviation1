@@ -41,7 +41,30 @@ function getLichessPieceUrl(color, type, pieceSet) {
   return `${LICHESS_PIECE_URL}/${folder}/${colorChar}${typeChar}.svg`;
 }
 
-export default function ChessBoard({ fen, playerColor = 'white', onMove, disabled = false, pieceSet = 'cburnett' }) {
+const BOARD_THEMES = {
+  classic: {
+    lightSquare: { backgroundColor: '#f0d9b5' },
+    darkSquare:  { backgroundColor: '#b58863' },
+  },
+  deepSpace: {
+    lightSquare: { backgroundColor: '#1e3a5a' },
+    darkSquare:  { backgroundColor: '#0a1628' },
+  },
+  lichess: {
+    lightSquare: { backgroundColor: '#f0d9b5' },
+    darkSquare:  { backgroundColor: '#b58863' },
+  },
+  green: {
+    lightSquare: { backgroundColor: '#ffffdd' },
+    darkSquare:  { backgroundColor: '#86a666' },
+  },
+  blue: {
+    lightSquare: { backgroundColor: '#dee3e6' },
+    darkSquare:  { backgroundColor: '#8ca2ad' },
+  },
+};
+
+export default function ChessBoard({ fen, playerColor = 'white', onMove, disabled = false, pieceSet = 'cburnett', boardTheme = 'classic' }) {
   const [selected, setSelected] = useState(null);
 
   const chess = useMemo(() => {
