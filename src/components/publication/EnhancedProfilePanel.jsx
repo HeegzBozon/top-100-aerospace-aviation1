@@ -18,7 +18,7 @@ const b = {
   sand:      '#f0e6d6',
 };
 
-const WREATH_URL = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/90f4fd33a_Gemini_Generated_Image_s3pahzs3pahzs3pa.png';
+const WREATH_URL = 'https://media.base44.com/images/public/68996845be6727838fdb822e/fa0298ddb_Gemini_Generated_Image_s3pahzs3pahzs3pa-removebg-preview.png';
 
 // ─── Rank helper ─────────────────────────────────────────────────────────────
 function getRankInfo(rank) {
