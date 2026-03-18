@@ -316,7 +316,7 @@ export default function ShareableCard({ nominee, rank, onClose }) {
             <div className="rounded-2xl overflow-hidden"
               style={{ boxShadow: `0 0 0 1px ${b.gold}30, 0 20px 56px rgba(0,0,0,0.65)` }}>
               <div style={{ overflowX: 'auto' }}>
-                <HonoreeCard ref={cardRef} nominee={nominee} rank={rank} photoDataUrl={photoDataUrl} />
+                <HonoreeCard ref={cardRef} nominee={nominee} rank={rank} photoDataUrl={photoDataUrl} wreathDataUrl={wreathDataUrl} />
               </div>
             </div>
           </div>
