@@ -215,22 +215,27 @@ export default function ShareableCard({ nominee, rank, onClose }) {
   const [isExporting, setIsExporting] = useState(false);
   const [copied, setCopied]           = useState(false);
   const [photoDataUrl, setPhotoDataUrl] = useState(null);
+  const [wreathDataUrl, setWreathDataUrl] = useState(null);
 
-  // Pre-convert photo to data URL so html2canvas can capture it
+  // Pre-convert photo + wreath to data URLs so html2canvas can capture them
   useEffect(() => {
-    const src = nominee.avatar_url || nominee.photo_url;
-    if (!src) return;
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      canvas.getContext('2d').drawImage(img, 0, 0);
-      try { setPhotoDataUrl(canvas.toDataURL('image/jpeg')); } catch { setPhotoDataUrl(src); }
+    const toDataUrl = (src, onDone) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        try { onDone(canvas.toDataURL('image/png')); } catch { onDone(src); }
+      };
+      img.onerror = () => onDone(src);
+      img.src = src;
     };
-    img.onerror = () => setPhotoDataUrl(src);
-    img.src = src;
+
+    const photoSrc = nominee.avatar_url || nominee.photo_url;
+    if (photoSrc) toDataUrl(photoSrc, setPhotoDataUrl);
+    toDataUrl(WREATH_URL, setWreathDataUrl);
   }, [nominee.avatar_url, nominee.photo_url]);
 
   const shareUrl  = `${window.location.origin}/Top100Women2025`;
