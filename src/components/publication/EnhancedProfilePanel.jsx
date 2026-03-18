@@ -129,8 +129,8 @@ function Slide1({ nominee, onClose, onShare }) {
         <DotPattern opacity={0.07} id="s1dots" />
 
         {/* Wreath + circular photo — pushed lower so it meets the text zone */}
-        <div className="absolute inset-0 flex items-end justify-center pb-4">
-          <div className="relative w-72 h-72">
+        <div className="absolute inset-0 flex items-end justify-center pb-0">
+          <div className="relative w-80 h-80">
             {/* Circular headshot sits inside the wreath opening */}
             <div className="absolute inset-[13%] rounded-full overflow-hidden shadow-2xl" style={{ boxShadow: `0 0 0 3px ${b.gold}60, 0 8px 32px rgba(0,0,0,0.6)` }}>
               {photo
