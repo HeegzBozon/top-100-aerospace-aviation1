@@ -16,11 +16,11 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden p-4 sm:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f1f35] via-[#1e3a5a] to-[#0a1628] relative overflow-hidden p-4 sm:p-8">
       {/* Ambient */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
-        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl" style={{ animation: 'pulse 3s infinite' }} />
+        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[#c9a87c] rounded-full mix-blend-multiply filter blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-[#4a90b8] rounded-full mix-blend-multiply filter blur-3xl" style={{ animation: 'pulse 3s infinite' }} />
       </div>
 
       <div className="relative z-10 max-w-3xl mx-auto">
