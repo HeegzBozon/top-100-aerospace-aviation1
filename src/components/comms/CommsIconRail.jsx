@@ -30,6 +30,7 @@ const FALLBACK_RAIL = [
 const FALLBACK_MORE = [
   { icon: "Gamepad2", label: "Play", page: "Arcade" },
   { icon: "Rocket", label: "Party", page: "LaunchParty" },
+  { icon: "Lightbulb", label: "Discovery", page: "DiscoveryQuestionnaire" },
   { icon: "User", label: "Profile", page: "Profile" },
   { icon: "Settings", label: "Settings", page: "Profile" },
 ];
