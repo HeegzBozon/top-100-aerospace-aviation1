@@ -549,33 +549,40 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare }
           </div>
 
           {/* Bottom nav */}
-          <div className="flex items-center justify-between px-3 pb-2 pt-1"
+          <div className="flex flex-col px-3 pb-3 pt-1"
             style={{ background: b.cream, borderTop: `1px solid ${b.navy}08` }}>
-            <button
-              onClick={prev}
-              disabled={isFirst}
-              aria-label="Previous slide"
-              className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 hover:scale-110 active:scale-95"
-              style={{ background: isFirst ? 'transparent' : `${b.navy}0d`, color: b.navy }}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
+            {/* Flower reaction */}
+            <div className="flex justify-center pb-1">
+              <FlowerButton nominee={nominee} currentUserEmail={currentUserEmail} />
+            </div>
+            {/* Slide controls */}
+            <div className="flex items-center justify-between">
+              <button
+                onClick={prev}
+                disabled={isFirst}
+                aria-label="Previous slide"
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 hover:scale-110 active:scale-95"
+                style={{ background: isFirst ? 'transparent' : `${b.navy}0d`, color: b.navy }}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
 
-            <SlideProgress total={SLIDES.length} current={slide} onGo={goTo} />
+              <SlideProgress total={SLIDES.length} current={slide} onGo={goTo} />
 
-            <button
-              onClick={next}
-              disabled={isLast}
-              aria-label="Next slide"
-              className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 hover:scale-110 active:scale-95"
-              style={{
-                background: isLast ? 'transparent' : `linear-gradient(135deg,${b.gold},${b.rose})`,
-                color: 'white',
-                boxShadow: isLast ? 'none' : `0 4px 12px ${b.gold}40`
-              }}
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
+              <button
+                onClick={next}
+                disabled={isLast}
+                aria-label="Next slide"
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 hover:scale-110 active:scale-95"
+                style={{
+                  background: isLast ? 'transparent' : `linear-gradient(135deg,${b.gold},${b.rose})`,
+                  color: 'white',
+                  boxShadow: isLast ? 'none' : `0 4px 12px ${b.gold}40`
+                }}
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </motion.div>
       </motion.div>
