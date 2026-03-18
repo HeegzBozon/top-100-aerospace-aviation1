@@ -249,9 +249,23 @@ export default function ShareableCard({ nominee, rank, onClose }) {
     if (!cardRef.current) return;
     setIsExporting(true);
     try {
+      // Wait for all images inside the card to fully load
+      const images = Array.from(cardRef.current.querySelectorAll('img'));
+      await Promise.all(
+        images.map(img =>
+          img.complete
+            ? Promise.resolve()
+            : new Promise(resolve => { img.onload = resolve; img.onerror = resolve; })
+        )
+      );
+
       const canvas = await html2canvas(cardRef.current, {
-        scale: 2, useCORS: true, allowTaint: true,
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
         backgroundColor: b.navyDark,
+        imageTimeout: 15000,
+        logging: false,
       });
       const link = document.createElement('a');
       link.download = `TOP100-${nominee.name?.replace(/\s+/g, '-')}-2025.png`;
