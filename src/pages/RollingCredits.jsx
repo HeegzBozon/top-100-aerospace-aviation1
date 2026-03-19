@@ -81,13 +81,7 @@ function CreditCard({ nominee, index }) {
   const photo = nominee.avatar_url || nominee.photo_url;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ margin: '-10% 0px -10% 0px', once: false }}
-      transition={{ duration: 1.2, ease: 'easeOut' }}
-      className="flex flex-col items-center py-14 md:py-20 px-6 relative"
-    >
+    <div className="flex flex-col items-center py-14 md:py-20 px-6 relative">
       {/* Top rule */}
       <div
         className="w-px mb-10 md:mb-14"
