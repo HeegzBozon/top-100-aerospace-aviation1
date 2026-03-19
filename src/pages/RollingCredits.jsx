@@ -455,61 +455,30 @@ function Controls({ isPlaying, onToggle, onRestart, progress }) {
 
 // ─── Data loader ───────────────────────────────────────────────────────────────
 async function loadNominees() {
-  let allSeasons = [];
-  try {
-    allSeasons = await base44.entities.Season.list('-created_date', 50);
-  } catch { allSeasons = []; }
+  // Get the active/completed season
+  const allSeasons = await base44.entities.Season.list('-created_date', 50).catch(() => []);
+  const season = allSeasons.find(s => s.name?.includes('Season 3'))
+    || allSeasons.find(s => ['completed', 'voting_open', 'active'].includes(s.status))
+    || allSeasons[0];
 
-  const season3 = allSeasons.find(s => s.name?.includes('Season 3'));
-  const activeSeason = allSeasons.find(s =>
-    ['completed', 'voting_open', 'active'].includes(s.status)
-  );
-  const selectedSeasonId = season3?.id || activeSeason?.id || allSeasons[0]?.id;
+  if (!season) return [];
 
-  if (!selectedSeasonId) return [];
+  // getStandingsData already returns sorted, ranked nominees with all fields needed
+  const resp = await getStandingsData({ season: season.id, sort: 'aura', dir: 'desc', page: 1, limit: 1000 });
+  const rows = resp?.data?.standings?.rows || [];
 
-  // Fetch standings + full nominee data in parallel
-  const [standingsResp, allNominees] = await Promise.all([
-    getStandingsData({ season: selectedSeasonId, sort: 'aura', dir: 'desc', page: 1, limit: 200 })
-      .catch(() => null),
-    base44.entities.Nominee.filter({ season_id: selectedSeasonId, status: 'active' }, '-aura_score', 200)
-      .catch(() => []),
-  ]);
-
-  const standingsRows = standingsResp?.data?.standings?.rows || [];
-
-  // Build a rank map from standings
-  const rankMap = new Map();
-  standingsRows.forEach((n, idx) => {
-    rankMap.set(n.nomineeId, { finalRank: idx + 1, aura_score: n.aura, name: n.nomineeName, avatar_url: n.avatarUrl, title: n.title, company: n.company, country: n.country });
-  });
-
-  // Merge full nominee data with rank
-  const fullNomineeMap = new Map(allNominees.map(n => [n.id, n]));
-
-  // Build merged list — prefer full nominee data, fill gaps from standings
-  const merged = [];
-  rankMap.forEach((rankData, id) => {
-    const full = fullNomineeMap.get(id) || {};
-    merged.push({
-      ...rankData,
-      ...full,
-      id,
-      finalRank: rankData.finalRank,
-      aura_score: rankData.aura_score,
-      avatar_url: full.avatar_url || full.photo_url || rankData.avatar_url,
-    });
-  });
-
-  // If no standings data, fall back to full nominees sorted by aura_score
-  if (merged.length === 0) {
-    allNominees
-      .sort((a, b) => (b.aura_score || 0) - (a.aura_score || 0))
-      .slice(0, 100)
-      .forEach((n, i) => merged.push({ ...n, finalRank: i + 1 }));
-  }
-
-  return merged.slice(0, 100);
+  return rows.slice(0, 100).map((n, i) => ({
+    id: n.nomineeId,
+    finalRank: i + 1,
+    name: n.nomineeName,
+    avatar_url: n.avatarUrl,
+    title: n.title,
+    company: n.company,
+    country: n.country,
+    aura_score: n.aura,
+    six_word_story: n.six_word_story,
+    professional_role: n.professional_role,
+  }));
 }
 
 // ─── Auto-scroll hook ──────────────────────────────────────────────────────────
