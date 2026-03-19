@@ -169,6 +169,16 @@ export default function LandingHeroSection({ user, onFooterLinkClick }) {
                 >
                   Create Account
                 </Button>
+                <Link to="/DiscoveryQuestionnaire" className="block mt-3">
+                  <Button
+                    variant="outline"
+                    className="w-full h-12 font-semibold rounded-xl border-2 transition hover:opacity-80 gap-2"
+                    style={{ borderColor: brandColors.navyDeep, color: brandColors.navyDeep }}
+                  >
+                    <Handshake className="w-4 h-4" />
+                    Work With Us
+                  </Button>
+                </Link>
                 <p className="text-xs mt-6 leading-relaxed" style={{ color: brandColors.navyMid }}>
                   By continuing, you agree to our Terms. Learn how we process your data in our Privacy Policy.
                 </p>
