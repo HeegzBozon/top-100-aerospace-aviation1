@@ -232,42 +232,143 @@ export default function Top100Women2025() {
   useEffect(() => {
     const loadCombinedResults = async () => {
       try {
-        const allSeasons = await base44.entities.Season.list('-created_date', 50).catch(() => []);
-        const season = allSeasons.find(s => s.name?.includes('Season 3'))
-          || allSeasons.find(s => ['completed', 'voting_open', 'active'].includes(s.status))
-          || allSeasons[0];
+        let allSeasons = [];
+        try {
+          allSeasons = await base44.entities.Season.list('-created_date', 50);
+        } catch (err) {
+          console.warn('Failed to load seasons:', err);
+          allSeasons = [];
+        }
+        
+        const season3 = allSeasons.find(s => s.name?.includes('Season 3'));
+        const activeSeason = allSeasons.find(s => s.status === 'completed' || s.status === 'voting_open' || s.status === 'active');
+        const selectedSeasonId = season3?.id || activeSeason?.id || allSeasons[0]?.id;
 
-        if (!season) { setLoading(false); return; }
+        if (!selectedSeasonId) {
+          console.warn('No season found, cannot load nominees');
+          setLoading(false);
+          return;
+        }
 
-        // getStandingsData already returns ranked nominees sorted by aura with all fields
-        const resp = await getStandingsData({ season: season.id, sort: 'aura', dir: 'desc', page: 1, limit: 1000 });
-        const rows = resp?.data?.standings?.rows || [];
+        let standingsData = { standings: { rows: [] } };
+        try {
+          const response = await getStandingsData({
+            season: selectedSeasonId,
+            sort: 'aura',
+            dir: 'desc',
+            page: 1,
+            limit: 1000
+          });
+          standingsData = response?.data || standingsData;
+        } catch (err) {
+          console.warn('Failed to load standings data:', err);
+        }
 
-        // Enrich with full nominee data for bio, six_word_story, etc.
-        const fullNominees = await base44.entities.Nominee.list('-created_date', 1000).catch(() => []);
-        const nomineeMap = new Map(fullNominees.map(n => [n.id, n]));
+        const standingsRows = standingsData?.standings?.rows || [];
+        let rankedVotes = [];
+        try {
+          rankedVotes = await base44.entities.RankedVote.list('-created_date', 10000);
+          rankedVotes = rankedVotes.filter(v => v.season_id === selectedSeasonId);
+        } catch (err) {
+          console.warn('Failed to load ranked votes:', err);
+        }
+        
+        const scoreMap = {};
+        standingsRows.forEach(n => {
+          scoreMap[n.nomineeId] = {
+            nomineeId: n.nomineeId,
+            bordaScore: 0,
+            totalVotes: 0,
+            firstChoiceVotes: 0
+          };
+        });
+        
+        rankedVotes.forEach(vote => {
+          if (!vote.ballot || !Array.isArray(vote.ballot)) return;
+          vote.ballot.forEach((nomineeId, position) => {
+            if (scoreMap[nomineeId]) {
+              const points = 100 - position;
+              scoreMap[nomineeId].bordaScore += points;
+              scoreMap[nomineeId].totalVotes += 1;
+              if (position === 0) {
+                scoreMap[nomineeId].firstChoiceVotes += 1;
+              }
+            }
+          });
+        });
+        
+        const rcvResults = Object.values(scoreMap)
+          .filter(n => n.totalVotes > 0)
+          .sort((a, b) => b.bordaScore - a.bordaScore)
+          .map((n, idx) => ({ ...n, rcvRank: idx + 1 }));
 
-        const enriched = rows.slice(0, 100).map((n, i) => {
-          const full = nomineeMap.get(n.nomineeId) || {};
+        const rcvMap = new Map();
+        rcvResults.forEach((nominee) => {
+          rcvMap.set(nominee.nomineeId, {
+            bordaScore: nominee.bordaScore || 0,
+            rcvRank: nominee.rcvRank,
+            totalRcvVotes: nominee.totalVotes || 0,
+            firstChoiceVotes: nominee.firstChoiceVotes || 0
+          });
+        });
+
+        const auraWeight = 50;
+        const rcvWeight = 50;
+        const maxAura = Math.max(...standingsRows.map(n => n.aura || 0), 1);
+        const maxBorda = Math.max(...rcvResults.map(n => n.bordaScore || 0), 1);
+
+        const combined = standingsRows.map((nominee, index) => {
+          const rcvInfo = rcvMap.get(nominee.nomineeId) || { bordaScore: 0, rcvRank: null, totalRcvVotes: 0 };
+          
+          const normalizedAura = ((nominee.aura || 0) / maxAura) * 100;
+          const normalizedRcv = (rcvInfo.bordaScore / maxBorda) * 100;
+          const combinedScore = (normalizedAura * (auraWeight / 100)) + (normalizedRcv * (rcvWeight / 100));
+
           return {
-            ...full,
-            id: n.nomineeId,
-            finalRank: i + 1,
-            name: n.nomineeName,
-            avatar_url: full.avatar_url || full.photo_url || n.avatarUrl,
-            title: full.title || n.title,
-            company: full.company || n.company,
-            country: full.country || n.country,
-            industry: full.industry,
-            aura_score: n.aura,
-            elo_rating: n.elo_rating,
-            borda_score: n.borda_score,
+            id: nominee.nomineeId,
+            name: nominee.nomineeName,
+            avatar_url: nominee.avatarUrl,
+            title: nominee.title,
+            company: nominee.company,
+            country: nominee.country,
+            aura_score: nominee.aura,
+            elo_rating: nominee.elo_rating,
+            borda_score: rcvInfo.bordaScore,
+            combinedScore,
+            auraRank: index + 1,
+            rcvRank: rcvInfo.rcvRank,
           };
         });
 
-        setNominees(enriched);
+        combined.sort((a, b) => b.combinedScore - a.combinedScore);
+        combined.forEach((n, i) => { n.finalRank = i + 1; });
+        
+        const top100Ids = new Set(combined.slice(0, 100).map(n => n.id));
+        const allNominees = await base44.entities.Nominee.list('-created_date', 1000);
+        const fullNominees = allNominees.filter(n => top100Ids.has(n.id));
+
+        const nomineeMap = new Map(fullNominees.map(n => [n.id, n]));
+        const enrichedResults = combined.slice(0, 100).map(result => {
+          const fullNominee = nomineeMap.get(result.id) || {};
+          return {
+            ...result,
+            ...fullNominee,
+            aura_score: result.aura_score,
+            elo_rating: result.elo_rating,
+            borda_score: result.borda_score,
+            combinedScore: result.combinedScore,
+            auraRank: result.auraRank,
+            rcvRank: result.rcvRank,
+            finalRank: result.finalRank,
+            country: fullNominee.country || result.country,
+            industry: fullNominee.industry || result.industry,
+            avatar_url: fullNominee.avatar_url || fullNominee.photo_url || result.avatar_url
+          };
+        });
+
+        setNominees(enrichedResults);
       } catch (err) {
-        console.error('Failed to load nominees:', err);
+        console.error('Failed to load combined results:', err);
       } finally {
         setLoading(false);
       }

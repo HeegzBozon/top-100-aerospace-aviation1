@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { getStandingsData } from '@/functions/getStandingsData';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, ChevronLeft } from 'lucide-react';
+import { Play, Pause, RotateCcw, ChevronLeft, Volume2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
@@ -81,7 +81,13 @@ function CreditCard({ nominee, index }) {
   const photo = nominee.avatar_url || nominee.photo_url;
 
   return (
-    <div className="flex flex-col items-center py-14 md:py-20 px-6 relative">
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ margin: '-10% 0px -10% 0px', once: false }}
+      transition={{ duration: 1.2, ease: 'easeOut' }}
+      className="flex flex-col items-center py-14 md:py-20 px-6 relative"
+    >
       {/* Top rule */}
       <div
         className="w-px mb-10 md:mb-14"
@@ -182,7 +188,7 @@ function CreditCard({ nominee, index }) {
           background: `linear-gradient(to bottom, ${b.gold}40, transparent)`,
         }}
       />
-    </div>
+    </motion.div>
   );
 }
 
@@ -294,7 +300,8 @@ function ClosingCard() {
 
       <motion.div
         initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         transition={{ duration: 2, ease: 'easeOut' }}
         className="text-center relative z-10 max-w-xl"
       >
@@ -453,31 +460,96 @@ function Controls({ isPlaying, onToggle, onRestart, progress }) {
   );
 }
 
-// ─── Data loader ───────────────────────────────────────────────────────────────
+// ─── Data loader (same pattern as Top100Women2025) ─────────────────────────────
 async function loadNominees() {
-  // Get the active/completed season
-  const allSeasons = await base44.entities.Season.list('-created_date', 50).catch(() => []);
-  const season = allSeasons.find(s => s.name?.includes('Season 3'))
-    || allSeasons.find(s => ['completed', 'voting_open', 'active'].includes(s.status))
-    || allSeasons[0];
+  let allSeasons = [];
+  try {
+    allSeasons = await base44.entities.Season.list('-created_date', 50);
+  } catch { allSeasons = []; }
 
-  if (!season) return [];
+  const season3 = allSeasons.find(s => s.name?.includes('Season 3'));
+  const activeSeason = allSeasons.find(s =>
+    ['completed', 'voting_open', 'active'].includes(s.status)
+  );
+  const selectedSeasonId = season3?.id || activeSeason?.id || allSeasons[0]?.id;
 
-  // getStandingsData already returns sorted, ranked nominees with all fields needed
-  const resp = await getStandingsData({ season: season.id, sort: 'aura', dir: 'desc', page: 1, limit: 1000 });
-  const rows = resp?.data?.standings?.rows || [];
+  if (!selectedSeasonId) return [];
 
-  return rows.slice(0, 100).map((n, i) => ({
-    id: n.nomineeId,
-    finalRank: i + 1,
-    name: n.nomineeName,
-    avatar_url: n.avatarUrl,
-    title: n.title,
-    company: n.company,
-    country: n.country,
-    aura_score: n.aura,
-    six_word_story: n.six_word_story,
-    professional_role: n.professional_role,
+  let standingsData = { standings: { rows: [] } };
+  try {
+    const response = await getStandingsData({
+      season: selectedSeasonId,
+      sort: 'aura',
+      dir: 'desc',
+      page: 1,
+      limit: 1000,
+    });
+    standingsData = response?.data || standingsData;
+  } catch { /* silent */ }
+
+  const standingsRows = standingsData?.standings?.rows || [];
+
+  const scoreMap = {};
+  standingsRows.forEach(n => {
+    scoreMap[n.nomineeId] = { nomineeId: n.nomineeId, bordaScore: 0, totalVotes: 0 };
+  });
+
+  try {
+    const votes = (await base44.entities.RankedVote.list('-created_date', 10000))
+      .filter(v => v.season_id === selectedSeasonId);
+    votes.forEach(vote => {
+      if (!Array.isArray(vote.ballot)) return;
+      vote.ballot.forEach((nid, pos) => {
+        if (scoreMap[nid]) {
+          scoreMap[nid].bordaScore += 100 - pos;
+          scoreMap[nid].totalVotes += 1;
+        }
+      });
+    });
+  } catch { /* silent */ }
+
+  const rcvResults = Object.values(scoreMap)
+    .filter(n => n.totalVotes > 0)
+    .sort((a, b) => b.bordaScore - a.bordaScore)
+    .map((n, i) => ({ ...n, rcvRank: i + 1 }));
+
+  const rcvMap = new Map(rcvResults.map(n => [n.nomineeId, n]));
+
+  const maxAura = Math.max(...standingsRows.map(n => n.aura || 0), 1);
+  const maxBorda = Math.max(...rcvResults.map(n => n.bordaScore || 0), 1);
+
+  const combined = standingsRows.map((n, idx) => {
+    const rcv = rcvMap.get(n.nomineeId) || { bordaScore: 0 };
+    const score =
+      ((n.aura || 0) / maxAura) * 50 + (rcv.bordaScore / maxBorda) * 50;
+    return {
+      id: n.nomineeId,
+      name: n.nomineeName,
+      avatar_url: n.avatarUrl,
+      title: n.title,
+      company: n.company,
+      country: n.country,
+      aura_score: n.aura,
+      combinedScore: score,
+      auraRank: idx + 1,
+    };
+  });
+
+  combined.sort((a, b) => b.combinedScore - a.combinedScore);
+  combined.forEach((n, i) => { n.finalRank = i + 1; });
+  const top100 = combined.slice(0, 100);
+
+  const fullMap = new Map(
+    (await base44.entities.Nominee.list('-created_date', 1000))
+      .filter(n => top100.some(r => r.id === n.id))
+      .map(n => [n.id, n])
+  );
+
+  return top100.map(r => ({
+    ...r,
+    ...(fullMap.get(r.id) || {}),
+    finalRank: r.finalRank,
+    avatar_url: fullMap.get(r.id)?.avatar_url || fullMap.get(r.id)?.photo_url || r.avatar_url,
   }));
 }
 
@@ -526,6 +598,17 @@ export default function RollingCredits() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsPlaying(false);
   }, []);
+
+  // Start playing once user scrolls past the opening card
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.scrollY > 80 && !isPlaying) {
+        // don't auto-start — let the user click play
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isPlaying]);
 
   useEffect(() => {
     loadNominees()
