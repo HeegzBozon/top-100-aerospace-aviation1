@@ -121,10 +121,10 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
         <div className="flex justify-center mt-6">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-xs text-[#c9a87c]/50 hover:text-[#c9a87c] transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-lg border border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10 hover:border-[#c9a87c]/70 transition-all font-semibold text-sm"
           >
-            <Home className="w-3.5 h-3.5" />
-            Back to Home
+            <Home className="w-4 h-4" />
+            Continue Exploring
           </Link>
         </div>
       </div>
