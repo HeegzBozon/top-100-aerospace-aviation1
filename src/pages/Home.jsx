@@ -258,11 +258,11 @@ export default function HomePage() {
     dashboard: <AerospaceDashboardSection />,
     programs: isMemberOnly ? null : <TrendingPrograms />,
     talent: <TrendingTalent nominees={trendingProfiles} />,
-    favorites: <CommunityFavorites />,
-    missions: <UpcomingMissions />,
-    topPrograms: <TopPrograms />,
+    favorites: isMemberOnly ? null : <CommunityFavorites />,
+    missions: isMemberOnly ? null : <UpcomingMissions />,
+    topPrograms: isMemberOnly ? null : <TopPrograms />,
     domain: <DomainExplorer />,
-    originals: <TopOriginals />,
+    originals: isMemberOnly ? null : <TopOriginals />,
     trending: trendingProfiles.length > 0 ? <TrendingSection trendingProfiles={trendingProfiles} pageViews={pageViews} /> : null,
   };
 
