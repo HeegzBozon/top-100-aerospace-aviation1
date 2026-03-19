@@ -82,7 +82,8 @@
     "@emoji-mart/react": "^1.1.1",
     "@emoji-mart/data": "^1.1.2",
     "chess.js": "^1.0.0",
-    "react-chessboard": "^4.2.0"
+    "react-chessboard": "^4.2.0",
+    "@daily-co/daily-js": "^0.70.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
