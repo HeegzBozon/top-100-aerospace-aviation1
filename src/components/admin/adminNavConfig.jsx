@@ -71,6 +71,7 @@ export const ADMIN_SECTIONS = [
             { id: 'publications', label: 'Publications', icon: BookOpen, component: 'Publications' },
             { id: 'testimonials', label: 'Testimonials', icon: Sparkles, component: 'TestimonialModeration' },
             { id: 'community-notes', label: 'Community Notes', icon: MessageSquare, component: 'CommunityNotesModeration' },
+            { id: 'discovery-responses', label: 'Discovery Responses', icon: ClipboardList, component: 'DiscoveryResponsesManager' },
         ],
     },
     {

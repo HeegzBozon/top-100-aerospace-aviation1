@@ -48,6 +48,7 @@ import CommunityNotesModeration from '@/components/admin/CommunityNotesModeratio
 import TestimonialModeration from '@/components/admin/TestimonialModeration';
 import UserManagement from '@/components/admin/UserManagement';
 import RailItemManager from '@/components/admin/RailItemManager';
+import DiscoveryResponsesManager from '@/components/admin/DiscoveryResponsesManager';
 import { Award, BookOpen } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
