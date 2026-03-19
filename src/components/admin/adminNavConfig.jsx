@@ -32,6 +32,7 @@ import {
     Tag,
     Bell,
     Columns,
+    ClipboardList,
 } from 'lucide-react';
 
 /**
