@@ -554,23 +554,66 @@ async function loadNominees() {
 }
 
 // ─── Auto-scroll hook ──────────────────────────────────────────────────────────
-function useAutoScroll(isPlaying, speed = 0.8) {
+// Robust implementation:
+// • Cancels RAF on both pause and unmount — no zombie loops
+// • Uses a ref for isPlaying so the RAF closure always reads current value
+// • Detects user-initiated wheel/touch scroll and pauses automatically
+function useAutoScroll(isPlaying, setIsPlaying, speed = 0.8) {
   const rafRef = useRef(null);
+  const isPlayingRef = useRef(isPlaying);
+  const userScrollingRef = useRef(false);
+  const userScrollTimerRef = useRef(null);
 
+  // Keep ref in sync with state
+  useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
+
+  // Detect user-initiated scroll (wheel / touch) → pause
   useEffect(() => {
+    const onUserScroll = () => {
+      if (!isPlayingRef.current) return;
+      userScrollingRef.current = true;
+      clearTimeout(userScrollTimerRef.current);
+      // Pause immediately on user interaction
+      setIsPlaying(false);
+    };
+
+    window.addEventListener('wheel', onUserScroll, { passive: true });
+    window.addEventListener('touchmove', onUserScroll, { passive: true });
+    return () => {
+      window.removeEventListener('wheel', onUserScroll);
+      window.removeEventListener('touchmove', onUserScroll);
+    };
+  }, [setIsPlaying]);
+
+  // RAF scroll loop — starts/stops with isPlaying, always cleans up on unmount
+  useEffect(() => {
+    const cancel = () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+
     if (!isPlaying) {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      cancel();
       return;
     }
 
     const scroll = () => {
+      if (!isPlayingRef.current) { cancel(); return; }
+      const max = document.body.scrollHeight - window.innerHeight;
+      if (window.scrollY >= max - 4) {
+        setIsPlaying(false);
+        cancel();
+        return;
+      }
       window.scrollBy(0, speed);
       rafRef.current = requestAnimationFrame(scroll);
     };
-    rafRef.current = requestAnimationFrame(scroll);
 
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [isPlaying, speed]);
+    rafRef.current = requestAnimationFrame(scroll);
+    return cancel; // unmount safety
+  }, [isPlaying, speed, setIsPlaying]);
 }
 
 // ─── Main page ─────────────────────────────────────────────────────────────────
@@ -580,15 +623,13 @@ export default function RollingCredits() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  useAutoScroll(isPlaying);
+  useAutoScroll(isPlaying, setIsPlaying);
 
-  // Track scroll progress
+  // Track scroll progress — single listener, no stale closures
   useEffect(() => {
     const onScroll = () => {
       const max = document.body.scrollHeight - window.innerHeight;
       if (max > 0) setProgress(window.scrollY / max);
-      // Pause auto-scroll at the end
-      if (window.scrollY >= max - 10) setIsPlaying(false);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -598,17 +639,6 @@ export default function RollingCredits() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsPlaying(false);
   }, []);
-
-  // Start playing once user scrolls past the opening card
-  useEffect(() => {
-    const onScroll = () => {
-      if (window.scrollY > 80 && !isPlaying) {
-        // don't auto-start — let the user click play
-      }
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [isPlaying]);
 
   useEffect(() => {
     loadNominees()
