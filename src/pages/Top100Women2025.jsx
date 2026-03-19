@@ -244,7 +244,6 @@ export default function Top100Women2025() {
         const rows = resp?.data?.standings?.rows || [];
 
         // Enrich with full nominee data for bio, six_word_story, etc.
-        const top100Ids = rows.slice(0, 100).map(r => r.nomineeId);
         const fullNominees = await base44.entities.Nominee.list('-created_date', 1000).catch(() => []);
         const nomineeMap = new Map(fullNominees.map(n => [n.id, n]));
 
