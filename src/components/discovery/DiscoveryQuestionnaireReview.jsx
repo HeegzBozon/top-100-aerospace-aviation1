@@ -1,8 +1,33 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, Download, ArrowLeft } from 'lucide-react';
+import { CheckCircle, Download, ArrowLeft, Loader2 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
+  const savedRef = useRef(false);
+
+  // Save to DB once on mount — idempotent via ref guard
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+
+    const save = async () => {
+      try {
+        const user = await base44.auth.me().catch(() => null);
+        await base44.entities.DiscoveryResponse.create({
+          responses: formData,
+          submitter_email: user?.email ?? 'anonymous',
+          submitter_name: user?.full_name ?? '',
+          status: 'new',
+        });
+      } catch (err) {
+        console.error('Failed to save discovery response:', err);
+      }
+    };
+
+    save();
+  }, [formData]);
+
   const handleDownload = () => {
     const timestamp = new Date().toLocaleDateString().replace(/\//g, '-');
     const content = JSON.stringify(formData, null, 2);
@@ -20,7 +45,7 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
       {/* Ambient */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
         <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[#c9a87c] rounded-full mix-blend-multiply filter blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-[#4a90b8] rounded-full mix-blend-multiply filter blur-3xl" style={{ animation: 'pulse 3s infinite' }} />
+        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-[#4a90b8] rounded-full mix-blend-multiply filter blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-3xl mx-auto">
