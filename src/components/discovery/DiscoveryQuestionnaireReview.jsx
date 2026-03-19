@@ -117,6 +117,16 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
         <p className="text-center text-xs text-[#c9a87c]/40 mt-8">
           Questions? Reply to your onboarding email and we'll walk you through anything you need.
         </p>
+
+        <div className="flex justify-center mt-6">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-xs text-[#c9a87c]/50 hover:text-[#c9a87c] transition-colors"
+          >
+            <Home className="w-3.5 h-3.5" />
+            Back to Home
+          </Link>
+        </div>
       </div>
     </div>
   );
