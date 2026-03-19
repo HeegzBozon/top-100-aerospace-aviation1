@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, Download, ArrowLeft, Loader2 } from 'lucide-react';
+import { CheckCircle, Download, ArrowLeft, Home } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 
 export default function DiscoveryQuestionnaireReview({ formData, onBack }) {

@@ -152,7 +152,7 @@ export default function DiscoveryQuestionnaire() {
             onClick={handleNext}
             className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#c9a87c] to-[#d4a090] text-[#1e3a5a] hover:from-[#e8d4b8] hover:to-[#d4a090] transition-all text-sm font-bold shadow-lg hover:shadow-xl"
           >
-            {currentStep === SECTIONS.length - 1 ? 'Review' : 'Next'}
+            {currentStep === SECTIONS.length - 1 ? 'Submit & Review' : 'Next'}
             {currentStep < SECTIONS.length - 1 && <ChevronRight className="w-4 h-4" />}
           </motion.button>
         </div>
