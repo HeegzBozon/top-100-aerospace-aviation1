@@ -182,7 +182,7 @@ function CreditCard({ nominee, index }) {
           background: `linear-gradient(to bottom, ${b.gold}40, transparent)`,
         }}
       />
-    </motion.div>
+    </div>
   );
 }
 
