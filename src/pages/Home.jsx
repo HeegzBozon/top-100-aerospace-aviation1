@@ -249,11 +249,14 @@ export default function HomePage() {
     return <LandingHeroSection user={null} />;
   }
 
+  const userRole = user?.role || 'user';
+  const isMemberOnly = userRole === 'user';
+
   const SECTION_COMPONENTS = {
-    spotlight: <IndustrySpotlight />,
-    featured: <FeaturedToday />,
+    spotlight: isMemberOnly ? null : <IndustrySpotlight />,
+    featured: isMemberOnly ? null : <FeaturedToday />,
     dashboard: <AerospaceDashboardSection />,
-    programs: <TrendingPrograms />,
+    programs: isMemberOnly ? null : <TrendingPrograms />,
     talent: <TrendingTalent nominees={trendingProfiles} />,
     favorites: <CommunityFavorites />,
     missions: <UpcomingMissions />,
