@@ -107,7 +107,7 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleDownload}
-            className="flex items-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-[#c9a87c] to-[#d4a090] text-[#1e3a5a] hover:from-[#e8d4b8] hover:to-[#d4a090] transition-all font-bold shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 px-8 py-3 rounded-lg border border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10 hover:border-[#c9a87c]/70 transition-all font-semibold text-sm"
           >
             <Download className="w-4 h-4" />
             Download Responses
@@ -121,7 +121,7 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
         <div className="flex justify-center mt-6">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-lg border border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10 hover:border-[#c9a87c]/70 transition-all font-semibold text-sm"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-[#c9a87c] to-[#d4a090] text-[#1e3a5a] hover:from-[#e8d4b8] hover:to-[#d4a090] transition-all font-bold shadow-lg hover:shadow-xl text-sm"
           >
             <Home className="w-4 h-4" />
             Continue Exploring
