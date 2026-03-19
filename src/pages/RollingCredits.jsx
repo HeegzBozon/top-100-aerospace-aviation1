@@ -453,7 +453,7 @@ function Controls({ isPlaying, onToggle, onRestart, progress }) {
   );
 }
 
-// ─── Data loader (same pattern as Top100Women2025) ─────────────────────────────
+// ─── Data loader ───────────────────────────────────────────────────────────────
 async function loadNominees() {
   let allSeasons = [];
   try {
@@ -468,82 +468,48 @@ async function loadNominees() {
 
   if (!selectedSeasonId) return [];
 
-  let standingsData = { standings: { rows: [] } };
-  try {
-    const response = await getStandingsData({
-      season: selectedSeasonId,
-      sort: 'aura',
-      dir: 'desc',
-      page: 1,
-      limit: 1000,
-    });
-    standingsData = response?.data || standingsData;
-  } catch { /* silent */ }
+  // Fetch standings + full nominee data in parallel
+  const [standingsResp, allNominees] = await Promise.all([
+    getStandingsData({ season: selectedSeasonId, sort: 'aura', dir: 'desc', page: 1, limit: 200 })
+      .catch(() => null),
+    base44.entities.Nominee.filter({ season_id: selectedSeasonId, status: 'active' }, '-aura_score', 200)
+      .catch(() => []),
+  ]);
 
-  const standingsRows = standingsData?.standings?.rows || [];
+  const standingsRows = standingsResp?.data?.standings?.rows || [];
 
-  const scoreMap = {};
-  standingsRows.forEach(n => {
-    scoreMap[n.nomineeId] = { nomineeId: n.nomineeId, bordaScore: 0, totalVotes: 0 };
+  // Build a rank map from standings
+  const rankMap = new Map();
+  standingsRows.forEach((n, idx) => {
+    rankMap.set(n.nomineeId, { finalRank: idx + 1, aura_score: n.aura, name: n.nomineeName, avatar_url: n.avatarUrl, title: n.title, company: n.company, country: n.country });
   });
 
-  try {
-    const votes = (await base44.entities.RankedVote.list('-created_date', 10000))
-      .filter(v => v.season_id === selectedSeasonId);
-    votes.forEach(vote => {
-      if (!Array.isArray(vote.ballot)) return;
-      vote.ballot.forEach((nid, pos) => {
-        if (scoreMap[nid]) {
-          scoreMap[nid].bordaScore += 100 - pos;
-          scoreMap[nid].totalVotes += 1;
-        }
-      });
+  // Merge full nominee data with rank
+  const fullNomineeMap = new Map(allNominees.map(n => [n.id, n]));
+
+  // Build merged list — prefer full nominee data, fill gaps from standings
+  const merged = [];
+  rankMap.forEach((rankData, id) => {
+    const full = fullNomineeMap.get(id) || {};
+    merged.push({
+      ...rankData,
+      ...full,
+      id,
+      finalRank: rankData.finalRank,
+      aura_score: rankData.aura_score,
+      avatar_url: full.avatar_url || full.photo_url || rankData.avatar_url,
     });
-  } catch { /* silent */ }
-
-  const rcvResults = Object.values(scoreMap)
-    .filter(n => n.totalVotes > 0)
-    .sort((a, b) => b.bordaScore - a.bordaScore)
-    .map((n, i) => ({ ...n, rcvRank: i + 1 }));
-
-  const rcvMap = new Map(rcvResults.map(n => [n.nomineeId, n]));
-
-  const maxAura = Math.max(...standingsRows.map(n => n.aura || 0), 1);
-  const maxBorda = Math.max(...rcvResults.map(n => n.bordaScore || 0), 1);
-
-  const combined = standingsRows.map((n, idx) => {
-    const rcv = rcvMap.get(n.nomineeId) || { bordaScore: 0 };
-    const score =
-      ((n.aura || 0) / maxAura) * 50 + (rcv.bordaScore / maxBorda) * 50;
-    return {
-      id: n.nomineeId,
-      name: n.nomineeName,
-      avatar_url: n.avatarUrl,
-      title: n.title,
-      company: n.company,
-      country: n.country,
-      aura_score: n.aura,
-      combinedScore: score,
-      auraRank: idx + 1,
-    };
   });
 
-  combined.sort((a, b) => b.combinedScore - a.combinedScore);
-  combined.forEach((n, i) => { n.finalRank = i + 1; });
-  const top100 = combined.slice(0, 100);
+  // If no standings data, fall back to full nominees sorted by aura_score
+  if (merged.length === 0) {
+    allNominees
+      .sort((a, b) => (b.aura_score || 0) - (a.aura_score || 0))
+      .slice(0, 100)
+      .forEach((n, i) => merged.push({ ...n, finalRank: i + 1 }));
+  }
 
-  const fullMap = new Map(
-    (await base44.entities.Nominee.list('-created_date', 1000))
-      .filter(n => top100.some(r => r.id === n.id))
-      .map(n => [n.id, n])
-  );
-
-  return top100.map(r => ({
-    ...r,
-    ...(fullMap.get(r.id) || {}),
-    finalRank: r.finalRank,
-    avatar_url: fullMap.get(r.id)?.avatar_url || fullMap.get(r.id)?.photo_url || r.avatar_url,
-  }));
+  return merged.slice(0, 100);
 }
 
 // ─── Auto-scroll hook ──────────────────────────────────────────────────────────
