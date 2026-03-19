@@ -113,8 +113,8 @@ export default function LandingHeroSection({ user, onFooterLinkClick }) {
         </div>
 
         {/* Right Column - Auth Card */}
-        <div className="flex-1 px-6 sm:px-8 lg:px-20 py-16 lg:py-24 flex items-center justify-center lg:justify-end">
-          <div className="w-full max-w-sm rounded-3xl backdrop-blur-sm border shadow-2xl p-8" style={{
+        <div className="flex-1 px-6 sm:px-8 lg:px-20 py-8 lg:py-16 flex items-center justify-center lg:justify-end">
+          <div className="w-full max-w-sm rounded-3xl backdrop-blur-sm border shadow-2xl p-8 overflow-y-auto" style={{
             backgroundColor: 'rgba(255, 255, 255, 0.98)',
             borderColor: brandColors.goldPrestige + '20'
           }}>
