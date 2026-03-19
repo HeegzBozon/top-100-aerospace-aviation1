@@ -281,6 +281,8 @@ export default function Admin() {
         return <PlatformSettings />;
       case 'rail-items':
         return <RailItemManager />;
+      case 'discovery-responses':
+        return <DiscoveryResponsesManager />;
       default:
         return (
           <div className="py-16 text-center text-[var(--muted)]">
