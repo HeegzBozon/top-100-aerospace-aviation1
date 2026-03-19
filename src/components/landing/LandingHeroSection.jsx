@@ -3,7 +3,7 @@ import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { ArrowRight, Sparkles, MessageCircle, Bot, Loader2 } from 'lucide-react';
+import { ArrowRight, Sparkles, MessageCircle, Bot, Loader2, Handshake } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brandColors } from '@/components/core/brandTheme';
 
