@@ -294,8 +294,7 @@ function ClosingCard() {
 
       <motion.div
         initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 2, ease: 'easeOut' }}
         className="text-center relative z-10 max-w-xl"
       >
