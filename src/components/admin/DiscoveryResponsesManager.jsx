@@ -5,17 +5,18 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import {
   Download, Search, Eye, StickyNote, Loader2, RefreshCw,
-  FileText, Users, CheckCircle2, Clock, ArrowUpRight, Mail, Calendar, MessageSquare
+  FileText, Users, CheckCircle2, Clock, Mail, Calendar, MessageSquare, ChevronRight
 } from 'lucide-react';
 
+// ─── Constants ────────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
-  new:         { label: 'New',         color: 'bg-sky-500/20 text-sky-300 border-sky-500/30',      dot: 'bg-sky-400' },
-  reviewed:    { label: 'Reviewed',    color: 'bg-amber-500/20 text-amber-300 border-amber-500/30', dot: 'bg-amber-400' },
-  in_progress: { label: 'In Progress', color: 'bg-violet-500/20 text-violet-300 border-violet-500/30', dot: 'bg-violet-400' },
-  completed:   { label: 'Completed',   color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30', dot: 'bg-emerald-400' },
+  new:         { label: 'New',         classes: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',      dot: 'bg-blue-500' },
+  reviewed:    { label: 'Reviewed',    classes: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200',   dot: 'bg-amber-500' },
+  in_progress: { label: 'In Progress', classes: 'bg-purple-50 text-purple-700 ring-1 ring-purple-200', dot: 'bg-purple-500' },
+  completed:   { label: 'Completed',   classes: 'bg-green-50 text-green-700 ring-1 ring-green-200',   dot: 'bg-green-500' },
 };
 
 const QUESTION_LABELS = {
@@ -33,28 +34,42 @@ const QUESTION_LABELS = {
 };
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
-function StatCard({ label, value, icon: Icon, color }) {
+function StatCard({ label, value, icon: Icon, iconClass }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-white/[0.04] border border-white/[0.08] p-5 flex items-center gap-4">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
-        <Icon className="w-5 h-5" />
+    <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-4 shadow-sm">
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconClass}`}>
+        <Icon className="w-5 h-5" aria-hidden="true" />
       </div>
       <div>
-        <p className="text-2xl font-bold text-white leading-none">{value}</p>
-        <p className="text-xs text-white/40 mt-1">{label}</p>
+        <p className="text-2xl font-bold text-slate-900 leading-none tabular-nums">{value}</p>
+        <p className="text-xs text-slate-500 mt-0.5 font-medium">{label}</p>
       </div>
     </div>
   );
 }
 
-// ─── Status Pill ─────────────────────────────────────────────────────────────
-function StatusPill({ status }) {
+// ─── Status Badge ─────────────────────────────────────────────────────────────
+function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.new;
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${cfg.color}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.classes}`}>
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`} aria-hidden="true" />
       {cfg.label}
     </span>
+  );
+}
+
+// ─── Avatar ───────────────────────────────────────────────────────────────────
+function Avatar({ name, email }) {
+  const initials = (name || email || '?')
+    .split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  return (
+    <div
+      className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-xs font-bold text-slate-600 select-none"
+      aria-hidden="true"
+    >
+      {initials}
+    </div>
   );
 }
 
@@ -62,63 +77,63 @@ function StatusPill({ status }) {
 function ResponseRow({ response, onReview }) {
   const filledCount = Object.values(response.responses ?? {}).filter(v => v && String(v).trim()).length;
   const preview = Object.entries(response.responses ?? {}).find(([, v]) => v && String(v).trim());
-  const initials = (response.submitter_name || response.submitter_email || '?')
-    .split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  const displayName = response.submitter_name || response.submitter_email || 'Anonymous';
 
   return (
-    <div className="group relative flex items-center gap-4 px-5 py-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-200">
-      {/* Avatar */}
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#c9a87c]/30 to-[#4a90b8]/30 border border-white/10 flex items-center justify-center shrink-0 text-sm font-bold text-white/80">
-        {initials}
-      </div>
+    <div className="group bg-white rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-150 p-4 flex items-center gap-3">
+      <Avatar name={response.submitter_name} email={response.submitter_email} />
 
-      {/* Main info */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap mb-1">
-          <span className="font-semibold text-white text-sm">
-            {response.submitter_name || response.submitter_email || 'Anonymous'}
-          </span>
+        {/* Name + status */}
+        <div className="flex items-center gap-2 flex-wrap mb-0.5">
+          <span className="font-semibold text-slate-900 text-sm">{displayName}</span>
+          <StatusBadge status={response.status} />
+        </div>
+
+        {/* Email + date + count */}
+        <div className="flex items-center gap-3 text-xs text-slate-400 flex-wrap">
           {response.submitter_name && response.submitter_email && (
-            <span className="text-xs text-white/30 flex items-center gap-1">
-              <Mail className="w-3 h-3" />
+            <span className="flex items-center gap-1">
+              <Mail className="w-3 h-3" aria-hidden="true" />
               {response.submitter_email}
             </span>
           )}
-          <StatusPill status={response.status} />
-        </div>
-        <div className="flex items-center gap-3 text-xs text-white/30 flex-wrap">
           <span className="flex items-center gap-1">
-            <Calendar className="w-3 h-3" />
+            <Calendar className="w-3 h-3" aria-hidden="true" />
             {new Date(response.created_date).toLocaleString()}
           </span>
           <span className="flex items-center gap-1">
-            <FileText className="w-3 h-3" />
+            <FileText className="w-3 h-3" aria-hidden="true" />
             {filledCount} answer{filledCount !== 1 ? 's' : ''}
           </span>
-          {preview && (
-            <span className="truncate max-w-xs italic text-white/20">
-              "{String(preview[1]).substring(0, 60)}…"
-            </span>
-          )}
         </div>
+
+        {/* Preview answer */}
+        {preview && (
+          <p className="text-xs text-slate-400 italic mt-1 truncate max-w-md">
+            "{String(preview[1]).substring(0, 80)}…"
+          </p>
+        )}
+
+        {/* Admin note */}
         {response.admin_notes && (
-          <p className="text-xs text-[#c9a87c]/60 mt-1.5 flex items-center gap-1 truncate">
-            <StickyNote className="w-3 h-3 shrink-0" />
+          <p className="text-xs text-amber-600 mt-1 flex items-center gap-1 truncate max-w-md">
+            <StickyNote className="w-3 h-3 shrink-0" aria-hidden="true" />
             {response.admin_notes.substring(0, 80)}
           </p>
         )}
       </div>
 
-      {/* Action */}
       <Button
         size="sm"
-        onClick={() => onReview(response)}
-        className="shrink-0 gap-1.5 bg-white/[0.06] hover:bg-white/[0.12] text-white/70 hover:text-white border border-white/10 hover:border-white/20 rounded-xl transition-all"
         variant="ghost"
+        onClick={() => onReview(response)}
+        aria-label={`Review submission from ${displayName}`}
+        className="shrink-0 gap-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-medium text-xs"
       >
-        <Eye className="w-3.5 h-3.5" />
+        <Eye className="w-3.5 h-3.5" aria-hidden="true" />
         Review
-        <ArrowUpRight className="w-3 h-3 opacity-50" />
+        <ChevronRight className="w-3 h-3 opacity-40" aria-hidden="true" />
       </Button>
     </div>
   );
@@ -149,47 +164,48 @@ function ResponseDetailModal({ response, onClose, onSave }) {
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0d1c2e] border border-white/10 text-white rounded-2xl">
-        <DialogHeader className="pb-4 border-b border-white/[0.08]">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white border border-slate-200 rounded-2xl shadow-xl">
+        {/* Header */}
+        <DialogHeader className="pb-4 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#c9a87c]/30 to-[#4a90b8]/30 border border-white/10 flex items-center justify-center text-sm font-bold text-white/80">
-              {(response.submitter_name || response.submitter_email || '?').charAt(0).toUpperCase()}
-            </div>
+            <Avatar name={response.submitter_name} email={response.submitter_email} />
             <div>
-              <DialogTitle className="text-[#e8d4b8] font-semibold">
+              <DialogTitle className="text-slate-900 font-semibold text-base">
                 {response.submitter_name || response.submitter_email || 'Anonymous'}
               </DialogTitle>
               {response.submitter_email && (
-                <p className="text-xs text-white/40 mt-0.5">{response.submitter_email}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{response.submitter_email}</p>
               )}
             </div>
           </div>
         </DialogHeader>
 
-        {/* Meta */}
-        <div className="flex items-center gap-4 py-3 text-xs text-white/40">
+        {/* Meta row */}
+        <div className="flex items-center gap-4 py-3 text-xs text-slate-400 border-b border-slate-100">
           <span className="flex items-center gap-1">
-            <Calendar className="w-3 h-3" />
+            <Calendar className="w-3 h-3" aria-hidden="true" />
             {new Date(response.created_date).toLocaleString()}
           </span>
           <span className="flex items-center gap-1">
-            <FileText className="w-3 h-3" />
-            {entries.length} answers
+            <FileText className="w-3 h-3" aria-hidden="true" />
+            {entries.length} answer{entries.length !== 1 ? 's' : ''}
           </span>
         </div>
 
-        {/* Status */}
-        <div className="flex items-center gap-3 mb-5">
-          <label className="text-sm text-white/50 whitespace-nowrap">Status</label>
+        {/* Status picker */}
+        <div className="flex items-center gap-3 py-3">
+          <Label htmlFor="modal-status" className="text-sm font-medium text-slate-700 whitespace-nowrap">
+            Status
+          </Label>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-44 bg-white/[0.06] border-white/10 text-white rounded-xl h-9">
+            <SelectTrigger id="modal-status" className="w-44 rounded-xl border-slate-200 text-slate-800 bg-white h-9 text-sm">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#0d1c2e] border-white/10 rounded-xl">
+            <SelectContent className="rounded-xl border-slate-200 bg-white shadow-lg">
               {Object.entries(STATUS_CONFIG).map(([val, cfg]) => (
-                <SelectItem key={val} value={val} className="text-white rounded-lg">
+                <SelectItem key={val} value={val} className="text-slate-800 rounded-lg text-sm">
                   <span className="flex items-center gap-2">
-                    <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} aria-hidden="true" />
                     {cfg.label}
                   </span>
                 </SelectItem>
@@ -198,44 +214,50 @@ function ResponseDetailModal({ response, onClose, onSave }) {
           </Select>
         </div>
 
-        {/* Responses */}
-        <div className="space-y-3 mb-5 max-h-72 overflow-y-auto pr-1">
+        {/* Answers */}
+        <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
           {entries.length === 0 ? (
-            <p className="text-sm text-white/30 italic text-center py-6">No answers submitted yet.</p>
+            <div className="text-center py-8 text-slate-400 text-sm">No answers submitted yet.</div>
           ) : entries.map(([key, value]) => (
-            <div key={key} className="p-4 bg-white/[0.03] rounded-xl border border-white/[0.06]">
-              <p className="text-[10px] font-bold text-[#c9a87c] uppercase tracking-widest mb-1.5">
+            <div key={key} className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
                 {QUESTION_LABELS[key] ?? key}
               </p>
-              <p className="text-sm text-white/70 leading-relaxed whitespace-pre-wrap">{value}</p>
+              <p className="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">{value}</p>
             </div>
           ))}
         </div>
 
         {/* Admin notes */}
-        <div className="mb-5">
-          <label className="text-sm text-white/50 mb-2 flex items-center gap-1.5">
-            <StickyNote className="w-3.5 h-3.5" />
+        <div className="mt-4">
+          <Label htmlFor="admin-notes" className="text-sm font-medium text-slate-700 flex items-center gap-1.5 mb-1.5">
+            <StickyNote className="w-3.5 h-3.5 text-amber-500" aria-hidden="true" />
             Admin Notes
-          </label>
+          </Label>
           <Textarea
+            id="admin-notes"
             value={notes}
             onChange={e => setNotes(e.target.value)}
-            placeholder="Internal notes..."
-            className="bg-white/[0.04] border-white/10 text-white placeholder:text-white/20 rounded-xl min-h-[80px] focus:border-[#c9a87c]/40 focus:ring-0"
+            placeholder="Internal notes about this submission…"
+            className="border-slate-200 text-slate-800 placeholder:text-slate-400 rounded-xl min-h-[80px] bg-white focus-visible:ring-slate-400 text-sm"
           />
         </div>
 
-        <div className="flex justify-end gap-2 pt-2 border-t border-white/[0.08]">
-          <Button variant="ghost" onClick={onClose} className="text-white/50 hover:text-white rounded-xl">
+        {/* Footer */}
+        <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 mt-4">
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-medium"
+          >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-gradient-to-r from-[#c9a87c] to-[#d4a090] text-[#0f1f35] hover:brightness-110 font-bold rounded-xl gap-2"
+            className="bg-slate-900 hover:bg-slate-700 text-white rounded-xl font-semibold gap-2"
           >
-            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+            {saving && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
             Save Changes
           </Button>
         </div>
@@ -244,7 +266,7 @@ function ResponseDetailModal({ response, onClose, onSave }) {
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// ─── Main ─────────────────────────────────────────────────────────────────────
 export default function DiscoveryResponsesManager() {
   const [responses, setResponses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -264,23 +286,20 @@ export default function DiscoveryResponsesManager() {
 
   useEffect(() => { load(); }, []);
 
-  const filtered = useMemo(() => {
-    return responses.filter(r => {
-      const matchStatus = statusFilter === 'all' || r.status === statusFilter;
-      const q = search.toLowerCase();
-      const matchSearch = !q ||
-        r.submitter_email?.toLowerCase().includes(q) ||
-        r.submitter_name?.toLowerCase().includes(q) ||
-        Object.values(r.responses ?? {}).some(v => String(v).toLowerCase().includes(q));
-      return matchStatus && matchSearch;
-    });
-  }, [responses, search, statusFilter]);
+  const filtered = useMemo(() => responses.filter(r => {
+    const matchStatus = statusFilter === 'all' || r.status === statusFilter;
+    const q = search.toLowerCase();
+    const matchSearch = !q
+      || r.submitter_email?.toLowerCase().includes(q)
+      || r.submitter_name?.toLowerCase().includes(q)
+      || Object.values(r.responses ?? {}).some(v => String(v).toLowerCase().includes(q));
+    return matchStatus && matchSearch;
+  }), [responses, search, statusFilter]);
 
-  // Stats
   const stats = useMemo(() => ({
-    total: responses.length,
-    newCount: responses.filter(r => r.status === 'new').length,
-    completed: responses.filter(r => r.status === 'completed').length,
+    total:      responses.length,
+    newCount:   responses.filter(r => r.status === 'new' || !r.status).length,
+    completed:  responses.filter(r => r.status === 'completed').length,
     withAnswers: responses.filter(r =>
       Object.values(r.responses ?? {}).some(v => v && String(v).trim())
     ).length,
@@ -304,71 +323,74 @@ export default function DiscoveryResponsesManager() {
     a.click();
   };
 
-  const handleSaved = (updated) => {
-    setResponses(prev => prev.map(r => r.id === updated.id ? updated : r));
-  };
+  const handleSaved = updated => setResponses(prev => prev.map(r => r.id === updated.id ? updated : r));
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-5">
+      {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-[#c9a87c]" />
+          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-slate-500" aria-hidden="true" />
             Discovery Responses
-          </h2>
-          <p className="text-sm text-white/40 mt-1">Client questionnaire submissions</p>
+          </h1>
+          <p className="text-sm text-slate-500 mt-0.5">Client questionnaire submissions</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
             onClick={load}
             disabled={loading}
-            className="rounded-xl w-9 h-9 border border-white/10 text-white/50 hover:text-white"
+            aria-label="Refresh submissions"
+            className="w-9 h-9 rounded-xl border-slate-200 text-slate-500 hover:text-slate-900"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
           </Button>
           <Button
             onClick={handleExportCSV}
             disabled={filtered.length === 0}
-            className="bg-[#c9a87c] hover:bg-[#e8d4b8] text-[#0f1f35] font-bold rounded-xl gap-2 px-4"
+            className="bg-slate-900 hover:bg-slate-700 text-white rounded-xl font-semibold gap-2"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-4 h-4" aria-hidden="true" />
             Export CSV
           </Button>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard label="Total Submissions" value={stats.total} icon={FileText} color="bg-sky-500/20 text-sky-300" />
-        <StatCard label="New / Unread" value={stats.newCount} icon={Clock} color="bg-amber-500/20 text-amber-300" />
-        <StatCard label="With Answers" value={stats.withAnswers} icon={Users} color="bg-violet-500/20 text-violet-300" />
-        <StatCard label="Completed" value={stats.completed} icon={CheckCircle2} color="bg-emerald-500/20 text-emerald-300" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3" role="region" aria-label="Submission statistics">
+        <StatCard label="Total Submissions"  value={stats.total}       icon={FileText}     iconClass="bg-slate-100 text-slate-600" />
+        <StatCard label="New / Unread"        value={stats.newCount}    icon={Clock}        iconClass="bg-blue-50 text-blue-600" />
+        <StatCard label="With Answers"        value={stats.withAnswers} icon={Users}        iconClass="bg-purple-50 text-purple-600" />
+        <StatCard label="Completed"           value={stats.completed}   icon={CheckCircle2} iconClass="bg-green-50 text-green-600" />
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 flex-wrap">
+      <div className="flex gap-3 flex-wrap items-center">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" aria-hidden="true" />
           <Input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search by name, email, answer…"
-            className="pl-9 bg-white/[0.04] border-white/10 text-white placeholder:text-white/30 rounded-xl h-9 focus:border-[#c9a87c]/40 focus:ring-0"
+            placeholder="Search by name, email, or answer…"
+            aria-label="Search submissions"
+            className="pl-9 rounded-xl border-slate-200 text-slate-900 placeholder:text-slate-400 bg-white h-9 text-sm focus-visible:ring-slate-400"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40 bg-white/[0.04] border-white/10 text-white rounded-xl h-9">
+          <SelectTrigger
+            className="w-44 rounded-xl border-slate-200 text-slate-800 bg-white h-9 text-sm"
+            aria-label="Filter by status"
+          >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#0d1c2e] border-white/10 rounded-xl">
-            <SelectItem value="all" className="text-white rounded-lg">All statuses</SelectItem>
+          <SelectContent className="rounded-xl border-slate-200 bg-white shadow-lg">
+            <SelectItem value="all" className="text-slate-800 rounded-lg text-sm">All statuses</SelectItem>
             {Object.entries(STATUS_CONFIG).map(([val, cfg]) => (
-              <SelectItem key={val} value={val} className="text-white rounded-lg">
+              <SelectItem key={val} value={val} className="text-slate-800 rounded-lg text-sm">
                 <span className="flex items-center gap-2">
-                  <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+                  <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} aria-hidden="true" />
                   {cfg.label}
                 </span>
               </SelectItem>
@@ -377,30 +399,33 @@ export default function DiscoveryResponsesManager() {
         </Select>
       </div>
 
-      {/* Count */}
-      <p className="text-xs text-white/30">
+      {/* Result count */}
+      <p className="text-xs text-slate-400" aria-live="polite">
         Showing {filtered.length} of {responses.length} submission{responses.length !== 1 ? 's' : ''}
       </p>
 
       {/* List */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
+        <div className="flex items-center justify-center py-20" role="status" aria-label="Loading submissions">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="w-6 h-6 animate-spin text-[#c9a87c]" />
-            <p className="text-sm text-white/30">Loading submissions…</p>
+            <Loader2 className="w-6 h-6 animate-spin text-slate-400" aria-hidden="true" />
+            <p className="text-sm text-slate-400">Loading submissions…</p>
           </div>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-20">
-          <FileText className="w-10 h-10 text-white/10 mx-auto mb-3" />
-          <p className="text-sm text-white/30">No submissions found.</p>
+        <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
+          <FileText className="w-10 h-10 text-slate-200 mx-auto mb-3" aria-hidden="true" />
+          <p className="text-sm font-medium text-slate-500">No submissions found</p>
+          <p className="text-xs text-slate-400 mt-1">Try adjusting your search or filter.</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <ul className="space-y-2" role="list" aria-label="Submission list">
           {filtered.map(r => (
-            <ResponseRow key={r.id} response={r} onReview={setSelected} />
+            <li key={r.id}>
+              <ResponseRow response={r} onReview={setSelected} />
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
       {selected && (
