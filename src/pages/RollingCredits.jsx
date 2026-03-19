@@ -558,17 +558,6 @@ export default function RollingCredits() {
     setIsPlaying(false);
   }, []);
 
-  // Start playing once user scrolls past the opening card
-  useEffect(() => {
-    const onScroll = () => {
-      if (window.scrollY > 80 && !isPlaying) {
-        // don't auto-start — let the user click play
-      }
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [isPlaying]);
-
   useEffect(() => {
     loadNominees()
       .then(setNominees)
