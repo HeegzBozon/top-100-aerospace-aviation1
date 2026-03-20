@@ -5,6 +5,7 @@ import ColonyLobby from '@/components/colony/ColonyLobby';
 import ColonyHUD from '@/components/colony/ColonyHUD';
 import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
+import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
 import { Loader2 } from 'lucide-react';
 
 export default function Colony() {
