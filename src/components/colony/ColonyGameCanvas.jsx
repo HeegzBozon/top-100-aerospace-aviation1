@@ -219,13 +219,16 @@ export default function ColonyGameCanvas({ sprites = [], localSessionId = null }
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const observer = new ResizeObserver(() => {
-      canvas.width  = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    });
+    const setSize = () => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      canvas.width  = parent.clientWidth;
+      canvas.height = parent.clientHeight;
+    };
+
+    setSize();
+    const observer = new ResizeObserver(setSize);
     observer.observe(canvas.parentElement);
-    canvas.width  = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
 
     return () => observer.disconnect();
   }, []);
