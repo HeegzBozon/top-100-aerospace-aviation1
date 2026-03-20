@@ -43,16 +43,22 @@ export default function GatherSpace() {
     const res = await colonyRoom({ action: 'get_or_create_room', roomName });
     const { room, token } = res.data;
 
-    const call = DailyIframe.createCallObject({
+    const call = Daily.createCallObject({
       audioSource: true,
       videoSource: true,
     });
     callRef.current = call;
 
-    call.on('participant-joined', syncParticipants);
-    call.on('participant-updated', syncParticipants);
-    call.on('participant-left', syncParticipants);
-    call.on('joined-meeting', syncParticipants);
+    const SYNC_EVENTS = [
+      'joined-meeting',
+      'participant-joined',
+      'participant-updated',
+      'participant-left',
+      'track-started',
+      'track-stopped',
+    ];
+    SYNC_EVENTS.forEach((evt) => call.on(evt, syncParticipants));
+
     call.on('error', (e) => {
       setErrorMsg(e?.errorMsg || 'An error occurred.');
       setCallState('error');
