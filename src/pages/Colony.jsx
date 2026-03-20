@@ -126,9 +126,9 @@ export default function Colony() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col">
+    <div className="h-screen bg-slate-950 flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 z-30">
+      <header className="flex-none flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 z-30">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
             <span className="text-white text-xs font-bold">C</span>
@@ -138,9 +138,9 @@ export default function Colony() {
         <span className="text-slate-400 text-xs">{participantList.length} in space</span>
       </header>
 
-      {/* World Canvas */}
+      {/* World Canvas — fills remaining height */}
       <main
-        className={`flex-1 relative overflow-hidden ${showParticipants ? 'mr-72' : ''}`}
+        className={`flex-1 relative overflow-hidden min-h-0 ${showParticipants ? 'mr-72' : ''}`}
         aria-label="Colony world"
       >
         <ColonyGameCanvas
@@ -148,19 +148,11 @@ export default function Colony() {
           localSessionId={localSessionId}
         />
 
-        {/* Floating video strip — remote participants only */}
-        {participantList.length > 1 && (
-          <div className="absolute bottom-20 left-0 right-0 flex gap-2 px-3 overflow-x-auto pointer-events-none">
-            {participantList.map((p) => (
-              <div key={p.session_id} className="pointer-events-auto w-32 shrink-0">
-                <ColonyVideoTile
-                  participant={p}
-                  isLocal={p.session_id === localSessionId}
-                />
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Video thumbnail — bottom-right corner */}
+        <VideoThumbnailOverlay
+          participants={participantList}
+          localSessionId={localSessionId}
+        />
       </main>
 
       {/* HUD */}
@@ -182,9 +174,6 @@ export default function Colony() {
           onClose={() => setShowParticipants(false)}
         />
       )}
-
-      {/* Bottom padding for HUD */}
-      <div className="h-24" aria-hidden="true" />
     </div>
   );
 }
