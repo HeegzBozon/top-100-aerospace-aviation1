@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import DailyIframe from '@daily-co/daily-js';
+import Daily from '@daily-co/daily-js';
 import { colonyRoom } from '@/functions/colonyRoom';
 import ColonyLobby from '@/components/colony/ColonyLobby';
 import ColonyHUD from '@/components/colony/ColonyHUD';

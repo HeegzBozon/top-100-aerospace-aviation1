@@ -7,20 +7,34 @@ export default function ColonyVideoTile({ participant, isLocal = false }) {
 
   const videoTrack = participant?.tracks?.video?.persistentTrack;
   const audioTrack = participant?.tracks?.audio?.persistentTrack;
-  const isMuted = !participant?.tracks?.audio?.subscribed || participant?.tracks?.audio?.state === 'off';
-  const isCamOff = !participant?.tracks?.video?.subscribed || participant?.tracks?.video?.state === 'off';
+
+  // A track is "off" if it doesn't exist or its state is off/interrupted
+  const videoState = participant?.tracks?.video?.state;
+  const audioState = participant?.tracks?.audio?.state;
+  const isCamOff = !videoTrack || videoState === 'off' || videoState === 'interrupted';
+  const isMuted = !audioTrack || audioState === 'off' || audioState === 'interrupted';
 
   useEffect(() => {
-    if (videoRef.current && videoTrack) {
-      videoRef.current.srcObject = new MediaStream([videoTrack]);
+    const el = videoRef.current;
+    if (!el) return;
+    if (videoTrack && !isCamOff) {
+      el.srcObject = new MediaStream([videoTrack]);
+      el.play().catch(() => {});
+    } else {
+      el.srcObject = null;
     }
-  }, [videoTrack]);
+  }, [videoTrack, isCamOff]);
 
   useEffect(() => {
-    if (audioRef.current && audioTrack && !isLocal) {
-      audioRef.current.srcObject = new MediaStream([audioTrack]);
+    const el = audioRef.current;
+    if (!el || isLocal) return;
+    if (audioTrack && !isMuted) {
+      el.srcObject = new MediaStream([audioTrack]);
+      el.play().catch(() => {});
+    } else {
+      el.srcObject = null;
     }
-  }, [audioTrack, isLocal]);
+  }, [audioTrack, isMuted, isLocal]);
 
   const displayName = participant?.user_name || 'Participant';
   const initials = displayName
@@ -32,12 +46,17 @@ export default function ColonyVideoTile({ participant, isLocal = false }) {
 
   return (
     <div className="relative rounded-xl overflow-hidden bg-slate-800 aspect-video flex items-center justify-center">
-      {/* Video Element */}
+      {/* Hidden audio element for remote participants */}
+      {!isLocal && (
+        <audio ref={audioRef} autoPlay playsInline aria-hidden="true" />
+      )}
+
+      {/* Video or avatar fallback */}
       {!isCamOff && videoTrack ? (
         <video
           ref={videoRef}
           autoPlay
-          muted={isLocal}
+          muted
           playsInline
           className="w-full h-full object-cover"
           aria-label={`Video of ${displayName}`}
@@ -49,9 +68,6 @@ export default function ColonyVideoTile({ participant, isLocal = false }) {
           </div>
         </div>
       )}
-
-      {/* Audio Element (hidden) */}
-      {!isLocal && <audio ref={audioRef} autoPlay playsInline aria-hidden="true" />}
 
       {/* Name + Status Bar */}
       <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-2 py-1 bg-slate-950/60">
