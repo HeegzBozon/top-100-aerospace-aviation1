@@ -217,7 +217,7 @@ export const PAGES = {
     "FounderResources": FounderResources,
     "FundraisingTracker": FundraisingTracker,
     "GamesLanding": GamesLanding,
-    "GatherSpace": GatherSpace,
+    "Colony": Colony,
     "GetStarted": GetStarted,
     "HabitWizard": HabitWizard,
     "HelpCenter": HelpCenter,
