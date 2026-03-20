@@ -6,7 +6,47 @@ import ColonyHUD from '@/components/colony/ColonyHUD';
 import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
 import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Maximize2, Minimize2 } from 'lucide-react';
+
+// ─── Video thumbnail overlay ───────────────────────────────────────────────────
+function VideoThumbnailOverlay({ participants, localSessionId }) {
+  const [expanded, setExpanded] = React.useState(false);
+  if (!participants.length) return null;
+
+  // Show local first, then remotes
+  const ordered = [
+    ...participants.filter(p => p.session_id === localSessionId),
+    ...participants.filter(p => p.session_id !== localSessionId),
+  ];
+
+  return (
+    <div className="absolute bottom-4 right-4 z-20 flex flex-col items-end gap-2">
+      <button
+        onClick={() => setExpanded(v => !v)}
+        aria-label={expanded ? 'Collapse video' : 'Expand video'}
+        className="self-end flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800/80 text-slate-300 text-xs hover:bg-slate-700/80 transition-colors"
+      >
+        {expanded ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
+        {expanded ? 'Collapse' : 'Expand'}
+      </button>
+      <div className={`flex flex-col gap-2 ${expanded ? 'w-56' : 'w-32'}`}>
+        {(expanded ? ordered : ordered.slice(0, 1)).map(p => (
+          <div key={p.session_id} className="rounded-xl overflow-hidden shadow-lg border border-slate-700">
+            <ColonyVideoTile
+              participant={p}
+              isLocal={p.session_id === localSessionId}
+            />
+          </div>
+        ))}
+        {!expanded && ordered.length > 1 && (
+          <div className="text-center text-xs text-slate-400 bg-slate-800/70 rounded-lg py-1">
+            +{ordered.length - 1} more
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function Colony() {
   const callRef = useRef(null);
