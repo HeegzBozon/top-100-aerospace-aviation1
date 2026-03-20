@@ -138,24 +138,29 @@ export default function Colony() {
         <span className="text-slate-400 text-xs">{participantList.length} in space</span>
       </header>
 
-      {/* Video Grid */}
+      {/* World Canvas */}
       <main
-        className={`flex-1 p-3 overflow-y-auto grid gap-3 ${showParticipants ? 'mr-72' : ''} ${
-          participantList.length <= 1
-            ? 'grid-cols-1'
-            : participantList.length <= 4
-            ? 'grid-cols-1 sm:grid-cols-2'
-            : 'grid-cols-2 sm:grid-cols-3'
-        }`}
-        aria-label="Video grid"
+        className={`flex-1 relative overflow-hidden ${showParticipants ? 'mr-72' : ''}`}
+        aria-label="Colony world"
       >
-        {participantList.map((p) => (
-          <ColonyVideoTile
-            key={p.session_id}
-            participant={p}
-            isLocal={p.session_id === localSessionId}
-          />
-        ))}
+        <ColonyGameCanvas
+          sprites={participantList.filter(p => p.session_id !== localSessionId)}
+          localSessionId={localSessionId}
+        />
+
+        {/* Floating video strip — remote participants only */}
+        {participantList.length > 1 && (
+          <div className="absolute bottom-20 left-0 right-0 flex gap-2 px-3 overflow-x-auto pointer-events-none">
+            {participantList.map((p) => (
+              <div key={p.session_id} className="pointer-events-auto w-32 shrink-0">
+                <ColonyVideoTile
+                  participant={p}
+                  isLocal={p.session_id === localSessionId}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </main>
 
       {/* HUD */}
