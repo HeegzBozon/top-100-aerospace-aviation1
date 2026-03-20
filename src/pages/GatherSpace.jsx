@@ -85,7 +85,10 @@ export default function GatherSpace() {
   useEffect(() => {
     return () => {
       if (callRef.current) {
-        callRef.current.destroy();
+        callRef.current.leave().catch(() => {}).finally(() => {
+          callRef.current?.destroy();
+          callRef.current = null;
+        });
       }
     };
   }, []);
