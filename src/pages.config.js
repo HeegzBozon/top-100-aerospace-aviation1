@@ -87,7 +87,7 @@ import FounderDashboard from './pages/FounderDashboard';
 import FounderResources from './pages/FounderResources';
 import FundraisingTracker from './pages/FundraisingTracker';
 import GamesLanding from './pages/GamesLanding';
-import GatherSpace from './pages/GatherSpace';
+import Colony from './pages/Colony';
 import GetStarted from './pages/GetStarted';
 import HabitWizard from './pages/HabitWizard';
 import HelpCenter from './pages/HelpCenter';
