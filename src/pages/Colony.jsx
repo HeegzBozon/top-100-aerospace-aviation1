@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState as useStateAlias } from 'react'; // alias unused — React.useState used in VideoThumbnailOverlay
 import Daily from '@daily-co/daily-js';
 import { colonyRoom } from '@/functions/colonyRoom';
 import ColonyLobby from '@/components/colony/ColonyLobby';
