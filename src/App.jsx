@@ -58,6 +58,8 @@ const AuthenticatedApp = () => {
       <Route path="/RollingCredits" element={<RollingCredits />} />
       <Route path="/Colony" element={<Colony />} />
       <Route path="/colony" element={<Colony />} />
+      <Route path="/AnalyticsDashboard" element={<AnalyticsDashboard />} />
+      <Route path="/analytics" element={<AnalyticsDashboard />} />
       {Object.entries(Pages).map(([path, Page]) => (
         <Route
           key={path}
