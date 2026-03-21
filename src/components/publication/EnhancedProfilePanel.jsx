@@ -74,7 +74,7 @@ function SlideProgress({ total, current, onGo }) {
 
 // ─── Persistent chrome ────────────────────────────────────────────────────────
 function ModalChrome({ rank, onClose }) {
-  const { icon: RIcon, label, bg, textColor } = getRankInfo(rank);
+  const { text, sub, glow } = getRankColor(rank);
   return (
     <>
       <button
@@ -85,15 +85,32 @@ function ModalChrome({ rank, onClose }) {
       >
         <X className="w-4 h-4" />
       </button>
+      {/* Editorial rank number */}
       <motion.div
-        initial={{ scale: 0, rotate: -180, opacity: 0 }}
-        animate={{ scale: 1, rotate: 0, opacity: 1 }}
-        transition={{ delay: 0.2, type: 'spring', stiffness: 240 }}
-        className="absolute top-3.5 left-3.5 z-30 px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[11px] font-black tracking-wide shadow-xl"
-        style={{ background: bg, color: textColor }}
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.15, duration: 0.4, ease: 'easeOut' }}
+        className="absolute top-2 left-4 z-30 flex flex-col leading-none"
+        style={{ filter: `drop-shadow(0 2px 12px ${glow})` }}
       >
-        <RIcon className="w-3 h-3" />
-        {label}
+        <span
+          className="font-black tabular-nums"
+          style={{
+            fontSize: 44,
+            lineHeight: 1,
+            color: text,
+            fontFamily: "'Playfair Display', Georgia, serif",
+            letterSpacing: '-0.03em',
+          }}
+        >
+          {rank}
+        </span>
+        <span
+          className="text-[9px] font-black tracking-[0.2em] uppercase mt-0.5"
+          style={{ color: sub }}
+        >
+          {rank === 1 ? 'Gold' : rank === 2 ? 'Silver' : rank === 3 ? 'Bronze' : rank <= 10 ? 'Top 10' : 'Honoree'}
+        </span>
       </motion.div>
     </>
   );
