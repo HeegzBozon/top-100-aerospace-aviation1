@@ -25,12 +25,12 @@ const b = {
 const WREATH_URL = 'https://media.base44.com/images/public/68996845be6727838fdb822e/fa0298ddb_Gemini_Generated_Image_s3pahzs3pahzs3pa-removebg-preview.png';
 
 // ─── Rank helper ─────────────────────────────────────────────────────────────
-function getRankInfo(rank) {
-  if (rank === 1) return { icon: Crown, label: '#1 · Gold',   bg: 'linear-gradient(135deg,#FFD700,#B8860B)', textColor: '#1a1200' };
-  if (rank === 2) return { icon: Medal, label: '#2 · Silver', bg: 'linear-gradient(135deg,#E8E8E8,#A0A0A0)', textColor: '#1a1a1a' };
-  if (rank === 3) return { icon: Medal, label: '#3 · Bronze', bg: 'linear-gradient(135deg,#CD7F32,#8B5A00)', textColor: '#fff8ee' };
-  if (rank <= 10) return { icon: Star,  label: `#${rank} · Top 10`, bg: `linear-gradient(135deg,${b.navyDark},${b.navyMid})`, textColor: b.goldLight };
-  return { icon: Award, label: `#${rank}`, bg: `linear-gradient(135deg,${b.navyDark},${b.sky})`, textColor: 'white' };
+function getRankColor(rank) {
+  if (rank === 1) return { text: '#FFD700', sub: '#B8860B', glow: 'rgba(255,215,0,0.35)' };
+  if (rank === 2) return { text: '#C8C8C8', sub: '#909090', glow: 'rgba(200,200,200,0.25)' };
+  if (rank === 3) return { text: '#CD7F32', sub: '#8B5A00', glow: 'rgba(205,127,50,0.30)' };
+  if (rank <= 10) return { text: b.goldLight, sub: b.gold, glow: `${b.gold}40` };
+  return { text: 'rgba(255,255,255,0.85)', sub: b.sky, glow: `${b.sky}30` };
 }
 
 // ─── Dot-pattern SVG ─────────────────────────────────────────────────────────
