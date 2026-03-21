@@ -13,8 +13,13 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const { siteUrl, startDate, endDate, dimensions = ['query'], rowLimit = 20 } = body;
 
+    // If no siteUrl, just return the list of sites
     if (!siteUrl) {
-      return Response.json({ error: 'siteUrl is required' }, { status: 400 });
+      const sitesRes = await fetch('https://www.googleapis.com/webmasters/v3/sites', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const sitesData = await sitesRes.json();
+      return Response.json({ rows: [], sites: sitesData.siteEntry || [] });
     }
 
     const encodedUrl = encodeURIComponent(siteUrl);
