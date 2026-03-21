@@ -526,7 +526,7 @@ const slideVariants = {
   exit:  (dir) => ({ x: dir > 0 ? '-55%' : '55%', opacity: 0, scale: 0.97 }),
 };
 
-export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, onNextNominee, hasNextNominee }) {
+export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, onNextNominee, hasNextNominee, onPrevNominee, hasPrevNominee }) {
   const [slide, setSlide] = useState(0);
   const [dir, setDir] = useState(1);
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
