@@ -35,7 +35,9 @@ export default function AnalyticsDashboard() {
 
         const props = gaRes.data?.properties || [];
         setProperties(props);
-        if (props.length > 0) setSelectedProperty(props[0].name);
+        // Default to the known property or the first available
+        const known = props.find(p => p.name?.includes('FKVD6VNDVS') || p.displayName);
+        setSelectedProperty(known?.name || props[0]?.name || '');
 
         // For GSC we need a real siteUrl to list sites — fetch with a dummy then extract from response
         // Actually call with no siteUrl to get sites list via the sites endpoint
