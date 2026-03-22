@@ -3,13 +3,15 @@ import { motion } from 'framer-motion';
 import { Rss, ExternalLink, AlertCircle, Loader2, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-
-const WM_BASE = 'https://worldmonitor-voip40t21-top-100-aerospace-and-aviation.vercel.app';
-const brandColors = { navyDeep: '#1e3a5a', skyBlue: '#4a90b8' };
+import { getNewsFeedDigest } from '@/functions/getNewsFeedDigest';
 
 const safeUrl = (url) => (url && /^https?:\/\//i.test(url) ? url : undefined);
-const THREAT_COLORS = { 2:'bg-yellow-100 text-yellow-700 border-yellow-200', 3:'bg-orange-100 text-orange-700 border-orange-200', 4:'bg-red-100 text-red-700 border-red-200' };
-const THREAT_LABELS = { 1:'Low', 2:'Medium', 3:'High', 4:'Critical' };
+const THREAT_COLORS = {
+  2: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+  3: 'bg-orange-100 text-orange-700 border-orange-200',
+  4: 'bg-red-100 text-red-700 border-red-200',
+};
+const THREAT_LABELS = { 1: 'Low', 2: 'Elevated', 3: 'High', 4: 'Critical' };
 
 export function NewsFeedDigest() {
   const [categories, setCategories] = useState({});
@@ -18,18 +20,16 @@ export function NewsFeedDigest() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetch(`${WM_BASE}/api/news/v1/list-feed-digest?variant=full&lang=en`, { signal: controller.signal })
-      .then(r => r.json())
-      .then(data => {
-        const cats = data.categories || {};
+    getNewsFeedDigest({})
+      .then(res => {
+        if (res.data?.error) throw new Error(res.data.error);
+        const cats = res.data?.categories || {};
         setCategories(cats);
         const firstKey = Object.keys(cats)[0];
         if (firstKey) setActiveCategory(firstKey);
       })
-      .catch(err => { if (err.name !== 'AbortError') setError('Unable to load news digest'); })
+      .catch(err => setError(err.message || 'Unable to load news digest'))
       .finally(() => setLoading(false));
-    return () => controller.abort();
   }, []);
 
   if (loading) return <PanelLoader label="news digest" />;
@@ -40,13 +40,20 @@ export function NewsFeedDigest() {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap" role="tablist">
         {categoryKeys.map(cat => (
-          <button key={cat} onClick={() => setActiveCategory(cat)} className={`text-xs px-3 py-1.5 rounded-full border capitalize transition-all duration-150 ${activeCategory === cat ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}`}>
+          <button
+            key={cat}
+            role="tab"
+            aria-selected={activeCategory === cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`text-xs px-3 py-1.5 rounded-full border capitalize transition-all duration-150 min-h-[36px] ${activeCategory === cat ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}`}
+          >
             {cat.replace(/_/g, ' ')} <span className="ml-1.5 opacity-70">{categories[cat]?.items?.length || 0}</span>
           </button>
         ))}
       </div>
+
       <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
         {activeItems.length === 0 ? (
           <p className="text-center text-sm text-slate-400 py-8">No items in this category</p>
@@ -55,28 +62,38 @@ export function NewsFeedDigest() {
             const threatLevel = item.threat?.level;
             const threatColor = THREAT_COLORS[threatLevel];
             return (
-              <motion.div key={item.id ?? `${activeCategory}-${i}`} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-                <Card className={`border-slate-200/50 transition-all ${threatLevel >= 4 ? 'border-red-200/60 bg-red-50/20' : threatLevel === 3 ? 'border-orange-200/60 bg-orange-50/20' : 'glass-card'}`}><CardContent className="p-3">
-                  <div className="flex items-start gap-2.5">
-                    {threatLevel >= 3 ? <AlertTriangle className="w-4 h-4 flex-shrink-0 text-orange-400 mt-0.5" /> : <Rss className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: brandColors.skyBlue }} />}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        {item.link ? (
-                          <a href={safeUrl(item.link)} target="_blank" rel="noopener noreferrer" className="text-sm font-medium hover:underline line-clamp-2 flex-1" style={{ color: brandColors.navyDeep }}>{item.title}</a>
-                        ) : (
-                          <p className="text-sm font-medium line-clamp-2 flex-1" style={{ color: brandColors.navyDeep }}>{item.title}</p>
-                        )}
-                        {item.link && <ExternalLink className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />}
-                      </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs text-slate-400">{item.source}</span>
-                        {item.published_at && <><span className="text-slate-300">·</span><span className="text-xs text-slate-400">{new Date(item.published_at).toLocaleDateString()}</span></>}
-                        {item.location_name && <><span className="text-slate-300">·</span><span className="text-xs text-slate-400">{item.location_name}</span></>}
-                        {threatColor && <Badge className={`text-xs ${threatColor}`}>{THREAT_LABELS[threatLevel]}</Badge>}
+              <motion.div key={item.id ?? `${activeCategory}-${i}`} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.03, 0.5) }}>
+                <Card className={`border-slate-200/50 transition-all ${threatLevel >= 4 ? 'border-red-200/60 bg-red-50/20' : threatLevel === 3 ? 'border-orange-200/60 bg-orange-50/20' : 'glass-card'}`}>
+                  <CardContent className="p-3">
+                    <div className="flex items-start gap-2.5">
+                      {threatLevel >= 3
+                        ? <AlertTriangle className="w-4 h-4 flex-shrink-0 text-orange-400 mt-0.5" />
+                        : <Rss className="w-4 h-4 flex-shrink-0 text-sky-500 mt-0.5" />
+                      }
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          {safeUrl(item.link) ? (
+                            <a href={safeUrl(item.link)} target="_blank" rel="noopener noreferrer"
+                              className="text-sm font-medium hover:underline line-clamp-2 flex-1 text-slate-800">
+                              {item.title}
+                            </a>
+                          ) : (
+                            <p className="text-sm font-medium line-clamp-2 flex-1 text-slate-800">{item.title}</p>
+                          )}
+                          {safeUrl(item.link) && <ExternalLink className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />}
+                        </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs text-slate-400">{item.source}</span>
+                          {item.published_at && (
+                            <><span className="text-slate-300">·</span>
+                            <span className="text-xs text-slate-400">{new Date(item.published_at).toLocaleDateString()}</span></>
+                          )}
+                          {threatColor && <Badge className={`text-xs ${threatColor}`}>{THREAT_LABELS[threatLevel]}</Badge>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent></Card>
+                  </CardContent>
+                </Card>
               </motion.div>
             );
           })

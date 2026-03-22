@@ -3,10 +3,7 @@ import { motion } from 'framer-motion';
 import { Newspaper, ExternalLink, AlertCircle, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-
-const WM_BASE = 'https://worldmonitor-voip40t21-top-100-aerospace-and-aviation.vercel.app';
-const brandColors = { navyDeep: '#1e3a5a', skyBlue: '#4a90b8' };
-const AEROSPACE_ENTITIES = ['Boeing', 'Airbus', 'NASA', 'SpaceX', 'FAA', 'ICAO'];
+import { getAviationNews } from '@/functions/getAviationNews';
 
 const safeUrl = (url) => (url && /^https?:\/\//i.test(url) ? url : undefined);
 
@@ -16,20 +13,18 @@ export function AviationNewsFeed() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const params = new URLSearchParams({ window_hours: '48', max_items: '20' });
-    AEROSPACE_ENTITIES.forEach(e => params.append('entities', e));
-    fetch(`${WM_BASE}/api/aviation/v1/list-aviation-news?${params}`, { signal: controller.signal })
-      .then(r => r.json())
-      .then(data => setItems(data.items || []))
-      .catch(err => { if (err.name !== 'AbortError') setError('Unable to load aviation news'); })
+    getAviationNews({})
+      .then(res => {
+        if (res.data?.error) throw new Error(res.data.error);
+        setItems(res.data?.items || []);
+      })
+      .catch(err => setError(err.message || 'Unable to load aviation news'))
       .finally(() => setLoading(false));
-    return () => controller.abort();
   }, []);
 
   if (loading) return <PanelLoader label="aviation news" />;
   if (error) return <PanelError message={error} />;
-  if (!items.length) return <PanelEmpty label="No aviation news in the last 48 hours" />;
+  if (!items.length) return <PanelEmpty label="No aviation news available" />;
 
   return (
     <div className="space-y-3">
@@ -38,27 +33,30 @@ export function AviationNewsFeed() {
           <Card className="glass-card border-slate-200/50 hover:shadow-md transition-all duration-200">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg flex-shrink-0" style={{ background: `${brandColors.skyBlue}15` }}>
-                  <Newspaper className="w-4 h-4" style={{ color: brandColors.skyBlue }} />
+                <div className="p-2 rounded-lg flex-shrink-0 bg-sky-50">
+                  <Newspaper className="w-4 h-4 text-sky-600" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
                     {safeUrl(item.url) ? (
-                      <a href={safeUrl(item.url)} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold hover:underline line-clamp-2 flex-1" style={{ color: brandColors.navyDeep }}>
+                      <a href={safeUrl(item.url)} target="_blank" rel="noopener noreferrer"
+                        className="text-sm font-semibold hover:underline line-clamp-2 flex-1 text-slate-800">
                         {item.title}
                       </a>
                     ) : (
-                      <p className="text-sm font-semibold line-clamp-2 flex-1" style={{ color: brandColors.navyDeep }}>{item.title}</p>
+                      <p className="text-sm font-semibold line-clamp-2 flex-1 text-slate-800">{item.title}</p>
                     )}
                     {safeUrl(item.url) && <ExternalLink className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />}
                   </div>
                   {item.snippet && <p className="text-xs text-slate-500 line-clamp-2 mb-2">{item.snippet}</p>}
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-xs text-slate-400">{item.source_name}</span>
-                    <span className="text-slate-300">·</span>
-                    <span className="text-xs text-slate-400">{item.published_at ? new Date(item.published_at).toLocaleDateString() : ''}</span>
+                    {item.published_at && (
+                      <><span className="text-slate-300">·</span>
+                      <span className="text-xs text-slate-400">{new Date(item.published_at).toLocaleDateString()}</span></>
+                    )}
                     {item.matched_entities?.map(e => (
-                      <Badge key={e} variant="secondary" className="text-xs px-1.5 py-0">{e}</Badge>
+                      <Badge key={e} variant="secondary" className="text-xs px-1.5 py-0 capitalize">{e}</Badge>
                     ))}
                   </div>
                 </div>
