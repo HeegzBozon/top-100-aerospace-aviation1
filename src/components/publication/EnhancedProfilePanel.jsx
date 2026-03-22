@@ -665,16 +665,15 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
               </div>
 
               <button
-                onClick={next}
+                onClick={isLast && hasNextNominee ? onNextNominee : next}
                 disabled={isLast && !hasNextNominee}
                 aria-label="Next slide"
                 className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 hover:scale-110 active:scale-95"
                 style={{
-                  background: isLast ? 'transparent' : `linear-gradient(135deg,${b.gold},${b.rose})`,
+                  background: isLast ? (hasNextNominee ? `linear-gradient(135deg,${b.gold},${b.rose})` : 'transparent') : `linear-gradient(135deg,${b.gold},${b.rose})`,
                   color: 'white',
-                  boxShadow: isLast ? 'none' : `0 4px 12px ${b.gold}40`,
+                  boxShadow: isLast && !hasNextNominee ? 'none' : `0 4px 12px ${b.gold}40`,
                 }}
-                onClick={isLast && hasNextNominee ? onNextNominee : next}
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
