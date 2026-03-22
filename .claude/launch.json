@@ -2,16 +2,25 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "dev",
+      "name": "top-100-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
+      "cwd": "/Users/heegzbozon/Downloads/top-100-aerospace-aviation1",
       "port": 5173
     },
     {
-      "name": "preview",
+      "name": "top-100-preview",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "preview"],
+      "cwd": "/Users/heegzbozon/Downloads/top-100-aerospace-aviation1",
       "port": 4173
+    },
+    {
+      "name": "worldmonitor-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "/Users/heegzbozon/Downloads/worldmonitor",
+      "port": 5173
     }
   ]
 }
