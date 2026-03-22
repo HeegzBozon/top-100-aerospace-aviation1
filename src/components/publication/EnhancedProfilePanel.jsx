@@ -428,7 +428,7 @@ function Slide3({ nominee, onClose, onShare }) {
 // ═══════════════════════════════════════════════════════════════════════════
 // SLIDE 4 — Action: Connect, follow, share
 // ═══════════════════════════════════════════════════════════════════════════
-function Slide4({ nominee, onClose, onShare, onNextNominee, hasNextNominee }) {
+function Slide4({ nominee, onClose, onShare, onNextNominee, hasNextNominee, onPrevNominee, hasPrevNominee }) {
   const socials = [
     nominee.linkedin_profile_url && { href: nominee.linkedin_profile_url, icon: Linkedin, label: 'Connect on LinkedIn', bg: 'linear-gradient(135deg,#0077B5,#005f8e)' },
     nominee.instagram_url        && { href: nominee.instagram_url,        icon: Instagram, label: 'Follow on Instagram', bg: 'linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)' },
