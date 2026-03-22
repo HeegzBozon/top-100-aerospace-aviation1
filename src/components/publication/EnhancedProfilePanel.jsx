@@ -5,7 +5,8 @@ import FlowerButton from './FlowerButton';
 import {
   X, Star, Globe, Briefcase,
   Linkedin, Instagram, ExternalLink, Share2, Sparkles,
-  ChevronRight, ChevronLeft, Users, Quote, Rocket, Heart
+  ChevronRight, ChevronLeft, Users, Quote, Rocket, Heart,
+  Play, Pause
 } from 'lucide-react';
 
 // ─── Brand tokens ───────────────────────────────────────────────────────────
