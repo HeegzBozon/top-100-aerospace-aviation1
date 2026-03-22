@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import FlowerButton from './FlowerButton';
 import {
-  X, Crown, Medal, Star, Award, Globe, Briefcase,
+  X, Star, Globe, Briefcase,
   Linkedin, Instagram, ExternalLink, Share2, Sparkles,
   ChevronRight, ChevronLeft, Users, Quote, Rocket, Heart
 } from 'lucide-react';
