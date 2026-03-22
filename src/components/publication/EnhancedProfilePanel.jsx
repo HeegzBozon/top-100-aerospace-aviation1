@@ -647,54 +647,64 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
                 <ChevronLeft className="w-5 h-5" />
               </button>
 
-              <SlideProgress total={SLIDES.length} current={slide} onGo={goTo} />
-
-              {isLast && hasNextNominee ? (
-                <motion.button
-                  onClick={onNextNominee}
-                  aria-label="Next honoree"
-                  animate={{ x: [0, 4, 0] }}
-                  transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-                  className="flex items-center gap-1 px-3 py-2 rounded-full text-[11px] font-black tracking-wide"
-                  style={{
-                    background: `linear-gradient(135deg,${b.gold},${b.rose})`,
-                    color: 'white',
-                    boxShadow: `0 4px 12px ${b.gold}40`,
-                  }}
-                >
-                  Next <ChevronRight className="w-4 h-4" />
-                </motion.button>
-              ) : isFirst && hasPrevNominee ? (
-                <motion.button
-                  onClick={onPrevNominee}
-                  aria-label="Previous honoree"
-                  animate={{ x: [0, -4, 0] }}
-                  transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-                  className="flex items-center gap-1 px-3 py-2 rounded-full text-[11px] font-black tracking-wide"
-                  style={{
-                    background: `linear-gradient(135deg,${b.navyMid},${b.sky})`,
-                    color: 'white',
-                    boxShadow: `0 4px 12px ${b.sky}40`,
-                  }}
-                >
-                  <ChevronLeft className="w-4 h-4" /> Prev
-                </motion.button>
-              ) : (
+              <div className="flex items-center gap-2">
+                <SlideProgress total={SLIDES.length} current={slide} onGo={goTo} />
+                {/* Play / Pause */}
                 <button
-                  onClick={next}
-                  disabled={isLast}
-                  aria-label="Next slide"
-                  className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 hover:scale-110 active:scale-95"
+                  onClick={() => setIsPlaying(v => !v)}
+                  aria-label={isPlaying ? 'Pause auto-play' : 'Play auto-advance'}
+                  className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
                   style={{
-                    background: isLast ? 'transparent' : `linear-gradient(135deg,${b.gold},${b.rose})`,
-                    color: 'white',
-                    boxShadow: isLast ? 'none' : `0 4px 12px ${b.gold}40`
+                    background: isPlaying ? `linear-gradient(135deg,${b.gold},${b.rose})` : `${b.navy}12`,
+                    color: isPlaying ? 'white' : b.navy,
+                    boxShadow: isPlaying ? `0 2px 8px ${b.gold}40` : 'none',
                   }}
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
                 </button>
-              )}
+              </div>
+
+              <button
+                onClick={next}
+                disabled={isLast && !hasNextNominee}
+                aria-label="Next slide"
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 hover:scale-110 active:scale-95"
+                style={{
+                  background: isLast ? 'transparent' : `linear-gradient(135deg,${b.gold},${b.rose})`,
+                  color: 'white',
+                  boxShadow: isLast ? 'none' : `0 4px 12px ${b.gold}40`,
+                }}
+                onClick={isLast && hasNextNominee ? onNextNominee : next}
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
             </div>
+
+            {/* Honoree prev / next row */}
+            {(hasPrevNominee || hasNextNominee) && (
+              <div className="flex gap-2 mt-1">
+                {hasPrevNominee && (
+                  <button
+                    onClick={onPrevNominee}
+                    aria-label="Previous honoree"
+                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-[11px] font-black transition-all hover:brightness-105 active:scale-[0.98]"
+                    style={{ background: `${b.navy}0a`, border: `1px solid ${b.sky}30`, color: b.sky }}
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" /> Prev
+                  </button>
+                )}
+                {hasNextNominee && (
+                  <button
+                    onClick={onNextNominee}
+                    aria-label="Next honoree"
+                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-[11px] font-black transition-all hover:brightness-105 active:scale-[0.98]"
+                    style={{ background: `${b.gold}12`, border: `1px solid ${b.gold}40`, color: b.goldDeep }}
+                  >
+                    Next <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>
