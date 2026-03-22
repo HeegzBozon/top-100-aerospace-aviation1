@@ -660,7 +660,7 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
                 <SlideProgress total={SLIDES.length} current={slide} onGo={goTo} />
                 {/* Play / Pause */}
                 <button
-                  onClick={() => setIsPlaying(v => !v)}
+                  onClick={() => setPlaying(!isPlaying)}
                   aria-label={isPlaying ? 'Pause auto-play' : 'Play auto-advance'}
                   className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
                   style={{
