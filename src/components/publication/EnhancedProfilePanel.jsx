@@ -582,7 +582,7 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
       } else if (hasNextNominee && onNextNominee) {
         onNextNominee(true); // true = keep playing
       } else {
-        setIsPlaying(false);
+        setPlaying(false);
       }
     }, 3500);
     return () => clearTimeout(id);
