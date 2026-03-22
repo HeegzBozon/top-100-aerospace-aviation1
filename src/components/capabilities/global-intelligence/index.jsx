@@ -1,3 +1,4 @@
+// Global Intelligence capability barrel
 export { WorldMonitorGlobe } from './WorldMonitorGlobe.jsx';
 export { AviationNewsFeed } from './AviationNewsFeed.jsx';
 export { LiveFlightsPanel } from './LiveFlightsPanel.jsx';
