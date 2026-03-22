@@ -117,12 +117,12 @@ export default function GlobalIntelligence() {
               })}
             </TabsList>
 
-            <TabsContent value="news"><AviationNewsFeed /></TabsContent>
-            <TabsContent value="flights"><LiveFlightsPanel /></TabsContent>
-            <TabsContent value="satellites"><SatelliteTracker /></TabsContent>
-            <TabsContent value="gps"><GpsJammingPanel /></TabsContent>
-            <TabsContent value="risk"><RiskScoresPanel /></TabsContent>
-            <TabsContent value="digest"><NewsFeedDigest /></TabsContent>
+            <TabsContent value="news">{activeTab === 'news' && <AviationNewsFeed />}</TabsContent>
+            <TabsContent value="flights">{activeTab === 'flights' && <LiveFlightsPanel />}</TabsContent>
+            <TabsContent value="satellites">{activeTab === 'satellites' && <SatelliteTracker />}</TabsContent>
+            <TabsContent value="gps">{activeTab === 'gps' && <GpsJammingPanel />}</TabsContent>
+            <TabsContent value="risk">{activeTab === 'risk' && <RiskScoresPanel />}</TabsContent>
+            <TabsContent value="digest">{activeTab === 'digest' && <NewsFeedDigest />}</TabsContent>
           </Tabs>
         </motion.div>
 
