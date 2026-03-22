@@ -1,7 +1,7 @@
 export { WorldMonitorGlobe } from './WorldMonitorGlobe.jsx';
-export { AviationNewsFeed } from './AviationNewsFeed';
-export { LiveFlightsPanel } from './LiveFlightsPanel';
-export { SatelliteTracker } from './SatelliteTracker';
-export { GpsJammingPanel } from './GpsJammingPanel';
-export { RiskScoresPanel } from './RiskScoresPanel';
-export { NewsFeedDigest } from './NewsFeedDigest';
+export { AviationNewsFeed } from './AviationNewsFeed.jsx';
+export { LiveFlightsPanel } from './LiveFlightsPanel.jsx';
+export { SatelliteTracker } from './SatelliteTracker.jsx';
+export { GpsJammingPanel } from './GpsJammingPanel.jsx';
+export { RiskScoresPanel } from './RiskScoresPanel.jsx';
+export { NewsFeedDigest } from './NewsFeedDigest.jsx';
