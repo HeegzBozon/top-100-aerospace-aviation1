@@ -633,6 +633,21 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
                 >
                   Next <ChevronRight className="w-4 h-4" />
                 </motion.button>
+              ) : isFirst && hasPrevNominee ? (
+                <motion.button
+                  onClick={onPrevNominee}
+                  aria-label="Previous honoree"
+                  animate={{ x: [0, -4, 0] }}
+                  transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                  className="flex items-center gap-1 px-3 py-2 rounded-full text-[11px] font-black tracking-wide"
+                  style={{
+                    background: `linear-gradient(135deg,${b.navyMid},${b.sky})`,
+                    color: 'white',
+                    boxShadow: `0 4px 12px ${b.sky}40`,
+                  }}
+                >
+                  <ChevronLeft className="w-4 h-4" /> Prev
+                </motion.button>
               ) : (
                 <button
                   onClick={next}
