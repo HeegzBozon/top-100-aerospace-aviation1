@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Globe2, Plane, Satellite, Radio, ShieldAlert, Rss } from 'lucide-react';
+import { Globe2, Plane, Newspaper, Satellite, Radio, ShieldAlert, Rss } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { base44 } from '@/api/base44Client';
 import {
   WorldMonitorGlobe,
   AviationNewsFeed,
