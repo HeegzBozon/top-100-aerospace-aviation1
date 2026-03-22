@@ -750,10 +750,15 @@ export default function Top100Women2025() {
           rank={selectedNominee.finalRank || nominees.findIndex(n => n.id === selectedNominee.id) + 1}
           onClose={() => setSelectedNominee(null)}
           onShare={(nominee) => setShareNominee(nominee)}
-          onNextNominee={() => {
+          autoPlaying={autoPlaying}
+          onAutoPlayChange={setAutoPlaying}
+          onNextNominee={(keepPlaying) => {
             const idx = nominees.findIndex(n => n.id === selectedNominee.id);
             const next = nominees[idx + 1];
-            if (next) setSelectedNominee(next);
+            if (next) {
+              if (keepPlaying) setAutoPlaying(true);
+              setSelectedNominee(next);
+            }
           }}
           hasNextNominee={nominees.findIndex(n => n.id === selectedNominee.id) < nominees.length - 1}
           onPrevNominee={() => {
