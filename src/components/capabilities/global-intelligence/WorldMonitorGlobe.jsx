@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, ChevronUp, ChevronDown, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const WM_URL = 'https://worldmonitor-voip40t21-top-100-aerospace-and-aviation.vercel.app/?lat=20.0000&lon=0.0000&zoom=1.50&view=global&timeRange=7d&layers=conflicts%2Cbases%2Chotspots%2Cnuclear%2Csanctions%2Cweather%2Ceconomic%2Cwaterways%2Coutages%2Cmilitary%2Cnatural%2CiranAttacks';
+const WM_URL = 'https://worldmonitor-voip40t21-top-100-aerospace-and-aviation.vercel.app';
 
 export function WorldMonitorGlobe() {
   const [collapsed, setCollapsed] = useState(false);
@@ -38,7 +38,7 @@ export function WorldMonitorGlobe() {
         {!collapsed && (
           <motion.div
             initial={{ height: 0 }}
-            animate={{ height: 680 }}
+            animate={{ height: 520 }}
             exit={{ height: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="relative overflow-hidden"
@@ -55,7 +55,7 @@ export function WorldMonitorGlobe() {
               src={WM_URL}
               title="World Monitor — Global Intelligence"
               className="w-full border-0"
-              style={{ height: 680 }}
+              style={{ height: 520 }}
               onLoad={() => setLoaded(true)}
               allow="geolocation"
             />
