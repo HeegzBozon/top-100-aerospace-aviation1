@@ -12,6 +12,7 @@ export const QUICK_ACTIONS = [
     { label: 'Nominate Someone', pageName: 'Nominations', icon: 'Send', color: brandColors.goldPrestige },
     { label: 'View TOP 100', pageName: 'Top100Women2025', icon: 'Trophy', color: brandColors.navyDeep },
     { label: 'Explore Arena', pageName: 'Arena', icon: 'Users', color: brandColors.skyBlue },
+    { label: 'Global Intelligence', pageName: 'GlobalIntelligence', icon: 'Globe2', color: brandColors.skyBlue },
 ];
 
 export const ALL_RESOURCES = [
@@ -25,6 +26,7 @@ export const ALL_RESOURCES = [
     { label: 'Talent Exchange', pageName: 'TalentExchange', icon: 'Briefcase' },
     { label: 'Profile', pageName: 'Profile', icon: 'Users' },
     { label: 'Mission Control', pageName: 'MissionControl', icon: 'LayoutDashboard' },
+    { label: 'Global Intelligence', pageName: 'GlobalIntelligence', icon: 'Globe2' },
     { label: 'Sponsors', pageName: 'Sponsors', icon: 'Heart' },
     { label: 'Help', pageName: 'HelpCenter', icon: 'MessageSquare' },
 ];
