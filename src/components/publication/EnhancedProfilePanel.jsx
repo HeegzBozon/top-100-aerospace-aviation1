@@ -106,12 +106,7 @@ function ModalChrome({ rank, onClose }) {
         >
           {rank}
         </span>
-        <span
-          className="text-[9px] font-black tracking-[0.2em] uppercase mt-0.5"
-          style={{ color: sub }}
-        >
-          {rank === 1 ? 'Gold' : rank === 2 ? 'Silver' : rank === 3 ? 'Bronze' : rank <= 10 ? 'Top 10' : 'Honoree'}
-        </span>
+
       </motion.div>
     </>
   );
