@@ -544,6 +544,7 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
   const [slide, setSlide] = useState(0);
   const [dir, setDir] = useState(1);
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => setCurrentUserEmail(u?.email ?? null)).catch(() => {});
@@ -552,6 +553,7 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
   useEffect(() => {
     setSlide(0);
     setDir(1);
+    setIsPlaying(false);
   }, [nominee?.id]);
 
   const goTo = useCallback((i) => {
@@ -561,6 +563,21 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
 
   const next = useCallback(() => { if (slide < SLIDES.length - 1) goTo(slide + 1); }, [slide, goTo]);
   const prev = useCallback(() => { if (slide > 0) goTo(slide - 1); }, [slide, goTo]);
+
+  // Auto-advance: slides → then next honoree
+  useEffect(() => {
+    if (!isPlaying) return;
+    const id = setTimeout(() => {
+      if (slide < SLIDES.length - 1) {
+        goTo(slide + 1);
+      } else if (hasNextNominee && onNextNominee) {
+        onNextNominee();
+      } else {
+        setIsPlaying(false);
+      }
+    }, 3500);
+    return () => clearTimeout(id);
+  }, [isPlaying, slide, goTo, hasNextNominee, onNextNominee]);
 
   if (!nominee) return null;
 
