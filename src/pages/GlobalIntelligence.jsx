@@ -106,6 +106,7 @@ export default function GlobalIntelligence() {
                   <TabsTrigger
                     key={tab.id}
                     value={tab.id}
+                    aria-label={tab.label}
                     className="flex flex-col items-center gap-1 rounded-lg text-xs data-[state=active]:glass-card data-[state=active]:shadow-md transition-all duration-200 py-2"
                   >
                     <Icon className="w-4 h-4" />
