@@ -22,18 +22,31 @@ export function WorldMonitorGlobe() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <a href={WM_URL} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-sky-400 transition-colors" title="Open in new tab" aria-label="Open World Monitor in new tab">
+          <a
+            href={WM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-slate-400 hover:text-sky-400 transition-colors"
+            aria-label="Open World Monitor in new tab"
+          >
             <ExternalLink className="w-4 h-4" />
           </a>
-          <Button variant="ghost" size="sm" onClick={() => {
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
               if (!collapsed) setLoaded(false);
               setCollapsed(c => !c);
-            }} className="text-slate-400 hover:text-white h-6 px-2">
+            }}
+            className="text-slate-400 hover:text-white h-6 px-2"
+            aria-label={collapsed ? 'Expand globe' : 'Collapse globe'}
+          >
             {collapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
             <span className="text-xs ml-1">{collapsed ? 'Expand' : 'Collapse'}</span>
           </Button>
         </div>
       </div>
+
       <AnimatePresence>
         {!collapsed && (
           <motion.div
@@ -44,7 +57,7 @@ export function WorldMonitorGlobe() {
             className="relative overflow-hidden"
           >
             {!loaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-900" style={{ zIndex: 1 }}>
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-10">
                 <div className="flex flex-col items-center gap-3">
                   <Globe className="w-10 h-10 text-sky-400 animate-pulse" />
                   <p className="text-sm text-slate-400">Loading World Monitor…</p>
@@ -54,8 +67,7 @@ export function WorldMonitorGlobe() {
             <iframe
               src={WM_URL}
               title="World Monitor — Global Intelligence"
-              className="w-full border-0"
-              style={{ height: 520 }}
+              className="w-full h-full border-0"
               onLoad={() => setLoaded(true)}
               allow="geolocation"
             />
