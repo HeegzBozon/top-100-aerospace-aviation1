@@ -39,7 +39,22 @@ export function WorldMonitorGlobe() {
           <motion.div
             initial={{ height: 0 }}
             animate={{ height: 680 }}
-...
+            exit={{ height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="relative overflow-hidden"
+          >
+            {!loaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-900" style={{ zIndex: 1 }}>
+                <div className="flex flex-col items-center gap-3">
+                  <Globe className="w-10 h-10 text-sky-400 animate-pulse" />
+                  <p className="text-sm text-slate-400">Loading World Monitor…</p>
+                </div>
+              </div>
+            )}
+            <iframe
+              src={WM_URL}
+              title="World Monitor — Global Intelligence"
+              className="w-full border-0"
               style={{ height: 680 }}
               onLoad={() => setLoaded(true)}
               allow="geolocation"
