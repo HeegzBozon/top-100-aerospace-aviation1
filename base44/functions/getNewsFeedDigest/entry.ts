@@ -1,62 +1,124 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
 
-const CATEGORY_FEEDS = {
-  aerospace: [
-    'https://www.flightglobal.com/rss/news',
-    'https://simpleflying.com/feed/',
-    'https://aviationweek.com/rss.xml',
-  ],
-  space: [
-    'https://www.nasaspaceflight.com/feed/',
-    'https://spacenews.com/feed/',
-    'https://www.space.com/feeds/all',
-  ],
-  defense: [
-    'https://www.defensenews.com/rss/news/',
-    'https://breakingdefense.com/feed/',
-  ],
-  geopolitics: [
-    'https://www.bbc.co.uk/news/world/rss.xml',
-    'https://feeds.reuters.com/reuters/worldNews',
-  ],
-};
-
-async function fetchFeed(url, category) {
-  const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=15`;
-  const res = await fetch(apiUrl, { signal: AbortSignal.timeout(8000) });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return (data.items || []).map(item => ({
-    id: item.guid || item.link,
-    title: item.title,
-    link: item.link,
-    source: data.feed?.title || new URL(url).hostname,
-    published_at: item.pubDate,
-    location_name: null,
-    threat: { level: category === 'defense' || category === 'geopolitics' ? 2 : 1 },
-  }));
-}
-
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const categories = {};
-    await Promise.all(
-      Object.entries(CATEGORY_FEEDS).map(async ([category, feeds]) => {
-        const results = await Promise.allSettled(feeds.map(url => fetchFeed(url, category)));
-        const items = results
-          .filter(r => r.status === 'fulfilled')
-          .flatMap(r => r.value)
-          .sort((a, b) => new Date(b.published_at) - new Date(a.published_at))
-          .slice(0, 20);
-        categories[category] = { items };
-      })
-    );
+    const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
+      prompt: `Provide a comprehensive news digest for today covering these 4 categories:
+1. aerospace: Latest commercial and civil aviation news, airline industry, aircraft, airports
+2. space: Space launches, satellites, NASA, SpaceX, ESA, space stations, Mars/Moon missions  
+3. defense: Military aviation, defense contracts, weapons systems, air forces worldwide
+4. geopolitics: International conflicts, diplomatic tensions, sanctions, border disputes relevant to aerospace/aviation
 
-    return Response.json({ categories });
+Return 15 news items per category. Each item should have a title, link (real URL if known), source, published_at, and threat level (1=low, 2=medium, 3=high, 4=critical) for defense/geopolitics items.`,
+      add_context_from_internet: true,
+      response_json_schema: {
+        type: 'object',
+        properties: {
+          categories: {
+            type: 'object',
+            properties: {
+              aerospace: {
+                type: 'object',
+                properties: {
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string' },
+                        title: { type: 'string' },
+                        link: { type: 'string' },
+                        source: { type: 'string' },
+                        published_at: { type: 'string' },
+                        location_name: { type: 'string' },
+                        threat: {
+                          type: 'object',
+                          properties: { level: { type: 'number' } },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              space: {
+                type: 'object',
+                properties: {
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string' },
+                        title: { type: 'string' },
+                        link: { type: 'string' },
+                        source: { type: 'string' },
+                        published_at: { type: 'string' },
+                        threat: {
+                          type: 'object',
+                          properties: { level: { type: 'number' } },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              defense: {
+                type: 'object',
+                properties: {
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string' },
+                        title: { type: 'string' },
+                        link: { type: 'string' },
+                        source: { type: 'string' },
+                        published_at: { type: 'string' },
+                        location_name: { type: 'string' },
+                        threat: {
+                          type: 'object',
+                          properties: { level: { type: 'number' } },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              geopolitics: {
+                type: 'object',
+                properties: {
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string' },
+                        title: { type: 'string' },
+                        link: { type: 'string' },
+                        source: { type: 'string' },
+                        published_at: { type: 'string' },
+                        location_name: { type: 'string' },
+                        threat: {
+                          type: 'object',
+                          properties: { level: { type: 'number' } },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return Response.json({ categories: result?.categories || {} });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
