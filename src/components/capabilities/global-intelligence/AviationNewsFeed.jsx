@@ -49,7 +49,7 @@ export function AviationNewsFeed() {
                     <span className="text-xs text-slate-400">{item.source_name}</span>
                     <span className="text-slate-300">·</span>
                     <span className="text-xs text-slate-400">{item.published_at ? new Date(item.published_at).toLocaleDateString() : ''}</span>
-                    {item.matched_entities?.slice(0, 2).map(e => (
+                    {item.matched_entities?.map(e => (
                       <Badge key={e} variant="secondary" className="text-xs px-1.5 py-0">{e}</Badge>
                     ))}
                   </div>

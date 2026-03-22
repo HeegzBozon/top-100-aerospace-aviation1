@@ -52,7 +52,7 @@ export function NewsFeedDigest() {
             const threatColor = THREAT_COLORS[threatLevel];
             return (
               <motion.div key={i} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-                <Card className={`border-slate-200/50 transition-all ${threatLevel >= 3 ? 'border-orange-200/60 bg-orange-50/20' : 'glass-card'}`}><CardContent className="p-3">
+                <Card className={`border-slate-200/50 transition-all ${threatLevel >= 4 ? 'border-red-200/60 bg-red-50/20' : threatLevel === 3 ? 'border-orange-200/60 bg-orange-50/20' : 'glass-card'}`}><CardContent className="p-3">
                   <div className="flex items-start gap-2.5">
                     {threatLevel >= 3 ? <AlertTriangle className="w-4 h-4 flex-shrink-0 text-orange-400 mt-0.5" /> : <Rss className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: brandColors.skyBlue }} />}
                     <div className="flex-1 min-w-0">

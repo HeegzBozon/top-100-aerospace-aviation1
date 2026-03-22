@@ -49,7 +49,7 @@ export function RiskScoresPanel() {
             <h3 className="font-semibold text-sm" style={{ color: brandColors.navyDeep }}>Composite Instability Index</h3>
           </div>
           <div className="space-y-3">
-            {ciiScores.slice(0, 20).map((score, i) => {
+            {ciiScores.map((score, i) => {
               const trendInfo = TREND_ICONS[score.trend] || TREND_ICONS[3];
               const TrendIcon = trendInfo.icon;
               return (
@@ -71,7 +71,7 @@ export function RiskScoresPanel() {
         <div>
           <h3 className="font-semibold text-sm mb-3" style={{ color: brandColors.navyDeep }}>Strategic Risk Assessments</h3>
           <div className="space-y-2">
-            {strategicRisks.slice(0, 10).map((risk, i) => (
+            {strategicRisks.map((risk, i) => (
               <Card key={i} className="glass-card border-slate-200/50"><CardContent className="p-3">
                 <p className="text-sm font-semibold" style={{ color: brandColors.navyDeep }}>{risk.region || risk.country || 'Global'}</p>
                 {risk.summary && <p className="text-xs text-slate-500 mt-1">{risk.summary}</p>}
