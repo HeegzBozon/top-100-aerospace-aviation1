@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, ChevronUp, ChevronDown, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const WM_URL = 'https://worldmonitor-voip40t21-top-100-aerospace-and-aviation.vercel.app';
+const WM_URL = 'https://worldmonitor-voip40t21-top-100-aerospace-and-aviation.vercel.app/?lat=20.0000&lon=0.0000&zoom=1.50&view=global&timeRange=7d&layers=conflicts%2Cbases%2Chotspots%2Cnuclear%2Csanctions%2Cweather%2Ceconomic%2Cwaterways%2Coutages%2Cmilitary%2Cnatural%2CiranAttacks';
 
 export function WorldMonitorGlobe() {
   const [collapsed, setCollapsed] = useState(false);
