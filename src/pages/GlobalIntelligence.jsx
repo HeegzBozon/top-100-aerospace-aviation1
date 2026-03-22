@@ -20,7 +20,7 @@ const brandColors = {
 };
 
 const DATA_TABS = [
-  { id: 'news', label: 'Aviation News', icon: Plane },
+  { id: 'news', label: 'Aviation News', icon: Newspaper },
   { id: 'flights', label: 'Live Flights', icon: Plane },
   { id: 'satellites', label: 'Satellites', icon: Satellite },
   { id: 'gps', label: 'GPS Signals', icon: Radio },
