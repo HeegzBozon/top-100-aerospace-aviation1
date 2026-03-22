@@ -8,19 +8,23 @@ const WM_BASE = 'https://worldmonitor-voip40t21-top-100-aerospace-and-aviation.v
 const brandColors = { navyDeep: '#1e3a5a', skyBlue: '#4a90b8' };
 const AEROSPACE_ENTITIES = ['Boeing', 'Airbus', 'NASA', 'SpaceX', 'FAA', 'ICAO'];
 
+const safeUrl = (url) => (url && /^https?:\/\//i.test(url) ? url : undefined);
+
 export function AviationNewsFeed() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
     const params = new URLSearchParams({ window_hours: '48', max_items: '20' });
     AEROSPACE_ENTITIES.forEach(e => params.append('entities', e));
-    fetch(`${WM_BASE}/api/aviation/v1/list-aviation-news?${params}`)
+    fetch(`${WM_BASE}/api/aviation/v1/list-aviation-news?${params}`, { signal: controller.signal })
       .then(r => r.json())
       .then(data => setItems(data.items || []))
-      .catch(() => setError('Unable to load aviation news'))
+      .catch(err => { if (err.name !== 'AbortError') setError('Unable to load aviation news'); })
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   if (loading) return <PanelLoader label="aviation news" />;
@@ -39,10 +43,14 @@ export function AviationNewsFeed() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold hover:underline line-clamp-2 flex-1" style={{ color: brandColors.navyDeep }}>
-                      {item.title}
-                    </a>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+                    {safeUrl(item.url) ? (
+                      <a href={safeUrl(item.url)} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold hover:underline line-clamp-2 flex-1" style={{ color: brandColors.navyDeep }}>
+                        {item.title}
+                      </a>
+                    ) : (
+                      <p className="text-sm font-semibold line-clamp-2 flex-1" style={{ color: brandColors.navyDeep }}>{item.title}</p>
+                    )}
+                    {safeUrl(item.url) && <ExternalLink className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />}
                   </div>
                   {item.snippet && <p className="text-xs text-slate-500 line-clamp-2 mb-2">{item.snippet}</p>}
                   <div className="flex items-center gap-2 flex-wrap">

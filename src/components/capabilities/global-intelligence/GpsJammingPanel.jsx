@@ -13,11 +13,13 @@ export function GpsJammingPanel() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${WM_BASE}/api/intelligence/v1/list-gps-interference`)
+    const controller = new AbortController();
+    fetch(`${WM_BASE}/api/intelligence/v1/list-gps-interference`, { signal: controller.signal })
       .then(r => r.json())
       .then(data => setEvents(data.events || data.items || []))
-      .catch(() => setError('Unable to load GPS interference data'))
+      .catch(err => { if (err.name !== 'AbortError') setError('Unable to load GPS interference data'); })
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   if (loading) return <PanelLoader label="GPS interference data" />;

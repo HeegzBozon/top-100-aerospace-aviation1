@@ -17,11 +17,13 @@ export function LiveFlightsPanel() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${WM_BASE}/api/military/v1/list-military-flights?page_size=50`)
+    const controller = new AbortController();
+    fetch(`${WM_BASE}/api/military/v1/list-military-flights?page_size=50`, { signal: controller.signal })
       .then(r => r.json())
       .then(data => { setFlights(data.flights || []); setClusters(data.clusters || []); })
-      .catch(() => setError('Unable to load military flight data'))
+      .catch(err => { if (err.name !== 'AbortError') setError('Unable to load military flight data'); })
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   if (loading) return <PanelLoader label="military flights" />;

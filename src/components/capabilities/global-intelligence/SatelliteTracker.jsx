@@ -15,11 +15,13 @@ export function SatelliteTracker() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${WM_BASE}/api/intelligence/v1/list-satellites`)
+    const controller = new AbortController();
+    fetch(`${WM_BASE}/api/intelligence/v1/list-satellites`, { signal: controller.signal })
       .then(r => r.json())
       .then(data => setSatellites(data.satellites || []))
-      .catch(() => setError('Unable to load satellite data'))
+      .catch(err => { if (err.name !== 'AbortError') setError('Unable to load satellite data'); })
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   if (loading) return <PanelLoader label="satellites" />;

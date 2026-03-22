@@ -22,10 +22,13 @@ export function WorldMonitorGlobe() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <a href={WM_URL} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-sky-400 transition-colors" title="Open in new tab">
+          <a href={WM_URL} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-sky-400 transition-colors" title="Open in new tab" aria-label="Open World Monitor in new tab">
             <ExternalLink className="w-4 h-4" />
           </a>
-          <Button variant="ghost" size="sm" onClick={() => setCollapsed(c => !c)} className="text-slate-400 hover:text-white h-6 px-2">
+          <Button variant="ghost" size="sm" onClick={() => {
+              if (!collapsed) setLoaded(false);
+              setCollapsed(c => !c);
+            }} className="text-slate-400 hover:text-white h-6 px-2">
             {collapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
             <span className="text-xs ml-1">{collapsed ? 'Expand' : 'Collapse'}</span>
           </Button>

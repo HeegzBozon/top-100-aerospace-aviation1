@@ -26,14 +26,16 @@ export function RiskScoresPanel() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${WM_BASE}/api/intelligence/v1/get-risk-scores`)
+    const controller = new AbortController();
+    fetch(`${WM_BASE}/api/intelligence/v1/get-risk-scores`, { signal: controller.signal })
       .then(r => r.json())
       .then(data => {
         setCiiScores((data.cii_scores || []).sort((a, b) => b.combined_score - a.combined_score));
         setStrategicRisks(data.strategic_risks || []);
       })
-      .catch(() => setError('Unable to load risk scores'))
+      .catch(err => { if (err.name !== 'AbortError') setError('Unable to load risk scores'); })
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   if (loading) return <PanelLoader label="risk scores" />;

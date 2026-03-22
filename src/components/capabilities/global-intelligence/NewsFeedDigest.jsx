@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 
 const WM_BASE = 'https://worldmonitor-voip40t21-top-100-aerospace-and-aviation.vercel.app';
 const brandColors = { navyDeep: '#1e3a5a', skyBlue: '#4a90b8' };
+
+const safeUrl = (url) => (url && /^https?:\/\//i.test(url) ? url : undefined);
 const THREAT_COLORS = { 2:'bg-yellow-100 text-yellow-700 border-yellow-200', 3:'bg-orange-100 text-orange-700 border-orange-200', 4:'bg-red-100 text-red-700 border-red-200' };
 const THREAT_LABELS = { 1:'Low', 2:'Medium', 3:'High', 4:'Critical' };
 
@@ -16,7 +18,8 @@ export function NewsFeedDigest() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${WM_BASE}/api/news/v1/list-feed-digest?variant=full&lang=en`)
+    const controller = new AbortController();
+    fetch(`${WM_BASE}/api/news/v1/list-feed-digest?variant=full&lang=en`, { signal: controller.signal })
       .then(r => r.json())
       .then(data => {
         const cats = data.categories || {};
@@ -24,8 +27,9 @@ export function NewsFeedDigest() {
         const firstKey = Object.keys(cats)[0];
         if (firstKey) setActiveCategory(firstKey);
       })
-      .catch(() => setError('Unable to load news digest'))
+      .catch(err => { if (err.name !== 'AbortError') setError('Unable to load news digest'); })
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   if (loading) return <PanelLoader label="news digest" />;
@@ -51,14 +55,14 @@ export function NewsFeedDigest() {
             const threatLevel = item.threat?.level;
             const threatColor = THREAT_COLORS[threatLevel];
             return (
-              <motion.div key={i} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
+              <motion.div key={item.id ?? `${activeCategory}-${i}`} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                 <Card className={`border-slate-200/50 transition-all ${threatLevel >= 4 ? 'border-red-200/60 bg-red-50/20' : threatLevel === 3 ? 'border-orange-200/60 bg-orange-50/20' : 'glass-card'}`}><CardContent className="p-3">
                   <div className="flex items-start gap-2.5">
                     {threatLevel >= 3 ? <AlertTriangle className="w-4 h-4 flex-shrink-0 text-orange-400 mt-0.5" /> : <Rss className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: brandColors.skyBlue }} />}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
                         {item.link ? (
-                          <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-sm font-medium hover:underline line-clamp-2 flex-1" style={{ color: brandColors.navyDeep }}>{item.title}</a>
+                          <a href={safeUrl(item.link)} target="_blank" rel="noopener noreferrer" className="text-sm font-medium hover:underline line-clamp-2 flex-1" style={{ color: brandColors.navyDeep }}>{item.title}</a>
                         ) : (
                           <p className="text-sm font-medium line-clamp-2 flex-1" style={{ color: brandColors.navyDeep }}>{item.title}</p>
                         )}
