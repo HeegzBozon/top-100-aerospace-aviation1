@@ -179,6 +179,7 @@ export default function Top100Women2025() {
   const [nominees, setNominees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNominee, setSelectedNominee] = useState(null);
+  const [autoPlaying, setAutoPlaying] = useState(false);
   const [shareNominee, setShareNominee] = useState(null);
   const [activeSection, setActiveSection] = useState('hero');
   const [showCountdown, setShowCountdown] = useState(false);
