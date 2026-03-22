@@ -679,31 +679,7 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
               </button>
             </div>
 
-            {/* Honoree prev / next row */}
-            {(hasPrevNominee || hasNextNominee) && (
-              <div className="flex gap-2 mt-1">
-                {hasPrevNominee && (
-                  <button
-                    onClick={onPrevNominee}
-                    aria-label="Previous honoree"
-                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-[11px] font-black transition-all hover:brightness-105 active:scale-[0.98]"
-                    style={{ background: `${b.navy}0a`, border: `1px solid ${b.sky}30`, color: b.sky }}
-                  >
-                    <ChevronLeft className="w-3.5 h-3.5" /> Prev
-                  </button>
-                )}
-                {hasNextNominee && (
-                  <button
-                    onClick={onNextNominee}
-                    aria-label="Next honoree"
-                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-[11px] font-black transition-all hover:brightness-105 active:scale-[0.98]"
-                    style={{ background: `${b.gold}12`, border: `1px solid ${b.gold}40`, color: b.goldDeep }}
-                  >
-                    Next <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            )}
+
           </div>
         </motion.div>
       </motion.div>
