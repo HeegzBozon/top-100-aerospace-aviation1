@@ -29,7 +29,21 @@ const DATA_TABS = [
 ];
 
 export default function GlobalIntelligence() {
-  const [activeTab, setActiveTab] = useState('news');
+  const [activeTab, setActiveTab] = useState(DATA_TABS[0].id);
+  const [isAuthed, setIsAuthed] = useState(null);
+
+  useEffect(() => {
+    base44.auth.isAuthenticated().then(authed => {
+      if (!authed) base44.auth.redirectToLogin(window.location.pathname);
+      else setIsAuthed(true);
+    });
+  }, []);
+
+  if (!isAuthed) return (
+    <div className="fixed inset-0 flex items-center justify-center bg-background">
+      <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
+    </div>
+  );
 
   return (
     <div
