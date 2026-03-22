@@ -755,6 +755,12 @@ export default function Top100Women2025() {
             if (next) setSelectedNominee(next);
           }}
           hasNextNominee={nominees.findIndex(n => n.id === selectedNominee.id) < nominees.length - 1}
+          onPrevNominee={() => {
+            const idx = nominees.findIndex(n => n.id === selectedNominee.id);
+            const prev = nominees[idx - 1];
+            if (prev) setSelectedNominee(prev);
+          }}
+          hasPrevNominee={nominees.findIndex(n => n.id === selectedNominee.id) > 0}
         />
       )}
       
