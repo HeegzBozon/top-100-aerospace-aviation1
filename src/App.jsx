@@ -13,6 +13,7 @@ import DiscoveryQuestionnaire from '@/pages/DiscoveryQuestionnaire';
 import RollingCredits from '@/pages/RollingCredits';
 import Colony from '@/pages/Colony';
 import AnalyticsDashboard from '@/pages/AnalyticsDashboard';
+import GlobalIntelligence from '@/pages/GlobalIntelligence';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
