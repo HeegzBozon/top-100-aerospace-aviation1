@@ -95,7 +95,7 @@ export default function GlobalIntelligence() {
                   >
                     <Icon className="w-4 h-4" />
                     <span className="hidden sm:block font-medium leading-tight text-center">
-                      {tab.label.split(' ')[0]}
+                      {tab.label}
                     </span>
                   </TabsTrigger>
                 );
