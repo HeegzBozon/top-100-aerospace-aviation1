@@ -564,14 +564,14 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
   const next = useCallback(() => { if (slide < SLIDES.length - 1) goTo(slide + 1); }, [slide, goTo]);
   const prev = useCallback(() => { if (slide > 0) goTo(slide - 1); }, [slide, goTo]);
 
-  // Auto-advance: slides → then next honoree
+  // Auto-advance: slides → then next honoree (passes isPlaying so parent can keep it going)
   useEffect(() => {
     if (!isPlaying) return;
     const id = setTimeout(() => {
       if (slide < SLIDES.length - 1) {
         goTo(slide + 1);
       } else if (hasNextNominee && onNextNominee) {
-        onNextNominee();
+        onNextNominee(true); // true = keep playing
       } else {
         setIsPlaying(false);
       }
