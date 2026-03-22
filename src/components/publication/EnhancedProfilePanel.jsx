@@ -540,11 +540,21 @@ const slideVariants = {
   exit:  (dir) => ({ x: dir > 0 ? '-55%' : '55%', opacity: 0, scale: 0.97 }),
 };
 
-export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, onNextNominee, hasNextNominee, onPrevNominee, hasPrevNominee }) {
+export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, onNextNominee, hasNextNominee, onPrevNominee, hasPrevNominee, autoPlaying = false, onAutoPlayChange }) {
   const [slide, setSlide] = useState(0);
   const [dir, setDir] = useState(1);
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // Sync external autoPlaying signal (e.g. when parent advances to next nominee mid-play)
+  useEffect(() => {
+    if (autoPlaying) setIsPlaying(true);
+  }, [autoPlaying, nominee?.id]);
+
+  const setPlaying = useCallback((val) => {
+    setIsPlaying(val);
+    onAutoPlayChange?.(val);
+  }, [onAutoPlayChange]);
 
   useEffect(() => {
     base44.auth.me().then(u => setCurrentUserEmail(u?.email ?? null)).catch(() => {});
@@ -553,7 +563,6 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
   useEffect(() => {
     setSlide(0);
     setDir(1);
-    setIsPlaying(false);
   }, [nominee?.id]);
 
   const goTo = useCallback((i) => {
