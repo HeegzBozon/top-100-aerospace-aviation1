@@ -25,16 +25,15 @@ import { useQuery } from '@tanstack/react-query';
 import { subDays } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 
-
-
-const brandColors = {
-  navyDeep: '#1e3a5a',
-  skyBlue: '#4a90b8',
-  goldPrestige: '#c9a87c',
-  goldLight: '#e8d4b8',
-  roseAccent: '#d4a574',
-  cream: '#faf8f5',
-};
+// Stable module-level shuffle — avoids re-creation on every render
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 export default function HomePage() {
   const [publicUserEmail, setPublicUserEmail] = useState(null);
