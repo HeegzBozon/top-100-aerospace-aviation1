@@ -7,18 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useMilitaryFlights, useWingbitsEnrichment, useConflictEvents } from '@/lib/intelligence/hooks';
 import { AIRCRAFT_MODEL_PATTERNS, THEATER_LABELS } from '@/lib/intelligence/constants';
+import { haversineKm } from '@/lib/intelligence/utils';
 
 // ── File-level utilities ─────────────────────────────────────────────────────
-
-function haversineKm(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
 
 function classifyRole(model) {
   if (!model) return null;

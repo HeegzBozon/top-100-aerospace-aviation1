@@ -173,6 +173,13 @@ export const THEATER_DEFS = [
   { id: 'AFRICOM',   color: '#ec4899', bounds: [ -20,-35,  55,  37] },
 ];
 
+export const MARITIME_RSS_FEEDS = [
+  'https://www.maritimebulletin.net/feed/',         // piracy + incident tracker
+  'https://gcaptain.com/feed/',                      // maritime news
+  'https://www.maritime-executive.com/feed/',        // industry news
+  'https://www.hellenicshippingnews.com/feed/',      // global shipping
+];
+
 export const MARITIME_CHOKEPOINTS = [
   { name: 'Strait of Hormuz', lat: 26.5, lon: 56.3, traffic: 'high', risk: 'elevated', dailyShips: 50 },
   { name: 'Bab el-Mandeb', lat: 12.6, lon: 43.3, traffic: 'high', risk: 'high', dailyShips: 40 },

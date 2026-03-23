@@ -1,3 +1,5 @@
+import { MARITIME_RSS_FEEDS } from './constants';
+
 // ── OpenSky Network (Military Flights + Theater Posture) ──
 // Add VITE_OPENSKY_USERNAME + VITE_OPENSKY_PASSWORD to .env.local for 10× rate limit (400→4000 req/day).
 // Free account: https://opensky-network.org/index.php?option=com_users&view=registration
@@ -104,6 +106,21 @@ export async function fetchCISAKEV(signal) {
 // ── CISA Alerts RSS ───────────────────────────────────────────────────────────
 export async function fetchCISAAlerts(signal) {
   return fetchRSSFeed('https://www.cisa.gov/cybersecurity-advisories/all.xml', signal);
+}
+
+// ── Maritime Incidents (multi-source RSS) ─────────────────────────────────────
+export async function fetchMaritimeIncidents(signal) {
+  const results = await Promise.allSettled(
+    MARITIME_RSS_FEEDS.map(url => fetchRSSFeed(url, signal))
+  );
+  return results
+    .filter(r => r.status === 'fulfilled')
+    .flatMap(r => r.value);
+}
+
+// ── CISA ICS-CERT Advisories (RSS via proxy) ─────────────────────────────────
+export async function fetchICSAdvisories(signal) {
+  return fetchRSSFeed('https://www.cisa.gov/ics-advisories.xml', signal);
 }
 
 // ── GPS Interference (static JSON fallback) ───────────────

@@ -11,6 +11,8 @@ import {
   fetchGDACSAlerts,
   fetchCISAKEV,
   fetchCISAAlerts,
+  fetchMaritimeIncidents,
+  fetchICSAdvisories,
 } from './api';
 import {
   ALL_RSS_FEEDS,
@@ -279,6 +281,74 @@ export function useCyberThreats() {
     staleTime: 60 * 60_000,   // KEV list updates ~daily
     refetchInterval: 60 * 60_000,
   });
+}
+
+// ── Maritime Intelligence (multi-source RSS) ─────────────────────────────────
+export function useMaritimeIntel() {
+  return useQuery({
+    queryKey: ['intel', 'maritime'],
+    queryFn: async ({ signal }) => {
+      const raw = await fetchMaritimeIncidents(signal);
+      const incidents = deduplicateItems(raw)
+        .slice(0, 40)
+        .map((item, i) => ({
+          id: i,
+          title: item.title,
+          link: item.link,
+          source: item.source,
+          pubDate: item.pubDate,
+          snippet: item.description,
+          type: classifyMaritimeIncident(item.title),
+        }));
+      return { incidents };
+    },
+    staleTime: 15 * 60_000,
+    refetchInterval: 20 * 60_000,
+  });
+}
+
+function classifyMaritimeIncident(title = '') {
+  if (/pirac|hijack|attack|armed/i.test(title)) return 'piracy';
+  if (/collision|grounding|aground/i.test(title)) return 'accident';
+  if (/sanction|embargo/i.test(title)) return 'sanctions';
+  if (/closure|canal|blocked|congest/i.test(title)) return 'disruption';
+  if (/drone|missile|houthi|naval/i.test(title)) return 'conflict';
+  return 'news';
+}
+
+// ── Critical Infrastructure Threats (CISA ICS-CERT advisories) ───────────────
+export function useInfraThreats() {
+  return useQuery({
+    queryKey: ['intel', 'ics-advisories'],
+    queryFn: async ({ signal }) => {
+      const raw = await fetchICSAdvisories(signal);
+      const advisories = (raw || []).slice(0, 25).map((item, i) => ({
+        id: i,
+        title: item.title,
+        link: item.link,
+        source: item.source || 'CISA ICS-CERT',
+        pubDate: item.pubDate,
+        snippet: item.description,
+        sector: classifyICSector(item.title),
+        severity: /critical/i.test(item.title) ? 'critical'
+          : /high/i.test(item.title) ? 'high'
+          : /medium/i.test(item.title) ? 'medium' : 'low',
+      }));
+      return { advisories };
+    },
+    staleTime: 60 * 60_000,
+    refetchInterval: 60 * 60_000,
+  });
+}
+
+function classifyICSector(title = '') {
+  if (/energy|power|electric|grid|oil|gas/i.test(title)) return 'Energy';
+  if (/water|wastewater/i.test(title)) return 'Water';
+  if (/transport|aviation|rail|port/i.test(title)) return 'Transportation';
+  if (/manufactur|chemical/i.test(title)) return 'Manufacturing';
+  if (/health|hospital|medical/i.test(title)) return 'Healthcare';
+  if (/communicat|telecom/i.test(title)) return 'Communications';
+  return 'Industrial';
 }
 
 // ── Risk Scores (ACLED → CII) ─────────────────────────────────────────────
