@@ -199,6 +199,13 @@ export default function Landing2Hero({ user }) {
           </div>
         </div>
 
+        {/* Prototype badge */}
+        {slide.isPrototype && (
+          <div className="absolute top-3 right-3 md:top-4 md:right-14 px-2 py-0.5 rounded text-[10px] font-black tracking-[0.2em] uppercase bg-amber-400/20 border border-amber-400/50 text-amber-300">
+            ⚗ Prototype
+          </div>
+        )}
+
         {/* Countdown bar for launch slide */}
         {slide.isLaunch && !countdown.past && (
           <div className="absolute bottom-10 md:bottom-14 left-4 md:left-8 flex items-center gap-2">
