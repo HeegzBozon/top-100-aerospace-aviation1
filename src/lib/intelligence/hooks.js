@@ -12,6 +12,7 @@ import {
   ALL_RSS_FEEDS,
   MILITARY_HEX_PREFIXES,
   DEFENSE_TICKERS,
+  AEROSPACE_ENTITIES,
 } from './constants';
 import { enrichFlight } from './enrichment';
 
@@ -30,7 +31,8 @@ const RSS_BASE = {
     const results = await Promise.allSettled(
       ALL_RSS_FEEDS.map(url => fetchRSSFeed(url, signal))
     );
-    return results.filter(r => r.status === 'fulfilled').flatMap(r => r.value);
+    const raw = results.filter(r => r.status === 'fulfilled').flatMap(r => r.value);
+    return deduplicateItems(raw);
   },
   staleTime: 5 * 60_000,
 };
@@ -95,8 +97,9 @@ export function useAviationNews() {
           snippet: item.description,
           source_name: item.source,
           published_at: item.pubDate,
-          matched_entities: [],
+          matched_entities: matchEntities(item),
           category: classifyNewsItem(item),
+          threat_level: computeThreatLevel(item),
         })),
     }),
   });
@@ -235,6 +238,43 @@ export function useWingbitsEnrichment(icao24List = []) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
+// ── Threat level (1–5) from headline + description keywords ──────────────────
+function computeThreatLevel(item) {
+  const text = `${item.title || ''} ${item.description || ''}`.toLowerCase();
+  if (/\b(war|invasion|invade|airstrike|strike|attacked|missile|nuclear|ballistic)\b/.test(text)) return 5;
+  if (/\b(sanctions|conflict|escalation|hostilities|coup|deployment)\b/.test(text)) return 4;
+  if (/\b(tensions|warning|incident|violation|standoff|intercept|disputed)\b/.test(text)) return 3;
+  if (/\b(military exercise|drill|treaty|surveillance|reconnaissance|intelligence)\b/.test(text)) return 2;
+  if (/\b(procurement|contract|funding|modernization|awarded|upgrade)\b/.test(text)) return 1;
+  return null;
+}
+
+// ── Entity matching against AEROSPACE_ENTITIES list ──────────────────────────
+function matchEntities(item) {
+  const text = `${item.title || ''} ${item.description || ''}`;
+  return AEROSPACE_ENTITIES.filter(entity => {
+    // Use word-boundary regex for short tokens (≤3 chars) to avoid false positives
+    if (entity.length <= 3) {
+      return new RegExp(`\\b${entity.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(text);
+    }
+    return text.toLowerCase().includes(entity.toLowerCase());
+  });
+}
+
+// ── Deduplication by normalized title ────────────────────────────────────────
+function normalizeTitle(title) {
+  return (title || '').toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function deduplicateItems(items) {
+  const seen = new Map();
+  for (const item of items) {
+    const key = normalizeTitle(item.title);
+    if (key && !seen.has(key)) seen.set(key, item);
+  }
+  return [...seen.values()];
+}
+
 function classifySatellite(name) {
   const n = (name || '').toUpperCase();
   if (/USA|NROL|LACROSSE|ONYX|MISTY|KH-/.test(n)) return 'military';
@@ -262,18 +302,19 @@ function categorizeNews(items) {
   const result = {};
   for (const [key, arr] of Object.entries(cats)) {
     if (arr.length > 0) {
+      const sorted = arr.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
       result[key] = {
-        items: arr
-          .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
-          .slice(0, 30)
-          .map((item, i) => ({
-            id: `${key}-${i}`,
-            title: item.title,
-            link: item.link,
-            source: item.source,
-            published_at: item.pubDate,
-            threat: null,
-          })),
+        lastUpdated: sorted.length > 0 ? (new Date(sorted[0].pubDate).toISOString() || null) : null,
+        items: sorted.slice(0, 30).map((item, i) => ({
+          id: `${key}-${i}`,
+          title: item.title,
+          link: item.link,
+          source: item.source,
+          published_at: item.pubDate,
+          snippet: item.description,
+          matched_entities: matchEntities(item),
+          threat_level: computeThreatLevel(item),
+        })),
       };
     }
   }
