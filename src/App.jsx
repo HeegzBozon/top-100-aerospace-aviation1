@@ -10,6 +10,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import DiscoveryQuestionnaire from '@/pages/DiscoveryQuestionnaire';
+import TermsOfService from '@/pages/TermsOfService';
 import RollingCredits from '@/pages/RollingCredits';
 import Colony from '@/pages/Colony';
 import AnalyticsDashboard from '@/pages/AnalyticsDashboard';
