@@ -19,6 +19,9 @@ export function AviationNewsFeed() {
 
   return (
     <div className="space-y-3">
+      {/* Launch Party Widget */}
+      <LaunchPartyWidget />
+
       {/* Header row with count + refresh */}
       <div className="flex items-center justify-between">
         <span className="text-xs text-slate-400">{items.length} items</span>
