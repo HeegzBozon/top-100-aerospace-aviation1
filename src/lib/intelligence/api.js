@@ -76,6 +76,36 @@ export async function fetchACLEDEvents(params = {}, signal) {
   return res.json();
 }
 
+// ── USGS Earthquakes (M4.5+ past 7 days, public CORS-enabled endpoint) ──────
+export async function fetchUSGSEarthquakes(signal) {
+  const res = await fetch(
+    'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson',
+    { signal }
+  );
+  if (!res.ok) throw new Error(`USGS returned ${res.status}`);
+  return res.json();
+}
+
+// ── GDACS Global Disaster Alerts (RSS via proxy) ─────────────────────────────
+export async function fetchGDACSAlerts(signal) {
+  return fetchRSSFeed('https://www.gdacs.org/xml/rss_24h.xml', signal);
+}
+
+// ── CISA Known Exploited Vulnerabilities (JSON, CORS-enabled) ────────────────
+export async function fetchCISAKEV(signal) {
+  const res = await fetch(
+    'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json',
+    { signal }
+  );
+  if (!res.ok) throw new Error(`CISA KEV returned ${res.status}`);
+  return res.json();
+}
+
+// ── CISA Alerts RSS ───────────────────────────────────────────────────────────
+export async function fetchCISAAlerts(signal) {
+  return fetchRSSFeed('https://www.cisa.gov/cybersecurity-advisories/all.xml', signal);
+}
+
 // ── GPS Interference (static JSON fallback) ───────────────
 export async function fetchGpsInterference(signal) {
   const res = await fetch('/data/gps-interference.json', { signal });

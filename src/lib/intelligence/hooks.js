@@ -7,6 +7,10 @@ import {
   fetchACLEDEvents,
   fetchGpsInterference,
   fetchWingbitsDetails,
+  fetchUSGSEarthquakes,
+  fetchGDACSAlerts,
+  fetchCISAKEV,
+  fetchCISAAlerts,
 } from './api';
 import {
   ALL_RSS_FEEDS,
@@ -151,6 +155,129 @@ export function useGpsJamming() {
     queryKey: ['intel', 'gps-jamming'],
     queryFn: ({ signal }) => fetchGpsInterference(signal),
     staleTime: 60 * 60_000,
+  });
+}
+
+// ── Natural Disasters (USGS + GDACS) ─────────────────────────────────────────
+export function useNaturalDisasters() {
+  return useQuery({
+    queryKey: ['intel', 'natural-disasters'],
+    queryFn: async ({ signal }) => {
+      const [usgsRaw, gdacsRaw] = await Promise.allSettled([
+        fetchUSGSEarthquakes(signal),
+        fetchGDACSAlerts(signal),
+      ]);
+
+      // USGS earthquakes → normalized events
+      const earthquakes = usgsRaw.status === 'fulfilled'
+        ? (usgsRaw.value.features || []).map(f => ({
+            id: f.id,
+            type: 'earthquake',
+            title: f.properties.title,
+            magnitude: f.properties.mag,
+            depth: f.geometry.coordinates[2],
+            lat: f.geometry.coordinates[1],
+            lon: f.geometry.coordinates[0],
+            place: f.properties.place,
+            url: f.properties.url,
+            occurredAt: new Date(f.properties.time).toISOString(),
+            severity: f.properties.mag >= 7 ? 'critical'
+              : f.properties.mag >= 6 ? 'high'
+              : f.properties.mag >= 5 ? 'medium' : 'low',
+          }))
+        : [];
+
+      // GDACS alerts → normalized events (lat/lon from geo: field in RSS)
+      const gdacs = gdacsRaw.status === 'fulfilled'
+        ? (gdacsRaw.value || []).slice(0, 30).map((item, i) => {
+            // GDACS RSS includes geo:lat/geo:long in description text — parse best-effort
+            const latMatch = (item.description || '').match(/lat[itude]*[:\s]+(-?\d+\.?\d*)/i);
+            const lonMatch = (item.description || '').match(/lon[gitude]*[:\s]+(-?\d+\.?\d*)/i);
+            return {
+              id: `gdacs-${i}`,
+              type: classifyGDACS(item.title),
+              title: item.title,
+              magnitude: null,
+              lat: latMatch ? parseFloat(latMatch[1]) : null,
+              lon: lonMatch ? parseFloat(lonMatch[1]) : null,
+              place: item.source || 'Global',
+              url: item.link,
+              occurredAt: item.pubDate || null,
+              severity: /red/i.test(item.title) ? 'critical'
+                : /orange/i.test(item.title) ? 'high' : 'medium',
+            };
+          }).filter(e => e.lat && e.lon)
+        : [];
+
+      const events = [...earthquakes, ...gdacs]
+        .sort((a, b) => new Date(b.occurredAt) - new Date(a.occurredAt));
+
+      return { events, earthquakeCount: earthquakes.length, gdacsCount: gdacs.length };
+    },
+    staleTime: 10 * 60_000,
+    refetchInterval: 15 * 60_000,
+  });
+}
+
+function classifyGDACS(title = '') {
+  const t = title.toLowerCase();
+  if (/earthquake|quake/i.test(t)) return 'earthquake';
+  if (/flood/i.test(t)) return 'flood';
+  if (/cyclone|hurricane|typhoon|tropical/i.test(t)) return 'cyclone';
+  if (/volcano/i.test(t)) return 'volcano';
+  if (/tsunami/i.test(t)) return 'tsunami';
+  if (/drought/i.test(t)) return 'drought';
+  return 'disaster';
+}
+
+// ── Cyber Threats (CISA KEV + advisories) ───────────────────────────────────
+export function useCyberThreats() {
+  return useQuery({
+    queryKey: ['intel', 'cyber-threats'],
+    queryFn: async ({ signal }) => {
+      const [kevRaw, alertsRaw] = await Promise.allSettled([
+        fetchCISAKEV(signal),
+        fetchCISAAlerts(signal),
+      ]);
+
+      // CISA KEV: last 30 entries, newest first
+      const kev = kevRaw.status === 'fulfilled'
+        ? (kevRaw.value.vulnerabilities || [])
+            .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
+            .slice(0, 30)
+            .map(v => ({
+              id: v.cveID,
+              cve: v.cveID,
+              vendor: v.vendorProject,
+              product: v.product,
+              name: v.vulnerabilityName,
+              description: v.shortDescription,
+              dateAdded: v.dateAdded,
+              dueDate: v.dueDate,
+              ransomware: v.knownRansomwareCampaignUse === 'Known',
+              url: `https://www.cve.org/CVERecord?id=${v.cveID}`,
+            }))
+        : [];
+
+      // CISA alerts RSS: advisory headlines
+      const alerts = alertsRaw.status === 'fulfilled'
+        ? (alertsRaw.value || []).slice(0, 20).map((item, i) => ({
+            id: `alert-${i}`,
+            title: item.title,
+            link: item.link,
+            source: item.source || 'CISA',
+            pubDate: item.pubDate,
+            snippet: item.description,
+            severity: /critical/i.test(item.title) ? 'critical'
+              : /high/i.test(item.title) ? 'high'
+              : /medium/i.test(item.title) ? 'medium' : 'low',
+          }))
+        : [];
+
+      return { kev, alerts, kevCount: kev.length, ransomwareCount: kev.filter(v => v.ransomware).length };
+    },
+    staleTime: 60 * 60_000,   // KEV list updates ~daily
+    refetchInterval: 60 * 60_000,
   });
 }
 

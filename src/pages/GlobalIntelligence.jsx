@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Globe2, Plane, Newspaper, Satellite, Radio, ShieldAlert, Rss, Shield, Anchor, BarChart3, Siren } from 'lucide-react';
+import { Globe2, Plane, Newspaper, Satellite, Radio, ShieldAlert, Rss, Shield, Anchor, BarChart3, Siren, Zap, AlertTriangle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { base44 } from '@/api/base44Client';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -16,6 +16,8 @@ import {
   MaritimePanel,
   MarketSignalsPanel,
   ConflictAlertsPanel,
+  DisastersPanel,
+  CyberThreatsPanel,
 } from '@/components/capabilities/global-intelligence';
 
 const brandColors = {
@@ -35,6 +37,8 @@ const DATA_TABS = [
   { id: 'maritime', label: 'Maritime', icon: Anchor },
   { id: 'markets', label: 'Markets', icon: BarChart3 },
   { id: 'conflicts', label: 'Conflicts', icon: Siren },
+  { id: 'disasters', label: 'Disasters', icon: AlertTriangle },
+  { id: 'cyber',     label: 'Cyber',     icon: Zap },
 ];
 
 export default function GlobalIntelligence() {
@@ -108,7 +112,7 @@ export default function GlobalIntelligence() {
           className="glass-card border border-slate-200/50 rounded-2xl shadow-lg p-6"
         >
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-5 sm:grid-cols-10 gap-1 bg-slate-100/50 p-1.5 rounded-xl mb-6">
+            <TabsList className="grid w-full grid-cols-6 sm:grid-cols-12 gap-1 bg-slate-100/50 p-1.5 rounded-xl mb-6">
               {DATA_TABS.map(tab => {
                 const Icon = tab.icon;
                 return (
@@ -137,6 +141,8 @@ export default function GlobalIntelligence() {
             <TabsContent value="maritime"><ErrorBoundary label="Maritime">{activeTab === 'maritime' && <MaritimePanel />}</ErrorBoundary></TabsContent>
             <TabsContent value="markets"><ErrorBoundary label="Markets">{activeTab === 'markets' && <MarketSignalsPanel />}</ErrorBoundary></TabsContent>
             <TabsContent value="conflicts"><ErrorBoundary label="Conflicts">{activeTab === 'conflicts' && <ConflictAlertsPanel />}</ErrorBoundary></TabsContent>
+            <TabsContent value="disasters"><ErrorBoundary label="Disasters">{activeTab === 'disasters' && <DisastersPanel />}</ErrorBoundary></TabsContent>
+            <TabsContent value="cyber"><ErrorBoundary label="Cyber Threats">{activeTab === 'cyber' && <CyberThreatsPanel />}</ErrorBoundary></TabsContent>
           </Tabs>
         </motion.div>
 

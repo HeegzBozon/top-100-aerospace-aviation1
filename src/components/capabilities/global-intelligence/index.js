@@ -9,3 +9,5 @@ export { MilitaryPosturePanel } from './MilitaryPosturePanel';
 export { MaritimePanel } from './MaritimePanel';
 export { MarketSignalsPanel } from './MarketSignalsPanel';
 export { ConflictAlertsPanel } from './ConflictAlertsPanel';
+export { DisastersPanel } from './DisastersPanel';
+export { CyberThreatsPanel } from './CyberThreatsPanel';
