@@ -41,14 +41,32 @@ export const SATELLITE_TYPE_COLORS = {
 };
 
 export const THREAT_COLORS = {
+  1: 'bg-slate-100 text-slate-600 border-slate-200',
   2: 'bg-yellow-100 text-yellow-700 border-yellow-200',
   3: 'bg-orange-100 text-orange-700 border-orange-200',
   4: 'bg-red-100 text-red-700 border-red-200',
+  5: 'bg-red-200 text-red-900 border-red-400',
 };
 
-export const THREAT_LABELS = { 1: 'Low', 2: 'Medium', 3: 'High', 4: 'Critical' };
+export const THREAT_LABELS = { 1: 'Low', 2: 'Medium', 3: 'High', 4: 'Critical', 5: 'Severe' };
 
-export const AEROSPACE_ENTITIES = ['Boeing', 'Airbus', 'NASA', 'SpaceX', 'FAA', 'ICAO'];
+export const AEROSPACE_ENTITIES = [
+  // Manufacturers & primes
+  'Boeing', 'Airbus', 'Lockheed Martin', 'Raytheon', 'Northrop Grumman',
+  'General Dynamics', 'BAE Systems', 'Thales', 'Leonardo', 'Safran',
+  'Pratt & Whitney', 'GE Aviation', 'Rolls-Royce', 'Honeywell',
+  'L3Harris', 'SAIC', 'Leidos', 'Textron', 'Embraer', 'Dassault',
+  // Space
+  'SpaceX', 'NASA', 'ESA', 'Blue Origin', 'Rocket Lab', 'ULA',
+  'Arianespace', 'ISRO', 'JAXA', 'Roscosmos',
+  // Regulators & bodies
+  'EASA', 'NATO', 'Pentagon', 'DARPA',
+  // Programs
+  'F-35', 'F-22', 'B-21', 'A400M', 'C-17', 'MQ-9',
+  'Starlink', 'Starship', 'Artemis',
+  // Short tokens (word-boundary matched in code)
+  'FAA', 'ICAO',
+];
 
 // Aviation & aerospace industry
 export const AVIATION_RSS_FEEDS = [
@@ -58,8 +76,12 @@ export const AVIATION_RSS_FEEDS = [
   'https://aviationweek.com/rss/all',
   'https://www.aviationpros.com/rss',
   'https://aerospaceamerica.aiaa.org/feed/',
-  'https://www.flightglobal.com/rss',
+  'https://www.flightglobal.com/rss/news',      // corrected path
   'https://theaviationgeekclub.com/feed/',
+  'https://theaviationist.com/feed/',
+  'https://www.aopa.org/news-and-media/rss/aopa-news.xml',
+  'https://www.c4isrnet.com/rss/all',
+  'https://www.airforcemag.com/feed/',
 ];
 
 // Defense & geopolitics
@@ -71,6 +93,9 @@ export const DEFENSE_RSS_FEEDS = [
   'https://www.navalnews.com/feed/',
   'https://www.thedrive.com/the-war-zone/rss',
   'https://taskandpurpose.com/feed/',
+  'https://navaltoday.com/feed/',
+  'https://www.defenseindustrydaily.com/feed/',
+  'https://www.armytimes.com/rss/news/',
 ];
 
 // Space & technology
@@ -79,6 +104,8 @@ export const SPACE_RSS_FEEDS = [
   'https://www.nasaspaceflight.com/feed/',
   'https://spaceflightnow.com/feed/',
   'https://arstechnica.com/tag/space/feed/',
+  'https://payloadspace.com/feed/',
+  'https://www.bbc.co.uk/news/technology/rss.xml',
 ];
 
 // All feeds combined for RSS raw query
