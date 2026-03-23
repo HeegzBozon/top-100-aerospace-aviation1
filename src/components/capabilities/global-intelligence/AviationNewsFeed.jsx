@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAviationNews } from '@/lib/intelligence/hooks';
 import { THREAT_COLORS, THREAT_LABELS } from '@/lib/intelligence/constants';
+import { LaunchPartyWidget } from './LaunchPartyWidget';
 
 const safeUrl = (url) => (url && /^https?:\/\//i.test(url) ? url : undefined);
 
