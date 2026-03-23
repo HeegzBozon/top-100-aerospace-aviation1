@@ -80,23 +80,8 @@ export default function HomePage() {
     queryFn: () => base44.entities.HonoreeMention.list('-published_at', 100),
   });
 
-  // Page view counts from analytics events (last 30 days)
-  // Keys are page names matching TRENDING_PAGES[].page
-  const { data: pageViewsRaw = [] } = useQuery({
-    queryKey: ['page-view-events'],
-    queryFn: () => base44.entities.FestivalStamp.filter({ type: 'page_view' }, '-created_date', 500),
-    // FestivalStamp is a lightweight fallback; real apps would use an analytics aggregate endpoint
-    enabled: false, // disabled — replace with real analytics query if available
-  });
-
-  // Build pageViews map: { PageName: viewCount }
-  const pageViews = useMemo(() => {
-    const map = {};
-    pageViewsRaw.forEach(ev => {
-      if (ev.page) map[ev.page] = (map[ev.page] || 0) + 1;
-    });
-    return map;
-  }, [pageViewsRaw]);
+  // pageViews: empty map — analytics aggregate not yet wired to a real endpoint
+  const pageViews = {};
 
   // Flight Plan milestones (hardcoded to match FlightPlanTab)
   const FLIGHT_PLAN_MILESTONES = [
@@ -158,8 +143,8 @@ export default function HomePage() {
   const remainingNominees = shuffledNominees.filter(n => !nomineeIds.has(n.id));
   const nomineeItems = remainingNominees.slice(0, 24).map(n => mapNomineeToCard(n, null));
 
-  // Compute composite trending score per nominee
-  const thirtyDaysAgo = subDays(new Date(), 30);
+  // Stable date boundary — memoized so useMemo deps don't churn on every render
+  const thirtyDaysAgo = useMemo(() => subDays(new Date(), 30), []);
 
   // Build feed signal count map by nominee_id (last 30 days)
   const signalCountMap = useMemo(() => {
