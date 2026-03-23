@@ -8,17 +8,37 @@ import {
   fetchGpsInterference,
 } from './api';
 import {
-  AVIATION_RSS_FEEDS,
+  ALL_RSS_FEEDS,
   MILITARY_HEX_PREFIXES,
   DEFENSE_TICKERS,
 } from './constants';
+import { enrichFlight } from './enrichment';
 
-// ── Military Flights ──────────────────────────────────────
+// ── Shared base query configs (React Query deduplicates identical queryKeys) ──
+
+const OPENSKY_BASE = {
+  queryKey: ['intel', 'opensky-raw'],
+  queryFn: ({ signal }) => fetchOpenSkyStates(signal),
+  staleTime: 30_000,
+  refetchInterval: 60_000,
+};
+
+const RSS_BASE = {
+  queryKey: ['intel', 'rss-raw'],
+  queryFn: async ({ signal }) => {
+    const results = await Promise.allSettled(
+      ALL_RSS_FEEDS.map(url => fetchRSSFeed(url, signal))
+    );
+    return results.filter(r => r.status === 'fulfilled').flatMap(r => r.value);
+  },
+  staleTime: 5 * 60_000,
+};
+
+// ── Military Flights (derived from shared OpenSky query) ──────────────────
 export function useMilitaryFlights() {
   return useQuery({
-    queryKey: ['intel', 'military-flights'],
-    queryFn: async ({ signal }) => {
-      const data = await fetchOpenSkyStates(signal);
+    ...OPENSKY_BASE,
+    select: (data) => {
       const flights = (data.states || [])
         .map(s => ({
           icao24: s[0],
@@ -26,7 +46,8 @@ export function useMilitaryFlights() {
           country: s[2],
           lon: s[5],
           lat: s[6],
-          altitude: s[7],
+          altitudeM: s[7],                        // raw meters from OpenSky
+          altitudeFt: s[7] ? Math.round(s[7] * 3.28084) : null,
           onGround: s[8],
           velocity: s[9],
           heading: s[10],
@@ -36,27 +57,36 @@ export function useMilitaryFlights() {
         .filter(s => {
           const hex = (s.icao24 || '').toUpperCase();
           return MILITARY_HEX_PREFIXES.some(p => hex.startsWith(p));
-        });
+        })
+        .map(f => ({ ...f, ...enrichFlight(f.icao24) }));
       return { flights, total: flights.length, clusters: [] };
     },
-    staleTime: 30_000,
-    refetchInterval: 60_000,
   });
 }
 
-// ── Aviation News ─────────────────────────────────────────
+// ── Theater Posture (derived from same shared OpenSky query — zero extra fetch) ─
+export function useTheaterPosture() {
+  return useQuery({
+    ...OPENSKY_BASE,
+    select: (data) => {
+      const militaryFlights = (data.states || [])
+        .filter(s =>
+          MILITARY_HEX_PREFIXES.some(p => (s[0] || '').toUpperCase().startsWith(p))
+        )
+        .filter(s => s[6] && s[5]);
+      return { theaters: computeTheaterPosture(militaryFlights) };
+    },
+  });
+}
+
+// ── Aviation News (derived from shared RSS query) ─────────────────────────
 export function useAviationNews() {
   return useQuery({
-    queryKey: ['intel', 'aviation-news'],
-    queryFn: async ({ signal }) => {
-      const results = await Promise.allSettled(
-        AVIATION_RSS_FEEDS.map(url => fetchRSSFeed(url, signal))
-      );
-      const items = results
-        .filter(r => r.status === 'fulfilled')
-        .flatMap(r => r.value)
+    ...RSS_BASE,
+    select: (items) => ({
+      items: items
         .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
-        .slice(0, 30)
+        .slice(0, 40)
         .map((item, i) => ({
           id: i,
           title: item.title,
@@ -65,14 +95,21 @@ export function useAviationNews() {
           source_name: item.source,
           published_at: item.pubDate,
           matched_entities: [],
-        }));
-      return { items };
-    },
-    staleTime: 5 * 60_000,
+          category: classifyNewsItem(item),
+        })),
+    }),
   });
 }
 
-// ── Satellites ────────────────────────────────────────────
+// ── News Digest (derived from same shared RSS query — zero extra fetch) ──
+export function useNewsFeedDigest() {
+  return useQuery({
+    ...RSS_BASE,
+    select: (items) => ({ categories: categorizeNews(items) }),
+  });
+}
+
+// ── Satellites (Celestrak TLE) ────────────────────────────────────────────
 export function useSatellites() {
   return useQuery({
     queryKey: ['intel', 'satellites'],
@@ -95,7 +132,7 @@ export function useSatellites() {
   });
 }
 
-// ── GPS Interference ──────────────────────────────────────
+// ── GPS Interference ──────────────────────────────────────────────────────
 export function useGpsJamming() {
   return useQuery({
     queryKey: ['intel', 'gps-jamming'],
@@ -104,38 +141,20 @@ export function useGpsJamming() {
   });
 }
 
-// ── News Digest ───────────────────────────────────────────
-export function useNewsFeedDigest() {
-  return useQuery({
-    queryKey: ['intel', 'news-digest'],
-    queryFn: async ({ signal }) => {
-      const results = await Promise.allSettled(
-        AVIATION_RSS_FEEDS.map(url => fetchRSSFeed(url, signal))
-      );
-      const allItems = results
-        .filter(r => r.status === 'fulfilled')
-        .flatMap(r => r.value);
-      return { categories: categorizeNews(allItems) };
-    },
-    staleTime: 5 * 60_000,
-  });
-}
-
-// ── Risk Scores ───────────────────────────────────────────
+// ── Risk Scores (ACLED → CII) ─────────────────────────────────────────────
 export function useRiskScores() {
   return useQuery({
     queryKey: ['intel', 'risk-scores'],
     queryFn: async ({ signal }) => {
       const data = await fetchACLEDEvents({ limit: '500' }, signal);
-      const events = data.data || [];
-      return { cii_scores: computeCII(events), strategic_risks: [] };
+      return { cii_scores: computeCII(data.data || []), strategic_risks: [] };
     },
     staleTime: 30 * 60_000,
     enabled: !!(import.meta.env.VITE_ACLED_API_KEY),
   });
 }
 
-// ── Market Quotes ─────────────────────────────────────────
+// ── Market Quotes (Finnhub) ──────────────────────────────────────────────
 export function useDefenseMarketQuotes() {
   return useQuery({
     queryKey: ['intel', 'market-quotes'],
@@ -163,7 +182,7 @@ export function useDefenseMarketQuotes() {
   });
 }
 
-// ── Conflict Events ───────────────────────────────────────
+// ── Conflict Events (ACLED) ──────────────────────────────────────────────
 export function useConflictEvents(params = {}) {
   return useQuery({
     queryKey: ['intel', 'conflict-events', params],
@@ -190,25 +209,7 @@ export function useConflictEvents(params = {}) {
   });
 }
 
-// ── Theater Posture ───────────────────────────────────────
-export function useTheaterPosture() {
-  return useQuery({
-    queryKey: ['intel', 'theater-posture'],
-    queryFn: async ({ signal }) => {
-      const data = await fetchOpenSkyStates(signal);
-      const militaryFlights = (data.states || [])
-        .filter(s =>
-          MILITARY_HEX_PREFIXES.some(p => (s[0] || '').toUpperCase().startsWith(p))
-        )
-        .filter(s => s[6] && s[5]);
-      return { theaters: computeTheaterPosture(militaryFlights) };
-    },
-    staleTime: 5 * 60_000,
-    refetchInterval: 5 * 60_000,
-  });
-}
-
-// ── Helpers ───────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────
 
 function classifySatellite(name) {
   const n = (name || '').toUpperCase();
@@ -219,27 +220,20 @@ function classifySatellite(name) {
   return null;
 }
 
+function classifyNewsItem(item) {
+  const text = `${item.title} ${item.description}`.toLowerCase();
+  if (/war|conflict|sanction|military|nato|missile|troops/.test(text)) return 'geopolitics';
+  if (/defense|lockheed|raytheon|northrop|weapon|pentagon/.test(text)) return 'defense';
+  if (/ai|space|satellite|launch|rocket|spacex|starship/.test(text)) return 'technology';
+  if (/stock|market|earnings|revenue|profit|shares/.test(text)) return 'markets';
+  return 'aviation';
+}
+
 function categorizeNews(items) {
-  const cats = {
-    geopolitics: [],
-    aviation: [],
-    technology: [],
-    markets: [],
-    defense: [],
-  };
+  const cats = { geopolitics: [], aviation: [], technology: [], markets: [], defense: [] };
   for (const item of items) {
-    const text = `${item.title} ${item.description}`.toLowerCase();
-    if (/war|conflict|sanction|military|nato|missile/.test(text))
-      cats.geopolitics.push(item);
-    else if (/flight|airline|airport|faa|airbus|boeing/.test(text))
-      cats.aviation.push(item);
-    else if (/ai|space|satellite|launch|rocket|spacex/.test(text))
-      cats.technology.push(item);
-    else if (/stock|market|earnings|revenue|profit/.test(text))
-      cats.markets.push(item);
-    else if (/defense|lockheed|raytheon|northrop|weapon/.test(text))
-      cats.defense.push(item);
-    else cats.aviation.push(item);
+    const cat = classifyNewsItem(item);
+    cats[cat].push(item);
   }
   const result = {};
   for (const [key, arr] of Object.entries(cats)) {
@@ -267,8 +261,7 @@ function computeCII(acledEvents) {
   for (const e of acledEvents) {
     const c = e.country;
     if (!c) continue;
-    if (!byCountry[c])
-      byCountry[c] = { region: c, events: 0, fatalities: 0, battles: 0 };
+    if (!byCountry[c]) byCountry[c] = { region: c, events: 0, fatalities: 0, battles: 0 };
     byCountry[c].events++;
     byCountry[c].fatalities += parseInt(e.fatalities) || 0;
     if (e.event_type === 'Battles') byCountry[c].battles++;
@@ -288,23 +281,17 @@ function computeCII(acledEvents) {
 
 function computeTheaterPosture(militaryStates) {
   const theaters = {
-    EUCOM: { bounds: [35, -30, 72, 40], flights: 0 },
-    CENTCOM: { bounds: [10, 25, 45, 75], flights: 0 },
-    INDOPACOM: { bounds: [-10, 60, 50, 180], flights: 0 },
-    NORTHCOM: { bounds: [15, -170, 72, -50], flights: 0 },
-    SOUTHCOM: { bounds: [-60, -120, 15, -30], flights: 0 },
-    AFRICOM: { bounds: [-35, -20, 37, 55], flights: 0 },
+    EUCOM:     { bounds: [35, -30, 72, 40],    flights: 0 },
+    CENTCOM:   { bounds: [10, 25, 45, 75],     flights: 0 },
+    INDOPACOM: { bounds: [-10, 60, 50, 180],   flights: 0 },
+    NORTHCOM:  { bounds: [15, -170, 72, -50],  flights: 0 },
+    SOUTHCOM:  { bounds: [-60, -120, 15, -30], flights: 0 },
+    AFRICOM:   { bounds: [-35, -20, 37, 55],   flights: 0 },
   };
   for (const s of militaryStates) {
-    const lat = s[6];
-    const lon = s[5];
+    const lat = s[6], lon = s[5];
     for (const [, t] of Object.entries(theaters)) {
-      if (
-        lat >= t.bounds[0] &&
-        lon >= t.bounds[1] &&
-        lat <= t.bounds[2] &&
-        lon <= t.bounds[3]
-      ) {
+      if (lat >= t.bounds[0] && lon >= t.bounds[1] && lat <= t.bounds[2] && lon <= t.bounds[3]) {
         t.flights++;
         break;
       }
@@ -312,8 +299,7 @@ function computeTheaterPosture(militaryStates) {
   }
   return Object.entries(theaters).map(([theater, t]) => ({
     theater,
-    postureLevel:
-      t.flights > 50 ? 'heightened' : t.flights > 20 ? 'raised' : 'normal',
+    postureLevel: t.flights > 50 ? 'heightened' : t.flights > 20 ? 'raised' : 'normal',
     activeFlights: t.flights,
     trackedVessels: null,
     activeOperations: [],

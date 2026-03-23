@@ -50,16 +50,42 @@ export const THREAT_LABELS = { 1: 'Low', 2: 'Medium', 3: 'High', 4: 'Critical' }
 
 export const AEROSPACE_ENTITIES = ['Boeing', 'Airbus', 'NASA', 'SpaceX', 'FAA', 'ICAO'];
 
+// Aviation & aerospace industry
 export const AVIATION_RSS_FEEDS = [
-  'https://www.flightglobal.com/rss',
   'https://simpleflying.com/feed/',
   'https://www.aerotime.aero/feed',
-  'https://thepointsguy.com/feed/',
   'https://airlinegeeks.com/feed/',
-  'https://onemileatatime.com/feed/',
-  'https://viewfromthewing.com/feed/',
-  'https://www.aviationpros.com/rss',
   'https://aviationweek.com/rss/all',
+  'https://www.aviationpros.com/rss',
+  'https://aerospaceamerica.aiaa.org/feed/',
+  'https://www.flightglobal.com/rss',
+  'https://theaviationgeekclub.com/feed/',
+];
+
+// Defense & geopolitics
+export const DEFENSE_RSS_FEEDS = [
+  'https://www.defensenews.com/rss/',
+  'https://breakingdefense.com/feed/',
+  'https://www.janes.com/feeds/news',
+  'https://www.militarytimes.com/rss/news/',
+  'https://www.navalnews.com/feed/',
+  'https://www.thedrive.com/the-war-zone/rss',
+  'https://taskandpurpose.com/feed/',
+];
+
+// Space & technology
+export const SPACE_RSS_FEEDS = [
+  'https://spacenews.com/feed/',
+  'https://www.nasaspaceflight.com/feed/',
+  'https://spaceflightnow.com/feed/',
+  'https://arstechnica.com/tag/space/feed/',
+];
+
+// All feeds combined for RSS raw query
+export const ALL_RSS_FEEDS = [
+  ...AVIATION_RSS_FEEDS,
+  ...DEFENSE_RSS_FEEDS,
+  ...SPACE_RSS_FEEDS,
 ];
 
 // ICAO hex prefixes used by military operators

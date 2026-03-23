@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Globe2, Plane, Newspaper, Satellite, Radio, ShieldAlert, Rss, Shield, Anchor, BarChart3, Siren } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { base44 } from '@/api/base44Client';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 import {
   WorldMonitorGlobe,
   AviationNewsFeed,
@@ -126,16 +127,16 @@ export default function GlobalIntelligence() {
               })}
             </TabsList>
 
-            <TabsContent value="news">{activeTab === 'news' && <AviationNewsFeed />}</TabsContent>
-            <TabsContent value="flights">{activeTab === 'flights' && <LiveFlightsPanel />}</TabsContent>
-            <TabsContent value="satellites">{activeTab === 'satellites' && <SatelliteTracker />}</TabsContent>
-            <TabsContent value="gps">{activeTab === 'gps' && <GpsJammingPanel />}</TabsContent>
-            <TabsContent value="risk">{activeTab === 'risk' && <RiskScoresPanel />}</TabsContent>
-            <TabsContent value="digest">{activeTab === 'digest' && <NewsFeedDigest />}</TabsContent>
-            <TabsContent value="posture">{activeTab === 'posture' && <MilitaryPosturePanel />}</TabsContent>
-            <TabsContent value="maritime">{activeTab === 'maritime' && <MaritimePanel />}</TabsContent>
-            <TabsContent value="markets">{activeTab === 'markets' && <MarketSignalsPanel />}</TabsContent>
-            <TabsContent value="conflicts">{activeTab === 'conflicts' && <ConflictAlertsPanel />}</TabsContent>
+            <TabsContent value="news"><ErrorBoundary label="Aviation News">{activeTab === 'news' && <AviationNewsFeed />}</ErrorBoundary></TabsContent>
+            <TabsContent value="flights"><ErrorBoundary label="Live Flights">{activeTab === 'flights' && <LiveFlightsPanel />}</ErrorBoundary></TabsContent>
+            <TabsContent value="satellites"><ErrorBoundary label="Satellites">{activeTab === 'satellites' && <SatelliteTracker />}</ErrorBoundary></TabsContent>
+            <TabsContent value="gps"><ErrorBoundary label="GPS Signals">{activeTab === 'gps' && <GpsJammingPanel />}</ErrorBoundary></TabsContent>
+            <TabsContent value="risk"><ErrorBoundary label="Risk Scores">{activeTab === 'risk' && <RiskScoresPanel />}</ErrorBoundary></TabsContent>
+            <TabsContent value="digest"><ErrorBoundary label="News Digest">{activeTab === 'digest' && <NewsFeedDigest />}</ErrorBoundary></TabsContent>
+            <TabsContent value="posture"><ErrorBoundary label="Mil. Posture">{activeTab === 'posture' && <MilitaryPosturePanel />}</ErrorBoundary></TabsContent>
+            <TabsContent value="maritime"><ErrorBoundary label="Maritime">{activeTab === 'maritime' && <MaritimePanel />}</ErrorBoundary></TabsContent>
+            <TabsContent value="markets"><ErrorBoundary label="Markets">{activeTab === 'markets' && <MarketSignalsPanel />}</ErrorBoundary></TabsContent>
+            <TabsContent value="conflicts"><ErrorBoundary label="Conflicts">{activeTab === 'conflicts' && <ConflictAlertsPanel />}</ErrorBoundary></TabsContent>
           </Tabs>
         </motion.div>
 
