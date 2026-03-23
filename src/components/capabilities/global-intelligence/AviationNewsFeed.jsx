@@ -1,35 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Newspaper, ExternalLink, AlertCircle, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getAviationNews } from '@/functions/getAviationNews';
+import { useAviationNews } from '@/lib/intelligence/hooks';
 
 const safeUrl = (url) => (url && /^https?:\/\//i.test(url) ? url : undefined);
 
 export function AviationNewsFeed() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, isLoading, isError } = useAviationNews();
+  const items = data?.items || [];
 
-  useEffect(() => {
-    getAviationNews({})
-      .then(res => {
-        if (res.data?.error) throw new Error(res.data.error);
-        setItems(res.data?.items || []);
-      })
-      .catch(err => setError(err.message || 'Unable to load aviation news'))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <PanelLoader label="aviation news" />;
-  if (error) return <PanelError message={error} />;
+  if (isLoading) return <PanelLoader label="aviation news" />;
+  if (isError) return <PanelError message="Unable to load aviation news" />;
   if (!items.length) return <PanelEmpty label="No aviation news available" />;
 
   return (
     <div className="space-y-3">
       {items.map((item, i) => (
-        <motion.div key={item.id || i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+        <motion.div key={item.id ?? i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
           <Card className="glass-card border-slate-200/50 hover:shadow-md transition-all duration-200">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">

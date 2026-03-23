@@ -1,28 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Radio, AlertTriangle, AlertCircle, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getGpsJamming } from '@/functions/getGpsJamming';
+import { useGpsJamming } from '@/lib/intelligence/hooks';
 
 export function GpsJammingPanel() {
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, isLoading, isError } = useGpsJamming();
+  const events = data?.events || [];
 
-  useEffect(() => {
-    getGpsJamming({})
-      .then(res => {
-        if (res.data?.error) throw new Error(res.data.error);
-        setEvents(res.data?.events || []);
-      })
-      .catch(err => setError(err.message || 'Unable to load GPS interference data'))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <PanelLoader label="GPS interference data" />;
-  if (error) return <PanelError message={error} />;
-
+  if (isLoading) return <PanelLoader label="GPS interference data" />;
+  if (isError) return <PanelError message="Unable to load GPS interference data" />;
   if (!events.length) return (
     <div className="flex flex-col items-center justify-center py-16 gap-3">
       <Radio className="w-8 h-8 text-green-400" />

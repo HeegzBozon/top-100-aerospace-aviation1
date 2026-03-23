@@ -1,35 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Satellite, AlertCircle, Loader2, Globe2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getSatellites } from '@/functions/getSatellites';
-
-const TYPE_COLORS = {
-  military: 'bg-red-100 text-red-700 border-red-200',
-  station: 'bg-blue-100 text-blue-700 border-blue-200',
-  weather: 'bg-purple-100 text-purple-700 border-purple-200',
-  communication: 'bg-green-100 text-green-700 border-green-200',
-};
+import { useSatellites } from '@/lib/intelligence/hooks';
+import { SATELLITE_TYPE_COLORS } from '@/lib/intelligence/constants';
 
 export function SatelliteTracker() {
-  const [satellites, setSatellites] = useState([]);
+  const { data, isLoading, isError } = useSatellites();
   const [filter, setFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const satellites = data?.satellites || [];
 
-  useEffect(() => {
-    getSatellites({})
-      .then(res => {
-        if (res.data?.error) throw new Error(res.data.error);
-        setSatellites(res.data?.satellites || []);
-      })
-      .catch(err => setError(err.message || 'Unable to load satellite data'))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <PanelLoader label="satellites" />;
-  if (error) return <PanelError message={error} />;
+  if (isLoading) return <PanelLoader label="satellites" />;
+  if (isError) return <PanelError message="Unable to load satellite data" />;
 
   const types = ['all', ...new Set(satellites.map(s => s.type).filter(Boolean))];
   const displayed = filter === 'all' ? satellites : satellites.filter(s => s.type === filter);
@@ -70,7 +53,7 @@ export function SatelliteTracker() {
                       <p className="text-xs text-slate-500">{sat.country || '—'}{sat.alt ? ` · ${sat.alt} km` : ''}</p>
                     </div>
                   </div>
-                  {sat.type && <Badge className={`text-xs capitalize flex-shrink-0 ${TYPE_COLORS[sat.type] || 'bg-slate-100 text-slate-600'}`}>{sat.type}</Badge>}
+                  {sat.type && <Badge className={`text-xs capitalize flex-shrink-0 ${SATELLITE_TYPE_COLORS[sat.type] || 'bg-slate-100 text-slate-600'}`}>{sat.type}</Badge>}
                 </div>
               </CardContent></Card>
             </motion.div>

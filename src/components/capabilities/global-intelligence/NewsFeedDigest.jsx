@@ -3,37 +3,23 @@ import { motion } from 'framer-motion';
 import { Rss, ExternalLink, AlertCircle, Loader2, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getNewsFeedDigest } from '@/functions/getNewsFeedDigest';
+import { useNewsFeedDigest } from '@/lib/intelligence/hooks';
+import { THREAT_COLORS, THREAT_LABELS } from '@/lib/intelligence/constants';
 
 const safeUrl = (url) => (url && /^https?:\/\//i.test(url) ? url : undefined);
-const THREAT_COLORS = {
-  2: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  3: 'bg-orange-100 text-orange-700 border-orange-200',
-  4: 'bg-red-100 text-red-700 border-red-200',
-};
-const THREAT_LABELS = { 1: 'Low', 2: 'Elevated', 3: 'High', 4: 'Critical' };
 
 export function NewsFeedDigest() {
-  const [categories, setCategories] = useState({});
+  const { data, isLoading, isError } = useNewsFeedDigest();
   const [activeCategory, setActiveCategory] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const categories = data?.categories || {};
 
   useEffect(() => {
-    getNewsFeedDigest({})
-      .then(res => {
-        if (res.data?.error) throw new Error(res.data.error);
-        const cats = res.data?.categories || {};
-        setCategories(cats);
-        const firstKey = Object.keys(cats)[0];
-        if (firstKey) setActiveCategory(firstKey);
-      })
-      .catch(err => setError(err.message || 'Unable to load news digest'))
-      .finally(() => setLoading(false));
-  }, []);
+    const firstKey = Object.keys(categories)[0];
+    if (firstKey && !activeCategory) setActiveCategory(firstKey);
+  }, [categories, activeCategory]);
 
-  if (loading) return <PanelLoader label="news digest" />;
-  if (error) return <PanelError message={error} />;
+  if (isLoading) return <PanelLoader label="news digest" />;
+  if (isError) return <PanelError message="Unable to load news digest" />;
 
   const categoryKeys = Object.keys(categories);
   const activeItems = activeCategory ? (categories[activeCategory]?.items || []) : [];

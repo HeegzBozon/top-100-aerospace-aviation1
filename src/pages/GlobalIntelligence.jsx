@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Globe2, Plane, Newspaper, Satellite, Radio, ShieldAlert, Rss } from 'lucide-react';
+import { Globe2, Plane, Newspaper, Satellite, Radio, ShieldAlert, Rss, Shield, Anchor, BarChart3, Siren } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { base44 } from '@/api/base44Client';
 import {
@@ -11,6 +11,10 @@ import {
   GpsJammingPanel,
   RiskScoresPanel,
   NewsFeedDigest,
+  MilitaryPosturePanel,
+  MaritimePanel,
+  MarketSignalsPanel,
+  ConflictAlertsPanel,
 } from '@/components/capabilities/global-intelligence';
 
 const brandColors = {
@@ -26,6 +30,10 @@ const DATA_TABS = [
   { id: 'gps', label: 'GPS Signals', icon: Radio },
   { id: 'risk', label: 'Risk Scores', icon: ShieldAlert },
   { id: 'digest', label: 'News Digest', icon: Rss },
+  { id: 'posture', label: 'Mil. Posture', icon: Shield },
+  { id: 'maritime', label: 'Maritime', icon: Anchor },
+  { id: 'markets', label: 'Markets', icon: BarChart3 },
+  { id: 'conflicts', label: 'Conflicts', icon: Siren },
 ];
 
 export default function GlobalIntelligence() {
@@ -76,13 +84,13 @@ export default function GlobalIntelligence() {
                 Global Intelligence
               </h1>
               <p className="text-sm text-slate-600 mt-2 font-medium">
-                Real-time aerospace, aviation & geopolitical intelligence — powered by World Monitor
+                Real-time aerospace, aviation & geopolitical intelligence — fully independent data feeds
               </p>
             </div>
           </div>
         </motion.div>
 
-        {/* Globe iFrame */}
+        {/* Native Globe */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -99,7 +107,7 @@ export default function GlobalIntelligence() {
           className="glass-card border border-slate-200/50 rounded-2xl shadow-lg p-6"
         >
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 gap-1 bg-slate-100/50 p-1.5 rounded-xl mb-6">
+            <TabsList className="grid w-full grid-cols-5 sm:grid-cols-10 gap-1 bg-slate-100/50 p-1.5 rounded-xl mb-6">
               {DATA_TABS.map(tab => {
                 const Icon = tab.icon;
                 return (
@@ -124,6 +132,10 @@ export default function GlobalIntelligence() {
             <TabsContent value="gps">{activeTab === 'gps' && <GpsJammingPanel />}</TabsContent>
             <TabsContent value="risk">{activeTab === 'risk' && <RiskScoresPanel />}</TabsContent>
             <TabsContent value="digest">{activeTab === 'digest' && <NewsFeedDigest />}</TabsContent>
+            <TabsContent value="posture">{activeTab === 'posture' && <MilitaryPosturePanel />}</TabsContent>
+            <TabsContent value="maritime">{activeTab === 'maritime' && <MaritimePanel />}</TabsContent>
+            <TabsContent value="markets">{activeTab === 'markets' && <MarketSignalsPanel />}</TabsContent>
+            <TabsContent value="conflicts">{activeTab === 'conflicts' && <ConflictAlertsPanel />}</TabsContent>
           </Tabs>
         </motion.div>
 

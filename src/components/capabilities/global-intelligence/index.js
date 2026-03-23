@@ -5,3 +5,7 @@ export { SatelliteTracker } from './SatelliteTracker';
 export { GpsJammingPanel } from './GpsJammingPanel';
 export { RiskScoresPanel } from './RiskScoresPanel';
 export { NewsFeedDigest } from './NewsFeedDigest';
+export { MilitaryPosturePanel } from './MilitaryPosturePanel';
+export { MaritimePanel } from './MaritimePanel';
+export { MarketSignalsPanel } from './MarketSignalsPanel';
+export { ConflictAlertsPanel } from './ConflictAlertsPanel';

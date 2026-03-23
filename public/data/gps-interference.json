@@ -1,0 +1,12 @@
+{
+  "events": [
+    { "id": 1, "region": "Eastern Mediterranean", "lat": 34.5, "lon": 33.5, "severity": "high", "type": "GNSS jamming", "detected_at": "2026-03-20T00:00:00Z" },
+    { "id": 2, "region": "Baltic Sea", "lat": 57.0, "lon": 20.0, "severity": "medium", "type": "GNSS spoofing", "detected_at": "2026-03-19T00:00:00Z" },
+    { "id": 3, "region": "Black Sea", "lat": 43.5, "lon": 34.0, "severity": "high", "type": "GNSS jamming", "detected_at": "2026-03-20T00:00:00Z" },
+    { "id": 4, "region": "Northern Iraq / Syria", "lat": 36.5, "lon": 42.0, "severity": "medium", "type": "GNSS interference", "detected_at": "2026-03-18T00:00:00Z" },
+    { "id": 5, "region": "Northern Norway / Finland", "lat": 69.0, "lon": 28.0, "severity": "low", "type": "GNSS jamming", "detected_at": "2026-03-17T00:00:00Z" },
+    { "id": 6, "region": "Sea of Azov", "lat": 46.0, "lon": 37.0, "severity": "high", "type": "GNSS spoofing", "detected_at": "2026-03-20T00:00:00Z" },
+    { "id": 7, "region": "Persian Gulf", "lat": 26.0, "lon": 52.0, "severity": "medium", "type": "GNSS interference", "detected_at": "2026-03-19T00:00:00Z" },
+    { "id": 8, "region": "South China Sea", "lat": 15.0, "lon": 114.0, "severity": "low", "type": "GNSS spoofing", "detected_at": "2026-03-16T00:00:00Z" }
+  ]
+}

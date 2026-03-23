@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { ShieldAlert, TrendingUp, TrendingDown, Minus, AlertCircle, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { getRiskScores } from '@/functions/getRiskScores';
+import { useRiskScores } from '@/lib/intelligence/hooks';
 
 const TREND_ICONS = {
   1: { icon: TrendingUp, color: 'text-red-500' },
@@ -29,25 +29,21 @@ function RiskBar({ score }) {
 }
 
 export function RiskScoresPanel() {
-  const [ciiScores, setCiiScores] = useState([]);
-  const [strategicRisks, setStrategicRisks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, isLoading, isError } = useRiskScores();
+  const ciiScores = data?.cii_scores || [];
+  const strategicRisks = data?.strategic_risks || [];
 
-  useEffect(() => {
-    getRiskScores({})
-      .then(res => {
-        if (res.data?.error) throw new Error(res.data.error);
-        setCiiScores(res.data?.cii_scores || []);
-        setStrategicRisks(res.data?.strategic_risks || []);
-      })
-      .catch(err => setError(err.message || 'Unable to load risk scores'))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <PanelLoader label="risk scores" />;
-  if (error) return <PanelError message={error} />;
-  if (!ciiScores.length && !strategicRisks.length) return <div className="text-center py-16 text-sm text-slate-400">No risk data available</div>;
+  if (isLoading) return <PanelLoader label="risk scores" />;
+  if (isError) return <PanelError message="Unable to load risk scores" />;
+  if (!ciiScores.length && !strategicRisks.length) {
+    return (
+      <div className="text-center py-16 text-sm text-slate-400">
+        {import.meta.env.VITE_ACLED_API_KEY
+          ? 'No risk data available'
+          : 'Set VITE_ACLED_API_KEY and VITE_ACLED_EMAIL in .env.local to enable risk scoring'}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -69,9 +65,6 @@ export function RiskScoresPanel() {
                       <TrendIcon className={`w-4 h-4 ${trendInfo.color}`} />
                     </div>
                     <RiskBar score={score.combined_score} />
-                    {score.active_crises > 0 && (
-                      <p className="text-xs text-slate-500 mt-1">{score.active_crises} active crisis{score.active_crises > 1 ? 'es' : ''}</p>
-                    )}
                   </CardContent></Card>
                 </motion.div>
               );
@@ -79,10 +72,9 @@ export function RiskScoresPanel() {
           </div>
         </div>
       )}
-
       {strategicRisks.length > 0 && (
         <div>
-          <h3 className="font-semibold text-sm text-slate-800 mb-3">Active Crises (ReliefWeb)</h3>
+          <h3 className="font-semibold text-sm text-slate-800 mb-3">Strategic Risk Assessments</h3>
           <div className="space-y-2">
             {strategicRisks.map((risk, i) => (
               <Card key={i} className="glass-card border-slate-200/50"><CardContent className="p-3">
@@ -93,7 +85,7 @@ export function RiskScoresPanel() {
           </div>
         </div>
       )}
-      <p className="text-xs text-center text-slate-400">Sources: ReliefWeb · Updated live</p>
+      <p className="text-xs text-center text-slate-400">Sources: ACLED · Updated live</p>
     </div>
   );
 }
