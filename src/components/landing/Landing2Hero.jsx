@@ -19,6 +19,16 @@ const brandColors = {
 
 const HERO_SLIDES = [
   {
+    tag: "🛰 PROTOTYPE — LIVE NOW",
+    title: "Global Intelligence",
+    subtitle: "Real-Time Aerospace & Geopolitical Ops",
+    description: "Live military flights, GPS jamming, satellite tracking, conflict alerts, maritime incidents & cyber threats — all on one globe.",
+    cta: "Explore Dashboard",
+    ctaLink: "GlobalIntelligence",
+    image: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1200&auto=format",
+    isPrototype: true,
+  },
+  {
     tag: "NOW LIVE — THE ORBITAL EDITION",
     title: "TOP 100 Women 2025",
     subtitle: "The Official Publication",
