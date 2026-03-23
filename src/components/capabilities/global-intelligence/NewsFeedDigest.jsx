@@ -17,7 +17,7 @@ const CATEGORY_ICONS = {
 };
 
 const safeUrl = (url) => (url && /^https?:\/\//i.test(url) ? url : undefined);
-const hasClaudeKey = !!(import.meta.env.VITE_ANTHROPIC_API_KEY);
+const hasClaudeKey = true; // Base44 InvokeLLM handles the key server-side — no client env var needed
 
 export function NewsFeedDigest() {
   const { data, isLoading, isError } = useNewsFeedDigest();
