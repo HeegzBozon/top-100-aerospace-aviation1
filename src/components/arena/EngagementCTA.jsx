@@ -1,7 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { CheckSquare, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

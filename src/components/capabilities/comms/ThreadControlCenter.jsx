@@ -1,4 +1,3 @@
-import React from "react";
 import TribeCRPHeader from "./TribeCRPHeader";
 
 export default function ThreadControlCenter({ conversation }) {

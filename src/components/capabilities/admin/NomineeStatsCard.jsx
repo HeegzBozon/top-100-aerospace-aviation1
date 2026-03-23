@@ -1,5 +1,4 @@
 
-import React from 'react';
 import { CheckCircle, XCircle, Play, Pause, Award, Eye, BarChartHorizontal, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

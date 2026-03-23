@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Scroll, Maximize2, Volume2, VolumeX, Layers, Trophy, MapPin, Video } from 'lucide-react';
 import { Link } from 'react-router-dom';

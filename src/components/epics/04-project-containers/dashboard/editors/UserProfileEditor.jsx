@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { User } from '@/entities/User';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Loader2, Save, Mail, UserCircle, Linkedin } from 'lucide-react';
+import { Camera, Loader2, Save, UserCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { LinkedInConnect } from '@/components/capabilities/onboarding';
 

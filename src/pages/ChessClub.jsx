@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { chessManageChallenge } from '@/functions/chessManageChallenge';
 import { createPageUrl } from '@/utils';
 import { Chess } from 'chess.js';
-import { Swords, CheckCircle2, Trophy } from 'lucide-react';
+import { Swords } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChallengeModal from '@/components/chess/ChallengeModal';
 import BotSelectModal from '@/components/chess/BotSelectModal';

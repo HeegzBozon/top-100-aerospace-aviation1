@@ -1,5 +1,4 @@
-import React from 'react';
-import { X, Mail, Linkedin, Globe, User, Users, Calendar, Award, BarChart2, Star, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { X, Mail, Linkedin, Globe, User, Users, Calendar, Award, Star, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 

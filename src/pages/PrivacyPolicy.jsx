@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Shield, Mail, Lock, Eye, Database, UserCheck } from 'lucide-react';

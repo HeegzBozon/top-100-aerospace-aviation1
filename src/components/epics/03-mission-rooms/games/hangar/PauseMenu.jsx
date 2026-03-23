@@ -1,11 +1,10 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../GameContext';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { 
-  Play, Settings, HelpCircle, LogOut, Volume2, VolumeX, 
+  Play, HelpCircle, LogOut, Volume2, VolumeX, 
   Monitor, Package, Trophy, Star 
 } from 'lucide-react';
 

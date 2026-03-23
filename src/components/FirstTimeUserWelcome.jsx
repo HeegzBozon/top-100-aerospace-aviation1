@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { User } from '@/entities/User';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { 
   Star, 
   Users, 
-  Trophy, 
   Zap, 
-  ArrowRight, 
-  CheckCircle,
-  Sparkles,
+  ArrowRight,
   Vote,
   Target
 } from 'lucide-react';

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Loader2, Plus, Trash2, Clock, Calendar, CheckCircle } from 'lucide-react';
+import { Loader2, Plus, Trash2, Clock, Calendar } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

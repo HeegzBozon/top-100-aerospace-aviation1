@@ -1,5 +1,4 @@
-import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';

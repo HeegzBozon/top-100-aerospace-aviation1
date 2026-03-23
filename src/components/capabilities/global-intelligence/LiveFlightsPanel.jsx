@@ -1,10 +1,8 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Plane, AlertCircle, Loader2, Activity, Globe, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useMilitaryFlights, useWingbitsEnrichment } from '@/lib/intelligence/hooks';
-import { brandColors } from '@/lib/intelligence/constants';
 
 export function LiveFlightsPanel() {
   const { data, isLoading, isError } = useMilitaryFlights();

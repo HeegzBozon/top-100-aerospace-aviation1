@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Award, CheckCircle, Clock, Loader2, Trophy, Star, Zap, ChevronRight, Sparkles, Shield, ScrollText } from 'lucide-react';
+import { CheckCircle, Clock, Loader2, Trophy, Star, Zap, ChevronRight, Sparkles, Shield, ScrollText } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';

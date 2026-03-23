@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Job } from '@/entities/Job';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -12,9 +12,6 @@ const brandColors = {
 };
 
 export default function OpportunitiesFeed({ user, limit = 3 }) {
-  // Hidden for now - Coming Soon feature
-  return null;
-
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,6 +28,9 @@ export default function OpportunitiesFeed({ user, limit = 3 }) {
     };
     fetchJobs();
   }, [limit]);
+
+  // Hidden for now - Coming Soon feature
+  return null;
 
   if (loading) {
     return (

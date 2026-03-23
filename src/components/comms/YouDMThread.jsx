@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Lightbulb, Plus, Trash2, Pencil, Check, X, StickyNote } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, Trash2, Pencil, Check, X, StickyNote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 

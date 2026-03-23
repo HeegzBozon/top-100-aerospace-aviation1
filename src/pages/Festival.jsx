@@ -1,5 +1,4 @@
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import EmceeCard from '@/components/festival/EmceeCard';
 import EventCard from '@/components/festival/EventCard';

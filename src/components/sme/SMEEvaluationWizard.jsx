@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { 
-  Award, Briefcase, Lightbulb, Users, TrendingUp, CheckCircle, Loader2,
-  ChevronRight, ChevronLeft, Sparkles, Star, Trophy, Zap, Target, Rocket, ExternalLink,
+  Award, Briefcase, Lightbulb, Users, CheckCircle, Loader2,
+  ChevronRight, ChevronLeft, Sparkles, Star, Zap, Target, Rocket, ExternalLink,
   Link2, Upload, X, Plus, FileText
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Trophy, Medal, Award, CheckCircle, Building, MapPin, Search, Info, Plus, X, ChevronUp, ChevronDown } from 'lucide-react';
-import { Nominee } from '@/entities/Nominee';
 import { RankedVote } from '@/entities/RankedVote';
 import { awardStardust } from '@/functions/awardStardust';
 import { useToast } from '@/components/ui/use-toast';

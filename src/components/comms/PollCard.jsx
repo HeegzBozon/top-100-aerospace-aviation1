@@ -1,9 +1,7 @@
-import React from "react";
 import { cn } from "@/lib/utils";
 import { format, isPast } from "date-fns";
 import { BarChart3, Clock, Lock, Users, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 
 export default function PollCard({ poll, currentUserEmail, onVote, onClose }) {
   const isCreator = poll.creator_email === currentUserEmail;

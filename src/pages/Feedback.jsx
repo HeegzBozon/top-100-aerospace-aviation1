@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Feedback as FeedbackEntity } from '@/entities/Feedback';
 import { Sprint } from '@/entities/Sprint';
 import { TestSession } from '@/entities/TestSession';
 import { UploadFile } from '@/integrations/Core';
-import { MessageSquare, Loader2 } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from '@/components/ui/button';

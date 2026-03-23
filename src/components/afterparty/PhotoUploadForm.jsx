@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { User } from '@/entities/User';
 import { Photo } from '@/entities/Photo';
 import { UploadFile } from '@/integrations/Core';

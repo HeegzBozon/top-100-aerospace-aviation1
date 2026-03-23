@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { X, Wand2, PencilLine } from "lucide-react";
 import { scriptBuilder } from "@/functions/scriptBuilder";
 import ComposerStepUpload from "./ComposerStepUpload";

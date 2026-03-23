@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { Satellite, Newspaper, ExternalLink, ArrowRight, Loader2, MapPin, Clock, Radio, Award, BookOpen, Zap, FlaskConical } from 'lucide-react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { Satellite, Newspaper, ExternalLink, ArrowRight, Loader2, MapPin, Clock, Radio, Award, BookOpen, Zap } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getUpcomingLaunches } from '@/functions/getUpcomingLaunches';
 import { format, parseISO, formatDistanceToNow, isPast } from 'date-fns';

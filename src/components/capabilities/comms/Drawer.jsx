@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
 import { useUnread } from "@/components/capabilities/contexts/UnreadContext";
 import NewConversationModal from "./NewConversationModal";
@@ -6,8 +6,7 @@ import ChannelManagerModal from "./ChannelManagerModal";
 import { ChannelsList } from "./ChannelsList";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { createPageUrl } from "@/utils";
-import { Plus, X } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Drawer({ currentPageName, onMobileClose, user }) {

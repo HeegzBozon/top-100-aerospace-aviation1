@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { List } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Standing } from '@/entities/Standing';

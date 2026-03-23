@@ -1,5 +1,4 @@
-import React from 'react';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Users, Monitor } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function ColonyHUD({

@@ -8,8 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
-  Users, Search, CheckCircle, XCircle, Clock, Eye, Edit, Trash2,
-  ChevronDown, ChevronUp, Loader2, UserPlus, Filter, MoreHorizontal, Upload, Plus
+  Users, Search, CheckCircle, XCircle, Eye, Edit, Trash2,
+  ChevronDown, ChevronUp, Loader2, MoreHorizontal, Upload, Plus
 } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import {

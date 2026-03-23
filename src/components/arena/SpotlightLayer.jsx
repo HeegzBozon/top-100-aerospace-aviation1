@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Crown, Star, Zap, Award, TrendingUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Crown, Star, Zap, TrendingUp } from 'lucide-react';
 
 const SPOTLIGHT_CATEGORIES = [
   {

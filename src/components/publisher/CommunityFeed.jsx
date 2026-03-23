@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { linkedInCommunity } from "@/functions/linkedInCommunity";
 import CommunityPostCard from "./CommunityPostCard";
 import { RefreshCw, Users, AlertCircle, Loader2 } from "lucide-react";

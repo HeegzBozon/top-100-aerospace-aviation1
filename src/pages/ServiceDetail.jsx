@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
-  Calendar, Clock, CreditCard, CheckCircle2,
-  AlertCircle, ArrowLeft, User, ShieldCheck, Star, Loader2
+  Calendar, Clock, ArrowLeft, User, ShieldCheck, Star, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { format, addDays } from "date-fns";

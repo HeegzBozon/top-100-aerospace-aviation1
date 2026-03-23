@@ -1,9 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, ArrowRight, Trophy, Sparkles, CheckCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Trophy } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 import PairwiseVoting from '@/components/voting/PairwiseVoting';

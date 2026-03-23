@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { SpotlightVote } from '@/entities/SpotlightVote';
 import { Star, Zap, Rocket, Award, X } from 'lucide-react';
 
@@ -146,7 +146,7 @@ export default function SpotlightSelector({ nominee, currentUser, activeSeason, 
                 <>
                   <Star className="w-5 h-5" />
                   Award Spotlight
-                </Button>
+                </>
               )}
             </button>
           </div>

@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Feedback } from '@/entities/Feedback';
 import { TestCase } from '@/entities/TestCase';
-import { TestSession } from '@/entities/TestSession';
 import { startTestSession } from '@/functions/startTestSession';
 import { updateTestSession } from '@/functions/updateTestSession';
 import { InvokeLLM } from '@/integrations/Core';

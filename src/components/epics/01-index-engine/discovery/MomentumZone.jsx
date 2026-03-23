@@ -1,5 +1,4 @@
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Flame, ArrowUp, ChevronsUp, UserPlus } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';

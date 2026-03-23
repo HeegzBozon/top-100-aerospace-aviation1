@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { User } from '@/entities/User';
 import { base44 } from '@/api/base44Client';
 import { Loader2, Download, ExternalLink } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import UnifiedProfileEditor from '@/components/dashboard/UnifiedProfileEditor';

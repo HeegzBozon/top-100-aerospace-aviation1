@@ -1,11 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import { Calendar, MapPin, Users, Clock } from 'lucide-react';
+import { MapPin, Users, Clock } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
 export default function EventCard({ event }) {

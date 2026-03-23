@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BugUrgencyVote } from '@/entities/BugUrgencyVote';
 import { awardStardust } from '@/functions/awardStardust';
 import { Zap, AlertTriangle, Bug } from 'lucide-react';

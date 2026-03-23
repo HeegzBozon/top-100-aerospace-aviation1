@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ImportJob } from '@/entities/ImportJob';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,10 +13,7 @@ import {
   AlertTriangle, 
   Trash2, 
   X,
-  Eye,
   Loader2,
-  CheckSquare,
-  Square,
   Zap 
 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox'; 

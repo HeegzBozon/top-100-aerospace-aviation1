@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import SponsorCard from '@/components/sponsors/SponsorCard';
 import { 
-  Loader2, Award, TrendingUp, Users, Globe, Target, CheckCircle, 
+  Loader2, Award, TrendingUp, Users, Globe, Target, 
   BarChart3, Rocket, Mail, ArrowRight, Trophy, Zap, Calendar
 } from 'lucide-react';
 

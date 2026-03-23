@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ArrowRight, Rocket, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -111,7 +111,7 @@ export default function Landing2Hero({ user }) {
       if (prev && prev.length === allSlides.length) return prev;
       return allSlides.map((_, i) => i);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [allSlides.length]);
 
   const orderedSlides = slideOrder ? slideOrder.map(i => allSlides[i]) : allSlides;
@@ -121,7 +121,7 @@ export default function Landing2Hero({ user }) {
       setCurrentSlide(prev => (prev + 1) % orderedSlides.length);
     }, 6000);
     return () => clearInterval(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [orderedSlides.length]);
 
   const slide = orderedSlides[currentSlide] || orderedSlides[0];

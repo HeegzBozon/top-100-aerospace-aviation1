@@ -1,8 +1,7 @@
-import React from 'react';
 import { format, isWithinInterval, isPast, isFuture } from 'date-fns';
 import { 
   Calendar, Users, Vote, Award, RefreshCw, 
-  CheckCircle, Clock, Play 
+  CheckCircle, Play 
 } from 'lucide-react';
 
 const brandColors = {

@@ -1,4 +1,3 @@
-import React from 'react';
 import NomineeCard from './NomineeCard';
 import { AnimatePresence } from 'framer-motion';
 

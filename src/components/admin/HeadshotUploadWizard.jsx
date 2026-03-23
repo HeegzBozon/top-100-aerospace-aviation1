@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Nominee } from '@/entities/Nominee';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Upload, ChevronRight, CheckCircle, Camera, Loader2 } from 'lucide-react';
+import { Upload, ChevronRight, CheckCircle, Loader2 } from 'lucide-react';
 
 export default function HeadshotUploadWizard() {
   const [nominees, setNominees] = useState([]);

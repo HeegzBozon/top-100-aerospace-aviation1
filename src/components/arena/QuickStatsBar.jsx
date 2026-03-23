@@ -1,4 +1,3 @@
-import React from 'react';
 import { Users, Zap, Trophy, TrendingUp, Clock } from 'lucide-react';
 
 const StatCard = ({ icon: Icon, label, value, trend, color = "text-[var(--text)]" }) => (

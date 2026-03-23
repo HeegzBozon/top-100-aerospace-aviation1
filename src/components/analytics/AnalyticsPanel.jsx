@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getAnalyticsData } from '@/functions/getAnalyticsData';
 import { BarChart2, Loader2, AlertCircle, ChevronDown } from 'lucide-react';
 import StatCard from './StatCard';

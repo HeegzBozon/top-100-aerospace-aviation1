@@ -1,7 +1,6 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLayer } from './LayerManager';
-import { Rocket, ArrowUp, Sparkles, Globe, Moon, Star } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

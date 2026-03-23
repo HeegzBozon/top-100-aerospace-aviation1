@@ -1,5 +1,4 @@
-import React from "react";
-import { ChevronLeft, HelpCircle, Hash, Lock } from "lucide-react";
+import { ChevronLeft, HelpCircle, Hash } from "lucide-react";
 import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
 import { brandColors } from "@/components/core/brandColors";
 import { motion } from "framer-motion";

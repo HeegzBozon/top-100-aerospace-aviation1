@@ -1,9 +1,7 @@
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { Search, Filter, X, Star } from 'lucide-react';
+import { Search, Filter, X } from 'lucide-react';
 import {
   Select,
   SelectContent,

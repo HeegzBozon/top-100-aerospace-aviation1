@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Initiative } from '@/entities/Initiative';
 import { Capability } from '@/entities/Capability';
 import { Feature } from '@/entities/Feature';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, ChevronDown, Layers, Milestone, Flag, GitCommit, MessageSquare, Loader2, ArrowUpDown, Inbox, Filter, Search, X, Star } from 'lucide-react';
+import { Plus, Layers, Milestone, Flag, GitCommit, Loader2, ArrowUpDown, Inbox, Filter, Search, X } from 'lucide-react';
 
 import BacklogItemForm from './BacklogItemForm';
 import BacklogItemView from './BacklogItemView';

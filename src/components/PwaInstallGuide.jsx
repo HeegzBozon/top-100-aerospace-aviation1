@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Share, PlusSquare, MoreVertical, Download } from 'lucide-react';
 
 export default function PwaInstallGuide({ onClose }) {

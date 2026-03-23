@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Loader2, ChevronUp, MessageSquare, Inbox, Clock, PlayCircle, CheckCircle2, Plus, GripVertical, Trash2, Edit2, HelpCircle, Lightbulb, X, Sparkles } from 'lucide-react';
+import { Loader2, ChevronUp, Inbox, Clock, PlayCircle, CheckCircle2, Plus, GripVertical, Trash2, Edit2, HelpCircle, Lightbulb, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import RoadmapItemForm from './RoadmapItemForm';

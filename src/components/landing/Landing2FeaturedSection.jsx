@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { ArrowRight, Star } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const brandColors = {
   navyDeep: '#1e3a5a',

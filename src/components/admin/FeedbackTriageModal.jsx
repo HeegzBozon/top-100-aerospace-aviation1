@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Feedback } from '@/entities/Feedback';
 import { Feature } from '@/entities/Feature';
 import { InvokeLLM } from '@/integrations/Core';
@@ -884,6 +884,7 @@ Generate up to 5 relevant tags. Return your list of tags as a JSON object.`;
         </form>
       </div>
       
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx>{`
         .slider-thumb::-webkit-slider-thumb {
           appearance: none;

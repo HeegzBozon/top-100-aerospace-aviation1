@@ -1,4 +1,3 @@
-import React from 'react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

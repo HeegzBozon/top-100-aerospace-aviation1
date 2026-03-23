@@ -1,4 +1,3 @@
-import React from 'react';
 import { X, User, Tag, Heart, Eye, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 

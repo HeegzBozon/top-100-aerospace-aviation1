@@ -1,10 +1,9 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingBag, Star, Award, BookOpen, Shirt, Gift, ArrowRight, ExternalLink } from 'lucide-react';
+import { ShoppingBag, Award, BookOpen, Shirt, Gift, ArrowRight } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

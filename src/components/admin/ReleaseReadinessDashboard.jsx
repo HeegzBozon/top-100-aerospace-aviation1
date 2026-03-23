@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { InvokeLLM } from '@/integrations/Core';
 import { Feedback } from '@/entities/Feedback';
@@ -11,20 +11,17 @@ import {
   CheckCircle,
   AlertTriangle,
   XCircle,
-  Clock,
   Download,
   TestTube,
   Rocket,
   Loader2,
-  Flag,
   ShoppingCart,
   Brain,
   Sparkles,
   Zap,
   Target,
   TrendingUp,
-  AlertOctagon,
-  MessageSquare
+  AlertOctagon
 } from 'lucide-react';
 
 const SpectrumMeter = ({ value = 65, isActive = true }) => {
@@ -702,6 +699,7 @@ Be concise, direct, and actionable in your analysis.`;
         blockerItem={selectedBlocker}
       />
       
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx>{`
         .mono { font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace; }
       `}</style>

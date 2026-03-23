@@ -1,19 +1,15 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge'; // This import is unused in the new structure but kept for completeness
+// This import is unused in the new structure but kept for completeness
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { 
     Settings, 
-    Save, 
-    RotateCcw, // This import is unused but kept for completeness
-    Eye, // This import is unused but kept for completeness
-    Zap,
-    Clock, // This import is unused in the new structure but kept for completeness
-    CheckCircle, // This import is unused but kept for completeness
+    Save, // This import is unused but kept for completeness
+    Zap, // This import is unused but kept for completeness
     AlertTriangle,
     Loader2,
     RefreshCw

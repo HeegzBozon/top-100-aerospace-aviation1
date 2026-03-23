@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
-import { buildGraphFromNominees } from '@/functions/buildGraphFromNominees';
 import KnowledgeGraph from '@/components/graph/KnowledgeGraph';
 
 const brandColors = {

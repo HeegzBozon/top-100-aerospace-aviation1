@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getVoteLedgerData } from '@/functions/getVoteLedgerData';
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from '@/components/ui/button';

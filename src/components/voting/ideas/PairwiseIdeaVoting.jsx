@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { IdeaPairwiseVote } from '@/entities/IdeaPairwiseVote';
 import { awardStardust } from '@/functions/awardStardust';
-import { Zap, ThumbsUp, Lightbulb } from 'lucide-react';
+import { Zap, Lightbulb } from 'lucide-react';
 
 export default function PairwiseIdeaVoting({ ideas, currentUser, onVoteComplete }) {
   const [currentPair, setCurrentPair] = useState(null);

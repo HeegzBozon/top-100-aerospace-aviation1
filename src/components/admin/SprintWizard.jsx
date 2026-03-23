@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Sprint } from '@/entities/Sprint';
 import { Feedback } from '@/entities/Feedback';
 import { User } from '@/entities/User'; // Assuming a User entity for current user info
@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { 
   Rocket, 
@@ -17,7 +15,6 @@ import {
   CheckCircle, 
   ArrowRight, 
   ArrowLeft,
-  Calendar as CalendarIcon,
   Star,
   Diamond,
   Zap,
@@ -25,8 +22,7 @@ import {
   Trophy,
   AlertTriangle,
   Sparkles,
-  BookOpen, // New icon for review
-  User as UserIcon, // New icon for team members (aliased to avoid conflict with entity User)
+  BookOpen, // New icon for team members (aliased to avoid conflict with entity User)
   UserPlus, // New icon for adding team members
   Download, // New for export
   TrendingUp, // New for velocity trends
@@ -196,6 +192,7 @@ const SuccessScreen = ({ sprintData, achievements, onExport }) => (
       </div>
     </div>
 
+    {/* eslint-disable-next-line react/no-unknown-property */}
     <style jsx>{`
       @keyframes rocket-launch {
         0% { transform: translate(-50%, 0) scale(1); }

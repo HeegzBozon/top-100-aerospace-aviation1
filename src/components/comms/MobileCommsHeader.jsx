@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ChevronLeft, HelpCircle, Hash, ChevronDown, CheckSquare } from "lucide-react";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import { brandColors } from "@/components/core/brandColors";

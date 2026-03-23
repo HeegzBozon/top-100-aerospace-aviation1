@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Lightbulb, Send, Share2, ClipboardCopy } from 'lucide-react';
+import { useState } from 'react';
+import { Send, Share2, ClipboardCopy } from 'lucide-react';
 
 export default function TttTipFlowDemo() {
   const [tipAmount, setTipAmount] = useState(10);

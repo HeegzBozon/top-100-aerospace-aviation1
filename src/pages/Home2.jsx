@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
@@ -9,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Award, BookOpen, Users, TrendingUp, Archive,
   CheckCircle, ArrowRight, Calendar, Globe, Star,
-  Download, Phone, Rocket, Heart, Building2, Plane
+  Download, Phone
 } from 'lucide-react';
 
 const brandColors = {

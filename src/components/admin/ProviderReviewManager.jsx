@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   CheckCircle2, XCircle, ExternalLink, User, 
-  Briefcase, Linkedin, Globe, Clock 
+  Briefcase, Linkedin, Globe 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

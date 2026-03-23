@@ -1,4 +1,3 @@
-import React from 'react';
 import { Rocket, MapPin, Radio } from 'lucide-react';
 import LaunchDateTime from './LaunchDateTime';
 

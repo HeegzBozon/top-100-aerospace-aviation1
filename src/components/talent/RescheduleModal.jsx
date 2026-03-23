@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Calendar as CalendarIcon } from 'lucide-react';
-import { format, addDays } from 'date-fns';
+import { Loader2 } from 'lucide-react';
+import { addDays } from 'date-fns';
 import { toast } from 'sonner';
 
 export default function RescheduleModal({ booking, service, isOpen, onClose, userEmail }) {

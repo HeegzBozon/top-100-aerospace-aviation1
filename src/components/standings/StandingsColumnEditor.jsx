@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, RotateCcw, GripVertical, Eye, EyeOff, Loader2, Snowflake, ChevronsUp, ChevronsDown } from 'lucide-react';
+import { X, Save, RotateCcw, GripVertical, Eye, EyeOff, Loader2, ChevronsUp, ChevronsDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';

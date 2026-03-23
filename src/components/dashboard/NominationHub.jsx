@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import SubmissionHub from '@/components/submit/SubmissionHub';
 import PairwiseVoting from '@/components/voting/PairwiseVoting';
 import RankedChoiceVoting from '@/components/voting/RankedChoiceVoting';

@@ -1,4 +1,3 @@
-import React from "react";
 import { Settings, Database, ChevronDown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ADMIN_TABS } from "./AdminTabs";

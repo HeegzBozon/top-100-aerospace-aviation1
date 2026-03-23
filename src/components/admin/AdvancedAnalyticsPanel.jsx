@@ -1,21 +1,18 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { 
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area,
+  BarChart, Bar, Line, PieChart, Pie, Cell, AreaChart, Area,
   XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, ComposedChart 
 } from 'recharts';
 import { 
-  TrendingUp, TrendingDown, Users, Vote, Target, Zap, 
-  Activity, Clock, Award, Flame, ArrowUpRight, ArrowDownRight,
-  BarChart3, PieChart as PieChartIcon, Loader2, RefreshCw,
-  UserCheck, UserPlus, Eye, MousePointerClick, Calendar, ExternalLink
+  TrendingUp, TrendingDown, Users, Vote, Target, 
+  Activity, Clock, Award, ArrowUpRight, ArrowDownRight,
+  BarChart3, PieChart as PieChartIcon, Loader2,
+  UserCheck, UserPlus, MousePointerClick
 } from 'lucide-react';
-import { format, subDays, differenceInDays, startOfDay, parseISO } from 'date-fns';
+import { format, subDays, startOfDay } from 'date-fns';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

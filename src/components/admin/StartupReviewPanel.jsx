@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
 import { 
-  Rocket, Star, CheckCircle, XCircle, Clock, Eye, 
-  TrendingUp, FileText, Award, AlertCircle 
+  Rocket, CheckCircle, Clock, 
+  TrendingUp 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

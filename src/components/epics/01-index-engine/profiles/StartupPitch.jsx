@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Video, ExternalLink, ShieldCheck, Zap, BrainCircuit, Heart, Rocket } from 'lucide-react';
-import { createPageUrl } from '@/utils';
 
 const brandColors = {
     navyDeep: '#1e3a5a',

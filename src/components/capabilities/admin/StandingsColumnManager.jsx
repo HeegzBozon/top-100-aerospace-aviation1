@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StandingsColumnConfig } from '@/entities/StandingsColumnConfig';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { useToast } from "@/components/ui/use-toast";
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, GripVertical, Loader2, RotateCcw, Save, Snowflake } from 'lucide-react';
+import { GripVertical, Loader2, RotateCcw, Save, Snowflake } from 'lucide-react';
 
 const defaultColumns = [
   { column_key: 'rank', display_name: 'Rank', order_index: 0, is_visible: true, is_sortable: true, is_frozen: true, min_width: 'w-16', responsive_breakpoint: 'always' },

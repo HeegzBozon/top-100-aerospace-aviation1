@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { getStandingsData } from '@/functions/getStandingsData';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, ChevronLeft, Volume2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Play, Pause, RotateCcw, ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 

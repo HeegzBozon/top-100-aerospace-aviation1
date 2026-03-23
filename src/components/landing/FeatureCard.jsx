@@ -1,8 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import { ArrowRight } from 'lucide-react';
 
 export default function FeatureCard({ icon: Icon, title, description, ctaText, ctaLink, accentClass }) {

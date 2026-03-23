@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getSearchConsoleData } from '@/functions/getSearchConsoleData';
-import { Search, Globe, BarChart2, Loader2, AlertCircle } from 'lucide-react';
+import { Search, Loader2, AlertCircle } from 'lucide-react';
 import StatCard from './StatCard';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 

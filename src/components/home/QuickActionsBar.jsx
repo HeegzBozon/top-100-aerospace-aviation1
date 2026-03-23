@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import { Users, Vote, Video, Mic, Type, Upload, X, Play, Pause, Check, BookOpen, Heart, Calendar, HelpCircle } from 'lucide-react';
+import { Users, Vote, Video, Mic, Type, Upload, X, Play, Pause, Check, BookOpen, Heart, HelpCircle } from 'lucide-react';
 import VotingModal from '@/components/voting/VotingModal';
 import NominationModal from '@/components/nominations/NominationModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Play, Pause, Download } from "lucide-react";
 import ConstellationBackground from "./ConstellationBackground";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";

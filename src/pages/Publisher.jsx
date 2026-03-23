@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Pen, Layers, CalendarDays, Radio, Zap, TrendingUp, Clock, FlaskConical, Users } from "lucide-react";
@@ -21,19 +21,6 @@ export default function Publisher() {
     staleTime: 5 * 60 * 1000,
   });
 
-  if (user && user.role !== "admin") {
-    return (
-      <div className="min-h-screen bg-[#0b1120] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
-            <Radio className="w-5 h-5 text-[#c9a87c]/40" />
-          </div>
-          <p className="text-[#e8dcc8]/40 text-sm font-medium tracking-widest uppercase">Restricted Access</p>
-        </div>
-      </div>
-    );
-  }
-
   const { data: channels = [], refetch: refetchChannels } = useQuery({
     queryKey: ["social-channels", user?.email],
     queryFn: () => base44.entities.SocialChannel.filter({ user_email: user.email }, "-created_date", 20),
@@ -46,6 +33,19 @@ export default function Publisher() {
     enabled: !!user?.email,
     refetchInterval: 30000,
   });
+
+  if (user && user.role !== "admin") {
+    return (
+      <div className="min-h-screen bg-[#0b1120] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+            <Radio className="w-5 h-5 text-[#c9a87c]/40" />
+          </div>
+          <p className="text-[#e8dcc8]/40 text-sm font-medium tracking-widest uppercase">Restricted Access</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleCompose = (post = null) => {
     setEditingPost(post);

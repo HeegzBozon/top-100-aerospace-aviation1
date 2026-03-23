@@ -1,9 +1,8 @@
-import React from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { Eye, Download, Share2, Users, Globe, TrendingUp, Loader2, FileText, ExternalLink } from 'lucide-react';
+import { Download, Users, Globe, TrendingUp, Loader2, FileText, ExternalLink } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

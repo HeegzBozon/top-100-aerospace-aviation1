@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Hand, Eye, MessageSquare, Package, Lock, Sparkles, Home } from 'lucide-react';
 

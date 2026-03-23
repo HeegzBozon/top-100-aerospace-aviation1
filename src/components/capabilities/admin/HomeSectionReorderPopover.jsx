@@ -1,7 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Settings2, GripVertical, Eye, EyeOff, X, RotateCcw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 
 const STORAGE_KEY = 'home_section_config_v1';

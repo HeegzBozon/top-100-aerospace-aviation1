@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { createPageUrl } from '@/utils';
 
 // Redirect from old HowWePick URL to new Top100OS page

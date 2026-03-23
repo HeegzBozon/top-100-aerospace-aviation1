@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Calendar, Trash2, Ban, PowerOff, Loader2, BarChart2, Users, FileText, Check, XCircle, Award } from 'lucide-react';
+import { X, Trash2, Ban, PowerOff, Loader2, BarChart2, Users, FileText, Check, XCircle, Award } from 'lucide-react';
 import { format } from 'date-fns';
 import { getSeasonAnalytics } from '@/functions/getSeasonAnalytics';
 import { calculateSeasonResults } from '@/functions/calculateSeasonResults';

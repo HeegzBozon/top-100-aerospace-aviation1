@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { User } from '@/entities/User';
 import { Employer } from '@/entities/Employer';
 import { Job } from '@/entities/Job';
@@ -9,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Building2, Briefcase, Users, Eye, FileText, Plus, 
-  Settings, BarChart3, CheckCircle, Clock, AlertCircle, Inbox
+  Settings, BarChart3, CheckCircle, Clock, Inbox
 } from 'lucide-react';
 import EmployerOnboarding from '@/components/talent/EmployerOnboarding';
 import JobPostForm from '@/components/talent/JobPostForm';

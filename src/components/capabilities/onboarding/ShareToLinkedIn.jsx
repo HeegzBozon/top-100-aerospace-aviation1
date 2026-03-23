@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Linkedin, Loader2, CheckCircle2, Send } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { shareToLinkedIn } from "@/functions/shareToLinkedIn";
 import { toast } from "sonner";
 import {

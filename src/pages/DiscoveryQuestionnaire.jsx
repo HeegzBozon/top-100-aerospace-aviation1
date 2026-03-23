@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Check, Sparkles } from 'lucide-react';
 import DiscoveryQuestionnaireForm from '@/components/discovery/DiscoveryQuestionnaireForm';

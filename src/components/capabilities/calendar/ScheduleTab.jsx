@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, isToday, isSameMonth, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { ChevronLeft, ChevronRight, Plus, Calendar, Clock, Users, X, MoreHorizontal, Award, Sparkles, Shield, Edit2, Trash2, Globe, Zap, ExternalLink, Camera } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Calendar, MoreHorizontal, Award, Sparkles, Edit2, Trash2, Globe, Zap, ExternalLink, Camera } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

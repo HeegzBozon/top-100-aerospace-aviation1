@@ -1,8 +1,7 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Rocket, TrendingUp, Sparkles, Target, Zap, Globe } from 'lucide-react';
+import { Rocket, TrendingUp, Sparkles, Target, Globe } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

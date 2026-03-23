@@ -1,5 +1,4 @@
-import React from 'react';
-import { X, User as UserIcon, Mail, MessageSquare, Bug, Clock, Link as LinkIcon, Image as ImageIcon } from 'lucide-react';
+import { X, Mail, MessageSquare, Bug, Clock, Link as LinkIcon, Image as ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function FeedbackViewModal({ feedback, onClose }) {

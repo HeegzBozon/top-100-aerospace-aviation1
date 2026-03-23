@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../GameContext';
 import { GameMission } from '@/entities/GameMission';
 import { Button } from '@/components/ui/button';
-import { X, Star, Clock, MapPin, Zap, Trophy, Calendar } from 'lucide-react';
+import { X, Star, Clock, Zap, Trophy, Calendar } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

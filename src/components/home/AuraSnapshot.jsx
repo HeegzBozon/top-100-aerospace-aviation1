@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Zap, Sparkles, Star, Shield } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Sparkles, Star, Shield } from 'lucide-react';
 import { User } from '@/entities/User';
 import { Skeleton } from '@/components/ui/skeleton';
 // Removed the updateUserScores function import as it's no longer needed here.

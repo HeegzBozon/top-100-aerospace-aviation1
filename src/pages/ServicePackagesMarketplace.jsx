@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { 
-  Package, Search, Filter, ArrowLeft, 
-  Sparkles, Star, Loader2 
+  Package, Search, ArrowLeft, 
+  Sparkles, Loader2 
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ServicePackageCard from '@/components/talent/ServicePackageCard';

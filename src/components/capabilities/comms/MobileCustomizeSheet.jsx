@@ -1,4 +1,3 @@
-import React from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";

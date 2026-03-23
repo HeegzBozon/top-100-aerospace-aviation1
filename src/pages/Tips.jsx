@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { TipEntry } from '@/entities/TipEntry';
 import { User } from '@/entities/User';
 import TipCard from '@/components/tips/TipCard';

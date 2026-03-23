@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Quest } from '@/entities/Quest';
 import { UserQuest } from '@/entities/UserQuest';
 import { User } from '@/entities/User';

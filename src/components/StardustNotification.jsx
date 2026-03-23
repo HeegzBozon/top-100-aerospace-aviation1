@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Star, Zap, TrendingUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Star, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function StardustNotification({ 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { User } from "@/entities/User";
@@ -6,21 +6,13 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  Calendar, 
-  DollarSign, 
-  Eye, 
-  TrendingUp, 
-  Clock, 
-  Users,
+  Calendar,
   Settings,
   ExternalLink,
   Link as LinkIcon,
   Edit,
   Loader2,
-  Inbox,
   MessageCircle,
   CreditCard
 } from "lucide-react";
@@ -33,7 +25,7 @@ import ProviderTierBadge from '@/components/talent/ProviderTierBadge';
 import ProviderReviewsManager from '@/components/talent/ProviderReviewsManager';
 import EarningsReport from '@/components/talent/EarningsReport';
 import ServiceAnalyticsWidget from '@/components/talent/ServiceAnalyticsWidget';
-import { format, isAfter, isBefore, startOfDay, endOfDay, addDays } from "date-fns";
+import { format, isAfter, addDays } from "date-fns";
 
 export default function ProviderDashboard() {
   const [dateRange, setDateRange] = useState("7");

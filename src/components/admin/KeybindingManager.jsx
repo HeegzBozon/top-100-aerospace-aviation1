@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Keybinding } from '@/entities/Keybinding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Save, Keyboard, Edit, X } from 'lucide-react';
+import { Loader2, Save, Edit, X } from 'lucide-react';
 
 export default function KeybindingManager() {
     const [keybindings, setKeybindings] = useState([]);

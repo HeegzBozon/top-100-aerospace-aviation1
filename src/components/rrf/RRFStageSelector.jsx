@@ -1,5 +1,3 @@
-import React, { useMemo } from 'react';
-import { Button } from '@/components/ui/button';
 
 const STAGES = [
   { key: 'FORM', label: 'FORM', color: '#C8A97E', description: 'Plant Presence' },

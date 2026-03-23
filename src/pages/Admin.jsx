@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Season } from '@/entities/Season';
 import { KBArticle } from '@/entities/KBArticle';
 import { User } from '@/entities/User';
-import { base44 } from '@/api/base44Client';
 import { useToast } from "@/components/ui/use-toast";
 import { Settings, X, Menu } from 'lucide-react';
 
@@ -49,7 +48,7 @@ import TestimonialModeration from '@/components/admin/TestimonialModeration';
 import UserManagement from '@/components/admin/UserManagement';
 import RailItemManager from '@/components/admin/RailItemManager';
 import DiscoveryResponsesManager from '@/components/admin/DiscoveryResponsesManager';
-import { Award, BookOpen } from 'lucide-react';
+import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
 

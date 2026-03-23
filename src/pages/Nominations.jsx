@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Trophy, Users, Star, Sparkles, Rocket, Award, ArrowRight, Lock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Trophy, Star, Rocket, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 import NominationHistoryFeed from '@/components/nominations/NominationHistoryFeed';
 import InlineNominationForm from '@/components/nominations/InlineNominationForm';

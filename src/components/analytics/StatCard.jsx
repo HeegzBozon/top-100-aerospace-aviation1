@@ -1,4 +1,3 @@
-import React from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 export default function StatCard({ label, value, sub, trend }) {

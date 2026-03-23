@@ -1,22 +1,13 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { 
   Users, 
-  Vote, 
-  Award, 
-  Scale, 
   Target, 
   Shield, 
   CheckCircle2,
-  BarChart3,
-  UserCheck,
-  Layers,
   Eye,
-  TrendingUp,
   Cpu,
-  Database,
   GitBranch,
   Clock,
   Sparkles,

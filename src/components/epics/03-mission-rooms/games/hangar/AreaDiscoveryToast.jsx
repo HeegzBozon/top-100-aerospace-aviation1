@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Star, Sparkles } from 'lucide-react';
+import { Star, Sparkles } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

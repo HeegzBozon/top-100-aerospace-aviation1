@@ -1,4 +1,3 @@
-import React from 'react';
 import { findTabById } from './adminNavConfig';
 import { ChevronRight, LayoutDashboard } from 'lucide-react';
 

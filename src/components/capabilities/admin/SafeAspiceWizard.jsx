@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -12,13 +11,10 @@ import {
   Shield, 
   CheckCircle, 
   AlertTriangle, 
-  Award, 
-  FileText,
+  Award,
   Zap,
   Target,
   Settings,
-  Upload,
-  Download,
   X,
   ChevronRight,
   Building

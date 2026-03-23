@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Send, AlertCircle, CheckCircle } from 'lucide-react';
+import { Loader2, Send, CheckCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Category } from '@/entities/Category';
-import { User } from '@/entities/User';
 import { base44 } from '@/api/base44Client';
 
 const formFields = [

@@ -1,5 +1,4 @@
-import React from 'react';
-import { CheckCircle, XCircle, User, FileText } from 'lucide-react';
+import { CheckCircle, XCircle, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 

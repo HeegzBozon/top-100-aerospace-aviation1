@@ -1,4 +1,3 @@
-import React from 'react';
 import { Mic, MicOff, Video, VideoOff, X } from 'lucide-react';
 
 function ParticipantRow({ participant, isLocal }) {

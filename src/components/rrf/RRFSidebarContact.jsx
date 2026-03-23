@@ -1,4 +1,3 @@
-import React from 'react';
 
 const stageColors = {
   FORM: 'bg-amber-400',

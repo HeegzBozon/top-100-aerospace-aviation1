@@ -1,4 +1,3 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -7,13 +6,11 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { 
   Calendar, DollarSign, Heart, Star, Clock, 
-  ArrowRight, TrendingUp, Loader2, CheckCircle2,
-  AlertCircle, XCircle
+  ArrowRight, TrendingUp, Loader2, CheckCircle2, XCircle
 } from 'lucide-react';
-import { format, isAfter, isBefore } from 'date-fns';
+import { format, isAfter } from 'date-fns';
 import { motion } from 'framer-motion';
 
 const brandColors = {

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Users, Search, Loader2, AlertCircle, RefreshCw, Clock, ScanSearch, Heart, Bookmark } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Users, Search, Loader2, AlertCircle, RefreshCw, Clock, ScanSearch, Heart } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';

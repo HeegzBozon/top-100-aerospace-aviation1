@@ -1,12 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { User } from '@/entities/User';
 import { HabitLog } from '@/entities/HabitLog';
 import AuraSnapshot from '@/components/home/AuraSnapshot';
 import { Sparkles, ArrowRight, Droplets } from 'lucide-react';
-import { startOfDay } from 'date-fns';
 
 export default function AuraRevealStep({ onComplete }) {
   const [user, setUser] = useState(null);

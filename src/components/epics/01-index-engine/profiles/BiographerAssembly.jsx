@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FileText, Linkedin, Newspaper, Quote, Award, User, Loader2, RefreshCw, Copy, Check, Lock, Download } from 'lucide-react';
+import { useState } from 'react';
+import { FileText, Linkedin, Newspaper, Quote, Award, User, Loader2, RefreshCw, Copy, Check, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';

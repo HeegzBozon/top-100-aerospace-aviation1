@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
-  Plus, Search, Edit, Trash2, MoreHorizontal, 
-  CheckCircle2, XCircle, Package, DollarSign, Clock, Filter
+  Plus, Search, Edit, Trash2, MoreHorizontal, Package
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +14,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Select,

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { User } from '@/entities/User';
 import { Button } from '@/components/ui/button';
@@ -13,15 +13,7 @@ import {
   Users,
   DollarSign,
   Award,
-  Share2,
-  CheckSquare,
-  Bookmark,
-  Calendar,
-  FileText,
-  Clock,
-  Rocket,
-  History,
-  ChevronRight
+  Share2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { resetAllScores } from '@/functions/resetAllScores';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';

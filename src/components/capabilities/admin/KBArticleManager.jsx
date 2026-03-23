@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { KBArticle } from '@/entities/KBArticle';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Edit, Trash2, Loader2, Pin, PinOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Pin, PinOff } from 'lucide-react';
 import KBArticleForm from './KBArticleForm';
 
 export default function KBArticleManager({ articles, onArticlesUpdate }) {

@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import {
-  User, Calendar, ExternalLink, Loader2, Trophy,
-  Clock, Send, Inbox, ArrowUpRight, ArrowDownLeft,
-  Sparkles, Star
+import { ExternalLink, Loader2,
+  Clock, Send, Inbox, ArrowUpRight, ArrowDownLeft
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';

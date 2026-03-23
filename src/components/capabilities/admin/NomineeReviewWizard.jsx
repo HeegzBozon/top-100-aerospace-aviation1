@@ -27,7 +27,6 @@ import {
   User,
   Award,
   Globe,
-  Briefcase,
   ExternalLink
 } from 'lucide-react';
 import { enrichProfileFromPdf } from '@/functions/enrichProfileFromPdf';

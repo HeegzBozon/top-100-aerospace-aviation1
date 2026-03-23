@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -7,11 +7,9 @@ import { motion } from "framer-motion";
 import FavoriteButton from '@/components/talent/FavoriteButton';
 import { User as UserEntity } from '@/entities/User';
 import { 
-  Sparkles, Search, Filter, ArrowRight, Star, 
-  Calendar, Clock, User as LucideUser, CheckCircle2 
+  Sparkles, Search, Star, Clock, User as LucideUser 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,

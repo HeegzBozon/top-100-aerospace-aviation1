@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,16 +28,6 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
   const queryClient = useQueryClient();
   const [searchOpen, setSearchOpen] = useState(false);
   const [crpExpanded, setCrpExpanded] = useState(false);
-
-  // Auth gate: show sign-in CTA if no user
-  if (!user) {
-    return (
-      <CommsAuthGate
-        onSignIn={() => base44.auth.redirectToLogin()}
-        onSignUp={() => base44.auth.redirectToLogin()}
-      />
-    );
-  }
 
   const { data: messages = [], isLoading: msgsLoading } = useQuery({
     queryKey: ["messages", activeConversation?.id],
@@ -120,6 +110,16 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
       queryClient.invalidateQueries(["unread-counts"]);
     },
   });
+
+  // Auth gate: show sign-in CTA if no user
+  if (!user) {
+    return (
+      <CommsAuthGate
+        onSignIn={() => base44.auth.redirectToLogin()}
+        onSignUp={() => base44.auth.redirectToLogin()}
+      />
+    );
+  }
 
   const getConversationTitle = () => {
     if (!activeConversation) return "";

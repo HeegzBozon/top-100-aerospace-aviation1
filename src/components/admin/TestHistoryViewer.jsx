@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Eye, CheckCircle, XCircle, AlertTriangle, Search, Filter } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, AlertTriangle, Search } from 'lucide-react';
 import { format } from 'date-fns';
 
 const StatusBadge = ({ status }) => {

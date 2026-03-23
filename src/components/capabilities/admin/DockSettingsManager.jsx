@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { DockItem } from '@/entities/DockItem';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -8,7 +8,6 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Plus, Edit, GripVertical, Loader2, RotateCcw } from 'lucide-react';
 import { iconMap, DefaultIcon } from '@/components/icons';
 import { resetDockOrder } from '@/functions/resetDockOrder';
-import { setDockOrder } from '@/functions/setDockOrder';
 import { fixVoteButton } from '@/functions/fixVoteButton';
 
 import DockItemForm from './DockItemForm';

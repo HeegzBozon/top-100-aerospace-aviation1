@@ -1,4 +1,3 @@
-import React from 'react';
 import HolisticScoreDisplay from './HolisticScoreDisplay';
 import { motion } from 'framer-motion';
 import { ArrowUp, ArrowDown, Minus } from 'lucide-react';

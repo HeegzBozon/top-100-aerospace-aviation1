@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import {
-  Home, Trophy, Compass, Calendar, MessageCircle, Users,
-  Bookmark, MoreHorizontal, Plus, Settings, User,
-  Smile, ChevronRight, Hash, Briefcase, Gamepad2, Video, ShieldCheck,
-  Search, Rocket, X, Clock, ArrowUp, ArrowDown, Send, Lightbulb
+import { Trophy, Calendar, MessageCircle, Users, MoreHorizontal, Plus,
+  Smile, ChevronRight, Hash, Briefcase, ShieldCheck,
+  Search, Clock, Send
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";

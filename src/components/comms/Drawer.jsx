@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import { useUnread } from "@/components/contexts/UnreadContext";
 import NewConversationModal from "./NewConversationModal";
@@ -6,7 +6,6 @@ import ChannelManagerModal from "./ChannelManagerModal";
 import { ChannelsList } from "./ChannelsList";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { createPageUrl } from "@/utils";
 import { Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";

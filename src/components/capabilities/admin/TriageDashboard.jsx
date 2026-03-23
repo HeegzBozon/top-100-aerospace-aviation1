@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Feedback } from '@/entities/Feedback';
 import { InvokeLLM } from '@/integrations/Core';
 import { useToast } from "@/components/ui/use-toast";

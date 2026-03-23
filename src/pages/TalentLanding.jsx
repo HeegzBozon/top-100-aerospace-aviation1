@@ -1,7 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Users, Building2, Rocket, Award, ArrowRight, CheckCircle } from 'lucide-react';
+import { Briefcase, Users, Building2, Rocket, Award, ArrowRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const brandColors = {

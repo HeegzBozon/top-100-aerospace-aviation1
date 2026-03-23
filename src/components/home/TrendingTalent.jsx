@@ -1,4 +1,3 @@
-import React from 'react';
 import { Flame, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { createPageUrl } from '@/utils';

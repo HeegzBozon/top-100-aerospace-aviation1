@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Construction, Wrench, Hammer, Sparkles } from 'lucide-react';
 

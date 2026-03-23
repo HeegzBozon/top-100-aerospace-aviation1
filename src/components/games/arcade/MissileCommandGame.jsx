@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const GAME_WIDTH = 600;
 const GAME_HEIGHT = 500;

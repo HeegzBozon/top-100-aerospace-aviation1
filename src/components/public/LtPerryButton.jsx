@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { MessageCircle } from "lucide-react";

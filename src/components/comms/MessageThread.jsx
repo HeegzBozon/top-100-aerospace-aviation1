@@ -10,7 +10,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import PollCard from "./PollCard";
 import CreatePollModal from "./CreatePollModal";
 import MentionPopover from "./MentionPopover";
-import CrpStepPickerButton from "./CrpStepPickerButton";
 import ConstellationBackground from "./ConstellationBackground";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 import { useTodos } from "./ConversationTodoPanel";

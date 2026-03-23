@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Rocket, MapPin, Radio, Clock, ExternalLink, ChevronDown, Loader2, Maximize2, Minimize2, PartyPopper } from 'lucide-react';
 import { findLaunchStream } from '@/functions/findLaunchStream';
 import { parseISO, differenceInSeconds, format } from 'date-fns';

@@ -1,5 +1,4 @@
-import React from 'react';
-import { TrendingUp, Users, Award, Zap, Target } from 'lucide-react';
+import { Users, Zap, Target } from 'lucide-react';
 
 const MetricCard = ({ icon: Icon, title, value, description, color = "text-[var(--accent-2)]" }) => (
   <div className="bg-black/10 rounded-xl p-3 border border-white/5">

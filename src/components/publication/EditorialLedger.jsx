@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ChevronDown, Globe, Sparkles } from 'lucide-react';
+import { Search, ChevronDown, Globe } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

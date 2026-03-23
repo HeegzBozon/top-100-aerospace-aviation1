@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import { createPageUrl } from "@/utils";
 import { User } from '@/entities/User';
 import { Loader2 } from "lucide-react";

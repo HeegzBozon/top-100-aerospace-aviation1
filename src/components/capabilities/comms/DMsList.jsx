@@ -1,4 +1,3 @@
-import React from "react";
 import { Plus, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useConversation } from "@/components/capabilities/contexts/ConversationContext";

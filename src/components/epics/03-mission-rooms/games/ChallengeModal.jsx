@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Swords } from 'lucide-react';
 import { chessManageChallenge } from '@/functions/chessManageChallenge';
 
 export default function ChallengeModal({ open, onClose, targetUser }) {

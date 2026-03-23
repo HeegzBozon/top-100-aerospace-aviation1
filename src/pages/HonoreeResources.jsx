@@ -1,12 +1,11 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  Trophy, Crown, Download, Share2, Mic, Calendar,
-  Users, Heart, Sparkles, ArrowRight, Star, Award, FileText
+  Trophy, Crown, Share2, Mic, Calendar,
+  Users, Heart, ArrowRight, Star, Award, FileText
 } from 'lucide-react';
 
 const brandColors = {

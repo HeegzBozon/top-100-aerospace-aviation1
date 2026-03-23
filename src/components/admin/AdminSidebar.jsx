@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ADMIN_SECTIONS, findTabById } from './adminNavConfig';
 import { ChevronDown, PanelLeftClose, PanelLeft, Search, Command } from 'lucide-react';
 

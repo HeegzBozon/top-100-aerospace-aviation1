@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,6 @@ import {
   ArrowLeft, 
   Star,
   Sparkles,
-  AlertTriangle,
   PlusSquare
 } from 'lucide-react';
 import { NominationForm } from '@/components/epics/06-nomination-engine/voting';

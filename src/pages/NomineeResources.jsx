@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Award, Users, TrendingUp, Share2, FileText, Camera, 
-  CheckCircle, ArrowRight, Sparkles, Target, Heart, Star
+  CheckCircle, ArrowRight, Star
 } from 'lucide-react';
 
 const brandColors = {

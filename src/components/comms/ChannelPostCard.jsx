@@ -1,7 +1,6 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { ArrowUp, MessageSquare, Eye, BookOpen, HelpCircle, Megaphone, MoreVertical, Edit2, Trash2, Clock, MoveRight } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from "@/components/ui/context-menu";

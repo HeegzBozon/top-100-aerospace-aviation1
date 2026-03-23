@@ -1,4 +1,3 @@
-import React from 'react';
 import { Heart, MessageSquare, Trophy } from 'lucide-react';
 
 const pulseIcons = {

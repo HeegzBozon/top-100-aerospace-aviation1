@@ -1,9 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
+import { useState, useEffect } from 'react';
 import { User } from '@/entities/User';
 import { Sponsor } from '@/entities/Sponsor';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 
 // Dashboard Components

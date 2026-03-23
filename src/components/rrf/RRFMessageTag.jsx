@@ -1,4 +1,3 @@
-import React from 'react';
 
 const stageConfig = {
   FORM: { color: 'bg-amber-100 text-amber-700', label: 'FORM', dot: 'bg-amber-400' },

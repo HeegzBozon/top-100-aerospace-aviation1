@@ -1,4 +1,3 @@
-import React from 'react';
 import { ExternalLink, Newspaper } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 

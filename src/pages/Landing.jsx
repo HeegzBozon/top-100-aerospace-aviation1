@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ProfileView from '@/pages/ProfileView';
 import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import FooterInfoModal from '@/components/landing/FooterInfoModal';

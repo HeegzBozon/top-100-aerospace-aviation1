@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { saveRankedVote } from '@/functions/saveRankedVote';
 import { getUserRankedVote } from '@/functions/getUserRankedVote';

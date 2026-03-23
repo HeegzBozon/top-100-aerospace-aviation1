@@ -62,6 +62,8 @@ export default function PayoutDashboard() {
     enabled: !!user?.email
   });
 
+  const [generatingReport, setGeneratingReport] = React.useState(false);
+
   if (userLoading || statusLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -71,18 +73,16 @@ export default function PayoutDashboard() {
   }
 
   const succeededPayments = payments.filter(p => p.status === 'succeeded');
-  const totalEarnings = succeededPayments.reduce((sum, p) => 
+  const totalEarnings = succeededPayments.reduce((sum, p) =>
     sum + (p.provider_amount_cents || p.amount_cents || 0) / 100, 0
   );
 
   const pendingPayouts = succeededPayments.filter(p => !p.payout_completed);
-  const pendingAmount = pendingPayouts.reduce((sum, p) => 
+  const pendingAmount = pendingPayouts.reduce((sum, p) =>
     sum + (p.provider_amount_cents || p.amount_cents || 0) / 100, 0
   );
 
   const isConnected = connectStatus?.has_account && connectStatus?.payouts_enabled;
-
-  const [generatingReport, setGeneratingReport] = React.useState(false);
 
   const handleDownloadReport = async (month, year) => {
     setGeneratingReport(true);

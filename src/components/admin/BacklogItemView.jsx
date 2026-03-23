@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { X, Edit, Layers, Milestone, Flag, GitCommit, Plus, Loader2 } from 'lucide-react';
 import { Capability } from '@/entities/Capability';

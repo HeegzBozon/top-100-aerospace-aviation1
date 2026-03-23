@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { SpotlightVote } from '@/entities/SpotlightVote';
 import { Star, Zap, Rocket, Award, X } from 'lucide-react';
 

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
   Activity, CheckCircle2, Rocket, CalendarDays,
-  Sparkles, Shield, Map, Compass, Plane, Trophy, Vote, Award, PartyPopper, Settings
+  Sparkles, Shield, Settings
 } from 'lucide-react';
 import { RoadmapItem } from '@/entities/RoadmapItem';
 import { base44 } from '@/api/base44Client';

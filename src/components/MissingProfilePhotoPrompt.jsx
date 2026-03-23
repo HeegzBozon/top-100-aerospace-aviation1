@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { User } from '@/entities/User';
 import { UploadFile } from '@/integrations/Core';
 import { Button } from '@/components/ui/button';

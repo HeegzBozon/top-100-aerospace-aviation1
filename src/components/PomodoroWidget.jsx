@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Timer, Play, Pause, RotateCcw, Award } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 import { User } from '@/entities/User';
 import { awardStardust } from '@/functions/awardStardust';
 

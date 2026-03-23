@@ -1,18 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Nominee } from '@/entities/Nominee';
 import { Season } from '@/entities/Season';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
-import {
-  Upload, FileSpreadsheet, Database, PlayCircle, CheckCircle,
-  Loader2, AlertTriangle, BarChart, Star, Users, Settings,
-  FileText, Plus, Download, Eye, Zap
+import { FileSpreadsheet, Database, PlayCircle, CheckCircle,
+  Loader2, Settings, Plus, Eye
 } from 'lucide-react';
 
 export default function NomineeImportWizard({ onClose, onSuccess }) {

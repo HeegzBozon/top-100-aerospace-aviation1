@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import {
   Edit2, Trash2, MoreVertical, Clock, XCircle, Zap, ChevronDown, ChevronUp, Plus
 } from "lucide-react";
 import { format, isToday, isTomorrow } from "date-fns";
-import { PLATFORM_CONFIG, POST_STATUS_CONFIG } from "./publisherConfig";
+import { PLATFORM_CONFIG } from "./publisherConfig";
 import { publishNow } from "@/functions/publishNow";
 
 const PLATFORMS = ["linkedin", "instagram", "threads"];

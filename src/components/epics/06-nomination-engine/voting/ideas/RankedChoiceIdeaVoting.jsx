@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { IdeaRankedVote } from '@/entities/IdeaRankedVote';
 import { awardStardust } from '@/functions/awardStardust';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { GripVertical, Trophy, Zap, Lightbulb } from 'lucide-react';
+import { GripVertical, Trophy, Zap } from 'lucide-react';
 
 export default function RankedChoiceIdeaVoting({ ideas, currentUser, onVoteComplete }) {
   const [selectedIdeas, setSelectedIdeas] = useState([]);

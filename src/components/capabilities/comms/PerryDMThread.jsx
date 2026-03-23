@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Send, Info } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
 import ReactQuill from 'react-quill';

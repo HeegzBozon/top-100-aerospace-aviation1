@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import {
-  Rocket, Globe2, MessageSquare, Radio,
+import { useState } from "react";
+import { Globe2, MessageSquare, Radio,
   Layers, Zap, Users, Star, ChevronRight, Clock, Download, AlertCircle
 } from "lucide-react";
 import ConstellationBackground from "./ConstellationBackground";

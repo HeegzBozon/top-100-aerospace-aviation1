@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, Check, X, Star, Video, Mic, FileText, Loader2 } from 'lucide-react';
+import { Check, X, Star, Video, Mic, FileText, Loader2 } from 'lucide-react';
 
 export default function TestimonialModeration() {
   const [testimonials, setTestimonials] = useState([]);

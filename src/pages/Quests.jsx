@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Quest } from '@/entities/Quest';
 import { UserQuest } from '@/entities/UserQuest';
 import { User } from '@/entities/User';
 import QuestCard from '@/components/quests/QuestCard';
-import { Trophy, Sparkles, Loader2 } from 'lucide-react';
+import { Trophy, Loader2 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useToast } from "@/components/ui/use-toast";
 

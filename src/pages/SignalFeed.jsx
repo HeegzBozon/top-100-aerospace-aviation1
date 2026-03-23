@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { User } from '@/entities/User';
 import { Link } from 'react-router-dom';
@@ -7,11 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import {
     Activity, Zap, BrainCircuit, UserPlus, Award, Trophy,
-    Rocket, Building2, BookOpen, ShieldCheck, ArrowUpRight,
-    Filter, Bell, TrendingUp, Newspaper, FileText,
-    Star, Briefcase, Globe, Sparkles, ChevronRight
+    Rocket, ArrowUpRight, Newspaper,
+    Star, Briefcase, Globe, Sparkles
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 const brandColors = {

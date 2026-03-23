@@ -1,4 +1,3 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -7,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Briefcase, Calendar, DollarSign, Star, Clock, 
-  ArrowRight, Heart, Users, TrendingUp, ShoppingBag
+  Briefcase, Calendar, Clock, 
+  ArrowRight, Heart, TrendingUp, ShoppingBag
 } from 'lucide-react';
 import { format, isAfter } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -22,10 +21,7 @@ export default function TalentExchangeWidget({ user, nominees = [] }) {
   // Only show to honorees (users with claimed nominee profiles) and admins
   const isAdmin = user?.role === 'admin';
   const isHonoree = nominees.some(n => n.claimed_by_user_email === user?.email);
-  
-  if (!isAdmin && !isHonoree) {
-    return null;
-  }
+
   // Provider data
   const { data: myServices = [] } = useQuery({
     queryKey: ['my-services', user?.email],
@@ -60,6 +56,10 @@ export default function TalentExchangeWidget({ user, nominees = [] }) {
     },
     enabled: !!user?.email,
   });
+
+  if (!isAdmin && !isHonoree) {
+    return null;
+  }
 
   const now = new Date();
   const isProvider = myServices.length > 0;

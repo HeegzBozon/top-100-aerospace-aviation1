@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGame } from '../GameContext';
 import { motion } from 'framer-motion';
 import { User, Trophy, Star, MapPin, Layers, Scroll } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import MissionsPanel from '../missions/MissionsPanel';
 
 const brandColors = {

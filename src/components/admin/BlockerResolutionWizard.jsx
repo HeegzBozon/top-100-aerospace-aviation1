@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { InvokeLLM } from '@/integrations/Core';
 import { Feedback } from '@/entities/Feedback';
-import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
 import { 
   X, 

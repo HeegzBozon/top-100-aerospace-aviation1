@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Target, Flag, CheckCircle, Play, Pause, RotateCcw, Award, Zap, ThumbsUp, BrainCircuit, Plus, X, Check, Loader2, ShieldAlert, Rocket } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { CheckCircle, Play, Pause, Award, Zap, ThumbsUp, Plus, Check, Loader2, ShieldAlert, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from "@/components/ui/use-toast";
-import { Checkbox } from "@/components/ui/checkbox"; // New import
+// New import
 import { startHuddleSession } from '@/functions/startHuddleSession';
 import { createHuddleBlocker } from '@/functions/createHuddleBlocker';
 import { finishHuddleSession } from '@/functions/finishHuddleSession';

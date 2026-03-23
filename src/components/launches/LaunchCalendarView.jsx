@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import { parseISO, format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, addMonths, subMonths, startOfYear, endOfYear, eachMonthOfInterval } from 'date-fns';
-import { ChevronLeft, ChevronRight, Rocket } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { parseISO, format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, addMonths, subMonths } from 'date-fns';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 function LaunchDot({ launch, onClick }) {
   const isGo = launch.status?.abbrev === 'Go';

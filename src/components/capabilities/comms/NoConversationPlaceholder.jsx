@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { MessageSquare, Users, Zap, Star } from "lucide-react";
 import { brandColors } from "@/components/core/brandTheme";
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
 import { useMessages } from "./hooks/useMessages";
 import { usePolls } from "./hooks/usePolls";

@@ -19,18 +19,11 @@ import {
     BookOpen,
     Sparkles,
     Calendar,
-    Database,
     Zap,
     MessageSquare,
-    Vote,
-    ClipboardCheck,
     GraduationCap,
-    Milestone,
-    Search,
     GitMerge,
     Clock,
-    Tag,
-    Bell,
     Columns,
 } from 'lucide-react';
 

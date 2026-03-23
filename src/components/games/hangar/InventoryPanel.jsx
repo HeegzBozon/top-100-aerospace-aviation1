@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../GameContext';
-import { X, Package, Trophy, Star, Sparkles, Lock } from 'lucide-react';
+import { X, Package, Trophy, Star, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const brandColors = {

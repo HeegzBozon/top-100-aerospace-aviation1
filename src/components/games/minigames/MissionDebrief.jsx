@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { CheckCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const retroColors = {

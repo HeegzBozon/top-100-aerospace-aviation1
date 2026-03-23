@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { User } from "@/entities/User";
 import { themes, getAutoTheme, getCSSVariables } from "./brandTheme";
 

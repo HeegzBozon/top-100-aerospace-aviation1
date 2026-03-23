@@ -1,4 +1,3 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import OpportunitiesFeed from '@/components/home/OpportunitiesFeed';
@@ -6,8 +5,6 @@ import ActivityFeed from '@/components/home/ActivityFeed';
 import DailyMissionsWidget from '@/components/missions/DailyMissionsWidget';
 import BiographerWidget from '@/components/home/BiographerWidget';
 import MyIntroRequests from '@/components/talent/MyIntroRequests';
-import TalentExchangeWidget from '@/components/passport/TalentExchangeWidget';
-import QuickBookingsWidget from '@/components/passport/QuickBookingsWidget';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Handshake } from 'lucide-react';
 

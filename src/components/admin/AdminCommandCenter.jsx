@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { getDashboardStats } from '@/functions/getDashboardStats';
 import { useToast } from '@/components/ui/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
     LayoutDashboard, Users, Trophy, Camera, Briefcase, Rocket, Award,
     CalendarDays, DollarSign, Settings, FileText, Activity,
-    RefreshCw, AlertCircle, CheckCircle2,
-    Zap, ArrowRight, Vote, UserPlus,
-    Globe, BarChart3, Flame, Loader2
+    RefreshCw, AlertCircle, CheckCircle2, ArrowRight, Vote, UserPlus,
+    Globe, BarChart3, Flame
 } from 'lucide-react';
 
 // ── Brand tokens ──────────────────────────────────────────────────────────────

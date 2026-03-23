@@ -4,8 +4,6 @@ import { createPageUrl } from "@/utils";
 import { useConversation } from "@/components/capabilities/contexts/ConversationContext";
 import { useUnread } from "@/components/capabilities/contexts/UnreadContext";
 import CommsMainView from "./CommsMainView";
-import MobileDock from "./MobileDock";
-import MobileSearch from "./MobileSearch";
 import MobileCustomizeSheet from "./MobileCustomizeSheet";
 import {
   Hash, Lock, MessageSquare, Bookmark, ChevronRight,

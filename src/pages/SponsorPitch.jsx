@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { 
   Award, TrendingUp, Users, Globe, Target, CheckCircle, 
-  BarChart3, Rocket, Linkedin, Mail, Calendar, ArrowRight,
+  BarChart3, Rocket, Mail, Calendar, ArrowRight,
   Star, Trophy, Sparkles, Zap
 } from 'lucide-react';
 

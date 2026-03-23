@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import TipViewModal from '@/components/tips/TipViewModal';
-import { ArrowUp, BookOpen, MessageSquare, Eye } from 'lucide-react';
+import { ArrowUp, BookOpen, Eye } from 'lucide-react';
 
 export default function TipCard({ tip, currentUserEmail, onUpvote }) {
   const [isModalOpen, setIsModalOpen] = useState(false);

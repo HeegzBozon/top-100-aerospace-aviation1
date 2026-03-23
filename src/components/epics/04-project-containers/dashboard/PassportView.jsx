@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Nominee } from '@/entities/Nominee';
 import { NomineeCard } from '@/entities/NomineeCard';
 import { Season } from '@/entities/Season';
 import { FestivalStamp } from '@/entities/FestivalStamp';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
-import { HolographicNomineeCard } from '@/components/capabilities/cards';
 import { awardStardust } from '@/functions/awardStardust';
 import { awardFestivalStamp } from '@/functions/awardFestivalStamp';
 import { useToast } from "@/components/ui/use-toast";

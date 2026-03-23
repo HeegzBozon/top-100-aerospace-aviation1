@@ -1,8 +1,7 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plane, Calendar, Vote, Trophy, Users, Megaphone, CheckCircle2, Clock, ArrowRight, Heart, Rocket } from 'lucide-react';
+import { Plane, Calendar, Vote, Trophy, Users, Megaphone, CheckCircle2, Clock, Heart, Rocket } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

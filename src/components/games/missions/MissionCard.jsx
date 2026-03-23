@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronUp, Trophy, Star, Gift } from 'lucide-react';
+import { ChevronDown, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const brandColors = {

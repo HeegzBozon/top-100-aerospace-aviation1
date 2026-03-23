@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { factoryReset } from '@/functions/factoryReset';
 import { Loader2, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';

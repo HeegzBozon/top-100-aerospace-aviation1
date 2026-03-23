@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -14,8 +14,8 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   MapPin, Briefcase, Clock, DollarSign, Building2, Shield, 
-  GraduationCap, Calendar, ArrowLeft, Star, Zap, CheckCircle,
-  ExternalLink, Loader2, Upload
+  GraduationCap, ArrowLeft, Star, Zap, CheckCircle,
+  ExternalLink, Loader2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { base44 } from '@/api/base44Client';

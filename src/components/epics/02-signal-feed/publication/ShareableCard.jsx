@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Share2, Twitter, Linkedin, Link2, Check, Loader2 } from 'lucide-react';
+import { Download, Twitter, Linkedin, Link2, Check, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 
 const brandColors = {

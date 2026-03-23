@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { User } from "@/entities/User";
@@ -9,11 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { 
   Clock, 
-  Calendar, 
-  Shield, 
-  Bell,
-  Users,
-  Eye,
+  Calendar,
   Loader2,
   Save,
   ArrowLeft

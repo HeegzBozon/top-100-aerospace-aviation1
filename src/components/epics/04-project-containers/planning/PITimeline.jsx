@@ -1,6 +1,4 @@
-import React from 'react';
 import { format } from 'date-fns';
-import { Badge } from '@/components/ui/badge';
 import { CalendarRange } from 'lucide-react';
 
 export default function PITimeline({ pi, sprints, objectives }) {

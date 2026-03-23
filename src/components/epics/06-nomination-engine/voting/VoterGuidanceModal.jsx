@@ -1,5 +1,4 @@
 
-import React from 'react';
 import { X, Users, CheckCircle, Trophy, Star } from 'lucide-react';
 
 export default function VoterGuidanceModal({ isOpen, onClose, votingMode }) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Eye, TrendingUp, SkipForward, BarChart, Trophy, Medal, Award, Loader2 } from 'lucide-react';

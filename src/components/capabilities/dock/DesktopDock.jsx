@@ -1,38 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
 import {
-  Home,
-  Trophy,
-  Users,
-  Calendar,
-  Send,
-  Settings,
   Star,
   Plus,
   X,
-  Plane,
-  Award,
-  Briefcase,
-  Heart,
-  Rocket,
-  Target,
   Zap,
-  Globe,
-  BookOpen,
-  MessageSquare,
-  Bell,
-  Search,
-  LayoutDashboard,
-  Compass,
   Bookmark,
   FolderOpen,
 } from 'lucide-react';

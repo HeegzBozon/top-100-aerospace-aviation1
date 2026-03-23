@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Rocket, AlertCircle, Loader2, MapPin } from 'lucide-react';
 import { getUpcomingLaunches } from '@/functions/getUpcomingLaunches';
 import { Button } from '@/components/ui/button';

@@ -1,10 +1,8 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
 import {
-  Rocket, BookOpen, Trophy, Users, ArrowRight,
-  CheckCircle, Cpu, Sparkles, Vote, Award
+  Rocket, BookOpen, Trophy, Users, ArrowRight, Cpu, Sparkles, Vote, Award
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useConversation } from "@/components/capabilities/contexts/ConversationContext";

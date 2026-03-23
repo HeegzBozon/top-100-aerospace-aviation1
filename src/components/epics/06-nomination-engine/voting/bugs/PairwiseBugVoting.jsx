@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BugPairwiseVote } from '@/entities/BugPairwiseVote';
 import { awardStardust } from '@/functions/awardStardust';
-import { Zap, AlertTriangle, Bug } from 'lucide-react';
+import { Zap, Bug } from 'lucide-react';
 
 export default function PairwiseBugVoting({ bugs, currentUser, onVoteComplete }) {
   const [currentPair, setCurrentPair] = useState(null);

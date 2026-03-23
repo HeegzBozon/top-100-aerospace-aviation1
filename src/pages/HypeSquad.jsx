@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { User } from '@/entities/User';
 import { Nominee } from '@/entities/Nominee';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLayer } from './LayerManager';
 import { LAYERS, LAYER_GROUPS } from './LayerConfig';
 import { 
-  ChevronUp, ChevronDown, Lock, Unlock, Rocket, 
+  ChevronUp, ChevronDown, Lock, Rocket, 
   Building, Settings, Cloud, Satellite, Star,
-  ArrowLeft, Info
+  ArrowLeft
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

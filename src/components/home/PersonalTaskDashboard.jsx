@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PersonalTask } from '@/entities/PersonalTask';
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, Tag, Calendar } from 'lucide-react';
+import { Plus, Calendar } from 'lucide-react';
 
 const TaskItem = ({ task, onTaskUpdate, onTaskDelete }) => {
   const { toast } = useToast();

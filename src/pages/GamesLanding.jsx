@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Gamepad2, Trophy, Star, Rocket, Package, ArrowRight, Sparkles } from 'lucide-react';

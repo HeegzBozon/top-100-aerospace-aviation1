@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { MicOff, VideoOff } from 'lucide-react';
 
 export default function ColonyVideoTile({ participant, isLocal = false }) {
@@ -48,7 +48,7 @@ export default function ColonyVideoTile({ participant, isLocal = false }) {
     <div className="relative rounded-xl overflow-hidden bg-slate-800 aspect-video flex items-center justify-center">
       {/* Hidden audio element for remote participants */}
       {!isLocal && (
-        <audio ref={audioRef} autoPlay playsInline aria-hidden="true" />
+        <audio ref={audioRef} autoPlay aria-hidden="true" />
       )}
 
       {/* Video or avatar fallback */}

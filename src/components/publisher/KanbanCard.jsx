@@ -1,4 +1,3 @@
-import React from "react";
 import { MoreVertical, ArrowRight, ArrowLeft, Edit2 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,

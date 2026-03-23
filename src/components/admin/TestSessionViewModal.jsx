@@ -1,5 +1,3 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
 import {
   X,
   User,
@@ -8,8 +6,6 @@ import {
   XCircle,
   AlertTriangle,
   PlayCircle,
-  Hash,
-  Type,
   FileText,
 } from 'lucide-react';
 import { format } from 'date-fns';

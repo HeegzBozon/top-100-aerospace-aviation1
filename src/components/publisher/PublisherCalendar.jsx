@@ -1,12 +1,12 @@
-import React, { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Plus, CalendarDays } from "lucide-react";
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
   eachDayOfInterval, format, isSameMonth, isSameDay, isToday,
   addMonths, subMonths, addWeeks, subWeeks, startOfWeek as startOfWeekFn, endOfWeek as endOfWeekFn,
-  parseISO, isSameWeek,
+  parseISO,
 } from "date-fns";
-import { PLATFORM_CONFIG, POST_STATUS_CONFIG } from "./publisherConfig";
+import { POST_STATUS_CONFIG } from "./publisherConfig";
 
 const VIEW_MONTH = "month";
 const VIEW_WEEK  = "week";

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { Loader2, ExternalLink } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import WorkCreditCard from './WorkCreditCard';
 

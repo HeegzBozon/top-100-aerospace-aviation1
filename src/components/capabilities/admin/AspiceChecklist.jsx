@@ -1,4 +1,3 @@
-import React from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, HelpCircle } from 'lucide-react';

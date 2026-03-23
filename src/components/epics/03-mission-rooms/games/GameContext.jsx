@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User } from '@/entities/User';
 import { GamePlayer } from '@/entities/GamePlayer';
 import { GameArtifact } from '@/entities/GameArtifact';

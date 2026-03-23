@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
 import {
-  Home,
-  MessageCircle,
-  Search,
   MoreHorizontal,
   UserCircle,
   Gamepad2,
   Rocket,
-  CheckSquare,
   BookOpen,
   Award,
   Star,

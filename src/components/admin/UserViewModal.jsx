@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { X, Mail, User as UserIcon, Shield, Clock } from 'lucide-react';
+import { X, Shield, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function UserViewModal({ user, onClose }) {

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { DockItem } from '@/entities/DockItem';
 import { User } from '@/entities/User';
 import { base44 } from '@/api/base44Client';
 import { iconMap, DefaultIcon } from '@/components/icons';
-import { Menu, X, LogIn, Shield, ShoppingBag, Search, Bell } from 'lucide-react';
+import { Menu, X, LogIn, ShoppingBag, Search, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Rocket, Clock, MapPin, ChevronRight, Loader2, AlertCircle, Radio } from 'lucide-react';
 import { getUpcomingLaunches } from '@/functions/getUpcomingLaunches';
 import { createPageUrl } from '@/utils';

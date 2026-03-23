@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 // ─── Isometric projection constants ───────────────────────────────────────────
 const TILE_W = 64;

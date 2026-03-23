@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { getStandingsData } from '@/functions/getStandingsData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Trophy, Medal, Crown, Search, Download, RefreshCw, Loader2,
-  TrendingUp, Star, Award, BarChart3, Users, Sparkles
+  TrendingUp, Award, BarChart3, Users, Sparkles
 } from 'lucide-react';
 
 const brandColors = {

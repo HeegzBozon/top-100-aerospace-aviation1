@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Feedback } from '@/entities/Feedback';
 import { awardStardust } from '@/functions/awardStardust';
 import { Zap, ThumbsUp, Lightbulb } from 'lucide-react';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { User } from '@/entities/User';
 import { BallotBoxStep } from '@/components/epics/05-rapid-response-cells/rituals';

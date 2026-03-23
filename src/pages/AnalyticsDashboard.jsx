@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getAnalyticsData } from '@/functions/getAnalyticsData';
 import { getSearchConsoleData } from '@/functions/getSearchConsoleData';
-import { BarChart2, Search, RefreshCw, Loader2, AlertCircle, ChevronDown } from 'lucide-react';
+import { BarChart2, Loader2, AlertCircle, ChevronDown } from 'lucide-react';
 import SearchConsolePanel from '@/components/analytics/SearchConsolePanel';
 import AnalyticsPanel from '@/components/analytics/AnalyticsPanel';
 import { base44 } from '@/api/base44Client';

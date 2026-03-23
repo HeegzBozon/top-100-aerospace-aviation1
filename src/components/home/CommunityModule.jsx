@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Event } from '@/entities/Event';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Users, Calendar, ArrowRight, MapPin, Loader2 } from 'lucide-react';
+import { Users, Calendar, MapPin, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 const brandColors = {

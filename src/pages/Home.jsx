@@ -1,13 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import ProfileView from '@/pages/ProfileView';
 import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import Landing2Hero from '@/components/landing/Landing2Hero';
 import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
-import Landing2FeaturedSection from '@/components/landing/Landing2FeaturedSection';
 
 import TrendingSection from '@/components/landing/TrendingSection';
-import CalendarView from '@/components/calendar/CalendarView';
-import GetStartedView from '@/components/onboarding/GetStartedView';
 import HeroHeader from '@/components/home/HeroHeader';
 import AerospaceDashboardSection from '@/components/home/AerospaceDashboardSection';
 import IndustrySpotlight from '@/components/home/IndustrySpotlight';
@@ -26,8 +23,7 @@ import HomeSectionReorderPopover, { loadSectionConfig, DEFAULT_SECTIONS } from '
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { subDays } from 'date-fns';
-import { Loader2, Calendar, TrendingUp, Award, Handshake, Users, Clock, Newspaper } from 'lucide-react';
-import { createPageUrl } from '@/utils';
+import { Loader2 } from 'lucide-react';
 
 
 

@@ -4,9 +4,9 @@
     {
       "name": "top-100-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": ["run", "dev", "--", "--port", "5174"],
       "cwd": "/Users/heegzbozon/Downloads/top-100-aerospace-aviation1",
-      "port": 5173
+      "port": 5174
     },
     {
       "name": "top-100-preview",

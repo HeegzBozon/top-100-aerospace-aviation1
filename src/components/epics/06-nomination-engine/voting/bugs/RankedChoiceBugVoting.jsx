@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BugRankedVote } from '@/entities/BugRankedVote';
 import { awardStardust } from '@/functions/awardStardust';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { GripVertical, Trophy, Zap, Bug } from 'lucide-react';
+import { GripVertical, Trophy, Zap } from 'lucide-react';
 
 export default function RankedChoiceBugVoting({ bugs, currentUser, onVoteComplete }) {
   const [selectedBugs, setSelectedBugs] = useState([]);

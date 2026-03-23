@@ -1,4 +1,3 @@
-import React from "react";
 import TopNav from "@/components/TopNav";
 import Landing2Sidebar from "@/components/landing/Landing2Sidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";

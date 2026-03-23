@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Message } from "@/entities/Message";
 import { Conversation } from "@/entities/Conversation";
@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import PostCard from "./PostCard";
 import PostDetail from "./PostDetail";
 import CreatePostModal from "./CreatePostModal";
-import { base44 } from "@/api/base44Client";
 
 const SORT_OPTIONS = [
   { key: "hot", label: "Hot", icon: Flame },

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Lock, Hash, UserPlus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";

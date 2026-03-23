@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Hash, Lock, ChevronDown, ChevronRight, Plus, Settings, Megaphone, MessageCircle, User, HelpCircle, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useConversation } from "@/components/contexts/ConversationContext";

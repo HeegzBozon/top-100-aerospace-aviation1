@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import KeybindingManager from './KeybindingManager';
 import { Switch } from '@/components/ui/switch';
 import { Settings, MoveRight, DatabaseBackup } from 'lucide-react';

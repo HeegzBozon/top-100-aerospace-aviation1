@@ -1,4 +1,3 @@
-import React from 'react';
 import { X, User as UserIcon, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 

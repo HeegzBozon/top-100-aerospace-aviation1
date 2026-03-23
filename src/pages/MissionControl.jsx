@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Plane, Target, Trophy, Star, Volume2, VolumeX, Zap, Rocket, Radio, Globe, Layout, Briefcase, Sparkles, Box, Shield, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Star, Volume2, VolumeX, Rocket, Radio, Globe, Briefcase, Box, Shield, ChevronRight } from 'lucide-react';
 import { GameProvider, useGame } from '@/components/games/GameContext';
 import RunwayToOrbit from '@/components/games/RunwayToOrbit';
 import FounderDashboard from './FounderDashboard';

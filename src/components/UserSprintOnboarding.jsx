@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { User } from '@/entities/User';
 import moment from 'moment';
 import PwaInstallGuide from "@/components/PwaInstallGuide";

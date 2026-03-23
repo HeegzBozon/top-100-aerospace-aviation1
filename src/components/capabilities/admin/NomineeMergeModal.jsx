@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { X, Merge, AlertTriangle, User, Mail, Building, Globe, Star, Trophy } from 'lucide-react';
+import { X, Merge, AlertTriangle, User, Mail, Building, Star, Trophy } from 'lucide-react';
 import { mergeNominees } from '@/functions/mergeNominees';
 import { useToast } from "@/components/ui/use-toast";
 

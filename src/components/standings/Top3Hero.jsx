@@ -1,5 +1,4 @@
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUp, ArrowDown, Minus } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';

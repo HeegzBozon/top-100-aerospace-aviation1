@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { motion } from 'framer-motion';
 import { 
-  Loader2, Search, BookOpen, Eye, Tag, FileText, ArrowUpDown, Filter, Pin
+  Loader2, Search, BookOpen, ArrowUpDown, Filter, Pin
 } from 'lucide-react';
 
 const brandColors = {

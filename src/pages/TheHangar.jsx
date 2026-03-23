@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameProvider, useGame } from '@/components/games/GameContext';
 import HangarScene from '@/components/games/hangar/HangarScene';
 import OutsideScene from '@/components/games/hangar/OutsideScene';
@@ -16,10 +16,8 @@ import OnboardingSequence from '@/components/games/hangar/OnboardingSequence';
 import { LayerProvider, useLayer, LayerNavigator, LayerTransitionOverlay } from '@/components/games/hangar/layers';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import { Nominee } from '@/entities/Nominee';
-import { ArrowLeft, Maximize2, Volume2, VolumeX, Loader2, Layers } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

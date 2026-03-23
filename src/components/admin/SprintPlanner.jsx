@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Sprint } from '@/entities/Sprint';
 import { Feedback } from '@/entities/Feedback';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Plus, Target, Clock, Users, BarChart3, Diamond, Edit, Star, BrainCircuit, Zap, Trash2, GripVertical, Rocket } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Target, Users, Diamond, Edit, Star, BrainCircuit, Zap, Trash2, GripVertical, Rocket } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import SprintWizard from '@/components/admin/SprintWizard';
 

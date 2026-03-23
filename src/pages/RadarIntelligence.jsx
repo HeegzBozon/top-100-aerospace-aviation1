@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
-    Zap, BrainCircuit, Search, Filter, TrendingUp,
+    Zap, BrainCircuit, Search, TrendingUp,
     ArrowUpRight, Users, Building2, Globe, ShieldCheck,
-    Rocket, Briefcase, ChevronRight, Activity
+    Rocket, ChevronRight, Activity
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

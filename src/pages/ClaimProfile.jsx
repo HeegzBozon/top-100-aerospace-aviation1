@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { User } from '@/entities/User';
 import { Nominee } from '@/entities/Nominee';
 import { Button } from '@/components/ui/button';
@@ -8,9 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   User as UserIcon,
   Mail,
-  Award,
   CheckCircle,
-  Star,
   Loader2,
   Crown,
   Sparkles,

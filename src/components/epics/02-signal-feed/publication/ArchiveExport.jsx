@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Download, Loader2, CheckCircle, BookOpen, Database, Lock, CreditCard, Heart } from 'lucide-react';
+import { FileText, Download, Loader2, CheckCircle, BookOpen, Database, Lock, Heart } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { User } from '@/entities/User';
 import { createArchiveCheckout } from '@/functions/createArchiveCheckout';

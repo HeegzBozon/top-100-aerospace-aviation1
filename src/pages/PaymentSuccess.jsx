@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { CheckCircle2, ArrowRight, Receipt } from "lucide-react";
+import { CheckCircle2, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { base44 } from "@/api/base44Client";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();

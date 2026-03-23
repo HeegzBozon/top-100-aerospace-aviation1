@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { getStandingsData } from "@/functions/getStandingsData";
 import { motion } from "framer-motion";

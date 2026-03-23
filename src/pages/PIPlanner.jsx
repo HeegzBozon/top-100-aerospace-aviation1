@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { SeasonalPlan } from '@/entities/SeasonalPlan';
 import { Objective } from '@/entities/Objective';
 import { KeyResult } from '@/entities/KeyResult';
-import { Sprint } from '@/entities/Sprint';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, TrendingUp, Target, Flag } from 'lucide-react';

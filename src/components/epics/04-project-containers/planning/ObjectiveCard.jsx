@@ -1,10 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Objective } from '@/entities/Objective';
 import { KeyResult } from '@/entities/KeyResult';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Target, Flag, Edit, Plus, Trash2, CheckCircle, Radio } from 'lucide-react';
+import { Target, Edit, Plus, Trash2 } from 'lucide-react';
 import KeyResultForm from './KeyResultForm';
 
 const KeyResultRow = ({ kr, onUpdate }) => {

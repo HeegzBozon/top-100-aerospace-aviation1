@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Bell, BellOff, CheckCircle, Loader2 } from 'lucide-react';
+import { Bell, BellOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function WaitlistButton({ serviceId, userEmail }) {

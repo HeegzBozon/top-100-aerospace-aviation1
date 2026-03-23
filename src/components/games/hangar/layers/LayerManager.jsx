@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import { LAYERS, TRANSITIONS, VEHICLES, getUnlockedLayers, getLayerById } from './LayerConfig';
 import { useGame } from '../../GameContext';
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { ChevronUp, ChevronDown, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 

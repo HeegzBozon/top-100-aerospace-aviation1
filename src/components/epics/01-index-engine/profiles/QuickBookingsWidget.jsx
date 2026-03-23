@@ -1,4 +1,3 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -6,7 +5,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Video, ArrowRight, CheckCircle } from 'lucide-react';
+import { Calendar, Clock, Video, ArrowRight } from 'lucide-react';
 import { format, isAfter, differenceInHours } from 'date-fns';
 
 const brandColors = {
@@ -23,10 +22,7 @@ export default function QuickBookingsWidget({ user, nominees = [] }) {
   // Only show to honorees (users with claimed nominee profiles) and admins
   const isAdmin = user?.role === 'admin';
   const isHonoree = nominees.some(n => n.claimed_by_user_email === user?.email);
-  
-  if (!isAdmin && !isHonoree) {
-    return null;
-  }
+
   const { data: clientBookings = [] } = useQuery({
     queryKey: ['client-bookings-widget', user?.email],
     queryFn: () => base44.entities.Booking.filter({ client_user_email: user.email }),
@@ -43,6 +39,10 @@ export default function QuickBookingsWidget({ user, nominees = [] }) {
     queryKey: ['services-list'],
     queryFn: () => base44.entities.Service.list(),
   });
+
+  if (!isAdmin && !isHonoree) {
+    return null;
+  }
 
   const now = new Date();
   const allBookings = [...clientBookings, ...providerBookings];

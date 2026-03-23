@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { linkedInCommunity } from "@/functions/linkedInCommunity";
-import { ChevronDown, ChevronUp, ThumbsUp, MessageSquare, Send, Loader2, Heart, Lightbulb, HandHeart, Laugh, Frown } from "lucide-react";
+import { ChevronDown, ChevronUp, ThumbsUp, MessageSquare, Send, Loader2, Heart, Lightbulb, HandHeart, Laugh } from "lucide-react";
 import { format } from "date-fns";
 
 const REACTIONS = [

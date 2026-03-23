@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { SubmissionHub } from '@/components/epics/06-nomination-engine/nominations';
 import { PairwiseVoting } from '@/components/epics/06-nomination-engine/voting';
 import { RankedChoiceVoting } from '@/components/epics/06-nomination-engine/voting';

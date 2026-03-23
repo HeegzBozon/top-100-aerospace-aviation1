@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, X, ZoomIn, ZoomOut, Maximize2, Focus, Layers, Globe, Briefcase, Tag, Building, MapPin } from 'lucide-react';
+import { Search, X, ZoomIn, ZoomOut, Maximize2, Layers, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

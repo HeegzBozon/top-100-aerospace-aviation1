@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGame } from '../GameContext';
 import { motion } from 'framer-motion';
-import { User, Trophy, Star, MapPin, Package, Settings, HelpCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { User, Trophy, Star, MapPin, Package } from 'lucide-react';
 import HangarMiniMap from './HangarMiniMap';
 import InventoryPanel from './InventoryPanel';
 

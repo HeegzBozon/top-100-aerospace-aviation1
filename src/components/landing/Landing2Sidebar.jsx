@@ -1,10 +1,8 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { 
-  Home, Sparkles, Search, Play, Newspaper, Link2, TrendingUp,
-  Crown, Trophy, Briefcase, Users, Calendar, Rocket, BookOpen, Star, Award, Megaphone, Handshake, Shield, IdCard
+  Home, Search, Link2, Trophy, Award, Shield, IdCard
 } from "lucide-react";
 import { User } from '@/entities/User';
 import { useState, useEffect } from "react";

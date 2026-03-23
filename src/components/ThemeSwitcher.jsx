@@ -1,4 +1,3 @@
-import React from 'react';
 import { Sun, Moon, Sunrise, Sunset, Sparkles, Monitor } from 'lucide-react';
 import {
   DropdownMenu,

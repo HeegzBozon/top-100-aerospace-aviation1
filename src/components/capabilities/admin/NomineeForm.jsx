@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Nominee } from '@/entities/Nominee';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from "@/components/ui/use-toast";
-import { X, Loader2, Upload, Camera } from 'lucide-react';
+import { X, Loader2, Camera } from 'lucide-react';
 
 export default function NomineeForm({ nominee, seasonId, onClose, onSuccess }) {
   const [formData, setFormData] = useState({

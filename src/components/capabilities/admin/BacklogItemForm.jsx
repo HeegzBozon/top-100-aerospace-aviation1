@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Initiative } from '@/entities/Initiative';
 import { Capability } from '@/entities/Capability';
 import { Feature } from '@/entities/Feature';

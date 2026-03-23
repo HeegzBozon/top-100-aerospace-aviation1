@@ -1,5 +1,3 @@
-import React from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Shield, Zap, Award, Crown, Sparkles } from 'lucide-react';
 
 const LEVELS = {

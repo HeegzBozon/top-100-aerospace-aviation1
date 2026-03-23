@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Share2, Users, Vote, Award, Flame, Target } from 'lucide-react';
 
