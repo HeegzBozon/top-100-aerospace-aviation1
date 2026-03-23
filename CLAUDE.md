@@ -44,6 +44,19 @@ entities/         ← Data model definitions
 functions/        ← Serverless backend function definitions
 ```
 
+## Code Retrieval — jCodemunch MCP
+
+Use `jcodemunch-mcp` for all code lookups. Never read full files when MCP is available.
+
+**Boot sequence (every session):**
+
+1. Call `list_repos` — if the project is not indexed, call `index_folder` with the current directory
+2. Use `search_symbols` / `get_symbol` to find and retrieve code by symbol name
+3. Use `get_repo_outline` or `get_file_outline` to explore structure before diving in
+4. Fall back to direct file reads only when editing or when MCP is unavailable
+
+Never open an entire file just to find one function. Query by symbol first.
+
 ## Architecture Rules (Non-Negotiable)
 
 1. Frontend/backend boundary is the Base44 SDK. Data logic goes in backend functions, not components.
