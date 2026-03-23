@@ -99,30 +99,45 @@ export function WorldMonitorGlobe() {
     if (collapsed || loaded) return;
     let cancelled = false;
 
-    import('globe.gl').then(({ default: GlobeGL }) => {
+    import('globe.gl').then(GlobeModule => {
       if (cancelled || !containerRef.current) return;
 
-      const g = GlobeGL()
-        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-        .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-        .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
-        .width(containerRef.current.clientWidth || 800)
-        .height(500)
-        .atmosphereColor('#4a90b8')
-        .atmosphereAltitude(0.18)
-        .pointOfView({ lat: 25, lng: 10, altitude: 2.0 })
-        // ── click handlers ──────────────────────────────────────────────────
-        .onPointClick(pt => pt && setTooltip({ type: pt._sat ? 'sat' : 'flight', data: pt }))
-        .onPolygonClick(p => p && setTooltip({ type: 'theater', data: p.properties }))
-        .onHexBinClick(hex => hex && setTooltip({
-          type: 'conflict',
-          data: { count: hex.points?.length || 0, fatalities: Math.round(hex.sumWeight || 0) },
-        }));
+      // Handle both ESM default and CJS exports
+      const GlobeGL = GlobeModule.default || GlobeModule;
 
-      g(containerRef.current);
-      globeRef.current = g;
+      try {
+        const g = GlobeGL()
+          .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+          .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+          .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+          .width(containerRef.current.clientWidth || 800)
+          .height(500)
+          .atmosphereColor('#4a90b8')
+          .atmosphereAltitude(0.18)
+          .pointOfView({ lat: 25, lng: 10, altitude: 2.0 })
+          .onPointClick(pt => pt && setTooltip({ type: pt._sat ? 'sat' : 'flight', data: pt }))
+          .onPolygonClick(p => p && setTooltip({ type: 'theater', data: p.properties }));
+
+        // onHexBinClick is not available in all globe.gl versions — add conditionally
+        if (typeof g.onHexBinClick === 'function') {
+          g.onHexBinClick(hex => hex && setTooltip({
+            type: 'conflict',
+            data: { count: hex.points?.length || 0, fatalities: Math.round(hex.sumWeight || 0) },
+          }));
+        }
+
+        g(containerRef.current);
+        globeRef.current = g;
+      } catch (err) {
+        console.error('[Globe] setup error:', err);
+      }
+
+      // Always clear loading state — even if setup partially failed
       setLoaded(true);
-    }).catch(err => console.warn('[Globe] init error:', err));
+    }).catch(err => {
+      console.warn('[Globe] import error:', err);
+      setLoaded(true);
+    });
 
     return () => { cancelled = true; };
   }, [collapsed]);
