@@ -4,22 +4,6 @@ import { getStandingsData } from '@/functions/getStandingsData';
 import { motion } from 'framer-motion';
 import { Play, Pause, RotateCcw, ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-
-// ─── Brand tokens ─────────────────────────────────────────────────────────────
-const b = {
-  navyDark:  '#0a1628',
-  navy:      '#0f1f35',
-  navyMid:   '#1e3a5a',
-  navyLight: '#2a4f7c',
-  sky:       '#4a90b8',
-  gold:      '#c9a87c',
-  goldLight: '#e8d4b8',
-  goldDeep:  '#a07840',
-  rose:      '#d4a090',
-  cream:     '#faf8f5',
-  sand:      '#f0e6d6',
-};
 
 // ─── Starfield background ──────────────────────────────────────────────────────
 function StarfieldCanvas() {
@@ -30,21 +14,26 @@ function StarfieldCanvas() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let raf;
+    let stars = [];
+
+    const seedStars = () => {
+      stars = Array.from({ length: 220 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.4 + 0.2,
+        alpha: Math.random(),
+        speed: Math.random() * 0.3 + 0.05,
+      }));
+    };
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      seedStars(); // re-seed so stars fill the new viewport
     };
+
     resize();
     window.addEventListener('resize', resize);
-
-    const stars = Array.from({ length: 220 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      r: Math.random() * 1.4 + 0.2,
-      alpha: Math.random(),
-      speed: Math.random() * 0.3 + 0.05,
-    }));
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -76,7 +65,7 @@ function StarfieldCanvas() {
 }
 
 // ─── Individual credit card ────────────────────────────────────────────────────
-function CreditCard({ nominee, index }) {
+function CreditCard({ nominee }) {
   const isSpecial = nominee.finalRank <= 3;
   const photo = nominee.avatar_url || nominee.photo_url;
 
@@ -84,49 +73,35 @@ function CreditCard({ nominee, index }) {
     <motion.div
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      viewport={{ margin: '-10% 0px -10% 0px', once: false }}
+      viewport={{ margin: '-10% 0px -10% 0px', once: true }}
       transition={{ duration: 1.2, ease: 'easeOut' }}
       className="flex flex-col items-center py-14 md:py-20 px-6 relative"
     >
       {/* Top rule */}
-      <div
-        className="w-px mb-10 md:mb-14"
-        style={{
-          height: 48,
-          background: `linear-gradient(to bottom, transparent, ${b.gold}60)`,
-        }}
-      />
+      <div className="w-px h-12 mb-10 md:mb-14 bg-gradient-to-b from-transparent to-[#c9a87c60]" />
 
       {/* Rank badge */}
-      <div
-        className="mb-5 px-4 py-1 rounded-full text-[10px] font-black tracking-[0.25em] uppercase"
-        style={{
-          background: isSpecial
-            ? `linear-gradient(135deg, ${b.goldDeep}, ${b.gold}, ${b.goldLight})`
-            : `${b.navyLight}55`,
-          color: isSpecial ? b.navy : `${b.goldLight}99`,
-          border: isSpecial ? 'none' : `1px solid ${b.gold}25`,
-          boxShadow: isSpecial ? `0 0 24px ${b.gold}40` : 'none',
-        }}
-      >
+      <div className={[
+        'mb-5 px-4 py-1 rounded-full text-[10px] font-black tracking-[0.25em] uppercase',
+        isSpecial
+          ? 'bg-gradient-to-br from-[#a07840] via-[#c9a87c] to-[#e8d4b8] text-[#0f1f35] shadow-[0_0_24px_#c9a87c40]'
+          : 'bg-[#2a4f7c55] text-[#e8d4b899] border border-[#c9a87c25]',
+      ].join(' ')}>
         {isSpecial ? `✦ #${nominee.finalRank} ✦` : `No. ${String(nominee.finalRank).padStart(3, '0')}`}
       </div>
 
       {/* Avatar */}
       {photo && (
-        <div
-          className="mb-6 rounded-full overflow-hidden flex-shrink-0"
-          style={{
-            width: isSpecial ? 96 : 72,
-            height: isSpecial ? 96 : 72,
-            boxShadow: isSpecial
-              ? `0 0 0 2px ${b.gold}, 0 0 40px ${b.gold}40`
-              : `0 0 0 1px ${b.gold}40`,
-          }}
-        >
+        <div className={[
+          'mb-6 rounded-full overflow-hidden flex-shrink-0',
+          isSpecial
+            ? 'w-24 h-24 ring-2 ring-[#c9a87c] shadow-[0_0_40px_#c9a87c40]'
+            : 'w-18 h-18 ring-1 ring-[#c9a87c40]',
+        ].join(' ')}>
           <img
             src={photo}
             alt={nominee.name}
+            loading="lazy"
             className="w-full h-full object-cover object-top"
           />
         </div>
@@ -134,12 +109,13 @@ function CreditCard({ nominee, index }) {
 
       {/* Name */}
       <h2
-        className="text-center font-light tracking-wide mb-2"
+        className={[
+          'text-center font-light tracking-wide mb-2',
+          isSpecial ? 'text-[#e8d4b8] drop-shadow-[0_0_40px_#c9a87c60]' : 'text-[#faf8f5]',
+        ].join(' ')}
         style={{
           fontFamily: "'Georgia', 'Playfair Display', serif",
           fontSize: isSpecial ? 'clamp(1.6rem, 4vw, 2.8rem)' : 'clamp(1.1rem, 3vw, 1.8rem)',
-          color: isSpecial ? b.goldLight : b.cream,
-          textShadow: isSpecial ? `0 0 40px ${b.gold}60` : 'none',
         }}
       >
         {nominee.name}
@@ -147,25 +123,17 @@ function CreditCard({ nominee, index }) {
 
       {/* Title / Company */}
       {(nominee.title || nominee.professional_role) && (
-        <p
-          className="text-center text-sm font-medium mb-1 tracking-wide"
-          style={{ color: b.gold, opacity: 0.85 }}
-        >
+        <p className="text-center text-sm font-medium mb-1 tracking-wide text-[#c9a87cda]">
           {nominee.title || nominee.professional_role}
           {nominee.company && (
-            <span style={{ color: `${b.goldLight}55`, fontWeight: 400 }}>
-              {' · '}{nominee.company}
-            </span>
+            <span className="text-[#e8d4b840] font-normal"> · {nominee.company}</span>
           )}
         </p>
       )}
 
       {/* Country */}
       {nominee.country && (
-        <p
-          className="text-xs tracking-[0.18em] uppercase"
-          style={{ color: `${b.sky}90` }}
-        >
+        <p className="text-xs tracking-[0.18em] uppercase text-[#4a90b890]">
           {nominee.country}
         </p>
       )}
@@ -173,21 +141,15 @@ function CreditCard({ nominee, index }) {
       {/* Six-word story for top 10 */}
       {nominee.finalRank <= 10 && nominee.six_word_story && (
         <p
-          className="mt-4 text-sm italic text-center max-w-xs leading-relaxed"
-          style={{ color: `${b.goldLight}70`, fontFamily: 'Georgia, serif' }}
+          className="mt-4 text-sm italic text-center max-w-xs leading-relaxed text-[#e8d4b870]"
+          style={{ fontFamily: 'Georgia, serif' }}
         >
           "{nominee.six_word_story}"
         </p>
       )}
 
       {/* Bottom rule */}
-      <div
-        className="w-px mt-10 md:mt-14"
-        style={{
-          height: 48,
-          background: `linear-gradient(to bottom, ${b.gold}40, transparent)`,
-        }}
-      />
+      <div className="w-px h-12 mt-10 md:mt-14 bg-gradient-to-b from-[#c9a87c40] to-transparent" />
     </motion.div>
   );
 }
@@ -196,13 +158,7 @@ function CreditCard({ nominee, index }) {
 function OpeningCard() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-24 px-6 relative z-10">
-      {/* Radial gold glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 60% 50% at 50% 50%, ${b.gold}18 0%, transparent 70%)`,
-        }}
-      />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,#c9a87c18_0%,transparent_70%)]" />
 
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -210,77 +166,45 @@ function OpeningCard() {
         transition={{ duration: 2, ease: 'easeOut' }}
         className="text-center relative z-10"
       >
-        {/* Overline */}
-        <p
-          className="text-[10px] tracking-[0.45em] uppercase mb-8 font-medium"
-          style={{ color: b.gold }}
-        >
+        <p className="text-[10px] tracking-[0.45em] uppercase mb-8 font-medium text-[#c9a87c]">
           The Orbital Edition · 2025
         </p>
 
-        {/* Gold rule */}
-        <div
-          className="mx-auto mb-8"
-          style={{
-            width: 80,
-            height: 1,
-            background: `linear-gradient(to right, transparent, ${b.gold}, transparent)`,
-          }}
-        />
+        <div className="mx-auto mb-8 w-20 h-px bg-gradient-to-r from-transparent via-[#c9a87c] to-transparent" />
 
-        {/* Main title */}
         <h1
-          className="font-light leading-tight mb-4"
+          className="font-light leading-tight mb-4 text-[#faf8f5]"
           style={{
             fontFamily: "'Georgia', 'Playfair Display', serif",
             fontSize: 'clamp(2.4rem, 8vw, 5.5rem)',
-            color: b.cream,
             letterSpacing: '-0.01em',
           }}
         >
           TOP 100
         </h1>
         <h2
-          className="font-light mb-8"
+          className="font-light mb-8 text-[#e8d4b8]"
           style={{
             fontFamily: "'Georgia', 'Playfair Display', serif",
             fontSize: 'clamp(1rem, 3vw, 1.8rem)',
-            color: b.goldLight,
             letterSpacing: '0.18em',
           }}
         >
           Women in Aerospace &amp; Aviation
         </h2>
 
-        {/* Gold rule */}
-        <div
-          className="mx-auto mb-10"
-          style={{
-            width: 80,
-            height: 1,
-            background: `linear-gradient(to right, transparent, ${b.gold}, transparent)`,
-          }}
-        />
+        <div className="mx-auto mb-10 w-20 h-px bg-gradient-to-r from-transparent via-[#c9a87c] to-transparent" />
 
-        <p
-          className="text-xs tracking-[0.3em] uppercase"
-          style={{ color: `${b.sky}90` }}
-        >
+        <p className="text-xs tracking-[0.3em] uppercase text-[#4a90b890]">
           Scroll to reveal the honorees
         </p>
 
-        {/* Scroll indicator */}
         <motion.div
           className="mt-12 flex justify-center"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <div
-            className="w-px h-16"
-            style={{
-              background: `linear-gradient(to bottom, ${b.gold}80, transparent)`,
-            }}
-          />
+          <div className="w-px h-16 bg-gradient-to-b from-[#c9a87c80] to-transparent" />
         </motion.div>
       </motion.div>
     </div>
@@ -291,12 +215,7 @@ function OpeningCard() {
 function ClosingCard() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-24 px-6 relative z-10">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 60% 50% at 50% 50%, ${b.rose}15 0%, transparent 70%)`,
-        }}
-      />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,#d4a09015_0%,transparent_70%)]" />
 
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -305,65 +224,36 @@ function ClosingCard() {
         transition={{ duration: 2, ease: 'easeOut' }}
         className="text-center relative z-10 max-w-xl"
       >
-        <div
-          className="mx-auto mb-8"
-          style={{
-            width: 80,
-            height: 1,
-            background: `linear-gradient(to right, transparent, ${b.gold}, transparent)`,
-          }}
-        />
+        <div className="mx-auto mb-8 w-20 h-px bg-gradient-to-r from-transparent via-[#c9a87c] to-transparent" />
 
-        <p
-          className="text-[10px] tracking-[0.45em] uppercase mb-6 font-medium"
-          style={{ color: b.gold }}
-        >
+        <p className="text-[10px] tracking-[0.45em] uppercase mb-6 font-medium text-[#c9a87c]">
           Fin
         </p>
 
         <h2
-          className="font-light mb-6"
+          className="font-light mb-6 text-[#faf8f5]"
           style={{
             fontFamily: "'Georgia', serif",
             fontSize: 'clamp(1.8rem, 5vw, 3rem)',
-            color: b.cream,
           }}
         >
           To the Women Who<br />Reached for the Stars.
         </h2>
 
-        <p
-          className="text-sm leading-relaxed mb-12"
-          style={{ color: `${b.goldLight}70` }}
-        >
+        <p className="text-sm leading-relaxed mb-12 text-[#e8d4b870]">
           These 100 leaders represent a generation of vision, courage, and excellence
           at the frontier of aerospace and aviation. Their orbits inspire millions.
         </p>
 
-        <div
-          className="mx-auto mb-12"
-          style={{
-            width: 80,
-            height: 1,
-            background: `linear-gradient(to right, transparent, ${b.gold}60, transparent)`,
-          }}
-        />
+        <div className="mx-auto mb-12 w-20 h-px bg-gradient-to-r from-transparent via-[#c9a87c60] to-transparent" />
 
-        <p
-          className="text-[10px] tracking-[0.3em] uppercase mb-2"
-          style={{ color: `${b.goldLight}50` }}
-        >
+        <p className="text-[10px] tracking-[0.3em] uppercase mb-2 text-[#e8d4b850]">
           TOP 100 Aerospace &amp; Aviation · The Orbital Edition · 2025
         </p>
 
         <Link
-          to={createPageUrl('Top100Women2025')}
-          className="inline-flex items-center gap-2 mt-10 px-7 py-3 rounded-full text-sm font-semibold tracking-wider uppercase transition-all hover:scale-105"
-          style={{
-            background: `linear-gradient(135deg, ${b.goldDeep}, ${b.gold})`,
-            color: b.navy,
-            boxShadow: `0 0 28px ${b.gold}35`,
-          }}
+          to="/Top100Women2025"
+          className="inline-flex items-center gap-2 mt-10 px-7 py-3 rounded-full text-sm font-semibold tracking-wider uppercase transition-all hover:scale-105 bg-gradient-to-br from-[#a07840] to-[#c9a87c] text-[#0f1f35] shadow-[0_0_28px_#c9a87c35]"
         >
           View Full Publication
         </Link>
@@ -381,78 +271,46 @@ function Controls({ isPlaying, onToggle, onRestart, progress }) {
       transition={{ delay: 1.5 }}
       className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3"
     >
-      <div
-        className="flex items-center gap-3 px-5 py-3 rounded-full backdrop-blur-xl"
-        style={{
-          background: `${b.navyDark}cc`,
-          border: `1px solid ${b.gold}30`,
-          boxShadow: `0 8px 32px rgba(0,0,0,0.6)`,
-        }}
-      >
-        {/* Back to publication */}
+      <div className="flex items-center gap-3 px-5 py-3 rounded-full backdrop-blur-xl bg-[#0a1628cc] border border-[#c9a87c30] shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
+
         <Link
-          to={createPageUrl('Top100Women2025')}
-          className="flex items-center justify-center w-8 h-8 rounded-full transition-all hover:scale-110"
-          style={{ color: `${b.goldLight}70` }}
-          aria-label="Back"
+          to="/Top100Women2025"
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-all hover:scale-110 text-[#e8d4b870]"
+          aria-label="Back to publication"
         >
           <ChevronLeft className="w-4 h-4" />
         </Link>
 
-        <div
-          className="w-px h-5"
-          style={{ background: `${b.gold}30` }}
-        />
+        <div className="w-px h-5 bg-[#c9a87c30]" />
 
-        {/* Restart */}
         <button
           onClick={onRestart}
-          className="flex items-center justify-center w-8 h-8 rounded-full transition-all hover:scale-110"
-          style={{ color: `${b.goldLight}70` }}
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-all hover:scale-110 text-[#e8d4b870]"
           aria-label="Restart"
         >
           <RotateCcw className="w-3.5 h-3.5" />
         </button>
 
-        {/* Play/Pause */}
         <button
           onClick={onToggle}
-          className="flex items-center justify-center w-10 h-10 rounded-full transition-all hover:scale-110"
-          style={{
-            background: `linear-gradient(135deg, ${b.goldDeep}, ${b.gold})`,
-            color: b.navy,
-          }}
+          className="flex items-center justify-center w-10 h-10 rounded-full transition-all hover:scale-110 bg-gradient-to-br from-[#a07840] to-[#c9a87c] text-[#0f1f35]"
           aria-label={isPlaying ? 'Pause' : 'Play'}
         >
           {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
         </button>
 
-        {/* Progress indicator */}
         <div className="flex items-center gap-2">
-          <div
-            className="w-24 h-1 rounded-full overflow-hidden"
-            style={{ background: `${b.navyLight}80` }}
-          >
+          <div className="w-24 h-1 rounded-full overflow-hidden bg-[#2a4f7c80]">
             <div
-              className="h-full rounded-full transition-all duration-300"
-              style={{
-                width: `${progress * 100}%`,
-                background: `linear-gradient(to right, ${b.gold}, ${b.rose})`,
-              }}
+              className="h-full rounded-full transition-all duration-300 bg-gradient-to-r from-[#c9a87c] to-[#d4a090]"
+              style={{ width: `${progress * 100}%` }}
             />
           </div>
         </div>
 
-        <div
-          className="w-px h-5"
-          style={{ background: `${b.gold}30` }}
-        />
+        <div className="w-px h-5 bg-[#c9a87c30]" />
 
-        {/* Scroll hint */}
-        <span
-          className="text-[10px] tracking-wider uppercase hidden sm:block"
-          style={{ color: `${b.goldLight}50` }}
-        >
+        <span className="text-[10px] tracking-wider uppercase hidden sm:block text-[#e8d4b850]">
           Scroll freely
         </span>
       </div>
@@ -460,22 +318,25 @@ function Controls({ isPlaying, onToggle, onRestart, progress }) {
   );
 }
 
-// ─── Data loader (same pattern as Top100Women2025) ─────────────────────────────
-async function loadNominees() {
+// ─── Data loader ───────────────────────────────────────────────────────────────
+// Uses getStandingsData (which already computes aura rankings server-side).
+// Avoids fetching 10k RankedVote records client-side.
+async function loadNominees(signal) {
   let allSeasons = [];
   try {
     allSeasons = await base44.entities.Season.list('-created_date', 50);
   } catch { allSeasons = []; }
+
+  if (signal?.aborted) return [];
 
   const season3 = allSeasons.find(s => s.name?.includes('Season 3'));
   const activeSeason = allSeasons.find(s =>
     ['completed', 'voting_open', 'active'].includes(s.status)
   );
   const selectedSeasonId = season3?.id || activeSeason?.id || allSeasons[0]?.id;
-
   if (!selectedSeasonId) return [];
 
-  let standingsData = { standings: { rows: [] } };
+  let standingsRows = [];
   try {
     const response = await getStandingsData({
       season: selectedSeasonId,
@@ -484,68 +345,38 @@ async function loadNominees() {
       page: 1,
       limit: 1000,
     });
-    standingsData = response?.data || standingsData;
+    standingsRows = response?.data?.standings?.rows || [];
   } catch { /* silent */ }
 
-  const standingsRows = standingsData?.standings?.rows || [];
+  if (signal?.aborted) return [];
 
-  const scoreMap = {};
-  standingsRows.forEach(n => {
-    scoreMap[n.nomineeId] = { nomineeId: n.nomineeId, bordaScore: 0, totalVotes: 0 };
-  });
+  // Take top 100 from standings (already sorted by aura desc server-side)
+  const top100Rows = standingsRows.slice(0, 100).map((n, i) => ({
+    id: n.nomineeId,
+    name: n.nomineeName,
+    avatar_url: n.avatarUrl || n.photo_url,
+    title: n.title,
+    company: n.company,
+    country: n.country,
+    aura_score: n.aura,
+    finalRank: i + 1,
+  }));
 
+  if (!top100Rows.length) return [];
+
+  // Hydrate with full nominee records (six_word_story, professional_role, etc.)
+  let fullNominees = [];
   try {
-    const votes = (await base44.entities.RankedVote.list('-created_date', 10000))
-      .filter(v => v.season_id === selectedSeasonId);
-    votes.forEach(vote => {
-      if (!Array.isArray(vote.ballot)) return;
-      vote.ballot.forEach((nid, pos) => {
-        if (scoreMap[nid]) {
-          scoreMap[nid].bordaScore += 100 - pos;
-          scoreMap[nid].totalVotes += 1;
-        }
-      });
-    });
+    const top100Ids = new Set(top100Rows.map(r => r.id));
+    fullNominees = (await base44.entities.Nominee.list('-created_date', 1000))
+      .filter(n => top100Ids.has(n.id));
   } catch { /* silent */ }
 
-  const rcvResults = Object.values(scoreMap)
-    .filter(n => n.totalVotes > 0)
-    .sort((a, b) => b.bordaScore - a.bordaScore)
-    .map((n, i) => ({ ...n, rcvRank: i + 1 }));
+  if (signal?.aborted) return [];
 
-  const rcvMap = new Map(rcvResults.map(n => [n.nomineeId, n]));
+  const fullMap = new Map(fullNominees.map(n => [n.id, n]));
 
-  const maxAura = Math.max(...standingsRows.map(n => n.aura || 0), 1);
-  const maxBorda = Math.max(...rcvResults.map(n => n.bordaScore || 0), 1);
-
-  const combined = standingsRows.map((n, idx) => {
-    const rcv = rcvMap.get(n.nomineeId) || { bordaScore: 0 };
-    const score =
-      ((n.aura || 0) / maxAura) * 50 + (rcv.bordaScore / maxBorda) * 50;
-    return {
-      id: n.nomineeId,
-      name: n.nomineeName,
-      avatar_url: n.avatarUrl,
-      title: n.title,
-      company: n.company,
-      country: n.country,
-      aura_score: n.aura,
-      combinedScore: score,
-      auraRank: idx + 1,
-    };
-  });
-
-  combined.sort((a, b) => b.combinedScore - a.combinedScore);
-  combined.forEach((n, i) => { n.finalRank = i + 1; });
-  const top100 = combined.slice(0, 100);
-
-  const fullMap = new Map(
-    (await base44.entities.Nominee.list('-created_date', 1000))
-      .filter(n => top100.some(r => r.id === n.id))
-      .map(n => [n.id, n])
-  );
-
-  return top100.map(r => ({
+  return top100Rows.map(r => ({
     ...r,
     ...(fullMap.get(r.id) || {}),
     finalRank: r.finalRank,
@@ -554,29 +385,18 @@ async function loadNominees() {
 }
 
 // ─── Auto-scroll hook ──────────────────────────────────────────────────────────
-// Robust implementation:
-// • Cancels RAF on both pause and unmount — no zombie loops
-// • Uses a ref for isPlaying so the RAF closure always reads current value
-// • Detects user-initiated wheel/touch scroll and pauses automatically
 function useAutoScroll(isPlaying, setIsPlaying, speed = 0.8) {
   const rafRef = useRef(null);
   const isPlayingRef = useRef(isPlaying);
-  const userScrollingRef = useRef(false);
-  const userScrollTimerRef = useRef(null);
 
-  // Keep ref in sync with state
   useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
 
-  // Detect user-initiated scroll (wheel / touch) → pause
+  // Pause on user-initiated scroll
   useEffect(() => {
     const onUserScroll = () => {
       if (!isPlayingRef.current) return;
-      userScrollingRef.current = true;
-      clearTimeout(userScrollTimerRef.current);
-      // Pause immediately on user interaction
       setIsPlaying(false);
     };
-
     window.addEventListener('wheel', onUserScroll, { passive: true });
     window.addEventListener('touchmove', onUserScroll, { passive: true });
     return () => {
@@ -585,7 +405,7 @@ function useAutoScroll(isPlaying, setIsPlaying, speed = 0.8) {
     };
   }, [setIsPlaying]);
 
-  // RAF scroll loop — starts/stops with isPlaying, always cleans up on unmount
+  // RAF scroll loop
   useEffect(() => {
     const cancel = () => {
       if (rafRef.current) {
@@ -594,10 +414,7 @@ function useAutoScroll(isPlaying, setIsPlaying, speed = 0.8) {
       }
     };
 
-    if (!isPlaying) {
-      cancel();
-      return;
-    }
+    if (!isPlaying) { cancel(); return; }
 
     const scroll = () => {
       if (!isPlayingRef.current) { cancel(); return; }
@@ -612,7 +429,7 @@ function useAutoScroll(isPlaying, setIsPlaying, speed = 0.8) {
     };
 
     rafRef.current = requestAnimationFrame(scroll);
-    return cancel; // unmount safety
+    return cancel;
   }, [isPlaying, speed, setIsPlaying]);
 }
 
@@ -625,11 +442,17 @@ export default function RollingCredits() {
 
   useAutoScroll(isPlaying, setIsPlaying);
 
-  // Track scroll progress — single listener, no stale closures
+  // Throttled scroll progress — gate updates via RAF to avoid 60 re-renders/sec
   useEffect(() => {
+    let rafPending = false;
     const onScroll = () => {
-      const max = document.body.scrollHeight - window.innerHeight;
-      if (max > 0) setProgress(window.scrollY / max);
+      if (rafPending) return;
+      rafPending = true;
+      requestAnimationFrame(() => {
+        const max = document.body.scrollHeight - window.innerHeight;
+        if (max > 0) setProgress(window.scrollY / max);
+        rafPending = false;
+      });
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -641,30 +464,23 @@ export default function RollingCredits() {
   }, []);
 
   useEffect(() => {
-    loadNominees()
-      .then(setNominees)
-      .finally(() => setLoading(false));
+    const controller = new AbortController();
+    loadNominees(controller.signal)
+      .then(data => { if (!controller.signal.aborted) setNominees(data); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, []);
 
   if (loading) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ background: b.navyDark }}
-      >
+      <div className="min-h-screen flex items-center justify-center bg-[#0a1628]">
         <motion.div
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
           className="text-center"
         >
-          <div
-            className="w-px h-16 mx-auto mb-6"
-            style={{ background: `linear-gradient(to bottom, transparent, ${b.gold}, transparent)` }}
-          />
-          <p
-            className="text-[10px] tracking-[0.5em] uppercase"
-            style={{ color: b.gold }}
-          >
+          <div className="w-px h-16 mx-auto mb-6 bg-gradient-to-b from-transparent via-[#c9a87c] to-transparent" />
+          <p className="text-[10px] tracking-[0.5em] uppercase text-[#c9a87c]">
             Loading
           </p>
         </motion.div>
@@ -673,62 +489,39 @@ export default function RollingCredits() {
   }
 
   return (
-    <div
-      className="relative min-h-screen"
-      style={{ background: `linear-gradient(to bottom, ${b.navyDark} 0%, ${b.navy} 30%, ${b.navyDark} 100%)` }}
-    >
-      {/* Persistent starfield */}
+    <div className="relative min-h-screen bg-gradient-to-b from-[#0a1628] via-[#0f1f35] to-[#0a1628]">
       <StarfieldCanvas />
 
       {/* Ambient side gradients */}
-      <div
-        className="fixed inset-y-0 left-0 w-32 pointer-events-none z-10"
-        style={{ background: `linear-gradient(to right, ${b.navyDark}cc, transparent)` }}
-      />
-      <div
-        className="fixed inset-y-0 right-0 w-32 pointer-events-none z-10"
-        style={{ background: `linear-gradient(to left, ${b.navyDark}cc, transparent)` }}
-      />
+      <div className="fixed inset-y-0 left-0 w-32 pointer-events-none z-10 bg-gradient-to-r from-[#0a1628cc] to-transparent" />
+      <div className="fixed inset-y-0 right-0 w-32 pointer-events-none z-10 bg-gradient-to-l from-[#0a1628cc] to-transparent" />
 
       {/* Top fade */}
-      <div
-        className="fixed top-0 left-0 right-0 h-40 pointer-events-none z-20"
-        style={{ background: `linear-gradient(to bottom, ${b.navyDark}, transparent)` }}
-      />
+      <div className="fixed top-0 left-0 right-0 h-40 pointer-events-none z-20 bg-gradient-to-b from-[#0a1628] to-transparent" />
 
       {/* Bottom fade */}
-      <div
-        className="fixed bottom-0 left-0 right-0 h-32 pointer-events-none z-20"
-        style={{ background: `linear-gradient(to top, ${b.navyDark}, transparent)` }}
-      />
+      <div className="fixed bottom-0 left-0 right-0 h-32 pointer-events-none z-20 bg-gradient-to-t from-[#0a1628] to-transparent" />
 
-      {/* Content */}
       <div className="relative z-10 max-w-2xl mx-auto">
-        {/* Opening title */}
         <OpeningCard />
 
-        {/* Divider */}
         <div className="flex items-center justify-center py-8">
           <div className="flex items-center gap-4">
-            <div className="h-px w-20" style={{ background: `linear-gradient(to right, transparent, ${b.gold}50)` }} />
-            <div className="w-1 h-1 rounded-full" style={{ background: b.gold }} />
-            <div className="h-px w-20" style={{ background: `linear-gradient(to left, transparent, ${b.gold}50)` }} />
+            <div className="h-px w-20 bg-gradient-to-r from-transparent to-[#c9a87c50]" />
+            <div className="w-1 h-1 rounded-full bg-[#c9a87c]" />
+            <div className="h-px w-20 bg-gradient-to-l from-transparent to-[#c9a87c50]" />
           </div>
         </div>
 
-        {/* All honoree credit cards */}
-        {nominees.map((nominee, idx) => (
-          <CreditCard key={nominee.id} nominee={nominee} index={idx} />
+        {nominees.map(nominee => (
+          <CreditCard key={nominee.id} nominee={nominee} />
         ))}
 
-        {/* Closing */}
         <ClosingCard />
 
-        {/* Bottom spacer */}
         <div className="h-40" />
       </div>
 
-      {/* Controls */}
       <Controls
         isPlaying={isPlaying}
         onToggle={() => setIsPlaying(p => !p)}
