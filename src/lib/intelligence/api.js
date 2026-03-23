@@ -1,6 +1,13 @@
 // ── OpenSky Network (Military Flights + Theater Posture) ──
+// Add VITE_OPENSKY_USERNAME + VITE_OPENSKY_PASSWORD to .env.local for 10× rate limit (400→4000 req/day).
+// Free account: https://opensky-network.org/index.php?option=com_users&view=registration
 export async function fetchOpenSkyStates(signal) {
-  const res = await fetch('https://opensky-network.org/api/states/all', { signal });
+  const user = import.meta.env.VITE_OPENSKY_USERNAME;
+  const pass = import.meta.env.VITE_OPENSKY_PASSWORD;
+  const headers = user && pass
+    ? { Authorization: `Basic ${btoa(`${user}:${pass}`)}` }
+    : {};
+  const res = await fetch('https://opensky-network.org/api/states/all', { signal, headers });
   if (!res.ok) throw new Error(`OpenSky returned ${res.status}`);
   return res.json();
 }
@@ -16,12 +23,26 @@ export async function fetchSatelliteTLEs(signal) {
 }
 
 // ── RSS Feeds (Aviation News / Digest) ────────────────────
+// Two CORS proxies for redundancy — falls back to corsproxy.io if allorigins is down.
+const RSS_PROXIES = [
+  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+];
+
 export async function fetchRSSFeed(url, signal) {
-  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-  const res = await fetch(proxyUrl, { signal });
-  if (!res.ok) throw new Error(`RSS fetch failed for ${url}`);
-  const text = await res.text();
-  return parseRSSXML(text);
+  let lastErr;
+  for (const proxy of RSS_PROXIES) {
+    try {
+      const res = await fetch(proxy(url), { signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      return parseRSSXML(text);
+    } catch (err) {
+      if (signal?.aborted) throw err;
+      lastErr = err;
+    }
+  }
+  throw new Error(`RSS fetch failed for ${url}: ${lastErr?.message}`);
 }
 
 // ── Finnhub (Market Quotes) ──────────────────────────────

@@ -162,6 +162,17 @@ export const THEATER_BOUNDS = {
   AFRICOM:   [-35, -20, 37,  55],
 };
 
+// THEATER_DEFS — single source of truth for globe polygon rendering.
+// bounds: [minLng, minLat, maxLng, maxLat] (GeoJSON convention, lng first)
+export const THEATER_DEFS = [
+  { id: 'EUCOM',     color: '#3b82f6', bounds: [-30, 35,  40,  72] },
+  { id: 'CENTCOM',   color: '#f59e0b', bounds: [ 25, 10,  75,  45] },
+  { id: 'INDOPACOM', color: '#6366f1', bounds: [ 60,-10, 180,  55] },
+  { id: 'NORTHCOM',  color: '#10b981', bounds: [-170,15, -50,  72] },
+  { id: 'SOUTHCOM',  color: '#8b5cf6', bounds: [-120,-60,-30,  15] },
+  { id: 'AFRICOM',   color: '#ec4899', bounds: [ -20,-35,  55,  37] },
+];
+
 export const MARITIME_CHOKEPOINTS = [
   { name: 'Strait of Hormuz', lat: 26.5, lon: 56.3, traffic: 'high', risk: 'elevated', dailyShips: 50 },
   { name: 'Bab el-Mandeb', lat: 12.6, lon: 43.3, traffic: 'high', risk: 'high', dailyShips: 40 },

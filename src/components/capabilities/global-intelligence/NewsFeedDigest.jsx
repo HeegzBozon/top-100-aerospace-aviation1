@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Rss, ExternalLink, AlertCircle, Loader2, AlertTriangle, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,21 +22,26 @@ const hasClaudeKey = true; // Base44 InvokeLLM handles the key server-side — n
 
 export function NewsFeedDigest() {
   const { data, isLoading, isError } = useNewsFeedDigest();
+  const queryClient = useQueryClient();
   const [activeCategory, setActiveCategory] = useState(null);
-  const [summaries, setSummaries] = useState({});
   const [loadingSummary, setLoadingSummary] = useState(null);
   const [summaryExpanded, setSummaryExpanded] = useState({});
 
   const categories = data?.categories || {};
+
+  // Summaries are stored in React Query cache so they survive tab unmount/remount.
+  // Key: ['intel', 'summary', category] — no queryFn, set manually via setQueryData.
+  const getSummary = (cat) => queryClient.getQueryData(['intel', 'summary', cat]) ?? null;
+  const setSummary = (cat, text) => queryClient.setQueryData(['intel', 'summary', cat], text);
 
   useEffect(() => {
     const firstKey = Object.keys(categories)[0];
     if (firstKey && !activeCategory) setActiveCategory(firstKey);
   }, [categories, activeCategory]);
 
-  // Auto-summarize on tab switch — debounced 400ms, only when key present and no summary yet
+  // Auto-summarize on tab switch — debounced 400ms, only when no cached summary yet
   useEffect(() => {
-    if (!activeCategory || summaries[activeCategory] || loadingSummary || !hasClaudeKey) return;
+    if (!activeCategory || getSummary(activeCategory) || loadingSummary || !hasClaudeKey) return;
     const items = categories[activeCategory]?.items || [];
     if (items.length === 0) return;
     const timer = setTimeout(handleSummarize, 400);
@@ -48,17 +54,17 @@ export function NewsFeedDigest() {
 
   const categoryKeys = Object.keys(categories);
   const activeItems = activeCategory ? (categories[activeCategory]?.items || []) : [];
-  const activeSummary = summaries[activeCategory];
+  const activeSummary = getSummary(activeCategory);
 
   async function handleSummarize() {
     if (!activeCategory || loadingSummary) return;
     setLoadingSummary(activeCategory);
     try {
       const text = await summarizeCategory(activeCategory, activeItems);
-      setSummaries(prev => ({ ...prev, [activeCategory]: text }));
+      setSummary(activeCategory, text);
       setSummaryExpanded(prev => ({ ...prev, [activeCategory]: true }));
     } catch (err) {
-      setSummaries(prev => ({ ...prev, [activeCategory]: `Error: ${err.message}` }));
+      setSummary(activeCategory, `Error: ${err.message}`);
     } finally {
       setLoadingSummary(null);
     }

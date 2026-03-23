@@ -12,17 +12,7 @@ import {
   useSatellites,
   useTheaterPosture,
 } from '@/lib/intelligence/hooks';
-
-// ─── Theater boundary polygons (simplified COCOM regions) ─────────────────────
-// [minLng, minLat, maxLng, maxLat]
-const THEATER_DEFS = [
-  { id: 'EUCOM',     color: '#3b82f6', bounds: [-30, 35,  40,  72] },
-  { id: 'CENTCOM',   color: '#f59e0b', bounds: [ 25, 10,  75,  45] },
-  { id: 'INDOPACOM', color: '#6366f1', bounds: [ 60,-10, 180,  55] },
-  { id: 'NORTHCOM',  color: '#10b981', bounds: [-170,15, -50,  72] },
-  { id: 'SOUTHCOM',  color: '#8b5cf6', bounds: [-120,-60,-30,  15] },
-  { id: 'AFRICOM',   color: '#ec4899', bounds: [ -20,-35,  55,  37] },
-];
+import { THEATER_DEFS } from '@/lib/intelligence/constants';
 
 function theaterPolygon({ id, color, bounds }) {
   const [w, s, e, n] = bounds;
@@ -55,6 +45,9 @@ function satPos(sat, nowMin) {
     lng: ((raan + (nowMin / period) * 360) % 360) - 180,
   };
 }
+
+// ─── Escape user-sourced strings before injecting into TIP() HTML ─────────────
+const esc = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 // ─── Tooltip HTML builder ──────────────────────────────────────────────────────
 const TIP = (lines) =>
@@ -164,8 +157,8 @@ export function WorldMonitorGlobe() {
           size: f.altitudeFt ? Math.min(0.18 + f.altitudeFt / 110_000, 0.55) : 0.3,
           color: flightColor(f),
           label: TIP([
-            `${f.operatorFlag || '✈'} <b>${f.callsign || f.icao24}</b>`,
-            f.operator || f.country || '',
+            `${f.operatorFlag || '✈'} <b>${esc(f.callsign || f.icao24)}</b>`,
+            esc(f.operator || f.country || ''),
             f.altitudeFt ? `${f.altitudeFt.toLocaleString()} ft` : '',
           ].filter(Boolean)),
           // Passthrough for tooltip
@@ -182,7 +175,7 @@ export function WorldMonitorGlobe() {
             _alt: Math.max(0.05, (s.alt || 400) / 6371), // float at orbital altitude
             size: 0.08,
             color: satColor(s),
-            label: TIP([`🛰 <b>${s.name}</b>`, `${s.country}`, `${(s.alt || 0).toLocaleString()} km`]),
+            label: TIP([`🛰 <b>${esc(s.name)}</b>`, esc(s.country), `${(s.alt || 0).toLocaleString()} km`]),
             _sat: true, _name: s.name, _satCountry: s.country, _satAlt: s.alt,
           };
         })

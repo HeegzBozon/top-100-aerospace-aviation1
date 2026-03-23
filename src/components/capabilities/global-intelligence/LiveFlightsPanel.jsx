@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Plane, AlertCircle, Loader2, Activity, Globe, Zap, AlertTriangle, MapPin, Filter } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -91,8 +91,20 @@ export function LiveFlightsPanel() {
   if (isLoading) return <PanelLoader label="military flights" />;
   if (isError) return <PanelError message="Unable to load military flight data" />;
 
+  // Pre-enrich each flight with nearConflict so it's available for sorting
+  const enrichedFlights = useMemo(() => flights.map(f => {
+    if (!conflictEvents.length || !f.lat || !f.lon) return f;
+    let minDist = Infinity;
+    let nearest = null;
+    for (const ev of conflictEvents) {
+      const dist = haversineKm(f.lat, f.lon, ev.location.latitude, ev.location.longitude);
+      if (dist < minDist) { minDist = dist; nearest = ev; }
+    }
+    return minDist <= 200 ? { ...f, _nearConflict: nearest } : f;
+  }), [flights, conflictEvents]);
+
   // Filter
-  const filtered = flights.filter(f => {
+  const filtered = enrichedFlights.filter(f => {
     if (search) {
       const q = search.toLowerCase();
       const wb = enrichment[f.icao24?.toLowerCase()];
@@ -106,8 +118,9 @@ export function LiveFlightsPanel() {
     return true;
   });
 
-  // Sort (conflict sort requires per-flight conflict check — done in render pass instead)
+  // Sort — conflict sort now works because nearConflict is precomputed
   const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === 'conflict') return (b._nearConflict ? 1 : 0) - (a._nearConflict ? 1 : 0);
     if (sortBy === 'altitude') return (b.altitudeFt || 0) - (a.altitudeFt || 0);
     if (sortBy === 'speed') return (b.velocity || 0) - (a.velocity || 0);
     if (sortBy === 'operator') return (a.operator || '').localeCompare(b.operator || '');
@@ -191,20 +204,8 @@ export function LiveFlightsPanel() {
             const operator = wb?.operator || flight.operator || flight.country || 'Unknown';
             const manufacturer = wb?.manufacturerName || null;
 
-            // Conflict proximity check
-            let nearConflict = null;
-            if (conflictEvents.length > 0 && flight.lat && flight.lon) {
-              let minDist = Infinity;
-              let nearest = null;
-              for (const ev of conflictEvents) {
-                const dist = haversineKm(
-                  flight.lat, flight.lon,
-                  ev.location.latitude, ev.location.longitude
-                );
-                if (dist < minDist) { minDist = dist; nearest = ev; }
-              }
-              if (minDist <= 200) nearConflict = nearest;
-            }
+            // nearConflict precomputed in enrichedFlights — just read it
+            const nearConflict = flight._nearConflict || null;
 
             return (
               <motion.div
