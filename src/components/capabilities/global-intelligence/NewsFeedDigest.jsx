@@ -17,7 +17,7 @@ const CATEGORY_ICONS = {
 };
 
 const safeUrl = (url) => (url && /^https?:\/\//i.test(url) ? url : undefined);
-const hasClaudeKey = true; // Uses Base44 InvokeLLM — no client-side key needed
+const hasClaudeKey = !!(import.meta.env.VITE_ANTHROPIC_API_KEY);
 
 export function NewsFeedDigest() {
   const { data, isLoading, isError } = useNewsFeedDigest();
@@ -32,6 +32,16 @@ export function NewsFeedDigest() {
     const firstKey = Object.keys(categories)[0];
     if (firstKey && !activeCategory) setActiveCategory(firstKey);
   }, [categories, activeCategory]);
+
+  // Auto-summarize on tab switch — debounced 400ms, only when key present and no summary yet
+  useEffect(() => {
+    if (!activeCategory || summaries[activeCategory] || loadingSummary || !hasClaudeKey) return;
+    const items = categories[activeCategory]?.items || [];
+    if (items.length === 0) return;
+    const timer = setTimeout(handleSummarize, 400);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCategory]);
 
   if (isLoading) return <PanelLoader label="news digest" />;
   if (isError) return <PanelError message="Unable to load news digest" />;
@@ -86,6 +96,11 @@ export function NewsFeedDigest() {
               <span className="text-xs font-semibold text-indigo-700 uppercase tracking-wide">
                 AI Intelligence Brief
               </span>
+              {categories[activeCategory]?.lastUpdated && (
+                <span className="text-xs text-slate-400 font-normal normal-case tracking-normal">
+                  · {new Date(categories[activeCategory].lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              )}
             </div>
             {activeSummary && (
               <button
@@ -137,7 +152,7 @@ export function NewsFeedDigest() {
           <p className="text-center text-sm text-slate-400 py-8">No items in this category</p>
         ) : (
           activeItems.slice(0, 50).map((item, i) => {
-            const threatLevel = item.threat?.level;
+            const threatLevel = item.threat_level;
             const threatColor = THREAT_COLORS[threatLevel];
             return (
               <motion.div
@@ -171,6 +186,9 @@ export function NewsFeedDigest() {
                             <ExternalLink className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
                           )}
                         </div>
+                        {item.snippet && (
+                          <p className="text-xs text-slate-500 line-clamp-2 mb-1">{item.snippet}</p>
+                        )}
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs text-slate-400">{item.source}</span>
                           {item.published_at && (
@@ -182,11 +200,21 @@ export function NewsFeedDigest() {
                             </>
                           )}
                           {threatColor && (
-                            <Badge className={`text-xs ${threatColor}`}>
+                            <span className={`inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full border ${threatColor}`}>
+                              <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
                               {THREAT_LABELS[threatLevel]}
-                            </Badge>
+                            </span>
                           )}
                         </div>
+                        {item.matched_entities?.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {item.matched_entities.slice(0, 4).map(e => (
+                              <Badge key={e} variant="secondary" className="text-xs px-1.5 py-0 h-4">
+                                {e}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
