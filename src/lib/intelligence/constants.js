@@ -132,7 +132,35 @@ export const MILITARY_HEX_PREFIXES = [
   '80',              // India military
   '78',              // China military (limited)
   '15',              // Russia military (limited)
+  '87',              // Japan JASDF
+  '71C',             // South Korea ROKAF
+  '4B',              // Turkey Air Force
+  '47',              // Norway Royal AF
+  '48D',             // Poland Air Force
+  '4C',              // NATO AWACS
+  '710',             // Saudi Arabia Air Force
+  '896',             // UAE Air Force
 ];
+
+export const AIRCRAFT_MODEL_PATTERNS = [
+  { pattern: /F-?1[5678]|F-?22|F-?35|Rafale|Typhoon|Gripen|MiG|Su-?[23]\d/i,        role: 'Fighter' },
+  { pattern: /KC-?1[03]|KC-?46|A330.*MRTT|VC-?10|Il-?78/i,                            role: 'Tanker' },
+  { pattern: /C-?130|C-?17|C-?5\b|A400|Il-?76|An-?124|Y-?20/i,                       role: 'Transport' },
+  { pattern: /\bE-?3\b|\bE-?7\b|A-?50|KJ-?[0-9]/i,                                   role: 'AWACS' },
+  { pattern: /RC-?135|U-?2\b|EP-?3|E-?8\b|WC-?135|P-?[13]\b|P-?8\b/i,              role: 'Recon' },
+  { pattern: /B-?52|B-?1\b|B-?2\b|Tu-?9[05]|Tu-?160|Tu-?22|H-?6\b/i,               role: 'Bomber' },
+  { pattern: /RQ-?4|MQ-?[19]|RQ-?170|Global Hawk|Reaper|Predator/i,                  role: 'Drone' },
+  { pattern: /UH-?60|CH-?4[67]|AH-?64|Mi-?\d+|Ka-?52|Black.?Hawk|Chinook|Apache/i,  role: 'Helicopter' },
+];
+
+export const THEATER_BOUNDS = {
+  EUCOM:     [35, -30, 72,  40],
+  CENTCOM:   [10,  25, 45,  75],
+  INDOPACOM: [-10, 60, 50, 180],
+  NORTHCOM:  [15, -170, 72, -50],
+  SOUTHCOM:  [-60, -120, 15, -30],
+  AFRICOM:   [-35, -20, 37,  55],
+};
 
 export const MARITIME_CHOKEPOINTS = [
   { name: 'Strait of Hormuz', lat: 26.5, lon: 56.3, traffic: 'high', risk: 'elevated', dailyShips: 50 },

@@ -13,7 +13,15 @@ import {
   MILITARY_HEX_PREFIXES,
   DEFENSE_TICKERS,
   AEROSPACE_ENTITIES,
+  THEATER_BOUNDS,
 } from './constants';
+
+export function getFlightTheater(lat, lon) {
+  for (const [name, [minLat, minLon, maxLat, maxLon]] of Object.entries(THEATER_BOUNDS)) {
+    if (lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon) return name;
+  }
+  return null;
+}
 import { enrichFlight } from './enrichment';
 
 // ── Shared base query configs (React Query deduplicates identical queryKeys) ──
@@ -61,7 +69,8 @@ export function useMilitaryFlights() {
           const hex = (s.icao24 || '').toUpperCase();
           return MILITARY_HEX_PREFIXES.some(p => hex.startsWith(p));
         })
-        .map(f => ({ ...f, ...enrichFlight(f.icao24) }));
+        .map(f => ({ ...f, ...enrichFlight(f.icao24) }))
+        .map(f => ({ ...f, theater: getFlightTheater(f.lat, f.lon) }));
       return { flights, total: flights.length, clusters: [] };
     },
   });
@@ -345,14 +354,9 @@ function computeCII(acledEvents) {
 }
 
 function computeTheaterPosture(militaryStates) {
-  const theaters = {
-    EUCOM:     { bounds: [35, -30, 72, 40],    flights: 0 },
-    CENTCOM:   { bounds: [10, 25, 45, 75],     flights: 0 },
-    INDOPACOM: { bounds: [-10, 60, 50, 180],   flights: 0 },
-    NORTHCOM:  { bounds: [15, -170, 72, -50],  flights: 0 },
-    SOUTHCOM:  { bounds: [-60, -120, 15, -30], flights: 0 },
-    AFRICOM:   { bounds: [-35, -20, 37, 55],   flights: 0 },
-  };
+  const theaters = Object.fromEntries(
+    Object.entries(THEATER_BOUNDS).map(([k, b]) => [k, { bounds: b, flights: 0 }])
+  );
   for (const s of militaryStates) {
     const lat = s[6], lon = s[5];
     for (const [, t] of Object.entries(theaters)) {
