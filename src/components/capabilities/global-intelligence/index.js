@@ -12,3 +12,4 @@ export { ConflictAlertsPanel } from './ConflictAlertsPanel';
 export { DisastersPanel } from './DisastersPanel';
 export { CyberThreatsPanel } from './CyberThreatsPanel';
 export { InfrastructurePanel } from './InfrastructurePanel';
+export { SupplyChainPanel } from './SupplyChainPanel';
