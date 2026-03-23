@@ -6,3 +6,7 @@ export { SatelliteTracker } from './SatelliteTracker.jsx';
 export { GpsJammingPanel } from './GpsJammingPanel.jsx';
 export { RiskScoresPanel } from './RiskScoresPanel.jsx';
 export { NewsFeedDigest } from './NewsFeedDigest.jsx';
+export { MilitaryPosturePanel } from './MilitaryPosturePanel.jsx';
+export { MaritimePanel } from './MaritimePanel.jsx';
+export { MarketSignalsPanel } from './MarketSignalsPanel.jsx';
+export { ConflictAlertsPanel } from './ConflictAlertsPanel.jsx';
