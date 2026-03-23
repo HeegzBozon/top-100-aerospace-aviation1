@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 import {
   fetchOpenSkyStates,
   fetchSatelliteTLEs,
@@ -6,6 +6,7 @@ import {
   fetchFinnhubQuote,
   fetchACLEDEvents,
   fetchGpsInterference,
+  fetchWingbitsDetails,
 } from './api';
 import {
   ALL_RSS_FEEDS,
@@ -207,6 +208,29 @@ export function useConflictEvents(params = {}) {
     staleTime: 15 * 60_000,
     enabled: !!(import.meta.env.VITE_ACLED_API_KEY),
   });
+}
+
+// ── Wingbits Aircraft Enrichment ─────────────────────────────────────────
+// One React Query cache entry per ICAO24 → perfect deduplication across tabs.
+// 24h staleTime matches the in-api-layer cache so we never double-fetch.
+export function useWingbitsEnrichment(icao24List = []) {
+  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
+  const queries = useQueries({
+    queries: icao24List.map(icao24 => ({
+      queryKey: ['intel', 'wingbits-aircraft', icao24.toLowerCase()],
+      queryFn: ({ signal }) => fetchWingbitsDetails(icao24, signal),
+      staleTime: 24 * 60 * 60_000,
+      gcTime: 24 * 60 * 60_000,
+      enabled: hasKey && !!icao24,
+    })),
+  });
+
+  // Return a plain object: { [icao24_lowercase]: enrichmentData | null }
+  const enrichment = {};
+  icao24List.forEach((icao24, i) => {
+    enrichment[icao24.toLowerCase()] = queries[i]?.data ?? null;
+  });
+  return { enrichment, isLoading: queries.some(q => q.isLoading), hasKey };
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────

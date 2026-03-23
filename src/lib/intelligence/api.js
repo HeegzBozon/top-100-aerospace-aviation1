@@ -55,11 +55,70 @@ export async function fetchACLEDEvents(params = {}, signal) {
   return res.json();
 }
 
-// ── GPS Interference (static JSON) ───────────────────────
+// ── GPS Interference (static JSON fallback) ───────────────
 export async function fetchGpsInterference(signal) {
   const res = await fetch('/data/gps-interference.json', { signal });
   if (!res.ok) return { events: [] };
   return res.json();
+}
+
+// ── Wingbits (Aircraft Enrichment + Live GPS Jam) ─────────
+// In-memory cache keyed by lowercase icao24 — aircraft profiles rarely change.
+// 24h TTL keeps us well within the 20k/30-day free-trial request budget.
+const _wingbitsCache = new Map();
+const WINGBITS_TTL = 24 * 60 * 60 * 1000;
+
+function _wingbitsKey() {
+  return import.meta.env.VITE_WINGBITS_API_KEY || null;
+}
+
+/**
+ * Fetch aircraft enrichment from Wingbits for a single ICAO24 hex.
+ * Returns null if no API key or request fails.
+ */
+export async function fetchWingbitsDetails(icao24, signal) {
+  const key = (icao24 || '').toLowerCase();
+  if (!key) return null;
+
+  const cached = _wingbitsCache.get(key);
+  if (cached && Date.now() - cached.fetchedAt < WINGBITS_TTL) return cached.data;
+
+  const apiKey = _wingbitsKey();
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetch(
+      `https://customer-api.wingbits.com/v1/flights/details/${key}`,
+      { headers: { 'x-api-key': apiKey }, signal }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    _wingbitsCache.set(key, { data, fetchedAt: Date.now() });
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Batch-enrich a list of ICAO24 hexes.
+ * Cache hits are instant; uncached calls are staggered 80ms apart to stay within rate limits.
+ * Returns a Map of icao24 (lowercase) → enrichment object.
+ */
+export async function fetchWingbitsBatch(icao24List, signal) {
+  const result = {};
+  for (const icao24 of icao24List) {
+    if (signal?.aborted) break;
+    const key = (icao24 || '').toLowerCase();
+    const wasCached = _wingbitsCache.has(key);
+    const data = await fetchWingbitsDetails(key, signal);
+    if (data) result[key] = data;
+    // Pace uncached network calls to avoid rate-limit bursts
+    if (!wasCached && data !== null) {
+      await new Promise(r => setTimeout(r, 80));
+    }
+  }
+  return result;
 }
 
 // ── RSS XML Parser ───────────────────────────────────────
