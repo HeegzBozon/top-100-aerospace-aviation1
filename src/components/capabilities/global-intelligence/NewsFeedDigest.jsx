@@ -17,7 +17,7 @@ const CATEGORY_ICONS = {
 };
 
 const safeUrl = (url) => (url && /^https?:\/\//i.test(url) ? url : undefined);
-const hasClaudeKey = !!import.meta.env.VITE_ANTHROPIC_API_KEY;
+const hasClaudeKey = true; // Uses Base44 InvokeLLM — no client-side key needed
 
 export function NewsFeedDigest() {
   const { data, isLoading, isError } = useNewsFeedDigest();
@@ -129,7 +129,7 @@ export function NewsFeedDigest() {
             ) : (
               <motion.p key="no-key" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="text-xs text-slate-400">
-                Add <code className="font-mono bg-slate-100 px-1 rounded">VITE_ANTHROPIC_API_KEY</code> to enable AI briefings
+                AI briefings unavailable
               </motion.p>
             )}
           </AnimatePresence>
