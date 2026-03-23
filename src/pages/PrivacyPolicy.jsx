@@ -1,245 +1,267 @@
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-import { Shield, Mail, Lock, Eye, Database, UserCheck } from 'lucide-react';
+import { Shield, Mail, Lock, Eye, Database, UserCheck, ExternalLink, FileText, AlertCircle } from 'lucide-react';
 
-const brandColors = {
+const BRAND = {
   navyDeep: '#1e3a5a',
   goldPrestige: '#c9a87c',
   cream: '#faf8f5',
 };
 
+const COMPANY = 'TOP 100 Aerospace & Aviation';
+const SITE_URL = 'top100aerospaceandaviation.com';
+const CONTACT_EMAIL = 'privacy@top100aerospaceandaviation.com';
+const EFFECTIVE_DATE = 'March 23, 2026';
+
+function SectionHeader({ icon: Icon, title }) {
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <Icon className="w-5 h-5 flex-shrink-0" style={{ color: BRAND.goldPrestige }} />
+      <h2
+        className="text-xl font-bold"
+        style={{ fontFamily: "'Playfair Display', Georgia, serif", color: BRAND.navyDeep }}
+      >
+        {title}
+      </h2>
+    </div>
+  );
+}
+
+function PolicySection({ icon, title, children }) {
+  return (
+    <section className="mb-10 pb-10 border-b last:border-b-0" style={{ borderColor: `${BRAND.navyDeep}18` }}>
+      {icon && title ? <SectionHeader icon={icon} title={title} /> : title && (
+        <h2
+          className="text-xl font-bold mb-4"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif", color: BRAND.navyDeep }}
+        >
+          {title}
+        </h2>
+      )}
+      <div className="space-y-3 text-base leading-relaxed" style={{ color: `${BRAND.navyDeep}CC` }}>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function BulletList({ items }) {
+  return (
+    <ul className="list-disc ml-5 space-y-1.5">
+      {items.map((item, i) => <li key={i}>{item}</li>)}
+    </ul>
+  );
+}
+
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen" style={{ background: brandColors.cream }}>
+    <div className="min-h-screen" style={{ background: BRAND.cream }}>
+
       {/* Header */}
-      <div className="border-b-2 py-12" style={{ borderColor: brandColors.navyDeep, background: 'white' }}>
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="flex items-center gap-3 mb-4">
-            <Shield className="w-8 h-8" style={{ color: brandColors.goldPrestige }} />
-            <h1 
-              className="text-5xl font-bold"
-              style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
-                color: brandColors.navyDeep,
-              }}
+      <header className="border-b-2 py-10 bg-white" style={{ borderColor: BRAND.navyDeep }}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center gap-3 mb-3">
+            <Shield className="w-7 h-7" style={{ color: BRAND.goldPrestige }} />
+            <h1
+              className="text-4xl sm:text-5xl font-bold"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif", color: BRAND.navyDeep }}
             >
               Privacy Policy
             </h1>
           </div>
-          <p className="text-lg" style={{ color: `${brandColors.navyDeep}CC` }}>
-            Last Updated: December 12, 2025
+          <p className="text-sm" style={{ color: `${BRAND.navyDeep}99` }}>
+            Effective Date: {EFFECTIVE_DATE} &nbsp;·&nbsp; {COMPANY}
           </p>
         </div>
-      </div>
+      </header>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
-          <p className="text-lg mb-6" style={{ color: brandColors.navyDeep }}>
-            TOP 100 Aerospace & Aviation ("we," "our," or "us") is committed to protecting your privacy. 
-            This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform.
+      {/* Body */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+
+        {/* Intro card */}
+        <div
+          className="rounded-xl p-5 mb-8 border"
+          style={{ background: `${BRAND.navyDeep}08`, borderColor: `${BRAND.navyDeep}20` }}
+        >
+          <p className="text-base leading-relaxed" style={{ color: BRAND.navyDeep }}>
+            <strong>{COMPANY}</strong> (the "Company") is committed to maintaining robust privacy protections for its users.
+            This Privacy Policy is designed to help you understand how we collect, use, and safeguard the information you provide to us,
+            and to assist you in making informed decisions when using our Service.
           </p>
-
-          {/* Information We Collect */}
-          <section className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <Database className="w-6 h-6" style={{ color: brandColors.goldPrestige }} />
-              <h2 className="text-2xl font-bold" style={{ 
-                fontFamily: "'Playfair Display', Georgia, serif",
-                color: brandColors.navyDeep 
-              }}>
-                Information We Collect
-              </h2>
-            </div>
-            
-            <h3 className="text-xl font-semibold mb-3" style={{ color: brandColors.navyDeep }}>
-              Personal Information
-            </h3>
-            <ul className="list-disc ml-6 mb-4 space-y-2" style={{ color: `${brandColors.navyDeep}DD` }}>
-              <li>Name and email address</li>
-              <li>Professional information (title, company, LinkedIn profile)</li>
-              <li>Profile photos and biographical information</li>
-              <li>Contact details you provide</li>
-            </ul>
-
-            <h3 className="text-xl font-semibold mb-3" style={{ color: brandColors.navyDeep }}>
-              Usage Information
-            </h3>
-            <ul className="list-disc ml-6 mb-4 space-y-2" style={{ color: `${brandColors.navyDeep}DD` }}>
-              <li>Voting and nomination data</li>
-              <li>Interaction with platform features</li>
-              <li>Device and browser information</li>
-              <li>IP address and location data</li>
-            </ul>
-          </section>
-
-          {/* How We Use Your Information */}
-          <section className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <UserCheck className="w-6 h-6" style={{ color: brandColors.goldPrestige }} />
-              <h2 className="text-2xl font-bold" style={{ 
-                fontFamily: "'Playfair Display', Georgia, serif",
-                color: brandColors.navyDeep 
-              }}>
-                How We Use Your Information
-              </h2>
-            </div>
-            
-            <ul className="list-disc ml-6 space-y-2" style={{ color: `${brandColors.navyDeep}DD` }}>
-              <li>To operate and maintain the TOP 100 recognition platform</li>
-              <li>To process nominations, votes, and evaluations</li>
-              <li>To display honoree profiles and rankings</li>
-              <li>To communicate updates and platform announcements</li>
-              <li>To improve our services and user experience</li>
-              <li>To prevent fraud and ensure platform integrity</li>
-            </ul>
-          </section>
-
-          {/* Information Sharing */}
-          <section className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <Eye className="w-6 h-6" style={{ color: brandColors.goldPrestige }} />
-              <h2 className="text-2xl font-bold" style={{ 
-                fontFamily: "'Playfair Display', Georgia, serif",
-                color: brandColors.navyDeep 
-              }}>
-                Information Sharing
-              </h2>
-            </div>
-            
-            <p className="mb-4" style={{ color: `${brandColors.navyDeep}DD` }}>
-              We may share your information with:
-            </p>
-            <ul className="list-disc ml-6 space-y-2" style={{ color: `${brandColors.navyDeep}DD` }}>
-              <li><strong>Public Display:</strong> Honoree profiles and rankings are publicly visible</li>
-              <li><strong>Service Providers:</strong> Third-party vendors who assist in platform operations</li>
-              <li><strong>Legal Compliance:</strong> When required by law or to protect our rights</li>
-              <li><strong>Business Transfers:</strong> In connection with mergers or acquisitions</li>
-            </ul>
-          </section>
-
-          {/* Data Security */}
-          <section className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <Lock className="w-6 h-6" style={{ color: brandColors.goldPrestige }} />
-              <h2 className="text-2xl font-bold" style={{ 
-                fontFamily: "'Playfair Display', Georgia, serif",
-                color: brandColors.navyDeep 
-              }}>
-                Data Security
-              </h2>
-            </div>
-            
-            <p style={{ color: `${brandColors.navyDeep}DD` }}>
-              We implement appropriate technical and organizational measures to protect your information. 
-              However, no method of transmission over the Internet is 100% secure, and we cannot guarantee absolute security.
-            </p>
-          </section>
-
-          {/* Your Rights */}
-          <section className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <Shield className="w-6 h-6" style={{ color: brandColors.goldPrestige }} />
-              <h2 className="text-2xl font-bold" style={{ 
-                fontFamily: "'Playfair Display', Georgia, serif",
-                color: brandColors.navyDeep 
-              }}>
-                Your Rights
-              </h2>
-            </div>
-            
-            <p className="mb-4" style={{ color: `${brandColors.navyDeep}DD` }}>
-              You have the right to:
-            </p>
-            <ul className="list-disc ml-6 space-y-2" style={{ color: `${brandColors.navyDeep}DD` }}>
-              <li>Access your personal information</li>
-              <li>Correct inaccurate data</li>
-              <li>Request deletion of your data</li>
-              <li>Opt-out of marketing communications</li>
-              <li>Withdraw consent where applicable</li>
-            </ul>
-          </section>
-
-          {/* Cookies */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4" style={{ 
-              fontFamily: "'Playfair Display', Georgia, serif",
-              color: brandColors.navyDeep 
-            }}>
-              Cookies and Tracking
-            </h2>
-            
-            <p style={{ color: `${brandColors.navyDeep}DD` }}>
-              We use cookies and similar tracking technologies to track activity on our platform and store certain information. 
-              You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.
-            </p>
-          </section>
-
-          {/* Children's Privacy */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4" style={{ 
-              fontFamily: "'Playfair Display', Georgia, serif",
-              color: brandColors.navyDeep 
-            }}>
-              Children's Privacy
-            </h2>
-            
-            <p style={{ color: `${brandColors.navyDeep}DD` }}>
-              Our platform is not intended for individuals under the age of 13. We do not knowingly collect personal information from children under 13.
-            </p>
-          </section>
-
-          {/* Changes to This Policy */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4" style={{ 
-              fontFamily: "'Playfair Display', Georgia, serif",
-              color: brandColors.navyDeep 
-            }}>
-              Changes to This Privacy Policy
-            </h2>
-            
-            <p style={{ color: `${brandColors.navyDeep}DD` }}>
-              We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page 
-              and updating the "Last Updated" date.
-            </p>
-          </section>
-
-          {/* Contact */}
-          <section className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <Mail className="w-6 h-6" style={{ color: brandColors.goldPrestige }} />
-              <h2 className="text-2xl font-bold" style={{ 
-                fontFamily: "'Playfair Display', Georgia, serif",
-                color: brandColors.navyDeep 
-              }}>
-                Contact Us
-              </h2>
-            </div>
-            
-            <p className="mb-4" style={{ color: `${brandColors.navyDeep}DD` }}>
-              If you have questions about this Privacy Policy, please contact us at:
-            </p>
-            <p style={{ color: brandColors.navyDeep, fontWeight: 600 }}>
-              privacy@top100aerospaceandaviation.com
-            </p>
-          </section>
+          <p className="text-sm mt-3" style={{ color: `${BRAND.navyDeep}99` }}>
+            "Site" refers to our website accessible at <strong>{SITE_URL}</strong>. "Service" refers to the Company's recognition
+            platform and related services. "You" refers to you as a user of our Site or Service. By accessing our Site or Service,
+            you accept this Privacy Policy and consent to our collection, storage, use, and disclosure of your information as described herein.
+          </p>
         </div>
 
-        {/* Back Link */}
-        <div className="text-center">
-          <Link 
-            to={createPageUrl('MissionControl')}
-            className="inline-block px-6 py-3 rounded-full font-semibold transition-all hover:scale-105"
-            style={{
-              background: brandColors.goldPrestige,
-              color: 'white',
-              fontFamily: "'Montserrat', sans-serif"
-            }}
+        <div className="bg-white rounded-xl shadow-sm p-6 sm:p-10">
+
+          {/* I. Information We Collect */}
+          <PolicySection icon={Database} title="I. Information We Collect">
+            <p>
+              We collect <strong>Non-Personal Information</strong> — data that cannot be used to personally identify you, such as
+              anonymous usage data, demographic trends, referring/exit URLs, platform types, and click counts —
+              and <strong>Personal Information</strong>, which includes data that can identify you directly.
+            </p>
+
+            <h3 className="font-semibold mt-4" style={{ color: BRAND.navyDeep }}>1. Information Collected via Technology</h3>
+            <p>
+              To activate the Service you need only provide your email address. To improve service quality, we automatically track
+              information your browser provides when you view or use the Service, including:
+            </p>
+            <BulletList items={[
+              'Referring URL (the website you came from)',
+              'Browser type and version',
+              'Device and operating system',
+              'Time, date, and duration of access',
+              'IP address and approximate geographic location',
+              'Pages visited and features used within the platform',
+            ]} />
+            <p className="mt-2">
+              We track this information using <strong>cookies</strong> — small text files sent to your browser from our servers and stored
+              on your device. We use both persistent cookies (which remain until deleted) and session cookies (which expire when you close
+              your browser) to maintain your preferences and improve your experience.
+            </p>
+
+            <h3 className="font-semibold mt-4" style={{ color: BRAND.navyDeep }}>2. Information You Provide by Registering</h3>
+            <p>To use the full Service, you create a personal profile by providing:</p>
+            <BulletList items={[
+              'Name and email address',
+              'Professional information (job title, company, LinkedIn profile URL)',
+              'Profile photo and biographical information',
+              'Nominations, votes, and platform-generated content you submit',
+              'Social media handles you choose to connect',
+            ]} />
+
+            <h3 className="font-semibold mt-4" style={{ color: BRAND.navyDeep }}>3. Children's Privacy</h3>
+            <p>
+              The Site and Service are not directed to anyone under the age of 13. We do not knowingly collect or solicit information
+              from anyone under 13 or allow anyone under 13 to register. If we learn we have gathered personal information from a child
+              under 13 without parental consent, we will delete it immediately. Contact us at <strong>{CONTACT_EMAIL}</strong> if you
+              believe this has occurred.
+            </p>
+          </PolicySection>
+
+          {/* II. How We Use and Share Information */}
+          <PolicySection icon={UserCheck} title="II. How We Use and Share Information">
+            <h3 className="font-semibold" style={{ color: BRAND.navyDeep }}>Personal Information</h3>
+            <p>
+              We do not sell, trade, rent, or share your Personal Information with third parties for their marketing purposes without
+              your consent. We use your Personal Information to:
+            </p>
+            <BulletList items={[
+              'Operate and maintain the TOP 100 recognition platform',
+              'Process nominations, votes, and evaluations',
+              'Display honoree profiles, rankings, and accolades',
+              'Respond to your questions and provide technical support',
+              'Send administrative updates and, where you opt in, promotional communications',
+              'Prevent fraud, abuse, and ensure platform integrity',
+            ]} />
+            <p className="mt-2">
+              We share Personal Information with trusted vendors performing services on our behalf (e.g., email delivery, hosting).
+              Those vendors access your data only as directed by us and under confidentiality obligations.
+            </p>
+            <p>
+              We may disclose Personal Information if we have a good-faith belief that disclosure is necessary to: comply with applicable
+              law or legal process; enforce our Terms of Service; address fraud or security concerns; or protect the rights, property, or
+              safety of our users or the public.
+            </p>
+
+            <h3 className="font-semibold mt-4" style={{ color: BRAND.navyDeep }}>Non-Personal Information</h3>
+            <p>
+              We use Non-Personal Information to improve the Service and customize user experience. We aggregate this data to track
+              trends and analyze usage patterns. We reserve the right to share aggregated, non-identifiable data with partners and
+              advertisers.
+            </p>
+
+            <h3 className="font-semibold mt-4" style={{ color: BRAND.navyDeep }}>Business Transfers</h3>
+            <p>
+              In the event of a merger, acquisition, or sale of assets, your Personal Information may be transferred as part of that
+              transaction. We will post notice of any such change on the Site.
+            </p>
+          </PolicySection>
+
+          {/* III. How We Protect Information */}
+          <PolicySection icon={Lock} title="III. How We Protect Information">
+            <p>
+              We implement security measures designed to protect your information from unauthorized access, including encryption,
+              firewalls, and secure socket layer (SSL/TLS) technology. Your account is protected by your password — please keep it
+              confidential and log out after each session.
+            </p>
+            <p>
+              However, no method of transmission over the Internet is 100% secure. By using our Service, you acknowledge that you
+              understand and agree to assume these inherent risks.
+            </p>
+          </PolicySection>
+
+          {/* IV. Your Rights */}
+          <PolicySection icon={Shield} title="IV. Your Rights Regarding Your Personal Information">
+            <p>You have the right at any time to:</p>
+            <BulletList items={[
+              'Access the personal information we hold about you',
+              'Request correction of inaccurate or incomplete data',
+              'Request deletion of your personal information',
+              'Opt out of marketing and promotional communications (via the unsubscribe link in any email or by contacting us)',
+              'Withdraw consent where our processing is based on consent',
+            ]} />
+            <p className="mt-2">
+              Note that even if you opt out of promotional emails, we may still send you administrative communications (e.g., policy updates,
+              security notices).
+            </p>
+          </PolicySection>
+
+          {/* V. Links to Other Websites */}
+          <PolicySection icon={ExternalLink} title="V. Links to Other Websites">
+            <p>
+              Our Service may contain links to third-party websites or applications. We are not responsible for the privacy practices
+              or content of those sites. This Privacy Policy applies solely to information collected by us through the Site and Service.
+              We encourage you to read the privacy policies of any third-party sites you visit.
+            </p>
+          </PolicySection>
+
+          {/* VI. Changes to Our Privacy Policy */}
+          <PolicySection icon={FileText} title="VI. Changes to Our Privacy Policy">
+            <p>
+              We may update this Privacy Policy from time to time. We will notify you of material changes by posting the revised
+              policy on this page with an updated effective date. If changes are significant, we may also send an email notification.
+              We encourage you to review this page periodically.
+            </p>
+          </PolicySection>
+
+          {/* VII. Contact */}
+          <PolicySection icon={Mail} title="VII. Contact Us">
+            <p>
+              If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:
+            </p>
+            <div
+              className="mt-3 p-4 rounded-lg border inline-block"
+              style={{ borderColor: `${BRAND.navyDeep}20`, background: `${BRAND.navyDeep}06` }}
+            >
+              <p className="font-semibold" style={{ color: BRAND.navyDeep }}>{COMPANY}</p>
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="text-sm hover:underline font-medium"
+                style={{ color: BRAND.goldPrestige }}
+              >
+                {CONTACT_EMAIL}
+              </a>
+            </div>
+          </PolicySection>
+
+        </div>
+
+        {/* Back link */}
+        <div className="text-center mt-8">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition-all hover:scale-105 hover:opacity-90"
+            style={{ background: BRAND.navyDeep, fontFamily: "'Montserrat', sans-serif" }}
           >
-            Back to Mission Control
+            Back to Home
           </Link>
         </div>
-      </div>
+
+      </main>
     </div>
   );
 }
