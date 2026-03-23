@@ -114,7 +114,7 @@ export function NewsFeedDigest() {
                 className="text-xs text-slate-500 italic">
                 Summary available — click ↑ to expand
               </motion.p>
-            ) : hasClaudeKey ? (
+            ) : (
               <motion.div key="prompt" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <Button
                   size="sm"
@@ -126,11 +126,6 @@ export function NewsFeedDigest() {
                   Generate brief for {activeCategory}
                 </Button>
               </motion.div>
-            ) : (
-              <motion.p key="no-key" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="text-xs text-slate-400">
-                AI briefings unavailable
-              </motion.p>
             )}
           </AnimatePresence>
         </div>

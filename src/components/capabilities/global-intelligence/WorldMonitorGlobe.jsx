@@ -51,6 +51,8 @@ export function WorldMonitorGlobe() {
       globe(containerRef.current);
       globeRef.current = globe;
       setLoaded(true);
+    }).catch(err => {
+      console.warn('[WorldMonitorGlobe] globe.gl failed to initialize:', err);
     });
 
     return () => {
