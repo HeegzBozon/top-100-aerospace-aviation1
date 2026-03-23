@@ -1,12 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FileText, UserCircle, Lock, Shield, AlertTriangle, ExternalLink, Scale, Ban, Copyright, Settings, Mail } from 'lucide-react';
 
-const BRAND = {
-  navyDeep: '#1e3a5a',
-  goldPrestige: '#c9a87c',
-  cream: '#faf8f5',
-};
-
 const COMPANY = 'TOP 100 Aerospace & Aviation Corporation';
 const SITE_URL = 'https://top100aero.space';
 const CONTACT_EMAIL = 'matthew@top100aero.space';
@@ -17,11 +11,8 @@ const EFFECTIVE_DATE = 'March 23, 2026';
 function SectionHeader({ icon: Icon, title }) {
   return (
     <div className="flex items-start gap-3 mb-4">
-      <Icon className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: BRAND.goldPrestige }} />
-      <h2
-        className="text-xl font-bold leading-tight"
-        style={{ fontFamily: "'Playfair Display', Georgia, serif", color: BRAND.navyDeep }}
-      >
+      <Icon className="w-5 h-5 flex-shrink-0 mt-0.5 text-[--brand-gold]" />
+      <h2 className="text-xl font-bold leading-tight text-[--brand-navy]" style={{ fontFamily: 'var(--brand-font-serif)' }}>
         {title}
       </h2>
     </div>
@@ -31,35 +22,43 @@ function SectionHeader({ icon: Icon, title }) {
 function SubSection({ number, title, children }) {
   return (
     <div className="mb-5">
-      <h3 className="font-semibold mb-2 text-base" style={{ color: BRAND.navyDeep }}>
-        {number} {title}
-      </h3>
-      <div className="space-y-2 text-sm leading-relaxed" style={{ color: `${BRAND.navyDeep}CC` }}>
-        {children}
-      </div>
+      <h3 className="font-semibold mb-2 text-base text-[--brand-navy]">{number} {title}</h3>
+      <div className="space-y-2 text-sm leading-relaxed text-[--brand-navy-80]">{children}</div>
     </div>
   );
 }
 
 function PolicySection({ icon, title, children }) {
   return (
-    <section className="mb-10 pb-10 border-b last:border-b-0" style={{ borderColor: `${BRAND.navyDeep}18` }}>
+    <section className="mb-10 pb-10 border-b border-[--brand-navy-18] last:border-b-0">
       <SectionHeader icon={icon} title={title} />
-      <div className="space-y-4 text-sm leading-relaxed" style={{ color: `${BRAND.navyDeep}CC` }}>
-        {children}
-      </div>
+      <div className="space-y-4 text-sm leading-relaxed text-[--brand-navy-80]">{children}</div>
     </section>
   );
 }
 
 function WarningBox({ children }) {
   return (
-    <div
-      className="rounded-lg p-4 border-l-4 my-4"
-      style={{ background: '#fff7ed', borderColor: '#f97316' }}
-    >
+    <div className="rounded-lg p-4 border-l-4 border-orange-400 bg-orange-50 my-4">
       <p className="text-sm font-semibold uppercase tracking-wide text-orange-700 mb-1">Important Notice</p>
       <p className="text-sm leading-relaxed text-orange-900">{children}</p>
+    </div>
+  );
+}
+
+function ArbitrageBox({ children }) {
+  return (
+    <div className="rounded-lg p-4 border-l-4 border-red-500 bg-red-50 mb-3">
+      <p className="text-sm font-semibold text-red-700 mb-1">Binding Arbitration Agreement</p>
+      <p className="text-sm text-red-900">{children}</p>
+    </div>
+  );
+}
+
+function DisclaimerBox({ children }) {
+  return (
+    <div className="rounded-lg p-4 border border-[--brand-navy-20] bg-[--brand-navy-08] text-sm font-medium leading-relaxed uppercase tracking-wide text-[--brand-navy]">
+      {children}
     </div>
   );
 }
@@ -80,23 +79,36 @@ function OrderedList({ items }) {
   );
 }
 
-export default function TermsOfService() {
+function ContactCard() {
   return (
-    <div className="min-h-screen" style={{ background: BRAND.cream }}>
+    <div className="mt-2 p-4 rounded-lg border border-[--brand-navy-20] bg-[--brand-navy-08] inline-block">
+      <p className="font-semibold text-[--brand-navy]">Matthew Higa</p>
+      <p className="text-sm mt-1 text-[--brand-navy-80]">
+        {CONTACT_ADDRESS}<br />
+        Telephone: {CONTACT_PHONE}<br />
+        <a href={`mailto:${CONTACT_EMAIL}`} className="hover:underline font-medium text-[--brand-gold]">
+          {CONTACT_EMAIL}
+        </a>
+      </p>
+    </div>
+  );
+}
 
-      {/* Header */}
-      <header className="border-b-2 py-10 bg-white" style={{ borderColor: BRAND.navyDeep }}>
+export default function TermsOfService() {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <div className="min-h-screen bg-[--brand-cream]">
+
+      <header className="border-b-2 border-[--brand-navy] py-10 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="flex items-center gap-3 mb-3">
-            <FileText className="w-7 h-7" style={{ color: BRAND.goldPrestige }} />
-            <h1
-              className="text-4xl sm:text-5xl font-bold"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", color: BRAND.navyDeep }}
-            >
+            <FileText className="w-7 h-7 text-[--brand-gold]" />
+            <h1 className="text-4xl sm:text-5xl font-bold text-[--brand-navy]" style={{ fontFamily: 'var(--brand-font-serif)' }}>
               Terms of Use
             </h1>
           </div>
-          <p className="text-sm" style={{ color: `${BRAND.navyDeep}99` }}>
+          <p className="text-sm text-[--brand-navy-60]">
             Version 1.0 &nbsp;·&nbsp; Last Revised: {EFFECTIVE_DATE} &nbsp;·&nbsp; {COMPANY}
           </p>
         </div>
@@ -104,25 +116,21 @@ export default function TermsOfService() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
 
-        {/* Preamble */}
-        <div
-          className="rounded-xl p-5 mb-8 border"
-          style={{ background: `${BRAND.navyDeep}08`, borderColor: `${BRAND.navyDeep}20` }}
-        >
-          <p className="text-sm leading-relaxed mb-3" style={{ color: BRAND.navyDeep }}>
+        <div className="rounded-xl p-5 mb-8 border border-[--brand-navy-20] bg-[--brand-navy-08]">
+          <p className="text-sm leading-relaxed mb-3 text-[--brand-navy]">
             The website located at <strong>{SITE_URL}</strong> (the "Site") is a copyrighted work belonging to{' '}
             <strong>{COMPANY}</strong> ("Company", "us", "our", and "we"). Certain features of the Site may be subject to
             additional guidelines, terms, or rules, which will be posted on the Site in connection with such features.
             All such additional terms, guidelines, and rules are incorporated by reference into these Terms.
           </p>
-          <p className="text-sm leading-relaxed" style={{ color: BRAND.navyDeep }}>
+          <p className="text-sm leading-relaxed text-[--brand-navy]">
             These Terms of Use ("Terms") set forth the legally binding terms and conditions that govern your use of the Site.
-            By accessing or using the Site, you are accepting these Terms. <strong>You may not access or use the Site if you are not at least 18 years old.</strong>{' '}
+            By accessing or using the Site, you are accepting these Terms.{' '}
+            <strong>You may not access or use the Site if you are not at least 18 years old.</strong>{' '}
             If you do not agree with all provisions of these Terms, do not access and/or use the Site.
           </p>
         </div>
 
-        {/* Arbitration Warning */}
         <WarningBox>
           Please be aware that Section 10.2 contains provisions governing how to resolve disputes between you and Company,
           including a binding arbitration agreement and class action waiver. Unless you opt out within 30 days, you will only
@@ -131,7 +139,6 @@ export default function TermsOfService() {
 
         <div className="bg-white rounded-xl shadow-sm p-6 sm:p-10">
 
-          {/* 1. Accounts */}
           <PolicySection icon={UserCircle} title="1. Accounts">
             <SubSection number="1.1." title="Account Creation">
               <p>
@@ -152,7 +159,6 @@ export default function TermsOfService() {
             </SubSection>
           </PolicySection>
 
-          {/* 2. Access to the Site */}
           <PolicySection icon={Lock} title="2. Access to the Site">
             <SubSection number="2.1." title="License">
               <p>
@@ -203,7 +209,6 @@ export default function TermsOfService() {
             </SubSection>
           </PolicySection>
 
-          {/* 3. User Content */}
           <PolicySection icon={Settings} title="3. User Content">
             <SubSection number="3.1." title="User Content">
               <p>
@@ -233,10 +238,10 @@ export default function TermsOfService() {
             <SubSection number="3.3." title="Acceptable Use Policy">
               <p>You agree not to use the Site to collect, upload, transmit, display, or distribute any User Content that:</p>
               <BulletList items={[
-                'Violates any third-party right, including any copyright, trademark, patent, trade secret, moral right, privacy right, right of publicity, or any other intellectual property or proprietary right.',
-                'Is unlawful, harassing, abusive, tortious, threatening, harmful, invasive of another\'s privacy, vulgar, defamatory, false, intentionally misleading, pornographic, obscene, promotes racism, bigotry, hatred, or physical harm of any kind.',
-                'Is harmful to minors in any way.',
-                'Is in violation of any law, regulation, or obligations or restrictions imposed by any third party.',
+                "Violates any third-party right, including any copyright, trademark, patent, trade secret, moral right, privacy right, right of publicity, or any other intellectual property or proprietary right.",
+                "Is unlawful, harassing, abusive, tortious, threatening, harmful, invasive of another's privacy, vulgar, defamatory, false, intentionally misleading, pornographic, obscene, promotes racism, bigotry, hatred, or physical harm of any kind.",
+                "Is harmful to minors in any way.",
+                "Is in violation of any law, regulation, or obligations or restrictions imposed by any third party.",
               ]} />
               <p className="mt-2">In addition, you agree not to:</p>
               <BulletList items={[
@@ -245,7 +250,7 @@ export default function TermsOfService() {
                 'Use the Site to harvest, collect, gather or assemble information or data regarding other users, including e-mail addresses, without their consent.',
                 'Interfere with, disrupt, or create an undue burden on servers or networks connected to the Site.',
                 'Attempt to gain unauthorized access to the Site (or to other computer systems or networks connected to or used together with the Site), whether through password mining or any other means.',
-                'Harass or interfere with any other user\'s use and enjoyment of the Site.',
+                "Harass or interfere with any other user's use and enjoyment of the Site.",
                 'Use software or automated agents or scripts to produce multiple accounts on the Site, or to generate automated searches, requests, or queries to (or to strip, scrape, or mine data from) the Site.',
               ]} />
             </SubSection>
@@ -259,7 +264,6 @@ export default function TermsOfService() {
             </SubSection>
           </PolicySection>
 
-          {/* 4. Indemnification */}
           <PolicySection icon={Shield} title="4. Indemnification">
             <p>
               You agree to indemnify and hold Company (and its officers, employees, and agents) harmless, including costs and
@@ -271,7 +275,6 @@ export default function TermsOfService() {
             </p>
           </PolicySection>
 
-          {/* 5. Third-Party Links & Other Users */}
           <PolicySection icon={ExternalLink} title="5. Third-Party Links & Ads; Other Users">
             <SubSection number="5.1." title="Third-Party Links & Ads">
               <p>
@@ -300,7 +303,7 @@ export default function TermsOfService() {
                 or that relates directly or indirectly to, the Site (including any interactions with, or act or omission of,
                 other Site users or any Third-Party Links & Ads).
               </p>
-              <p className="text-xs font-medium uppercase tracking-wide mt-2" style={{ color: BRAND.navyDeep }}>
+              <p className="text-xs font-medium uppercase tracking-wide mt-2 text-[--brand-navy]">
                 If you are a California resident, you hereby waive California Civil Code Section 1542, which states: "A general
                 release does not extend to claims which the creditor or releasing party does not know or suspect to exist in
                 his or her favor at the time of executing the release, which if known by him or her must have materially
@@ -309,12 +312,8 @@ export default function TermsOfService() {
             </SubSection>
           </PolicySection>
 
-          {/* 6. Disclaimers */}
           <PolicySection icon={AlertTriangle} title="6. Disclaimers">
-            <div
-              className="rounded-lg p-4 border text-sm font-medium leading-relaxed uppercase tracking-wide"
-              style={{ background: `${BRAND.navyDeep}06`, borderColor: `${BRAND.navyDeep}20`, color: BRAND.navyDeep }}
-            >
+            <DisclaimerBox>
               <p>
                 The Site is provided on an "as-is" and "as available" basis, and Company (and our suppliers) expressly
                 disclaim any and all warranties and conditions of any kind, whether express, implied, or statutory, including
@@ -324,15 +323,11 @@ export default function TermsOfService() {
                 viruses or other harmful code, complete, legal, or safe. If applicable law requires any warranties with
                 respect to the Site, all such warranties are limited in duration to 90 days from the date of first use.
               </p>
-            </div>
+            </DisclaimerBox>
           </PolicySection>
 
-          {/* 7. Limitation on Liability */}
           <PolicySection icon={Ban} title="7. Limitation on Liability">
-            <div
-              className="rounded-lg p-4 border text-sm font-medium leading-relaxed uppercase tracking-wide"
-              style={{ background: `${BRAND.navyDeep}06`, borderColor: `${BRAND.navyDeep}20`, color: BRAND.navyDeep }}
-            >
+            <DisclaimerBox>
               <p className="mb-3">
                 To the maximum extent permitted by law, in no event shall Company (or our suppliers) be liable to you or
                 any third party for any lost profits, lost data, costs of procurement of substitute products, or any
@@ -345,10 +340,9 @@ export default function TermsOfService() {
                 these Terms will at all times be limited to a maximum of fifty US dollars ($50.00). The existence of more
                 than one claim will not enlarge this limit.
               </p>
-            </div>
+            </DisclaimerBox>
           </PolicySection>
 
-          {/* 8. Term and Termination */}
           <PolicySection icon={Scale} title="8. Term and Termination">
             <p>
               Subject to this Section, these Terms will remain in full force and effect while you use the Site. We may
@@ -364,7 +358,6 @@ export default function TermsOfService() {
             </p>
           </PolicySection>
 
-          {/* 9. Copyright Policy */}
           <PolicySection icon={Copyright} title="9. Copyright Policy (DMCA)">
             <p>
               Company respects the intellectual property of others and asks that users of our Site do the same. We have
@@ -386,29 +379,25 @@ export default function TermsOfService() {
               'A statement that you have a good faith belief that use of the objectionable material is not authorized by the copyright owner, its agent, or under the law.',
               'A statement that the information in the notification is accurate, and under penalty of perjury, that you are either the owner of the copyright that has allegedly been infringed or that you are authorized to act on behalf of the copyright owner.',
             ]} />
-            <p className="text-xs mt-3" style={{ color: `${BRAND.navyDeep}99` }}>
+            <p className="text-xs mt-3 text-[--brand-navy-60]">
               Pursuant to 17 U.S.C. § 512(f), any misrepresentation of material fact in a written notification automatically
               subjects the complaining party to liability for any damages, costs and attorney's fees incurred by us in
               connection with the written notification and allegation of copyright infringement.
             </p>
-            <div
-              className="mt-4 p-4 rounded-lg border"
-              style={{ borderColor: `${BRAND.navyDeep}20`, background: `${BRAND.navyDeep}06` }}
-            >
-              <p className="font-semibold mb-1" style={{ color: BRAND.navyDeep }}>Designated Copyright Agent</p>
-              <p className="text-sm" style={{ color: `${BRAND.navyDeep}CC` }}>
+            <div className="mt-4 p-4 rounded-lg border border-[--brand-navy-20] bg-[--brand-navy-08]">
+              <p className="font-semibold mb-1 text-[--brand-navy]">Designated Copyright Agent</p>
+              <p className="text-sm text-[--brand-navy-80]">
                 Matthew Higa<br />
                 {CONTACT_ADDRESS}<br />
                 Telephone: {CONTACT_PHONE}<br />
                 Email:{' '}
-                <a href={`mailto:${CONTACT_EMAIL}`} className="hover:underline" style={{ color: BRAND.goldPrestige }}>
+                <a href={`mailto:${CONTACT_EMAIL}`} className="hover:underline text-[--brand-gold]">
                   {CONTACT_EMAIL}
                 </a>
               </p>
             </div>
           </PolicySection>
 
-          {/* 10. General */}
           <PolicySection icon={Settings} title="10. General">
             <SubSection number="10.1." title="Changes">
               <p>
@@ -418,17 +407,13 @@ export default function TermsOfService() {
                 acknowledgement of such changes and agreement to be bound by the terms and conditions of such changes.
               </p>
             </SubSection>
-
             <SubSection number="10.2." title="Dispute Resolution & Arbitration">
-              <div className="rounded-lg p-4 border-l-4 mb-3" style={{ background: '#fef2f2', borderColor: '#ef4444' }}>
-                <p className="text-sm font-semibold text-red-700 mb-1">Binding Arbitration Agreement</p>
-                <p className="text-sm text-red-900">
-                  You agree that any dispute between you and Company relating in any way to the Site, the services offered
-                  on the Site, or these Terms will be resolved by binding arbitration, rather than in court, except for:
-                  (1) individualized small claims court claims; and (2) equitable relief for intellectual property
-                  infringement. This Arbitration Agreement survives the expiration or termination of these Terms.
-                </p>
-              </div>
+              <ArbitrageBox>
+                You agree that any dispute between you and Company relating in any way to the Site, the services offered
+                on the Site, or these Terms will be resolved by binding arbitration, rather than in court, except for:
+                (1) individualized small claims court claims; and (2) equitable relief for intellectual property
+                infringement. This Arbitration Agreement survives the expiration or termination of these Terms.
+              </ArbitrageBox>
               <BulletList items={[
                 'Informal Dispute Resolution: Before commencing arbitration, parties must personally meet and confer in good faith within 45 days of written Notice. Send Notice to: matthew@top100aero.space or 3910 Cheverly Dr E, Lakeland, Florida 33813.',
                 'Arbitration Forum: Conducted by JAMS. Claims under $250,000 use JAMS Streamlined Rules; all others use JAMS Comprehensive Rules. See www.jamsadr.com.',
@@ -438,7 +423,6 @@ export default function TermsOfService() {
                 'Batch Arbitration: 100+ substantially similar individual Requests filed within 30 days may be administered in batches of 100 by JAMS.',
               ]} />
             </SubSection>
-
             <SubSection number="10.3." title="Export">
               <p>
                 The Site may be subject to U.S. export control laws. You agree not to export, reexport, or transfer,
@@ -446,7 +430,6 @@ export default function TermsOfService() {
                 export laws or regulations.
               </p>
             </SubSection>
-
             <SubSection number="10.4." title="Disclosures">
               <p>
                 If you are a California resident, you may report complaints to the Complaint Assistance Unit of the Division
@@ -454,7 +437,6 @@ export default function TermsOfService() {
                 400 R Street, Sacramento, CA 95814, or by telephone at (800) 952-5210.
               </p>
             </SubSection>
-
             <SubSection number="10.5." title="Electronic Communications">
               <p>
                 For contractual purposes, you (a) consent to receive communications from Company in an electronic form;
@@ -463,7 +445,6 @@ export default function TermsOfService() {
                 satisfy if it were in a hardcopy writing.
               </p>
             </SubSection>
-
             <SubSection number="10.6." title="Entire Terms">
               <p>
                 These Terms constitute the entire agreement between you and us regarding the use of the Site. If any
@@ -474,52 +455,31 @@ export default function TermsOfService() {
                 delegated, or otherwise transferred by you without Company's prior written consent.
               </p>
             </SubSection>
-
             <SubSection number="10.7." title="Copyright/Trademark Information">
               <p>
-                Copyright © 2026 TOP 100 Aerospace & Aviation Corporation. All rights reserved. All trademarks, logos and
+                Copyright © {currentYear} TOP 100 Aerospace & Aviation Corporation. All rights reserved. All trademarks, logos and
                 service marks displayed on the Site are our property or the property of other third parties. You are not
                 permitted to use these Marks without our prior written consent or the consent of such third party which may
                 own the Marks.
               </p>
             </SubSection>
-
             <SubSection number="10.8." title="Contact Information">
-              <div
-                className="mt-2 p-4 rounded-lg border inline-block"
-                style={{ borderColor: `${BRAND.navyDeep}20`, background: `${BRAND.navyDeep}06` }}
-              >
-                <p className="font-semibold" style={{ color: BRAND.navyDeep }}>Matthew Higa</p>
-                <p className="text-sm mt-1" style={{ color: `${BRAND.navyDeep}CC` }}>
-                  {CONTACT_ADDRESS}<br />
-                  Telephone: {CONTACT_PHONE}<br />
-                  <a
-                    href={`mailto:${CONTACT_EMAIL}`}
-                    className="hover:underline font-medium"
-                    style={{ color: BRAND.goldPrestige }}
-                  >
-                    {CONTACT_EMAIL}
-                  </a>
-                </p>
-              </div>
+              <ContactCard />
             </SubSection>
           </PolicySection>
 
         </div>
 
-        {/* Navigation links */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition-all hover:scale-105 hover:opacity-90"
-            style={{ background: BRAND.navyDeep, fontFamily: "'Montserrat', sans-serif" }}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white bg-[--brand-navy] transition-all hover:scale-105 hover:opacity-90"
           >
             Back to Home
           </Link>
           <Link
             to="/PrivacyPolicy"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all hover:scale-105"
-            style={{ background: BRAND.goldPrestige, color: 'white', fontFamily: "'Montserrat', sans-serif" }}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white bg-[--brand-gold] transition-all hover:scale-105 hover:opacity-90"
           >
             View Privacy Policy
           </Link>

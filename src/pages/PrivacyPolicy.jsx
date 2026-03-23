@@ -1,11 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Shield, Mail, Lock, Eye, Database, UserCheck, ExternalLink, FileText, AlertCircle } from 'lucide-react';
-
-const BRAND = {
-  navyDeep: '#1e3a5a',
-  goldPrestige: '#c9a87c',
-  cream: '#faf8f5',
-};
+import { Shield, Mail, Lock, Database, UserCheck, ExternalLink, FileText } from 'lucide-react';
 
 const COMPANY = 'TOP 100 Aerospace & Aviation';
 const SITE_URL = 'top100aerospaceandaviation.com';
@@ -15,11 +9,8 @@ const EFFECTIVE_DATE = 'March 23, 2026';
 function SectionHeader({ icon: Icon, title }) {
   return (
     <div className="flex items-center gap-3 mb-4">
-      <Icon className="w-5 h-5 flex-shrink-0" style={{ color: BRAND.goldPrestige }} />
-      <h2
-        className="text-xl font-bold"
-        style={{ fontFamily: "'Playfair Display', Georgia, serif", color: BRAND.navyDeep }}
-      >
+      <Icon className="w-5 h-5 flex-shrink-0 text-[--brand-gold]" />
+      <h2 className="text-xl font-bold text-[--brand-navy]" style={{ fontFamily: 'var(--brand-font-serif)' }}>
         {title}
       </h2>
     </div>
@@ -28,20 +19,22 @@ function SectionHeader({ icon: Icon, title }) {
 
 function PolicySection({ icon, title, children }) {
   return (
-    <section className="mb-10 pb-10 border-b last:border-b-0" style={{ borderColor: `${BRAND.navyDeep}18` }}>
-      {icon && title ? <SectionHeader icon={icon} title={title} /> : title && (
-        <h2
-          className="text-xl font-bold mb-4"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif", color: BRAND.navyDeep }}
-        >
+    <section className="mb-10 pb-10 border-b border-[--brand-navy-18] last:border-b-0">
+      {icon && title && <SectionHeader icon={icon} title={title} />}
+      {!icon && title && (
+        <h2 className="text-xl font-bold mb-4 text-[--brand-navy]" style={{ fontFamily: 'var(--brand-font-serif)' }}>
           {title}
         </h2>
       )}
-      <div className="space-y-3 text-base leading-relaxed" style={{ color: `${BRAND.navyDeep}CC` }}>
+      <div className="space-y-3 text-base leading-relaxed text-[--brand-navy-80]">
         {children}
       </div>
     </section>
   );
+}
+
+function SubHeading({ children }) {
+  return <h3 className="font-semibold mt-4 text-[--brand-navy]">{children}</h3>;
 }
 
 function BulletList({ items }) {
@@ -54,40 +47,31 @@ function BulletList({ items }) {
 
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen" style={{ background: BRAND.cream }}>
+    <div className="min-h-screen bg-[--brand-cream]">
 
-      {/* Header */}
-      <header className="border-b-2 py-10 bg-white" style={{ borderColor: BRAND.navyDeep }}>
+      <header className="border-b-2 border-[--brand-navy] py-10 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="flex items-center gap-3 mb-3">
-            <Shield className="w-7 h-7" style={{ color: BRAND.goldPrestige }} />
-            <h1
-              className="text-4xl sm:text-5xl font-bold"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", color: BRAND.navyDeep }}
-            >
+            <Shield className="w-7 h-7 text-[--brand-gold]" />
+            <h1 className="text-4xl sm:text-5xl font-bold text-[--brand-navy]" style={{ fontFamily: 'var(--brand-font-serif)' }}>
               Privacy Policy
             </h1>
           </div>
-          <p className="text-sm" style={{ color: `${BRAND.navyDeep}99` }}>
+          <p className="text-sm text-[--brand-navy-60]">
             Effective Date: {EFFECTIVE_DATE} &nbsp;·&nbsp; {COMPANY}
           </p>
         </div>
       </header>
 
-      {/* Body */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
 
-        {/* Intro card */}
-        <div
-          className="rounded-xl p-5 mb-8 border"
-          style={{ background: `${BRAND.navyDeep}08`, borderColor: `${BRAND.navyDeep}20` }}
-        >
-          <p className="text-base leading-relaxed" style={{ color: BRAND.navyDeep }}>
+        <div className="rounded-xl p-5 mb-8 border border-[--brand-navy-20] bg-[--brand-navy-08]">
+          <p className="text-base leading-relaxed text-[--brand-navy]">
             <strong>{COMPANY}</strong> (the "Company") is committed to maintaining robust privacy protections for its users.
             This Privacy Policy is designed to help you understand how we collect, use, and safeguard the information you provide to us,
             and to assist you in making informed decisions when using our Service.
           </p>
-          <p className="text-sm mt-3" style={{ color: `${BRAND.navyDeep}99` }}>
+          <p className="text-sm mt-3 text-[--brand-navy-60]">
             "Site" refers to our website accessible at <strong>{SITE_URL}</strong>. "Service" refers to the Company's recognition
             platform and related services. "You" refers to you as a user of our Site or Service. By accessing our Site or Service,
             you accept this Privacy Policy and consent to our collection, storage, use, and disclosure of your information as described herein.
@@ -96,15 +80,13 @@ export default function PrivacyPolicy() {
 
         <div className="bg-white rounded-xl shadow-sm p-6 sm:p-10">
 
-          {/* I. Information We Collect */}
           <PolicySection icon={Database} title="I. Information We Collect">
             <p>
               We collect <strong>Non-Personal Information</strong> — data that cannot be used to personally identify you, such as
               anonymous usage data, demographic trends, referring/exit URLs, platform types, and click counts —
               and <strong>Personal Information</strong>, which includes data that can identify you directly.
             </p>
-
-            <h3 className="font-semibold mt-4" style={{ color: BRAND.navyDeep }}>1. Information Collected via Technology</h3>
+            <SubHeading>1. Information Collected via Technology</SubHeading>
             <p>
               To activate the Service you need only provide your email address. To improve service quality, we automatically track
               information your browser provides when you view or use the Service, including:
@@ -122,8 +104,7 @@ export default function PrivacyPolicy() {
               on your device. We use both persistent cookies (which remain until deleted) and session cookies (which expire when you close
               your browser) to maintain your preferences and improve your experience.
             </p>
-
-            <h3 className="font-semibold mt-4" style={{ color: BRAND.navyDeep }}>2. Information You Provide by Registering</h3>
+            <SubHeading>2. Information You Provide by Registering</SubHeading>
             <p>To use the full Service, you create a personal profile by providing:</p>
             <BulletList items={[
               'Name and email address',
@@ -132,8 +113,7 @@ export default function PrivacyPolicy() {
               'Nominations, votes, and platform-generated content you submit',
               'Social media handles you choose to connect',
             ]} />
-
-            <h3 className="font-semibold mt-4" style={{ color: BRAND.navyDeep }}>3. Children's Privacy</h3>
+            <SubHeading>3. Children's Privacy</SubHeading>
             <p>
               The Site and Service are not directed to anyone under the age of 13. We do not knowingly collect or solicit information
               from anyone under 13 or allow anyone under 13 to register. If we learn we have gathered personal information from a child
@@ -142,9 +122,8 @@ export default function PrivacyPolicy() {
             </p>
           </PolicySection>
 
-          {/* II. How We Use and Share Information */}
           <PolicySection icon={UserCheck} title="II. How We Use and Share Information">
-            <h3 className="font-semibold" style={{ color: BRAND.navyDeep }}>Personal Information</h3>
+            <SubHeading>Personal Information</SubHeading>
             <p>
               We do not sell, trade, rent, or share your Personal Information with third parties for their marketing purposes without
               your consent. We use your Personal Information to:
@@ -166,22 +145,19 @@ export default function PrivacyPolicy() {
               law or legal process; enforce our Terms of Service; address fraud or security concerns; or protect the rights, property, or
               safety of our users or the public.
             </p>
-
-            <h3 className="font-semibold mt-4" style={{ color: BRAND.navyDeep }}>Non-Personal Information</h3>
+            <SubHeading>Non-Personal Information</SubHeading>
             <p>
               We use Non-Personal Information to improve the Service and customize user experience. We aggregate this data to track
               trends and analyze usage patterns. We reserve the right to share aggregated, non-identifiable data with partners and
               advertisers.
             </p>
-
-            <h3 className="font-semibold mt-4" style={{ color: BRAND.navyDeep }}>Business Transfers</h3>
+            <SubHeading>Business Transfers</SubHeading>
             <p>
               In the event of a merger, acquisition, or sale of assets, your Personal Information may be transferred as part of that
               transaction. We will post notice of any such change on the Site.
             </p>
           </PolicySection>
 
-          {/* III. How We Protect Information */}
           <PolicySection icon={Lock} title="III. How We Protect Information">
             <p>
               We implement security measures designed to protect your information from unauthorized access, including encryption,
@@ -194,7 +170,6 @@ export default function PrivacyPolicy() {
             </p>
           </PolicySection>
 
-          {/* IV. Your Rights */}
           <PolicySection icon={Shield} title="IV. Your Rights Regarding Your Personal Information">
             <p>You have the right at any time to:</p>
             <BulletList items={[
@@ -210,7 +185,6 @@ export default function PrivacyPolicy() {
             </p>
           </PolicySection>
 
-          {/* V. Links to Other Websites */}
           <PolicySection icon={ExternalLink} title="V. Links to Other Websites">
             <p>
               Our Service may contain links to third-party websites or applications. We are not responsible for the privacy practices
@@ -219,7 +193,6 @@ export default function PrivacyPolicy() {
             </p>
           </PolicySection>
 
-          {/* VI. Changes to Our Privacy Policy */}
           <PolicySection icon={FileText} title="VI. Changes to Our Privacy Policy">
             <p>
               We may update this Privacy Policy from time to time. We will notify you of material changes by posting the revised
@@ -228,20 +201,15 @@ export default function PrivacyPolicy() {
             </p>
           </PolicySection>
 
-          {/* VII. Contact */}
           <PolicySection icon={Mail} title="VII. Contact Us">
             <p>
               If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:
             </p>
-            <div
-              className="mt-3 p-4 rounded-lg border inline-block"
-              style={{ borderColor: `${BRAND.navyDeep}20`, background: `${BRAND.navyDeep}06` }}
-            >
-              <p className="font-semibold" style={{ color: BRAND.navyDeep }}>{COMPANY}</p>
+            <div className="mt-3 p-4 rounded-lg border border-[--brand-navy-20] bg-[--brand-navy-08] inline-block">
+              <p className="font-semibold text-[--brand-navy]">{COMPANY}</p>
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
-                className="text-sm hover:underline font-medium"
-                style={{ color: BRAND.goldPrestige }}
+                className="text-sm hover:underline font-medium text-[--brand-gold]"
               >
                 {CONTACT_EMAIL}
               </a>
@@ -250,12 +218,10 @@ export default function PrivacyPolicy() {
 
         </div>
 
-        {/* Back link */}
         <div className="text-center mt-8">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition-all hover:scale-105 hover:opacity-90"
-            style={{ background: BRAND.navyDeep, fontFamily: "'Montserrat', sans-serif" }}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white bg-[--brand-navy] transition-all hover:scale-105 hover:opacity-90"
           >
             Back to Home
           </Link>
