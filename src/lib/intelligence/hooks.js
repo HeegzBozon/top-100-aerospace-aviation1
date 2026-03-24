@@ -1,4 +1,5 @@
 import { useQuery, useQueries } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import {
   fetchOpenSkyStates,
   fetchSatelliteTLEs,
@@ -626,4 +627,44 @@ function computeTheaterPosture(militaryStates) {
     activeOperations: [],
     assessedAt: new Date().toISOString(),
   }));
+}
+
+// ── Fleet ORBAT (Order of Battle) ────────────────────────────────────────────
+// Aggregates Wingbits-enriched flights into a live operator registry.
+export function useFleetORBAT() {
+  const { data: flightData } = useMilitaryFlights();
+  const flights = flightData?.flights ?? [];
+  const icao24s = flights.map(f => f.icao24).filter(Boolean);
+  const { enrichment } = useWingbitsEnrichment(icao24s);
+
+  return useMemo(() => {
+    const registry = {};
+    for (const flight of flights) {
+      const wb = enrichment?.[flight.icao24?.toLowerCase()] ?? {};
+      const operator = wb.operator || flight.operator || flight.originCountry || flight.country || 'Unknown';
+      const theater = flight.theater || 'Unknown';
+
+      if (!registry[operator]) {
+        registry[operator] = {
+          operator,
+          country: flight.operatorCountry || flight.country || null,
+          flag: flight.operatorFlag || null,
+          total: 0,
+          theaters: new Set(),
+        };
+      }
+      registry[operator].total++;
+      registry[operator].theaters.add(theater);
+    }
+
+    const orbat = Object.values(registry)
+      .map(r => ({ ...r, theaters: [...r.theaters] }))
+      .sort((a, b) => b.total - a.total);
+
+    return {
+      orbat,
+      totalFlights: flights.length,
+      totalOperators: orbat.length,
+    };
+  }, [flights, enrichment]);
 }
