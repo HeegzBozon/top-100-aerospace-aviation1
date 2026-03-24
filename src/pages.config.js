@@ -1,29 +1,29 @@
 /**
  * pages.config.js - Page routing configuration
- * 
+ *
  * This file is AUTO-GENERATED. Do not add imports or modify PAGES manually.
  * Pages are auto-registered when you create files in the ./pages/ folder.
- * 
+ *
  * THE ONLY EDITABLE VALUE: mainPage
  * This controls which page is the landing page (shown when users visit the app).
- * 
+ *
  * Example file structure:
- * 
+ *
  *   import HomePage from './pages/HomePage';
  *   import Dashboard from './pages/Dashboard';
  *   import Settings from './pages/Settings';
- *   
+ *
  *   export const PAGES = {
  *       "HomePage": HomePage,
  *       "Dashboard": Dashboard,
  *       "Settings": Settings,
  *   }
- *   
+ *
  *   export const pagesConfig = {
  *       mainPage: "HomePage",
  *       Pages: PAGES,
  *   };
- * 
+ *
  * Example with Layout (wraps all pages):
  *
  *   import Home from './pages/Home';
@@ -47,133 +47,135 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import About from './pages/About';
-import AcceleratorHub from './pages/AcceleratorHub';
-import Admin from './pages/Admin';
-import AdminAction from './pages/AdminAction';
-import Afterparty from './pages/Afterparty';
-import AlumniInResearch from './pages/AlumniInResearch';
-import AlumniRadar from './pages/AlumniRadar';
-import Arcade from './pages/Arcade';
-import ArchiveLanding from './pages/ArchiveLanding';
-import Arena from './pages/Arena';
-import Article from './pages/Article';
-import Articles from './pages/Articles';
-import AvailabilitySettings from './pages/AvailabilitySettings';
-import BallotBox from './pages/BallotBox';
-import BatchNominations from './pages/BatchNominations';
-import Biographer from './pages/Biographer';
-import BusinessResources from './pages/BusinessResources';
-import Calendar from './pages/Calendar';
-import CapitalExchange from './pages/CapitalExchange';
-import CareerResources from './pages/CareerResources';
-import ChessClub from './pages/ChessClub';
-import ChessGame from './pages/ChessGame';
-import ClaimProfile from './pages/ClaimProfile';
-import ClientDashboard from './pages/ClientDashboard';
-import Comms from './pages/Comms';
-import CompareServices from './pages/CompareServices';
-import DemoDayEvent from './pages/DemoDayEvent';
-import Demographics from './pages/Demographics';
-import EditProfile from './pages/EditProfile';
-import EmployerDashboard from './pages/EmployerDashboard';
-import EnterpriseResources from './pages/EnterpriseResources';
-import EventPage from './pages/EventPage';
-import FactoryReset from './pages/FactoryReset';
-import Feedback from './pages/Feedback';
-import Festival from './pages/Festival';
-import FounderApplication from './pages/FounderApplication';
-import FounderDashboard from './pages/FounderDashboard';
-import FounderResources from './pages/FounderResources';
-import FundraisingTracker from './pages/FundraisingTracker';
-import GamesLanding from './pages/GamesLanding';
-import Colony from './pages/Colony';
-import GetStarted from './pages/GetStarted';
-import HabitWizard from './pages/HabitWizard';
-import HelpCenter from './pages/HelpCenter';
-import Home from './pages/Home';
-import Home2 from './pages/Home2';
-import HonoreeResources from './pages/HonoreeResources';
-import HowWePick from './pages/HowWePick';
-import Huddle from './pages/Huddle';
-import HypeSquad from './pages/HypeSquad';
-import HypeSquadWizard from './pages/HypeSquadWizard';
-import IntelligenceDashboard from './pages/IntelligenceDashboard';
-import InvestorDashboard from './pages/InvestorDashboard';
-import InvestorOnboarding from './pages/InvestorOnboarding';
-import JobDetail from './pages/JobDetail';
-import Landing from './pages/Landing';
-import LaunchParty from './pages/LaunchParty';
-import Membership from './pages/Membership';
-import MentorPortal from './pages/MentorPortal';
-import MilestoneDetail from './pages/MilestoneDetail';
-import MissionControl from './pages/MissionControl';
-import MissionVisionValues from './pages/MissionVisionValues';
-import MyBookings from './pages/MyBookings';
-import MyFavorites from './pages/MyFavorites';
-import Nominations from './pages/Nominations';
-import Nominee from './pages/Nominee';
-import NomineeResources from './pages/NomineeResources';
-import NomineesByDomain from './pages/NomineesByDomain';
-import NotFound from './pages/NotFound';
-import OriginStory from './pages/OriginStory';
-import PIPlanner from './pages/PIPlanner';
-import Passport from './pages/Passport';
-import PaymentCancel from './pages/PaymentCancel';
-import PaymentSuccess from './pages/PaymentSuccess';
-import PayoutDashboard from './pages/PayoutDashboard';
-import PayoutSettings from './pages/PayoutSettings';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import Profile from './pages/Profile';
-import ProfileView from './pages/ProfileView';
-import ProviderApplication from './pages/ProviderApplication';
-import ProviderDashboard from './pages/ProviderDashboard';
-import ProviderInbox from './pages/ProviderInbox';
-import PublicProfile from './pages/PublicProfile';
-import Quests from './pages/Quests';
-import RadarDashboard from './pages/RadarDashboard';
-import RadarIntelligence from './pages/RadarIntelligence';
-import RaisingJupiter from './pages/RaisingJupiter';
-import RankedChoice from './pages/RankedChoice';
-import RecruitmentRun from './pages/RecruitmentRun';
-import ResultsCountdown from './pages/ResultsCountdown';
-import SMEPortal from './pages/SMEPortal';
-import SWE5TestArchitecture from './pages/SWE5TestArchitecture';
-import SWE6QualificationPlan from './pages/SWE6QualificationPlan';
-import SYS4IntegrationPlan from './pages/SYS4IntegrationPlan';
-import SYS5SystemValidation from './pages/SYS5SystemValidation';
-import Season4 from './pages/Season4';
-import ServiceCategories from './pages/ServiceCategories';
-import ServiceDetail from './pages/ServiceDetail';
-import ServicePackagesMarketplace from './pages/ServicePackagesMarketplace';
-import ServicesLanding from './pages/ServicesLanding';
-import Shop from './pages/Shop';
-import SignalAnalytics from './pages/SignalAnalytics';
-import SignalEmbed from './pages/SignalEmbed';
-import SignalEngineRoadmap from './pages/SignalEngineRoadmap';
-import SignalFeed from './pages/SignalFeed';
-import SignalReview from './pages/SignalReview';
-import SignalSearch from './pages/SignalSearch';
-import SignalTimeline from './pages/SignalTimeline';
-import SpaceNews from './pages/SpaceNews';
-import SponsorPitch from './pages/SponsorPitch';
-import SponsorResources from './pages/SponsorResources';
-import Sponsors from './pages/Sponsors';
-import StartupDirectory from './pages/StartupDirectory';
-import StudentResources from './pages/StudentResources';
-import TalentExchange from './pages/TalentExchange';
-import TalentExchangeLanding from './pages/TalentExchangeLanding';
-import TalentLanding from './pages/TalentLanding';
-import TheHangar from './pages/TheHangar';
-import Tips from './pages/Tips';
-import Top100Nominees2025 from './pages/Top100Nominees2025';
-import Top100OS from './pages/Top100OS';
-import Top100Women2025 from './pages/Top100Women2025';
-import TrendingSignals from './pages/TrendingSignals';
-import UserProfile from './pages/UserProfile';
-import VotingHub from './pages/VotingHub';
-import Publisher from './pages/Publisher';
+import { lazy } from 'react';
 import __Layout from './Layout.jsx';
+
+const About                      = lazy(() => import('./pages/About'));
+const AcceleratorHub             = lazy(() => import('./pages/AcceleratorHub'));
+const Admin                      = lazy(() => import('./pages/Admin'));
+const AdminAction                = lazy(() => import('./pages/AdminAction'));
+const Afterparty                 = lazy(() => import('./pages/Afterparty'));
+const AlumniInResearch           = lazy(() => import('./pages/AlumniInResearch'));
+const AlumniRadar                = lazy(() => import('./pages/AlumniRadar'));
+const Arcade                     = lazy(() => import('./pages/Arcade'));
+const ArchiveLanding             = lazy(() => import('./pages/ArchiveLanding'));
+const Arena                      = lazy(() => import('./pages/Arena'));
+const Article                    = lazy(() => import('./pages/Article'));
+const Articles                   = lazy(() => import('./pages/Articles'));
+const AvailabilitySettings       = lazy(() => import('./pages/AvailabilitySettings'));
+const BallotBox                  = lazy(() => import('./pages/BallotBox'));
+const BatchNominations           = lazy(() => import('./pages/BatchNominations'));
+const Biographer                 = lazy(() => import('./pages/Biographer'));
+const BusinessResources          = lazy(() => import('./pages/BusinessResources'));
+const Calendar                   = lazy(() => import('./pages/Calendar'));
+const CapitalExchange            = lazy(() => import('./pages/CapitalExchange'));
+const CareerResources            = lazy(() => import('./pages/CareerResources'));
+const ChessClub                  = lazy(() => import('./pages/ChessClub'));
+const ChessGame                  = lazy(() => import('./pages/ChessGame'));
+const ClaimProfile               = lazy(() => import('./pages/ClaimProfile'));
+const ClientDashboard            = lazy(() => import('./pages/ClientDashboard'));
+const Comms                      = lazy(() => import('./pages/Comms'));
+const CompareServices            = lazy(() => import('./pages/CompareServices'));
+const DemoDayEvent               = lazy(() => import('./pages/DemoDayEvent'));
+const Demographics               = lazy(() => import('./pages/Demographics'));
+const EditProfile                = lazy(() => import('./pages/EditProfile'));
+const EmployerDashboard          = lazy(() => import('./pages/EmployerDashboard'));
+const EnterpriseResources        = lazy(() => import('./pages/EnterpriseResources'));
+const EventPage                  = lazy(() => import('./pages/EventPage'));
+const FactoryReset               = lazy(() => import('./pages/FactoryReset'));
+const Feedback                   = lazy(() => import('./pages/Feedback'));
+const Festival                   = lazy(() => import('./pages/Festival'));
+const FounderApplication         = lazy(() => import('./pages/FounderApplication'));
+const FounderDashboard           = lazy(() => import('./pages/FounderDashboard'));
+const FounderResources           = lazy(() => import('./pages/FounderResources'));
+const FundraisingTracker         = lazy(() => import('./pages/FundraisingTracker'));
+const GamesLanding               = lazy(() => import('./pages/GamesLanding'));
+const Colony                     = lazy(() => import('./pages/Colony'));
+const GetStarted                 = lazy(() => import('./pages/GetStarted'));
+const HabitWizard                = lazy(() => import('./pages/HabitWizard'));
+const HelpCenter                 = lazy(() => import('./pages/HelpCenter'));
+const Home                       = lazy(() => import('./pages/Home'));
+const Home2                      = lazy(() => import('./pages/Home2'));
+const HonoreeResources           = lazy(() => import('./pages/HonoreeResources'));
+const HowWePick                  = lazy(() => import('./pages/HowWePick'));
+const Huddle                     = lazy(() => import('./pages/Huddle'));
+const HypeSquad                  = lazy(() => import('./pages/HypeSquad'));
+const HypeSquadWizard            = lazy(() => import('./pages/HypeSquadWizard'));
+const IntelligenceDashboard      = lazy(() => import('./pages/IntelligenceDashboard'));
+const InvestorDashboard          = lazy(() => import('./pages/InvestorDashboard'));
+const InvestorOnboarding         = lazy(() => import('./pages/InvestorOnboarding'));
+const JobDetail                  = lazy(() => import('./pages/JobDetail'));
+const Landing                    = lazy(() => import('./pages/Landing'));
+const LaunchParty                = lazy(() => import('./pages/LaunchParty'));
+const Membership                 = lazy(() => import('./pages/Membership'));
+const MentorPortal               = lazy(() => import('./pages/MentorPortal'));
+const MilestoneDetail            = lazy(() => import('./pages/MilestoneDetail'));
+const MissionControl             = lazy(() => import('./pages/MissionControl'));
+const MissionVisionValues        = lazy(() => import('./pages/MissionVisionValues'));
+const MyBookings                 = lazy(() => import('./pages/MyBookings'));
+const MyFavorites                = lazy(() => import('./pages/MyFavorites'));
+const Nominations                = lazy(() => import('./pages/Nominations'));
+const Nominee                    = lazy(() => import('./pages/Nominee'));
+const NomineeResources           = lazy(() => import('./pages/NomineeResources'));
+const NomineesByDomain           = lazy(() => import('./pages/NomineesByDomain'));
+const NotFound                   = lazy(() => import('./pages/NotFound'));
+const OriginStory                = lazy(() => import('./pages/OriginStory'));
+const PIPlanner                  = lazy(() => import('./pages/PIPlanner'));
+const Passport                   = lazy(() => import('./pages/Passport'));
+const PaymentCancel              = lazy(() => import('./pages/PaymentCancel'));
+const PaymentSuccess             = lazy(() => import('./pages/PaymentSuccess'));
+const PayoutDashboard            = lazy(() => import('./pages/PayoutDashboard'));
+const PayoutSettings             = lazy(() => import('./pages/PayoutSettings'));
+const PrivacyPolicy              = lazy(() => import('./pages/PrivacyPolicy'));
+const Profile                    = lazy(() => import('./pages/Profile'));
+const ProfileView                = lazy(() => import('./pages/ProfileView'));
+const ProviderApplication        = lazy(() => import('./pages/ProviderApplication'));
+const ProviderDashboard          = lazy(() => import('./pages/ProviderDashboard'));
+const ProviderInbox              = lazy(() => import('./pages/ProviderInbox'));
+const PublicProfile              = lazy(() => import('./pages/PublicProfile'));
+const Quests                     = lazy(() => import('./pages/Quests'));
+const RadarDashboard             = lazy(() => import('./pages/RadarDashboard'));
+const RadarIntelligence          = lazy(() => import('./pages/RadarIntelligence'));
+const RaisingJupiter             = lazy(() => import('./pages/RaisingJupiter'));
+const RankedChoice               = lazy(() => import('./pages/RankedChoice'));
+const RecruitmentRun             = lazy(() => import('./pages/RecruitmentRun'));
+const ResultsCountdown           = lazy(() => import('./pages/ResultsCountdown'));
+const SMEPortal                  = lazy(() => import('./pages/SMEPortal'));
+const SWE5TestArchitecture       = lazy(() => import('./pages/SWE5TestArchitecture'));
+const SWE6QualificationPlan      = lazy(() => import('./pages/SWE6QualificationPlan'));
+const SYS4IntegrationPlan        = lazy(() => import('./pages/SYS4IntegrationPlan'));
+const SYS5SystemValidation       = lazy(() => import('./pages/SYS5SystemValidation'));
+const Season4                    = lazy(() => import('./pages/Season4'));
+const ServiceCategories          = lazy(() => import('./pages/ServiceCategories'));
+const ServiceDetail              = lazy(() => import('./pages/ServiceDetail'));
+const ServicePackagesMarketplace = lazy(() => import('./pages/ServicePackagesMarketplace'));
+const ServicesLanding            = lazy(() => import('./pages/ServicesLanding'));
+const Shop                       = lazy(() => import('./pages/Shop'));
+const SignalAnalytics            = lazy(() => import('./pages/SignalAnalytics'));
+const SignalEmbed                = lazy(() => import('./pages/SignalEmbed'));
+const SignalEngineRoadmap        = lazy(() => import('./pages/SignalEngineRoadmap'));
+const SignalFeed                 = lazy(() => import('./pages/SignalFeed'));
+const SignalReview               = lazy(() => import('./pages/SignalReview'));
+const SignalSearch               = lazy(() => import('./pages/SignalSearch'));
+const SignalTimeline             = lazy(() => import('./pages/SignalTimeline'));
+const SpaceNews                  = lazy(() => import('./pages/SpaceNews'));
+const SponsorPitch               = lazy(() => import('./pages/SponsorPitch'));
+const SponsorResources           = lazy(() => import('./pages/SponsorResources'));
+const Sponsors                   = lazy(() => import('./pages/Sponsors'));
+const StartupDirectory           = lazy(() => import('./pages/StartupDirectory'));
+const StudentResources           = lazy(() => import('./pages/StudentResources'));
+const TalentExchange             = lazy(() => import('./pages/TalentExchange'));
+const TalentExchangeLanding      = lazy(() => import('./pages/TalentExchangeLanding'));
+const TalentLanding              = lazy(() => import('./pages/TalentLanding'));
+const TheHangar                  = lazy(() => import('./pages/TheHangar'));
+const Tips                       = lazy(() => import('./pages/Tips'));
+const Top100Nominees2025         = lazy(() => import('./pages/Top100Nominees2025'));
+const Top100OS                   = lazy(() => import('./pages/Top100OS'));
+const Top100Women2025            = lazy(() => import('./pages/Top100Women2025'));
+const TrendingSignals            = lazy(() => import('./pages/TrendingSignals'));
+const UserProfile                = lazy(() => import('./pages/UserProfile'));
+const VotingHub                  = lazy(() => import('./pages/VotingHub'));
+const Publisher                  = lazy(() => import('./pages/Publisher'));
 
 
 export const PAGES = {
