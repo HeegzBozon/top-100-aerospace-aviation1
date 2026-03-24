@@ -2,32 +2,11 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "worktree-dev",
+      "name": "nervous-rosalind-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "--port", "5175"],
-      "cwd": "/Users/heegzbozon/Downloads/top-100-aerospace-aviation1/.claude/worktrees/elegant-villani",
-      "port": 5175
-    },
-    {
-      "name": "top-100-dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "--port", "5174"],
-      "cwd": "/Users/heegzbozon/Downloads/top-100-aerospace-aviation1",
-      "port": 5174
-    },
-    {
-      "name": "top-100-preview",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "preview"],
-      "cwd": "/Users/heegzbozon/Downloads/top-100-aerospace-aviation1",
-      "port": 4173
-    },
-    {
-      "name": "worldmonitor-dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "cwd": "/Users/heegzbozon/Downloads/worldmonitor",
-      "port": 5173
+      "runtimeArgs": ["run", "dev", "--", "--port", "5176"],
+      "cwd": "/Users/heegzbozon/Downloads/top-100-aerospace-aviation1/.claude/worktrees/nervous-rosalind",
+      "port": 5176
     }
   ]
 }
