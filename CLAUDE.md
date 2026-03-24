@@ -138,11 +138,13 @@ Do not implement stories whose epic dependencies are incomplete. Check linked ti
 1. Fetch tickets labeled `AI:Ready` from PLATFORM project
 2. Read ticket description + linked tickets for full context
 3. Check epic dependency chain above before starting
-4. Implement on branch `feature/PLATFORM-{id}-{slug}`
-5. Open PR → add PR link as comment to Jira ticket
-6. Move ticket label from `AI:Ready` → `AI:Review`
-7. Move Jira status → Test
-8. Wait for human review before merging
+4. If ticket not in active sprint → move to active sprint
+5. Move ticket label from `AI:Ready` → `AI:InProgress` + Update Jira status → In Progress
+6. Implement on branch `feature/PLATFORM-{id}-{slug}`
+7. Open PR → add PR link as comment to Jira ticket
+8. Move ticket label from `AI:InProgress` → `AI:Review`
+9. Move Jira status → Test
+10. Wait for human review before merging
 
 ## What "Done" Looks Like
 
