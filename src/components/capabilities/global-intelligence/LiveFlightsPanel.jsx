@@ -79,10 +79,7 @@ export function LiveFlightsPanel() {
     prevHexesRef.current = current;
   }, [flights]);
 
-  if (isLoading) return <PanelLoader label="military flights" />;
-  if (isError) return <PanelError message="Unable to load military flight data" />;
-
-  // Pre-enrich each flight with nearConflict so it's available for sorting
+  // Pre-enrich each flight with nearConflict — must be before early returns (hooks rules)
   const enrichedFlights = useMemo(() => flights.map(f => {
     if (!conflictEvents.length || !f.lat || !f.lon) return f;
     let minDist = Infinity;
@@ -93,6 +90,9 @@ export function LiveFlightsPanel() {
     }
     return minDist <= 200 ? { ...f, _nearConflict: nearest } : f;
   }), [flights, conflictEvents]);
+
+  if (isLoading) return <PanelLoader label="military flights" />;
+  if (isError) return <PanelError message="Unable to load military flight data" />;
 
   // Filter
   const filtered = enrichedFlights.filter(f => {

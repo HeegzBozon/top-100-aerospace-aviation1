@@ -13,3 +13,7 @@ export { DisastersPanel } from './DisastersPanel';
 export { CyberThreatsPanel } from './CyberThreatsPanel';
 export { InfrastructurePanel } from './InfrastructurePanel';
 export { SupplyChainPanel } from './SupplyChainPanel';
+// Terminal panels (Phase 1)
+export { FleetORBATPanel } from './FleetORBATPanel';
+export { LiveNewsPanel } from './LiveNewsPanel';
+export { LiveWebcamsPanel } from './LiveWebcamsPanel';

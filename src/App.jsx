@@ -62,8 +62,8 @@ const AuthenticatedApp = () => {
       <Route path="/colony" element={<Colony />} />
       <Route path="/AnalyticsDashboard" element={<AnalyticsDashboard />} />
       <Route path="/analytics" element={<AnalyticsDashboard />} />
-      <Route path="/GlobalIntelligence" element={<LayoutWrapper currentPageName="GlobalIntelligence"><GlobalIntelligence /></LayoutWrapper>} />
-      <Route path="/global-intelligence" element={<LayoutWrapper currentPageName="GlobalIntelligence"><GlobalIntelligence /></LayoutWrapper>} />
+      <Route path="/GlobalIntelligence" element={<GlobalIntelligence />} />
+      <Route path="/global-intelligence" element={<GlobalIntelligence />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
       <Route path="/terms" element={<TermsOfService />} />
       {Object.entries(Pages).map(([path, Page]) => (

@@ -1,143 +1,154 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Globe2, Plane, Newspaper, Satellite, Radio, ShieldAlert, Rss, Shield, Anchor, BarChart3, Siren, Zap, AlertTriangle, Building2, PackageSearch } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import {
   WorldMonitorGlobe,
-  AviationNewsFeed,
   LiveFlightsPanel,
-  SatelliteTracker,
-  GpsJammingPanel,
-  RiskScoresPanel,
-  NewsFeedDigest,
-  MilitaryPosturePanel,
-  MaritimePanel,
-  MarketSignalsPanel,
-  ConflictAlertsPanel,
-  DisastersPanel,
-  CyberThreatsPanel,
-  InfrastructurePanel,
-  SupplyChainPanel,
 } from '@/components/capabilities/global-intelligence';
+import { TickerHeader }           from '@/components/capabilities/global-intelligence/TickerHeader';
+import { LiveNewsPanel }          from '@/components/capabilities/global-intelligence/LiveNewsPanel';
+import { FleetORBATPanel }        from '@/components/capabilities/global-intelligence/FleetORBATPanel';
+import { LaunchWidgetCompact }    from '@/components/capabilities/global-intelligence/LaunchWidgetCompact';
+import { ConflictAlertsSummary }  from '@/components/capabilities/global-intelligence/ConflictAlertsSummary';
+import { DisastersSummary }       from '@/components/capabilities/global-intelligence/DisastersSummary';
+import { CyberThreatsSummary }    from '@/components/capabilities/global-intelligence/CyberThreatsSummary';
+import { MaritimeSummary }        from '@/components/capabilities/global-intelligence/MaritimeSummary';
+import { GpsJammingSummary }      from '@/components/capabilities/global-intelligence/GpsJammingSummary';
+import { SupplyChainSummary }     from '@/components/capabilities/global-intelligence/SupplyChainSummary';
 
-const brandColors = {
-  navyDeep: '#1e3a5a',
-  skyBlue: '#4a90b8',
-  cream: '#faf8f5',
-};
+// ── TerminalPanel must be defined at FILE SCOPE — not inside the page component.
+// Moving it inside would cause React to treat it as a new component type on every
+// render, unmounting the globe/YouTube iframes on every state change.
+function TerminalPanel({ label, children }) {
+  return (
+    <div className="h-full flex flex-col bg-[#0a0f1e]">
+      <div className="px-3 py-1 border-b border-slate-800 flex items-center gap-2 shrink-0">
+        <span className="text-[10px] font-mono tracking-[0.2em] text-slate-400 uppercase">
+          {label}
+        </span>
+        <div className="flex-1 h-px bg-slate-800" />
+        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+      </div>
+      <div className="flex-1 overflow-auto p-2 min-h-0">
+        {children}
+      </div>
+    </div>
+  );
+}
 
-const DATA_TABS = [
-  { id: 'news', label: 'Aviation News', icon: Newspaper },
-  { id: 'flights', label: 'Live Flights', icon: Plane },
-  { id: 'satellites', label: 'Satellites', icon: Satellite },
-  { id: 'gps', label: 'GPS Signals', icon: Radio },
-  { id: 'risk', label: 'Risk Scores', icon: ShieldAlert },
-  { id: 'digest', label: 'News Digest', icon: Rss },
-  { id: 'posture', label: 'Mil. Posture', icon: Shield },
-  { id: 'maritime', label: 'Maritime', icon: Anchor },
-  { id: 'markets', label: 'Markets', icon: BarChart3 },
-  { id: 'conflicts', label: 'Conflicts', icon: Siren },
-  { id: 'disasters', label: 'Disasters',      icon: AlertTriangle },
-  { id: 'cyber',     label: 'Cyber',          icon: Zap },
-  { id: 'infra',     label: 'Infrastructure', icon: Building2 },
-  { id: 'supply',   label: 'Supply Chain',   icon: PackageSearch },
+function TerminalPanelCompact({ label, children }) {
+  return (
+    <div className="h-full flex flex-col bg-[#0a0f1e]">
+      <div className="px-2 py-0.5 border-b border-slate-800 flex items-center gap-1.5 shrink-0">
+        <span className="text-[9px] font-mono tracking-[0.15em] text-slate-500 uppercase">
+          {label}
+        </span>
+        <div className="flex-1 h-px bg-slate-800" />
+      </div>
+      <div className="flex-1 overflow-hidden p-1 min-h-0">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+const BOTTOM_PANELS = [
+  { label: 'CONFLICTS',    Component: ConflictAlertsSummary },
+  { label: 'DISASTERS',   Component: DisastersSummary },
+  { label: 'CYBER',       Component: CyberThreatsSummary },
+  { label: 'MARITIME',    Component: MaritimeSummary },
+  { label: 'GPS JAM',     Component: GpsJammingSummary },
+  { label: 'SUPPLY',      Component: SupplyChainSummary },
 ];
 
 export default function GlobalIntelligence() {
-  const [activeTab, setActiveTab] = useState(DATA_TABS[0].id);
-
   return (
-    <div
-      className="min-h-screen overflow-x-hidden sf-pro"
-      style={{ background: `linear-gradient(135deg, #faf8f5 0%, #f5f1ed 50%, #faf8f5 100%)` }}
-    >
-      <div className="px-4 py-8 md:px-6 max-w-7xl mx-auto space-y-8">
+    <div className="bg-[#070b14] text-white h-screen flex flex-col overflow-hidden font-mono">
 
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-center gap-4">
-            <motion.div
-              initial={{ scale: 0.8, rotate: -90 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="p-4 rounded-2xl shadow-lg"
-              style={{ background: `linear-gradient(135deg, ${brandColors.skyBlue}, ${brandColors.navyDeep})` }}
-            >
-              <Globe2 className="w-7 h-7 text-white" />
-            </motion.div>
-            <div>
-              <h1
-                className="text-4xl md:text-5xl font-bold"
-                style={{ color: brandColors.navyDeep }}
-              >
-                Global Intelligence
-              </h1>
-              <p className="text-sm text-slate-600 mt-2 font-medium">
-                Real-time aerospace, aviation & geopolitical intelligence — fully independent data feeds
-              </p>
-            </div>
+      {/* Ticker */}
+      <TickerHeader />
+
+      {/* Main 3-column panel grid */}
+      <PanelGroup
+        direction="horizontal"
+        className="flex-1 min-h-0"
+        autoSaveId="gi-main"
+      >
+
+        {/* Left: Globe (40%) */}
+        <Panel defaultSize={40} minSize={20} id="globe">
+          <TerminalPanel label="GLOBAL MAP">
+            <ErrorBoundary label="Globe">
+              <WorldMonitorGlobe />
+            </ErrorBoundary>
+          </TerminalPanel>
+        </Panel>
+
+        <PanelResizeHandle className="w-1 bg-slate-800 hover:bg-blue-600 transition-colors cursor-col-resize" />
+
+        {/* Middle: Flights (top) + ORBAT (bottom) — 35% */}
+        <Panel defaultSize={35} minSize={20} id="intel-col">
+          <PanelGroup direction="vertical" autoSaveId="gi-intel-col">
+
+            <Panel defaultSize={55} minSize={25} id="flights">
+              <TerminalPanel label="MILITARY INTEL">
+                <ErrorBoundary label="Live Flights">
+                  <LiveFlightsPanel />
+                </ErrorBoundary>
+              </TerminalPanel>
+            </Panel>
+
+            <PanelResizeHandle className="h-1 bg-slate-800 hover:bg-blue-600 transition-colors cursor-row-resize" />
+
+            <Panel defaultSize={45} minSize={25} id="orbat">
+              <TerminalPanel label="FLEET ORBAT">
+                <ErrorBoundary label="Fleet ORBAT">
+                  <FleetORBATPanel />
+                </ErrorBoundary>
+              </TerminalPanel>
+            </Panel>
+
+          </PanelGroup>
+        </Panel>
+
+        <PanelResizeHandle className="w-1 bg-slate-800 hover:bg-blue-600 transition-colors cursor-col-resize" />
+
+        {/* Right: Live feeds (top) + Launches (bottom) — 25% */}
+        <Panel defaultSize={25} minSize={15} id="streams-col">
+          <PanelGroup direction="vertical" autoSaveId="gi-streams-col">
+
+            <Panel defaultSize={60} minSize={30} id="live-news">
+              <TerminalPanel label="LIVE FEEDS">
+                <LiveNewsPanel />
+              </TerminalPanel>
+            </Panel>
+
+            <PanelResizeHandle className="h-1 bg-slate-800 hover:bg-blue-600 transition-colors cursor-row-resize" />
+
+            <Panel defaultSize={40} minSize={20} id="launches">
+              <TerminalPanel label="LAUNCH SCHEDULE">
+                <LaunchWidgetCompact />
+              </TerminalPanel>
+            </Panel>
+
+          </PanelGroup>
+        </Panel>
+
+      </PanelGroup>
+
+      {/* Bottom strip — fixed height, 6 panels side-by-side */}
+      <div className="h-28 flex border-t border-slate-800 shrink-0">
+        {BOTTOM_PANELS.map(({ label, Component }, i) => (
+          <div
+            key={label}
+            className={`flex-1 min-w-0 ${i > 0 ? 'border-l border-slate-800' : ''}`}
+          >
+            <TerminalPanelCompact label={label}>
+              <Component />
+            </TerminalPanelCompact>
           </div>
-        </motion.div>
-
-        {/* Native Globe */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-        >
-          <WorldMonitorGlobe />
-        </motion.div>
-
-        {/* Data Panels */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.25 }}
-          className="glass-card border border-slate-200/50 rounded-2xl shadow-lg p-6"
-        >
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="flex flex-wrap gap-1 bg-slate-100/50 p-1.5 rounded-xl mb-6">
-              {DATA_TABS.map(tab => {
-                const Icon = tab.icon;
-                return (
-                  <TabsTrigger
-                    key={tab.id}
-                    value={tab.id}
-                    aria-label={tab.label}
-                    className="flex flex-col items-center gap-1 rounded-lg text-xs data-[state=active]:glass-card data-[state=active]:shadow-md transition-all duration-200 py-2"
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span className="hidden sm:block font-medium leading-tight text-center">
-                      {tab.label}
-                    </span>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-
-            <TabsContent value="news"><ErrorBoundary label="Aviation News">{activeTab === 'news' && <AviationNewsFeed />}</ErrorBoundary></TabsContent>
-            <TabsContent value="flights"><ErrorBoundary label="Live Flights">{activeTab === 'flights' && <LiveFlightsPanel />}</ErrorBoundary></TabsContent>
-            <TabsContent value="satellites"><ErrorBoundary label="Satellites">{activeTab === 'satellites' && <SatelliteTracker />}</ErrorBoundary></TabsContent>
-            <TabsContent value="gps"><ErrorBoundary label="GPS Signals">{activeTab === 'gps' && <GpsJammingPanel />}</ErrorBoundary></TabsContent>
-            <TabsContent value="risk"><ErrorBoundary label="Risk Scores">{activeTab === 'risk' && <RiskScoresPanel />}</ErrorBoundary></TabsContent>
-            <TabsContent value="digest"><ErrorBoundary label="News Digest">{activeTab === 'digest' && <NewsFeedDigest />}</ErrorBoundary></TabsContent>
-            <TabsContent value="posture"><ErrorBoundary label="Mil. Posture">{activeTab === 'posture' && <MilitaryPosturePanel />}</ErrorBoundary></TabsContent>
-            <TabsContent value="maritime"><ErrorBoundary label="Maritime">{activeTab === 'maritime' && <MaritimePanel />}</ErrorBoundary></TabsContent>
-            <TabsContent value="markets"><ErrorBoundary label="Markets">{activeTab === 'markets' && <MarketSignalsPanel />}</ErrorBoundary></TabsContent>
-            <TabsContent value="conflicts"><ErrorBoundary label="Conflicts">{activeTab === 'conflicts' && <ConflictAlertsPanel />}</ErrorBoundary></TabsContent>
-            <TabsContent value="disasters"><ErrorBoundary label="Disasters">{activeTab === 'disasters' && <DisastersPanel />}</ErrorBoundary></TabsContent>
-            <TabsContent value="cyber"><ErrorBoundary label="Cyber Threats">{activeTab === 'cyber' && <CyberThreatsPanel />}</ErrorBoundary></TabsContent>
-            <TabsContent value="infra"><ErrorBoundary label="Infrastructure">{activeTab === 'infra' && <InfrastructurePanel />}</ErrorBoundary></TabsContent>
-            <TabsContent value="supply"><ErrorBoundary label="Supply Chain">{activeTab === 'supply' && <SupplyChainPanel />}</ErrorBoundary></TabsContent>
-          </Tabs>
-        </motion.div>
-
+        ))}
       </div>
+
     </div>
   );
 }
