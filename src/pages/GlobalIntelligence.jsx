@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Globe2, Plane, Newspaper, Satellite, Radio, ShieldAlert, Rss, Shield, Anchor, BarChart3, Siren, Zap, AlertTriangle, Building2 } from 'lucide-react';
+import { Globe2, Plane, Newspaper, Satellite, Radio, ShieldAlert, Rss, Shield, Anchor, BarChart3, Siren, Zap, AlertTriangle, Building2, PackageSearch } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import {
@@ -18,6 +18,7 @@ import {
   DisastersPanel,
   CyberThreatsPanel,
   InfrastructurePanel,
+  SupplyChainPanel,
 } from '@/components/capabilities/global-intelligence';
 
 const brandColors = {
@@ -40,6 +41,7 @@ const DATA_TABS = [
   { id: 'disasters', label: 'Disasters',      icon: AlertTriangle },
   { id: 'cyber',     label: 'Cyber',          icon: Zap },
   { id: 'infra',     label: 'Infrastructure', icon: Building2 },
+  { id: 'supply',   label: 'Supply Chain',   icon: PackageSearch },
 ];
 
 export default function GlobalIntelligence() {
@@ -131,6 +133,7 @@ export default function GlobalIntelligence() {
             <TabsContent value="disasters"><ErrorBoundary label="Disasters">{activeTab === 'disasters' && <DisastersPanel />}</ErrorBoundary></TabsContent>
             <TabsContent value="cyber"><ErrorBoundary label="Cyber Threats">{activeTab === 'cyber' && <CyberThreatsPanel />}</ErrorBoundary></TabsContent>
             <TabsContent value="infra"><ErrorBoundary label="Infrastructure">{activeTab === 'infra' && <InfrastructurePanel />}</ErrorBoundary></TabsContent>
+            <TabsContent value="supply"><ErrorBoundary label="Supply Chain">{activeTab === 'supply' && <SupplyChainPanel />}</ErrorBoundary></TabsContent>
           </Tabs>
         </motion.div>
 

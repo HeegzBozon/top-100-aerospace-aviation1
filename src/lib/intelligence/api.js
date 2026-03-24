@@ -1,17 +1,42 @@
-import { MARITIME_RSS_FEEDS } from './constants';
+import { MARITIME_RSS_FEEDS, THEATER_BOUNDS } from './constants';
 
 // ── OpenSky Network (Military Flights + Theater Posture) ──
 // Add VITE_OPENSKY_USERNAME + VITE_OPENSKY_PASSWORD to .env.local for 10× rate limit (400→4000 req/day).
 // Free account: https://opensky-network.org/index.php?option=com_users&view=registration
+//
+// Fetches 4 bounded regional payloads (EUCOM, CENTCOM, INDOPACOM, NORTHCOM) instead of the
+// ~5-7MB global endpoint, reducing payload ~60% and halving quota usage at the 120s interval.
+const OPENSKY_REGIONS = ['EUCOM', 'CENTCOM', 'INDOPACOM', 'NORTHCOM'];
+
 export async function fetchOpenSkyStates(signal) {
   const user = import.meta.env.VITE_OPENSKY_USERNAME;
   const pass = import.meta.env.VITE_OPENSKY_PASSWORD;
   const headers = user && pass
     ? { Authorization: `Basic ${btoa(`${user}:${pass}`)}` }
     : {};
-  const res = await fetch('https://opensky-network.org/api/states/all', { signal, headers });
-  if (!res.ok) throw new Error(`OpenSky returned ${res.status}`);
-  return res.json();
+
+  const fetches = OPENSKY_REGIONS.map(region => {
+    const [lamin, lomin, lamax, lomax] = THEATER_BOUNDS[region];
+    const url = `https://opensky-network.org/api/states/all?lamin=${lamin}&lomin=${lomin}&lamax=${lamax}&lomax=${lomax}`;
+    return fetch(url, { signal, headers })
+      .then(res => { if (!res.ok) throw new Error(`OpenSky ${region} returned ${res.status}`); return res.json(); });
+  });
+
+  const results = await Promise.allSettled(fetches);
+  const allStates = results
+    .filter(r => r.status === 'fulfilled')
+    .flatMap(r => r.value.states || []);
+
+  // Deduplicate by icao24 (index 0) — aircraft near region boundaries appear in multiple fetches
+  const seen = new Set();
+  const states = allStates.filter(s => {
+    const key = s[0];
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return { states };
 }
 
 // ── Celestrak (Satellite TLEs) ────────────────────────────
@@ -187,6 +212,28 @@ export async function fetchWingbitsBatch(icao24List, signal) {
     }
   }
   return result;
+}
+
+// ── Baltic Dry Index (Nasdaq Data Link, public — no API key required) ────────
+// Dataset: CHRIS/CME_BF1 (BDI futures front month). Returns last 30 rows.
+export async function fetchBDITrend(signal) {
+  try {
+    const res = await fetch(
+      'https://data.nasdaq.com/api/v3/datasets/CHRIS/CME_BF1.json?rows=30',
+      { signal }
+    );
+    if (!res.ok) return { data: [] };
+    const json = await res.json();
+    // column_names: ['Date', 'Open', 'High', 'Low', 'Last', 'Change', 'Settle', 'Volume', 'Open Interest']
+    // data: [[date, open, high, low, last, ...], ...]  newest first
+    const rows = (json.dataset?.data || []).map(row => ({
+      date: row[0],
+      value: row[6] ?? row[4], // Settle price preferred, fallback to Last
+    }));
+    return { data: rows };
+  } catch {
+    return { data: [] };
+  }
 }
 
 // ── RSS XML Parser ───────────────────────────────────────

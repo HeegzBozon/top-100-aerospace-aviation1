@@ -13,6 +13,7 @@ import {
   fetchCISAAlerts,
   fetchMaritimeIncidents,
   fetchICSAdvisories,
+  fetchBDITrend,
 } from './api';
 import {
   ALL_RSS_FEEDS,
@@ -20,6 +21,7 @@ import {
   DEFENSE_TICKERS,
   AEROSPACE_ENTITIES,
   THEATER_BOUNDS,
+  MARITIME_CHOKEPOINTS,
 } from './constants';
 
 export function getFlightTheater(lat, lon) {
@@ -36,7 +38,7 @@ const OPENSKY_BASE = {
   queryKey: ['intel', 'opensky-raw'],
   queryFn: ({ signal }) => fetchOpenSkyStates(signal),
   staleTime: 30_000,
-  refetchInterval: 60_000,
+  refetchInterval: 120_000,
 };
 
 const RSS_BASE = {
@@ -379,7 +381,8 @@ export function useDefenseMarketQuotes() {
         .map(r => ({
           symbol: r.value.symbol,
           price: r.value.c,
-          change: r.value.dp,
+          change: r.value.dp,         // percent change
+          absoluteChange: r.value.d,  // absolute price change
           high: r.value.h,
           low: r.value.l,
           open: r.value.o,
@@ -440,6 +443,58 @@ export function useWingbitsEnrichment(icao24List = []) {
     enrichment[icao24.toLowerCase()] = queries[i]?.data ?? null;
   });
   return { enrichment, isLoading: queries.some(q => q.isLoading), hasKey };
+}
+
+// ── Supply Chain Intelligence ─────────────────────────────────────────────
+// Disruption alerts derived from shared RSS_BASE (zero extra fetch).
+// BDI trend from Nasdaq Data Link public endpoint (no key required, graceful fallback).
+export function useSupplyChainIntel() {
+  const disruptions = useQuery({
+    ...RSS_BASE,
+    select: (items) => {
+      const filtered = items.filter(item => {
+        const text = `${item.title} ${item.description}`.toLowerCase();
+        return /suez|panama|canal|blocked|freight disruption|shipping disruption/.test(text);
+      });
+      return filtered.slice(0, 20).map((item, i) => ({
+        id: i,
+        title: item.title,
+        link: item.link,
+        source: item.source,
+        pubDate: item.pubDate,
+        snippet: item.description,
+        canal: /suez/i.test(item.title + item.description) ? 'Suez'
+          : /panama/i.test(item.title + item.description) ? 'Panama'
+          : 'Other',
+      }));
+    },
+  });
+
+  const bdi = useQuery({
+    queryKey: ['intel', 'bdi-trend'],
+    queryFn: ({ signal }) => fetchBDITrend(signal),
+    staleTime: 15 * 60_000,
+    refetchInterval: 20 * 60_000,
+  });
+
+  // Chokepoint status derived from static MARITIME_CHOKEPOINTS constant
+  const FOCUS_CHOKEPOINTS = ['Suez Canal', 'Panama Canal', 'Strait of Hormuz', 'Strait of Malacca'];
+  const chokepoints = MARITIME_CHOKEPOINTS
+    .filter(c => FOCUS_CHOKEPOINTS.includes(c.name))
+    .map(c => ({
+      ...c,
+      statusColor: c.risk === 'high' ? 'red'
+        : c.risk === 'elevated' ? 'yellow'
+        : 'green',
+    }));
+
+  return {
+    disruptions: disruptions.data || [],
+    isLoadingDisruptions: disruptions.isLoading,
+    bdiData: bdi.data?.data || [],
+    isLoadingBDI: bdi.isLoading,
+    chokepoints,
+  };
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────
