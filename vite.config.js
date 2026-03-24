@@ -19,4 +19,21 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('/node_modules/')) return;
+          if (id.includes('/three/') || id.includes('/globe.gl/')) return 'vendor-3d';
+          if (id.includes('/recharts/') || id.includes('/d3-') || id.includes('/d3/')) return 'vendor-charts';
+          if (id.includes('/react-leaflet/') || id.includes('/leaflet/')) return 'vendor-maps';
+          if (id.includes('/@radix-ui/') || id.includes('/framer-motion/') || id.includes('/@floating-ui/') || id.includes('/cmdk/') || id.includes('/vaul/') || id.includes('/react-day-picker/') || id.includes('/embla-carousel')) return 'vendor-ui';
+          if (id.includes('/@tanstack/')) return 'vendor-query';
+          if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router')) return 'vendor-react';
+          if (id.includes('/lodash')) return 'vendor-utils';
+        },
+      },
+    },
+  },
 });

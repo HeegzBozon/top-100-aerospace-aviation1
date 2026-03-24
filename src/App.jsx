@@ -1,4 +1,5 @@
 import './App.css'
+import { lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -9,12 +10,13 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import DiscoveryQuestionnaire from '@/pages/DiscoveryQuestionnaire';
-import TermsOfService from '@/pages/TermsOfService';
-import RollingCredits from '@/pages/RollingCredits';
-import Colony from '@/pages/Colony';
-import AnalyticsDashboard from '@/pages/AnalyticsDashboard';
-import GlobalIntelligence from '@/pages/GlobalIntelligence';
+
+const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
+const TermsOfService          = lazy(() => import('@/pages/TermsOfService'));
+const RollingCredits          = lazy(() => import('@/pages/RollingCredits'));
+const Colony                  = lazy(() => import('@/pages/Colony'));
+const AnalyticsDashboard      = lazy(() => import('@/pages/AnalyticsDashboard'));
+const GlobalIntelligence      = lazy(() => import('@/pages/GlobalIntelligence'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -49,6 +51,11 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
+    <Suspense fallback={
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
+      </div>
+    }>
     <Routes>
       <Route path="/" element={
         <LayoutWrapper currentPageName={mainPageKey}>
@@ -79,6 +86,7 @@ const AuthenticatedApp = () => {
       ))}
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </Suspense>
   );
 };
 
