@@ -27,14 +27,14 @@ const NAV_ITEMS = [
 ];
 
 const RESOURCES = [
-  { label: "Nominee Resources", href: "NomineeResources", emoji: "🏅" },
-  { label: "Honoree Resources", href: "HonoreeResources", emoji: "🏆" },
-  { label: "Student Resources", href: "StudentResources", emoji: "🎓" },
-  { label: "Career Resources", href: "CareerResources", emoji: "💼" },
-  { label: "Founder Resources", href: "FounderResources", emoji: "🚀" },
-  { label: "Business Resources", href: "BusinessResources", emoji: "🏢" },
-  { label: "Enterprise Resources", href: "EnterpriseResources", emoji: "🏛️" },
-  { label: "Sponsor Resources", href: "SponsorResources", emoji: "⭐" },
+  { label: "Nominee Resources",  role: "nominee",    emoji: "🏅" },
+  { label: "Honoree Resources",  role: "honoree",    emoji: "🏆" },
+  { label: "Student Resources",  role: "student",    emoji: "🎓" },
+  { label: "Career Resources",   role: "career",     emoji: "💼" },
+  { label: "Founder Resources",  role: "founder",    emoji: "🚀" },
+  { label: "Business Resources", role: "business",   emoji: "🏢" },
+  { label: "Enterprise Resources", role: "enterprise", emoji: "🏛️" },
+  { label: "Sponsor Resources",  role: "sponsor",    emoji: "⭐" },
 ];
 
 export default function Landing2Sidebar({ activeItem = "Landing" }) {
@@ -126,7 +126,7 @@ export default function Landing2Sidebar({ activeItem = "Landing" }) {
           {RESOURCES.map(resource => (
             <Link
               key={resource.label}
-              to={createPageUrl(resource.href)}
+              to={`${createPageUrl('Resources')}?role=${resource.role}`}
               className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/50 transition-all text-sm"
               style={{ color: brandColors.navyDeep, fontFamily: "'Montserrat', sans-serif" }}
             >

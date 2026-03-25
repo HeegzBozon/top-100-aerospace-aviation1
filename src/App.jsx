@@ -73,6 +73,10 @@ const AuthenticatedApp = () => {
       <Route path="/global-intelligence" element={<GlobalIntelligence />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
       <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/Profile" element={<Navigate to="/ProfileView" replace />} />
+      <Route path="/PublicProfile" element={<Navigate to="/ProfileView" replace />} />
+      <Route path="/Nominee" element={<Navigate to="/ProfileView" replace />} />
+      <Route path="/UserProfile" element={<Navigate to="/ProfileView" replace />} />
       {Object.entries(Pages).map(([path, Page]) => (
         <Route
           key={path}
