@@ -430,15 +430,15 @@ export function useConflictEvents(params = {}) {
 // ── Wingbits Aircraft Enrichment ─────────────────────────────────────────
 // One React Query cache entry per ICAO24 → perfect deduplication across tabs.
 // 24h staleTime matches the in-api-layer cache so we never double-fetch.
+// Key is server-side only (no VITE_WINGBITS_API_KEY needed in frontend).
 export function useWingbitsEnrichment(icao24List = []) {
-  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
   const queries = useQueries({
     queries: icao24List.map(icao24 => ({
       queryKey: ['intel', 'wingbits-aircraft', icao24.toLowerCase()],
-      queryFn: ({ signal }) => fetchWingbitsDetails(icao24, signal),
+      queryFn: () => fetchWingbitsDetails(icao24),
       staleTime: 24 * 60 * 60_000,
       gcTime: 24 * 60 * 60_000,
-      enabled: hasKey && !!icao24,
+      enabled: !!icao24,
     })),
   });
 
@@ -447,7 +447,7 @@ export function useWingbitsEnrichment(icao24List = []) {
   icao24List.forEach((icao24, i) => {
     enrichment[icao24.toLowerCase()] = queries[i]?.data ?? null;
   });
-  return { enrichment, isLoading: queries.some(q => q.isLoading), hasKey };
+  return { enrichment, isLoading: queries.some(q => q.isLoading), hasKey: true };
 }
 
 // ── Supply Chain Intelligence ─────────────────────────────────────────────
@@ -503,51 +503,46 @@ export function useSupplyChainIntel() {
 }
 
 // ── Wingbits Live Flights ─────────────────────────────────────────────────
+// Key is server-side only — always enabled, no VITE_ env var needed.
 export function useWingbitsLiveFlights() {
-  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
   return useQuery({
     queryKey: ['intel', 'wingbits-live-flights'],
-    queryFn: ({ signal }) => fetchWingbitsLiveFlightsBatch(signal),
+    queryFn: () => fetchWingbitsLiveFlightsBatch(),
     staleTime: 25_000,           // slightly under 30s server cache
     refetchInterval: 30_000,
-    enabled: hasKey,
     placeholderData: null,
   });
 }
 
 // ── Wingbits GPS Jamming ──────────────────────────────────────────────────
 export function useWingbitsGpsJam() {
-  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
   return useQuery({
     queryKey: ['intel', 'wingbits-gps-jam'],
-    queryFn: ({ signal }) => fetchWingbitsGpsJam(signal),
+    queryFn: () => fetchWingbitsGpsJam(),
     staleTime: 4 * 60_000,       // 4min (server caches 5min)
     refetchInterval: 5 * 60_000,
-    enabled: hasKey,
     placeholderData: { hexes: [], lastUpdated: null },
   });
 }
 
 // ── Wingbits Flight Detail ────────────────────────────────────────────────
 export function useWingbitsFlightDetail(icao24) {
-  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
   return useQuery({
     queryKey: ['intel', 'wingbits-flight-detail', (icao24 || '').toLowerCase()],
-    queryFn: ({ signal }) => fetchWingbitsFlightDetail(icao24, signal),
+    queryFn: () => fetchWingbitsFlightDetail(icao24),
     staleTime: 10_000,
     refetchInterval: 15_000,
-    enabled: hasKey && !!icao24,
+    enabled: !!icao24,
   });
 }
 
 // ── Wingbits Flight Path ──────────────────────────────────────────────────
 export function useWingbitsFlightPath(icao24) {
-  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
   return useQuery({
     queryKey: ['intel', 'wingbits-flight-path', (icao24 || '').toLowerCase()],
-    queryFn: ({ signal }) => fetchWingbitsFlightPath(icao24, signal),
+    queryFn: () => fetchWingbitsFlightPath(icao24),
     staleTime: 60 * 60_000,
-    enabled: hasKey && !!icao24,
+    enabled: !!icao24,
   });
 }
 
