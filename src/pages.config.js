@@ -59,7 +59,6 @@ import ArchiveLanding from './pages/ArchiveLanding';
 import Arena from './pages/Arena';
 import Article from './pages/Article';
 import Articles from './pages/Articles';
-import AvailabilitySettings from './pages/AvailabilitySettings';
 import BallotBox from './pages/BallotBox';
 import BatchNominations from './pages/BatchNominations';
 import Biographer from './pages/Biographer';
@@ -70,13 +69,10 @@ import CareerResources from './pages/CareerResources';
 import ChessClub from './pages/ChessClub';
 import ChessGame from './pages/ChessGame';
 import ClaimProfile from './pages/ClaimProfile';
-import ClientDashboard from './pages/ClientDashboard';
 import Comms from './pages/Comms';
-import CompareServices from './pages/CompareServices';
 import DemoDayEvent from './pages/DemoDayEvent';
 import Demographics from './pages/Demographics';
 import EditProfile from './pages/EditProfile';
-import EmployerDashboard from './pages/EmployerDashboard';
 import EnterpriseResources from './pages/EnterpriseResources';
 import EventPage from './pages/EventPage';
 import FactoryReset from './pages/FactoryReset';
@@ -87,12 +83,10 @@ import FounderDashboard from './pages/FounderDashboard';
 import FounderResources from './pages/FounderResources';
 import FundraisingTracker from './pages/FundraisingTracker';
 import GamesLanding from './pages/GamesLanding';
-import Colony from './pages/Colony';
 import GetStarted from './pages/GetStarted';
 import HabitWizard from './pages/HabitWizard';
 import HelpCenter from './pages/HelpCenter';
 import Home from './pages/Home';
-import Home2 from './pages/Home2';
 import HonoreeResources from './pages/HonoreeResources';
 import HowWePick from './pages/HowWePick';
 import Huddle from './pages/Huddle';
@@ -109,7 +103,6 @@ import MentorPortal from './pages/MentorPortal';
 import MilestoneDetail from './pages/MilestoneDetail';
 import MissionControl from './pages/MissionControl';
 import MissionVisionValues from './pages/MissionVisionValues';
-import MyBookings from './pages/MyBookings';
 import MyFavorites from './pages/MyFavorites';
 import Nominations from './pages/Nominations';
 import Nominee from './pages/Nominee';
@@ -117,36 +110,21 @@ import NomineeResources from './pages/NomineeResources';
 import NomineesByDomain from './pages/NomineesByDomain';
 import NotFound from './pages/NotFound';
 import OriginStory from './pages/OriginStory';
-import PIPlanner from './pages/PIPlanner';
 import Passport from './pages/Passport';
 import PaymentCancel from './pages/PaymentCancel';
 import PaymentSuccess from './pages/PaymentSuccess';
-import PayoutDashboard from './pages/PayoutDashboard';
-import PayoutSettings from './pages/PayoutSettings';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Profile from './pages/Profile';
 import ProfileView from './pages/ProfileView';
-import ProviderApplication from './pages/ProviderApplication';
-import ProviderDashboard from './pages/ProviderDashboard';
-import ProviderInbox from './pages/ProviderInbox';
 import PublicProfile from './pages/PublicProfile';
 import Quests from './pages/Quests';
 import RadarDashboard from './pages/RadarDashboard';
 import RadarIntelligence from './pages/RadarIntelligence';
 import RaisingJupiter from './pages/RaisingJupiter';
 import RankedChoice from './pages/RankedChoice';
-import RecruitmentRun from './pages/RecruitmentRun';
 import ResultsCountdown from './pages/ResultsCountdown';
 import SMEPortal from './pages/SMEPortal';
-import SWE5TestArchitecture from './pages/SWE5TestArchitecture';
-import SWE6QualificationPlan from './pages/SWE6QualificationPlan';
-import SYS4IntegrationPlan from './pages/SYS4IntegrationPlan';
-import SYS5SystemValidation from './pages/SYS5SystemValidation';
 import Season4 from './pages/Season4';
-import ServiceCategories from './pages/ServiceCategories';
-import ServiceDetail from './pages/ServiceDetail';
-import ServicePackagesMarketplace from './pages/ServicePackagesMarketplace';
-import ServicesLanding from './pages/ServicesLanding';
 import Shop from './pages/Shop';
 import SignalAnalytics from './pages/SignalAnalytics';
 import SignalEmbed from './pages/SignalEmbed';
@@ -161,9 +139,6 @@ import SponsorResources from './pages/SponsorResources';
 import Sponsors from './pages/Sponsors';
 import StartupDirectory from './pages/StartupDirectory';
 import StudentResources from './pages/StudentResources';
-import TalentExchange from './pages/TalentExchange';
-import TalentExchangeLanding from './pages/TalentExchangeLanding';
-import TalentLanding from './pages/TalentLanding';
 import TheHangar from './pages/TheHangar';
 import Tips from './pages/Tips';
 import Top100Nominees2025 from './pages/Top100Nominees2025';
@@ -189,7 +164,6 @@ export const PAGES = {
     "Arena": Arena,
     "Article": Article,
     "Articles": Articles,
-    "AvailabilitySettings": AvailabilitySettings,
     "BallotBox": BallotBox,
     "BatchNominations": BatchNominations,
     "Biographer": Biographer,
@@ -200,13 +174,10 @@ export const PAGES = {
     "ChessClub": ChessClub,
     "ChessGame": ChessGame,
     "ClaimProfile": ClaimProfile,
-    "ClientDashboard": ClientDashboard,
     "Comms": Comms,
-    "CompareServices": CompareServices,
     "DemoDayEvent": DemoDayEvent,
     "Demographics": Demographics,
     "EditProfile": EditProfile,
-    "EmployerDashboard": EmployerDashboard,
     "EnterpriseResources": EnterpriseResources,
     "EventPage": EventPage,
     "FactoryReset": FactoryReset,
@@ -217,12 +188,10 @@ export const PAGES = {
     "FounderResources": FounderResources,
     "FundraisingTracker": FundraisingTracker,
     "GamesLanding": GamesLanding,
-    "Colony": Colony,
     "GetStarted": GetStarted,
     "HabitWizard": HabitWizard,
     "HelpCenter": HelpCenter,
     "Home": Home,
-    "Home2": Home2,
     "HonoreeResources": HonoreeResources,
     "HowWePick": HowWePick,
     "Huddle": Huddle,
@@ -239,7 +208,6 @@ export const PAGES = {
     "MilestoneDetail": MilestoneDetail,
     "MissionControl": MissionControl,
     "MissionVisionValues": MissionVisionValues,
-    "MyBookings": MyBookings,
     "MyFavorites": MyFavorites,
     "Nominations": Nominations,
     "Nominee": Nominee,
@@ -247,36 +215,21 @@ export const PAGES = {
     "NomineesByDomain": NomineesByDomain,
     "NotFound": NotFound,
     "OriginStory": OriginStory,
-    "PIPlanner": PIPlanner,
     "Passport": Passport,
     "PaymentCancel": PaymentCancel,
     "PaymentSuccess": PaymentSuccess,
-    "PayoutDashboard": PayoutDashboard,
-    "PayoutSettings": PayoutSettings,
     "PrivacyPolicy": PrivacyPolicy,
     "Profile": Profile,
     "ProfileView": ProfileView,
-    "ProviderApplication": ProviderApplication,
-    "ProviderDashboard": ProviderDashboard,
-    "ProviderInbox": ProviderInbox,
     "PublicProfile": PublicProfile,
     "Quests": Quests,
     "RadarDashboard": RadarDashboard,
     "RadarIntelligence": RadarIntelligence,
     "RaisingJupiter": RaisingJupiter,
     "RankedChoice": RankedChoice,
-    "RecruitmentRun": RecruitmentRun,
     "ResultsCountdown": ResultsCountdown,
     "SMEPortal": SMEPortal,
-    "SWE5TestArchitecture": SWE5TestArchitecture,
-    "SWE6QualificationPlan": SWE6QualificationPlan,
-    "SYS4IntegrationPlan": SYS4IntegrationPlan,
-    "SYS5SystemValidation": SYS5SystemValidation,
     "Season4": Season4,
-    "ServiceCategories": ServiceCategories,
-    "ServiceDetail": ServiceDetail,
-    "ServicePackagesMarketplace": ServicePackagesMarketplace,
-    "ServicesLanding": ServicesLanding,
     "Shop": Shop,
     "SignalAnalytics": SignalAnalytics,
     "SignalEmbed": SignalEmbed,
@@ -291,9 +244,6 @@ export const PAGES = {
     "Sponsors": Sponsors,
     "StartupDirectory": StartupDirectory,
     "StudentResources": StudentResources,
-    "TalentExchange": TalentExchange,
-    "TalentExchangeLanding": TalentExchangeLanding,
-    "TalentLanding": TalentLanding,
     "TheHangar": TheHangar,
     "Tips": Tips,
     "Top100Nominees2025": Top100Nominees2025,
