@@ -74,28 +74,20 @@ const FactoryReset               = lazy(() => import('./pages/FactoryReset'));
 const Feedback                   = lazy(() => import('./pages/Feedback'));
 const GamesLanding               = lazy(() => import('./pages/GamesLanding'));
 const GetStarted                 = lazy(() => import('./pages/GetStarted'));
-const HabitWizard                = lazy(() => import('./pages/HabitWizard'));
 const HelpCenter                 = lazy(() => import('./pages/HelpCenter'));
 const Home                       = lazy(() => import('./pages/Home'));
-const HonoreeResources           = lazy(() => import('./pages/HonoreeResources'));
 const HowWePick                  = lazy(() => import('./pages/HowWePick'));
 const Huddle                     = lazy(() => import('./pages/Huddle'));
-const HypeSquad                  = lazy(() => import('./pages/HypeSquad'));
-const HypeSquadWizard            = lazy(() => import('./pages/HypeSquadWizard'));
 const IntelligenceDashboard      = lazy(() => import('./pages/IntelligenceDashboard'));
 const Landing                    = lazy(() => import('./pages/Landing'));
-const LaunchParty                = lazy(() => import('./pages/LaunchParty'));
 const Membership                 = lazy(() => import('./pages/Membership'));
 const MilestoneDetail            = lazy(() => import('./pages/MilestoneDetail'));
 const MissionControl             = lazy(() => import('./pages/MissionControl'));
-const MissionVisionValues        = lazy(() => import('./pages/MissionVisionValues'));
 const MyFavorites                = lazy(() => import('./pages/MyFavorites'));
 const Nominations                = lazy(() => import('./pages/Nominations'));
 const Nominee                    = lazy(() => import('./pages/Nominee'));
-const NomineeResources           = lazy(() => import('./pages/NomineeResources'));
 const NomineesByDomain           = lazy(() => import('./pages/NomineesByDomain'));
 const NotFound                   = lazy(() => import('./pages/NotFound'));
-const OriginStory                = lazy(() => import('./pages/OriginStory'));
 const Passport                   = lazy(() => import('./pages/Passport'));
 const PaymentCancel              = lazy(() => import('./pages/PaymentCancel'));
 const PaymentSuccess             = lazy(() => import('./pages/PaymentSuccess'));
@@ -103,8 +95,6 @@ const PrivacyPolicy              = lazy(() => import('./pages/PrivacyPolicy'));
 const Profile                    = lazy(() => import('./pages/Profile'));
 const ProfileView                = lazy(() => import('./pages/ProfileView'));
 const PublicProfile              = lazy(() => import('./pages/PublicProfile'));
-const Publisher                  = lazy(() => import('./pages/Publisher'));
-const Quests                     = lazy(() => import('./pages/Quests'));
 const RadarDashboard             = lazy(() => import('./pages/RadarDashboard'));
 const RadarIntelligence          = lazy(() => import('./pages/RadarIntelligence'));
 const RaisingJupiter             = lazy(() => import('./pages/RaisingJupiter'));
@@ -115,7 +105,6 @@ const Shop                       = lazy(() => import('./pages/Shop'));
 const SignalFeed                 = lazy(() => import('./pages/SignalFeed'));
 const SpaceNews                  = lazy(() => import('./pages/SpaceNews'));
 const SponsorPitch               = lazy(() => import('./pages/SponsorPitch'));
-const SponsorResources           = lazy(() => import('./pages/SponsorResources'));
 const Sponsors                   = lazy(() => import('./pages/Sponsors'));
 const StartupDirectory           = lazy(() => import('./pages/StartupDirectory'));
 const TheHangar                  = lazy(() => import('./pages/TheHangar'));
@@ -126,6 +115,8 @@ const Top100Women2025            = lazy(() => import('./pages/Top100Women2025'))
 const TrendingSignals            = lazy(() => import('./pages/TrendingSignals'));
 const UserProfile                = lazy(() => import('./pages/UserProfile'));
 const VotingHub                  = lazy(() => import('./pages/VotingHub'));
+const Publisher                  = lazy(() => import('./pages/Publisher'));
+const Resources                  = lazy(() => import('./pages/Resources'));
 
 
 export const PAGES = {
@@ -153,28 +144,20 @@ export const PAGES = {
     "Feedback": Feedback,
     "GamesLanding": GamesLanding,
     "GetStarted": GetStarted,
-    "HabitWizard": HabitWizard,
     "HelpCenter": HelpCenter,
     "Home": Home,
-    "HonoreeResources": HonoreeResources,
     "HowWePick": HowWePick,
     "Huddle": Huddle,
-    "HypeSquad": HypeSquad,
-    "HypeSquadWizard": HypeSquadWizard,
     "IntelligenceDashboard": IntelligenceDashboard,
     "Landing": Landing,
-    "LaunchParty": LaunchParty,
     "Membership": Membership,
     "MilestoneDetail": MilestoneDetail,
     "MissionControl": MissionControl,
-    "MissionVisionValues": MissionVisionValues,
     "MyFavorites": MyFavorites,
     "Nominations": Nominations,
     "Nominee": Nominee,
-    "NomineeResources": NomineeResources,
     "NomineesByDomain": NomineesByDomain,
     "NotFound": NotFound,
-    "OriginStory": OriginStory,
     "Passport": Passport,
     "PaymentCancel": PaymentCancel,
     "PaymentSuccess": PaymentSuccess,
@@ -182,8 +165,6 @@ export const PAGES = {
     "Profile": Profile,
     "ProfileView": ProfileView,
     "PublicProfile": PublicProfile,
-    "Publisher": Publisher,
-    "Quests": Quests,
     "RadarDashboard": RadarDashboard,
     "RadarIntelligence": RadarIntelligence,
     "RaisingJupiter": RaisingJupiter,
@@ -194,7 +175,6 @@ export const PAGES = {
     "SignalFeed": SignalFeed,
     "SpaceNews": SpaceNews,
     "SponsorPitch": SponsorPitch,
-    "SponsorResources": SponsorResources,
     "Sponsors": Sponsors,
     "StartupDirectory": StartupDirectory,
     "TheHangar": TheHangar,
@@ -205,6 +185,8 @@ export const PAGES = {
     "TrendingSignals": TrendingSignals,
     "UserProfile": UserProfile,
     "VotingHub": VotingHub,
+    "Publisher": Publisher,
+    "Resources": Resources,
 }
 
 export const pagesConfig = {
