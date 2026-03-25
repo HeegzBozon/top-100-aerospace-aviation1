@@ -15,6 +15,10 @@ import {
   fetchMaritimeIncidents,
   fetchICSAdvisories,
   fetchBDITrend,
+  fetchWingbitsLiveFlightsBatch,
+  fetchWingbitsGpsJam,
+  fetchWingbitsFlightDetail,
+  fetchWingbitsFlightPath,
 } from './api';
 import {
   ALL_RSS_FEEDS,
@@ -496,6 +500,55 @@ export function useSupplyChainIntel() {
     isLoadingBDI: bdi.isLoading,
     chokepoints,
   };
+}
+
+// ── Wingbits Live Flights ─────────────────────────────────────────────────
+export function useWingbitsLiveFlights() {
+  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
+  return useQuery({
+    queryKey: ['intel', 'wingbits-live-flights'],
+    queryFn: ({ signal }) => fetchWingbitsLiveFlightsBatch(signal),
+    staleTime: 25_000,           // slightly under 30s server cache
+    refetchInterval: 30_000,
+    enabled: hasKey,
+    placeholderData: null,
+  });
+}
+
+// ── Wingbits GPS Jamming ──────────────────────────────────────────────────
+export function useWingbitsGpsJam() {
+  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
+  return useQuery({
+    queryKey: ['intel', 'wingbits-gps-jam'],
+    queryFn: ({ signal }) => fetchWingbitsGpsJam(signal),
+    staleTime: 4 * 60_000,       // 4min (server caches 5min)
+    refetchInterval: 5 * 60_000,
+    enabled: hasKey,
+    placeholderData: { hexes: [], lastUpdated: null },
+  });
+}
+
+// ── Wingbits Flight Detail ────────────────────────────────────────────────
+export function useWingbitsFlightDetail(icao24) {
+  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
+  return useQuery({
+    queryKey: ['intel', 'wingbits-flight-detail', (icao24 || '').toLowerCase()],
+    queryFn: ({ signal }) => fetchWingbitsFlightDetail(icao24, signal),
+    staleTime: 10_000,
+    refetchInterval: 15_000,
+    enabled: hasKey && !!icao24,
+  });
+}
+
+// ── Wingbits Flight Path ──────────────────────────────────────────────────
+export function useWingbitsFlightPath(icao24) {
+  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
+  return useQuery({
+    queryKey: ['intel', 'wingbits-flight-path', (icao24 || '').toLowerCase()],
+    queryFn: ({ signal }) => fetchWingbitsFlightPath(icao24, signal),
+    staleTime: 60 * 60_000,
+    enabled: hasKey && !!icao24,
+  });
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────

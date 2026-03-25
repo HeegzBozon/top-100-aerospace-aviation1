@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Globe as GlobeIcon, ChevronUp, ChevronDown, Loader2,
-  Plane, Radio, Crosshair, Map, Satellite,
+  Plane, Radio, Crosshair, Map, Satellite, Rocket, AlertTriangle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,7 +11,12 @@ import {
   useConflictEvents,
   useSatellites,
   useTheaterPosture,
+  useWingbitsGpsJam,
+  useWingbitsLiveFlights,
+  useWingbitsFlightDetail,
+  useWingbitsFlightPath,
 } from '@/lib/intelligence/hooks';
+import { cellToLatLng } from 'h3-js';
 import { THEATER_DEFS } from '@/lib/intelligence/constants';
 
 function theaterPolygon({ id, color, bounds }) {
@@ -60,6 +65,15 @@ const LAYER_DEFS = [
   { id: 'conflicts',  icon: Crosshair, label: 'Conflicts' },
   { id: 'theaters',   icon: Map,       label: 'Theaters'  },
   { id: 'satellites', icon: Satellite, label: 'Sats'      },
+  { id: 'launches',   icon: Rocket,    label: 'Launches'  },
+];
+
+// ─── Launch site constants ──────────────────────────────────────────────────────
+const LAUNCH_SITES = [
+  { id: 'kennedy',    name: 'KSC',      lat: 28.3922,  lng: -80.6077  },
+  { id: 'starbase',   name: 'StarBase', lat: 25.9969,  lng: -97.1572  },
+  { id: 'vandenberg', name: 'VSFB',     lat: 34.7420,  lng: -120.5724 },
+  { id: 'mahia',      name: 'Mahia',    lat: -39.2594, lng: 177.8645  },
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -68,7 +82,7 @@ export function WorldMonitorGlobe() {
   const [loaded,     setLoaded]     = useState(false);
   const [nowMin,     setNowMin]     = useState(() => Date.now() / 60000);
   const [layers,     setLayers]     = useState({
-    flights: true, gps: true, conflicts: true, theaters: true, satellites: false,
+    flights: true, gps: true, conflicts: true, theaters: true, satellites: false, launches: false,
   });
   const [tooltip, setTooltip] = useState(null);
 
@@ -80,6 +94,12 @@ export function WorldMonitorGlobe() {
   const { data: conflictData } = useConflictEvents({ limit: '200' });
   const { data: satData      } = useSatellites();
   const { data: theaterData  } = useTheaterPosture();
+
+  const [selectedIcao24, setSelectedIcao24] = useState(null);
+  const { data: wbFlightsRaw }  = useWingbitsLiveFlights();
+  const { data: wbGpsData }      = useWingbitsGpsJam();
+  const { data: wbDetailData }   = useWingbitsFlightDetail(selectedIcao24);
+  const { data: wbPathData }     = useWingbitsFlightPath(selectedIcao24);
 
   // Animate satellite positions every 30 s
   useEffect(() => {
@@ -119,7 +139,19 @@ export function WorldMonitorGlobe() {
           if (!cancelled && globeRef.current) {
             globeRef.current
               .enablePointerInteraction(true)
-              .onPointClick(pt => pt && setTooltip({ type: pt._sat ? 'sat' : 'flight', data: pt }))
+              .onPointClick(pt => {
+                if (!pt) return;
+                if (pt._launchSite) {
+                  setTooltip({ type: 'launch', data: pt });
+                  return;
+                }
+                if (pt._sat) {
+                  setTooltip({ type: 'sat', data: pt });
+                  return;
+                }
+                setTooltip({ type: 'flight', data: pt });
+                if (pt._icao24) setSelectedIcao24(pt._icao24.toLowerCase());
+              })
               .onPolygonClick(p => p && setTooltip({ type: 'theater', data: p.properties }));
 
             if (typeof globeRef.current.onHexBinClick === 'function') {
@@ -144,15 +176,46 @@ export function WorldMonitorGlobe() {
     return () => { cancelled = true; };
   }, [collapsed]);
 
-  // ─── Layer: flight points + satellite dots (combined pointsData) ───────────
+  // ─── Layer: flight points + satellite dots + launch sites (combined pointsData) ─
   useEffect(() => {
     const g = globeRef.current;
     if (!g || !loaded) return;
 
-    const flightPts = layers.flights
-      ? (flightsData?.flights || []).map(f => ({
+    // ─── Wingbits live flights (flatten all aliases) ───
+    const wbFlights = layers.flights && wbFlightsRaw
+      ? wbFlightsRaw.flatMap(area => (area.data || []))
+          .filter(f => !f.og && f.la && f.lo)
+      : [];
+
+    // ─── OpenSky military flights ───
+    const osFlights = layers.flights
+      ? (flightsData?.flights || [])
+      : [];
+
+    // ─── Merge: prefer Wingbits data (keyed by hex 'h'), OpenSky keyed by icao24 ───
+    const wbHexes = new Set(wbFlights.map(f => f.h?.toLowerCase()).filter(Boolean));
+    const mergedFlights = [
+      ...wbFlights.map(f => {
+        const isEmergency = ['7700', '7600', '7500'].includes(f.sq);
+        return {
+          lat: f.la, lng: f.lo,
+          _alt: 0.01,
+          size: isEmergency ? 0.5 : (f.ab ? Math.min(0.18 + f.ab / 110000, 0.5) : 0.28),
+          color: isEmergency ? '#ef4444' : (COUNTRY_COLOR[f.country] || '#94a3b8'),
+          label: TIP([
+            `${isEmergency ? '🚨' : '✈'} <b>${esc(f.f || f.h || '')}</b>`,
+            isEmergency ? `<span style="color:#f87171">SQUAWK ${f.sq}</span>` : '',
+            f.ab ? `${f.ab.toLocaleString()} ft` : '',
+            f.gs ? `${Math.round(f.gs)} kts` : '',
+          ].filter(Boolean)),
+          _icao24: f.h, _callsign: f.f, _altFt: f.ab, _speed: f.gs, _squawk: f.sq,
+          _isEmergency: isEmergency, _source: 'wingbits',
+        };
+      }),
+      ...osFlights
+        .filter(f => !wbHexes.has((f.icao24 || '').toLowerCase()))
+        .map(f => ({
           lat: f.lat, lng: f.lon,
-          // Altitude stays at surface; radius scales with altitude
           _alt: 0.01,
           size: f.altitudeFt ? Math.min(0.18 + f.altitudeFt / 110_000, 0.55) : 0.3,
           color: flightColor(f),
@@ -161,18 +224,19 @@ export function WorldMonitorGlobe() {
             esc(f.operator || f.country || ''),
             f.altitudeFt ? `${f.altitudeFt.toLocaleString()} ft` : '',
           ].filter(Boolean)),
-          // Passthrough for tooltip
           _icao24: f.icao24, _callsign: f.callsign, _operator: f.operator,
           _country: f.country, _flag: f.operatorFlag, _altFt: f.altitudeFt,
-        }))
-      : [];
+          _source: 'opensky',
+        })),
+    ];
 
+    // ─── Satellite points ───
     const satPts = layers.satellites
       ? (satData?.satellites || []).slice(0, 80).map(s => {
           const pos = satPos(s, nowMin);
           return {
             ...pos,
-            _alt: Math.max(0.05, (s.alt || 400) / 6371), // float at orbital altitude
+            _alt: Math.max(0.05, (s.alt || 400) / 6371),
             size: 0.08,
             color: satColor(s),
             label: TIP([`🛰 <b>${esc(s.name)}</b>`, esc(s.country), `${(s.alt || 0).toLocaleString()} km`]),
@@ -181,30 +245,104 @@ export function WorldMonitorGlobe() {
         })
       : [];
 
-    const pts = [...flightPts, ...satPts];
+    // ─── Launch site markers ───
+    const launchPts = layers.launches
+      ? LAUNCH_SITES.map(site => {
+          const nearbyAlias = wbFlightsRaw?.find(a => a.alias === site.id);
+          const count = nearbyAlias?.data?.filter(f => !f.og).length || 0;
+          return {
+            lat: site.lat, lng: site.lng,
+            _alt: 0.005,
+            size: 0.35,
+            color: '#f59e0b',
+            label: TIP([`🚀 <b>${site.name}</b>`, count > 0 ? `${count} aircraft in corridor` : 'Monitoring…']),
+            _launchSite: true, _siteName: site.name, _siteCount: count,
+          };
+        })
+      : [];
+
+    const pts = [...mergedFlights, ...satPts, ...launchPts];
     g.pointsData(pts)
       .pointLat('lat').pointLng('lng')
       .pointAltitude('_alt')
       .pointRadius('size')
       .pointColor('color')
       .pointLabel('label');
-  }, [flightsData, satData, loaded, layers.flights, layers.satellites, nowMin]);
+  }, [flightsData, wbFlightsRaw, satData, loaded, layers.flights, layers.satellites, layers.launches, nowMin]);
 
   // ─── Layer: GPS jamming rings ──────────────────────────────────────────────
   useEffect(() => {
     const g = globeRef.current;
     if (!g || !loaded) return;
 
-    const rings = layers.gps
-      ? (gpsData?.events || []).filter(e => e.lat && e.lon).map(e => ({
+    if (!layers.gps) {
+      g.ringsData([]);
+      return;
+    }
+
+    const rings = [];
+
+    // ─── Wingbits real H3 sensor data ───
+    const wbHexes = wbGpsData?.hexes || [];
+    for (const hex of wbHexes) {
+      if ((hex.sampleCount || 0) < 3) continue;
+      const npAvg = hex.npAvg ?? 8;
+      if (npAvg >= 8) continue;
+
+      try {
+        const [lat, lng] = cellToLatLng(hex.h3Index);
+        const isSevere = npAvg < 2;
+        const isMedium = npAvg < 4;
+        rings.push({
+          lat, lng,
+          maxR:             isSevere ? 5.5 : isMedium ? 3.5 : 2.0,
+          propagationSpeed: isSevere ? 3.2 : isMedium ? 2.0 : 1.5,
+          repeatPeriod:     isSevere ? 600 : 800,
+          color: t => isSevere
+            ? `rgba(239,68,68,${Math.max(0, 1 - t * 1.4)})`
+            : isMedium
+            ? `rgba(245,158,11,${Math.max(0, 1 - t * 1.4)})`
+            : `rgba(234,179,8,${Math.max(0, 1 - t * 1.6)})`,
+          label: TIP([
+            `⚡ GPS ${isSevere ? 'Severe Jam' : isMedium ? 'Jamming' : 'Degraded'}`,
+            `NAC-p avg: ${npAvg.toFixed(1)}`,
+            `${hex.aircraftCount || 0} aircraft / ${hex.sampleCount || 0} samples`,
+          ]),
+        });
+      } catch {
+        // invalid h3Index — skip
+      }
+    }
+
+    // ─── Fallback: legacy static events if no Wingbits data ───
+    if (rings.length === 0) {
+      const fallback = (gpsData?.events || []).filter(e => e.lat && e.lon);
+      for (const e of fallback) {
+        rings.push({
           lat: e.lat, lng: e.lon,
-          maxR:              e.severity === 'high' ? 5.5 : e.severity === 'medium' ? 3.5 : 2,
-          propagationSpeed:  e.severity === 'high' ? 3.2 : 1.8,
-          repeatPeriod:      700,
+          maxR: e.severity === 'high' ? 5.5 : e.severity === 'medium' ? 3.5 : 2,
+          propagationSpeed: e.severity === 'high' ? 3.2 : 1.8,
+          repeatPeriod: 700,
           color: t => `rgba(245,158,11,${Math.max(0, 1 - t * 1.4)})`,
           label: TIP([`⚡ GPS Jam`, e.region || '', e.severity || 'active']),
-        }))
-      : [];
+        });
+      }
+    }
+
+    // ─── Emergency squawk rings (always added regardless of GPS layer toggle) ───
+    const wbFlightsList = (wbFlightsRaw || []).flatMap(a => a.data || []);
+    for (const f of wbFlightsList) {
+      if (['7700', '7600', '7500'].includes(f.sq) && f.la && f.lo) {
+        rings.push({
+          lat: f.la, lng: f.lo,
+          maxR: 4,
+          propagationSpeed: 4,
+          repeatPeriod: 400,
+          color: t => `rgba(239,68,68,${Math.max(0, 1 - t * 1.2)})`,
+          label: TIP([`🚨 EMERGENCY`, `Squawk ${f.sq}`, esc(f.f || f.h || '')]),
+        });
+      }
+    }
 
     g.ringsData(rings)
       .ringLat('lat').ringLng('lng')
@@ -212,7 +350,30 @@ export function WorldMonitorGlobe() {
       .ringPropagationSpeed('propagationSpeed')
       .ringRepeatPeriod('repeatPeriod')
       .ringColor('color');
-  }, [gpsData, loaded, layers.gps]);
+  }, [wbGpsData, gpsData, wbFlightsRaw, loaded, layers.gps]);
+
+  // ─── Layer: selected flight path ──────────────────────────────────────────
+  useEffect(() => {
+    const g = globeRef.current;
+    if (!g || !loaded) return;
+    if (!wbPathData?.flight?.path?.length) {
+      if (typeof g.pathsData === 'function') g.pathsData([]);
+      return;
+    }
+    if (typeof g.pathsData !== 'function') return;  // globe.gl version check
+
+    const coords = wbPathData.flight.path.map(p => [p.latitude, p.longitude, Math.max(0, (p.altitude || 0) / 6371000 * 0.3)]);
+    g.pathsData([{ coords, name: wbPathData.flight.name }])
+      .pathPoints('coords')
+      .pathPointLat(p => p[0])
+      .pathPointLng(p => p[1])
+      .pathPointAlt(p => p[2])
+      .pathStroke(0.5)
+      .pathColor(() => ['rgba(14,165,233,0)', 'rgba(14,165,233,0.9)'])
+      .pathDashLength(0.1)
+      .pathDashGap(0.008)
+      .pathDashAnimateTime(12000);
+  }, [wbPathData, loaded]);
 
   // ─── Layer: conflict hex-bin columns ──────────────────────────────────────
   useEffect(() => {
@@ -279,8 +440,11 @@ export function WorldMonitorGlobe() {
 
   // ─── Stats ─────────────────────────────────────────────────────────────────
   const flightCount  = flightsData?.flights?.length || 0;
-  const gpsCount     = gpsData?.events?.length || 0;
+  const gpsCount     = (wbGpsData?.hexes || []).filter(h => h.npAvg < 4 && (h.sampleCount || 0) >= 3).length
+    || gpsData?.events?.length || 0;
   const conflictCount = (conflictData?.events || []).filter(e => e.fatalities > 2).length;
+  const emergencyCount = (wbFlightsRaw || []).flatMap(a => a.data || [])
+    .filter(f => ['7700', '7600', '7500'].includes(f.sq)).length;
 
   const toggleLayer = id => setLayers(l => ({ ...l, [id]: !l[id] }));
 
@@ -300,6 +464,7 @@ export function WorldMonitorGlobe() {
         </div>
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-3">
+            {emergencyCount > 0 && <StatPill color="text-red-400 animate-pulse" label={`🚨 ${emergencyCount} EMRG`} />}
             {flightCount  > 0 && <StatPill color="text-red-400"    label={`${flightCount} flights`}   />}
             {gpsCount     > 0 && <StatPill color="text-amber-400"  label={`${gpsCount} GPS`}          />}
             {conflictCount> 0 && <StatPill color="text-rose-500"   label={`${conflictCount} conflicts`}/>}
@@ -381,13 +546,31 @@ export function WorldMonitorGlobe() {
                 {tooltip.type === 'flight' && (
                   <div className="space-y-0.5">
                     <p className="font-semibold text-sky-300">
-                      {tooltip.data._flag || '✈'} {tooltip.data._callsign || tooltip.data._icao24}
+                      {tooltip.data._isEmergency ? '🚨' : (tooltip.data._flag || '✈')}{' '}
+                      {tooltip.data._callsign || tooltip.data._icao24}
                     </p>
+                    {tooltip.data._isEmergency && (
+                      <p className="text-red-400 font-semibold text-[10px] uppercase tracking-wide">
+                        Emergency — Squawk {tooltip.data._squawk}
+                      </p>
+                    )}
                     <p className="text-slate-400">{tooltip.data._operator || tooltip.data._country}</p>
                     {tooltip.data._altFt && (
                       <p className="tabular-nums">{tooltip.data._altFt.toLocaleString()} ft</p>
                     )}
-                    <p className="text-slate-500 font-mono text-[10px]">{tooltip.data._icao24?.toUpperCase()}</p>
+                    {tooltip.data._speed && (
+                      <p className="tabular-nums text-slate-400">{Math.round(tooltip.data._speed)} kts</p>
+                    )}
+                    {wbDetailData?.flight && (
+                      <div className="mt-1 pt-1 border-t border-slate-600/50 text-[10px] text-slate-400">
+                        <p>{wbDetailData.flight.model || ''} {wbDetailData.flight.typecode ? `· ${wbDetailData.flight.typecode}` : ''}</p>
+                        <p>{wbDetailData.flight.operator || ''}</p>
+                      </div>
+                    )}
+                    {wbPathData?.flight?.path?.length > 0 && (
+                      <p className="text-[10px] text-sky-400 mt-1">↗ Path tracked ({wbPathData.flight.path.length} pts)</p>
+                    )}
+                    <p className="text-slate-500 font-mono text-[10px]">{(tooltip.data._icao24 || '').toUpperCase()}</p>
                   </div>
                 )}
 
@@ -416,6 +599,13 @@ export function WorldMonitorGlobe() {
                     {tooltip.data.flights > 0 && (
                       <p className="text-slate-400">{tooltip.data.flights} active flights</p>
                     )}
+                  </div>
+                )}
+
+                {tooltip.type === 'launch' && (
+                  <div className="space-y-0.5">
+                    <p className="font-semibold text-amber-300">🚀 {tooltip.data._siteName}</p>
+                    <p className="text-slate-300">{tooltip.data._siteCount > 0 ? `${tooltip.data._siteCount} aircraft in corridor` : 'Monitoring…'}</p>
                   </div>
                 )}
               </motion.div>
