@@ -146,20 +146,44 @@ Do not implement stories whose epic dependencies are incomplete. Check linked ti
 9. Move Jira status → Test
 10. Wait for human review before merging
 
-## What "Done" Looks Like
+## Board Governance
 
-A ticket is done when:
+### WIP Limits
 
-- [ ] All acceptance criteria in the ticket description are checked off
-- [ ] Feature branch exists (never committed to main)
-- [ ] PR is open and passes build
-- [ ] No TypeScript/lint errors
-- [ ] Loading states implemented on all async operations
-- [ ] Empty states implemented
-- [ ] Error states implemented
-- [ ] No regressions on existing pages
-- [ ] PR link commented on the Jira ticket
-- [ ] Jira ticket status moved to Test
+| Column | Max | Notes |
+|---|---|---|
+| DEFINE | 2 | Don't let planning pile up |
+| READY | 5 | Groomed sprint buffer — not infinite backlog |
+| BUILD | 3 | One per concurrent thread max |
+| REVIEW | 2 | REVIEW + AI:REVIEW statuses both count against this |
+| TEST | 2 | Don't let verified work rot waiting for deploy |
+
+Limits are enforced via Jira column constraints. Harness must check WIP before pulling a new ticket — if BUILD ≥ 3, halt and surface to human.
+
+### Stage Gates
+
+Work cannot advance to the next column without meeting the gate.
+
+| From → To | Gate |
+|---|---|
+| DEFINE → READY | Acceptance criteria written. Entity schema identified. No open architectural questions. |
+| READY → BUILD | Feature branch created (`feature/PLATFORM-{id}-{slug}`). Never on `main`. |
+| BUILD → REVIEW | Code complete. Compiles. No lint errors. PR opened. PR link on Jira ticket. |
+| REVIEW → TEST | PR approved (human) or AI:Review cleared. No unresolved comments. |
+| TEST → DEPLOYED | All acceptance criteria verified. Happy path smoke test passes. No regressions. |
+
+Harness must not transition a ticket past a gate it cannot verify. If blocked, comment + apply `AI:Skip`.
+
+### Definition of Done
+
+A ticket is **DONE** when it is **DEPLOYED** — defined as all three:
+
+1. **Merged to `main`** — PR merged, branch deleted
+2. **Pushed to Base44 production** — GitHub sync confirmed in Base44 editor
+3. **Smoke-verified live** — happy path works end-to-end in the running app
+
+Not merged ≠ Done. Not synced ≠ Done. Not verified ≠ Done.
+Any ticket moved to DEPLOYED without all three is a false close — flag it.
 
 ## Key Routes (Current)
 
@@ -183,6 +207,20 @@ Active migration: PLATFORM-66
 - Never "likes" — always "endorsements"
 - Sponsor attribution: "Patron of Record" not "Sponsored by [advertiser]"
 
+## When Things Break (Self-Correction Protocol)
+
+Errors are learning opportunities, not failures. When something breaks:
+
+1. Read the error message and stack trace fully before touching code
+2. Fix the root cause — do not bypass safety checks or work around symptoms
+3. Test the fix
+4. Update the relevant documentation (this file, plan docs, integration guides) with what you learned — API limits, timing constraints, edge cases, better approaches
+5. System is now stronger
+
+**Before writing a new script or utility:** check `scripts/` for existing tools first. Only create new ones if nothing applicable exists.
+
+**Docs are living documents.** When you discover a constraint, a better pattern, or a common error that isn't documented — update the doc. Don't create or overwrite docs without good reason, but do improve them continuously.
+
 ## Contact / Escalate
 
 If a ticket is ambiguous, underdefined, or blocked by a missing dependency:
@@ -194,4 +232,4 @@ If a ticket is ambiguous, underdefined, or blocked by a missing dependency:
 
 ---
 
-*Last updated: March 2026 | Project: pineappleempire-team.atlassian.net | PLATFORM project*
+*Last updated: March 2026 (Board Governance added) | Project: pineappleempire-team.atlassian.net | PLATFORM project*

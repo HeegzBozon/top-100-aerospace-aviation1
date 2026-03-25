@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { GameProvider, useGame } from '@/components/games/GameContext';
-import HangarScene from '@/components/games/hangar/HangarScene';
-import OutsideScene from '@/components/games/hangar/OutsideScene';
+const HangarScene  = lazy(() => import('@/components/games/hangar/HangarScene'));
+const OutsideScene = lazy(() => import('@/components/games/hangar/OutsideScene'));
 import UnifiedGameHUD from '@/components/games/hangar/UnifiedGameHUD';
 import HangarAudio from '@/components/games/hangar/HangarAudio';
 import InteractionPrompt from '@/components/games/hangar/InteractionPrompt';
@@ -281,19 +281,25 @@ function HangarGame() {
   return (
     <div className="relative w-full h-screen overflow-hidden bg-black">
       {/* 3D Scene - Toggle between inside and outside */}
-      {showOutside ? (
-        <OutsideScene 
-          onAreaChange={handleAreaChange}
-          onInteractableNear={setNearbyInteractable}
-          cameraMode={cameraMode}
-        />
-      ) : (
-        <HangarScene 
-          onAreaChange={handleAreaChange}
-          onInteractableNear={setNearbyInteractable}
-          cameraMode={cameraMode}
-        />
-      )}
+      <Suspense fallback={
+        <div className="absolute inset-0 flex items-center justify-center bg-black">
+          <Loader2 className="w-8 h-8 text-white animate-spin" />
+        </div>
+      }>
+        {showOutside ? (
+          <OutsideScene
+            onAreaChange={handleAreaChange}
+            onInteractableNear={setNearbyInteractable}
+            cameraMode={cameraMode}
+          />
+        ) : (
+          <HangarScene
+            onAreaChange={handleAreaChange}
+            onInteractableNear={setNearbyInteractable}
+            cameraMode={cameraMode}
+          />
+        )}
+      </Suspense>
 
       {/* Ambient Audio */}
       <HangarAudio isMuted={isMuted} currentArea={currentArea} />

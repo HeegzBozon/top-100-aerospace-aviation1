@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { Season } from '@/entities/Season';
 import { KBArticle } from '@/entities/KBArticle';
 import { User } from '@/entities/User';
@@ -11,43 +11,43 @@ import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import AdminCommandPalette, { addRecentTab } from '@/components/admin/AdminCommandPalette';
 import { findTabById } from '@/components/admin/adminNavConfig';
 
-// Admin content components (eagerly loaded for now — can lazy-load later if bundle grows)
-import AdminCommandCenter from '@/components/admin/AdminCommandCenter';
-import SeasonCommandCenter from '@/components/admin/SeasonCommandCenter';
-import SeasonManager from '@/components/admin/SeasonManager';
-import SeasonViewModal from '@/components/admin/SeasonViewModal';
-import ProviderReviewManager from '@/components/admin/ProviderReviewManager';
-import ServiceManager from '@/components/admin/ServiceManager';
-import NomineeManager from '@/components/admin/NomineeManager';
-import KBArticleManager from '@/components/admin/KBArticleManager';
-import PlatformSettings from '@/components/admin/PlatformSettings';
-import UserViewModal from '@/components/admin/UserViewModal';
-import RankedVoteManager from '@/components/admin/RankedVoteManager';
-import UniversalDataWizard from '@/components/admin/UniversalDataWizard';
-import ProfilePhotoDiagnostics from '@/components/admin/ProfilePhotoDiagnostics';
-import NomineePhotoUploadWizard from '@/components/admin/NomineePhotoUploadWizard';
-import HeadshotUploadWizard from '@/components/admin/HeadshotUploadWizard';
-import AssetManager from '@/components/admin/AssetManager';
-import EventManagement from '@/components/admin/EventManagement';
-import SponsorManagement from '@/components/admin/SponsorManagement';
-import AvailabilityManager from '@/components/admin/AvailabilityManager';
-import ClaimsReviewManager from '@/components/admin/ClaimsReviewManager';
-import UserMergeManager from '@/components/admin/UserMergeManager';
-import NomineeAssignmentManager from '@/components/admin/NomineeAssignmentManager';
-import HolisticScoringPanel from '@/components/admin/HolisticScoringPanel';
-import VerificationDashboard from '@/components/admin/VerificationDashboard';
-import ScoringAnalytics from '@/components/admin/ScoringAnalytics';
-import SalesAnalytics from '@/components/admin/SalesAnalytics';
-import SMEAssignmentPanel from '@/components/admin/SMEAssignmentPanel';
-import StartupReviewPanel from '@/components/admin/StartupReviewPanel';
-import AcceleratorManagement from '@/components/admin/AcceleratorManagement';
-import EnrollmentManagement from '@/components/admin/EnrollmentManagement';
-import MilestoneReview from '@/components/admin/MilestoneReview';
-import CommunityNotesModeration from '@/components/admin/CommunityNotesModeration';
-import TestimonialModeration from '@/components/admin/TestimonialModeration';
-import UserManagement from '@/components/admin/UserManagement';
-import RailItemManager from '@/components/admin/RailItemManager';
-import DiscoveryResponsesManager from '@/components/admin/DiscoveryResponsesManager';
+// Admin content components — lazy-loaded per tab (only the active tab downloads its chunk)
+const AdminCommandCenter       = lazy(() => import('@/components/admin/AdminCommandCenter'));
+const SeasonCommandCenter      = lazy(() => import('@/components/admin/SeasonCommandCenter'));
+const SeasonManager            = lazy(() => import('@/components/admin/SeasonManager'));
+const SeasonViewModal          = lazy(() => import('@/components/admin/SeasonViewModal'));
+const ProviderReviewManager    = lazy(() => import('@/components/admin/ProviderReviewManager'));
+const ServiceManager           = lazy(() => import('@/components/admin/ServiceManager'));
+const NomineeManager           = lazy(() => import('@/components/admin/NomineeManager'));
+const KBArticleManager         = lazy(() => import('@/components/admin/KBArticleManager'));
+const PlatformSettings         = lazy(() => import('@/components/admin/PlatformSettings'));
+const UserViewModal            = lazy(() => import('@/components/admin/UserViewModal'));
+const RankedVoteManager        = lazy(() => import('@/components/admin/RankedVoteManager'));
+const UniversalDataWizard      = lazy(() => import('@/components/admin/UniversalDataWizard'));
+const ProfilePhotoDiagnostics  = lazy(() => import('@/components/admin/ProfilePhotoDiagnostics'));
+const NomineePhotoUploadWizard = lazy(() => import('@/components/admin/NomineePhotoUploadWizard'));
+const HeadshotUploadWizard     = lazy(() => import('@/components/admin/HeadshotUploadWizard'));
+const AssetManager             = lazy(() => import('@/components/admin/AssetManager'));
+const EventManagement          = lazy(() => import('@/components/admin/EventManagement'));
+const SponsorManagement        = lazy(() => import('@/components/admin/SponsorManagement'));
+const AvailabilityManager      = lazy(() => import('@/components/admin/AvailabilityManager'));
+const ClaimsReviewManager      = lazy(() => import('@/components/admin/ClaimsReviewManager'));
+const UserMergeManager         = lazy(() => import('@/components/admin/UserMergeManager'));
+const NomineeAssignmentManager = lazy(() => import('@/components/admin/NomineeAssignmentManager'));
+const HolisticScoringPanel     = lazy(() => import('@/components/admin/HolisticScoringPanel'));
+const VerificationDashboard    = lazy(() => import('@/components/admin/VerificationDashboard'));
+const ScoringAnalytics         = lazy(() => import('@/components/admin/ScoringAnalytics'));
+const SalesAnalytics           = lazy(() => import('@/components/admin/SalesAnalytics'));
+const SMEAssignmentPanel       = lazy(() => import('@/components/admin/SMEAssignmentPanel'));
+const StartupReviewPanel       = lazy(() => import('@/components/admin/StartupReviewPanel'));
+const AcceleratorManagement    = lazy(() => import('@/components/admin/AcceleratorManagement'));
+const EnrollmentManagement     = lazy(() => import('@/components/admin/EnrollmentManagement'));
+const MilestoneReview          = lazy(() => import('@/components/admin/MilestoneReview'));
+const CommunityNotesModeration = lazy(() => import('@/components/admin/CommunityNotesModeration'));
+const TestimonialModeration    = lazy(() => import('@/components/admin/TestimonialModeration'));
+const UserManagement           = lazy(() => import('@/components/admin/UserManagement'));
+const RailItemManager          = lazy(() => import('@/components/admin/RailItemManager'));
+const DiscoveryResponsesManager = lazy(() => import('@/components/admin/DiscoveryResponsesManager'));
 import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
@@ -354,7 +354,13 @@ export default function Admin() {
         {/* Page content */}
         <main className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-6 lg:p-8">
-            {renderContent()}
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--accent)] border-t-transparent" />
+              </div>
+            }>
+              {renderContent()}
+            </Suspense>
           </div>
         </main>
       </div>
@@ -367,45 +373,47 @@ export default function Admin() {
       />
 
       {/* ── Modals ── */}
-      {selectedUser && <UserViewModal user={selectedUser} onClose={() => setSelectedUser(null)} />}
+      <Suspense fallback={null}>
+        {selectedUser && <UserViewModal user={selectedUser} onClose={() => setSelectedUser(null)} />}
 
-      {viewingSeason && (
-        <SeasonViewModal
-          season={viewingSeason}
-          onClose={() => setViewingSeason(null)}
-          onDelete={async () => {
-            if (confirm(`Delete "${viewingSeason.name}"?`)) {
-              await Season.delete(viewingSeason.id);
-              setViewingSeason(null);
-              loadAllData();
-            }
-          }}
-        />
-      )}
-
-      {showImportWizard && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-900">Universal Data Import Wizard</h2>
-              <button
-                onClick={() => setShowImportWizard(false)}
-                className="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <UniversalDataWizard
-              onClose={() => setShowImportWizard(false)}
-              onSuccess={() => {
+        {viewingSeason && (
+          <SeasonViewModal
+            season={viewingSeason}
+            onClose={() => setViewingSeason(null)}
+            onDelete={async () => {
+              if (confirm(`Delete "${viewingSeason.name}"?`)) {
+                await Season.delete(viewingSeason.id);
+                setViewingSeason(null);
                 loadAllData();
-                toast({ title: "Import Successful!", description: "Your data has been imported successfully." });
-                setShowImportWizard(false);
-              }}
-            />
+              }
+            }}
+          />
+        )}
+
+        {showImportWizard && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-gray-900">Universal Data Import Wizard</h2>
+                <button
+                  onClick={() => setShowImportWizard(false)}
+                  className="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <UniversalDataWizard
+                onClose={() => setShowImportWizard(false)}
+                onSuccess={() => {
+                  loadAllData();
+                  toast({ title: "Import Successful!", description: "Your data has been imported successfully." });
+                  setShowImportWizard(false);
+                }}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Suspense>
     </div>
   );
 }
