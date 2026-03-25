@@ -27,14 +27,14 @@ const NAV_ITEMS = [
 ];
 
 const RESOURCES = [
-  { label: "Nominee Resources",  role: "nominee",    emoji: "🏅" },
-  { label: "Honoree Resources",  role: "honoree",    emoji: "🏆" },
-  { label: "Student Resources",  role: "student",    emoji: "🎓" },
-  { label: "Career Resources",   role: "career",     emoji: "💼" },
-  { label: "Founder Resources",  role: "founder",    emoji: "🚀" },
-  { label: "Business Resources", role: "business",   emoji: "🏢" },
+  { label: "Nominee Resources",    role: "nominee",    emoji: "🏅" },
+  { label: "Honoree Resources",    role: "honoree",    emoji: "🏆" },
+  { label: "Student Resources",    role: "student",    emoji: "🎓" },
+  { label: "Career Resources",     role: "career",     emoji: "💼" },
+  { label: "Founder Resources",    role: "founder",    emoji: "🚀" },
+  { label: "Business Resources",   role: "business",   emoji: "🏢" },
   { label: "Enterprise Resources", role: "enterprise", emoji: "🏛️" },
-  { label: "Sponsor Resources",  role: "sponsor",    emoji: "⭐" },
+  { label: "Sponsor Resources",    role: "sponsor",    emoji: "⭐" },
 ];
 
 export default function Landing2Sidebar({ activeItem = "Landing" }) {
