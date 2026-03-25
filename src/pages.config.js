@@ -54,8 +54,6 @@ const About                      = lazy(() => import('./pages/About'));
 const AcceleratorHub             = lazy(() => import('./pages/AcceleratorHub'));
 const Admin                      = lazy(() => import('./pages/Admin'));
 const AdminAction                = lazy(() => import('./pages/AdminAction'));
-const AlumniInResearch           = lazy(() => import('./pages/AlumniInResearch'));
-const AlumniRadar                = lazy(() => import('./pages/AlumniRadar'));
 const Arcade                     = lazy(() => import('./pages/Arcade'));
 const ArchiveLanding             = lazy(() => import('./pages/ArchiveLanding'));
 const Arena                      = lazy(() => import('./pages/Arena'));
@@ -65,7 +63,6 @@ const BallotBox                  = lazy(() => import('./pages/BallotBox'));
 const BatchNominations           = lazy(() => import('./pages/BatchNominations'));
 const Biographer                 = lazy(() => import('./pages/Biographer'));
 const Calendar                   = lazy(() => import('./pages/Calendar'));
-const CapitalExchange            = lazy(() => import('./pages/CapitalExchange'));
 const ChessClub                  = lazy(() => import('./pages/ChessClub'));
 const ChessGame                  = lazy(() => import('./pages/ChessGame'));
 const ClaimProfile               = lazy(() => import('./pages/ClaimProfile'));
@@ -75,9 +72,6 @@ const EditProfile                = lazy(() => import('./pages/EditProfile'));
 const EventPage                  = lazy(() => import('./pages/EventPage'));
 const FactoryReset               = lazy(() => import('./pages/FactoryReset'));
 const Feedback                   = lazy(() => import('./pages/Feedback'));
-const FounderApplication         = lazy(() => import('./pages/FounderApplication'));
-const FounderDashboard           = lazy(() => import('./pages/FounderDashboard'));
-const FundraisingTracker         = lazy(() => import('./pages/FundraisingTracker'));
 const GamesLanding               = lazy(() => import('./pages/GamesLanding'));
 const GetStarted                 = lazy(() => import('./pages/GetStarted'));
 const HelpCenter                 = lazy(() => import('./pages/HelpCenter'));
@@ -85,12 +79,8 @@ const Home                       = lazy(() => import('./pages/Home'));
 const HowWePick                  = lazy(() => import('./pages/HowWePick'));
 const Huddle                     = lazy(() => import('./pages/Huddle'));
 const IntelligenceDashboard      = lazy(() => import('./pages/IntelligenceDashboard'));
-const InvestorDashboard          = lazy(() => import('./pages/InvestorDashboard'));
-const InvestorOnboarding         = lazy(() => import('./pages/InvestorOnboarding'));
-const JobDetail                  = lazy(() => import('./pages/JobDetail'));
 const Landing                    = lazy(() => import('./pages/Landing'));
 const Membership                 = lazy(() => import('./pages/Membership'));
-const MentorPortal               = lazy(() => import('./pages/MentorPortal'));
 const MilestoneDetail            = lazy(() => import('./pages/MilestoneDetail'));
 const MissionControl             = lazy(() => import('./pages/MissionControl'));
 const MyFavorites                = lazy(() => import('./pages/MyFavorites'));
@@ -110,16 +100,9 @@ const RadarIntelligence          = lazy(() => import('./pages/RadarIntelligence'
 const RaisingJupiter             = lazy(() => import('./pages/RaisingJupiter'));
 const RankedChoice               = lazy(() => import('./pages/RankedChoice'));
 const ResultsCountdown           = lazy(() => import('./pages/ResultsCountdown'));
-const SMEPortal                  = lazy(() => import('./pages/SMEPortal'));
 const Season4                    = lazy(() => import('./pages/Season4'));
 const Shop                       = lazy(() => import('./pages/Shop'));
-const SignalAnalytics            = lazy(() => import('./pages/SignalAnalytics'));
-const SignalEmbed                = lazy(() => import('./pages/SignalEmbed'));
-const SignalEngineRoadmap        = lazy(() => import('./pages/SignalEngineRoadmap'));
 const SignalFeed                 = lazy(() => import('./pages/SignalFeed'));
-const SignalReview               = lazy(() => import('./pages/SignalReview'));
-const SignalSearch               = lazy(() => import('./pages/SignalSearch'));
-const SignalTimeline             = lazy(() => import('./pages/SignalTimeline'));
 const SpaceNews                  = lazy(() => import('./pages/SpaceNews'));
 const SponsorPitch               = lazy(() => import('./pages/SponsorPitch'));
 const Sponsors                   = lazy(() => import('./pages/Sponsors'));
@@ -141,8 +124,6 @@ export const PAGES = {
     "AcceleratorHub": AcceleratorHub,
     "Admin": Admin,
     "AdminAction": AdminAction,
-    "AlumniInResearch": AlumniInResearch,
-    "AlumniRadar": AlumniRadar,
     "Arcade": Arcade,
     "ArchiveLanding": ArchiveLanding,
     "Arena": Arena,
@@ -152,7 +133,6 @@ export const PAGES = {
     "BatchNominations": BatchNominations,
     "Biographer": Biographer,
     "Calendar": Calendar,
-    "CapitalExchange": CapitalExchange,
     "ChessClub": ChessClub,
     "ChessGame": ChessGame,
     "ClaimProfile": ClaimProfile,
@@ -162,9 +142,6 @@ export const PAGES = {
     "EventPage": EventPage,
     "FactoryReset": FactoryReset,
     "Feedback": Feedback,
-    "FounderApplication": FounderApplication,
-    "FounderDashboard": FounderDashboard,
-    "FundraisingTracker": FundraisingTracker,
     "GamesLanding": GamesLanding,
     "GetStarted": GetStarted,
     "HelpCenter": HelpCenter,
@@ -172,12 +149,8 @@ export const PAGES = {
     "HowWePick": HowWePick,
     "Huddle": Huddle,
     "IntelligenceDashboard": IntelligenceDashboard,
-    "InvestorDashboard": InvestorDashboard,
-    "InvestorOnboarding": InvestorOnboarding,
-    "JobDetail": JobDetail,
     "Landing": Landing,
     "Membership": Membership,
-    "MentorPortal": MentorPortal,
     "MilestoneDetail": MilestoneDetail,
     "MissionControl": MissionControl,
     "MyFavorites": MyFavorites,
@@ -197,16 +170,9 @@ export const PAGES = {
     "RaisingJupiter": RaisingJupiter,
     "RankedChoice": RankedChoice,
     "ResultsCountdown": ResultsCountdown,
-    "SMEPortal": SMEPortal,
     "Season4": Season4,
     "Shop": Shop,
-    "SignalAnalytics": SignalAnalytics,
-    "SignalEmbed": SignalEmbed,
-    "SignalEngineRoadmap": SignalEngineRoadmap,
     "SignalFeed": SignalFeed,
-    "SignalReview": SignalReview,
-    "SignalSearch": SignalSearch,
-    "SignalTimeline": SignalTimeline,
     "SpaceNews": SpaceNews,
     "SponsorPitch": SponsorPitch,
     "Sponsors": Sponsors,
