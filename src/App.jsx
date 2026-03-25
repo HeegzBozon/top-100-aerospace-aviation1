@@ -13,7 +13,6 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const TermsOfService          = lazy(() => import('@/pages/TermsOfService'));
-const RollingCredits          = lazy(() => import('@/pages/RollingCredits'));
 const Colony                  = lazy(() => import('@/pages/Colony'));
 const AnalyticsDashboard      = lazy(() => import('@/pages/AnalyticsDashboard'));
 const GlobalIntelligence      = lazy(() => import('@/pages/GlobalIntelligence'));
@@ -64,7 +63,6 @@ const AuthenticatedApp = () => {
       } />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/discovery" element={<DiscoveryQuestionnaire />} />
-      <Route path="/RollingCredits" element={<RollingCredits />} />
       <Route path="/Colony" element={<Colony />} />
       <Route path="/colony" element={<Colony />} />
       <Route path="/AnalyticsDashboard" element={<AnalyticsDashboard />} />
