@@ -37,6 +37,12 @@
       "port": 5177
     },
     {
+      "name": "sleepy-nash-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5181"],
+      "port": 5181
+    },
+    {
       "name": "worldmonitor-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
