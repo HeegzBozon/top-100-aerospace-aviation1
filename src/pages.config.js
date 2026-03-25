@@ -94,7 +94,6 @@ const PaymentSuccess             = lazy(() => import('./pages/PaymentSuccess'));
 const PrivacyPolicy              = lazy(() => import('./pages/PrivacyPolicy'));
 const Profile                    = lazy(() => import('./pages/Profile'));
 const ProfileView                = lazy(() => import('./pages/ProfileView'));
-const PublicProfile              = lazy(() => import('./pages/PublicProfile'));
 const RadarDashboard             = lazy(() => import('./pages/RadarDashboard'));
 const RadarIntelligence          = lazy(() => import('./pages/RadarIntelligence'));
 const RaisingJupiter             = lazy(() => import('./pages/RaisingJupiter'));
@@ -104,6 +103,7 @@ const Season4                    = lazy(() => import('./pages/Season4'));
 const Shop                       = lazy(() => import('./pages/Shop'));
 const SignalFeed                 = lazy(() => import('./pages/SignalFeed'));
 const SpaceNews                  = lazy(() => import('./pages/SpaceNews'));
+
 const SponsorPitch               = lazy(() => import('./pages/SponsorPitch'));
 const Sponsors                   = lazy(() => import('./pages/Sponsors'));
 const StartupDirectory           = lazy(() => import('./pages/StartupDirectory'));
@@ -164,7 +164,6 @@ export const PAGES = {
     "PrivacyPolicy": PrivacyPolicy,
     "Profile": Profile,
     "ProfileView": ProfileView,
-    "PublicProfile": PublicProfile,
     "RadarDashboard": RadarDashboard,
     "RadarIntelligence": RadarIntelligence,
     "RaisingJupiter": RaisingJupiter,
@@ -174,6 +173,7 @@ export const PAGES = {
     "Shop": Shop,
     "SignalFeed": SignalFeed,
     "SpaceNews": SpaceNews,
+
     "SponsorPitch": SponsorPitch,
     "Sponsors": Sponsors,
     "StartupDirectory": StartupDirectory,
