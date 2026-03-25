@@ -27,14 +27,14 @@ const NAV_ITEMS = [
 ];
 
 const RESOURCES = [
-  { label: "Nominee Resources", href: "NomineeResources", emoji: "🏅" },
-  { label: "Honoree Resources", href: "HonoreeResources", emoji: "🏆" },
-  { label: "Student Resources", href: "StudentResources", emoji: "🎓" },
-  { label: "Career Resources", href: "CareerResources", emoji: "💼" },
-  { label: "Founder Resources", href: "FounderResources", emoji: "🚀" },
-  { label: "Business Resources", href: "BusinessResources", emoji: "🏢" },
-  { label: "Enterprise Resources", href: "EnterpriseResources", emoji: "🏛️" },
-  { label: "Sponsor Resources", href: "SponsorResources", emoji: "⭐" },
+  { label: "Nominee Resources",   href: "Resources", tab: "nominee",    emoji: "🏅" },
+  { label: "Honoree Resources",   href: "Resources", tab: "honoree",    emoji: "🏆" },
+  { label: "Student Resources",   href: "Resources", tab: "student",    emoji: "🎓" },
+  { label: "Career Resources",    href: "Resources", tab: "career",     emoji: "💼" },
+  { label: "Founder Resources",   href: "Resources", tab: "founder",    emoji: "🚀" },
+  { label: "Business Resources",  href: "Resources", tab: "business",   emoji: "🏢" },
+  { label: "Enterprise Resources",href: "Resources", tab: "enterprise", emoji: "🏛️" },
+  { label: "Sponsor Resources",   href: "Resources", tab: "sponsor",    emoji: "⭐" },
 ];
 
 export default function Landing2Sidebar({ activeItem = "Landing" }) {
@@ -126,7 +126,7 @@ export default function Landing2Sidebar({ activeItem = "Landing" }) {
           {RESOURCES.map(resource => (
             <Link
               key={resource.label}
-              to={createPageUrl(resource.href)}
+              to={`${createPageUrl(resource.href)}?tab=${resource.tab}`}
               className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/50 transition-all text-sm"
               style={{ color: brandColors.navyDeep, fontFamily: "'Montserrat', sans-serif" }}
             >
