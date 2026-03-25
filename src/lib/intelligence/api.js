@@ -214,6 +214,176 @@ export async function fetchWingbitsBatch(icao24List, signal) {
   return result;
 }
 
+// ── Wingbits Live Flights Batch ───────────────────────────
+// POSTs 7 area queries (radius + box) to the Wingbits flights endpoint.
+// 30-second TTL — balances freshness against the rate budget.
+const _liveFlightsCache = new Map();
+const LIVE_FLIGHTS_TTL = 30 * 1000;
+
+/**
+ * Fetch live flights for 7 pre-defined aerospace-relevant areas in one POST request.
+ * Returns Array<{ alias: string, data: Flight[] }> or null on failure / missing key.
+ */
+export async function fetchWingbitsLiveFlightsBatch(signal) {
+  const cached = _liveFlightsCache.get('batch');
+  if (cached && Date.now() - cached.fetchedAt < LIVE_FLIGHTS_TTL) return cached.data;
+
+  const apiKey = _wingbitsKey();
+  if (!apiKey) return null;
+
+  const body = [
+    { alias: 'cape_canaveral', by: 'radius', la: 28.3922,  lo: -80.6077,  rad: 200, unit: 'km' },
+    { alias: 'boca_chica',     by: 'radius', la: 25.9969,  lo: -97.1572,  rad: 200, unit: 'km' },
+    { alias: 'vandenberg',     by: 'radius', la: 34.7420,  lo: -120.5724, rad: 200, unit: 'km' },
+    { alias: 'mahia',          by: 'radius', la: -39.2594, lo: 177.8645,  rad: 200, unit: 'km' },
+    { alias: 'eastern_med',    by: 'box',    la: 34.5,     lo: 28.0,      w: 900,   h: 700, unit: 'km' },
+    { alias: 'baltic',         by: 'box',    la: 58.0,     lo: 14.0,      w: 900,   h: 700, unit: 'km' },
+    { alias: 'black_sea',      by: 'box',    la: 43.0,     lo: 28.0,      w: 900,   h: 600, unit: 'km' },
+  ];
+
+  try {
+    const res = await fetch('https://customer-api.wingbits.com/v1/flights', {
+      method: 'POST',
+      headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal,
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    _liveFlightsCache.set('batch', { data, fetchedAt: Date.now() });
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+// ── Wingbits GPS Jam (multi-region) ──────────────────────
+// Queries 3 bounding boxes in parallel, merges hexes, deduplicates by h3Index.
+// 5-minute TTL — GPS interference patterns shift slowly.
+const _gpsJamCache = new Map();
+const GPS_JAM_TTL = 5 * 60 * 1000;
+
+const _GPS_JAM_BOXES = [
+  { min_lat: 30, max_lat: 42, min_lng: 25, max_lng: 42 }, // Eastern Mediterranean
+  { min_lat: 54, max_lat: 64, min_lng: 14, max_lng: 28 }, // Baltic
+  { min_lat: 46, max_lat: 56, min_lng: 22, max_lng: 40 }, // Eastern Europe
+];
+
+/**
+ * Fetch live GPS jamming hexes across 3 strategic regions.
+ * Returns { hexes: Array, lastUpdated: string|null }.
+ */
+export async function fetchWingbitsGpsJam(signal) {
+  const cached = _gpsJamCache.get('gps-jam');
+  if (cached && Date.now() - cached.fetchedAt < GPS_JAM_TTL) return cached.data;
+
+  const apiKey = _wingbitsKey();
+  if (!apiKey) return { hexes: [], lastUpdated: null };
+
+  const requests = _GPS_JAM_BOXES.map(box => {
+    const params = new URLSearchParams({
+      min_lat: box.min_lat,
+      max_lat: box.max_lat,
+      min_lng: box.min_lng,
+      max_lng: box.max_lng,
+    });
+    return fetch(`https://customer-api.wingbits.com/v1/gps/jam?${params}`, {
+      headers: { 'x-api-key': apiKey },
+      signal,
+    }).then(res => {
+      if (!res.ok) throw new Error(`GPS jam ${res.status}`);
+      return res.json();
+    });
+  });
+
+  const results = await Promise.allSettled(requests);
+  const allHexes = results
+    .filter(r => r.status === 'fulfilled')
+    .flatMap(r => r.value?.hexes || []);
+
+  // Deduplicate by h3Index
+  const seen = new Set();
+  const mergedHexes = allHexes.filter(h => {
+    if (!h?.h3Index || seen.has(h.h3Index)) return false;
+    seen.add(h.h3Index);
+    return true;
+  });
+
+  const data = {
+    hexes: mergedHexes,
+    lastUpdated: mergedHexes.length > 0 ? new Date().toISOString() : null,
+  };
+  _gpsJamCache.set('gps-jam', { data, fetchedAt: Date.now() });
+  return data;
+}
+
+// ── Wingbits Flight Detail (single ICAO24) ────────────────
+// 10-second TTL — positional data is highly time-sensitive.
+const _flightDetailCache = new Map();
+const FLIGHT_DETAIL_TTL = 10 * 1000;
+
+/**
+ * Fetch live detail for a single ICAO24 hex.
+ * Returns { flight, lastPosition, message } or null on failure / missing key.
+ */
+export async function fetchWingbitsFlightDetail(icao24, signal) {
+  const key = (icao24 || '').toLowerCase();
+  if (!key) return null;
+
+  const cached = _flightDetailCache.get(key);
+  if (cached && Date.now() - cached.fetchedAt < FLIGHT_DETAIL_TTL) return cached.data;
+
+  const apiKey = _wingbitsKey();
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetch(
+      `https://customer-api.wingbits.com/v1/flights/${key}`,
+      { headers: { 'x-api-key': apiKey }, signal }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    _flightDetailCache.set(key, { data, fetchedAt: Date.now() });
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+// ── Wingbits Flight Path (single ICAO24) ─────────────────
+// 60-minute TTL — flight paths change infrequently within a mission window.
+const _flightPathCache = new Map();
+const FLIGHT_PATH_TTL = 60 * 60 * 1000;
+
+/**
+ * Fetch the recorded flight path for a single ICAO24 hex.
+ * Returns { flight: { id, name, path: Array<{latitude, longitude, altitude, timestamp}> } }
+ * or null on failure / missing key.
+ */
+export async function fetchWingbitsFlightPath(icao24, signal) {
+  const key = (icao24 || '').toLowerCase();
+  if (!key) return null;
+
+  const cached = _flightPathCache.get(key);
+  if (cached && Date.now() - cached.fetchedAt < FLIGHT_PATH_TTL) return cached.data;
+
+  const apiKey = _wingbitsKey();
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetch(
+      `https://customer-api.wingbits.com/v1/flights/${key}/path`,
+      { headers: { 'x-api-key': apiKey }, signal }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    _flightPathCache.set(key, { data, fetchedAt: Date.now() });
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 // ── Baltic Dry Index (Nasdaq Data Link, public — no API key required) ────────
 // Dataset: CHRIS/CME_BF1 (BDI futures front month). Returns last 30 rows.
 export async function fetchBDITrend(signal) {
