@@ -207,6 +207,20 @@ Active migration: PLATFORM-66
 - Never "likes" — always "endorsements"
 - Sponsor attribution: "Patron of Record" not "Sponsored by [advertiser]"
 
+## When Things Break (Self-Correction Protocol)
+
+Errors are learning opportunities, not failures. When something breaks:
+
+1. Read the error message and stack trace fully before touching code
+2. Fix the root cause — do not bypass safety checks or work around symptoms
+3. Test the fix
+4. Update the relevant documentation (this file, plan docs, integration guides) with what you learned — API limits, timing constraints, edge cases, better approaches
+5. System is now stronger
+
+**Before writing a new script or utility:** check `scripts/` for existing tools first. Only create new ones if nothing applicable exists.
+
+**Docs are living documents.** When you discover a constraint, a better pattern, or a common error that isn't documented — update the doc. Don't create or overwrite docs without good reason, but do improve them continuously.
+
 ## Contact / Escalate
 
 If a ticket is ambiguous, underdefined, or blocked by a missing dependency:
