@@ -62,7 +62,6 @@ const ArchiveLanding             = lazy(() => import('./pages/ArchiveLanding'));
 const Arena                      = lazy(() => import('./pages/Arena'));
 const Article                    = lazy(() => import('./pages/Article'));
 const Articles                   = lazy(() => import('./pages/Articles'));
-const AvailabilitySettings       = lazy(() => import('./pages/AvailabilitySettings'));
 const BallotBox                  = lazy(() => import('./pages/BallotBox'));
 const BatchNominations           = lazy(() => import('./pages/BatchNominations'));
 const Biographer                 = lazy(() => import('./pages/Biographer'));
@@ -73,13 +72,10 @@ const CareerResources            = lazy(() => import('./pages/CareerResources'))
 const ChessClub                  = lazy(() => import('./pages/ChessClub'));
 const ChessGame                  = lazy(() => import('./pages/ChessGame'));
 const ClaimProfile               = lazy(() => import('./pages/ClaimProfile'));
-const ClientDashboard            = lazy(() => import('./pages/ClientDashboard'));
 const Comms                      = lazy(() => import('./pages/Comms'));
-const CompareServices            = lazy(() => import('./pages/CompareServices'));
 const DemoDayEvent               = lazy(() => import('./pages/DemoDayEvent'));
 const Demographics               = lazy(() => import('./pages/Demographics'));
 const EditProfile                = lazy(() => import('./pages/EditProfile'));
-const EmployerDashboard          = lazy(() => import('./pages/EmployerDashboard'));
 const EnterpriseResources        = lazy(() => import('./pages/EnterpriseResources'));
 const EventPage                  = lazy(() => import('./pages/EventPage'));
 const FactoryReset               = lazy(() => import('./pages/FactoryReset'));
@@ -90,12 +86,10 @@ const FounderDashboard           = lazy(() => import('./pages/FounderDashboard')
 const FounderResources           = lazy(() => import('./pages/FounderResources'));
 const FundraisingTracker         = lazy(() => import('./pages/FundraisingTracker'));
 const GamesLanding               = lazy(() => import('./pages/GamesLanding'));
-const Colony                     = lazy(() => import('./pages/Colony'));
 const GetStarted                 = lazy(() => import('./pages/GetStarted'));
 const HabitWizard                = lazy(() => import('./pages/HabitWizard'));
 const HelpCenter                 = lazy(() => import('./pages/HelpCenter'));
 const Home                       = lazy(() => import('./pages/Home'));
-const Home2                      = lazy(() => import('./pages/Home2'));
 const HonoreeResources           = lazy(() => import('./pages/HonoreeResources'));
 const HowWePick                  = lazy(() => import('./pages/HowWePick'));
 const Huddle                     = lazy(() => import('./pages/Huddle'));
@@ -112,7 +106,6 @@ const MentorPortal               = lazy(() => import('./pages/MentorPortal'));
 const MilestoneDetail            = lazy(() => import('./pages/MilestoneDetail'));
 const MissionControl             = lazy(() => import('./pages/MissionControl'));
 const MissionVisionValues        = lazy(() => import('./pages/MissionVisionValues'));
-const MyBookings                 = lazy(() => import('./pages/MyBookings'));
 const MyFavorites                = lazy(() => import('./pages/MyFavorites'));
 const Nominations                = lazy(() => import('./pages/Nominations'));
 const Nominee                    = lazy(() => import('./pages/Nominee'));
@@ -120,36 +113,21 @@ const NomineeResources           = lazy(() => import('./pages/NomineeResources')
 const NomineesByDomain           = lazy(() => import('./pages/NomineesByDomain'));
 const NotFound                   = lazy(() => import('./pages/NotFound'));
 const OriginStory                = lazy(() => import('./pages/OriginStory'));
-const PIPlanner                  = lazy(() => import('./pages/PIPlanner'));
 const Passport                   = lazy(() => import('./pages/Passport'));
 const PaymentCancel              = lazy(() => import('./pages/PaymentCancel'));
 const PaymentSuccess             = lazy(() => import('./pages/PaymentSuccess'));
-const PayoutDashboard            = lazy(() => import('./pages/PayoutDashboard'));
-const PayoutSettings             = lazy(() => import('./pages/PayoutSettings'));
 const PrivacyPolicy              = lazy(() => import('./pages/PrivacyPolicy'));
 const Profile                    = lazy(() => import('./pages/Profile'));
 const ProfileView                = lazy(() => import('./pages/ProfileView'));
-const ProviderApplication        = lazy(() => import('./pages/ProviderApplication'));
-const ProviderDashboard          = lazy(() => import('./pages/ProviderDashboard'));
-const ProviderInbox              = lazy(() => import('./pages/ProviderInbox'));
 const PublicProfile              = lazy(() => import('./pages/PublicProfile'));
 const Quests                     = lazy(() => import('./pages/Quests'));
 const RadarDashboard             = lazy(() => import('./pages/RadarDashboard'));
 const RadarIntelligence          = lazy(() => import('./pages/RadarIntelligence'));
 const RaisingJupiter             = lazy(() => import('./pages/RaisingJupiter'));
 const RankedChoice               = lazy(() => import('./pages/RankedChoice'));
-const RecruitmentRun             = lazy(() => import('./pages/RecruitmentRun'));
 const ResultsCountdown           = lazy(() => import('./pages/ResultsCountdown'));
 const SMEPortal                  = lazy(() => import('./pages/SMEPortal'));
-const SWE5TestArchitecture       = lazy(() => import('./pages/SWE5TestArchitecture'));
-const SWE6QualificationPlan      = lazy(() => import('./pages/SWE6QualificationPlan'));
-const SYS4IntegrationPlan        = lazy(() => import('./pages/SYS4IntegrationPlan'));
-const SYS5SystemValidation       = lazy(() => import('./pages/SYS5SystemValidation'));
 const Season4                    = lazy(() => import('./pages/Season4'));
-const ServiceCategories          = lazy(() => import('./pages/ServiceCategories'));
-const ServiceDetail              = lazy(() => import('./pages/ServiceDetail'));
-const ServicePackagesMarketplace = lazy(() => import('./pages/ServicePackagesMarketplace'));
-const ServicesLanding            = lazy(() => import('./pages/ServicesLanding'));
 const Shop                       = lazy(() => import('./pages/Shop'));
 const SignalAnalytics            = lazy(() => import('./pages/SignalAnalytics'));
 const SignalEmbed                = lazy(() => import('./pages/SignalEmbed'));
@@ -164,9 +142,6 @@ const SponsorResources           = lazy(() => import('./pages/SponsorResources')
 const Sponsors                   = lazy(() => import('./pages/Sponsors'));
 const StartupDirectory           = lazy(() => import('./pages/StartupDirectory'));
 const StudentResources           = lazy(() => import('./pages/StudentResources'));
-const TalentExchange             = lazy(() => import('./pages/TalentExchange'));
-const TalentExchangeLanding      = lazy(() => import('./pages/TalentExchangeLanding'));
-const TalentLanding              = lazy(() => import('./pages/TalentLanding'));
 const TheHangar                  = lazy(() => import('./pages/TheHangar'));
 const Tips                       = lazy(() => import('./pages/Tips'));
 const Top100Nominees2025         = lazy(() => import('./pages/Top100Nominees2025'));
@@ -191,7 +166,6 @@ export const PAGES = {
     "Arena": Arena,
     "Article": Article,
     "Articles": Articles,
-    "AvailabilitySettings": AvailabilitySettings,
     "BallotBox": BallotBox,
     "BatchNominations": BatchNominations,
     "Biographer": Biographer,
@@ -202,13 +176,10 @@ export const PAGES = {
     "ChessClub": ChessClub,
     "ChessGame": ChessGame,
     "ClaimProfile": ClaimProfile,
-    "ClientDashboard": ClientDashboard,
     "Comms": Comms,
-    "CompareServices": CompareServices,
     "DemoDayEvent": DemoDayEvent,
     "Demographics": Demographics,
     "EditProfile": EditProfile,
-    "EmployerDashboard": EmployerDashboard,
     "EnterpriseResources": EnterpriseResources,
     "EventPage": EventPage,
     "FactoryReset": FactoryReset,
@@ -219,12 +190,10 @@ export const PAGES = {
     "FounderResources": FounderResources,
     "FundraisingTracker": FundraisingTracker,
     "GamesLanding": GamesLanding,
-    "Colony": Colony,
     "GetStarted": GetStarted,
     "HabitWizard": HabitWizard,
     "HelpCenter": HelpCenter,
     "Home": Home,
-    "Home2": Home2,
     "HonoreeResources": HonoreeResources,
     "HowWePick": HowWePick,
     "Huddle": Huddle,
@@ -241,7 +210,6 @@ export const PAGES = {
     "MilestoneDetail": MilestoneDetail,
     "MissionControl": MissionControl,
     "MissionVisionValues": MissionVisionValues,
-    "MyBookings": MyBookings,
     "MyFavorites": MyFavorites,
     "Nominations": Nominations,
     "Nominee": Nominee,
@@ -249,36 +217,21 @@ export const PAGES = {
     "NomineesByDomain": NomineesByDomain,
     "NotFound": NotFound,
     "OriginStory": OriginStory,
-    "PIPlanner": PIPlanner,
     "Passport": Passport,
     "PaymentCancel": PaymentCancel,
     "PaymentSuccess": PaymentSuccess,
-    "PayoutDashboard": PayoutDashboard,
-    "PayoutSettings": PayoutSettings,
     "PrivacyPolicy": PrivacyPolicy,
     "Profile": Profile,
     "ProfileView": ProfileView,
-    "ProviderApplication": ProviderApplication,
-    "ProviderDashboard": ProviderDashboard,
-    "ProviderInbox": ProviderInbox,
     "PublicProfile": PublicProfile,
     "Quests": Quests,
     "RadarDashboard": RadarDashboard,
     "RadarIntelligence": RadarIntelligence,
     "RaisingJupiter": RaisingJupiter,
     "RankedChoice": RankedChoice,
-    "RecruitmentRun": RecruitmentRun,
     "ResultsCountdown": ResultsCountdown,
     "SMEPortal": SMEPortal,
-    "SWE5TestArchitecture": SWE5TestArchitecture,
-    "SWE6QualificationPlan": SWE6QualificationPlan,
-    "SYS4IntegrationPlan": SYS4IntegrationPlan,
-    "SYS5SystemValidation": SYS5SystemValidation,
     "Season4": Season4,
-    "ServiceCategories": ServiceCategories,
-    "ServiceDetail": ServiceDetail,
-    "ServicePackagesMarketplace": ServicePackagesMarketplace,
-    "ServicesLanding": ServicesLanding,
     "Shop": Shop,
     "SignalAnalytics": SignalAnalytics,
     "SignalEmbed": SignalEmbed,
@@ -293,9 +246,6 @@ export const PAGES = {
     "Sponsors": Sponsors,
     "StartupDirectory": StartupDirectory,
     "StudentResources": StudentResources,
-    "TalentExchange": TalentExchange,
-    "TalentExchangeLanding": TalentExchangeLanding,
-    "TalentLanding": TalentLanding,
     "TheHangar": TheHangar,
     "Tips": Tips,
     "Top100Nominees2025": Top100Nominees2025,

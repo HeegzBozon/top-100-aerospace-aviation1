@@ -30,6 +30,13 @@
       "port": 4173
     },
     {
+      "name": "distracted-lamport-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5177"],
+      "cwd": "/Users/heegzbozon/Downloads/inventing-me-vault/top-100-aerospace-aviation1/.claude/worktrees/distracted-lamport",
+      "port": 5177
+    },
+    {
       "name": "worldmonitor-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],

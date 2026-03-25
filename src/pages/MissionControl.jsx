@@ -7,8 +7,6 @@ import { GameProvider, useGame } from '@/components/games/GameContext';
 import RunwayToOrbit from '@/components/games/RunwayToOrbit';
 import FounderDashboard from './FounderDashboard';
 import InvestorDashboard from './InvestorDashboard';
-import EmployerDashboard from './EmployerDashboard';
-import ProviderDashboard from './ProviderDashboard';
 
 import Season3ReOnboarding from '@/components/onboarding/Season3ReOnboarding';
 
@@ -847,8 +845,6 @@ function MissionControlContent() {
 
           {activeModule === "founder" && <div className="min-h-full bg-white dark:bg-[#0c1929]"><FounderDashboard /></div>}
           {activeModule === "investor" && <div className="min-h-full bg-white dark:bg-[#0c1929]"><InvestorDashboard /></div>}
-          {activeModule === "employer" && <div className="min-h-full bg-white dark:bg-[#0c1929]"><EmployerDashboard /></div>}
-          {activeModule === "provider" && <div className="min-h-full bg-white dark:bg-[#0c1929]"><ProviderDashboard /></div>}
 
         </div>
       </div>
