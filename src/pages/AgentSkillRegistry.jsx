@@ -21,6 +21,7 @@ import RegistryTeamManager from '@/components/admin/RegistryTeamManager';
 import SAFeHierarchyViewer from '@/components/admin/SAFeHierarchyViewer';
 import SkillManager from '@/components/admin/SkillManager';
 import ResourceManager from '@/components/admin/ResourceManager';
+import AgentManager from '@/components/admin/AgentManager';
 import { skillToMarkdown, markdownToSkill, downloadMarkdown } from '@/lib/agentSkillMarkdown';
 
 const PERSONA_ROLES = [
@@ -193,8 +194,10 @@ export default function AgentSkillRegistry() {
             </TabsContent>
 
             <TabsContent value="agents" className="space-y-6">
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <AgentManager />
+              
+              {/* Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { label: 'Total Skills', value: skills.length, Icon: Bot, color: 'text-indigo-600' },
               { label: 'Active', value: activeCount, Icon: Zap, color: 'text-green-600' },
