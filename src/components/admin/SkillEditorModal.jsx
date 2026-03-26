@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ const PERSONA_ROLES = [
 const EMPTY_SKILL = {
   name: '', display_name: '', persona_role: 'custom', description: '',
   instructions: '', output_format: '', allowed_tools: [], tags: [],
-  is_active: true, tdd_enforced: false, version: '1.0.0',
+  is_active: true, tdd_enforced: false, version: '1.0.0', team_id: '',
 };
 
 export default function SkillEditorModal({ open, onClose, skill, onSaved }) {
@@ -27,6 +28,11 @@ export default function SkillEditorModal({ open, onClose, skill, onSaved }) {
   const [saving, setSaving] = useState(false);
   const [tagsInput, setTagsInput] = useState('');
   const [toolsInput, setToolsInput] = useState('');
+
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams-for-skill-editor'],
+    queryFn: () => base44.entities.AgentTeam.list(),
+  });
 
   useEffect(() => {
     if (skill) {
@@ -120,6 +126,19 @@ export default function SkillEditorModal({ open, onClose, skill, onSaved }) {
             <div className="space-y-1.5">
               <Label htmlFor="tags">Tags (comma-separated)</Label>
               <Input id="tags" placeholder="testing, quality, automation" value={tagsInput} onChange={e => setTagsInput(e.target.value)} />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Assign to Team (optional)</Label>
+              <Select value={form.team_id || ''} onValueChange={v => set('team_id', v || '')}>
+                <SelectTrigger><SelectValue placeholder="No team assigned" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>None</SelectItem>
+                  {teams.map(t => (
+                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex items-center gap-6 pt-2">

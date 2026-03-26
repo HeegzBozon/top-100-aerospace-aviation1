@@ -25,6 +25,20 @@ export default function TeamManager() {
     queryFn: () => base44.entities.AgileReleaseTrain.list(),
   });
 
+  const { data: teamSkills = {}, isLoading: skillsLoading } = useQuery({
+    queryKey: ['team-skills'],
+    queryFn: async () => {
+      const skills = await base44.entities.AgentSkill.list();
+      return skills.reduce((acc, s) => {
+        if (s.team_id) {
+          if (!acc[s.team_id]) acc[s.team_id] = [];
+          acc[s.team_id].push(s);
+        }
+        return acc;
+      }, {});
+    },
+  });
+
   const createTeamMutation = useMutation({
     mutationFn: (data) => base44.entities.AgentTeam.create(data),
     onSuccess: () => {
@@ -125,7 +139,22 @@ export default function TeamManager() {
                     <div className="flex-1">
                       <h3 className="font-semibold text-slate-900">{team.name}</h3>
                       <p className="text-sm text-slate-500">{team.description}</p>
-                      <div className="text-xs text-slate-400 mt-2">{team.member_count || 0} members</div>
+                      <div className="text-xs text-slate-600 mt-3 space-y-1">
+                        {teamSkills[team.id]?.length > 0 ? (
+                          <>
+                            <div className="font-medium">Skills ({teamSkills[team.id].length}):</div>
+                            <div className="flex flex-wrap gap-1">
+                              {teamSkills[team.id].map(skill => (
+                                <span key={skill.id} className="bg-slate-100 px-2 py-0.5 rounded text-xs">
+                                  {skill.display_name}
+                                </span>
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-slate-400">No skills assigned</div>
+                        )}
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       <Button size="sm" variant="outline" onClick={() => handleEditTeam(team)}>
