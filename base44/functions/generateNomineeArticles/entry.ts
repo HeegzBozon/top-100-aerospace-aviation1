@@ -59,6 +59,17 @@ Format the article in clean markdown with H2 headers for each section.`;
           article_status: 'draft',
         });
 
+        // Create a draft ScheduledPost for the editorial pipeline
+        await base44.asServiceRole.entities.ScheduledPost.create({
+          title: `${nominee.name} — Editorial Spotlight`,
+          content: response,
+          status: 'draft',
+          nominee_id: nominee.id,
+          user_email: user.email,
+          channels: [],
+          is_editorial: true,
+        });
+
         articles.push({
           nominee_id: nominee.id,
           nominee_name: nominee.name,
