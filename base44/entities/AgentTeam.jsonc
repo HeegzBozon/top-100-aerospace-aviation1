@@ -1,0 +1,36 @@
+{
+  "name": "AgentTeam",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique name for the agent team"
+    },
+    "description": {
+      "type": "string",
+      "description": "Purpose and mission of the team"
+    },
+    "lead_agent_skill_id": {
+      "type": "string",
+      "description": "Optional reference to the AgentSkill that leads this team"
+    },
+    "art_id": {
+      "type": "string",
+      "description": "Reference to the AgileReleaseTrain this team belongs to"
+    },
+    "member_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of agent skills in this team"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this team is currently active"
+    }
+  },
+  "required": [
+    "name",
+    "art_id"
+  ]
+}

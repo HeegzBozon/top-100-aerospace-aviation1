@@ -52,6 +52,10 @@
       },
       "description": "Categorization tags (e.g., 'testing', 'frontend', 'backend', 'planning')"
     },
+    "team_id": {
+      "type": "string",
+      "description": "Optional reference to the AgentTeam this skill belongs to"
+    },
     "is_active": {
       "type": "boolean",
       "default": true,

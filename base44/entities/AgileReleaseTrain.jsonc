@@ -1,0 +1,36 @@
+{
+  "name": "AgileReleaseTrain",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the Agile Release Train"
+    },
+    "description": {
+      "type": "string",
+      "description": "Value stream delivered by this ART"
+    },
+    "solution_train_id": {
+      "type": "string",
+      "description": "Optional reference to the SolutionTrain this ART belongs to"
+    },
+    "program_increment_id": {
+      "type": "string",
+      "description": "Reference to the current Program Increment"
+    },
+    "team_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of agent teams in this ART"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this ART is currently active"
+    }
+  },
+  "required": [
+    "name",
+    "program_increment_id"
+  ]
+}

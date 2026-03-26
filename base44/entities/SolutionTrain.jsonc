@@ -1,0 +1,31 @@
+{
+  "name": "SolutionTrain",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the Solution Train"
+    },
+    "description": {
+      "type": "string",
+      "description": "Vision and mission for the large-scale solution"
+    },
+    "vision": {
+      "type": "string",
+      "description": "Extended vision statement for this solution train"
+    },
+    "art_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of ARTs in this solution train"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this solution train is currently active"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
