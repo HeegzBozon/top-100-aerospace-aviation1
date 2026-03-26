@@ -1,0 +1,773 @@
+{
+  "name": "Nominee",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Full name of the nominee"
+    },
+    "nominee_email": {
+      "type": "string",
+      "description": "Primary email contact for the nominee"
+    },
+    "secondary_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional email addresses associated with this nominee"
+    },
+    "linkedin_profile_url": {
+      "type": "string",
+      "description": "URL to the nominee's LinkedIn profile"
+    },
+    "instagram_url": {
+      "type": "string",
+      "description": "URL to the nominee's Instagram profile"
+    },
+    "tiktok_url": {
+      "type": "string",
+      "description": "URL to the nominee's TikTok profile"
+    },
+    "youtube_url": {
+      "type": "string",
+      "description": "URL to the nominee's YouTube channel"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country where the nominee is based"
+    },
+    "continent": {
+      "type": "string",
+      "enum": [
+        "Africa",
+        "Antarctica",
+        "Asia",
+        "Europe",
+        "North America",
+        "Oceania",
+        "South America"
+      ],
+      "description": "Continent where the nominee is based, derived from country"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Industry or sector the nominee works in"
+    },
+    "description": {
+      "type": "string",
+      "description": "A one-sentence summary about the nominee"
+    },
+    "professional_role": {
+      "type": "string",
+      "description": "Their professional role or area of expertise"
+    },
+    "linkedin_follow_reason": {
+      "type": "string",
+      "description": "Why people should follow them on LinkedIn"
+    },
+    "linkedin_proudest_achievement": {
+      "type": "string",
+      "description": "What post or achievement they are most proud of on LinkedIn"
+    },
+    "nominated_by": {
+      "type": "string",
+      "description": "Email of the person who nominated them"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "active",
+        "rejected",
+        "winner",
+        "finalist"
+      ],
+      "default": "pending",
+      "description": "Nomination status. 'Active' means they are in the current voting pool."
+    },
+    "claim_status": {
+      "type": "string",
+      "enum": [
+        "unclaimed",
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "unclaimed",
+      "description": "Profile claim status for admin approval workflow"
+    },
+    "claim_requested_by": {
+      "type": "string",
+      "description": "Email of user who requested to claim this profile"
+    },
+    "claim_requested_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the claim was requested"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "ID of the season this nominee belongs to"
+    },
+    "title": {
+      "type": "string",
+      "description": "Job title or role"
+    },
+    "company": {
+      "type": "string",
+      "description": "Company or organization"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Profile photo URL"
+    },
+    "photo_url": {
+      "type": "string",
+      "description": "Legacy field for photo URL from import"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Extended biography or achievements"
+    },
+    "bio_extended": {
+      "type": "string",
+      "description": "Comprehensive biography for unified talent graph profile"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Personal or professional website"
+    },
+    "additional_links": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional links or endorsements"
+    },
+    "career_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "company_name": {
+            "type": "string"
+          },
+          "role_title": {
+            "type": "string"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Chronological career history for talent graph"
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "institution_name": {
+            "type": "string"
+          },
+          "degree": {
+            "type": "string"
+          },
+          "field_of_study": {
+            "type": "string"
+          },
+          "graduation_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "description": "Educational background"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Core competencies and technical skills"
+    },
+    "affiliations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Professional organizations, societies, boards"
+    },
+    "verified_status": {
+      "type": "string",
+      "enum": [
+        "unverified",
+        "self_verified",
+        "partially_verified",
+        "fully_verified"
+      ],
+      "default": "unverified",
+      "description": "Profile verification level"
+    },
+    "impact_summary": {
+      "type": "string",
+      "description": "Curated summary of major career impacts and contributions"
+    },
+    "social_stats": {
+      "type": "object",
+      "properties": {
+        "linkedin_followers": {
+          "type": "number",
+          "default": 0
+        },
+        "linkedin_connections": {
+          "type": "number",
+          "default": 0
+        },
+        "tiktok_followers": {
+          "type": "number",
+          "default": 0
+        },
+        "tiktok_likes": {
+          "type": "number",
+          "default": 0
+        },
+        "tiktok_videos": {
+          "type": "number",
+          "default": 0
+        },
+        "instagram_followers": {
+          "type": "number",
+          "default": 0
+        },
+        "youtube_subscribers": {
+          "type": "number",
+          "default": 0
+        },
+        "youtube_views": {
+          "type": "number",
+          "default": 0
+        },
+        "total_followers": {
+          "type": "number",
+          "default": 0
+        },
+        "last_synced": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Aggregated social media statistics"
+    },
+    "elo_rating": {
+      "type": "number",
+      "default": 1200,
+      "description": "BLENDED ELO rating for ranking"
+    },
+    "borda_score": {
+      "type": "number",
+      "default": 0,
+      "description": "BLENDED calculated score from ranked-choice voting"
+    },
+    "direct_vote_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of direct votes received"
+    },
+    "community_elo_rating": {
+      "type": "number",
+      "default": 1200,
+      "description": "ELO from community votes"
+    },
+    "nominee_elo_rating": {
+      "type": "number",
+      "default": 1200,
+      "description": "ELO from nominee peer votes"
+    },
+    "community_borda_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Borda score from community"
+    },
+    "nominee_borda_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Borda score from nominees"
+    },
+    "community_direct_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Direct vote score from community"
+    },
+    "nominee_direct_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Direct vote score from nominees"
+    },
+    "pairwise_appearance_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Times appeared in pairwise comparison"
+    },
+    "total_votes": {
+      "type": "number",
+      "default": 0,
+      "description": "Total votes involved in"
+    },
+    "rising_star_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Rising Star spotlight votes"
+    },
+    "rock_star_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Rock Star spotlight votes"
+    },
+    "super_star_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Super Star spotlight votes"
+    },
+    "north_star_count": {
+      "type": "number",
+      "default": 0,
+      "description": "North Star spotlight votes"
+    },
+    "endorsement_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Score based on weighted endorsements"
+    },
+    "clout": {
+      "type": "number",
+      "default": 0,
+      "description": "Clout score from quests and activities"
+    },
+    "starpower_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Final Starpower score combining voting dimensions"
+    },
+    "aura_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Final Aura score - weighted combination of all metrics"
+    },
+    "aura_rank_name": {
+      "type": "string",
+      "default": "Bronze I-III",
+      "description": "Current Aura rank name"
+    },
+    "total_spotlights": {
+      "type": "number",
+      "default": 0,
+      "description": "Sum of all spotlight votes"
+    },
+    "total_wins": {
+      "type": "number",
+      "default": 0,
+      "description": "Total pairwise wins"
+    },
+    "total_losses": {
+      "type": "number",
+      "default": 0,
+      "description": "Total pairwise losses"
+    },
+    "win_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Percentage of matchups won"
+    },
+    "is_on_fire": {
+      "type": "boolean",
+      "default": false,
+      "description": "High momentum indicator"
+    },
+    "claimed_by_user_email": {
+      "type": "string",
+      "description": "Email of user who claimed this profile"
+    },
+    "six_word_story": {
+      "type": "string",
+      "description": "AI-generated six-word story"
+    },
+    "raw_nomination_data": {
+      "type": "object",
+      "description": "Original nomination form data"
+    },
+    "league_id": {
+      "type": "string",
+      "description": "ID of the League"
+    },
+    "competition_id": {
+      "type": "string",
+      "description": "ID of the Competition"
+    },
+    "department": {
+      "type": "string",
+      "description": "Department or team"
+    },
+    "category": {
+      "type": "string",
+      "description": "Specific category within competition"
+    },
+    "nomination_reason": {
+      "type": "string",
+      "description": "Reason for nomination"
+    },
+    "organization": {
+      "type": "string",
+      "description": "Organization or company name"
+    },
+    "achievements": {
+      "type": "string",
+      "description": "Notable achievements"
+    },
+    "flower_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total flowers sent to this nominee"
+    },
+    "flowered_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of user emails who have sent flowers to this nominee"
+    },
+    "perception_layer_score": {
+      "type": "number",
+      "default": 0,
+      "description": "V3.0: Perception Layer (30%)"
+    },
+    "objective_layer_score": {
+      "type": "number",
+      "default": 0,
+      "description": "V3.0: Objective Achievement Layer (30%)"
+    },
+    "sme_layer_score": {
+      "type": "number",
+      "default": 0,
+      "description": "V3.0: SME Evaluation Layer (20%)"
+    },
+    "narrative_layer_score": {
+      "type": "number",
+      "default": 0,
+      "description": "V3.0: Narrative & Influence Layer (10%)"
+    },
+    "normalization_layer_score": {
+      "type": "number",
+      "default": 0,
+      "description": "V3.0: Representation & Normalization Layer (10%)"
+    },
+    "ecosystem_layer_score": {
+      "type": "number",
+      "default": 0,
+      "description": "V4.0: Ecosystem Building Layer score"
+    },
+    "holistic_score": {
+      "type": "number",
+      "default": 0,
+      "description": "V3.0: Final holistic score (0-100)"
+    },
+    "impact_metrics": {
+      "type": "object",
+      "properties": {
+        "patents_count": {
+          "type": "number"
+        },
+        "citations_count": {
+          "type": "number"
+        },
+        "missions_flown": {
+          "type": "number"
+        },
+        "flight_hours": {
+          "type": "number"
+        },
+        "research_publications": {
+          "type": "number"
+        },
+        "programs_led": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tech_deployed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "teams_influenced_size": {
+          "type": "number"
+        }
+      },
+      "description": "V3.0: Quantitative impact indicators"
+    },
+    "leadership_metrics": {
+      "type": "object",
+      "properties": {
+        "team_size_managed": {
+          "type": "number"
+        },
+        "budget_responsibility": {
+          "type": "number"
+        },
+        "leadership_roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "awards": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "promotions_count": {
+          "type": "number"
+        }
+      },
+      "description": "V3.0: Leadership indicators"
+    },
+    "innovation_metrics": {
+      "type": "object",
+      "properties": {
+        "patents_filed": {
+          "type": "number"
+        },
+        "startups_founded": {
+          "type": "number"
+        },
+        "tech_commercialized": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "trl_advancement": {
+          "type": "string"
+        },
+        "breakthrough_classifications": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "V3.0: Innovation indicators"
+    },
+    "community_metrics": {
+      "type": "object",
+      "properties": {
+        "mentorship_hours": {
+          "type": "number"
+        },
+        "speaking_engagements": {
+          "type": "number"
+        },
+        "volunteer_hours": {
+          "type": "number"
+        },
+        "board_memberships": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "open_source_contributions": {
+          "type": "number"
+        }
+      },
+      "description": "V3.0: Community contribution metrics"
+    },
+    "ecosystem_metrics": {
+      "type": "object",
+      "properties": {
+        "mentees_in_aerospace": {
+          "type": "number"
+        },
+        "women_mentored": {
+          "type": "number"
+        },
+        "urm_mentored": {
+          "type": "number"
+        },
+        "programs_founded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scholarship_funds_raised": {
+          "type": "number"
+        },
+        "stem_outreach_events": {
+          "type": "number"
+        },
+        "advocacy_initiatives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hiring_pipeline_impact": {
+          "type": "number"
+        },
+        "educational_content_reach": {
+          "type": "number"
+        },
+        "coalition_memberships": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "policy_contributions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "V4.0: Ecosystem building metrics"
+    },
+    "trajectory_metrics": {
+      "type": "object",
+      "properties": {
+        "promotion_velocity": {
+          "type": "number"
+        },
+        "funding_raised": {
+          "type": "number"
+        },
+        "company_growth_rate": {
+          "type": "number"
+        },
+        "follower_count_weighted": {
+          "type": "number"
+        },
+        "career_stage": {
+          "type": "string",
+          "enum": [
+            "early",
+            "mid",
+            "senior",
+            "executive"
+          ]
+        },
+        "momentum_score": {
+          "type": "number"
+        }
+      },
+      "description": "V3.0: Trajectory indicators"
+    },
+    "discipline": {
+      "type": "string",
+      "enum": [
+        "space_rd",
+        "commercial_aviation",
+        "defense",
+        "manufacturing",
+        "operations",
+        "engineering",
+        "policy",
+        "entrepreneurship"
+      ],
+      "description": "V3.0: Primary discipline for normalization"
+    },
+    "verification_status": {
+      "type": "object",
+      "properties": {
+        "linkedin_verified": {
+          "type": "boolean"
+        },
+        "employer_verified": {
+          "type": "boolean"
+        },
+        "sme_reviewed": {
+          "type": "boolean"
+        },
+        "metrics_validated": {
+          "type": "boolean"
+        },
+        "ecosystem_validated": {
+          "type": "boolean"
+        }
+      },
+      "description": "V3.0: Verification checkpoints"
+    },
+    "narrative_analysis": {
+      "type": "object",
+      "properties": {
+        "arc_strength": {
+          "type": "number"
+        },
+        "clarity_score": {
+          "type": "number"
+        },
+        "persuasion_strength": {
+          "type": "number"
+        },
+        "domain_mastery": {
+          "type": "number"
+        }
+      },
+      "description": "V3.0: AI-extracted narrative signals"
+    },
+    "orcid_id": {
+      "type": "string",
+      "description": "ORCID identifier for academic authors"
+    },
+    "email_domain": {
+      "type": "string",
+      "description": "Email domain for potential organizational matching"
+    },
+    "organization_history": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of past and current organizations/employers"
+    },
+    "editorial_article": {
+      "type": "string",
+      "description": "Editorial article written by journalist agent about this nominee"
+    },
+    "article_generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the editorial article was generated"
+    },
+    "article_status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "pending"
+      ],
+      "default": "draft",
+      "description": "Publication status of the editorial article"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "nominated_by"
+  ]
+}
