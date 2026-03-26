@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { project, status, maxResults = 50, startAt = 0 } = body;
+    const { project, status, maxResults = 50, startAt = 0, jql: rawJql } = body;
 
     const instanceUrl = Deno.env.get('JIRA_INSTANCE_URL');
     const apiToken = Deno.env.get('JIRA_API_TOKEN');
@@ -24,16 +24,20 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Jira credentials not configured' }, { status: 500 });
     }
 
-    // Build JQL query — the new /search/jql endpoint requires bounded queries
-    const conditions = [];
-    if (project) {
-      conditions.push(`project = "${project}"`);
+    // Allow raw JQL override, otherwise build from params
+    let jql;
+    if (rawJql) {
+      jql = rawJql;
     } else {
-      // Default: fetch from all projects updated in the last 90 days
-      conditions.push('updated >= -90d');
+      const conditions = [];
+      if (project) {
+        conditions.push(`project = "${project}"`);
+      } else {
+        conditions.push('updated >= -90d');
+      }
+      if (status) conditions.push(`status = "${status}"`);
+      jql = conditions.join(' AND ') + ' ORDER BY updated DESC';
     }
-    if (status) conditions.push(`status = "${status}"`);
-    const jql = conditions.join(' AND ') + ' ORDER BY updated DESC';
 
     const params = new URLSearchParams({
       jql,
