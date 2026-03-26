@@ -6,6 +6,7 @@ import PostComposer from "@/components/publisher/PostComposer.jsx";
 import PostQueue from "@/components/publisher/PostQueue";
 import PublisherCalendar from "@/components/publisher/PublisherCalendar";
 import EditorialKanban from "@/components/publisher/EditorialKanban";
+import EditorialPipeline from "@/components/publisher/EditorialPipeline";
 import CommunityFeed from "@/components/publisher/CommunityFeed";
 import ChannelManager from "@/components/publisher/ChannelManager";
 import { base44 } from "@/api/base44Client";
@@ -114,6 +115,7 @@ export default function Publisher() {
           <TabsList className="mb-6 h-auto p-1 rounded-xl border border-white/[0.07]" style={{background: "rgba(255,255,255,0.04)"}}>
             {[
               { value: "queue", icon: Layers, label: "Queue" },
+              { value: "pipeline", icon: Layers, label: "Pipeline" },
               { value: "calendar", icon: CalendarDays, label: "Calendar" },
               { value: "rd", icon: FlaskConical, label: "R&D" },
               { value: "community", icon: Users, label: "Community" },
@@ -144,6 +146,10 @@ export default function Publisher() {
               onRefresh={refetchPosts}
               onNewPost={() => handleCompose()}
             />
+          </TabsContent>
+
+          <TabsContent value="pipeline">
+            <EditorialPipeline userEmail={user?.email} />
           </TabsContent>
 
           <TabsContent value="calendar">
