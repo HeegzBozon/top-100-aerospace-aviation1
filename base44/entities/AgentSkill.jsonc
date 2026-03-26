@@ -74,6 +74,52 @@
     "last_updated_by": {
       "type": "string",
       "description": "Email of the admin who last modified this skill"
+    },
+    "ai_agent_function_type": {
+      "type": "string",
+      "enum": [
+        "generator",
+        "critic",
+        "verifier",
+        "manager",
+        "executor",
+        "custom"
+      ],
+      "description": "Role differentiation for AI agents based on computational strengths (HIT framework)"
+    },
+    "allowed_domains": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of domain boundaries this AI agent can operate within (e.g., 'frontend', 'backend', 'data-pipeline')"
+    },
+    "data_access_policies": {
+      "type": "object",
+      "properties": {
+        "can_read_entities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of entity types this agent can read"
+        },
+        "can_write_entities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of entity types this agent can write"
+        },
+        "restricted_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Fields this agent cannot access (e.g., 'user_passwords', 'api_keys')"
+        }
+      },
+      "description": "Explicit operational boundaries defining data access for AI agents (Algorithmic Bureaucracy)"
     }
   },
   "required": [

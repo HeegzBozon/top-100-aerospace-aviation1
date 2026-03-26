@@ -23,6 +23,15 @@
       "type": "boolean",
       "default": true,
       "description": "Whether this solution train is currently active"
+    },
+    "machine_readable_knowledge_base_url": {
+      "type": "string",
+      "description": "URL or reference to externalized context and strategic intent for Algorithmic Bureaucracy \u2014 enables human and AI agents to be hot-swappable, zero-latency processing nodes"
+    },
+    "hybrid_intelligence_framework_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this Solution Train operates under Hybrid Intelligence Team principles with explicit AI-human role differentiation"
     }
   },
   "required": [

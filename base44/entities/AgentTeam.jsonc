@@ -27,6 +27,38 @@
       "type": "boolean",
       "default": true,
       "description": "Whether this team is currently active"
+    },
+    "team_topology_type": {
+      "type": "string",
+      "enum": [
+        "stream_aligned",
+        "platform",
+        "enabling",
+        "complicated_subsystem"
+      ],
+      "description": "Classification of team type per Team Topologies adapted for HIT (Hybrid Intelligence Teams)"
+    },
+    "coherence_anchor_user_id": {
+      "type": "string",
+      "description": "User ID of the human 'Coherence Anchor' responsible for narrative continuity, ethical oversight, and HIT governance"
+    },
+    "manager_agent_skill_id": {
+      "type": "string",
+      "description": "Optional reference to an AgentSkill with ai_agent_function_type='manager' for autonomous orchestration and task decomposition"
+    },
+    "cognitive_load_strategy": {
+      "type": "string",
+      "enum": [
+        "intrinsic_reduction",
+        "extraneous_optimization",
+        "bilateral_memory"
+      ],
+      "description": "Team's approach to managing cognitive load across human-AI interactions"
+    },
+    "epistemic_safety_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the team has explicit protocols for AI dissent, contradiction surfacing, and constructive challenge"
     }
   },
   "required": [
