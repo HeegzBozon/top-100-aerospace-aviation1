@@ -18,6 +18,9 @@ const Colony                  = lazy(() => import('@/pages/Colony'));
 const AnalyticsDashboard      = lazy(() => import('@/pages/AnalyticsDashboard'));
 const GlobalIntelligence      = lazy(() => import('@/pages/GlobalIntelligence'));
 const ProfileView             = lazy(() => import('@/pages/ProfileView'));
+const ARTCommandCenter        = lazy(() => import('@/pages/ARTCommandCenter'));
+const TeamManager             = lazy(() => import('@/pages/TeamManager'));
+const FeatureToTeamMapper     = lazy(() => import('@/pages/FeatureToTeamMapper'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -83,6 +86,9 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
       } />
       <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/art-command-center" element={<ARTCommandCenter />} />
+      <Route path="/team-manager" element={<TeamManager />} />
+      <Route path="/feature-to-team-mapper" element={<FeatureToTeamMapper />} />
       <Route path="/profiles/:id" element={
         <LayoutWrapper currentPageName="ProfileView">
           <ProfileView />
