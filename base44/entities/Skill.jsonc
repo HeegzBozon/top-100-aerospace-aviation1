@@ -1,0 +1,69 @@
+{
+  "name": "Skill",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique name for the reusable skill (e.g., 'CodeGeneration', 'SentimentAnalysis')"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable display name for the skill"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed explanation of what the skill does"
+    },
+    "instructions": {
+      "type": "string",
+      "description": "Guidelines or prompt for how an Agent should use this skill"
+    },
+    "input_schema": {
+      "type": "object",
+      "description": "JSON schema for the expected input payload to activate this skill"
+    },
+    "output_schema": {
+      "type": "object",
+      "description": "JSON schema for the expected output structure from this skill"
+    },
+    "associated_resource_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of IDs of Resource entities this skill depends on"
+    },
+    "required_agent_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of AgentSkill capabilities (e.g., 'generator', 'critic') required to use this skill"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0.0",
+      "description": "Semantic version of this skill definition"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this skill is currently enabled and available"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Categorization tags for the skill"
+    }
+  },
+  "required": [
+    "name",
+    "display_name",
+    "description",
+    "instructions",
+    "input_schema",
+    "output_schema"
+  ]
+}

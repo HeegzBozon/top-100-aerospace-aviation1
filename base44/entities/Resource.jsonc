@@ -1,0 +1,67 @@
+{
+  "name": "Resource",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique name for the resource (e.g., 'OpenAIGPT4', 'JiraAPI', 'CompanyKnowledgeBase')"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable display name for the resource"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the resource and its purpose"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "llm",
+        "api_endpoint",
+        "knowledge_base",
+        "database_access",
+        "sandbox_environment",
+        "model_serving_infrastructure",
+        "rag_pipeline",
+        "tool_runner",
+        "external_service"
+      ],
+      "description": "Classification of the resource type"
+    },
+    "access_config": {
+      "type": "object",
+      "description": "Configuration details for accessing the resource (e.g., API key reference, URL, authentication method)"
+    },
+    "data_retrieval_method": {
+      "type": "string",
+      "enum": [
+        "api_call",
+        "database_query",
+        "file_read",
+        "search_engine",
+        "none"
+      ],
+      "description": "Method an agent would use to retrieve information or interact with this resource"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Categorization tags (e.g., 'internal', 'external', 'sensitive')"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this resource is currently available"
+    }
+  },
+  "required": [
+    "name",
+    "display_name",
+    "description",
+    "type",
+    "access_config"
+  ]
+}

@@ -19,6 +19,8 @@ import SolutionTrainManager from '@/components/admin/SolutionTrainManager';
 import ARTManager from '@/components/admin/ARTManager';
 import RegistryTeamManager from '@/components/admin/RegistryTeamManager';
 import SAFeHierarchyViewer from '@/components/admin/SAFeHierarchyViewer';
+import SkillManager from '@/components/admin/SkillManager';
+import ResourceManager from '@/components/admin/ResourceManager';
 import { skillToMarkdown, markdownToSkill, downloadMarkdown } from '@/lib/agentSkillMarkdown';
 
 const PERSONA_ROLES = [
@@ -161,16 +163,17 @@ export default function AgentSkillRegistry() {
           </div>
         </div>
 
-        <Tabs defaultValue="skills" className="mt-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <Tabs defaultValue="agents" className="mt-6">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="agents">Agents</TabsTrigger>
           <TabsTrigger value="skills">Skills</TabsTrigger>
+          <TabsTrigger value="resources">Resources</TabsTrigger>
           <TabsTrigger value="org-chart">Org Chart</TabsTrigger>
           <TabsTrigger value="solution-trains">Solution Trains</TabsTrigger>
           <TabsTrigger value="arts">ARTs</TabsTrigger>
-          <TabsTrigger value="teams">Teams</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="skills" className="mt-6 space-y-6">
+        <TabsContent value="agents" className="mt-6 space-y-6">
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
@@ -242,6 +245,14 @@ export default function AgentSkillRegistry() {
           )}
         </TabsContent>
 
+        <TabsContent value="skills" className="mt-6 space-y-4">
+          <SkillManager />
+        </TabsContent>
+
+        <TabsContent value="resources" className="mt-6 space-y-4">
+          <ResourceManager />
+        </TabsContent>
+
         <TabsContent value="org-chart" className="mt-6 space-y-6">
           <AgentSkillOrgChart skills={skills} onSelectSkill={skill => { setEditingSkill(skill); setEditorOpen(true); }} />
           <SAFeHierarchyViewer />
@@ -255,9 +266,7 @@ export default function AgentSkillRegistry() {
           <ARTManager />
         </TabsContent>
 
-        <TabsContent value="teams" className="mt-6 space-y-4">
-          <RegistryTeamManager />
-        </TabsContent>
+
       </Tabs>
 
       {/* Import confirmation modal */}
