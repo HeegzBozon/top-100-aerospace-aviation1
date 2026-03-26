@@ -5,12 +5,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { X, Save, MessageSquare } from 'lucide-react';
+import { X, Save, MessageSquare, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function PostDetailModal({ post, isOpen, onClose }) {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const [showPublicPreview, setShowPublicPreview] = useState(false);
   const [editedTitle, setEditedTitle] = useState(post?.title || '');
   const [editedContent, setEditedContent] = useState(post?.content || '');
   const [comment, setComment] = useState('');
@@ -69,7 +70,20 @@ export default function PostDetailModal({ post, isOpen, onClose }) {
           )}
 
           {/* Content */}
-          {isEditing ? (
+          {showPublicPreview ? (
+            <div className="space-y-4">
+              <div className="prose prose-sm max-w-none">
+                {post.content}
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setShowPublicPreview(false)}
+                className="w-full"
+              >
+                Back to Edit View
+              </Button>
+            </div>
+          ) : isEditing ? (
             <Textarea
               value={editedContent}
               onChange={(e) => setEditedContent(e.target.value)}
@@ -83,36 +97,47 @@ export default function PostDetailModal({ post, isOpen, onClose }) {
           )}
 
           {/* Actions */}
-          <div className="flex gap-2">
-            {isEditing ? (
-              <>
-                <Button
-                  onClick={handleSave}
-                  disabled={updateMutation.isPending}
-                  className="gap-2"
-                >
-                  <Save className="w-4 h-4" /> Save
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsEditing(false);
-                    setEditedTitle(post.title);
-                    setEditedContent(post.content);
-                  }}
-                >
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <Button
-                variant="outline"
-                onClick={() => setIsEditing(true)}
-              >
-                Edit
-              </Button>
-            )}
-          </div>
+          {!showPublicPreview && (
+            <div className="flex gap-2">
+              {isEditing ? (
+                <>
+                  <Button
+                    onClick={handleSave}
+                    disabled={updateMutation.isPending}
+                    className="gap-2"
+                  >
+                    <Save className="w-4 h-4" /> Save
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEditedTitle(post.title);
+                      setEditedContent(post.content);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowPublicPreview(true)}
+                    className="gap-2"
+                  >
+                    <Eye className="w-4 h-4" /> Preview Public
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Comments Section */}
           {!isEditing && (
