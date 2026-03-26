@@ -90,6 +90,7 @@ const AuthenticatedApp = () => {
       <Route path="/art-command-center" element={<ARTCommandCenter />} />
       <Route path="/team-manager" element={<TeamManager />} />
       <Route path="/feature-to-team-mapper" element={<FeatureToTeamMapper />} />
+      <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
       <Route path="/profiles/:nomineeId" element={<DynamicProfilePage />} />
       <Route path="/profiles/:id" element={
         <LayoutWrapper currentPageName="ProfileView">
