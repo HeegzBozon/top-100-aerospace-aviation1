@@ -81,7 +81,7 @@ export default function Profile() {
       <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto">
         <div className="flex justify-end mb-4">
           <Link
-            to={createPageUrl('ProfileView') + `?id=${user?.id}`}
+            to={`/profiles/${user?.id}`}
             className="flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity"
             style={{ color: brandColors.navyDeep }}
           >

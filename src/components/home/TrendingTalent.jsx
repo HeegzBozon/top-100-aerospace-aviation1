@@ -1,6 +1,6 @@
 import { Flame, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { createPageUrl } from '@/utils';
+
 import { BRAND_COLORS } from '@/components/core/brandConstants';
 
 function InitialsAvatar({ name }) {
@@ -24,7 +24,7 @@ function TalentCard({ nominee }) {
   const hasPhoto = !!(nominee.avatar_url || nominee.photo_url);
   return (
     <a
-      href={createPageUrl(`Nominee?id=${nominee.id}`)}
+      href={`/profiles/${nominee.id}`}
       aria-label={`View profile of ${nominee.name}`}
       className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#4a90b8] rounded-xl"
     >

@@ -370,7 +370,7 @@ export default function ClaimProfile() {
                             </>
                           )}
                         </div>
-                        <Link to={createPageUrl('ProfileView') + `?id=${nominee.id}`}>
+                        <Link to={`/profiles/${nominee.id}`}>
                           <Button variant="outline" size="sm" className="flex items-center gap-2">
                             <ExternalLink className="w-4 h-4" />
                             View Public Profile
