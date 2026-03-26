@@ -30,11 +30,17 @@ export default function SmartEntityCreator({ open, onClose, onEntityCreated }) {
     try {
       const text = await file.text();
       const result = parseMarkdownEntity(text);
+      const detectedType = result.entity_type || 'AgentSkill';
+      
       setParsed(result);
-      setEntityType(result.entity_type || 'AgentSkill');
-      setForm(result.data);
+      setEntityType(detectedType);
+      // Merge parsed data with template defaults to fill in missing fields
+      setForm(prev => ({
+        ...ENTITY_TEMPLATES[detectedType],
+        ...result.data,
+      }));
       setTab('review');
-      toast.success(`Parsed ${result.entity_type}`);
+      toast.success(`Parsed ${detectedType}`);
     } catch (err) {
       toast.error(`Parse failed: ${err.message}`);
     }
