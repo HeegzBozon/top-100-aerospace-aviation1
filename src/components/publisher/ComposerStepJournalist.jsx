@@ -10,6 +10,7 @@ export default function ComposerStepJournalist({ onBack, onDone }) {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
+  const [progress, setProgress] = useState(null);
   
   const { data: nominees = [], isLoading } = useQuery({
     queryKey: ['nominees-for-journalist'],
@@ -18,20 +19,31 @@ export default function ComposerStepJournalist({ onBack, onDone }) {
 
   const generateMutation = useMutation({
     mutationFn: async () => {
-      const res = await base44.functions.invoke('generateNomineeArticles', {
-        nominee_ids: selectedIds,
-      });
-      return res;
+      setProgress({ current: 0, total: selectedIds.length, message: 'Starting generation...' });
+      try {
+        const res = await base44.functions.invoke('generateNomineeArticles', {
+          nominee_ids: selectedIds,
+        });
+        setProgress({ current: selectedIds.length, total: selectedIds.length, message: 'Complete!' });
+        return res;
+      } catch (err) {
+        setProgress(null);
+        throw err;
+      }
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['nominees-for-journalist'] });
-      toast.success(`Generated ${data.generated_count} articles`);
-      if (data.failed_count > 0) {
-        toast.warning(`${data.failed_count} articles failed`);
-      }
-      onDone();
+      setTimeout(() => {
+        toast.success(`Generated ${data.generated_count} articles`);
+        if (data.failed_count > 0) {
+          toast.warning(`${data.failed_count} articles failed`);
+        }
+        setProgress(null);
+        onDone();
+      }, 500);
     },
     onError: (err) => {
+      setProgress(null);
       toast.error(`Generation failed: ${err.message}`);
     },
   });
@@ -110,14 +122,32 @@ export default function ComposerStepJournalist({ onBack, onDone }) {
         </div>
       )}
 
-      <div className="bg-slate-50 p-3 rounded-lg text-sm text-slate-700">
-        <strong>{selectedIds.length} nominee{selectedIds.length !== 1 ? 's' : ''} selected</strong>
-        {selectedIds.length > 0 && (
-          <p className="text-xs text-slate-600 mt-1">
-            Articles will be generated using Claude Sonnet and stored as drafts.
+      {progress ? (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="font-medium text-blue-900">{progress.message}</p>
+            <p className="text-sm text-blue-700">{progress.current}/{progress.total}</p>
+          </div>
+          <div className="w-full bg-blue-200 rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-blue-600 h-full transition-all duration-300"
+              style={{ width: `${(progress.current / progress.total) * 100}%` }}
+            />
+          </div>
+          <p className="text-xs text-blue-600">
+            Generating articles using Claude Sonnet. This may take a minute...
           </p>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="bg-slate-50 p-3 rounded-lg text-sm text-slate-700">
+          <strong>{selectedIds.length} nominee{selectedIds.length !== 1 ? 's' : ''} selected</strong>
+          {selectedIds.length > 0 && (
+            <p className="text-xs text-slate-600 mt-1">
+              Articles will be generated using Claude Sonnet and stored as drafts.
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="flex gap-3">
         <Button variant="outline" onClick={onBack} className="flex-1">
