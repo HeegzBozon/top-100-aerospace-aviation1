@@ -1,0 +1,82 @@
+{
+  "name": "AgentSkill",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique identifier name for the skill (e.g., 'qa-engineer', 'senior-engineer')"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable display name"
+    },
+    "persona_role": {
+      "type": "string",
+      "enum": [
+        "chief-of-staff",
+        "principal-engineer",
+        "staff-engineer",
+        "senior-engineer",
+        "junior-engineer",
+        "scrum-master",
+        "product-owner",
+        "art-conductor",
+        "qa-engineer",
+        "custom"
+      ],
+      "description": "The agent persona this skill belongs to"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of when to activate this skill"
+    },
+    "instructions": {
+      "type": "string",
+      "description": "Full skill instructions body \u2014 the prompt injected when this skill is active"
+    },
+    "output_format": {
+      "type": "string",
+      "description": "The required response prefix format for this persona (e.g., 'QA: [TEST PLAN / BUG REPORT / VERIFY]')"
+    },
+    "allowed_tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of backend function names or tool identifiers this skill is permitted to invoke"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Categorization tags (e.g., 'testing', 'frontend', 'backend', 'planning')"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this skill is currently enabled and available for activation"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0.0",
+      "description": "Semantic version of this skill definition"
+    },
+    "tdd_enforced": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this skill mandates TDD practices (write tests before implementation)"
+    },
+    "last_updated_by": {
+      "type": "string",
+      "description": "Email of the admin who last modified this skill"
+    }
+  },
+  "required": [
+    "name",
+    "display_name",
+    "persona_role",
+    "description",
+    "instructions"
+  ]
+}

@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
+const AgentSkillRegistry     = lazy(() => import('@/pages/AgentSkillRegistry'));
 const TermsOfService          = lazy(() => import('@/pages/TermsOfService'));
 const Colony                  = lazy(() => import('@/pages/Colony'));
 const AnalyticsDashboard      = lazy(() => import('@/pages/AnalyticsDashboard'));
@@ -71,6 +72,16 @@ const AuthenticatedApp = () => {
       <Route path="/GlobalIntelligence" element={<GlobalIntelligence />} />
       <Route path="/global-intelligence" element={<GlobalIntelligence />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
+      <Route path="/AgentSkillRegistry" element={
+        <LayoutWrapper currentPageName="AgentSkillRegistry">
+          <AgentSkillRegistry />
+        </LayoutWrapper>
+      } />
+      <Route path="/agent-skills" element={
+        <LayoutWrapper currentPageName="AgentSkillRegistry">
+          <AgentSkillRegistry />
+        </LayoutWrapper>
+      } />
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/profiles/:id" element={
         <LayoutWrapper currentPageName="ProfileView">
