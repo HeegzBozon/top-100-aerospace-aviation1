@@ -99,29 +99,31 @@ export default function AgentSkillOrgChart({ skills, onSelectSkill }) {
   }, [skills]);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-8 overflow-x-auto">
-      <h2 className="text-lg font-bold mb-6 text-slate-900">Persona Hierarchy</h2>
-      
-      {rootSkills.length === 0 ? (
-        <div className="text-center text-slate-500 py-12">
-          No Chief of Staff persona found. Define a chief-of-staff skill to begin.
-        </div>
-      ) : (
-        <div className="flex flex-col items-center gap-8 min-w-min">
-          {rootSkills.map(skill => (
-            <div key={skill.id} className="flex flex-col items-center">
-              <button
-                onClick={() => onSelectSkill(skill)}
-                className="px-4 py-2 rounded-lg font-bold text-sm bg-violet-100 text-violet-900 hover:bg-violet-200 transition-colors"
-              >
-                {skill.display_name}
-              </button>
-              <div className="w-0.5 h-6 bg-slate-300 mt-2 mb-4" />
-              <OrgNode role="principal-engineer" skills={skills} onSelectSkill={onSelectSkill} />
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-8 overflow-x-auto">
+        <h2 className="text-lg font-bold mb-6 text-slate-900">Persona Hierarchy</h2>
+        
+        {rootSkills.length === 0 ? (
+          <div className="text-center text-slate-500 py-12">
+            No Chief of Staff persona found. Define a chief-of-staff skill to begin.
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-8 min-w-min">
+            {rootSkills.map(skill => (
+              <div key={skill.id} className="flex flex-col items-center">
+                <button
+                  onClick={() => onSelectSkill(skill)}
+                  className="px-4 py-2 rounded-lg font-bold text-sm bg-violet-100 text-violet-900 hover:bg-violet-200 transition-colors"
+                >
+                  {skill.display_name}
+                </button>
+                <div className="w-0.5 h-6 bg-slate-300 mt-2 mb-4" />
+                <OrgNode role="principal-engineer" skills={skills} onSelectSkill={onSelectSkill} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

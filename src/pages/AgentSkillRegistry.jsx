@@ -18,6 +18,7 @@ import AgentSkillOrgChart from '@/components/admin/AgentSkillOrgChart';
 import SolutionTrainManager from '@/components/admin/SolutionTrainManager';
 import ARTManager from '@/components/admin/ARTManager';
 import RegistryTeamManager from '@/components/admin/RegistryTeamManager';
+import SAFeHierarchyViewer from '@/components/admin/SAFeHierarchyViewer';
 import { skillToMarkdown, markdownToSkill, downloadMarkdown } from '@/lib/agentSkillMarkdown';
 
 const PERSONA_ROLES = [
@@ -241,8 +242,9 @@ export default function AgentSkillRegistry() {
           )}
         </TabsContent>
 
-        <TabsContent value="org-chart" className="mt-6">
+        <TabsContent value="org-chart" className="mt-6 space-y-6">
           <AgentSkillOrgChart skills={skills} onSelectSkill={skill => { setEditingSkill(skill); setEditorOpen(true); }} />
+          <SAFeHierarchyViewer />
         </TabsContent>
 
         <TabsContent value="solution-trains" className="mt-6 space-y-4">
