@@ -8,7 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Upload } from 'lucide-react';
+import { useRef } from 'react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -35,6 +36,7 @@ export default function AgentManager() {
   const [tagsInput, setTagsInput] = useState('');
   const [toolsInput, setToolsInput] = useState('');
   const [domainsInput, setDomainsInput] = useState('');
+  const fileInputRef = useRef(null);
 
   const { data: agents = [], isLoading } = useQuery({
     queryKey: ['agent-skills'],
@@ -92,6 +94,18 @@ export default function AgentManager() {
     setToolsInput((agent.allowed_tools || []).join(', '));
     setDomainsInput((agent.allowed_domains || []).join(', '));
     setEditorOpen(true);
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      setForm({ ...form, instructions: text });
+      toast.success('Instructions loaded from file');
+    } catch (err) {
+      toast.error('Failed to read file');
+    }
   };
 
   const handleSave = async () => {
@@ -267,9 +281,31 @@ export default function AgentManager() {
               </div>
             </TabsContent>
 
-            <TabsContent value="instructions" className="mt-4">
+            <TabsContent value="instructions" className="mt-4 space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="instructions">Full Instructions Prompt</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="gap-1.5"
+                  >
+                    <Upload className="w-4 h-4" /> Upload File
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".md,.txt"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  <span className="text-xs text-slate-500 self-center">(.md or .txt)</span>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="instructions">Content</Label>
                 <Textarea
                   id="instructions"
                   rows={18}
