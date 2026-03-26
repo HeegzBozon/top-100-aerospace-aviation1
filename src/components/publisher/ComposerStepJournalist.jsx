@@ -33,6 +33,7 @@ export default function ComposerStepJournalist({ onBack, onDone }) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['nominees-for-journalist'] });
+      queryClient.invalidateQueries({ queryKey: ['scheduled-posts-pipeline'] });
       setTimeout(() => {
         toast.success(`Generated ${data.generated_count} articles`);
         if (data.failed_count > 0) {
