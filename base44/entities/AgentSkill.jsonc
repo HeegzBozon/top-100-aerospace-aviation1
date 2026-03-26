@@ -54,7 +54,18 @@
     },
     "team_id": {
       "type": "string",
-      "description": "Optional reference to the AgentTeam this skill belongs to"
+      "description": "Optional reference to the AgentTeam this agent belongs to"
+    },
+    "assignment_status": {
+      "type": "string",
+      "enum": [
+        "unassigned",
+        "ready_for_duty",
+        "bench",
+        "beach"
+      ],
+      "default": "unassigned",
+      "description": "Team assignment status. Inherits team's topology, coherence anchor, and data access policies when assigned."
     },
     "is_active": {
       "type": "boolean",

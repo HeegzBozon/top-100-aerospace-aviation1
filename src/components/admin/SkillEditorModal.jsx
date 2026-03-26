@@ -17,10 +17,12 @@ const PERSONA_ROLES = [
   'junior-engineer', 'scrum-master', 'product-owner', 'art-conductor', 'qa-engineer', 'custom'
 ];
 
+const ASSIGNMENT_STATUSES = ['unassigned', 'ready_for_duty', 'bench', 'beach'];
+
 const EMPTY_SKILL = {
   name: '', display_name: '', persona_role: 'custom', description: '',
   instructions: '', output_format: '', allowed_tools: [], tags: [],
-  is_active: true, tdd_enforced: false, version: '1.0.0', team_id: '',
+  is_active: true, tdd_enforced: false, version: '1.0.0', team_id: '', assignment_status: 'unassigned',
 };
 
 export default function SkillEditorModal({ open, onClose, skill, onSaved }) {
@@ -128,17 +130,30 @@ export default function SkillEditorModal({ open, onClose, skill, onSaved }) {
               <Input id="tags" placeholder="testing, quality, automation" value={tagsInput} onChange={e => setTagsInput(e.target.value)} />
             </div>
 
-            <div className="space-y-1.5">
-              <Label>Assign to Team (optional)</Label>
-              <Select value={form.team_id || ''} onValueChange={v => set('team_id', v || '')}>
-                <SelectTrigger><SelectValue placeholder="No team assigned" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={null}>None</SelectItem>
-                  {teams.map(t => (
-                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label>Assign to Team (optional)</Label>
+                <Select value={form.team_id || ''} onValueChange={v => set('team_id', v || '')}>
+                  <SelectTrigger><SelectValue placeholder="No team assigned" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={null}>None</SelectItem>
+                    {teams.map(t => (
+                      <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Status</Label>
+                <Select value={form.assignment_status || 'unassigned'} onValueChange={v => set('assignment_status', v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {ASSIGNMENT_STATUSES.map(s => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="flex items-center gap-6 pt-2">

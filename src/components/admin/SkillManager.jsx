@@ -7,8 +7,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Plus, Edit, Trash2, Copy } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+
+const ASSIGNMENT_STATUSES = ['unassigned', 'ready_for_duty', 'bench', 'beach'];
 
 const EMPTY_SKILL = {
   name: '',
@@ -22,6 +24,8 @@ const EMPTY_SKILL = {
   version: '1.0.0',
   is_active: true,
   tags: [],
+  team_id: '',
+  assignment_status: 'unassigned',
 };
 
 export default function SkillManager() {
@@ -29,11 +33,19 @@ export default function SkillManager() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingSkill, setEditingSkill] = useState(null);
   const [form, setForm] = useState(EMPTY_SKILL);
+  const [filterTeam, setFilterTeam] = useState('all');
 
   const { data: skills = [], isLoading } = useQuery({
     queryKey: ['skills'],
     queryFn: () => base44.entities.Skill.list('-updated_date', 100),
   });
+
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams'],
+    queryFn: () => base44.entities.AgentTeam.list(),
+  });
+
+  const filteredSkills = filterTeam === 'all' ? skills : skills.filter(s => s.team_id === filterTeam);
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Skill.create(data),
@@ -91,9 +103,22 @@ export default function SkillManager() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-bold text-slate-900">Skills Library</h2>
-        <Button onClick={handleNew} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2">
-          <Plus className="w-4 h-4" /> New Skill
-        </Button>
+        <div className="flex gap-2">
+          <Select value={filterTeam} onValueChange={setFilterTeam}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filter by team" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Teams</SelectItem>
+              {teams.map(t => (
+                <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={handleNew} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2">
+            <Plus className="w-4 h-4" /> New Skill
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -108,7 +133,7 @@ export default function SkillManager() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {skills.map(skill => (
+          {filteredSkills.map(skill => (
             <div key={skill.id} className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-semibold text-slate-900">{skill.display_name}</h3>
@@ -187,6 +212,36 @@ export default function SkillManager() {
                 value={form.instructions}
                 onChange={e => setForm({ ...form, instructions: e.target.value })}
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label>Assign to Team</Label>
+                <Select value={form.team_id || ''} onValueChange={v => setForm({ ...form, team_id: v })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Unassigned" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={null}>Unassigned</SelectItem>
+                    {teams.map(t => (
+                      <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Status</Label>
+                <Select value={form.assignment_status} onValueChange={v => setForm({ ...form, assignment_status: v })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ASSIGNMENT_STATUSES.map(s => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="flex justify-end gap-3 pt-4 border-t">

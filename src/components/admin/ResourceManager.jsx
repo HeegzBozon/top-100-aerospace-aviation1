@@ -23,6 +23,7 @@ const RESOURCE_TYPES = [
 ];
 
 const RETRIEVAL_METHODS = ['api_call', 'database_query', 'file_read', 'search_engine', 'none'];
+const ASSIGNMENT_STATUSES = ['unassigned', 'ready_for_duty', 'bench', 'beach'];
 
 const EMPTY_RESOURCE = {
   name: '',
@@ -33,6 +34,8 @@ const EMPTY_RESOURCE = {
   data_retrieval_method: 'api_call',
   tags: [],
   is_active: true,
+  team_id: '',
+  assignment_status: 'unassigned',
 };
 
 export default function ResourceManager() {
@@ -40,11 +43,19 @@ export default function ResourceManager() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingResource, setEditingResource] = useState(null);
   const [form, setForm] = useState(EMPTY_RESOURCE);
+  const [filterTeam, setFilterTeam] = useState('all');
 
   const { data: resources = [], isLoading } = useQuery({
     queryKey: ['resources'],
     queryFn: () => base44.entities.Resource.list('-updated_date', 100),
   });
+
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams'],
+    queryFn: () => base44.entities.AgentTeam.list(),
+  });
+
+  const filteredResources = filterTeam === 'all' ? resources : resources.filter(r => r.team_id === filterTeam);
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Resource.create(data),
@@ -102,9 +113,22 @@ export default function ResourceManager() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-bold text-slate-900">Resources</h2>
-        <Button onClick={handleNew} className="bg-green-600 hover:bg-green-700 text-white gap-2">
-          <Plus className="w-4 h-4" /> New Resource
-        </Button>
+        <div className="flex gap-2">
+          <Select value={filterTeam} onValueChange={setFilterTeam}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filter by team" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Teams</SelectItem>
+              {teams.map(t => (
+                <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={handleNew} className="bg-green-600 hover:bg-green-700 text-white gap-2">
+            <Plus className="w-4 h-4" /> New Resource
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -119,7 +143,7 @@ export default function ResourceManager() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {resources.map(resource => (
+          {filteredResources.map(resource => (
             <div key={resource.id} className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-semibold text-slate-900">{resource.display_name}</h3>
@@ -216,6 +240,36 @@ export default function ResourceManager() {
                       <SelectItem key={m} value={m}>
                         {m}
                       </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label>Assign to Team</Label>
+                <Select value={form.team_id || ''} onValueChange={v => setForm({ ...form, team_id: v })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Unassigned" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={null}>Unassigned</SelectItem>
+                    {teams.map(t => (
+                      <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Status</Label>
+                <Select value={form.assignment_status} onValueChange={v => setForm({ ...form, assignment_status: v })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ASSIGNMENT_STATUSES.map(s => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
