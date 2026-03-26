@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
 
     // Fetch nominees to generate articles for
     const nominees = await Promise.all(
-      nominee_ids.map(id => base44.entities.Nominee.read(id))
+      nominee_ids.map(id => base44.asServiceRole.entities.Nominee.read(id))
     );
 
     const articles = [];
