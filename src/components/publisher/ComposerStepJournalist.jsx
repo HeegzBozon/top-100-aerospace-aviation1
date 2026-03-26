@@ -4,7 +4,6 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Search, Check } from 'lucide-react';
-import { generateNomineeArticles } from '@/functions/generateNomineeArticles';
 import { toast } from 'sonner';
 
 export default function ComposerStepJournalist({ onBack, onDone }) {
@@ -19,10 +18,10 @@ export default function ComposerStepJournalist({ onBack, onDone }) {
 
   const generateMutation = useMutation({
     mutationFn: async () => {
-      const res = await generateNomineeArticles({
+      const res = await base44.functions.invoke('generateNomineeArticles', {
         nominee_ids: selectedIds,
       });
-      return res.data;
+      return res;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['nominees-for-journalist'] });
