@@ -82,7 +82,6 @@ export default function SmartEntityCreator({ open, onClose, onEntityCreated }) {
         throw new Error(`Invalid entity type: ${entityType}`);
       }
       
-      // Direct entity mapping to avoid dynamic access issues
       const entityMap = {
         'AgentSkill': base44.entities.AgentSkill,
         'Skill': base44.entities.Skill,
@@ -92,43 +91,45 @@ export default function SmartEntityCreator({ open, onClose, onEntityCreated }) {
       };
       
       const entity = entityMap[entityType];
-      if (!entity) {
-        throw new Error(`Entity ${entityType} not found in base44.entities`);
-      }
+      if (!entity) throw new Error(`Entity ${entityType} not found in base44.entities`);
       
-      console.log(`Creating ${entityType} with:`, data);
+      console.log(`[SmartEntityCreator] Creating ${entityType}:`, data);
       const result = await entity.create(data);
-      console.log(`Created ${entityType}:`, result);
+      console.log(`[SmartEntityCreator] Success:`, result);
       return result;
     },
     onSuccess: (result) => {
+      console.log(`[SmartEntityCreator] onSuccess fired, closing modal...`);
       queryClient.invalidateQueries({ queryKey: ['agent-skills'] });
       queryClient.invalidateQueries({ queryKey: ['agent-teams'] });
       queryClient.invalidateQueries({ queryKey: ['skills'] });
       queryClient.invalidateQueries({ queryKey: ['resources'] });
       toast.success(`${entityType} created successfully`);
       if (onEntityCreated) onEntityCreated(result);
-      handleClose();
+      // Close after a short delay to allow toast to display
+      setTimeout(() => handleClose(), 500);
     },
     onError: (err) => {
-      console.error(`Creation failed:`, err);
+      console.error(`[SmartEntityCreator] Creation failed:`, err);
       toast.error(`Failed to create ${entityType}: ${err.message}`);
     },
   });
 
   const handleCreate = () => {
-    console.log('handleCreate called with entityType:', entityType, 'form:', form);
+    console.log('[SmartEntityCreator] handleCreate: type=', entityType, 'form=', form);
     
     const required = ['name', 'display_name', 'description'];
     if (entityType === 'AgentSkill' || entityType === 'Skill') required.push('instructions');
     
     const missing = required.filter(f => !form[f]);
     if (missing.length > 0) {
-      toast.error(`Missing required fields: ${missing.join(', ')}`);
+      const msg = `Missing: ${missing.join(', ')}`;
+      console.log('[SmartEntityCreator]', msg);
+      toast.error(msg);
       return;
     }
     
-    console.log('Validation passed, calling mutation...');
+    console.log('[SmartEntityCreator] Validation OK, calling mutation...');
     createMutation.mutate(form);
   };
 
