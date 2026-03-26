@@ -19,15 +19,15 @@ export default function ComposerStepJournalist({ onBack, onDone }) {
 
   const generateMutation = useMutation({
     mutationFn: async () => {
-      setProgress({ current: 0, total: selectedIds.length, message: 'Starting generation...' });
+      setProgress({ current: 0, total: selectedIds.length, message: 'Starting generation...', isError: false });
       try {
         const res = await base44.functions.invoke('generateNomineeArticles', {
           nominee_ids: selectedIds,
         });
-        setProgress({ current: selectedIds.length, total: selectedIds.length, message: 'Complete!' });
+        setProgress({ current: selectedIds.length, total: selectedIds.length, message: 'Complete! Check pipeline.', isError: false });
         return res;
       } catch (err) {
-        setProgress(null);
+        setProgress({ current: 0, total: selectedIds.length, message: `Error: ${err.message}`, isError: true });
         throw err;
       }
     },
@@ -40,11 +40,11 @@ export default function ComposerStepJournalist({ onBack, onDone }) {
         }
         setProgress(null);
         onDone();
-      }, 500);
+      }, 2000);
     },
     onError: (err) => {
-      setProgress(null);
       toast.error(`Generation failed: ${err.message}`);
+      setTimeout(() => setProgress(null), 3000);
     },
   });
 
@@ -123,19 +123,29 @@ export default function ComposerStepJournalist({ onBack, onDone }) {
       )}
 
       {progress ? (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+        <div className={`rounded-lg p-4 space-y-3 border ${
+          progress.isError 
+            ? 'bg-red-50 border-red-200' 
+            : 'bg-blue-50 border-blue-200'
+        }`}>
           <div className="flex items-center justify-between">
-            <p className="font-medium text-blue-900">{progress.message}</p>
-            <p className="text-sm text-blue-700">{progress.current}/{progress.total}</p>
+            <p className={`font-medium ${progress.isError ? 'text-red-900' : 'text-blue-900'}`}>
+              {progress.message}
+            </p>
+            <p className={`text-sm ${progress.isError ? 'text-red-700' : 'text-blue-700'}`}>
+              {progress.current}/{progress.total}
+            </p>
           </div>
-          <div className="w-full bg-blue-200 rounded-full h-2 overflow-hidden">
+          <div className={`w-full rounded-full h-2 overflow-hidden ${progress.isError ? 'bg-red-200' : 'bg-blue-200'}`}>
             <div
-              className="bg-blue-600 h-full transition-all duration-300"
+              className={`h-full transition-all duration-300 ${progress.isError ? 'bg-red-600' : 'bg-blue-600'}`}
               style={{ width: `${(progress.current / progress.total) * 100}%` }}
             />
           </div>
-          <p className="text-xs text-blue-600">
-            Generating articles using Claude Sonnet. This may take a minute...
+          <p className={`text-xs ${progress.isError ? 'text-red-600' : 'text-blue-600'}`}>
+            {progress.isError 
+              ? 'Check browser console for details' 
+              : 'Generating articles using Claude Sonnet. This may take a minute...'}
           </p>
         </div>
       ) : (
