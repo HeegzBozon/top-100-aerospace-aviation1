@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, Radar, TrendingUp, Newspaper } from 'lucide-react';
-import RadarDashboard from '@/pages/RadarDashboard';
-import IntelligenceDashboard from '@/pages/IntelligenceDashboard';
-import SpaceNews from '@/pages/SpaceNews';
+const RadarDashboard = lazy(() => import('@/pages/RadarDashboard'));
+const IntelligenceDashboard = lazy(() => import('@/pages/IntelligenceDashboard'));
+const SpaceNews = lazy(() => import('@/pages/SpaceNews'));
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -184,7 +184,7 @@ export default function AuthenticatedIntelligenceHeader() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <RadarDashboard />
+                <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="w-6 h-6 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" /></div>}><RadarDashboard /></Suspense>
               </motion.div>
             </TabsContent>
 
@@ -194,7 +194,7 @@ export default function AuthenticatedIntelligenceHeader() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <IntelligenceDashboard />
+                <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="w-6 h-6 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" /></div>}><IntelligenceDashboard /></Suspense>
               </motion.div>
             </TabsContent>
 
@@ -204,7 +204,7 @@ export default function AuthenticatedIntelligenceHeader() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <SpaceNews />
+                <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="w-6 h-6 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" /></div>}><SpaceNews /></Suspense>
               </motion.div>
             </TabsContent>
           </div>
