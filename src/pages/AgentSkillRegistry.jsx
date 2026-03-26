@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Plus, Search, Bot, FlaskConical, ShieldCheck, Zap, Download, Upload, GitBranch } from 'lucide-react';
+import { Plus, Search, Bot, FlaskConical, ShieldCheck, Zap, Download, Upload, GitBranch, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
 import SkillEditorModal from '@/components/admin/SkillEditorModal';
 import SkillCard from '@/components/admin/SkillCard';
@@ -22,6 +22,7 @@ import SAFeHierarchyViewer from '@/components/admin/SAFeHierarchyViewer';
 import SkillManager from '@/components/admin/SkillManager';
 import ResourceManager from '@/components/admin/ResourceManager';
 import AgentManager from '@/components/admin/AgentManager';
+import SmartEntityCreator from '@/components/admin/SmartEntityCreator';
 import { skillToMarkdown, markdownToSkill, downloadMarkdown } from '@/lib/agentSkillMarkdown';
 
 const PERSONA_ROLES = [
@@ -41,6 +42,7 @@ export default function AgentSkillRegistry() {
   const [importAction, setImportAction] = useState('create'); // 'create' or 'replace'
   const [importedSkill, setImportedSkill] = useState(null);
   const [agentSubTab, setAgentSubTab] = useState('by-role');
+  const [smartCreatorOpen, setSmartCreatorOpen] = useState(false);
   const fileInputRef = useRef(null);
 
   const { data: skills = [], isLoading } = useQuery({
@@ -155,6 +157,9 @@ export default function AgentSkillRegistry() {
           <div className="flex flex-wrap gap-2">
             <Button onClick={handleNew} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 min-h-[44px]">
               <Plus className="w-4 h-4" /> New Skill
+            </Button>
+            <Button onClick={() => setSmartCreatorOpen(true)} className="bg-purple-600 hover:bg-purple-700 text-white gap-2 min-h-[44px]">
+              <Wand2 className="w-4 h-4" /> Smart Create
             </Button>
             <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="gap-2 min-h-[44px]">
               <Upload className="w-4 h-4" /> Import
@@ -378,6 +383,15 @@ export default function AgentSkillRegistry() {
         onSaved={() => {
           queryClient.invalidateQueries(['agent-skills']);
           setEditorOpen(false);
+        }}
+      />
+
+      <SmartEntityCreator
+        open={smartCreatorOpen}
+        onClose={() => setSmartCreatorOpen(false)}
+        onEntityCreated={() => {
+          queryClient.invalidateQueries(['agent-skills']);
+          queryClient.invalidateQueries(['agent-teams']);
         }}
       />
       </div>
