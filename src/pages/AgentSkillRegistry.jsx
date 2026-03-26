@@ -15,6 +15,9 @@ import { toast } from 'sonner';
 import SkillEditorModal from '@/components/admin/SkillEditorModal';
 import SkillCard from '@/components/admin/SkillCard';
 import AgentSkillOrgChart from '@/components/admin/AgentSkillOrgChart';
+import SolutionTrainManager from '@/components/admin/SolutionTrainManager';
+import ARTManager from '@/components/admin/ARTManager';
+import RegistryTeamManager from '@/components/admin/RegistryTeamManager';
 import { skillToMarkdown, markdownToSkill, downloadMarkdown } from '@/lib/agentSkillMarkdown';
 
 const PERSONA_ROLES = [
@@ -158,9 +161,12 @@ export default function AgentSkillRegistry() {
         </div>
 
         <Tabs defaultValue="skills" className="mt-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="skills">Skills</TabsTrigger>
           <TabsTrigger value="org-chart">Org Chart</TabsTrigger>
+          <TabsTrigger value="solution-trains">Solution Trains</TabsTrigger>
+          <TabsTrigger value="arts">ARTs</TabsTrigger>
+          <TabsTrigger value="teams">Teams</TabsTrigger>
         </TabsList>
 
         <TabsContent value="skills" className="mt-6 space-y-6">
@@ -237,6 +243,18 @@ export default function AgentSkillRegistry() {
 
         <TabsContent value="org-chart" className="mt-6">
           <AgentSkillOrgChart skills={skills} onSelectSkill={skill => { setEditingSkill(skill); setEditorOpen(true); }} />
+        </TabsContent>
+
+        <TabsContent value="solution-trains" className="mt-6 space-y-4">
+          <SolutionTrainManager />
+        </TabsContent>
+
+        <TabsContent value="arts" className="mt-6 space-y-4">
+          <ARTManager />
+        </TabsContent>
+
+        <TabsContent value="teams" className="mt-6 space-y-4">
+          <RegistryTeamManager />
         </TabsContent>
       </Tabs>
 
