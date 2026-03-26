@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Eye, Check, Calendar, Send } from 'lucide-react';
 import { toast } from 'sonner';
+import PostDetailModal from './PostDetailModal';
 
 const STAGES = [
   { key: 'draft', label: 'Draft', icon: null, color: 'bg-slate-100 text-slate-700' },
@@ -18,6 +19,7 @@ const STAGES = [
 export default function EditorialPipeline({ userEmail }) {
   const queryClient = useQueryClient();
   const [expandedPost, setExpandedPost] = useState(null);
+  const [selectedPost, setSelectedPost] = useState(null);
 
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ['scheduled-posts-pipeline', userEmail],
@@ -103,7 +105,7 @@ export default function EditorialPipeline({ userEmail }) {
                       <Card
                         key={post.id}
                         className="p-3 cursor-pointer hover:shadow-md transition-shadow bg-white"
-                        onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}
+                        onClick={() => setSelectedPost(post)}
                       >
                         <div className="space-y-2">
                           <p className="font-medium text-slate-900 line-clamp-2 text-sm">
@@ -128,27 +130,24 @@ export default function EditorialPipeline({ userEmail }) {
                           )}
                         </div>
 
-                        {/* Expanded Actions */}
-                        {expandedPost === post.id && (
-                          <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
-                            {STAGES.filter(s => s.key !== stageKey).map(nextStage => (
-                              <Button
-                                key={nextStage.key}
-                                size="sm"
-                                variant="outline"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  movePost(post.id, nextStage.key);
-                                  setExpandedPost(null);
-                                }}
-                                disabled={updateMutation.isPending}
-                                className="w-full text-xs"
-                              >
-                                → {nextStage.label}
-                              </Button>
-                            ))}
-                          </div>
-                        )}
+                        {/* Move Actions */}
+                         <div className="mt-3 pt-3 border-t border-slate-200 space-y-1 flex gap-1 flex-wrap">
+                           {STAGES.filter(s => s.key !== stageKey).slice(0, 2).map(nextStage => (
+                             <Button
+                               key={nextStage.key}
+                               size="sm"
+                               variant="outline"
+                               onClick={(e) => {
+                                 e.stopPropagation();
+                                 movePost(post.id, nextStage.key);
+                               }}
+                               disabled={updateMutation.isPending}
+                               className="text-xs flex-1"
+                             >
+                               → {nextStage.label}
+                             </Button>
+                           ))}
+                         </div>
                       </Card>
                     ))
                   )}
@@ -158,6 +157,12 @@ export default function EditorialPipeline({ userEmail }) {
           })}
         </div>
       </div>
+
+      <PostDetailModal
+        post={selectedPost}
+        isOpen={!!selectedPost}
+        onClose={() => setSelectedPost(null)}
+      />
     </div>
   );
 }
