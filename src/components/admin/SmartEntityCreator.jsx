@@ -75,27 +75,57 @@ export default function SmartEntityCreator({ open, onClose, onEntityCreated }) {
 
   const createMutation = useMutation({
     mutationFn: async (data) => {
-      const entity = ENTITY_TYPES.find(et => et === entityType);
-      if (!entity) throw new Error('Invalid entity type');
-      return base44.entities[entityType].create(data);
+      if (!entityType || !ENTITY_TYPES.includes(entityType)) {
+        throw new Error(`Invalid entity type: ${entityType}`);
+      }
+      
+      // Direct entity mapping to avoid dynamic access issues
+      const entityMap = {
+        'AgentSkill': base44.entities.AgentSkill,
+        'Skill': base44.entities.Skill,
+        'AgentTeam': base44.entities.AgentTeam,
+        'AgileReleaseTrain': base44.entities.AgileReleaseTrain,
+        'SolutionTrain': base44.entities.SolutionTrain,
+      };
+      
+      const entity = entityMap[entityType];
+      if (!entity) {
+        throw new Error(`Entity ${entityType} not found in base44.entities`);
+      }
+      
+      console.log(`Creating ${entityType} with:`, data);
+      const result = await entity.create(data);
+      console.log(`Created ${entityType}:`, result);
+      return result;
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries();
-      toast.success(`${entityType} created`);
+      queryClient.invalidateQueries({ queryKey: ['agent-skills'] });
+      queryClient.invalidateQueries({ queryKey: ['agent-teams'] });
+      queryClient.invalidateQueries({ queryKey: ['skills'] });
+      queryClient.invalidateQueries({ queryKey: ['resources'] });
+      toast.success(`${entityType} created successfully`);
       if (onEntityCreated) onEntityCreated(result);
       handleClose();
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => {
+      console.error(`Creation failed:`, err);
+      toast.error(`Failed to create ${entityType}: ${err.message}`);
+    },
   });
 
   const handleCreate = () => {
+    console.log('handleCreate called with entityType:', entityType, 'form:', form);
+    
     const required = ['name', 'display_name', 'description'];
     if (entityType === 'AgentSkill' || entityType === 'Skill') required.push('instructions');
+    
     const missing = required.filter(f => !form[f]);
     if (missing.length > 0) {
-      toast.error(`Missing: ${missing.join(', ')}`);
+      toast.error(`Missing required fields: ${missing.join(', ')}`);
       return;
     }
+    
+    console.log('Validation passed, calling mutation...');
     createMutation.mutate(form);
   };
 
@@ -245,10 +275,19 @@ export default function SmartEntityCreator({ open, onClose, onEntityCreated }) {
               >
                 <Wand2 className="w-4 h-4" /> {loading ? 'Reviewing...' : 'AI Review'}
               </Button>
-              <Button onClick={handleCreate} disabled={createMutation.isPending} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 flex-1">
+              <Button 
+                onClick={handleCreate} 
+                disabled={createMutation.isPending}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 flex-1 min-h-[44px]"
+              >
                 <Save className="w-4 h-4" /> {createMutation.isPending ? 'Creating...' : 'Create'}
               </Button>
             </div>
+            {createMutation.error && (
+              <div className="bg-red-50 border border-red-200 rounded p-2 text-sm text-red-700">
+                Error: {createMutation.error.message}
+              </div>
+            )}
           </TabsContent>
 
           {/* AI REVIEW TAB */}
