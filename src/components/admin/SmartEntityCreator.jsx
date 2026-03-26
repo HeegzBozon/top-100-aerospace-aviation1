@@ -43,7 +43,7 @@ export default function SmartEntityCreator({ open, onClose, onEntityCreated }) {
   const handleAiReview = async () => {
     setLoading(true);
     try {
-      const prompt = `Review and improve this ${entityType} entity definition. Fill in any missing critical fields, enhance descriptions, and suggest better instructions if vague. Return as JSON with the same structure:\n\n${JSON.stringify(form, null, 2)}`;
+      const prompt = `Review and improve this ${entityType} entity definition. Fill in any missing critical fields, enhance descriptions, and suggest better instructions if vague. Return JSON with 'improvements' (array of strings) and 'data' (full improved entity object):\n\n${JSON.stringify(form, null, 2)}`;
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
         response_json_schema: {
@@ -52,13 +52,16 @@ export default function SmartEntityCreator({ open, onClose, onEntityCreated }) {
             improvements: { type: 'array', items: { type: 'string' } },
             data: { type: 'object' },
           },
+          required: ['improvements', 'data'],
         },
       });
+      console.log('AI Response:', response);
       setAiSuggestions(response);
       setTab('ai-review');
       toast.success('AI review complete');
     } catch (err) {
-      toast.error('AI review failed');
+      console.error('AI review error:', err);
+      toast.error(`AI review failed: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -134,6 +137,7 @@ export default function SmartEntityCreator({ open, onClose, onEntityCreated }) {
     setAiSuggestions(null);
     setForm(ENTITY_TEMPLATES[entityType] || {});
     setTab('upload');
+    setEntityType('AgentSkill');
     onClose();
   };
 
