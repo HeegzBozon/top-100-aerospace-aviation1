@@ -4,7 +4,8 @@ import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Eye, Check, Calendar, Send } from 'lucide-react';
+import { Loader2, Eye, Check, Calendar, Send, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import PostDetailModal from './PostDetailModal';
 
@@ -104,7 +105,7 @@ export default function EditorialPipeline({ userEmail }) {
                     stagePosts.map(post => (
                       <Card
                         key={post.id}
-                        className="p-3 cursor-pointer hover:shadow-md transition-shadow bg-white"
+                        className="p-3 hover:shadow-md transition-shadow bg-white"
                         onClick={() => setSelectedPost(post)}
                       >
                         <div className="space-y-2">
@@ -130,24 +131,40 @@ export default function EditorialPipeline({ userEmail }) {
                           )}
                         </div>
 
-                        {/* Move Actions */}
-                         <div className="mt-3 pt-3 border-t border-slate-200 space-y-1 flex gap-1 flex-wrap">
-                           {STAGES.filter(s => s.key !== stageKey).slice(0, 2).map(nextStage => (
-                             <Button
-                               key={nextStage.key}
-                               size="sm"
-                               variant="outline"
-                               onClick={(e) => {
-                                 e.stopPropagation();
-                                 movePost(post.id, nextStage.key);
-                               }}
-                               disabled={updateMutation.isPending}
-                               className="text-xs flex-1"
-                             >
-                               → {nextStage.label}
-                             </Button>
-                           ))}
-                         </div>
+                        {/* Move Actions & View Link */}
+                        <div className="mt-3 pt-3 border-t border-slate-200 space-y-1 flex gap-1 flex-wrap">
+                          {post.nominee_id && (
+                            <Link
+                              to={`/Top100Women2025/${post.nominee_id}`}
+                              target="_blank"
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex-1"
+                            >
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-xs w-full gap-1"
+                              >
+                                <ExternalLink className="w-3 h-3" /> View
+                              </Button>
+                            </Link>
+                          )}
+                          {STAGES.filter(s => s.key !== stageKey).slice(0, 2).map(nextStage => (
+                            <Button
+                              key={nextStage.key}
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                movePost(post.id, nextStage.key);
+                              }}
+                              disabled={updateMutation.isPending}
+                              className="text-xs flex-1"
+                            >
+                              → {nextStage.label}
+                            </Button>
+                          ))}
+                        </div>
                       </Card>
                     ))
                   )}
