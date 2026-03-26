@@ -181,11 +181,16 @@ export default function AgentSkillRegistry() {
 
         <TabsContent value="teams" className="mt-6 space-y-6">
           <Tabs value={agentSubTab} onValueChange={setAgentSubTab} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="manage">Manage Teams</TabsTrigger>
               <TabsTrigger value="agents">Agents</TabsTrigger>
               <TabsTrigger value="skills">Skills</TabsTrigger>
               <TabsTrigger value="resources">Resources</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="manage" className="space-y-4">
+              <RegistryTeamManager />
+            </TabsContent>
 
             <TabsContent value="agents" className="space-y-6">
           {/* Stats */}
