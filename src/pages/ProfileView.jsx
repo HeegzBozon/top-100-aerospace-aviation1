@@ -1,7 +1,7 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { useProfileResolution } from '@/components/hooks/useProfileResolution';
+import { useProfileResolution } from '@/hooks/useProfileResolution';
 import { Loader2, Crown, Briefcase, Building, Linkedin, Trophy, Globe, Award, Quote, Mail, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
@@ -48,9 +48,10 @@ const LinkButton = ({ href, icon: Icon, children }) => (
 );
 
 export default function ProfileView({ userId: propUserId = null }) {
+    const { id: pathId } = useParams();
     const location = useLocation();
     const params = new URLSearchParams(location.search);
-    const targetId = propUserId || params.get('id');
+    const targetId = propUserId || pathId || params.get('id');
     const targetEmail = params.get('user') || params.get('email');
 
     const { data: viewer } = useQuery({

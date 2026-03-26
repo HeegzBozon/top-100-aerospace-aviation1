@@ -16,6 +16,7 @@ const TermsOfService          = lazy(() => import('@/pages/TermsOfService'));
 const Colony                  = lazy(() => import('@/pages/Colony'));
 const AnalyticsDashboard      = lazy(() => import('@/pages/AnalyticsDashboard'));
 const GlobalIntelligence      = lazy(() => import('@/pages/GlobalIntelligence'));
+const ProfileView             = lazy(() => import('@/pages/ProfileView'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -71,6 +72,11 @@ const AuthenticatedApp = () => {
       <Route path="/global-intelligence" element={<GlobalIntelligence />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
       <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/profiles/:id" element={
+        <LayoutWrapper currentPageName="ProfileView">
+          <ProfileView />
+        </LayoutWrapper>
+      } />
       <Route path="/Profile" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/PublicProfile" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/Nominee" element={<Navigate to="/ProfileView" replace />} />
