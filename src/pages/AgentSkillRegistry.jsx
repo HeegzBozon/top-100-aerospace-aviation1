@@ -171,17 +171,23 @@ export default function AgentSkillRegistry() {
           </div>
         </div>
 
-        <Tabs defaultValue="agents" className="mt-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="agents">Agents</TabsTrigger>
-          <TabsTrigger value="skills">Skills</TabsTrigger>
-          <TabsTrigger value="resources">Resources</TabsTrigger>
+        <Tabs defaultValue="teams" className="mt-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="teams">Teams</TabsTrigger>
           <TabsTrigger value="org-chart">Org Chart</TabsTrigger>
           <TabsTrigger value="solution-trains">Solution Trains</TabsTrigger>
           <TabsTrigger value="arts">ARTs</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="agents" className="mt-6 space-y-6">
+        <TabsContent value="teams" className="mt-6 space-y-6">
+          <Tabs value={agentSubTab} onValueChange={setAgentSubTab} className="space-y-4">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="agents">Agents</TabsTrigger>
+              <TabsTrigger value="skills">Skills</TabsTrigger>
+              <TabsTrigger value="resources">Resources</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="agents" className="space-y-6">
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
@@ -200,16 +206,53 @@ export default function AgentSkillRegistry() {
             ))}
           </div>
 
-          {/* Agent Sub-Tabs */}
-          <Tabs value={agentSubTab} onValueChange={setAgentSubTab} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="by-role">By Role</TabsTrigger>
-              <TabsTrigger value="by-team">By Team</TabsTrigger>
-              <TabsTrigger value="by-status">By Status</TabsTrigger>
-            </TabsList>
-
-            {/* By Role */}
-            <TabsContent value="by-role" className="space-y-3">
+              {/* Filter by role/team/status */}
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Input
+                      placeholder="Search agents..."
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                  <Select value={filterRole} onValueChange={setFilterRole}>
+                    <SelectTrigger className="w-full sm:w-52">
+                      <SelectValue placeholder="Filter by role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Roles</SelectItem>
+                      {PERSONA_ROLES.map(r => (
+                        <SelectItem key={r} value={r}>{r}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={filterTeam} onValueChange={setFilterTeam}>
+                    <SelectTrigger className="w-full sm:w-52">
+                      <SelectValue placeholder="Filter by team" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Teams</SelectItem>
+                      {teams.map(t => (
+                        <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                    <SelectTrigger className="w-full sm:w-52">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
+                      <SelectItem value="ready_for_duty">Ready for Duty</SelectItem>
+                      <SelectItem value="bench">Bench</SelectItem>
+                      <SelectItem value="beach">Beach</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -242,8 +285,8 @@ export default function AgentSkillRegistry() {
               ) : filtered.length === 0 ? (
                 <div className="text-center py-20 text-slate-400">
                   <Bot className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p className="font-medium">No skills found</p>
-                  <p className="text-sm mt-1">Create your first skill to get started</p>
+                  <p className="font-medium">No agents found</p>
+                  <p className="text-sm mt-1">Create your first agent skill to get started</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -259,93 +302,17 @@ export default function AgentSkillRegistry() {
                   ))}
                 </div>
               )}
+              </div>
             </TabsContent>
 
-            {/* By Team */}
-            <TabsContent value="by-team" className="space-y-3">
-              <Select value={filterTeam} onValueChange={setFilterTeam}>
-                <SelectTrigger className="w-full sm:w-64">
-                  <SelectValue placeholder="Filter by team" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Teams</SelectItem>
-                  {teams.map(t => (
-                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {[1,2,3,4,5,6].map(n => (
-                    <div key={n} className="h-48 bg-slate-200 rounded-xl animate-pulse" />
-                  ))}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {skills
-                    .filter(s => filterTeam === 'all' || s.team_id === filterTeam)
-                    .map(skill => (
-                      <SkillCard
-                        key={skill.id}
-                        skill={skill}
-                        onEdit={() => handleEdit(skill)}
-                        onDelete={() => deleteMutation.mutate(skill.id)}
-                        onDuplicate={() => handleDuplicate(skill)}
-                        onToggle={(is_active) => toggleMutation.mutate({ id: skill.id, is_active })}
-                      />
-                    ))}
-                </div>
-              )}
+            <TabsContent value="skills" className="space-y-4">
+              <SkillManager />
             </TabsContent>
 
-            {/* By Status */}
-            <TabsContent value="by-status" className="space-y-3">
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-full sm:w-64">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="unassigned">Unassigned</SelectItem>
-                  <SelectItem value="ready_for_duty">Ready for Duty</SelectItem>
-                  <SelectItem value="bench">Bench</SelectItem>
-                  <SelectItem value="beach">Beach</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {[1,2,3,4,5,6].map(n => (
-                    <div key={n} className="h-48 bg-slate-200 rounded-xl animate-pulse" />
-                  ))}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {skills
-                    .filter(s => filterStatus === 'all' || s.assignment_status === filterStatus)
-                    .map(skill => (
-                      <SkillCard
-                        key={skill.id}
-                        skill={skill}
-                        onEdit={() => handleEdit(skill)}
-                        onDelete={() => deleteMutation.mutate(skill.id)}
-                        onDuplicate={() => handleDuplicate(skill)}
-                        onToggle={(is_active) => toggleMutation.mutate({ id: skill.id, is_active })}
-                      />
-                    ))}
-                </div>
-              )}
+            <TabsContent value="resources" className="space-y-4">
+              <ResourceManager />
             </TabsContent>
           </Tabs>
-        </TabsContent>
-
-        <TabsContent value="skills" className="mt-6 space-y-4">
-          <SkillManager />
-        </TabsContent>
-
-        <TabsContent value="resources" className="mt-6 space-y-4">
-          <ResourceManager />
         </TabsContent>
 
         <TabsContent value="org-chart" className="mt-6 space-y-6">
