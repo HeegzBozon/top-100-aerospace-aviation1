@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { X, Wand2, PencilLine } from "lucide-react";
+import { X, Wand2, PencilLine, BookOpen } from "lucide-react";
 import { scriptBuilder } from "@/functions/scriptBuilder";
 import ComposerStepUpload from "./ComposerStepUpload";
 import ComposerStepReview from "./ComposerStepReview";
+import ComposerStepJournalist from "./ComposerStepJournalist";
 import SinglePostForm from "./SinglePostForm";
 
-const STEP_MODE   = "mode";
-const STEP_UPLOAD = "upload";
-const STEP_LOADING= "loading";
-const STEP_REVIEW = "review";
-const STEP_SINGLE = "single";
+const STEP_MODE      = "mode";
+const STEP_UPLOAD    = "upload";
+const STEP_LOADING   = "loading";
+const STEP_REVIEW    = "review";
+const STEP_SINGLE    = "single";
+const STEP_JOURNALIST = "journalist";
 
 export default function PostComposer({ channels, editingPost, userEmail, onClose }) {
   const [step, setStep] = useState(editingPost ? STEP_SINGLE : STEP_MODE);
@@ -41,11 +43,12 @@ export default function PostComposer({ channels, editingPost, userEmail, onClose
   const handleDone = () => onClose();
 
   const stepTitle = {
-    [STEP_MODE]:    "New Post",
-    [STEP_UPLOAD]:  "Script Builder — Source",
-    [STEP_LOADING]: "Generating Script…",
-    [STEP_REVIEW]:  "Review & Approve Posts",
-    [STEP_SINGLE]:  editingPost ? "Edit Post" : "New Post",
+    [STEP_MODE]:       "New Post",
+    [STEP_UPLOAD]:     "Script Builder — Source",
+    [STEP_LOADING]:    "Generating Script…",
+    [STEP_REVIEW]:     "Review & Approve Posts",
+    [STEP_SINGLE]:     editingPost ? "Edit Post" : "New Post",
+    [STEP_JOURNALIST]: "Journalist Spotlight",
   }[step] || "Composer";
 
   return (
@@ -84,6 +87,19 @@ export default function PostComposer({ channels, editingPost, userEmail, onClose
                 <div>
                   <p className="font-semibold text-slate-800">Script Builder</p>
                   <p className="text-sm text-slate-500 mt-0.5">Upload content and let AI generate up to 12 posts mapped to JJJH + AIDA + Hero's Journey.</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setStep(STEP_JOURNALIST)}
+                className="flex flex-col items-start gap-3 p-5 rounded-2xl border-2 border-slate-200 hover:border-amber-400 hover:bg-amber-50 transition-all text-left group min-h-[140px]"
+              >
+                <div className="w-11 h-11 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                  <BookOpen className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-800">Journalist Spotlight</p>
+                  <p className="text-sm text-slate-500 mt-0.5">Generate editorial articles for TOP 100 nominees using AI journalist agent.</p>
                 </div>
               </button>
 
@@ -135,6 +151,14 @@ export default function PostComposer({ channels, editingPost, userEmail, onClose
               userEmail={userEmail}
               onBack={() => setStep(STEP_UPLOAD)}
               onDone={handleDone}
+            />
+          )}
+
+          {/* Step: Journalist */}
+          {step === STEP_JOURNALIST && (
+            <ComposerStepJournalist
+              onBack={() => setStep(STEP_MODE)}
+              onDone={onClose}
             />
           )}
 
