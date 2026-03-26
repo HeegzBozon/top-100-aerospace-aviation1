@@ -2,7 +2,8 @@ import { useLocation, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useProfileResolution } from '@/hooks/useProfileResolution';
-import { Loader2, Crown, Briefcase, Building, Linkedin, Trophy, Globe, Award, Quote, Mail, ExternalLink } from 'lucide-react';
+import { Loader2, Crown, Briefcase, Building, Linkedin, Trophy, Globe, Award, Quote, Mail, ExternalLink, Pencil } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 
@@ -122,8 +123,25 @@ export default function ProfileView({ userId: propUserId = null }) {
 
                     {/* Left Column: Core Identity */}
                     <div className="lg:col-span-1 space-y-6">
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-3xl p-6 text-center material-shadow-lg bg-white/90 backdrop-blur-xl">
-                            <img
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative glass-card rounded-3xl p-6 text-center material-shadow-lg bg-white/90 backdrop-blur-xl">
+                            {/* Edit button for profile owner */}
+                        {viewer && (
+                            nominee?.nominee_email === viewer.email ||
+                            nominee?.claimed_by_user_email === viewer.email ||
+                            user?.email === viewer.email
+                        ) && (
+                            <Link to="/Profile" className="absolute top-4 right-4">
+                                <button
+                                    aria-label="Edit your profile"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/80 backdrop-blur-sm border border-slate-200 hover:bg-white transition-all shadow-sm"
+                                    style={{ color: brandColors.navyDeep }}
+                                >
+                                    <Pencil className="w-3 h-3" />
+                                    Edit Profile
+                                </button>
+                            </Link>
+                        )}
+                        <img
                                 src={displayAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&size=128&background=random`}
                                 className="w-32 h-32 rounded-full border-4 mx-auto mb-4 object-cover"
                                 style={{ borderColor: brandColors.cream }}
