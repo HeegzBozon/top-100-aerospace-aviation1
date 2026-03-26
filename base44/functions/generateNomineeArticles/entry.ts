@@ -17,12 +17,15 @@ Deno.serve(async (req) => {
 
     // Fetch nominees to generate articles for
     const nominees = await Promise.all(
-      nominee_ids.map(id => base44.asServiceRole.entities.Nominee.read(id))
+      nominee_ids.map(id => base44.asServiceRole.entities.Nominee.filter({ id }, '', 1))
     );
+    
+    // Unwrap single-item responses
+    const flatNominees = nominees.map(result => Array.isArray(result) ? result[0] : result).filter(Boolean);
 
     const articles = [];
 
-    for (const nominee of nominees) {
+    for (const nominee of flatNominees) {
       try {
         // Call journalist agent to generate article
         const prompt = `You are an investigative aerospace journalist. Write a 1500-2000 word editorial spotlight article about ${nominee.name}, a nominee in the TOP 100 Aerospace & Aviation.
