@@ -199,7 +199,7 @@ export default function Solutions() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative min-h-[600px] bg-gradient-to-br from-[#1e3a5a] via-[#162842] to-[#0f2438] text-white overflow-hidden px-6 py-24">
+      <div className="relative min-h-[700px] bg-gradient-to-br from-[#1e3a5a] via-[#162842] to-[#0f2438] text-white overflow-hidden px-6 py-24 flex items-center justify-center">
         {/* Constellation Background */}
         <ConstellationBackground />
         
@@ -215,7 +215,14 @@ export default function Solutions() {
           transition={{ duration: 25, repeat: Infinity }}
         />
         
-        <div className="max-w-5xl mx-auto text-center relative z-10">
+        {/* Glass Card Container */}
+        <motion.div 
+          className="relative z-10 max-w-4xl mx-auto backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-12 md:p-16 shadow-2xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="text-center">
           <motion.div
             className="inline-block mb-6"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -258,7 +265,8 @@ export default function Solutions() {
               Executive Brief
             </Button>
           </motion.div>
-        </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Intro Section */}
