@@ -1,21 +1,26 @@
-import { base44 } from '@/api/base44Client';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { LogIn, UserPlus } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 export default function UnauthenticatedCTA({ user }) {
   if (user) return null;
 
+  const handleSignIn = () => {
+    base44.auth.redirectToLogin();
+  };
+
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-5 py-3 rounded-full bg-white/90 backdrop-blur-md shadow-lg border border-gray-200">
-      <span className="text-sm text-gray-600 hidden sm:inline">Join the community</span>
-      <Button
-        size="sm"
-        className="rounded-full gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white"
-        onClick={() => base44.auth.redirectToLogin()}
-      >
-        <LogIn className="w-3.5 h-3.5" />
-        Sign In
-      </Button>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-slate-900 to-slate-800 px-4 py-3"
+    >
+      <div className="max-w-6xl mx-auto flex items-center justify-between">
+        <p className="text-sm text-white">Sign in to vote and nominate</p>
+        <Button onClick={handleSignIn} size="sm" className="bg-blue-600 hover:bg-blue-700">
+          Sign In
+        </Button>
+      </div>
+    </motion.div>
   );
 }

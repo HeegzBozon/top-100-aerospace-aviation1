@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getSearchConsoleData } from '@/functions/getSearchConsoleData';
 import { Search, Loader2, AlertCircle } from 'lucide-react';
 import StatCard from './StatCard';
-import { useRecharts } from '@/lib/recharts-lazy';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const RANGES = [
   { label: '7d', days: 7 },
@@ -17,7 +17,6 @@ function getDateDaysAgo(days) {
 }
 
 export default function SearchConsolePanel({ siteUrl }) {
-  const rc = useRecharts();
   const [range, setRange] = useState(28);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -101,9 +100,7 @@ export default function SearchConsolePanel({ siteUrl }) {
         </div>
       )}
 
-      {!loading && !error && data && rc && (() => {
-          const { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } = rc;
-          return (
+      {!loading && !error && data && (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <StatCard label="Clicks" value={totals.clicks.toLocaleString()} />
@@ -156,8 +153,7 @@ export default function SearchConsolePanel({ siteUrl }) {
             </div>
           )}
         </>
-          );
-      })()}
+      )}
     </section>
   );
 }

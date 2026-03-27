@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react"
-import { useRecharts } from "@/lib/recharts-lazy"
+import * as RechartsPrimitive from "recharts"
+
 import { cn } from "@/lib/utils"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
@@ -24,17 +25,6 @@ function useChart() {
 const ChartContainer = React.forwardRef(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
-  const rc = useRecharts();
-
-  if (!rc) {
-    return (
-      <div className={cn("flex aspect-video justify-center items-center text-xs text-muted-foreground", className)} {...props}>
-        <div className="animate-pulse">Loading chart...</div>
-      </div>
-    );
-  }
-
-  const { ResponsiveContainer } = rc;
 
   return (
     (<ChartContext.Provider value={{ config }}>
@@ -47,9 +37,9 @@ const ChartContainer = React.forwardRef(({ id, className, children, config, ...p
         )}
         {...props}>
         <ChartStyle id={chartId} config={config} />
-        <ResponsiveContainer>
+        <RechartsPrimitive.ResponsiveContainer>
           {children}
-        </ResponsiveContainer>
+        </RechartsPrimitive.ResponsiveContainer>
       </div>
     </ChartContext.Provider>)
   );
@@ -87,14 +77,7 @@ return color ? `  --color-${key}: ${color};` : null
   );
 }
 
-// These are now just pass-through names — actual Tooltip/Legend components
-// must come from useRecharts() in the consuming component
-const ChartTooltip = (props) => {
-  const rc = useRecharts();
-  if (!rc) return null;
-  const { Tooltip } = rc;
-  return <Tooltip {...props} />;
-};
+const ChartTooltip = RechartsPrimitive.Tooltip
 
 const ChartTooltipContent = React.forwardRef((
   {
@@ -231,12 +214,7 @@ const ChartTooltipContent = React.forwardRef((
 })
 ChartTooltipContent.displayName = "ChartTooltip"
 
-const ChartLegend = (props) => {
-  const rc = useRecharts();
-  if (!rc) return null;
-  const { Legend } = rc;
-  return <Legend {...props} />;
-};
+const ChartLegend = RechartsPrimitive.Legend
 
 const ChartLegendContent = React.forwardRef((
   { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey },

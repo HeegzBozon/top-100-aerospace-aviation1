@@ -1,14 +1,14 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import { createPageUrl } from "@/utils";
-import { base44 } from "@/api/base44Client";
+import { User } from '@/entities/User';
 import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 
 import { getAutoTheme, getCSSVariables, themes } from "@/components/core/brandTheme";
 import { ThemeProvider } from "@/components/core/ThemeContext";
 import { PUBLIC_PAGES } from "@/components/core/appConfig";
-const CommsLayoutMobile = React.lazy(() => import("@/components/layout/CommsLayoutMobile"));
-const CommsLayoutDesktop = React.lazy(() => import("@/components/layout/CommsLayoutDesktop"));
+import CommsLayoutMobile from "@/components/layout/CommsLayoutMobile";
+import CommsLayoutDesktop from "@/components/layout/CommsLayoutDesktop";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ConversationProvider } from "@/components/contexts/ConversationContext";
 import { UnreadProvider } from "@/components/contexts/UnreadContext";
@@ -27,17 +27,20 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     const handleAuth = async () => {
       try {
-        const currentUser = await base44.auth.me();
+        const currentUser = await User.me();
         setUser(currentUser);
-        if (currentUser?.theme_mode) setInitialThemeMode(currentUser.theme_mode);
-        if (currentPageName === 'MissionControl' && !currentUser?.season3_reonboarding_seen) {
+        if (currentUser.theme_mode) setInitialThemeMode(currentUser.theme_mode);
+        if (currentPageName === 'MissionControl' && !currentUser.season3_reonboarding_seen) {
           setShowReOnboarding(true);
         }
         setAuthStatus('ok');
-      } catch (err) {
-        console.error('Auth error:', err);
+      } catch {
         setUser(null);
-        setAuthStatus('ok');
+        if (!PUBLIC_PAGES.includes(currentPageName)) {
+          window.location.href = createPageUrl('Home');
+        } else {
+          setAuthStatus('ok');
+        }
       }
     };
     handleAuth();
@@ -52,19 +55,12 @@ export default function Layout({ children, currentPageName }) {
   const handleReOnboardingDone = async () => {
     setShowReOnboarding(false);
     if (user) {
-      try { await base44.auth.updateMe({ season3_reonboarding_seen: true }); } catch { }
+      try { await User.updateMyUserData({ season3_reonboarding_seen: true }); } catch { }
     }
   };
 
   // --- Loading state (before ThemeProvider is ready) ---
-  // Render after 5 seconds even if still checking
-  const [showTimeout, setShowTimeout] = React.useState(false);
-  React.useEffect(() => {
-    const timer = setTimeout(() => setShowTimeout(true), 5000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (authStatus === 'checking' && !showTimeout) {
+  if (authStatus === 'checking') {
     const themeVars = themes[getAutoTheme()] || themes.brand;
     return (
       <>
@@ -93,7 +89,6 @@ export default function Layout({ children, currentPageName }) {
           <CommsThemeProvider>
           <SidebarProvider>
             <Toaster />
-            <Suspense fallback={<div />}>
             {isMobile ? (
               <CommsLayoutMobile
                 currentPageName={currentPageName}
@@ -116,9 +111,8 @@ export default function Layout({ children, currentPageName }) {
               >
                 {children}
               </CommsLayoutDesktop>
-              )}
-              </Suspense>
-              </SidebarProvider>
+            )}
+          </SidebarProvider>
           </CommsThemeProvider>
         </UnreadProvider>
       </ConversationProvider>

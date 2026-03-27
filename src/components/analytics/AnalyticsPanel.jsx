@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getAnalyticsData } from '@/functions/getAnalyticsData';
 import { BarChart2, Loader2, AlertCircle, ChevronDown } from 'lucide-react';
 import StatCard from './StatCard';
-import { useRecharts } from '@/lib/recharts-lazy';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const RANGES = [
   { label: '7d', days: 7 },
@@ -23,7 +23,6 @@ function fmtDuration(secs) {
 }
 
 export default function AnalyticsPanel({ propertyId, onPropertyChange, properties }) {
-  const rc = useRecharts();
   const [range, setRange] = useState(28);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -151,9 +150,7 @@ export default function AnalyticsPanel({ propertyId, onPropertyChange, propertie
         </div>
       )}
 
-      {!loading && !error && data && rc && (() => {
-          const { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } = rc;
-          return (
+      {!loading && !error && data && (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <StatCard label="Sessions" value={totals.sessions.toLocaleString()} />
@@ -210,8 +207,7 @@ export default function AnalyticsPanel({ propertyId, onPropertyChange, propertie
             </div>
           )}
         </>
-          );
-      })()}
+      )}
     </section>
   );
 }
