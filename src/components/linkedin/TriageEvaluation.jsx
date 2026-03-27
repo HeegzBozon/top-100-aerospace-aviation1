@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Loader2, Zap } from 'lucide-react';
+import { Zap, RotateCw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function TriageEvaluation({ contact, onEvaluated }) {
@@ -160,14 +160,8 @@ export default function TriageEvaluation({ contact, onEvaluated }) {
             variant="outline"
             className="w-full bg-white/10 text-white hover:bg-white/20 border-white/30"
           >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Re-analyzing...
-              </>
-            ) : (
-              'Re-analyze'
-            )}
+            <RotateCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            {loading ? 'Re-analyzing...' : 'Re-analyze'}
           </Button>
         </div>
       </motion.div>
@@ -189,14 +183,7 @@ export default function TriageEvaluation({ contact, onEvaluated }) {
         disabled={loading}
         className="w-full bg-[#D4A574] text-white hover:bg-[#C19A6B] font-semibold"
       >
-        {loading ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Evaluating...
-          </>
-        ) : (
-          'Evaluate with TIER-S Rubric'
-        )}
+        {loading ? 'Evaluating...' : 'Evaluate with TIER-S Rubric'}
       </Button>
     </motion.div>
   );
