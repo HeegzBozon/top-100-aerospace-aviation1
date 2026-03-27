@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import Daily from '@daily-co/daily-js';
 import { colonyRoom } from '@/functions/colonyRoom';
 import ColonyLobby from '@/components/colony/ColonyLobby';
 import ColonyHUD from '@/components/colony/ColonyHUD';
@@ -84,6 +83,7 @@ export default function Colony() {
     const res = await colonyRoom({ action: 'get_or_create_room', roomName });
     const { room, token } = res.data;
 
+    const Daily = (await import('@daily-co/daily-js')).default;
     const call = Daily.createCallObject({
       audioSource: true,
       videoSource: true,
