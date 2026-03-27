@@ -83,8 +83,17 @@ export default function Colony() {
     const res = await colonyRoom({ action: 'get_or_create_room', roomName });
     const { room, token } = res.data;
 
-    const Daily = (await import('@daily-co/daily-js')).default;
-    const call = Daily.createCallObject({
+    // Load Daily.js from CDN at runtime to avoid build-time resolution
+    if (!window.Daily) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@daily-co/daily-js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+    const call = window.Daily.createCallObject({
       audioSource: true,
       videoSource: true,
     });
