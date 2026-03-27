@@ -477,10 +477,22 @@ export default function OnboardingKickstarter() {
                     </div>
 
                     {/* Plan total */}
-                    <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
+                    <div className="pt-3 border-t border-slate-100 flex justify-between items-center mb-4">
                       <p className="font-semibold text-slate-700 text-sm">Total</p>
                       <p className="text-base font-bold text-slate-800">${totalCollected.toLocaleString()}</p>
                     </div>
+
+                    {/* Select button */}
+                    <button
+                      onClick={() => setSelectedPlanIdx(pi)}
+                      className={`w-full py-2.5 rounded-lg text-xs font-semibold transition-all ${
+                        selectedPlanIdx === pi
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      {selectedPlanIdx === pi ? '✓ Selected' : 'Select This Plan'}
+                    </button>
                   </div>
                 );
               })}
