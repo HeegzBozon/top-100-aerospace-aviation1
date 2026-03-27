@@ -1,7 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
-import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 
 const AuthContext = createContext();
 
@@ -11,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
   const [authError, setAuthError] = useState(null);
-  const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
+  const [appPublicSettings, setAppPublicSettings] = useState(null);
 
   useEffect(() => {
     checkAppState();
@@ -22,58 +21,61 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
       
-      // First, check app public settings (with token if available)
-      // This will tell us if auth is required, user not registered, etc.
-      const appClient = createAxiosClient({
-        baseURL: `${appParams.serverUrl}/api/apps/public`,
-        headers: {
-          'X-App-Id': appParams.appId
-        },
-        token: appParams.token, // Include token if available
-        interceptResponses: true,
-        timeout: 5000 // 5 second timeout to prevent hanging
-      });
-      
+      // Fetch public settings using native fetch instead of internal SDK axios client
       try {
-        const publicSettings = await appClient.get(`/prod/public-settings/by-id/${appParams.appId}`);
-        setAppPublicSettings(publicSettings);
-        
-        // If we got the app public settings successfully, check if user is authenticated
+        const headers = { 'X-App-Id': appParams.appId };
         if (appParams.token) {
-          await checkUserAuth();
-        } else {
-          setIsLoadingAuth(false);
-          setIsAuthenticated(false);
+          headers['Authorization'] = `Bearer ${appParams.token}`;
         }
-        setIsLoadingPublicSettings(false);
-      } catch (appError) {
-        console.error('App state check failed:', appError);
         
-        // Handle app-level errors
-        if (appError.status === 403 && appError.data?.extra_data?.reason) {
-          const reason = appError.data.extra_data.reason;
-          if (reason === 'auth_required') {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch(
+          `${appParams.serverUrl}/api/apps/public/prod/public-settings/by-id/${appParams.appId}`,
+          { headers, signal: controller.signal }
+        );
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          const publicSettings = await response.json();
+          setAppPublicSettings(publicSettings);
+          
+          if (appParams.token) {
+            await checkUserAuth();
+          } else {
+            setIsLoadingAuth(false);
+            setIsAuthenticated(false);
+          }
+          setIsLoadingPublicSettings(false);
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          
+          if (response.status === 403 && errorData?.extra_data?.reason) {
+            const reason = errorData.extra_data.reason;
             setAuthError({
-              type: 'auth_required',
-              message: 'Authentication required'
-            });
-          } else if (reason === 'user_not_registered') {
-            setAuthError({
-              type: 'user_not_registered',
-              message: 'User not registered for this app'
+              type: reason === 'auth_required' ? 'auth_required' 
+                   : reason === 'user_not_registered' ? 'user_not_registered' 
+                   : reason,
+              message: reason === 'auth_required' ? 'Authentication required'
+                      : reason === 'user_not_registered' ? 'User not registered for this app'
+                      : errorData.message || 'Access denied'
             });
           } else {
             setAuthError({
-              type: reason,
-              message: appError.message
+              type: 'unknown',
+              message: errorData.message || 'Failed to load app'
             });
           }
-        } else {
-          setAuthError({
-            type: 'unknown',
-            message: appError.message || 'Failed to load app'
-          });
+          setIsLoadingPublicSettings(false);
+          setIsLoadingAuth(false);
         }
+      } catch (appError) {
+        console.error('App state check failed:', appError);
+        setAuthError({
+          type: 'unknown',
+          message: appError.message || 'Failed to load app'
+        });
         setIsLoadingPublicSettings(false);
         setIsLoadingAuth(false);
       }
