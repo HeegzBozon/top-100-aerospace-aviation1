@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Check, Upload, ExternalLink, Globe, Loader2, Settings, X, Plus, Trash2, Save, Mail } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { sendOnboardingEmail } from '@/functions/sendOnboardingEmail';
+import PaymentModal from '@/components/onboarding-admin/PaymentModal';
+import SendEmailModal from '@/components/onboarding-admin/SendEmailModal';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 function fmtDate(dateStr) {
@@ -62,6 +64,7 @@ export default function OnboardingKickstarter() {
   const [newScope, setNewScope] = useState('');
   const [showSendPanel, setShowSendPanel] = useState(false);
   const [expandedPlan, setExpandedPlan] = useState(null); // index of plan open in editor
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // client state
   const [selectedPlanIdx, setSelectedPlanIdx] = useState(0);
@@ -550,8 +553,8 @@ export default function OnboardingKickstarter() {
               <ChecklistItem done={checklist.deposit} onToggle={() => toggleCheck('deposit')}
                 title={`Send $${Number(activePlan?.installments?.[0]?.amount || display.deposit_amount || 0).toLocaleString()} Deposit`}
                 description="This secures your spot and gets your project on the board.">
-                <button onClick={() => toggleCheck('deposit')}
-                  className="inline-flex items-center gap-1.5 mt-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg">
+                <button onClick={() => setShowPaymentModal(true)}
+                  className="inline-flex items-center gap-1.5 mt-3 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white text-sm font-semibold px-4 py-2 rounded-lg">
                   Pay Now — ${Number(activePlan?.installments?.[0]?.amount || display.deposit_amount || 0).toLocaleString()}
                 </button>
               </ChecklistItem>
@@ -614,6 +617,17 @@ export default function OnboardingKickstarter() {
 
         </div>
       </div>
+
+      {sendModal && (
+        <SendEmailModal isOpen={!!sendModal} onClose={() => setSendModal(null)} pkg={sendModal} />
+      )}
+
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        amount={Number(activePlan?.installments?.[0]?.amount || display.deposit_amount || 0) * 100}
+        onSuccess={() => toggleCheck('deposit')}
+      />
     </div>
   );
 }
