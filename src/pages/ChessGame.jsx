@@ -7,7 +7,6 @@ import { createPageUrl } from '@/utils';
 import { ArrowLeft, Flag, Bot, Crown, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Chess } from 'chess.js';
 import ChessBoard from '@/components/chess/ChessBoard';
 import MoveHistory from '@/components/chess/MoveHistory';
 import GameChatPanel from '@/components/chess/GameChatPanel';
@@ -75,8 +74,9 @@ export default function ChessGame() {
   const isMyTurn = (() => {
     if (!game || game.status !== 'active') return false;
     try {
-      const chess = new Chess(game.current_fen);
-      return (chess.turn() === 'w') === (myColor === 'white');
+      // FEN active color is the 2nd space-separated field: 'w' or 'b'
+      const fenTurn = game.current_fen?.split(' ')[1];
+      return (fenTurn === 'w') === (myColor === 'white');
     } catch { return false; }
   })();
 

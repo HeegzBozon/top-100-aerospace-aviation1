@@ -1,5 +1,26 @@
-import { useState, useMemo, useCallback } from 'react';
-import { Chess } from 'chess.js';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+
+// Lazy-load chess.js to avoid build-time resolution failure
+let ChessClass = null;
+async function getChess() {
+  if (!ChessClass) {
+    const mod = await import('chess.js');
+    ChessClass = mod.Chess;
+  }
+  return ChessClass;
+}
+
+// Synchronous fallback shim used before chess.js loads
+function makeChessShim(fen) {
+  return {
+    turn: () => fen?.split(' ')[1] || 'w',
+    moves: () => [],
+    get: () => null,
+    inCheck: () => false,
+    board: () => Array(8).fill(Array(8).fill(null)),
+    load: () => {},
+  };
+}
 import { Chessboard } from 'react-chessboard';
 
 // Lichess CDN — reliable piece images for all standard sets
@@ -70,16 +91,19 @@ const BOARD_THEMES = {
 
 export default function ChessBoard({ fen, playerColor = 'white', onMove, disabled = false, pieceSet = 'cburnett', boardTheme = 'classic' }) {
   const [selected, setSelected] = useState(null);
+  const [chessLoaded, setChessLoaded] = useState(false);
+  const chessRef = useRef(makeChessShim(fen));
 
-  const chess = useMemo(() => {
-    const c = new Chess();
-    if (fen) {
-      try {
-        c.load(fen);
-      } catch {}
-    }
-    return c;
+  useEffect(() => {
+    getChess().then((Chess) => {
+      const c = new Chess();
+      if (fen) { try { c.load(fen); } catch {} }
+      chessRef.current = c;
+      setChessLoaded(true);
+    });
   }, [fen]);
+
+  const chess = chessRef.current;
 
   const isMyTurn = useMemo(() => {
     if (disabled) return false;
