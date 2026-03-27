@@ -226,12 +226,12 @@ export default function Solutions() {
             </motion.div>
             
             <motion.h1 
-              className="text-6xl sm:text-7xl font-bold mb-6 font-serif text-[#D4A574] leading-tight"
+              className="text-5xl sm:text-6xl font-bold mb-6 font-serif text-[#D4A574] leading-tight text-pretty"
               initial={{ opacity: 0, y: -30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Aerospace & Aviation Solutions
+              Aerospace &amp; Aviation Solutions
             </motion.h1>
             
             <motion.p 
@@ -249,10 +249,10 @@ export default function Solutions() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-base px-8 py-3 h-auto font-semibold">
+              <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] transition-colors duration-200 text-base px-8 py-3 h-auto font-semibold">
                 Launch Your Program
               </Button>
-              <Button variant="outline" className="border-[#D4A574] text-[#D4A574] hover:bg-[#D4A574]/10 text-base px-8 py-3 h-auto font-semibold">
+              <Button variant="outline" className="border-[#D4A574] text-[#D4A574] hover:bg-[#D4A574]/10 transition-colors duration-200 text-base px-8 py-3 h-auto font-semibold">
                 Executive Brief
               </Button>
             </motion.div>
@@ -263,7 +263,7 @@ export default function Solutions() {
       {/* Intro Section */}
       <div className="max-w-4xl mx-auto px-6 py-16">
         <motion.p 
-          className="text-xl text-slate-700 leading-relaxed"
+          className="text-lg text-slate-700 leading-relaxed max-w-2xl"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -283,11 +283,11 @@ export default function Solutions() {
           >
             Digital Product Line
           </motion.h2>
-          <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto">
-            Sixteen integrated solution categories designed to transform your digital presence.
+          <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto text-base leading-relaxed">
+            Integrated solutions designed to transform your institutional presence and signal market leadership.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {SOLUTIONS.map((solution, idx) => {
               const Icon = solution.icon;
               return (
@@ -297,18 +297,18 @@ export default function Solutions() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08 hover:shadow-xl transition-all"
+                  className="bg-white rounded-2xl shadow-lg p-6 border border-brand-navy-08 hover:shadow-xl transition-shadow duration-200"
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <Icon className="w-8 h-8 text-[#D4A574]" />
-                    <h3 className="text-2xl font-bold text-[#1e3a5a] font-serif">{solution.title}</h3>
+                    <Icon className="w-8 h-8 text-[#D4A574] flex-shrink-0" aria-hidden="true" />
+                    <h3 className="text-xl font-bold text-[#1e3a5a] font-serif leading-tight">{solution.title}</h3>
                   </div>
-                  <p className="text-slate-700 mb-6">{solution.description}</p>
-                  <ul className="space-y-3">
+                  <p className="text-slate-700 mb-6 text-sm leading-relaxed">{solution.description}</p>
+                  <ul className="space-y-2.5">
                     {solution.features.map((feature, i) => (
-                      <li key={i} className="flex gap-3 text-slate-600">
-                        <span className="text-[#D4A574] font-bold">•</span>
-                        <span>{feature}</span>
+                      <li key={i} className="flex gap-3 text-slate-600 text-sm">
+                        <span className="text-[#D4A574] font-bold flex-shrink-0 w-1">•</span>
+                        <span className="leading-relaxed">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -378,10 +378,10 @@ export default function Solutions() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <Button className="bg-[#D4A574] text-[#1e3a5a] hover:bg-[#C19A6B] text-lg px-8 py-4 h-auto font-semibold">
+            <Button className="bg-[#D4A574] text-[#1e3a5a] hover:bg-[#C19A6B] transition-colors duration-200 text-lg px-8 py-4 h-auto font-semibold">
               Request Executive Briefing
             </Button>
-            <Button variant="outline" className="border-[#D4A574] text-[#D4A574] hover:bg-[#D4A574]/10 text-lg px-8 py-4 h-auto font-semibold">
+            <Button variant="outline" className="border-[#D4A574] text-[#D4A574] hover:bg-[#D4A574]/10 transition-colors duration-200 text-lg px-8 py-4 h-auto font-semibold">
               View Case Studies
             </Button>
           </motion.div>
