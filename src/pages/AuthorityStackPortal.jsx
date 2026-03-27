@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import Phase02DataRefinery from '@/components/authority-portal/Phase02DataRefinery';
 
 export default function AuthorityStackPortal() {
   const [phase, setPhase] = useState('proposal'); // 'proposal', 'refinery', 'control'
@@ -82,13 +83,14 @@ export default function AuthorityStackPortal() {
         </>
       )}
 
-      {/* PHASE 02: THE DATA REFINERY (placeholder) */}
+      {/* PHASE 02: THE DATA REFINERY */}
       {phase === 'refinery' && (
-        <div className="max-w-4xl mx-auto px-6 py-12">
-          <h1 className="text-4xl font-bold text-brand-navy mb-6 font-serif">Phase 02: The Data Refinery</h1>
-          <p className="text-slate-700 mb-6">Onboarding interface - integrating OnboardingKickstarter.</p>
-          <Button onClick={() => setPhase('proposal')} variant="outline">Back to Proposal</Button>
-        </div>
+        <>
+          <Phase02DataRefinery onNext={() => setPhase('control')} />
+          <div className="max-w-4xl mx-auto px-6 pb-12">
+            <Button onClick={() => setPhase('proposal')} variant="outline">← Back to Phase 01</Button>
+          </div>
+        </>
       )}
     </div>
   );
