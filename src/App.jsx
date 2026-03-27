@@ -11,19 +11,15 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
-const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
+// Explicit routes with custom configurations
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
 const OnboardingAdmin = lazy(() => import('@/pages/OnboardingAdmin'));
-const AgentSkillRegistry     = lazy(() => import('@/pages/AgentSkillRegistry'));
-const TermsOfService          = lazy(() => import('@/pages/TermsOfService'));
-const Colony                  = lazy(() => import('@/pages/Colony'));
-const AnalyticsDashboard      = lazy(() => import('@/pages/AnalyticsDashboard'));
-const GlobalIntelligence      = lazy(() => import('@/pages/GlobalIntelligence'));
-const ProfileView             = lazy(() => import('@/pages/ProfileView'));
-const ARTCommandCenter        = lazy(() => import('@/pages/ARTCommandCenter'));
-const TeamManager             = lazy(() => import('@/pages/TeamManager'));
-const FeatureToTeamMapper     = lazy(() => import('@/pages/FeatureToTeamMapper'));
-const DynamicProfilePage      = lazy(() => import('@/pages/DynamicProfilePage'));
+const AgentSkillRegistry = lazy(() => import('@/pages/AgentSkillRegistry'));
+const ProfileView = lazy(() => import('@/pages/ProfileView'));
+const ARTCommandCenter = lazy(() => import('@/pages/ARTCommandCenter'));
+const TeamManager = lazy(() => import('@/pages/TeamManager'));
+const FeatureToTeamMapper = lazy(() => import('@/pages/FeatureToTeamMapper'));
+const DynamicProfilePage = lazy(() => import('@/pages/DynamicProfilePage'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -110,18 +106,11 @@ const AuthenticatedApp = () => {
           <MainPage />
         </LayoutWrapper>
       } />
-      <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />
       <Route path="/onboarding-admin" element={<OnboardingAdmin />} />
       <Route path="/OnboardingKickstarter" element={<OnboardingKickstarter />} />
-      <Route path="/discovery" element={<DiscoveryQuestionnaire />} />
-      <Route path="/Colony" element={<Colony />} />
-      <Route path="/colony" element={<Colony />} />
-      <Route path="/AnalyticsDashboard" element={<AnalyticsDashboard />} />
-      <Route path="/analytics" element={<AnalyticsDashboard />} />
-      <Route path="/GlobalIntelligence" element={<GlobalIntelligence />} />
-      <Route path="/global-intelligence" element={<GlobalIntelligence />} />
-      <Route path="/TermsOfService" element={<TermsOfService />} />
+      <Route path="/discovery" element={<Pages.DiscoveryQuestionnaire />} />
+      <Route path="/DiscoveryQuestionnaire" element={<Pages.DiscoveryQuestionnaire />} />
       <Route path="/AgentSkillRegistry" element={
         <LayoutWrapper currentPageName="AgentSkillRegistry">
           <AgentSkillRegistry />
@@ -132,7 +121,6 @@ const AuthenticatedApp = () => {
           <AgentSkillRegistry />
         </LayoutWrapper>
       } />
-      <Route path="/terms" element={<TermsOfService />} />
       <Route path="/art-command-center" element={<ARTCommandCenter />} />
       <Route path="/team-manager" element={<TeamManager />} />
       <Route path="/feature-to-team-mapper" element={<FeatureToTeamMapper />} />
@@ -143,26 +131,17 @@ const AuthenticatedApp = () => {
           <ProfileView />
         </LayoutWrapper>
       } />
-      <Route path="/Profile" element={<Navigate to="/ProfileView" replace />} />
-      <Route path="/PublicProfile" element={<Navigate to="/ProfileView" replace />} />
-      <Route path="/Nominee" element={<Navigate to="/ProfileView" replace />} />
-      <Route path="/UserProfile" element={<Navigate to="/ProfileView" replace />} />
-      {Object.entries(Pages).map(([path, Page]) => {
-        const LazyPage = lazy(() => Promise.resolve({ default: Page }));
-        return (
-          <Route
-            key={path}
-            path={`/${path}`}
-            element={
-              <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" /></div>}>
-                <LayoutWrapper currentPageName={path}>
-                  <LazyPage />
-                </LayoutWrapper>
-              </Suspense>
-            }
-          />
-        );
-      })}
+      {Object.entries(Pages).map(([path, Page]) => (
+        <Route
+          key={path}
+          path={`/${path}`}
+          element={
+            <LayoutWrapper currentPageName={path}>
+              <Page />
+            </LayoutWrapper>
+          }
+        />
+      ))}
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
