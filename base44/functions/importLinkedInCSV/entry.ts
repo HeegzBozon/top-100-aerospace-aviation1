@@ -74,15 +74,19 @@ Deno.serve(async (req) => {
       }
     }
 
+    console.log(`Attempting to create ${contacts.length} contacts`);
+    
     // Bulk create contacts
+    let created = [];
     if (contacts.length > 0) {
-      await base44.entities.LinkedInContact.bulkCreate(contacts);
+      created = await base44.entities.LinkedInContact.bulkCreate(contacts);
+      console.log(`Successfully created ${created.length} contacts`);
     }
 
     return Response.json({
       success: true,
-      imported: contacts.length,
-      contacts: contacts
+      imported: created.length || contacts.length,
+      contacts: created.length ? created : contacts
     });
   } catch (error) {
     console.error('Import error:', error);

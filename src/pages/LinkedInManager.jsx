@@ -38,12 +38,19 @@ export default function LinkedInManager() {
     setError(null);
     try {
       const text = await csvFile.text();
-      const result = await base44.functions.invoke('importLinkedInCSV', { csvContent: text });
+      console.log('CSV content length:', text.length);
       
-      if (result.success) {
-        setContacts(result.contacts || []);
+      const result = await base44.functions.invoke('importLinkedInCSV', { csvContent: text });
+      console.log('Import result:', result);
+      
+      if (result.data?.success || result.success) {
+        const contactsData = result.data?.contacts || result.contacts || [];
+        console.log('Imported contacts:', contactsData);
+        setContacts(contactsData);
         setImported(true);
         setCsvFile(null);
+      } else {
+        throw new Error(result.error || 'Import failed');
       }
     } catch (err) {
       console.error('Import error:', err);
