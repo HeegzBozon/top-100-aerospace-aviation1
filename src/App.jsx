@@ -13,6 +13,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
+const OnboardingAdmin = lazy(() => import('@/pages/OnboardingAdmin'));
 const AgentSkillRegistry     = lazy(() => import('@/pages/AgentSkillRegistry'));
 const TermsOfService          = lazy(() => import('@/pages/TermsOfService'));
 const Colony                  = lazy(() => import('@/pages/Colony'));
@@ -70,6 +71,7 @@ const AuthenticatedApp = () => {
       } />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />
+      <Route path="/onboarding-admin" element={<OnboardingAdmin />} />
       <Route path="/OnboardingKickstarter" element={<OnboardingKickstarter />} />
       <Route path="/discovery" element={<DiscoveryQuestionnaire />} />
       <Route path="/Colony" element={<Colony />} />

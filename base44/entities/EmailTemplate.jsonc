@@ -1,0 +1,41 @@
+{
+  "name": "EmailTemplate",
+  "type": "object",
+  "description": "Reusable email templates for client onboarding outreach.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name shown in admin UI"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "welcome",
+        "follow_up",
+        "payment_reminder",
+        "kickoff",
+        "custom"
+      ],
+      "default": "custom",
+      "description": "Template category"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Email subject line. Supports {{client_name}} and {{package_name}} variables."
+    },
+    "body": {
+      "type": "string",
+      "description": "Email body (HTML or plain text). Supports {{client_name}}, {{package_name}}, {{onboarding_url}}, {{deposit_amount}}, {{total_amount}} variables."
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a system default template"
+    }
+  },
+  "required": [
+    "name",
+    "subject",
+    "body"
+  ]
+}

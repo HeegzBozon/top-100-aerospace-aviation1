@@ -1,0 +1,83 @@
+{
+  "name": "OnboardingPackage",
+  "type": "object",
+  "description": "Reusable client onboarding package with customizable payment plan and project scope.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Internal name for this package (e.g., 'Web + SEO Standard')"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description shown to the client"
+    },
+    "scope_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of deliverables shown as scope badges (e.g. 'New Website', 'SEO')"
+    },
+    "total_amount": {
+      "type": "number",
+      "description": "Total contract value in USD"
+    },
+    "deposit_amount": {
+      "type": "number",
+      "description": "Initial deposit amount in USD"
+    },
+    "payment_installments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "List of payment installments (after deposit)"
+    },
+    "headline": {
+      "type": "string",
+      "description": "Hero headline shown to the client"
+    },
+    "subheadline": {
+      "type": "string",
+      "description": "Hero subheadline text"
+    },
+    "closing_quote": {
+      "type": "string",
+      "description": "Motivational closing quote on the page"
+    },
+    "closing_body": {
+      "type": "string",
+      "description": "Closing paragraph body text"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Package status"
+    }
+  },
+  "required": [
+    "name",
+    "total_amount",
+    "deposit_amount"
+  ]
+}
