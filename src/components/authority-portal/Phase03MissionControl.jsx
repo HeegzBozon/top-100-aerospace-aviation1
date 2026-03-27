@@ -48,7 +48,7 @@ export default function Phase03MissionControl() {
       <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-12 px-6">
         <div className="max-w-5xl mx-auto">
           <motion.h1 
-            className="text-4xl font-bold mb-2 font-serif text-brand-gold"
+            className="text-4xl font-bold mb-2 font-serif text-[#B76E79]"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -60,8 +60,8 @@ export default function Phase03MissionControl() {
 
       <div className="max-w-5xl mx-auto px-6 space-y-8">
         {/* 7-Phase Product Roadmap */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-          <h2 className="text-2xl font-bold text-brand-navy mb-6 font-serif">7-Phase Product Roadmap</h2>
+        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
+          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-6 font-serif">7-Phase Product Roadmap</h2>
           <div className="space-y-4">
             {ROADMAP_PHASES.map((item, idx) => (
               <motion.div
@@ -72,11 +72,11 @@ export default function Phase03MissionControl() {
                 transition={{ delay: idx * 0.1 }}
                 className="flex items-center gap-4"
               >
-                <div className="w-12 h-12 rounded-full bg-brand-gold text-brand-navy font-bold flex items-center justify-center text-lg">
+                <div className="w-12 h-12 rounded-full bg-[#B76E79] text-white font-bold flex items-center justify-center text-lg">
                   {item.phase}
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-slate-800">{item.name}</p>
+                  <p className="font-semibold text-[#1e3a5a]">{item.name}</p>
                 </div>
                 <span className={`px-4 py-1 rounded-full text-sm font-semibold border-2 ${getStatusColor(item.status)}`}>
                   {item.status === 'in-progress' ? '🔄 In Progress' : item.status === 'complete' ? '✓ Complete' : 'Pending'}
@@ -87,8 +87,8 @@ export default function Phase03MissionControl() {
         </section>
 
         {/* Collaborative Feed */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-          <h2 className="text-2xl font-bold text-brand-navy mb-6 font-serif">Collaborative Feed</h2>
+        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
+          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-6 font-serif">Collaborative Feed</h2>
           <div className="space-y-4 mb-6 max-h-80 overflow-y-auto">
             {feed.map((item) => (
               <motion.div
@@ -114,31 +114,31 @@ export default function Phase03MissionControl() {
               onKeyDown={(e) => e.key === 'Enter' && handleAddMessage()}
               className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-gold"
             />
-            <Button onClick={handleAddMessage} className="bg-brand-gold text-brand-navy hover:bg-brand-gold/90">
+            <Button onClick={handleAddMessage} className="bg-[#B76E79] text-white hover:bg-[#A67068]">
               <Send className="w-4 h-4" />
             </Button>
           </div>
         </section>
 
         {/* Authority Dashboard */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-          <h2 className="text-2xl font-bold text-brand-navy mb-6 font-serif">Authority Dashboard</h2>
+        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
+          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-6 font-serif">Authority Dashboard</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-brand-gold/20 to-slate-50 rounded-xl p-6 border border-brand-gold/30"
+              className="bg-gradient-to-br from-[#B76E79]/20 to-slate-50 rounded-xl p-6 border border-[#B76E79]/30"
             >
               <div className="flex items-center gap-3 mb-4">
-                <BookOpen className="w-6 h-6 text-brand-gold" />
-                <h3 className="font-semibold text-brand-navy">Canonical Program Page</h3>
+                <BookOpen className="w-6 h-6 text-[#B76E79]" />
+                <h3 className="font-semibold text-[#1e3a5a]">Canonical Program Page</h3>
               </div>
               <p className="text-slate-700 text-sm mb-4">
                 Your institutional archive is being built. Track its evolution from blank canvas to full authority platform.
               </p>
               <div className="w-full bg-slate-300 rounded-full h-2">
-                <div className="bg-brand-gold h-full rounded-full" style={{ width: '65%' }} />
+                <div className="bg-[#B76E79] h-full rounded-full" style={{ width: '65%' }} />
               </div>
               <p className="text-xs text-slate-500 mt-2">65% Complete</p>
             </motion.div>
@@ -148,22 +148,22 @@ export default function Phase03MissionControl() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-gradient-to-br from-brand-navy/10 to-slate-50 rounded-xl p-6 border border-brand-navy/20"
+              className="bg-gradient-to-br from-[#1e3a5a]/10 to-slate-50 rounded-xl p-6 border border-[#1e3a5a]/20"
             >
               <div className="flex items-center gap-3 mb-4">
-                <Zap className="w-6 h-6 text-brand-navy" />
-                <h3 className="font-semibold text-brand-navy">Ecosystem Growth</h3>
+                <Zap className="w-6 h-6 text-[#1e3a5a]" />
+                <h3 className="font-semibold text-[#1e3a5a]">Ecosystem Growth</h3>
               </div>
               <p className="text-slate-700 text-sm mb-4">
                 Collaborate with your team, contributors, and partners to build authentic authority.
               </p>
               <div className="flex gap-2">
                 <div className="flex-1 text-center py-2 rounded bg-slate-100">
-                  <p className="text-lg font-bold text-brand-navy">3</p>
+                  <p className="text-lg font-bold text-[#1e3a5a]">3</p>
                   <p className="text-xs text-slate-600">Team Members</p>
                 </div>
                 <div className="flex-1 text-center py-2 rounded bg-slate-100">
-                  <p className="text-lg font-bold text-brand-navy">12</p>
+                  <p className="text-lg font-bold text-[#1e3a5a]">12</p>
                   <p className="text-xs text-slate-600">Contributors</p>
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default function Phase03MissionControl() {
         {/* Final CTA */}
         <section className="text-center py-10">
           <p className="text-slate-600 mb-6">Your mission is now live. Start building.</p>
-          <Button className="bg-brand-gold text-brand-navy hover:bg-brand-gold/90 text-lg px-8 py-4 h-auto">
+          <Button className="bg-[#B76E79] text-white hover:bg-[#A67068] text-lg px-8 py-4 h-auto">
             View Your Canonical Page →
           </Button>
         </section>

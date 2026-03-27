@@ -35,7 +35,7 @@ export default function Phase02DataRefinery({ onNext }) {
       <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-12 px-6">
         <div className="max-w-4xl mx-auto">
           <motion.h1 
-            className="text-4xl font-bold mb-2 font-serif text-brand-gold"
+            className="text-4xl font-bold mb-2 font-serif text-[#B76E79]"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -47,15 +47,15 @@ export default function Phase02DataRefinery({ onNext }) {
 
       <div className="max-w-4xl mx-auto px-6 space-y-8">
         {/* Financial Close */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-          <h2 className="text-2xl font-bold text-brand-navy mb-4 font-serif">Financial Close</h2>
+        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
+          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-4 font-serif">Financial Close</h2>
           <p className="text-slate-600 mb-6">Secure your deposit to establish account integrity.</p>
           <button
             onClick={() => setDeposits({ paid: true })}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
               deposits.paid
                 ? 'bg-green-100 text-green-700 cursor-default'
-                : 'bg-brand-gold text-brand-navy hover:bg-brand-gold/90'
+                : 'bg-[#B76E79] text-white hover:bg-[#A67068]'
             }`}
           >
             {deposits.paid ? <Check className="w-4 h-4" /> : null}
@@ -64,8 +64,8 @@ export default function Phase02DataRefinery({ onNext }) {
         </section>
 
         {/* Flightography Setup */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-          <h2 className="text-2xl font-bold text-brand-navy mb-4 font-serif">Flightography Setup</h2>
+        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
+          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-4 font-serif">Flightography Setup</h2>
           <p className="text-slate-600 mb-6">Upload brand assets, history, and subsystems (service lines).</p>
           <div className="grid grid-cols-2 gap-4">
             {[
@@ -91,8 +91,8 @@ export default function Phase02DataRefinery({ onNext }) {
         </section>
 
         {/* Peer Validation */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-          <h2 className="text-2xl font-bold text-brand-navy mb-4 font-serif">Verification Loop</h2>
+        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
+          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-4 font-serif">Verification Loop</h2>
           <p className="text-slate-600 mb-6">Invite team members to confirm brand details.</p>
           <div className="flex gap-2 mb-4">
             <input
@@ -102,7 +102,7 @@ export default function Phase02DataRefinery({ onNext }) {
               onChange={(e) => setPeerEmail(e.target.value)}
               className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-gold"
             />
-            <Button onClick={handleAddPeer} className="bg-brand-gold text-brand-navy hover:bg-brand-gold/90">
+            <Button onClick={handleAddPeer} className="bg-[#B76E79] text-white hover:bg-[#A67068]">
               Add
             </Button>
           </div>
@@ -117,8 +117,8 @@ export default function Phase02DataRefinery({ onNext }) {
         </section>
 
         {/* Status Gate */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-          <h2 className="text-2xl font-bold text-brand-navy mb-4 font-serif">Completion Status</h2>
+        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
+          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-4 font-serif">Completion Status</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-slate-700 font-semibold">Deposit Secured</span>
@@ -135,7 +135,7 @@ export default function Phase02DataRefinery({ onNext }) {
           </div>
           <div className="mt-6 w-full bg-slate-200 rounded-full h-3 overflow-hidden">
             <div
-              className="bg-brand-gold h-full transition-all"
+              className="bg-[#B76E79] h-full transition-all"
               style={{ width: `${isComplete ? 100 : (assetCount / requiredAssets + (deposits.paid ? 0.33 : 0) + (peers.length > 0 ? 0.33 : 0)) * 33}%` }}
             />
           </div>
@@ -148,7 +148,7 @@ export default function Phase02DataRefinery({ onNext }) {
             disabled={!isComplete}
             className={`text-lg px-8 py-4 h-auto ${
               isComplete
-                ? 'bg-brand-gold text-brand-navy hover:bg-brand-gold/90'
+                ? 'bg-[#B76E79] text-white hover:bg-[#A67068]'
                 : 'bg-slate-300 text-slate-500 cursor-not-allowed'
             }`}
           >

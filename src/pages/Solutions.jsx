@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Globe, Smartphone, Share2, Zap } from 'lucide-react';
+import { Globe, Smartphone, Share2, Zap, Volume2, Cloud, Brain, Rocket, TestTube } from 'lucide-react';
 
 const SOLUTIONS = [
   {
@@ -48,6 +48,61 @@ const SOLUTIONS = [
       'Immersive simulation & verified aerospace steward training',
     ],
   },
+  {
+    id: 5,
+    icon: Volume2,
+    title: 'Public Speaking & Executive Presence',
+    description: 'Strategic communication coaching and narrative development for industry leadership.',
+    features: [
+      'Executive messaging frameworks for conferences & keynotes',
+      'Media training and thought leadership positioning',
+      'Presentation design for technical and non-technical audiences',
+    ],
+  },
+  {
+    id: 6,
+    icon: Cloud,
+    title: 'Cloud Architecture & DevOps',
+    description: 'Enterprise infrastructure and deployment pipelines built for scale and reliability.',
+    features: [
+      'Multi-cloud architecture design and optimization',
+      'CI/CD pipeline implementation and automation',
+      'Kubernetes & containerization for aerospace-grade systems',
+    ],
+  },
+  {
+    id: 7,
+    icon: Brain,
+    title: 'Perception Engineering (ADAS)',
+    description: 'Advanced driver assistance systems and autonomous vehicle perception layers.',
+    features: [
+      'Computer vision pipeline development for real-time detection',
+      'Machine learning model training on aerospace-grade datasets',
+      'Safety validation and certification-ready testing protocols',
+    ],
+  },
+  {
+    id: 8,
+    icon: Rocket,
+    title: 'Venture Studio',
+    description: 'Full-service startup acceleration and early-stage venture building.',
+    features: [
+      'Idea validation and business model development',
+      'Funding strategy and investor pitch preparation',
+      'Go-to-market strategy and initial scaling support',
+    ],
+  },
+  {
+    id: 9,
+    icon: TestTube,
+    title: 'Hill Lab Testing Platform',
+    description: 'Proprietary testing framework and validation infrastructure for aerospace systems.',
+    features: [
+      'Automated test suite generation and execution',
+      'Real-time monitoring and failure analysis dashboards',
+      'Compliance reporting aligned with ASPICE & DO-254',
+    ],
+  },
 ];
 
 const DELIVERY_PHASES = [
@@ -77,10 +132,10 @@ export default function Solutions() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-20 px-6">
+      <div className="bg-gradient-to-r from-[#1e3a5a] via-[#2E5090] to-[#1e3a5a] text-white py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.h1 
-            className="text-5xl sm:text-6xl font-bold mb-4 font-serif text-brand-gold leading-tight"
+            className="text-5xl sm:text-6xl font-bold mb-4 font-serif text-[#B76E79] leading-tight"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -106,15 +161,15 @@ export default function Solutions() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          The aerospace industry is built on precision engineering and high-stakes innovation, yet its digital presence often lags behind its physical achievements. Every digital asset we build is governed by the <span className="font-semibold text-brand-navy">ASPICE V-Model</span>, ensuring rigorous alignment between your brand's strategic goals and final deployment.
+          The aerospace industry is built on precision engineering and high-stakes innovation, yet its digital presence often lags behind its physical achievements. Every digital asset we build is governed by the <span className="font-semibold text-[#1e3a5a]">ASPICE V-Model</span>, ensuring rigorous alignment between your brand's strategic goals and final deployment.
         </motion.p>
       </div>
 
       {/* Solutions Grid */}
-      <div className="bg-gradient-to-b from-slate-50 to-white px-6 py-16">
+      <div className="bg-gradient-to-b from-[#faf8f5] to-white px-6 py-16">
         <div className="max-w-6xl mx-auto">
           <motion.h2 
-            className="text-4xl font-bold text-brand-navy mb-4 font-serif text-center"
+            className="text-4xl font-bold text-[#1e3a5a] mb-4 font-serif text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -122,10 +177,10 @@ export default function Solutions() {
             Digital Product Line
           </motion.h2>
           <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto">
-            Four integrated solution categories designed to transform your digital presence.
+            Nine integrated solution categories designed to transform your digital presence.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {SOLUTIONS.map((solution, idx) => {
               const Icon = solution.icon;
               return (
@@ -138,14 +193,14 @@ export default function Solutions() {
                   className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08 hover:shadow-xl transition-all"
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <Icon className="w-8 h-8 text-brand-gold" />
-                    <h3 className="text-2xl font-bold text-brand-navy font-serif">{solution.title}</h3>
+                    <Icon className="w-8 h-8 text-[#B76E79]" />
+                    <h3 className="text-2xl font-bold text-[#1e3a5a] font-serif">{solution.title}</h3>
                   </div>
                   <p className="text-slate-700 mb-6">{solution.description}</p>
                   <ul className="space-y-3">
                     {solution.features.map((feature, i) => (
                       <li key={i} className="flex gap-3 text-slate-600">
-                        <span className="text-brand-gold font-bold">•</span>
+                        <span className="text-[#B76E79] font-bold">•</span>
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -160,7 +215,7 @@ export default function Solutions() {
       {/* Delivery Framework */}
       <div className="max-w-6xl mx-auto px-6 py-16">
         <motion.h2 
-          className="text-4xl font-bold text-brand-navy mb-12 font-serif text-center"
+          className="text-4xl font-bold text-[#1e3a5a] mb-12 font-serif text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -176,21 +231,21 @@ export default function Solutions() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-brand-gold"
+              className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-[#B76E79]"
             >
-              <div className="text-brand-gold font-bold text-sm uppercase tracking-widest mb-2">
+              <div className="text-[#B76E79] font-bold text-sm uppercase tracking-widest mb-2">
                 Phase {idx + 1}
               </div>
-              <h3 className="text-xl font-bold text-brand-navy mb-2 font-serif">{item.phase}</h3>
+              <h3 className="text-xl font-bold text-[#1e3a5a] mb-2 font-serif">{item.phase}</h3>
               <p className="text-slate-600 text-sm mb-4"><span className="font-semibold">Action:</span> {item.action}</p>
-              <p className="text-slate-700"><span className="font-semibold text-brand-navy">Outcome:</span> {item.outcome}</p>
+              <p className="text-slate-700"><span className="font-semibold text-[#1e3a5a]">Outcome:</span> {item.outcome}</p>
             </motion.div>
           ))}
         </div>
       </div>
 
       {/* Closing Section */}
-      <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-16 px-6">
+      <div className="bg-gradient-to-r from-[#1e3a5a] via-[#2E5090] to-[#1e3a5a] text-white py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.h2 
             className="text-3xl sm:text-4xl font-bold mb-6 font-serif"
@@ -216,7 +271,7 @@ export default function Solutions() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <Button className="bg-brand-gold text-brand-navy hover:bg-brand-gold/90 text-lg px-8 py-4 h-auto">
+            <Button className="bg-[#B76E79] text-white hover:bg-[#A67068] text-lg px-8 py-4 h-auto">
               Launch Your Project Build
             </Button>
             <Button variant="outline" className="border-white text-white hover:bg-white/10 text-lg px-8 py-4 h-auto">

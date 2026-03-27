@@ -16,7 +16,7 @@ export default function AuthorityStackPortal() {
           <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-16 px-6">
             <div className="max-w-4xl mx-auto text-center">
               <motion.h1 
-                className="text-4xl sm:text-5xl font-bold mb-4 leading-tight font-serif text-brand-gold"
+                className="text-4xl sm:text-5xl font-bold mb-4 leading-tight font-serif text-[#B76E79]"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
@@ -39,7 +39,7 @@ export default function AuthorityStackPortal() {
             {/* Executive Summary */}
             <section>
               <motion.h2 
-                className="text-3xl font-bold text-brand-navy mb-6 font-serif"
+                className="text-3xl font-bold text-[#1e3a5a] mb-6 font-serif"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -61,13 +61,13 @@ export default function AuthorityStackPortal() {
 
             {/* Tiered Offer Stack */}
             <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-              <h2 className="text-3xl font-bold text-brand-navy mb-6 font-serif">Tiered Offer Stack</h2>
+              <h2 className="text-3xl font-bold text-[#1e3a5a] mb-6 font-serif">Tiered Offer Stack</h2>
               <p className="text-slate-600">[Sponsorship Tiers $10k–$150k or Service Levels - coming soon]</p>
             </section>
 
             {/* Social Proof Graph */}
             <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-              <h2 className="text-3xl font-bold text-brand-navy mb-6 font-serif">Social Proof Graph</h2>
+              <h2 className="text-3xl font-bold text-[#1e3a5a] mb-6 font-serif">Social Proof Graph</h2>
               <p className="text-slate-600">[Talent Graph with past Programs and Contributors - coming soon]</p>
             </section>
 
@@ -75,7 +75,7 @@ export default function AuthorityStackPortal() {
             <section className="text-center py-10">
               <Button 
                 onClick={() => setPhase('refinery')}
-                className="bg-brand-gold text-brand-navy hover:bg-brand-gold/90 text-lg px-8 py-4 h-auto"
+                className="bg-[#B76E79] text-white hover:bg-[#A67068] text-lg px-8 py-4 h-auto"
               >
                 Authorize Mission →
               </Button>
