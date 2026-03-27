@@ -1,45 +1,71 @@
 /**
  * pages.config.js
  * 
- * Provides page metadata for the Base44 platform preview dropdown.
- * Actual route rendering is handled by App.jsx with lazy-loaded imports.
+ * Page metadata for the Base44 platform preview dropdown.
+ * Actual route rendering and lazy-loading is handled by App.jsx.
  * 
- * IMPORTANT: This file is read by the platform to populate the page navigator.
- * The lazy() imports here are only used by the platform's page picker, 
- * NOT for route rendering (that's in App.jsx).
+ * NOTE: We intentionally do NOT import components here to avoid
+ * circular dependency issues with recharts in the production bundle.
  */
 
-import { lazy } from 'react';
 import Layout from '@/components/layout/AppLayout';
 
 export const pagesConfig = {
     mainPage: "Home",
     Layout: Layout,
     Pages: {
-        Home: { component: lazy(() => import("@/pages/Home")), path: "/" },
-        About: { component: lazy(() => import("@/pages/About")), path: "/About" },
-        Admin: { component: lazy(() => import("@/pages/Admin")), path: "/Admin" },
-        Arena: { component: lazy(() => import("@/pages/Arena")), path: "/Arena" },
-        Articles: { component: lazy(() => import("@/pages/Articles")), path: "/Articles" },
-        Calendar: { component: lazy(() => import("@/pages/Calendar")), path: "/Calendar" },
-        Comms: { component: lazy(() => import("@/pages/Comms")), path: "/Comms" },
-        Feedback: { component: lazy(() => import("@/pages/Feedback")), path: "/Feedback" },
-        HelpCenter: { component: lazy(() => import("@/pages/HelpCenter")), path: "/HelpCenter" },
-        Nominations: { component: lazy(() => import("@/pages/Nominations")), path: "/Nominations" },
-        Profile: { component: lazy(() => import("@/pages/Profile")), path: "/Profile" },
-        VotingHub: { component: lazy(() => import("@/pages/VotingHub")), path: "/VotingHub" },
-        Top100Women2025: { component: lazy(() => import("@/pages/Top100Women2025")), path: "/Top100Women2025" },
-        MissionControl: { component: lazy(() => import("@/pages/MissionControl")), path: "/MissionControl" },
-        Landing: { component: lazy(() => import("@/pages/Landing")), path: "/Landing" },
-        Resources: { component: lazy(() => import("@/pages/Resources")), path: "/Resources" },
-        Shop: { component: lazy(() => import("@/pages/Shop")), path: "/Shop" },
-        Sponsors: { component: lazy(() => import("@/pages/Sponsors")), path: "/Sponsors" },
-        Tips: { component: lazy(() => import("@/pages/Tips")), path: "/Tips" },
-        Membership: { component: lazy(() => import("@/pages/Membership")), path: "/Membership" },
-        SignalFeed: { component: lazy(() => import("@/pages/SignalFeed")), path: "/SignalFeed" },
-        AnalyticsDashboard: { component: lazy(() => import("@/pages/AnalyticsDashboard")), path: "/AnalyticsDashboard" },
-        Passport: { component: lazy(() => import("@/pages/Passport")), path: "/Passport" },
-        EditProfile: { component: lazy(() => import("@/pages/EditProfile")), path: "/EditProfile" },
-        GetStarted: { component: lazy(() => import("@/pages/GetStarted")), path: "/GetStarted" },
+        Home: { path: "/" },
+        About: { path: "/About" },
+        Admin: { path: "/Admin" },
+        Arena: { path: "/Arena" },
+        Articles: { path: "/Articles" },
+        Calendar: { path: "/Calendar" },
+        Comms: { path: "/Comms" },
+        Feedback: { path: "/Feedback" },
+        HelpCenter: { path: "/HelpCenter" },
+        Nominations: { path: "/Nominations" },
+        Profile: { path: "/Profile" },
+        VotingHub: { path: "/VotingHub" },
+        Top100Women2025: { path: "/Top100Women2025" },
+        MissionControl: { path: "/MissionControl" },
+        Landing: { path: "/Landing" },
+        Resources: { path: "/Resources" },
+        Shop: { path: "/Shop" },
+        Sponsors: { path: "/Sponsors" },
+        Tips: { path: "/Tips" },
+        Membership: { path: "/Membership" },
+        SignalFeed: { path: "/SignalFeed" },
+        AnalyticsDashboard: { path: "/AnalyticsDashboard" },
+        Passport: { path: "/Passport" },
+        EditProfile: { path: "/EditProfile" },
+        GetStarted: { path: "/GetStarted" },
+        Huddle: { path: "/Huddle" },
+        AcceleratorHub: { path: "/AcceleratorHub" },
+        BatchNominations: { path: "/BatchNominations" },
+        Biographer: { path: "/Biographer" },
+        ClaimProfile: { path: "/ClaimProfile" },
+        Demographics: { path: "/Demographics" },
+        EventPage: { path: "/EventPage" },
+        GamesLanding: { path: "/GamesLanding" },
+        GlobalIntelligence: { path: "/GlobalIntelligence" },
+        HowWePick: { path: "/HowWePick" },
+        IntelligenceDashboard: { path: "/IntelligenceDashboard" },
+        MyFavorites: { path: "/MyFavorites" },
+        NomineesByDomain: { path: "/NomineesByDomain" },
+        Publisher: { path: "/Publisher" },
+        RaisingJupiter: { path: "/RaisingJupiter" },
+        RankedChoice: { path: "/RankedChoice" },
+        ResultsCountdown: { path: "/ResultsCountdown" },
+        Season4: { path: "/Season4" },
+        SpaceNews: { path: "/SpaceNews" },
+        SponsorPitch: { path: "/SponsorPitch" },
+        StartupDirectory: { path: "/StartupDirectory" },
+        TheHangar: { path: "/TheHangar" },
+        Top100Nominees2025: { path: "/Top100Nominees2025" },
+        Top100OS: { path: "/Top100OS" },
+        TrendingSignals: { path: "/TrendingSignals" },
+        Arcade: { path: "/Arcade" },
+        ChessClub: { path: "/ChessClub" },
+        Colony: { path: "/Colony" },
     },
 };
