@@ -157,22 +157,22 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
       {/* Conversation Messages */}
       <div className="grid grid-cols-1 gap-4">
         {/* Their Message */}
-        {contact.last_received_message && (
+        {contact.last_sent_message && (
           <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
             <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-3">
-              💬 Their Message ({new Date(contact.last_received_date).toLocaleDateString()})
+              💬 Their Message ({new Date(contact.last_sent_date).toLocaleDateString()})
             </p>
-            <p className="text-slate-700 leading-relaxed">{contact.last_received_message}</p>
+            <p className="text-slate-700 leading-relaxed">{contact.last_sent_message}</p>
           </div>
         )}
 
         {/* Your Previous Message */}
-        {contact.last_sent_message && (
+        {contact.last_received_message && (
           <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6">
             <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">
-              ✓ Your Previous Message ({new Date(contact.last_sent_date).toLocaleDateString()})
+              ✓ Your Previous Message ({new Date(contact.last_received_date).toLocaleDateString()})
             </p>
-            <p className="text-slate-700 leading-relaxed">{contact.last_sent_message}</p>
+            <p className="text-slate-700 leading-relaxed">{contact.last_received_message}</p>
           </div>
         )}
       </div>
