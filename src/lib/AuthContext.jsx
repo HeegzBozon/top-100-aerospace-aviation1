@@ -30,7 +30,8 @@ export const AuthProvider = ({ children }) => {
           'X-App-Id': appParams.appId
         },
         token: appParams.token, // Include token if available
-        interceptResponses: true
+        interceptResponses: true,
+        timeout: 5000 // 5 second timeout to prevent hanging
       });
       
       try {
