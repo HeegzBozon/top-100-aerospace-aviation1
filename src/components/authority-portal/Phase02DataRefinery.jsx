@@ -30,7 +30,7 @@ export default function Phase02DataRefinery({ onNext }) {
   };
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 bg-gradient-to-b from-[#faf8f5] to-white">
       {/* Hero */}
       <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-12 px-6">
         <div className="max-w-4xl mx-auto">
@@ -45,9 +45,9 @@ export default function Phase02DataRefinery({ onNext }) {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 space-y-8">
+      <div className="max-w-4xl mx-auto px-6 space-y-8 py-4">
         {/* Financial Close */}
-        <section className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow duration-200">
+        <section className="bg-white rounded-2xl shadow-md p-6 border border-slate-300 hover:shadow-lg transition-shadow duration-200">
           <div className="flex items-start justify-between mb-4">
             <h2 className="text-lg font-bold text-[#1e3a5a] font-serif">Financial Close</h2>
             {deposits.paid && <Check className="w-5 h-5 text-green-600" />}
@@ -67,7 +67,7 @@ export default function Phase02DataRefinery({ onNext }) {
         </section>
 
         {/* Flightography Setup */}
-        <section className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow duration-200">
+        <section className="bg-white rounded-2xl shadow-md p-6 border border-slate-300 hover:shadow-lg transition-shadow duration-200">
           <div className="flex items-start justify-between mb-4">
             <h2 className="text-lg font-bold text-[#1e3a5a] font-serif">Flightography Setup</h2>
             <span className="text-xs font-semibold text-slate-500">{assetCount}/{requiredAssets}</span>
@@ -97,7 +97,7 @@ export default function Phase02DataRefinery({ onNext }) {
         </section>
 
         {/* Peer Validation */}
-        <section className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow duration-200">
+        <section className="bg-white rounded-2xl shadow-md p-6 border border-slate-300 hover:shadow-lg transition-shadow duration-200">
           <h2 className="text-lg font-bold text-[#1e3a5a] mb-4 font-serif">Verification Loop</h2>
           <p className="text-slate-600 text-sm mb-6">Invite team members to confirm brand details.</p>
           <div className="flex gap-2 mb-4">
@@ -123,7 +123,7 @@ export default function Phase02DataRefinery({ onNext }) {
         </section>
 
         {/* Status Gate */}
-        <section className="bg-gradient-to-br from-[#faf8f5] to-white rounded-2xl shadow-sm p-6 border border-slate-200">
+        <section className="bg-white rounded-2xl shadow-md p-6 border border-slate-300 hover:shadow-lg transition-shadow duration-200">
           <h2 className="text-lg font-bold text-[#1e3a5a] mb-6 font-serif">Completion Status</h2>
           <div className="space-y-3 mb-6">
             <div className="flex items-center justify-between text-sm">

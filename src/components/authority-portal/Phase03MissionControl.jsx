@@ -5,11 +5,11 @@ import { Send, Zap, BookOpen } from 'lucide-react';
 
 const ROADMAP_PHASES = [
   { phase: 1, name: 'Discovery', status: 'complete' },
-  { phase: 2, name: 'Design', status: 'complete' },
-  { phase: 3, name: 'Development', status: 'in-progress' },
-  { phase: 4, name: 'Testing', status: 'pending' },
-  { phase: 5, name: 'Launch Prep', status: 'pending' },
-  { phase: 6, name: 'Go Live', status: 'pending' },
+  { phase: 2, name: 'Design Phase', status: 'in-progress' },
+  { phase: 3, name: 'Design Refinement', status: 'in-progress' },
+  { phase: 4, name: 'Development', status: 'pending' },
+  { phase: 5, name: 'Testing', status: 'pending' },
+  { phase: 6, name: 'Launch Prep', status: 'pending' },
   { phase: 7, name: 'Optimization', status: 'pending' },
 ];
 
@@ -60,7 +60,7 @@ export default function Phase03MissionControl() {
 
       <div className="max-w-5xl mx-auto px-6 space-y-8">
         {/* 7-Phase Product Roadmap */}
-        <section className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
+        <section className="bg-white rounded-2xl shadow-md p-6 border border-slate-300 hover:shadow-lg transition-shadow duration-200">
           <h2 className="text-lg font-bold text-[#1e3a5a] mb-6 font-serif">7-Phase Build Plan</h2>
           <div className="space-y-3">
             {ROADMAP_PHASES.map((item, idx) => (
@@ -91,7 +91,7 @@ export default function Phase03MissionControl() {
         </section>
 
         {/* Collaborative Feed */}
-        <section className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
+        <section className="bg-white rounded-2xl shadow-md p-6 border border-slate-300 hover:shadow-lg transition-shadow duration-200">
           <h2 className="text-lg font-bold text-[#1e3a5a] mb-6 font-serif">Team Updates</h2>
           <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
             {feed.map((item) => (
@@ -130,7 +130,7 @@ export default function Phase03MissionControl() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow duration-200"
+            className="bg-white rounded-2xl shadow-md p-6 border border-slate-300 hover:shadow-lg transition-shadow duration-200"
           >
             <div className="flex items-center gap-3 mb-4">
               <BookOpen className="w-5 h-5 text-[#D4A574]" />
@@ -152,7 +152,7 @@ export default function Phase03MissionControl() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow duration-200"
+            className="bg-white rounded-2xl shadow-md p-6 border border-slate-300 hover:shadow-lg transition-shadow duration-200"
           >
             <div className="flex items-center gap-3 mb-4">
               <Zap className="w-5 h-5 text-[#1e3a5a]" />

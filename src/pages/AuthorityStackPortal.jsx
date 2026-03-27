@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import Phase02DataRefinery from '@/components/authority-portal/Phase02DataRefinery';
 import Phase03MissionControl from '@/components/authority-portal/Phase03MissionControl';
+import ConstellationBackground from '@/components/comms/ConstellationBackground';
 
 export default function AuthorityStackPortal() {
   const [phase, setPhase] = useState('proposal'); // 'proposal', 'refinery', 'control'
@@ -13,8 +14,11 @@ export default function AuthorityStackPortal() {
       {phase === 'proposal' && (
         <>
           {/* Hero Section */}
-          <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-16 px-6">
-            <div className="max-w-4xl mx-auto text-center">
+          <div className="relative bg-gradient-to-r from-[#1e3a5a] to-[#0f2438] text-white py-20 px-6 overflow-hidden">
+            <div className="absolute inset-0 opacity-20">
+              <ConstellationBackground />
+            </div>
+            <div className="max-w-4xl mx-auto text-center relative z-10">
               <motion.h1 
                 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight font-serif text-[#D4A574]"
                 initial={{ opacity: 0, y: -20 }}
