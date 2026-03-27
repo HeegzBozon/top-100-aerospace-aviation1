@@ -60,6 +60,11 @@
       "format": "date-time",
       "description": "When the last message was sent"
     },
+    "connection_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When you connected with this person on LinkedIn"
+    },
     "has_unread": {
       "type": "boolean",
       "default": false,

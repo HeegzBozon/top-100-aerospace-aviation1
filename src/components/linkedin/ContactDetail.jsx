@@ -129,8 +129,18 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
             <h2 className="text-2xl font-bold text-[#1e3a5a] mb-1">{contact.full_name}</h2>
             <p className="text-sm text-slate-600 mb-3">{contact.headline}</p>
             {contact.current_company && (
-              <p className="text-sm text-slate-700 mb-3">
+              <p className="text-sm text-slate-700 mb-2">
                 <span className="font-semibold">Current:</span> {contact.current_position} at {contact.current_company}
+              </p>
+            )}
+            {contact.location && (
+              <p className="text-sm text-slate-700 mb-2">
+                <span className="font-semibold">Location:</span> {contact.location}
+              </p>
+            )}
+            {contact.connection_date && (
+              <p className="text-sm text-slate-600 mb-3">
+                <span className="font-semibold">Connected:</span> {new Date(contact.connection_date).toLocaleDateString()}
               </p>
             )}
             <a
@@ -157,25 +167,35 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
 
       {/* Conversation Messages */}
       <div className="grid grid-cols-1 gap-4">
-        {/* Their Message */}
-        {contact.last_sent_message && (
-          <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
-            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-3">
-              💬 Their Message ({new Date(contact.last_sent_date).toLocaleDateString()})
-            </p>
-            <p className="text-slate-700 leading-relaxed">{contact.last_sent_message}</p>
-          </div>
-        )}
+      {/* Their Message */}
+      {contact.last_received_message && (
+        <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
+          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-3">
+            💬 Their Message
+            {contact.last_received_date && (
+              <span className="text-slate-500 font-normal ml-2">
+                {new Date(contact.last_received_date).toLocaleString()}
+              </span>
+            )}
+          </p>
+          <p className="text-slate-700 leading-relaxed">{contact.last_received_message}</p>
+        </div>
+      )}
 
-        {/* Your Previous Message */}
-        {contact.last_received_message && (
-          <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6">
-            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">
-              ✓ Your Previous Message ({new Date(contact.last_received_date).toLocaleDateString()})
-            </p>
-            <p className="text-slate-700 leading-relaxed">{contact.last_received_message}</p>
-          </div>
-        )}
+      {/* Your Previous Message */}
+      {contact.last_sent_message && (
+        <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6">
+          <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">
+            ✓ Your Previous Message
+            {contact.last_sent_date && (
+              <span className="text-blue-500 font-normal ml-2">
+                {new Date(contact.last_sent_date).toLocaleString()}
+              </span>
+            )}
+          </p>
+          <p className="text-slate-700 leading-relaxed">{contact.last_sent_message}</p>
+        </div>
+      )}
       </div>
 
       {/* Response Composer */}
