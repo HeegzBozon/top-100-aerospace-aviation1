@@ -420,84 +420,93 @@ export default function OnboardingKickstarter() {
 
         <div className="max-w-3xl mx-auto px-6 py-12 space-y-12">
 
-          {/* Payment Plan Selection */}
+          {/* Payment Plan Comparison */}
           <section>
-            <h2 className="text-2xl font-bold text-slate-800 mb-1">Your Payment Plan</h2>
-            <p className="text-slate-500 text-sm mb-6">{display.description || 'Choose the option that works best for you.'}</p>
+            <h2 className="text-2xl font-bold text-slate-800 mb-1">Your Payment Options</h2>
+            <p className="text-slate-500 text-sm mb-6">{display.description || 'Compare and choose the option that works best for you.'}</p>
 
-            {/* Plan selector tabs */}
-            {plans.length > 1 && (
-              <div className="flex gap-2 mb-5 flex-wrap">
-                {plans.map((plan, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedPlanIdx(i)}
-                    className={`flex-1 min-w-[120px] rounded-xl border-2 px-4 py-3 text-left transition-all ${
-                      selectedPlanIdx === i
-                        ? 'border-indigo-500 bg-indigo-50'
-                        : 'border-slate-200 bg-white hover:border-slate-300'
-                    }`}
-                  >
-                    <p className={`text-sm font-bold ${selectedPlanIdx === i ? 'text-indigo-700' : 'text-slate-700'}`}>{plan.label}</p>
-                    {plan.description && <p className="text-xs text-slate-500 mt-0.5">{plan.description}</p>}
-                    <p className="text-xs font-semibold text-slate-400 mt-1">{plan.installments?.length || 0} payments</p>
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Side-by-side plan cards */}
+            <div className={`grid gap-5 mb-6 ${plans.length > 2 ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
+              {plans.map((plan, pi) => {
+                const totalCollected = (plan.installments || []).reduce((sum, inst) => sum + Number(inst.amount || 0), 0);
+                return (
+                  <div key={pi} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-5">
+                    {/* Plan header */}
+                    <div className="mb-5 pb-4 border-b border-slate-100">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{plan.label}</p>
+                      <p className="text-lg font-bold text-slate-800 mt-1">{plan.description || 'Your Payment Schedule'}</p>
+                    </div>
 
-            {/* Active plan card with timeline */}
-            {activePlan && (
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-6">
-                {/* Plan title */}
-                <div className="mb-6 pb-4 border-b border-slate-100">
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{activePlan.label}</p>
-                  <p className="text-xl font-bold text-slate-800 mt-1">{activePlan.description || 'Your Payment Schedule'}</p>
-                </div>
-
-                {/* Timeline table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left">
-                        <th className="pb-3 font-semibold text-slate-600">Month</th>
-                        <th className="pb-3 font-semibold text-slate-600">Payment</th>
-                        <th className="pb-3 font-semibold text-slate-600 text-right">Amount</th>
-                        <th className="pb-3 font-semibold text-slate-600 text-right">Collected</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(activePlan.installments || []).map((row, i) => {
-                        let collected = 0;
-                        for (let j = 0; j <= i; j++) {
-                          collected += Number(activePlan.installments[j]?.amount || 0);
-                        }
-                        const monthStr = row.due_date ? new Date(row.due_date).toLocaleDateString('en-US', { month: 'short' }) : 'Now';
-                        return (
-                          <tr key={i} className="border-t border-slate-100">
-                            <td className="py-4 text-slate-700 font-medium">{monthStr}</td>
-                            <td className="py-4">
-                              <span className={`inline-block px-2.5 py-1 rounded text-xs font-semibold ${
-                                row.label === 'Deposit' ? 'bg-green-100 text-green-700' :
-                                row.label === 'Final' || row.label?.includes('Final') ? 'bg-blue-100 text-blue-700' :
-                                'bg-amber-100 text-amber-700'
-                              }`}>
-                                {row.label}
-                              </span>
-                            </td>
-                            <td className="py-4 text-right text-slate-800 font-semibold">${Number(row.amount || 0).toLocaleString()}</td>
-                            <td className="py-4 text-right text-slate-800 font-semibold">${collected.toLocaleString()}</td>
+                    {/* Timeline table */}
+                    <div className="overflow-x-auto mb-4">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="text-left">
+                            <th className="pb-2.5 font-semibold text-slate-600">Month</th>
+                            <th className="pb-2.5 font-semibold text-slate-600">Payment</th>
+                            <th className="pb-2.5 font-semibold text-slate-600 text-right">Amount</th>
+                            <th className="pb-2.5 font-semibold text-slate-600 text-right">Collected</th>
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                        </thead>
+                        <tbody>
+                          {(plan.installments || []).map((row, i) => {
+                            let collected = 0;
+                            for (let j = 0; j <= i; j++) {
+                              collected += Number(plan.installments[j]?.amount || 0);
+                            }
+                            const monthStr = row.due_date ? new Date(row.due_date).toLocaleDateString('en-US', { month: 'short' }) : 'Now';
+                            return (
+                              <tr key={i} className="border-t border-slate-100">
+                                <td className="py-2.5 text-slate-700 font-medium">{monthStr}</td>
+                                <td className="py-2.5">
+                                  <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${
+                                    row.label === 'Deposit' ? 'bg-green-100 text-green-700' :
+                                    row.label === 'Final' || row.label?.includes('Final') ? 'bg-blue-100 text-blue-700' :
+                                    'bg-amber-100 text-amber-700'
+                                  }`}>
+                                    {row.label}
+                                  </span>
+                                </td>
+                                <td className="py-2.5 text-right text-slate-800 font-semibold text-xs">${Number(row.amount || 0).toLocaleString()}</td>
+                                <td className="py-2.5 text-right text-slate-800 font-semibold text-xs">${collected.toLocaleString()}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
 
-                {/* Total row */}
-                <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
-                  <p className="font-bold text-slate-800">Total</p>
-                  <p className="text-lg font-bold text-slate-800">${Number(display.total_amount || 0).toLocaleString()}</p>
+                    {/* Plan total */}
+                    <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
+                      <p className="font-semibold text-slate-700 text-sm">Total</p>
+                      <p className="text-base font-bold text-slate-800">${totalCollected.toLocaleString()}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Summary metrics */}
+            {plans.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-slate-50 rounded-xl p-4 text-center">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Total Contract Value</p>
+                  <p className="text-2xl font-bold text-slate-800">${Number(display.total_amount || 0).toLocaleString()}</p>
+                </div>
+                {plans.map((plan, pi) => {
+                  const juneTotal = (plan.installments || [])
+                    .filter(inst => inst.due_date && new Date(inst.due_date) <= new Date('2026-06-30'))
+                    .reduce((sum, inst) => sum + Number(inst.amount || 0), 0);
+                  return (
+                    <div key={pi} className="bg-slate-50 rounded-xl p-4 text-center">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Collected by June<br/>({plan.label})</p>
+                      <p className="text-2xl font-bold text-slate-800">${juneTotal.toLocaleString()}</p>
+                    </div>
+                  );
+                })}
+                <div className="bg-slate-50 rounded-xl p-4 text-center">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Final Payment</p>
+                  <p className="text-2xl font-bold text-slate-800">October</p>
                 </div>
               </div>
             )}
