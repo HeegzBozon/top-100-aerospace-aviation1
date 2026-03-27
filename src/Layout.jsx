@@ -57,7 +57,14 @@ export default function Layout({ children, currentPageName }) {
   };
 
   // --- Loading state (before ThemeProvider is ready) ---
-  if (authStatus === 'checking') {
+  // Render after 5 seconds even if still checking
+  const [showTimeout, setShowTimeout] = React.useState(false);
+  React.useEffect(() => {
+    const timer = setTimeout(() => setShowTimeout(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (authStatus === 'checking' && !showTimeout) {
     const themeVars = themes[getAutoTheme()] || themes.brand;
     return (
       <>
