@@ -40,20 +40,19 @@ Deno.serve(async (req) => {
     );
 
     const csvText = await csvResponse.text();
-    const rows = csvText.split('\n').slice(1); // Skip header
+    const rows = parseCSV(csvText).slice(1); // Skip header
     const messages = [];
 
     // Parse CSV and extract unread messages
     rows.forEach((row, idx) => {
-      if (!row.trim()) return;
+      if (!row || row.length < 173) return;
 
-      const cols = row.split(',').map(c => c.trim().slice(1, -1)); // Remove quotes
       const parsed = {
-        fullName: cols[29],
-        headline: cols[34],
-        lastMessage: cols[168],
-        isUnread: cols[172] === 'true',
-        profileUrl: cols[14]
+        fullName: row[29] || '',
+        headline: row[34] || '',
+        lastMessage: row[168] || '',
+        isUnread: row[172] === 'true',
+        profileUrl: row[14] || ''
       };
 
       if (parsed.isUnread && parsed.lastMessage) {
@@ -101,6 +100,48 @@ Generate only the response text, no preamble.`,
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
+
+function parseCSV(csvText) {
+  const rows = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < csvText.length; i++) {
+    const char = csvText[i];
+    const nextChar = csvText[i + 1];
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      rows[rows.length] = (rows[rows.length] || []);
+      rows[rows.length - 1].push(current.trim());
+      current = '';
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (current.trim()) {
+        rows[rows.length] = (rows[rows.length] || []);
+        rows[rows.length - 1].push(current.trim());
+      }
+      if (rows[rows.length - 1]?.length > 0) {
+        rows.push([]);
+      }
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+
+  if (current.trim()) {
+    rows[rows.length] = (rows[rows.length] || []);
+    rows[rows.length - 1].push(current.trim());
+  }
+
+  return rows.filter(r => r.length > 0);
+}
 
 function buildDocContent(responses, userName) {
   let content = `LinkedIn Inbox - Generated Responses\nPrepared for: ${userName}\nDate: ${new Date().toLocaleDateString()}\n\n`;
