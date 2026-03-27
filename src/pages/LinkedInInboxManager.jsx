@@ -40,10 +40,10 @@ export default function LinkedInInboxManager() {
       if (result.docUrl) setDocUrl(result.docUrl);
     } catch (err) {
       const msg = err.message || '';
-      if (msg.includes('permission') || msg.includes('Permission')) {
+      if (mode === 'drive' && (msg.includes('permission') || msg.includes('Permission'))) {
         setError('Permission denied accessing Google Drive. Try uploading the CSV directly instead.');
       } else {
-        setError(msg);
+        setError(msg || 'An error occurred. Check the console for details.');
       }
     } finally {
       setLoading(false);
