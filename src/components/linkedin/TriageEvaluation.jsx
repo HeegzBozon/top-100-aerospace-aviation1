@@ -46,6 +46,25 @@ export default function TriageEvaluation({ contact, onEvaluated }) {
     }
   };
 
+  const reanalyze = async () => {
+    setLoading(true);
+    try {
+      const result = await base44.functions.invoke('evaluateLinkedInMessage', {
+        contactId: contact.id,
+        headline: contact.headline,
+        message: contact.last_sent_message,
+        company: contact.current_company,
+        position: contact.current_position
+      });
+
+      onEvaluated(result.data.contact);
+    } catch (err) {
+      console.error('Re-evaluation error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (contact.triage_status === 'evaluated') {
     return (
       <motion.div
@@ -131,6 +150,25 @@ export default function TriageEvaluation({ contact, onEvaluated }) {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Re-analyze Button */}
+        <div className="mt-6">
+          <Button
+            onClick={reanalyze}
+            disabled={loading}
+            variant="outline"
+            className="w-full bg-white/10 text-white hover:bg-white/20 border-white/30"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Re-analyzing...
+              </>
+            ) : (
+              'Re-analyze'
+            )}
+          </Button>
         </div>
       </motion.div>
     );
