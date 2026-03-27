@@ -22,12 +22,10 @@ const TeamManager = lazy(() => import('@/pages/TeamManager'));
 const FeatureToTeamMapper = lazy(() => import('@/pages/FeatureToTeamMapper'));
 const DynamicProfilePage = lazy(() => import('@/pages/DynamicProfilePage'));
 
-// Load layout if available
-const { Layout } = pagesConfig;
+// Layout disabled temporarily to test for recharts circular dependency
+// const { Layout } = pagesConfig;
 
-const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-  <Layout currentPageName={currentPageName}>{children}</Layout>
-  : <>{children}</>;
+const LayoutWrapper = ({ children, currentPageName }) => <>{children}</>;
 
 // Lazy load all pages individually
 const About                    = lazy(() => import('@/pages/About'));
