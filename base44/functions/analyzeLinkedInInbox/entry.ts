@@ -30,11 +30,11 @@ Deno.serve(async (req) => {
     const dataRows = rows.slice(1);
     console.log(`Parsed ${dataRows.length} rows from CSV`);
     
-    // Find column indices
-    const nameIdx = headers.findIndex(h => h.toLowerCase().includes('name') || h.toLowerCase().includes('from'));
-    const messageIdx = headers.findIndex(h => h.toLowerCase().includes('message') || h.toLowerCase().includes('content'));
-    const headlineIdx = headers.findIndex(h => h.toLowerCase().includes('headline') || h.toLowerCase().includes('title'));
-    const unreadIdx = headers.findIndex(h => h.toLowerCase().includes('unread'));
+    // Standard LinkedIn export column names
+    const nameIdx = headers.indexOf('full_name');
+    const messageIdx = headers.indexOf('last_received_message_text');
+    const headlineIdx = headers.indexOf('headline');
+    const unreadIdx = headers.indexOf('has_unread_messages');
     
     const messages = [];
 
