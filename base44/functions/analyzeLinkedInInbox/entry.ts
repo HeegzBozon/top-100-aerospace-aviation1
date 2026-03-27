@@ -17,21 +17,27 @@ Deno.serve(async (req) => {
     // Get Google Drive access token
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('googledrive');
 
-    // List CSV files in Google Drive folder
-    const driveResponse = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and mimeType='text/csv'&fields=files(id,name)`,
+    // List all files in folder first
+    const listResponse = await fetch(
+      `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents&fields=files(id,name,mimeType)&pageSize=50`,
       {
         headers: { Authorization: `Bearer ${accessToken}` }
       }
     );
 
-    const driveData = await driveResponse.json();
-    if (!driveData.files || driveData.files.length === 0) {
-      return Response.json({ messages: [], responses: [], docUrl: null });
+    const listData = await listResponse.json();
+    console.error('Files in folder:', listData.files?.map(f => ({ name: f.name, mimeType: f.mimeType })));
+
+    // Filter for CSV files
+    const csvFiles = listData.files?.filter(f => f.mimeType === 'text/csv' || f.name.endsWith('.csv')) || [];
+    if (csvFiles.length === 0) {
+      console.error(`No CSV files found. Found ${listData.files?.length || 0} total files`);
+      return Response.json({ messages: [], responses: [], docUrl: null, debug: { totalFiles: listData.files?.length, fileList: listData.files?.map(f => f.name) } });
     }
+    console.log(`Found ${csvFiles.length} CSV files`);
 
     // Download and parse the most recent CSV
-    const csvFile = driveData.files[0];
+    const csvFile = csvFiles[0];
     const csvResponse = await fetch(
       `https://www.googleapis.com/drive/v3/files/${csvFile.id}?alt=media`,
       {
@@ -41,11 +47,15 @@ Deno.serve(async (req) => {
 
     const csvText = await csvResponse.text();
     const rows = parseCSV(csvText).slice(1); // Skip header
+    console.log(`Parsed ${rows.length} rows from CSV`);
     const messages = [];
 
     // Parse CSV and extract unread messages
     rows.forEach((row, idx) => {
-      if (!row || row.length < 173) return;
+      if (!row || row.length < 173) {
+        console.log(`Row ${idx} skipped: length ${row?.length}`);
+        return;
+      }
 
       const parsed = {
         fullName: row[29] || '',
@@ -59,28 +69,33 @@ Deno.serve(async (req) => {
         messages.push(parsed);
       }
     });
+    console.log(`Found ${messages.length} unread messages`);
 
     // Generate responses using LLM
     const responses = [];
     for (const msg of messages) {
-      const llmResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a professional aerospace industry networking assistant. Generate a thoughtful, personalized 2-3 sentence response to this LinkedIn message. Keep it warm but professional.
+      try {
+        const llmResult = await base44.integrations.Core.InvokeLLM({
+          prompt: `You are a professional aerospace industry networking assistant. Generate a thoughtful, personalized 2-3 sentence response to this LinkedIn message. Keep it warm but professional.
 
 From: ${msg.fullName} (${msg.headline})
 Message: "${msg.lastMessage}"
 
-Generate only the response text, no preamble.`,
-        model: 'gpt_4o_mini'
-      });
+Generate only the response text, no preamble.`
+        });
 
-      responses.push({
-        senderName: msg.fullName,
-        headline: msg.headline,
-        originalMessage: msg.lastMessage,
-        generatedResponse: llmResult,
-        profileUrl: msg.profileUrl
-      });
+        responses.push({
+          senderName: msg.fullName,
+          headline: msg.headline,
+          originalMessage: msg.lastMessage,
+          generatedResponse: llmResult,
+          profileUrl: msg.profileUrl
+        });
+      } catch (llmErr) {
+        console.error('LLM error:', llmErr);
+      }
     }
+    console.log(`Generated ${responses.length} responses`);
 
     // Create Google Doc with responses
     let docUrl = null;
