@@ -85,6 +85,55 @@
       "format": "date-time",
       "description": "When the outreach was marked complete"
     },
+    "triage_status": {
+      "type": "string",
+      "enum": [
+        "unevaluated",
+        "evaluated",
+        "triaged"
+      ],
+      "default": "unevaluated",
+      "description": "Triage evaluation status"
+    },
+    "tier_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Total TIER-S score (0-20)"
+    },
+    "tier_classification": {
+      "type": "string",
+      "enum": [
+        "S-Tier",
+        "A-Tier",
+        "B-Tier",
+        "C-Tier"
+      ],
+      "description": "TIER-S classification"
+    },
+    "talent_graph_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Talent Graph Authority score (0-5)"
+    },
+    "institutional_revenue_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Institutional Revenue Potential score (0-5)"
+    },
+    "ecosystem_gravity_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Ecosystem Gravity score (0-5)"
+    },
+    "rigor_scalability_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Rigor & Scalability score (0-5)"
+    },
+    "triage_reasoning": {
+      "type": "string",
+      "description": "AI-generated reasoning for the scores and tier classification"
+    },
     "tags": {
       "type": "array",
       "items": {

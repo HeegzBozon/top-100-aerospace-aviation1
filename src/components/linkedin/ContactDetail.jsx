@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Loader2, MessageCircle, ExternalLink, CheckCircle2, Zap } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import TriageEvaluation from './TriageEvaluation';
 
 export default function ContactDetail({ contact, onUpdate }) {
   const [response, setResponse] = useState(contact.generated_response || '');
@@ -228,6 +229,15 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
           <p className="text-xs text-green-600 mt-3">✓ Marked as sent</p>
         )}
       </div>
+
+      {/* TIER-S Triage Evaluation */}
+      {contact.triage_status === 'unevaluated' && (
+        <TriageEvaluation contact={contact} onEvaluated={onUpdate} />
+      )}
+
+      {contact.triage_status === 'evaluated' && (
+        <TriageEvaluation contact={contact} onEvaluated={onUpdate} />
+      )}
 
       {/* Action Buttons */}
       {contact.response_status !== 'done' && (
