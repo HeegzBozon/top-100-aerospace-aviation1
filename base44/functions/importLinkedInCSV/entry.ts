@@ -83,6 +83,29 @@ Deno.serve(async (req) => {
     if (contacts.length > 0) {
       created = await base44.entities.LinkedInContact.bulkCreate(contacts);
       console.log(`Successfully created ${created.length} contacts`);
+      
+      // Auto-evaluate all contacts in parallel
+      console.log(`Evaluating ${created.length} contacts...`);
+      const evaluations = await Promise.allSettled(
+        created.map(contact =>
+          base44.functions.invoke('evaluateLinkedInMessage', {
+            contactId: contact.id,
+            headline: contact.headline || '',
+            theirMessage: contact.last_received_message || 'No message provided',
+            yourMessage: contact.generated_response || contact.last_sent_message || 'No response yet',
+            company: contact.current_company || '',
+            position: contact.current_position || '',
+          })
+        )
+      );
+
+      // Fetch updated contacts with evaluation results
+      const evaluatedContacts = await Promise.all(
+        created.map(c => base44.entities.LinkedInContact.get(c.id))
+      );
+      
+      console.log(`Evaluation complete: ${evaluatedContacts.length} contacts evaluated`);
+      created = evaluatedContacts;
     }
 
     return Response.json({

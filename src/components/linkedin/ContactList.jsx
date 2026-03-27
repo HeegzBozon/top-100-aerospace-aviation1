@@ -58,7 +58,16 @@ export default function ContactList({ contacts, selectedContact, onSelectContact
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-[#1e3a5a] truncate">{contact.full_name}</p>
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <p className="font-semibold text-[#1e3a5a] truncate">{contact.full_name}</p>
+                      {/* Tier Badge */}
+                      {contact.tier_classification && (
+                        <div className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 bg-purple-100 rounded-lg">
+                          <span className="text-xs font-bold text-purple-700">{contact.tier_classification}</span>
+                          <span className="text-xs font-semibold text-purple-600">{contact.tier_score || 0}</span>
+                        </div>
+                      )}
+                    </div>
                     <p className="text-xs text-slate-600 truncate">{contact.headline}</p>
                     {contact.last_received_message && (
                       <p className="text-xs text-slate-500 line-clamp-2 mt-1">
