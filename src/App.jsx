@@ -4,12 +4,13 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import VisualEditAgent from '@/lib/VisualEditAgent'
-import NavigationTracker from '@/lib/NavigationTracker'
-import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+
+// Lazy-load non-critical modules to reduce initial bundle
+const NavigationTracker = lazy(() => import('@/lib/NavigationTracker'));
+const PageNotFound = lazy(() => import('./lib/PageNotFound'));
 
 // Explicit routes with custom configurations (excluded from pages.config to avoid circular deps)
 const Home = lazy(() => import('@/pages/Home'));
@@ -261,7 +262,7 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
-          <NavigationTracker />
+          <Suspense fallback={null}><NavigationTracker /></Suspense>
           <AuthenticatedApp />
         </Router>
         <Toaster />
