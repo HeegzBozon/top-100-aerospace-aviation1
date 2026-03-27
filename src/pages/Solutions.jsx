@@ -240,7 +240,7 @@ export default function Solutions() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Your organization operates at scale—managing billions in programs, leading teams across continents, competing for talent and investor confidence. Your digital presence should reflect that authority. TOP 100 OS builds the institutional infrastructure that aerospace and defense leaders need to win.
+              Right now, your best talent is evaluating you on platforms you don't control. Your competitors are building institutional authority while you manage legacy systems. Investor confidence depends on signals you're not sending. But the cost of inaction is compounding every month you wait. TOP 100 OS changes that. In 90 days, you'll have the digital infrastructure that signals mastery, attracts capital, and wins the war for talent.
             </motion.p>
             
             <motion.div
@@ -268,7 +268,7 @@ export default function Solutions() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          For the aerospace, defense, and space sectors, digital systems are now as strategic as physical operations. Your talent, programs, and market position depend on institutional credibility—the ability to signal excellence, attract investment, and lead your market. Every solution we build is architected with aerospace-grade discipline, governed by the <span className="font-semibold text-[#1e3a5a]">ASPICE V-Model</span>, ensuring alignment between your strategic vision and flawless execution.
+          You're competing for three things: talent, capital, and market position. Digital institutions win all three. Your current infrastructure was designed for a different era—internal operations, not institutional presence. The barrier to entry is no longer technical. It's institutional credibility. Every day you delay, your competitors are closing the gap. We've built the exact system that aerospace and defense leaders use: architected with aerospace-grade discipline, governed by the <span className="font-semibold text-[#1e3a5a]">ASPICE V-Model</span>, and proven by organizations leading multi-billion-dollar programs.
         </motion.p>
       </div>
 
@@ -369,7 +369,7 @@ export default function Solutions() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            Senior leaders at the world's most advanced aerospace and defense organizations are already building institutional digital advantage with us. Your board expects it. Your investors demand it. Your talent pool depends on it. We transform technical complexity into market dominance through strategic architecture, compelling narrative, and relentless execution.
+            Imagine 90 days from now. Your institutional platform is live. Top talent sees it and wants in. Investors recognize the institutional maturity. Your market position is visibly stronger. That's what happens when you move. Now imagine 90 days from now with no change—same gap in the market, same talent questions, same investor uncertainty. The cost of waiting is real. The leaders in your space are already ahead. We work with organizations managing $50B+ in programs and leading the global market. When they move, it matters. When you move, it will too.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center"
