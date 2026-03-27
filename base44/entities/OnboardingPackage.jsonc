@@ -1,7 +1,7 @@
 {
   "name": "OnboardingPackage",
   "type": "object",
-  "description": "Reusable client onboarding package with customizable payment plan and project scope.",
+  "description": "Reusable client onboarding package with multiple selectable payment plan options.",
   "properties": {
     "name": {
       "type": "string",
@@ -16,7 +16,7 @@
       "items": {
         "type": "string"
       },
-      "description": "List of deliverables shown as scope badges (e.g. 'New Website', 'SEO')"
+      "description": "List of deliverables shown as scope badges"
     },
     "total_amount": {
       "type": "number",
@@ -26,8 +26,47 @@
       "type": "number",
       "description": "Initial deposit amount in USD"
     },
+    "payment_plans": {
+      "type": "array",
+      "description": "Multiple payment plan options (A, B, C) the client can choose from",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "e.g. 'Plan A', 'Plan B'"
+          },
+          "description": {
+            "type": "string",
+            "description": "Short pitch for this plan"
+          },
+          "installments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "due_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "note": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "payment_installments": {
       "type": "array",
+      "description": "Legacy single-plan installments (kept for backward compat)",
       "items": {
         "type": "object",
         "properties": {
@@ -45,24 +84,19 @@
             "type": "string"
           }
         }
-      },
-      "description": "List of payment installments (after deposit)"
+      }
     },
     "headline": {
-      "type": "string",
-      "description": "Hero headline shown to the client"
+      "type": "string"
     },
     "subheadline": {
-      "type": "string",
-      "description": "Hero subheadline text"
+      "type": "string"
     },
     "closing_quote": {
-      "type": "string",
-      "description": "Motivational closing quote on the page"
+      "type": "string"
     },
     "closing_body": {
-      "type": "string",
-      "description": "Closing paragraph body text"
+      "type": "string"
     },
     "status": {
       "type": "string",
@@ -71,8 +105,7 @@
         "active",
         "archived"
       ],
-      "default": "draft",
-      "description": "Package status"
+      "default": "draft"
     }
   },
   "required": [
