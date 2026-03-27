@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
+const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
 const AgentSkillRegistry     = lazy(() => import('@/pages/AgentSkillRegistry'));
 const TermsOfService          = lazy(() => import('@/pages/TermsOfService'));
 const Colony                  = lazy(() => import('@/pages/Colony'));
@@ -68,6 +69,8 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
       } />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
+      <Route path="/onboarding" element={<OnboardingKickstarter />} />
+      <Route path="/OnboardingKickstarter" element={<OnboardingKickstarter />} />
       <Route path="/discovery" element={<DiscoveryQuestionnaire />} />
       <Route path="/Colony" element={<Colony />} />
       <Route path="/colony" element={<Colony />} />
