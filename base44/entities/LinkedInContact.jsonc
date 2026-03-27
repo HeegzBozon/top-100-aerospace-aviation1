@@ -1,0 +1,106 @@
+{
+  "name": "LinkedInContact",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string",
+      "description": "Full name from LinkedIn profile"
+    },
+    "first_name": {
+      "type": "string",
+      "description": "First name"
+    },
+    "last_name": {
+      "type": "string",
+      "description": "Last name"
+    },
+    "linkedin_profile_url": {
+      "type": "string",
+      "description": "LinkedIn profile URL"
+    },
+    "headline": {
+      "type": "string",
+      "description": "LinkedIn headline/title"
+    },
+    "location": {
+      "type": "string",
+      "description": "Location from LinkedIn"
+    },
+    "summary": {
+      "type": "string",
+      "description": "LinkedIn about/summary"
+    },
+    "current_company": {
+      "type": "string",
+      "description": "Current company name"
+    },
+    "current_position": {
+      "type": "string",
+      "description": "Current position/title"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Profile avatar image URL"
+    },
+    "last_received_message": {
+      "type": "string",
+      "description": "Most recent message received from this contact"
+    },
+    "last_received_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the last message was received"
+    },
+    "last_sent_message": {
+      "type": "string",
+      "description": "Most recent message sent to this contact"
+    },
+    "last_sent_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the last message was sent"
+    },
+    "has_unread": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this contact has unread messages"
+    },
+    "generated_response": {
+      "type": "string",
+      "description": "AI-generated response draft to their last message"
+    },
+    "response_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "draft",
+        "sent"
+      ],
+      "default": "pending",
+      "description": "Status of the response"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags like angelAerospaceWomenSF"
+    },
+    "mutual_connections_count": {
+      "type": "number",
+      "description": "Number of mutual connections"
+    },
+    "followers": {
+      "type": "number",
+      "description": "LinkedIn followers count"
+    },
+    "connections_count": {
+      "type": "number",
+      "description": "Total connections count"
+    }
+  },
+  "required": [
+    "full_name",
+    "linkedin_profile_url"
+  ]
+}

@@ -26,7 +26,8 @@ const FeatureToTeamMapper     = lazy(() => import('@/pages/FeatureToTeamMapper')
 const DynamicProfilePage      = lazy(() => import('@/pages/DynamicProfilePage'));
 const AuthorityStackPortal    = lazy(() => import('@/pages/AuthorityStackPortal'));
 const Solutions               = lazy(() => import('@/pages/Solutions'));
-const LinkedInInboxManager    = lazy(() => import('@/pages/LinkedInInboxManager'));
+const LinkedInManager         = lazy(() => import('@/pages/LinkedInManager'));
+
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -108,6 +109,11 @@ const AuthenticatedApp = () => {
           <Solutions />
         </LayoutWrapper>
       } />
+      <Route path="/linkedin-manager" element={
+        <LayoutWrapper currentPageName="LinkedInManager">
+          <LinkedInManager />
+        </LayoutWrapper>
+      } />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:id" element={
@@ -115,11 +121,7 @@ const AuthenticatedApp = () => {
           <ProfileView />
         </LayoutWrapper>
        } />
-       <Route path="/linkedin-inbox" element={
-        <LayoutWrapper currentPageName="LinkedInInboxManager">
-          <LinkedInInboxManager />
-        </LayoutWrapper>
-       } />
+
       <Route path="/Profile" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/PublicProfile" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/Nominee" element={<Navigate to="/ProfileView" replace />} />
