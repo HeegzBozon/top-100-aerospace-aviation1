@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { Loader2 } from "lucide-react";
@@ -7,8 +7,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { getAutoTheme, getCSSVariables, themes } from "@/components/core/brandTheme";
 import { ThemeProvider } from "@/components/core/ThemeContext";
 import { PUBLIC_PAGES } from "@/components/core/appConfig";
-import CommsLayoutMobile from "@/components/layout/CommsLayoutMobile";
-import CommsLayoutDesktop from "@/components/layout/CommsLayoutDesktop";
+const CommsLayoutMobile = React.lazy(() => import("@/components/layout/CommsLayoutMobile"));
+const CommsLayoutDesktop = React.lazy(() => import("@/components/layout/CommsLayoutDesktop"));
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ConversationProvider } from "@/components/contexts/ConversationContext";
 import { UnreadProvider } from "@/components/contexts/UnreadContext";
@@ -93,6 +93,7 @@ export default function Layout({ children, currentPageName }) {
           <CommsThemeProvider>
           <SidebarProvider>
             <Toaster />
+            <Suspense fallback={<div />}>
             {isMobile ? (
               <CommsLayoutMobile
                 currentPageName={currentPageName}
@@ -115,8 +116,9 @@ export default function Layout({ children, currentPageName }) {
               >
                 {children}
               </CommsLayoutDesktop>
-            )}
-          </SidebarProvider>
+              )}
+              </Suspense>
+              </SidebarProvider>
           </CommsThemeProvider>
         </UnreadProvider>
       </ConversationProvider>
