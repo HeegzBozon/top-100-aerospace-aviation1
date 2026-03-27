@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Check, Upload, ExternalLink, Globe, Loader2, Settings, X, Plus, Trash2, Save, Mail } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { sendOnboardingEmail } from '@/functions/sendOnboardingEmail';
-import PaymentModal from '@/components/onboarding-admin/PaymentModal';
+import { createCheckoutSession } from '@/functions/createCheckoutSession';
 import SendEmailModal from '@/components/onboarding-admin/SendEmailModal';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ export default function OnboardingKickstarter() {
   const [newScope, setNewScope] = useState('');
   const [showSendPanel, setShowSendPanel] = useState(false);
   const [expandedPlan, setExpandedPlan] = useState(null); // index of plan open in editor
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const [sendModal, setSendModal] = useState(null);
 
   // client state
@@ -210,6 +210,20 @@ export default function OnboardingKickstarter() {
       setUploadedFile({ name: file.name, url: file_url });
       toggleCheck('assets');
     } finally { setUploading(false); }
+  };
+
+  const handlePayment = async () => {
+    setPaymentLoading(true);
+    try {
+      const { url } = await createCheckoutSession({
+        amount: Number(activePlan?.installments?.[0]?.amount || display.deposit_amount || 0),
+        description: 'Onboarding Deposit',
+      });
+      window.location.href = url;
+    } catch (err) {
+      alert('Payment error: ' + err.message);
+      setPaymentLoading(false);
+    }
   };
 
   if (loading) return (
@@ -554,9 +568,9 @@ export default function OnboardingKickstarter() {
               <ChecklistItem done={checklist.deposit} onToggle={() => toggleCheck('deposit')}
                 title={`Send $${Number(activePlan?.installments?.[0]?.amount || display.deposit_amount || 0).toLocaleString()} Deposit`}
                 description="This secures your spot and gets your project on the board.">
-                <button onClick={() => setShowPaymentModal(true)}
-                  className="inline-flex items-center gap-1.5 mt-3 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white text-sm font-semibold px-4 py-2 rounded-lg">
-                  Pay Now — ${Number(activePlan?.installments?.[0]?.amount || display.deposit_amount || 0).toLocaleString()}
+                <button onClick={handlePayment} disabled={paymentLoading}
+                  className="inline-flex items-center gap-1.5 mt-3 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white text-sm font-semibold px-4 py-2 rounded-lg disabled:opacity-50">
+                  {paymentLoading ? 'Redirecting...' : `Pay Now — $${Number(activePlan?.installments?.[0]?.amount || display.deposit_amount || 0).toLocaleString()}`}
                 </button>
               </ChecklistItem>
 
@@ -622,13 +636,6 @@ export default function OnboardingKickstarter() {
       {sendModal && (
         <SendEmailModal isOpen={!!sendModal} onClose={() => setSendModal(null)} pkg={sendModal} />
       )}
-
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        amount={Number(activePlan?.installments?.[0]?.amount || display.deposit_amount || 0) * 100}
-        onSuccess={() => toggleCheck('deposit')}
-      />
     </div>
   );
 }
