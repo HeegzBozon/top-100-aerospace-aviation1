@@ -147,7 +147,7 @@ export default function LinkedInInboxManager() {
         >
           <Button
             onClick={handleAnalyzeInbox}
-            disabled={loading || !folderId.trim()}
+            disabled={loading || (mode === 'drive' ? !folderId.trim() : !csvFile)}
             className="bg-[#D4A574] text-white hover:bg-[#C19A6B] transition-colors h-auto py-3 px-6 text-base rounded-lg flex items-center gap-2"
           >
             {loading ? (
