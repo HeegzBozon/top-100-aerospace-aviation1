@@ -96,45 +96,39 @@ Generate only the response text, no preamble.`
 });
 
 function parseCSV(csvText) {
+  const lines = csvText.split('\n');
   const rows = [];
-  let current = '';
-  let inQuotes = false;
 
-  for (let i = 0; i < csvText.length; i++) {
-    const char = csvText[i];
-    const nextChar = csvText[i + 1];
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    
+    const fields = [];
+    let current = '';
+    let inQuotes = false;
 
-    if (char === '"') {
-      if (inQuotes && nextChar === '"') {
-        current += '"';
-        i++;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      const nextChar = line[i + 1];
+
+      if (char === '"') {
+        if (inQuotes && nextChar === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        fields.push(current.trim());
+        current = '';
       } else {
-        inQuotes = !inQuotes;
+        current += char;
       }
-    } else if (char === ',' && !inQuotes) {
-      rows[rows.length] = (rows[rows.length] || []);
-      rows[rows.length - 1].push(current.trim());
-      current = '';
-    } else if ((char === '\n' || char === '\r') && !inQuotes) {
-      if (current.trim()) {
-        rows[rows.length] = (rows[rows.length] || []);
-        rows[rows.length - 1].push(current.trim());
-      }
-      if (rows[rows.length - 1]?.length > 0) {
-        rows.push([]);
-      }
-      current = '';
-    } else {
-      current += char;
     }
+    fields.push(current.trim());
+    rows.push(fields);
   }
 
-  if (current.trim()) {
-    rows[rows.length] = (rows[rows.length] || []);
-    rows[rows.length - 1].push(current.trim());
-  }
-
-  return rows.filter(r => r.length > 0);
+  return rows;
 }
 
 function buildDocContent(responses, userName) {
