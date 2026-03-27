@@ -47,27 +47,33 @@ export default function Phase02DataRefinery({ onNext }) {
 
       <div className="max-w-4xl mx-auto px-6 space-y-8">
         {/* Financial Close */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
-          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-4 font-serif">Financial Close</h2>
-          <p className="text-slate-600 mb-6">Secure your deposit to establish account integrity.</p>
+        <section className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow duration-200">
+          <div className="flex items-start justify-between mb-4">
+            <h2 className="text-lg font-bold text-[#1e3a5a] font-serif">Financial Close</h2>
+            {deposits.paid && <Check className="w-5 h-5 text-green-600" />}
+          </div>
+          <p className="text-slate-600 text-sm mb-6">Secure your deposit to establish account integrity.</p>
           <button
             onClick={() => setDeposits({ paid: true })}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+            disabled={deposits.paid}
+            className={`px-6 py-2.5 rounded-full font-semibold transition-colors duration-200 text-sm ${
               deposits.paid
-                ? 'bg-green-100 text-green-700 cursor-default'
+                ? 'bg-slate-100 text-slate-600 cursor-default'
                 : 'bg-[#D4A574] text-white hover:bg-[#C19A6B]'
             }`}
           >
-            {deposits.paid ? <Check className="w-4 h-4" /> : null}
             {deposits.paid ? 'Deposit Secured' : 'Pay Deposit: $350'}
           </button>
         </section>
 
         {/* Flightography Setup */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
-          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-4 font-serif">Flightography Setup</h2>
-          <p className="text-slate-600 mb-6">Upload brand assets, history, and subsystems (service lines).</p>
-          <div className="grid grid-cols-2 gap-4">
+        <section className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow duration-200">
+          <div className="flex items-start justify-between mb-4">
+            <h2 className="text-lg font-bold text-[#1e3a5a] font-serif">Flightography Setup</h2>
+            <span className="text-xs font-semibold text-slate-500">{assetCount}/{requiredAssets}</span>
+          </div>
+          <p className="text-slate-600 text-sm mb-6">Upload brand assets, history, and subsystems.</p>
+          <div className="grid grid-cols-2 gap-3">
             {[
               { key: 'logo', label: 'Logo' },
               { key: 'colors', label: 'Brand Colors' },
@@ -77,10 +83,10 @@ export default function Phase02DataRefinery({ onNext }) {
               <button
                 key={item.key}
                 onClick={() => handleAssetUpload(item.key)}
-                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold border-2 transition-all ${
+                className={`flex flex-col items-center justify-center gap-2 px-3 py-4 rounded-xl font-medium text-sm transition-all ${
                   assets[item.key]
-                    ? 'bg-green-50 border-green-500 text-green-700'
-                    : 'border-dashed border-slate-300 text-slate-600 hover:border-brand-gold'
+                    ? 'bg-green-50 border border-green-300 text-green-700'
+                    : 'bg-slate-50 border border-slate-200 text-slate-600 hover:border-[#D4A574]'
                 }`}
               >
                 {assets[item.key] ? <Check className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
@@ -91,25 +97,25 @@ export default function Phase02DataRefinery({ onNext }) {
         </section>
 
         {/* Peer Validation */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
-          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-4 font-serif">Verification Loop</h2>
-          <p className="text-slate-600 mb-6">Invite team members to confirm brand details.</p>
+        <section className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow duration-200">
+          <h2 className="text-lg font-bold text-[#1e3a5a] mb-4 font-serif">Verification Loop</h2>
+          <p className="text-slate-600 text-sm mb-6">Invite team members to confirm brand details.</p>
           <div className="flex gap-2 mb-4">
             <input
               type="email"
               placeholder="team@example.com"
               value={peerEmail}
               onChange={(e) => setPeerEmail(e.target.value)}
-              className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-gold"
+              className="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A574]/50"
             />
-            <Button onClick={handleAddPeer} className="bg-[#D4A574] text-white hover:bg-[#C19A6B]">
+            <Button onClick={handleAddPeer} className="bg-[#D4A574] text-white hover:bg-[#C19A6B] transition-colors duration-200 text-sm px-4 h-auto py-2">
               Add
             </Button>
           </div>
           <div className="space-y-2">
             {peers.map((email, i) => (
               <div key={i} className="flex items-center gap-2 text-sm text-slate-700 bg-slate-50 px-4 py-2 rounded-lg">
-                <Check className="w-4 h-4 text-green-600" />
+                <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
                 {email}
               </div>
             ))}
@@ -117,25 +123,25 @@ export default function Phase02DataRefinery({ onNext }) {
         </section>
 
         {/* Status Gate */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
-          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-4 font-serif">Completion Status</h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-slate-700 font-semibold">Deposit Secured</span>
-              {deposits.paid ? <Check className="w-5 h-5 text-green-600" /> : <Lock className="w-5 h-5 text-slate-300" />}
+        <section className="bg-gradient-to-br from-[#faf8f5] to-white rounded-2xl shadow-sm p-6 border border-slate-200">
+          <h2 className="text-lg font-bold text-[#1e3a5a] mb-6 font-serif">Completion Status</h2>
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-700">Deposit Secured</span>
+              {deposits.paid ? <Check className="w-4 h-4 text-green-600" /> : <span className="w-4 h-4 bg-slate-200 rounded-full" />}
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-700 font-semibold">Brand Assets ({assetCount}/{requiredAssets})</span>
-              {assetCount === requiredAssets ? <Check className="w-5 h-5 text-green-600" /> : <Lock className="w-5 h-5 text-slate-300" />}
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-700">Brand Assets</span>
+              <span className="text-xs text-slate-500">{assetCount}/{requiredAssets}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-700 font-semibold">Peer Validation ({peers.length})</span>
-              {peers.length > 0 ? <Check className="w-5 h-5 text-green-600" /> : <Lock className="w-5 h-5 text-slate-300" />}
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-700">Peer Validation</span>
+              <span className="text-xs text-slate-500">{peers.length} added</span>
             </div>
           </div>
-          <div className="mt-6 w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+          <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
             <div
-              className="bg-[#D4A574] h-full transition-all"
+              className="bg-[#D4A574] h-full transition-all duration-300"
               style={{ width: `${isComplete ? 100 : (assetCount / requiredAssets + (deposits.paid ? 0.33 : 0) + (peers.length > 0 ? 0.33 : 0)) * 33}%` }}
             />
           </div>
@@ -146,13 +152,13 @@ export default function Phase02DataRefinery({ onNext }) {
           <Button
             onClick={onNext}
             disabled={!isComplete}
-            className={`text-lg px-8 py-4 h-auto ${
+            className={`text-base px-8 py-3 h-auto rounded-full transition-all duration-200 ${
               isComplete
                 ? 'bg-[#D4A574] text-white hover:bg-[#C19A6B]'
-                : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
-            {isComplete ? 'Proceed to Phase 03 →' : 'Complete all steps to continue'}
+            {isComplete ? 'Next: Mission Control' : 'Complete all steps to continue'}
           </Button>
         </section>
       </div>

@@ -60,26 +60,30 @@ export default function Phase03MissionControl() {
 
       <div className="max-w-5xl mx-auto px-6 space-y-8">
         {/* 7-Phase Product Roadmap */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
-          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-6 font-serif">7-Phase Product Roadmap</h2>
-          <div className="space-y-4">
+        <section className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
+          <h2 className="text-lg font-bold text-[#1e3a5a] mb-6 font-serif">7-Phase Build Plan</h2>
+          <div className="space-y-3">
             {ROADMAP_PHASES.map((item, idx) => (
               <motion.div
                 key={item.phase}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="flex items-center gap-4"
+                transition={{ delay: idx * 0.05 }}
+                className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors duration-200"
               >
-                <div className="w-12 h-12 rounded-full bg-[#D4A574] text-white font-bold flex items-center justify-center text-lg">
+                <div className={`w-10 h-10 rounded-full font-bold flex items-center justify-center text-sm flex-shrink-0 ${
+                  item.status === 'complete' ? 'bg-green-100 text-green-700' :
+                  item.status === 'in-progress' ? 'bg-[#D4A574]/20 text-[#D4A574]' :
+                  'bg-slate-200 text-slate-600'
+                }`}>
                   {item.phase}
                 </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-[#1e3a5a]">{item.name}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-[#1e3a5a] text-sm">{item.name}</p>
                 </div>
-                <span className={`px-4 py-1 rounded-full text-sm font-semibold border-2 ${getStatusColor(item.status)}`}>
-                  {item.status === 'in-progress' ? '🔄 In Progress' : item.status === 'complete' ? '✓ Complete' : 'Pending'}
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0 ${getStatusColor(item.status)}`}>
+                  {item.status === 'in-progress' ? 'In Progress' : item.status === 'complete' ? 'Complete' : 'Pending'}
                 </span>
               </motion.div>
             ))}
@@ -87,95 +91,94 @@ export default function Phase03MissionControl() {
         </section>
 
         {/* Collaborative Feed */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
-          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-6 font-serif">Collaborative Feed</h2>
-          <div className="space-y-4 mb-6 max-h-80 overflow-y-auto">
+        <section className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
+          <h2 className="text-lg font-bold text-[#1e3a5a] mb-6 font-serif">Team Updates</h2>
+          <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
             {feed.map((item) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="border-l-4 border-brand-gold pl-4 py-3"
+                className="border-l-2 border-[#D4A574] pl-4 py-2"
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold text-slate-800">{item.author}</span>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="font-semibold text-slate-800 text-sm">{item.author}</span>
                   <span className="text-xs text-slate-400">{item.time}</span>
                 </div>
-                <p className="text-slate-700">{item.message}</p>
+                <p className="text-slate-700 text-sm">{item.message}</p>
               </motion.div>
             ))}
           </div>
           <div className="flex gap-2">
             <input
               type="text"
-              placeholder="Share an update..."
+              placeholder="Share an update…"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddMessage()}
-              className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-gold"
+              className="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A574]/50"
             />
-            <Button onClick={handleAddMessage} className="bg-[#D4A574] text-white hover:bg-[#C19A6B]">
+            <Button onClick={handleAddMessage} className="bg-[#D4A574] text-white hover:bg-[#C19A6B] transition-colors duration-200 px-3 h-auto py-2">
               <Send className="w-4 h-4" />
             </Button>
           </div>
         </section>
 
         {/* Authority Dashboard */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 border border-[#1e3a5a]/08">
-          <h2 className="text-2xl font-bold text-[#1e3a5a] mb-6 font-serif">Authority Dashboard</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-[#D4A574]/20 to-slate-50 rounded-xl p-6 border border-[#D4A574]/30"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <BookOpen className="w-6 h-6 text-[#D4A574]" />
-                <h3 className="font-semibold text-[#1e3a5a]">Canonical Program Page</h3>
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow duration-200"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <BookOpen className="w-5 h-5 text-[#D4A574]" />
+              <h3 className="font-semibold text-[#1e3a5a] text-sm">Canonical Program Page</h3>
+            </div>
+            <p className="text-slate-600 text-sm mb-4 leading-relaxed">
+              Your institutional archive is building. Track progress from concept to full authority platform.
+            </p>
+            <div className="space-y-2">
+              <div className="w-full bg-slate-200 rounded-full h-1.5">
+                <div className="bg-[#D4A574] h-full rounded-full transition-all" style={{ width: '65%' }} />
               </div>
-              <p className="text-slate-700 text-sm mb-4">
-                Your institutional archive is being built. Track its evolution from blank canvas to full authority platform.
-              </p>
-              <div className="w-full bg-slate-300 rounded-full h-2">
-                <div className="bg-[#D4A574] h-full rounded-full" style={{ width: '65%' }} />
-              </div>
-              <p className="text-xs text-slate-500 mt-2">65% Complete</p>
-            </motion.div>
+              <p className="text-xs text-slate-500 text-right">65% Complete</p>
+            </div>
+          </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="bg-gradient-to-br from-[#1e3a5a]/10 to-slate-50 rounded-xl p-6 border border-[#1e3a5a]/20"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <Zap className="w-6 h-6 text-[#1e3a5a]" />
-                <h3 className="font-semibold text-[#1e3a5a]">Ecosystem Growth</h3>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow duration-200"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <Zap className="w-5 h-5 text-[#1e3a5a]" />
+              <h3 className="font-semibold text-[#1e3a5a] text-sm">Ecosystem Growth</h3>
+            </div>
+            <p className="text-slate-600 text-sm mb-4 leading-relaxed">
+              Build authentic authority with team, contributors, and partners.
+            </p>
+            <div className="flex gap-2">
+              <div className="flex-1 text-center py-3 rounded-lg bg-slate-50 border border-slate-200">
+                <p className="text-base font-bold text-[#1e3a5a]">3</p>
+                <p className="text-xs text-slate-600">Team Members</p>
               </div>
-              <p className="text-slate-700 text-sm mb-4">
-                Collaborate with your team, contributors, and partners to build authentic authority.
-              </p>
-              <div className="flex gap-2">
-                <div className="flex-1 text-center py-2 rounded bg-slate-100">
-                  <p className="text-lg font-bold text-[#1e3a5a]">3</p>
-                  <p className="text-xs text-slate-600">Team Members</p>
-                </div>
-                <div className="flex-1 text-center py-2 rounded bg-slate-100">
-                  <p className="text-lg font-bold text-[#1e3a5a]">12</p>
-                  <p className="text-xs text-slate-600">Contributors</p>
-                </div>
+              <div className="flex-1 text-center py-3 rounded-lg bg-slate-50 border border-slate-200">
+                <p className="text-base font-bold text-[#1e3a5a]">12</p>
+                <p className="text-xs text-slate-600">Contributors</p>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </section>
 
         {/* Final CTA */}
         <section className="text-center py-10">
-          <p className="text-slate-600 mb-6">Your mission is now live. Start building.</p>
-          <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-lg px-8 py-4 h-auto">
-            View Your Canonical Page →
+          <p className="text-slate-600 text-base mb-6">Your institutional platform is live. Begin building authority.</p>
+          <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] transition-colors duration-200 text-base px-8 py-3 h-auto rounded-full">
+            View Your Program Page
           </Button>
         </section>
       </div>
