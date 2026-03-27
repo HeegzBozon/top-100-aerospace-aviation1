@@ -65,6 +65,7 @@ export default function OnboardingKickstarter() {
   const [showSendPanel, setShowSendPanel] = useState(false);
   const [expandedPlan, setExpandedPlan] = useState(null); // index of plan open in editor
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [sendModal, setSendModal] = useState(null);
 
   // client state
   const [selectedPlanIdx, setSelectedPlanIdx] = useState(0);
