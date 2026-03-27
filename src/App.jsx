@@ -147,17 +147,22 @@ const AuthenticatedApp = () => {
       <Route path="/PublicProfile" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/Nominee" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/UserProfile" element={<Navigate to="/ProfileView" replace />} />
-      {Object.entries(Pages).map(([path, Page]) => (
-        <Route
-          key={path}
-          path={`/${path}`}
-          element={
-            <LayoutWrapper currentPageName={path}>
-              <Page />
-            </LayoutWrapper>
-          }
-        />
-      ))}
+      {Object.entries(Pages).map(([path, Page]) => {
+        const LazyPage = lazy(() => Promise.resolve({ default: Page }));
+        return (
+          <Route
+            key={path}
+            path={`/${path}`}
+            element={
+              <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" /></div>}>
+                <LayoutWrapper currentPageName={path}>
+                  <LazyPage />
+                </LayoutWrapper>
+              </Suspense>
+            }
+          />
+        );
+      })}
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
