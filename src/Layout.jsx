@@ -29,18 +29,15 @@ export default function Layout({ children, currentPageName }) {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-        if (currentUser.theme_mode) setInitialThemeMode(currentUser.theme_mode);
-        if (currentPageName === 'MissionControl' && !currentUser.season3_reonboarding_seen) {
+        if (currentUser?.theme_mode) setInitialThemeMode(currentUser.theme_mode);
+        if (currentPageName === 'MissionControl' && !currentUser?.season3_reonboarding_seen) {
           setShowReOnboarding(true);
         }
         setAuthStatus('ok');
-      } catch {
+      } catch (err) {
+        console.error('Auth error:', err);
         setUser(null);
-        if (!PUBLIC_PAGES.includes(currentPageName)) {
-          window.location.href = createPageUrl('Home');
-        } else {
-          setAuthStatus('ok');
-        }
+        setAuthStatus('ok');
       }
     };
     handleAuth();
