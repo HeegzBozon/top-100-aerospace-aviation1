@@ -198,7 +198,7 @@ export default function Solutions() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-[#1e3a5a] via-[#2E5090] to-[#1e3a5a] text-white py-20 px-6">
+      <div className="bg-gradient-to-r from-[#1e3a5a] to-[#0f2438] text-white py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.h1 
             className="text-5xl sm:text-6xl font-bold mb-4 font-serif text-[#D4A574] leading-tight"
@@ -311,7 +311,7 @@ export default function Solutions() {
       </div>
 
       {/* Closing Section */}
-      <div className="bg-gradient-to-r from-[#1e3a5a] via-[#2E5090] to-[#1e3a5a] text-white py-16 px-6">
+      <div className="bg-gradient-to-r from-[#1e3a5a] to-[#0f2438] text-white py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.h2 
             className="text-3xl sm:text-4xl font-bold mb-6 font-serif"

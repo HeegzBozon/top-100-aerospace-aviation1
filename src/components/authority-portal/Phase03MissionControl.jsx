@@ -45,7 +45,7 @@ export default function Phase03MissionControl() {
   return (
     <div className="space-y-12">
       {/* Hero */}
-      <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-12 px-6">
+      <div className="bg-gradient-to-r from-[#1e3a5a] to-[#0f2438] text-white py-12 px-6">
         <div className="max-w-5xl mx-auto">
           <motion.h1 
             className="text-4xl font-bold mb-2 font-serif text-[#D4A574]"
