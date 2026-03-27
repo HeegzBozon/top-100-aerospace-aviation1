@@ -1,0 +1,123 @@
+{
+  "name": "ScheduledPost",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who created this post"
+    },
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the Nominee this post is about (for editorial pipeline)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title or headline for this post"
+    },
+    "channel_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of SocialChannel IDs to publish to"
+    },
+    "content": {
+      "type": "string",
+      "description": "Post text content (max 500 chars for Threads)"
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Public URLs of images or videos to attach"
+    },
+    "media_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "image",
+        "video",
+        "carousel"
+      ],
+      "default": "text",
+      "description": "Type of media in the post"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When to publish this post (null = immediate)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "reviewing",
+        "approved",
+        "scheduled",
+        "publishing",
+        "published",
+        "failed",
+        "cancelled"
+      ],
+      "default": "draft",
+      "description": "Current lifecycle status of the post"
+    },
+    "platform_post_ids": {
+      "type": "object",
+      "description": "Map of channel_id -> platform post ID after publishing"
+    },
+    "publish_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "channel_id": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "post_id": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          },
+          "published_at": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Per-channel publish results"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error details if publishing failed"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the post was actually published"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Internal tags for organizing posts"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes about this post"
+    }
+  },
+  "required": [
+    "user_email",
+    "content",
+    "channel_ids"
+  ]
+}
