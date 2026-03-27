@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { useRecharts } from '@/lib/recharts-lazy';
 import {
   Activity,
   TrendingUp,
@@ -45,6 +45,7 @@ const brandColors = {
 };
 
 export default function SeasonCommandCenter({ onNavigate }) {
+  const rc = useRecharts();
   const [activeSubTab, setActiveSubTab] = useState('overview');
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -430,9 +431,11 @@ export default function SeasonCommandCenter({ onNavigate }) {
 
   const DashboardContent = () => {
     // If we're loading and have no stats, show loading state
-    if (loading && !stats) {
+    if (loading && !stats || !rc) {
       return <LoadingState />;
     }
+
+    const { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } = rc;
 
     // If not loading and no stats, indicate no data
     if (!stats || Object.keys(stats).length === 0) {

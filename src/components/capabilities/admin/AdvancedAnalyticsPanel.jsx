@@ -2,10 +2,7 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  BarChart, Bar, Line, PieChart, Pie, Cell, AreaChart, Area,
-  XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, ComposedChart 
-} from 'recharts';
+import { useRecharts } from '@/lib/recharts-lazy';
 import { 
   TrendingUp, TrendingDown, Users, Vote, Target, 
   Activity, Clock, Award, ArrowUpRight, ArrowDownRight,

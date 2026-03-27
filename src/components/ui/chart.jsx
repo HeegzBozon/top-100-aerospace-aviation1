@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react"
-import { ResponsiveContainer, Tooltip, Legend } from "recharts"
-
+import { useRecharts } from "@/lib/recharts-lazy"
 import { cn } from "@/lib/utils"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
@@ -25,6 +24,17 @@ function useChart() {
 const ChartContainer = React.forwardRef(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
+  const rc = useRecharts();
+
+  if (!rc) {
+    return (
+      <div className={cn("flex aspect-video justify-center items-center text-xs text-muted-foreground", className)} {...props}>
+        <div className="animate-pulse">Loading chart...</div>
+      </div>
+    );
+  }
+
+  const { ResponsiveContainer } = rc;
 
   return (
     (<ChartContext.Provider value={{ config }}>
@@ -77,7 +87,14 @@ return color ? `  --color-${key}: ${color};` : null
   );
 }
 
-const ChartTooltip = Tooltip
+// These are now just pass-through names — actual Tooltip/Legend components
+// must come from useRecharts() in the consuming component
+const ChartTooltip = (props) => {
+  const rc = useRecharts();
+  if (!rc) return null;
+  const { Tooltip } = rc;
+  return <Tooltip {...props} />;
+};
 
 const ChartTooltipContent = React.forwardRef((
   {
@@ -214,7 +231,12 @@ const ChartTooltipContent = React.forwardRef((
 })
 ChartTooltipContent.displayName = "ChartTooltip"
 
-const ChartLegend = Legend
+const ChartLegend = (props) => {
+  const rc = useRecharts();
+  if (!rc) return null;
+  const { Legend } = rc;
+  return <Legend {...props} />;
+};
 
 const ChartLegendContent = React.forwardRef((
   { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey },

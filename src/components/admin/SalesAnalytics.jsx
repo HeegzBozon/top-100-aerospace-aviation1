@@ -16,7 +16,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { useRecharts } from '@/lib/recharts-lazy';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -27,6 +27,7 @@ const brandColors = {
 const COLORS = ['#1e3a5a', '#4a90b8', '#c9a87c', '#2ED573', '#FF6B6B'];
 
 export default function SalesAnalytics() {
+  const rc = useRecharts();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [timeRange, setTimeRange] = useState('30d');
@@ -60,7 +61,7 @@ export default function SalesAnalytics() {
   const recentCharges = stripeData?.recentCharges || [];
   const recentPayouts = stripeData?.recentPayouts || [];
 
-  if (loading) {
+  if (loading || !rc) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -70,6 +71,8 @@ export default function SalesAnalytics() {
       </div>
     );
   }
+
+  const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } = rc;
 
   if (error) {
     return (

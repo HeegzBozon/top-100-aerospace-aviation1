@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter } from 'recharts';
+import { useRecharts } from '@/lib/recharts-lazy';
 import { TrendingUp, BarChart3, Target, Loader2, BookOpen, Calculator } from 'lucide-react';
 import PostPublicationAnalytics from './PostPublicationAnalytics';
 
@@ -13,6 +13,7 @@ const brandColors = {
 };
 
 export default function ScoringAnalytics() {
+  const rc = useRecharts();
   const [activeSubTab, setActiveSubTab] = useState('scoring');
   const { data: nominees, isLoading } = useQuery({
     queryKey: ['nominees-analytics'],
@@ -20,13 +21,15 @@ export default function ScoringAnalytics() {
     initialData: []
   });
 
-  if (isLoading) {
+  if (isLoading || !rc) {
     return (
       <div className="flex items-center justify-center p-12">
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: brandColors.goldPrestige }} />
       </div>
     );
   }
+
+  const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter } = rc;
 
   const scoredNominees = nominees.filter(n => n.holistic_score > 0);
 

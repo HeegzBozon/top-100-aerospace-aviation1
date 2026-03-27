@@ -16,7 +16,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { useRecharts } from '@/lib/recharts-lazy';
 
 const brandColors = {
   navyDeep: '#1e3a5a',

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter } from 'recharts';
+import { useRecharts } from '@/lib/recharts-lazy';
 import { TrendingUp, BarChart3, Target, Loader2, BookOpen, Calculator } from 'lucide-react';
 import PostPublicationAnalytics from './PostPublicationAnalytics';
 

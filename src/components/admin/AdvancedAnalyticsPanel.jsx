@@ -2,10 +2,7 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  BarChart, Bar, Line, PieChart, Pie, Cell, AreaChart, Area,
-  XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, ComposedChart 
-} from 'recharts';
+import { useRecharts } from '@/lib/recharts-lazy';
 import { 
   TrendingUp, TrendingDown, Users, Vote, Target, 
   Activity, Clock, Award, ArrowUpRight, ArrowDownRight,
@@ -25,6 +22,7 @@ const brandColors = {
 const CHART_COLORS = ['#1e3a5a', '#c9a87c', '#4a90b8', '#ee885c', '#5da5a2', '#8b5cf6', '#10b981', '#f59e0b'];
 
 export default function AdvancedAnalyticsPanel({ seasonId, onNavigate }) {
+  const rc = useRecharts();
   const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState(null);
 
@@ -215,13 +213,15 @@ export default function AdvancedAnalyticsPanel({ seasonId, onNavigate }) {
     }
   };
 
-  if (loading) {
+  if (loading || !rc) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="w-8 h-8 animate-spin text-[var(--accent)]" />
       </div>
     );
   }
+
+  const { BarChart, Bar, Line, PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, ComposedChart } = rc;
 
   if (!analytics) {
     return (

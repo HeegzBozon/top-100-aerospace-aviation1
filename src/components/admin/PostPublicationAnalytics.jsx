@@ -1,7 +1,7 @@
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { useRecharts } from '@/lib/recharts-lazy';
 import { Download, Users, Globe, TrendingUp, Loader2, FileText, ExternalLink } from 'lucide-react';
 
 const brandColors = {
@@ -14,6 +14,7 @@ const brandColors = {
 const chartColors = [brandColors.navyDeep, brandColors.skyBlue, brandColors.goldPrestige, '#6b7280', '#10b981'];
 
 export default function PostPublicationAnalytics() {
+  const rc = useRecharts();
   // Fetch nominees for publication stats
   const { data: nominees, isLoading: nomineesLoading } = useQuery({
     queryKey: ['publication-nominees'],
@@ -30,13 +31,15 @@ export default function PostPublicationAnalytics() {
 
   const isLoading = nomineesLoading || usersLoading;
 
-  if (isLoading) {
+  if (isLoading || !rc) {
     return (
       <div className="flex items-center justify-center p-12">
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: brandColors.goldPrestige }} />
       </div>
     );
   }
+
+  const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } = rc;
 
   // Calculate publication metrics
   const top100 = nominees
