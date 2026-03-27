@@ -11,17 +11,30 @@ export default function LinkedInInboxManager() {
   const [docUrl, setDocUrl] = useState(null);
   const [error, setError] = useState(null);
   const [folderId, setFolderId] = useState('');
+  const [csvFile, setCsvFile] = useState(null);
+  const [mode, setMode] = useState('drive'); // 'drive' or 'upload'
 
   const handleAnalyzeInbox = async () => {
-    if (!folderId.trim()) {
+    if (mode === 'drive' && !folderId.trim()) {
       setError('Please enter a Google Drive folder ID');
+      return;
+    }
+    if (mode === 'upload' && !csvFile) {
+      setError('Please select a CSV file');
       return;
     }
     
     setLoading(true);
     setError(null);
     try {
-      const result = await base44.functions.invoke('analyzeLinkedInInbox', { folderId });
+      let payload = {};
+      if (mode === 'drive') {
+        payload = { folderId };
+      } else {
+        const text = await csvFile.text();
+        payload = { csvContent: text };
+      }
+      const result = await base44.functions.invoke('analyzeLinkedInInbox', payload);
       setMessages(result.messages || []);
       setResponses(result.responses || []);
       if (result.docUrl) setDocUrl(result.docUrl);
@@ -49,27 +62,81 @@ export default function LinkedInInboxManager() {
           </p>
         </motion.div>
 
-        {/* Folder ID Input */}
+        {/* Input Mode Toggle */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8 bg-white rounded-lg border border-slate-300 p-6"
+          className="mb-8 flex gap-2 bg-slate-100 p-1 rounded-lg w-fit"
         >
-          <label className="block text-sm font-semibold text-[#1e3a5a] mb-2">
-            Google Drive Folder ID
-          </label>
-          <input
-            type="text"
-            placeholder="Paste your Google Drive folder ID"
-            value={folderId}
-            onChange={(e) => setFolderId(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A574] mb-4"
-          />
-          <p className="text-xs text-slate-600">
-            Get your folder ID from the URL: drive.google.com/drive/folders/<strong>FOLDER_ID</strong>
-          </p>
+          <button
+            onClick={() => setMode('drive')}
+            className={`px-4 py-2 rounded font-medium text-sm transition-all ${
+              mode === 'drive'
+                ? 'bg-white text-[#1e3a5a] shadow'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Google Drive
+          </button>
+          <button
+            onClick={() => setMode('upload')}
+            className={`px-4 py-2 rounded font-medium text-sm transition-all ${
+              mode === 'upload'
+                ? 'bg-white text-[#1e3a5a] shadow'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Upload CSV
+          </button>
         </motion.div>
+
+        {/* Google Drive Input */}
+        {mode === 'drive' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8 bg-white rounded-lg border border-slate-300 p-6"
+          >
+            <label className="block text-sm font-semibold text-[#1e3a5a] mb-2">
+              Google Drive Folder ID
+            </label>
+            <input
+              type="text"
+              placeholder="Paste your Google Drive folder ID"
+              value={folderId}
+              onChange={(e) => setFolderId(e.target.value)}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A574] mb-4"
+            />
+            <p className="text-xs text-slate-600">
+              Get your folder ID from the URL: drive.google.com/drive/folders/<strong>FOLDER_ID</strong>
+            </p>
+          </motion.div>
+        )}
+
+        {/* CSV Upload Input */}
+        {mode === 'upload' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8 bg-white rounded-lg border border-slate-300 p-6"
+          >
+            <label className="block text-sm font-semibold text-[#1e3a5a] mb-2">
+              LinkedIn Messages CSV
+            </label>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A574]"
+            />
+            <p className="text-xs text-slate-600 mt-2">
+              {csvFile ? `Selected: ${csvFile.name}` : 'Upload your LinkedIn inbox CSV export'}
+            </p>
+          </motion.div>
+        )}
 
         {/* Action Button */}
         <motion.div

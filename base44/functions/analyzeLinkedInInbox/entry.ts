@@ -9,43 +9,43 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { folderId } = await req.json();
-    if (!folderId) {
-      return Response.json({ error: 'Google Drive folder ID is required' }, { status: 400 });
-    }
+    const { folderId, csvContent } = await req.json();
+    
+    let csvText;
+    
+    if (csvContent) {
+      // Direct CSV upload
+      csvText = csvContent;
+    } else if (folderId) {
+      // Google Drive folder
+      const { accessToken } = await base44.asServiceRole.connectors.getConnection('googledrive');
 
-    // Get Google Drive access token
-    const { accessToken } = await base44.asServiceRole.connectors.getConnection('googledrive');
+      const listResponse = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents&fields=files(id,name,mimeType)&pageSize=50`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        }
+      );
 
-    // List all files in folder first
-    const listResponse = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents&fields=files(id,name,mimeType)&pageSize=50`,
-      {
-        headers: { Authorization: `Bearer ${accessToken}` }
+      const listData = await listResponse.json();
+      const csvFiles = listData.files?.filter(f => f.mimeType === 'text/csv' || f.name.endsWith('.csv')) || [];
+      
+      if (csvFiles.length === 0) {
+        return Response.json({ messages: [], responses: [], docUrl: null });
       }
-    );
 
-    const listData = await listResponse.json();
-    console.error('Files in folder:', listData.files?.map(f => ({ name: f.name, mimeType: f.mimeType })));
+      const csvFile = csvFiles[0];
+      const csvResponse = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${csvFile.id}?alt=media`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        }
+      );
 
-    // Filter for CSV files
-    const csvFiles = listData.files?.filter(f => f.mimeType === 'text/csv' || f.name.endsWith('.csv')) || [];
-    if (csvFiles.length === 0) {
-      console.error(`No CSV files found. Found ${listData.files?.length || 0} total files`);
-      return Response.json({ messages: [], responses: [], docUrl: null, debug: { totalFiles: listData.files?.length, fileList: listData.files?.map(f => f.name) } });
+      csvText = await csvResponse.text();
+    } else {
+      return Response.json({ error: 'Either folderId or csvContent is required' }, { status: 400 });
     }
-    console.log(`Found ${csvFiles.length} CSV files`);
-
-    // Download and parse the most recent CSV
-    const csvFile = csvFiles[0];
-    const csvResponse = await fetch(
-      `https://www.googleapis.com/drive/v3/files/${csvFile.id}?alt=media`,
-      {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      }
-    );
-
-    const csvText = await csvResponse.text();
     const rows = parseCSV(csvText).slice(1); // Skip header
     console.log(`Parsed ${rows.length} rows from CSV`);
     const messages = [];
