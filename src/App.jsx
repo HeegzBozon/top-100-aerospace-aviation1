@@ -109,11 +109,16 @@ const AuthenticatedApp = () => {
       } />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:nomineeId" element={<DynamicProfilePage />} />
-      <Route path="/profiles/:id" element={
+       <Route path="/profiles/:id" element={
         <LayoutWrapper currentPageName="ProfileView">
           <ProfileView />
         </LayoutWrapper>
-      } />
+       } />
+       <Route path="/linkedin-inbox" element={
+        <LayoutWrapper currentPageName="LinkedInInboxManager">
+          <LinkedInInboxManager />
+        </LayoutWrapper>
+       } />
       <Route path="/Profile" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/PublicProfile" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/Nominee" element={<Navigate to="/ProfileView" replace />} />
