@@ -25,30 +25,39 @@ Deno.serve(async (req) => {
       console.error('Could not get Google Drive access token:', e.message);
       accessToken = null;
     }
-    const rows = parseCSV(csvText).slice(1); // Skip header
-    console.log(`Parsed ${rows.length} rows from CSV`);
+    const rows = parseCSV(csvText);
+    const headers = rows[0] || [];
+    const dataRows = rows.slice(1);
+    console.log(`Parsed ${dataRows.length} rows from CSV`);
+    
+    // Find column indices
+    const nameIdx = headers.findIndex(h => h.toLowerCase().includes('name') || h.toLowerCase().includes('from'));
+    const messageIdx = headers.findIndex(h => h.toLowerCase().includes('message') || h.toLowerCase().includes('content'));
+    const headlineIdx = headers.findIndex(h => h.toLowerCase().includes('headline') || h.toLowerCase().includes('title'));
+    const unreadIdx = headers.findIndex(h => h.toLowerCase().includes('unread'));
+    
     const messages = [];
 
-    // Parse CSV and extract unread messages
-    rows.forEach((row, idx) => {
-      if (!row || row.length < 173) {
-        console.log(`Row ${idx} skipped: length ${row?.length}`);
-        return;
-      }
+    // Parse rows and extract messages
+    dataRows.forEach((row) => {
+      if (!row || row.length < 2) return;
 
-      const parsed = {
-        fullName: row[29] || '',
-        headline: row[34] || '',
-        lastMessage: row[168] || '',
-        isUnread: row[172] === 'true',
-        profileUrl: row[14] || ''
-      };
+      const fullName = nameIdx >= 0 ? row[nameIdx] : '';
+      const lastMessage = messageIdx >= 0 ? row[messageIdx] : '';
+      const headline = headlineIdx >= 0 ? row[headlineIdx] : '';
+      const isUnread = unreadIdx >= 0 ? row[unreadIdx]?.toLowerCase() === 'true' : true;
 
-      if (parsed.isUnread && parsed.lastMessage) {
-        messages.push(parsed);
+      if (lastMessage && fullName) {
+        messages.push({
+          fullName,
+          headline,
+          lastMessage,
+          isUnread,
+          profileUrl: ''
+        });
       }
     });
-    console.log(`Found ${messages.length} unread messages`);
+    console.log(`Found ${messages.length} messages`);
 
     // Generate responses using LLM
     const responses = [];
