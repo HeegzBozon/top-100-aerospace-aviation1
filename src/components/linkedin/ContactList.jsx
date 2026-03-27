@@ -5,15 +5,34 @@ import { cn } from '@/lib/utils';
 
 export default function ContactList({ contacts, selectedContact, onSelectContact }) {
   const unreadCount = contacts.filter(c => c.has_unread).length;
+  const completedCount = contacts.filter(c => c.response_status === 'done').length;
+  const totalCount = contacts.length;
+  const completionPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
     <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
       <div className="p-6 border-b border-slate-200">
-        <h2 className="text-lg font-bold text-[#1e3a5a] mb-2">Contacts ({contacts.length})</h2>
+        <h2 className="text-lg font-bold text-[#1e3a5a] mb-3">Inbox ({contacts.length})</h2>
+        
+        {/* Progress Bar */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs font-semibold text-slate-600">Inbox Zero Progress</span>
+            <span className="text-xs font-bold text-[#D4A574]">{completionPercent}%</span>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-gradient-to-r from-[#D4A574] to-green-500 h-full transition-all duration-300"
+              style={{ width: `${completionPercent}%` }}
+            />
+          </div>
+          <p className="text-xs text-slate-500 mt-2">{completedCount} of {totalCount} completed</p>
+        </div>
+
         {unreadCount > 0 && (
           <div className="flex items-center gap-2 text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">
             <AlertCircle className="w-4 h-4" />
-            {unreadCount} unread messages
+            {unreadCount} unread
           </div>
         )}
       </div>

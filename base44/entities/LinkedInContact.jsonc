@@ -74,10 +74,16 @@
       "enum": [
         "pending",
         "draft",
-        "sent"
+        "sent",
+        "done"
       ],
       "default": "pending",
       "description": "Status of the response"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the outreach was marked complete"
     },
     "tags": {
       "type": "array",
