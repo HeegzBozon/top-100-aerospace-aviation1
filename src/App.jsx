@@ -23,17 +23,11 @@ const TeamManager = lazy(() => import('@/pages/TeamManager'));
 const FeatureToTeamMapper = lazy(() => import('@/pages/FeatureToTeamMapper'));
 const DynamicProfilePage = lazy(() => import('@/pages/DynamicProfilePage'));
 
-// Layout lazy-loaded to avoid circular dependency with recharts
-const Layout = lazy(() => import('@/layout'));
+// Layout component
+import Layout from '@/components/layout/AppLayout';
 
 const LayoutWrapper = ({ children, currentPageName }) => (
-  <Suspense fallback={
-    <div className="fixed inset-0 flex items-center justify-center bg-white">
-      <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
-    </div>
-  }>
-    <Layout currentPageName={currentPageName}>{children}</Layout>
-  </Suspense>
+  <Layout currentPageName={currentPageName}>{children}</Layout>
 );
 
 // Lazy load all pages individually
