@@ -1,12 +1,12 @@
-import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import ProfileView from '@/pages/ProfileView';
 import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import Landing2Hero from '@/components/landing/Landing2Hero';
 import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
 
-const TrendingSection = lazy(() => import('@/components/landing/TrendingSection'));
+import TrendingSection from '@/components/landing/TrendingSection';
 import HeroHeader from '@/components/home/HeroHeader';
-const AerospaceDashboardSection = lazy(() => import('@/components/home/AerospaceDashboardSection'));
+import AerospaceDashboardSection from '@/components/home/AerospaceDashboardSection';
 import IndustrySpotlight from '@/components/home/IndustrySpotlight';
 import FeaturedToday from '@/components/home/FeaturedToday';
 import TrendingPrograms from '@/components/home/TrendingPrograms';
@@ -251,17 +251,15 @@ export default function HomePage() {
 
       {/* Ordered, togglable sections */}
       {orderedSectionIds.map(id => {
-         if (!isVisible(id)) return null;
-         const component = SECTION_COMPONENTS[id];
-         if (!component) return null;
-         return (
-           <ErrorBoundary key={id}>
-             <Suspense fallback={<div className="h-64" />}>
-               {component}
-             </Suspense>
-           </ErrorBoundary>
-         );
-       })}
+        if (!isVisible(id)) return null;
+        const component = SECTION_COMPONENTS[id];
+        if (!component) return null;
+        return (
+          <ErrorBoundary key={id}>
+            {component}
+          </ErrorBoundary>
+        );
+      })}
 
       {/* Admin-only section reorder toggle */}
       <HomeSectionReorderPopover
