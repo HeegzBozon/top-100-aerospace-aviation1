@@ -428,13 +428,32 @@ export default function OnboardingKickstarter() {
             {/* Side-by-side plan cards */}
             <div className={`grid gap-5 mb-6 ${plans.length > 2 ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
               {plans.map((plan, pi) => {
+                const isSelected = selectedPlanIdx === pi;
                 const totalCollected = (plan.installments || []).reduce((sum, inst) => sum + Number(inst.amount || 0), 0);
                 return (
-                  <div key={pi} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-5">
+                  <div key={pi} className={`relative bg-white rounded-2xl overflow-hidden p-5 transition-all ${
+                    isSelected
+                      ? 'border-2 border-[#c9a87c] shadow-lg -translate-y-1'
+                      : 'border border-slate-100 shadow-sm hover:shadow-md'
+                  }`}>
+                    {/* Checkmark badge for selected */}
+                    {isSelected && (
+                      <div className="absolute top-3 right-3 w-8 h-8 bg-[#c9a87c] text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        ✓
+                      </div>
+                    )}
+                    
+                    {/* Best Value tag */}
+                    {pi === 0 && (
+                      <div className="absolute top-3 left-3">
+                        <span className="inline-block bg-[#c9a87c] text-white text-xs font-bold px-2.5 py-1 rounded-full">Best Value</span>
+                      </div>
+                    )}
+
                     {/* Plan header */}
-                    <div className="mb-5 pb-4 border-b border-slate-100">
-                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{plan.label}</p>
-                      <p className="text-lg font-bold text-slate-800 mt-1">{plan.description || 'Your Payment Schedule'}</p>
+                    <div className={`mb-5 pb-4 border-b transition-colors ${isSelected ? 'border-[#c9a87c]/20' : 'border-slate-100'}`}>
+                      <p className="text-xs font-semibold text-[#1e3a5a] uppercase tracking-wider">{plan.label}</p>
+                      <p className="text-lg font-bold text-[#1e3a5a] mt-1" style={{fontFamily: "'Playfair Display', Georgia, serif"}}>{plan.description || 'Your Payment Schedule'}</p>
                     </div>
 
                     {/* Timeline table */}
