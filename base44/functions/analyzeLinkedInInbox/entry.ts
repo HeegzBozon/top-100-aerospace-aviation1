@@ -1,8 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
-// TODO: Replace with your Google Drive folder ID
-const GOOGLE_DRIVE_FOLDER_ID = 'YOUR_GOOGLE_DRIVE_FOLDER_ID';
-
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -12,12 +9,17 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { folderId } = await req.json();
+    if (!folderId) {
+      return Response.json({ error: 'Google Drive folder ID is required' }, { status: 400 });
+    }
+
     // Get Google Drive access token
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('googledrive');
 
     // List CSV files in Google Drive folder
     const driveResponse = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q='${GOOGLE_DRIVE_FOLDER_ID}' in parents and mimeType='text/csv'&fields=files(id,name)`,
+      `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and mimeType='text/csv'&fields=files(id,name)`,
       {
         headers: { Authorization: `Bearer ${accessToken}` }
       }

@@ -10,12 +10,18 @@ export default function LinkedInInboxManager() {
   const [responses, setResponses] = useState([]);
   const [docUrl, setDocUrl] = useState(null);
   const [error, setError] = useState(null);
+  const [folderId, setFolderId] = useState('');
 
   const handleAnalyzeInbox = async () => {
+    if (!folderId.trim()) {
+      setError('Please enter a Google Drive folder ID');
+      return;
+    }
+    
     setLoading(true);
     setError(null);
     try {
-      const result = await base44.functions.invoke('analyzeLinkedInInbox', {});
+      const result = await base44.functions.invoke('analyzeLinkedInInbox', { folderId });
       setMessages(result.messages || []);
       setResponses(result.responses || []);
       if (result.docUrl) setDocUrl(result.docUrl);
@@ -43,16 +49,38 @@ export default function LinkedInInboxManager() {
           </p>
         </motion.div>
 
-        {/* Action Button */}
+        {/* Folder ID Input */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          className="mb-8 bg-white rounded-lg border border-slate-300 p-6"
+        >
+          <label className="block text-sm font-semibold text-[#1e3a5a] mb-2">
+            Google Drive Folder ID
+          </label>
+          <input
+            type="text"
+            placeholder="Paste your Google Drive folder ID"
+            value={folderId}
+            onChange={(e) => setFolderId(e.target.value)}
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D4A574] mb-4"
+          />
+          <p className="text-xs text-slate-600">
+            Get your folder ID from the URL: drive.google.com/drive/folders/<strong>FOLDER_ID</strong>
+          </p>
+        </motion.div>
+
+        {/* Action Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
           className="mb-12"
         >
           <Button
             onClick={handleAnalyzeInbox}
-            disabled={loading}
+            disabled={loading || !folderId.trim()}
             className="bg-[#D4A574] text-white hover:bg-[#C19A6B] transition-colors h-auto py-3 px-6 text-base rounded-lg flex items-center gap-2"
           >
             {loading ? (
