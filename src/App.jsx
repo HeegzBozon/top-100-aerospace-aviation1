@@ -27,7 +27,15 @@ const DynamicProfilePage      = lazy(() => import('@/pages/DynamicProfilePage'))
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
-const MainPage = mainPageKey ? Pages[mainPageKey] : () => <div className="fixed inset-0 flex items-center justify-center"><p className="text-red-500 font-bold">Error: No main page configured</p></div>;
+const MainPage = mainPageKey ? Pages[mainPageKey] : () => (
+  <div className="fixed inset-0 flex flex-col items-center justify-center bg-white p-4">
+    <div className="text-center max-w-md">
+      <p className="text-lg font-bold text-red-600 mb-2">Error: No main page configured</p>
+      <p className="text-sm text-slate-500 mb-4">Check that a page is set as the home/main page.</p>
+      <p className="text-xs text-slate-400">Main page key: {mainPageKey || 'undefined'}</p>
+    </div>
+  </div>
+);
 
 const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   <Layout currentPageName={currentPageName}>{children}</Layout>
@@ -35,12 +43,45 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
+  const [loadingTimeout, setLoadingTimeout] = React.useState(false);
+
+  // If loading takes more than 10 seconds, show error message
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isLoadingPublicSettings || isLoadingAuth) {
+        console.warn('[App] Loading timeout - still loading after 10 seconds');
+        setLoadingTimeout(true);
+      }
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, [isLoadingPublicSettings, isLoadingAuth]);
 
   // Show loading spinner while checking app public settings or auth
-  if (isLoadingPublicSettings || isLoadingAuth) {
+  if ((isLoadingPublicSettings || isLoadingAuth) && !loadingTimeout) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      <div className="fixed inset-0 flex items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-xs text-slate-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If loading has timed out, show error
+  if (loadingTimeout) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white p-4">
+        <div className="text-center max-w-md">
+          <p className="text-lg font-bold text-red-600 mb-2">Loading timeout</p>
+          <p className="text-sm text-slate-600 mb-4">The page took too long to load. Check your connection and refresh.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700"
+          >
+            Refresh Page
+          </button>
+        </div>
       </div>
     );
   }
@@ -130,6 +171,13 @@ if (typeof document !== 'undefined') {
   if (viewportMeta) {
     viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
   }
+}
+
+// Global error handler for unhandled rejections
+if (typeof window !== 'undefined') {
+  window.addEventListener('unhandledrejection', (event) => {
+    console.error('[Global Error Handler] Unhandled rejection:', event.reason);
+  });
 }
 
 function App() {
