@@ -25,6 +25,7 @@ const TeamManager             = lazy(() => import('@/pages/TeamManager'));
 const FeatureToTeamMapper     = lazy(() => import('@/pages/FeatureToTeamMapper'));
 const DynamicProfilePage      = lazy(() => import('@/pages/DynamicProfilePage'));
 const AuthorityStackPortal    = lazy(() => import('@/pages/AuthorityStackPortal'));
+const Solutions               = lazy(() => import('@/pages/Solutions'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -99,6 +100,11 @@ const AuthenticatedApp = () => {
       <Route path="/portal" element={
         <LayoutWrapper currentPageName="AuthorityStackPortal">
           <AuthorityStackPortal />
+        </LayoutWrapper>
+      } />
+      <Route path="/solutions" element={
+        <LayoutWrapper currentPageName="Solutions">
+          <Solutions />
         </LayoutWrapper>
       } />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
