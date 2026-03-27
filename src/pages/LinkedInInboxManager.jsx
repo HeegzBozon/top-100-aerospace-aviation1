@@ -39,7 +39,12 @@ export default function LinkedInInboxManager() {
       setResponses(result.responses || []);
       if (result.docUrl) setDocUrl(result.docUrl);
     } catch (err) {
-      setError(err.message);
+      const msg = err.message || '';
+      if (msg.includes('permission') || msg.includes('Permission')) {
+        setError('Permission denied accessing Google Drive. Try uploading the CSV directly instead.');
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
