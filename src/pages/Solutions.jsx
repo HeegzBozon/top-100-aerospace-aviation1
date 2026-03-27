@@ -213,50 +213,51 @@ export default function Solutions() {
           </div>
           
           {/* Content Layer */}
-          <div className="relative z-10">
-          <div className="text-center">
-          <motion.div
-            className="inline-block mb-6"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="inline-block px-4 py-2 rounded-full bg-[#D4A574]/10 border border-[#D4A574]/30 backdrop-blur-sm">
-              <span className="text-[#D4A574] text-sm font-bold uppercase tracking-widest">Elite Solutions for Aerospace</span>
-            </div>
-          </motion.div>
-          
-          <motion.h1 
-            className="text-6xl sm:text-7xl font-bold mb-6 font-serif text-[#D4A574] leading-tight"
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Aerospace & Aviation Solutions
-          </motion.h1>
-          
-          <motion.p 
-            className="text-xl text-slate-200 max-w-3xl mx-auto mb-8 leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            Your organization operates at scale—managing billions in programs, leading teams across continents, competing for talent and investor confidence. Your digital presence should reflect that authority. TOP 100 OS builds the institutional infrastructure that aerospace and defense leaders need to win.
-          </motion.p>
-          
-          <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-          >
-            <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-base px-8 py-3 h-auto font-semibold">
-              Launch Your Program
-            </Button>
-            <Button variant="outline" className="border-[#D4A574] text-[#D4A574] hover:bg-[#D4A574]/10 text-base px-8 py-3 h-auto font-semibold">
-              Executive Brief
-            </Button>
-          </motion.div>
+          <div className="relative z-10 text-center">
+            <motion.div
+              className="inline-block mb-6"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="inline-block px-4 py-2 rounded-full bg-[#D4A574]/10 border border-[#D4A574]/30 backdrop-blur-sm">
+                <span className="text-[#D4A574] text-sm font-bold uppercase tracking-widest">Elite Solutions for Aerospace</span>
+              </div>
+            </motion.div>
+            
+            <motion.h1 
+              className="text-6xl sm:text-7xl font-bold mb-6 font-serif text-[#D4A574] leading-tight"
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              Aerospace & Aviation Solutions
+            </motion.h1>
+            
+            <motion.p 
+              className="text-xl text-slate-200 max-w-3xl mx-auto mb-8 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              Your organization operates at scale—managing billions in programs, leading teams across continents, competing for talent and investor confidence. Your digital presence should reflect that authority. TOP 100 OS builds the institutional infrastructure that aerospace and defense leaders need to win.
+            </motion.p>
+            
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-base px-8 py-3 h-auto font-semibold">
+                Launch Your Program
+              </Button>
+              <Button variant="outline" className="border-[#D4A574] text-[#D4A574] hover:bg-[#D4A574]/10 text-base px-8 py-3 h-auto font-semibold">
+                Executive Brief
+              </Button>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Intro Section */}
