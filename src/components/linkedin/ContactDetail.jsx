@@ -119,13 +119,36 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
     onUpdate(evaluatedContact);
   };
 
+  const handleQuickEvaluate = async () => {
+    setLoading(true);
+    try {
+      const result = await base44.functions.invoke('evaluateLinkedInMessage', {
+        contactId: currentContact.id,
+        headline: currentContact.headline || '',
+        theirMessage: currentContact.last_received_message || 'No message provided',
+        yourMessage: currentContact.generated_response || currentContact.last_sent_message || 'No response yet',
+        company: currentContact.current_company || '',
+        position: currentContact.current_position || '',
+      });
+
+      const updatedContact = result.data?.contact || result.contact;
+      if (updatedContact) {
+        handleEvaluated(updatedContact);
+      }
+    } catch (err) {
+      console.error('Evaluation error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      {/* Contact Header */}
+      {/* Contact Header with Integrated Evaluation */}
       <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
         <div className="flex items-start gap-4 mb-4">
           {currentContact.avatar_url && (
@@ -136,8 +159,22 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
             />
           )}
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-[#1e3a5a] mb-1">{currentContact.full_name}</h2>
-            <p className="text-sm text-slate-600 mb-3">{currentContact.headline}</p>
+            <div className="flex items-start justify-between gap-4 mb-2">
+              <div>
+                <h2 className="text-2xl font-bold text-[#1e3a5a]">{currentContact.full_name}</h2>
+                <p className="text-sm text-slate-600">{currentContact.headline}</p>
+              </div>
+              {/* Tier Badge in Header */}
+              {currentContact.tier_classification && (
+                <div className="flex-shrink-0 text-right">
+                  <div className="inline-flex flex-col items-center px-3 py-2 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
+                    <span className="text-xs font-semibold text-purple-600 uppercase tracking-wide">{currentContact.tier_classification}</span>
+                    <span className="text-lg font-bold text-purple-700">{currentContact.tier_score || 0}/20</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
             {currentContact.current_company && (
               <p className="text-sm text-slate-700 mb-2">
                 <span className="font-semibold">Current:</span> {currentContact.current_position} at {currentContact.current_company}
@@ -154,7 +191,7 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
               </p>
             )}
             <a
-              href={contact.linkedin_profile_url}
+              href={currentContact.linkedin_profile_url}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-[#D4A574] hover:text-[#C19A6B] text-sm font-semibold"
@@ -164,13 +201,15 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
           </div>
         </div>
 
-        {/* Status Badge */}
-        {currentContact.response_status && (
-          <div className="pt-4 border-t border-slate-200 mt-4 flex items-center gap-2">
-            <div className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-xs font-semibold text-blue-700">
-              <CheckCircle2 className="w-3 h-3" />
-              Status: {currentContact.response_status}
-            </div>
+        {/* Status & Action Bar */}
+        <div className="pt-4 border-t border-slate-200 mt-4 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            {currentContact.response_status && (
+              <div className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-xs font-semibold text-blue-700">
+                <CheckCircle2 className="w-3 h-3" />
+                {currentContact.response_status}
+              </div>
+            )}
             {linkedEntity && (
               <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg text-xs font-semibold text-green-700">
                 <CheckCircle2 className="w-3 h-3" />
@@ -178,7 +217,26 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
               </div>
             )}
           </div>
-        )}
+
+          {/* Quick Evaluate Button if not evaluated */}
+          {currentContact.triage_status !== 'evaluated' && (
+            <Button
+              onClick={handleQuickEvaluate}
+              disabled={loading}
+              size="sm"
+              className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-xs font-semibold"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin mr-1.5 w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
+                  Evaluating...
+                </>
+              ) : (
+                'Evaluate'
+              )}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Conversation Messages */}
