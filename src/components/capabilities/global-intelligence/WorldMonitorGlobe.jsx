@@ -16,6 +16,7 @@ import {
   useWingbitsFlightDetail,
   useWingbitsFlightPath,
 } from '@/lib/intelligence/hooks';
+import { cellToLatLng } from 'h3-js';
 import { THEATER_DEFS } from '@/lib/intelligence/constants';
 
 function theaterPolygon({ id, color, bounds }) {
@@ -271,7 +272,6 @@ export function WorldMonitorGlobe() {
 
   // ─── Layer: GPS jamming rings ──────────────────────────────────────────────
   useEffect(() => {
-    (async () => {
     const g = globeRef.current;
     if (!g || !loaded) return;
 
@@ -284,7 +284,6 @@ export function WorldMonitorGlobe() {
 
     // ─── Wingbits real H3 sensor data ───
     const wbHexes = wbGpsData?.hexes || [];
-    const { cellToLatLng } = wbHexes.length > 0 ? await import('h3-js') : {};
     for (const hex of wbHexes) {
       if ((hex.sampleCount || 0) < 3) continue;
       const npAvg = hex.npAvg ?? 8;
@@ -351,7 +350,6 @@ export function WorldMonitorGlobe() {
       .ringPropagationSpeed('propagationSpeed')
       .ringRepeatPeriod('repeatPeriod')
       .ringColor('color');
-    })();
   }, [wbGpsData, gpsData, wbFlightsRaw, loaded, layers.gps]);
 
   // ─── Layer: selected flight path ──────────────────────────────────────────

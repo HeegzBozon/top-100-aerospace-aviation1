@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Daily from '@daily-co/daily-js';
 import { colonyRoom } from '@/functions/colonyRoom';
 import ColonyLobby from '@/components/colony/ColonyLobby';
 import ColonyHUD from '@/components/colony/ColonyHUD';
@@ -83,17 +84,7 @@ export default function Colony() {
     const res = await colonyRoom({ action: 'get_or_create_room', roomName });
     const { room, token } = res.data;
 
-    // Load Daily.js from CDN at runtime to avoid build-time resolution
-    if (!window.Daily) {
-      await new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/@daily-co/daily-js';
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
-      });
-    }
-    const call = window.Daily.createCallObject({
+    const call = Daily.createCallObject({
       audioSource: true,
       videoSource: true,
     });
