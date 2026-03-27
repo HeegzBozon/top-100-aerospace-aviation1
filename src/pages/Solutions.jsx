@@ -173,24 +173,24 @@ const SOLUTIONS = [
 
 const DELIVERY_PHASES = [
   {
-    phase: 'Foundation',
-    action: 'Architecture & MVP Profiles',
-    outcome: 'Rapid Deployment of Core Assets',
+    phase: 'Continuous Exploration',
+    action: 'Discovery & Research',
+    outcome: 'Deep Market & Competitive Intelligence',
   },
   {
-    phase: 'Integration',
-    action: 'Recognition Engine & Workflows',
-    outcome: 'Automated Authority Generation',
+    phase: 'Continuous Integration',
+    action: 'Build & Validate',
+    outcome: 'Unified Authority Architecture',
   },
   {
-    phase: 'Expansion',
-    action: 'Community Loops & Social Graph',
-    outcome: 'Compounding Ecosystem Growth',
+    phase: 'Continuous Deployment',
+    action: 'Launch & Scale',
+    outcome: 'Live Institutional Presence',
   },
   {
-    phase: 'Archive',
-    action: 'Institutional Continuity',
-    outcome: 'Permanent Industry Legacy',
+    phase: 'Release on Demand',
+    action: 'Optimize & Evolve',
+    outcome: 'Adaptive Ecosystem Leadership',
   },
 ];
 
@@ -198,24 +198,62 @@ export default function Solutions() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-[#1e3a5a] to-[#0f2438] text-white py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
+      <div className="relative min-h-[600px] bg-gradient-to-br from-[#1e3a5a] via-[#162842] to-[#0f2438] text-white overflow-hidden px-6 py-24">
+        {/* Animated background accent */}
+        <motion.div 
+          className="absolute -top-40 -right-40 w-80 h-80 bg-[#D4A574] rounded-full opacity-5 blur-3xl"
+          animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
+          transition={{ duration: 20, repeat: Infinity }}
+        />
+        <motion.div 
+          className="absolute -bottom-32 -left-32 w-96 h-96 bg-[#D4A574] rounded-full opacity-3 blur-3xl"
+          animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }}
+          transition={{ duration: 25, repeat: Infinity }}
+        />
+        
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          <motion.div
+            className="inline-block mb-6"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="inline-block px-4 py-2 rounded-full bg-[#D4A574]/10 border border-[#D4A574]/30 backdrop-blur-sm">
+              <span className="text-[#D4A574] text-sm font-bold uppercase tracking-widest">Elite Solutions for Aerospace</span>
+            </div>
+          </motion.div>
+          
           <motion.h1 
-            className="text-5xl sm:text-6xl font-bold mb-4 font-serif text-[#D4A574] leading-tight"
-            initial={{ opacity: 0, y: -20 }}
+            className="text-6xl sm:text-7xl font-bold mb-6 font-serif text-[#D4A574] leading-tight"
+            initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Top 100 Aerospace & Aviation Solutions
+            Aerospace & Aviation Solutions
           </motion.h1>
+          
           <motion.p 
-            className="text-slate-300 text-lg max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: -10 }}
+            className="text-xl text-slate-200 max-w-3xl mx-auto mb-8 leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
           >
-            TOP 100 OS functions as the aerospace industry's Systems Architect and Narrative Engine, deploying elite creative solutions to bridge technical complexity and market-dominating authority.
+            The aerospace industry demands precision. We deliver it. TOP 100 OS bridges the gap between technical complexity and institutional authority—building the digital infrastructure that aerospace deserves.
           </motion.p>
+          
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-base px-8 py-3 h-auto font-semibold">
+              Explore Solutions
+            </Button>
+            <Button variant="outline" className="border-[#D4A574] text-[#D4A574] hover:bg-[#D4A574]/10 text-base px-8 py-3 h-auto font-semibold">
+              Schedule a Consultation
+            </Button>
+          </motion.div>
         </div>
       </div>
 
@@ -286,7 +324,7 @@ export default function Solutions() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          TOP 100 Delivery Framework
+          Top 100 Aerospace & Aviation Solutions Framework
         </motion.h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -314,21 +352,21 @@ export default function Solutions() {
       <div className="bg-gradient-to-r from-[#1e3a5a] to-[#0f2438] text-white py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.h2 
-            className="text-3xl sm:text-4xl font-bold mb-6 font-serif"
+            className="text-3xl sm:text-4xl font-bold mb-6 font-serif text-[#D4A574]"
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            Build for Scale. Move with Rigor.
+            Authority Built for Aerospace.
           </motion.h2>
           <motion.p 
-            className="text-slate-300 text-lg max-w-2xl mx-auto mb-8"
+            className="text-slate-200 text-lg max-w-2xl mx-auto mb-8 leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            Our creative agency solutions are the transformation systems that turn a simple list into a full institutional ecosystem. We are building the record that aerospace never had.
+            Every solution we build is engineered for institutional impact. We transform technical complexity into market dominance through strategic architecture, compelling narrative, and relentless execution.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center"
