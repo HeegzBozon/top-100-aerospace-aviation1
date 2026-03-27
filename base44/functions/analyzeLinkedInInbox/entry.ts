@@ -9,54 +9,21 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { folderId, csvContent } = await req.json();
+    const { csvContent } = await req.json();
     
-    let csvText;
-    let accessToken;
+    if (!csvContent) {
+      return Response.json({ error: 'csvContent is required' }, { status: 400 });
+    }
 
-    // Get Google access token for creating docs (needed regardless of input mode)
+    const csvText = csvContent;
+
+    let accessToken;
     try {
       const conn = await base44.asServiceRole.connectors.getConnection('googledrive');
       accessToken = conn.accessToken;
     } catch (e) {
       console.error('Could not get Google Drive access token:', e.message);
       accessToken = null;
-    }
-    
-    if (csvContent) {
-      // Direct CSV upload
-      csvText = csvContent;
-    } else if (folderId) {
-      // Google Drive folder
-      if (!accessToken) {
-        return Response.json({ error: 'Google Drive access not available' }, { status: 401 });
-      }
-
-      const listResponse = await fetch(
-        `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents&fields=files(id,name,mimeType)&pageSize=50`,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        }
-      );
-
-      const listData = await listResponse.json();
-      const csvFiles = listData.files?.filter(f => f.mimeType === 'text/csv' || f.name.endsWith('.csv')) || [];
-      
-      if (csvFiles.length === 0) {
-        return Response.json({ messages: [], responses: [], docUrl: null });
-      }
-
-      const csvFile = csvFiles[0];
-      const csvResponse = await fetch(
-        `https://www.googleapis.com/drive/v3/files/${csvFile.id}?alt=media`,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        }
-      );
-
-      csvText = await csvResponse.text();
-    } else {
-      return Response.json({ error: 'Either folderId or csvContent is required' }, { status: 400 });
     }
     const rows = parseCSV(csvText).slice(1); // Skip header
     console.log(`Parsed ${rows.length} rows from CSV`);
