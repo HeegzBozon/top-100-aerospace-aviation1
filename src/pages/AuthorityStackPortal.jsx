@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import Phase02DataRefinery from '@/components/authority-portal/Phase02DataRefinery';
+import Phase03MissionControl from '@/components/authority-portal/Phase03MissionControl';
 
 export default function AuthorityStackPortal() {
   const [phase, setPhase] = useState('proposal'); // 'proposal', 'refinery', 'control'
@@ -89,6 +90,16 @@ export default function AuthorityStackPortal() {
           <Phase02DataRefinery onNext={() => setPhase('control')} />
           <div className="max-w-4xl mx-auto px-6 pb-12">
             <Button onClick={() => setPhase('proposal')} variant="outline">← Back to Phase 01</Button>
+          </div>
+        </>
+      )}
+
+      {/* PHASE 03: MISSION CONTROL */}
+      {phase === 'control' && (
+        <>
+          <Phase03MissionControl />
+          <div className="max-w-5xl mx-auto px-6 pb-12">
+            <Button onClick={() => setPhase('refinery')} variant="outline">← Back to Phase 02</Button>
           </div>
         </>
       )}
