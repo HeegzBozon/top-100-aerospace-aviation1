@@ -38,8 +38,9 @@ export default function TriageEvaluation({ contact, onEvaluated }) {
         position: contact.current_position
       });
 
-      if (result.contact) {
-        onEvaluated(result.contact);
+      const contact_data = result.data?.contact || result.contact;
+      if (contact_data) {
+        onEvaluated(contact_data);
       }
     } catch (err) {
       console.error('Evaluation error:', err);
@@ -59,8 +60,9 @@ export default function TriageEvaluation({ contact, onEvaluated }) {
         position: contact.current_position
       });
 
-      if (result.contact) {
-        onEvaluated(result.contact);
+      const contact_data = result.data?.contact || result.contact;
+      if (contact_data) {
+        onEvaluated(contact_data);
       }
     } catch (err) {
       console.error('Re-evaluation error:', err);
