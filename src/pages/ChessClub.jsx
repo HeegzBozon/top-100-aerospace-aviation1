@@ -3,7 +3,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { chessManageChallenge } from '@/functions/chessManageChallenge';
 import { createPageUrl } from '@/utils';
-import { Chess } from 'chess.js';
 import { Swords } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChallengeModal from '@/components/chess/ChallengeModal';
@@ -219,8 +218,8 @@ export default function ChessClub() {
 
   const myTurnGames = useMemo(() => activeGames.filter(g => {
     try {
-      const chess = new Chess(g.current_fen);
-      return chess.turn() === (g.player_white_email === user?.email ? 'w' : 'b');
+      const fenTurn = g.current_fen?.split(' ')[1];
+      return fenTurn === (g.player_white_email === user?.email ? 'w' : 'b');
     } catch { return false; }
   }), [activeGames, user]);
 
@@ -373,7 +372,7 @@ export default function ChessClub() {
                       key={g.id}
                       href={createPageUrl(`ChessGame?id=${g.id}`)}
                       className={`flex items-center justify-between px-5 py-4 border-b border-black/[0.06] dark:border-white/[0.08] last:border-0 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors ${
-                        (() => { try { const c = new Chess(g.current_fen); return c.turn() === (g.player_white_email === user.email ? 'w' : 'b'); } catch { return false; } })()
+                        g.current_fen?.split(' ')[1] === (g.player_white_email === user.email ? 'w' : 'b')
                           ? 'border-l-2 border-l-[var(--accent,#c9a84c)] pl-4' : ''
                       }`}
                     >
@@ -388,10 +387,10 @@ export default function ChessClub() {
                         </p>
                       </div>
                       <span className={`text-[10px] font-black tracking-[0.1em] uppercase ${
-                        (() => { try { const c = new Chess(g.current_fen); return c.turn() === (g.player_white_email === user.email ? 'w' : 'b'); } catch { return false; } })()
+                        g.current_fen?.split(' ')[1] === (g.player_white_email === user.email ? 'w' : 'b')
                           ? 'text-[var(--accent,#c9a84c)]' : 'text-black/40 dark:text-white/40'
                       }`}>
-                        {(() => { try { const c = new Chess(g.current_fen); return c.turn() === (g.player_white_email === user.email ? 'w' : 'b') ? 'Your turn' : 'Waiting'; } catch { return '—'; } })()}
+                        {g.current_fen?.split(' ')[1] === (g.player_white_email === user.email ? 'w' : 'b') ? 'Your turn' : 'Waiting'}
                       </span>
                     </a>
                   ))}

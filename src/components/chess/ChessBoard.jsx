@@ -1,215 +1,123 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { Chessboard } from 'react-chessboard';
 
-// Lazy-load chess.js to avoid build-time resolution failure
+// Module-level cache so chess.js is only loaded once
 let ChessClass = null;
-async function getChess() {
-  if (!ChessClass) {
-    const mod = await import('chess.js');
+function loadChess() {
+  if (ChessClass) return Promise.resolve(ChessClass);
+  return import('chess.js').then((mod) => {
     ChessClass = mod.Chess;
-  }
-  return ChessClass;
+    return ChessClass;
+  });
 }
 
-// Synchronous fallback shim used before chess.js loads
-function makeChessShim(fen) {
+const LICHESS_PIECE_URL = 'https://lichess1.org/assets/piece';
+
+const PIECE_SET_MAP = {
+  cburnett: 'cburnett', merida: 'merida', alpha: 'alpha', pirouetti: 'pirouetti',
+  chessnut: 'chessnut', chess7: 'chess7', reillycraig: 'reillycraig', fantasy: 'fantasy',
+  spatial: 'spatial', california: 'california', pixel: 'pixel', maestro: 'maestro',
+  fresca: 'fresca', cardinal: 'cardinal', gioco: 'gioco', tatiana: 'tatiana',
+  staunty: 'staunty', dubrovny: 'dubrovny', icpieces: 'icpieces', mpchess: 'mpchess',
+};
+
+function getLichessPieceUrl(color, type, pieceSet) {
+  const folder = PIECE_SET_MAP[pieceSet] || 'cburnett';
+  return `${LICHESS_PIECE_URL}/${folder}/${color}${type.toUpperCase()}.svg`;
+}
+
+const BOARD_THEMES = {
+  classic:  { lightSquare: { backgroundColor: '#f0d9b5' }, darkSquare: { backgroundColor: '#b58863' } },
+  deepSpace:{ lightSquare: { backgroundColor: '#1e3a5a' }, darkSquare: { backgroundColor: '#0a1628' } },
+  lichess:  { lightSquare: { backgroundColor: '#f0d9b5' }, darkSquare: { backgroundColor: '#b58863' } },
+  green:    { lightSquare: { backgroundColor: '#ffffdd' }, darkSquare: { backgroundColor: '#86a666' } },
+  blue:     { lightSquare: { backgroundColor: '#dee3e6' }, darkSquare: { backgroundColor: '#8ca2ad' } },
+  top100:   { lightSquare: { backgroundColor: '#e8d4b8' }, darkSquare: { backgroundColor: '#1e3a5a' } },
+};
+
+// Lightweight FEN-based shim until chess.js loads
+function makeShim(fen) {
   return {
     turn: () => fen?.split(' ')[1] || 'w',
     moves: () => [],
     get: () => null,
     inCheck: () => false,
-    board: () => Array(8).fill(Array(8).fill(null)),
-    load: () => {},
+    board: () => [],
   };
 }
-import { Chessboard } from 'react-chessboard';
-
-// Lichess CDN — reliable piece images for all standard sets
-const LICHESS_PIECE_URL = 'https://lichess1.org/assets/piece';
-
-// Maps piece set names to their Lichess CDN folder names
-const PIECE_SET_MAP = {
-  cburnett: 'cburnett',
-  merida: 'merida',
-  alpha: 'alpha',
-  pirouetti: 'pirouetti',
-  chessnut: 'chessnut',
-  chess7: 'chess7',
-  reillycraig: 'reillycraig',
-  fantasy: 'fantasy',
-  spatial: 'spatial',
-  california: 'california',
-  pixel: 'pixel',
-  maestro: 'maestro',
-  fresca: 'fresca',
-  cardinal: 'cardinal',
-  gioco: 'gioco',
-  tatiana: 'tatiana',
-  staunty: 'staunty',
-  dubrovny: 'dubrovny',
-  icpieces: 'icpieces',
-  mpchess: 'mpchess',
-};
-
-const PIECE_FILE_NAMES = {
-  wK: 'wK', wQ: 'wQ', wR: 'wR', wB: 'wB', wN: 'wN', wP: 'wP',
-  bK: 'bK', bQ: 'bQ', bR: 'bR', bB: 'bB', bN: 'bN', bP: 'bP',
-};
-
-function getLichessPieceUrl(color, type, pieceSet) {
-  const folder = PIECE_SET_MAP[pieceSet] || 'cburnett';
-  const colorChar = color === 'w' ? 'w' : 'b';
-  const typeChar = type.toUpperCase();
-  return `${LICHESS_PIECE_URL}/${folder}/${colorChar}${typeChar}.svg`;
-}
-
-const BOARD_THEMES = {
-  classic: {
-    lightSquare: { backgroundColor: '#f0d9b5' },
-    darkSquare:  { backgroundColor: '#b58863' },
-  },
-  deepSpace: {
-    lightSquare: { backgroundColor: '#1e3a5a' },
-    darkSquare:  { backgroundColor: '#0a1628' },
-  },
-  lichess: {
-    lightSquare: { backgroundColor: '#f0d9b5' },
-    darkSquare:  { backgroundColor: '#b58863' },
-  },
-  green: {
-    lightSquare: { backgroundColor: '#ffffdd' },
-    darkSquare:  { backgroundColor: '#86a666' },
-  },
-  blue: {
-    lightSquare: { backgroundColor: '#dee3e6' },
-    darkSquare:  { backgroundColor: '#8ca2ad' },
-  },
-  top100: {
-    lightSquare: { backgroundColor: '#e8d4b8' },
-    darkSquare:  { backgroundColor: '#1e3a5a' },
-  },
-};
 
 export default function ChessBoard({ fen, playerColor = 'white', onMove, disabled = false, pieceSet = 'cburnett', boardTheme = 'classic' }) {
   const [selected, setSelected] = useState(null);
-  const [chessLoaded, setChessLoaded] = useState(false);
-  const chessRef = useRef(makeChessShim(fen));
+  const [, forceUpdate] = useState(0);
+  const chessRef = useRef(null);
 
+  // Load chess.js once, then rebuild whenever fen changes
   useEffect(() => {
-    getChess().then((Chess) => {
+    loadChess().then((Chess) => {
       const c = new Chess();
-      if (fen) { try { c.load(fen); } catch {} }
+      try { if (fen) c.load(fen); } catch {}
       chessRef.current = c;
-      setChessLoaded(true);
+      forceUpdate(n => n + 1);
     });
-  }, [fen]);
+  }, [fen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const chess = chessRef.current;
+  const chess = chessRef.current || makeShim(fen);
+  const isMyTurn = !disabled && chess.turn() === (playerColor === 'white' ? 'w' : 'b');
 
-  const isMyTurn = useMemo(() => {
-    if (disabled) return false;
-    return chess.turn() === (playerColor === 'white' ? 'w' : 'b');
-  }, [chess, playerColor, disabled]);
+  const getLegalMoves = useCallback((square) => {
+    return chess.moves({ square, verbose: true }).map((m) => m.to);
+  }, [chess]);
 
-  const getLegalMoves = useCallback(
-    (square) => {
-      return chess.moves({ square, verbose: true }).map((m) => m.to);
-    },
-    [chess]
-  );
+  const handleSquareClick = useCallback((square) => {
+    if (!isMyTurn) return;
+    const piece = chess.get(square);
 
-  const handleSquareClick = useCallback(
-    (square) => {
-      if (!isMyTurn) return;
+    if (selected === square) { setSelected(null); return; }
 
-      const piece = chess.get(square);
-
-      if (selected === square) {
+    if (selected) {
+      const legal = getLegalMoves(selected);
+      if (legal.includes(square)) {
+        const movingPiece = chess.get(selected);
+        const isPromotion = movingPiece?.type === 'p' && (square[1] === '8' || square[1] === '1');
+        onMove({ from: selected, to: square, promotion: isPromotion ? 'q' : undefined });
         setSelected(null);
         return;
       }
+    }
 
-      if (selected) {
-        const legalMoves = getLegalMoves(selected);
-        if (legalMoves.includes(square)) {
-          const movingPiece = chess.get(selected);
-          const isPromotion =
-            movingPiece?.type === 'p' &&
-            (square[1] === '8' || square[1] === '1');
+    if (piece && piece.color === chess.turn()) {
+      setSelected(square);
+    } else {
+      setSelected(null);
+    }
+  }, [chess, selected, isMyTurn, getLegalMoves, onMove]);
 
-          onMove({
-            from: selected,
-            to: square,
-            promotion: isPromotion ? 'q' : undefined,
-          });
-
-          setSelected(null);
-          return;
-        }
-      }
-
-      if (piece && piece.color === chess.turn()) {
-        setSelected(square);
-      } else {
-        setSelected(null);
-      }
-    },
-    [chess, selected, isMyTurn, getLegalMoves, onMove]
-  );
-
-  const customSquareStyles = useMemo(() => {
+  const customSquareStyles = (() => {
     const styles = {};
-
     if (selected) {
-      styles[selected] = {
-        backgroundColor: 'rgba(212, 165, 116, 0.5)',
-      };
-
-      const legalMoves = getLegalMoves(selected);
-      legalMoves.forEach((square) => {
-        styles[square] = {
-          backgroundColor: 'rgba(212, 165, 116, 0.3)',
-          borderRadius: '50%',
-        };
+      styles[selected] = { backgroundColor: 'rgba(212, 165, 116, 0.5)' };
+      getLegalMoves(selected).forEach(sq => {
+        styles[sq] = { backgroundColor: 'rgba(212, 165, 116, 0.3)', borderRadius: '50%' };
       });
     }
-
     if (chess.inCheck()) {
-      const kingSquare = chess.board().flat().find((piece) => piece?.type === 'k' && piece?.color === chess.turn());
-      if (kingSquare) {
-        const square = Object.entries(chess.board()).find(
-          ([, row]) => row.includes(kingSquare)
-        );
-        if (square) {
-          styles[square] = {
-            backgroundColor: 'rgba(220, 38, 38, 0.6)',
-          };
-        }
-      }
+      const flat = chess.board().flat();
+      const king = flat.find(p => p?.type === 'k' && p?.color === chess.turn());
+      if (king?.square) styles[king.square] = { backgroundColor: 'rgba(220, 38, 38, 0.6)' };
     }
-
     return styles;
-  }, [selected, chess, getLegalMoves]);
+  })();
 
-  const customPieces = useMemo(() => {
-    const pieces = {};
-    ['K', 'Q', 'R', 'B', 'N', 'P'].forEach((type) => {
-      ['w', 'b'].forEach((color) => {
-        const key = `${color}${type}`;
-        const src = getLichessPieceUrl(color, type, pieceSet);
-        pieces[key] = ({ squareWidth }) => (
-          <img
-            src={src}
-            alt={key}
-            width={squareWidth}
-            height={squareWidth}
-            draggable={false}
-            className="select-none pointer-events-none"
-          />
-        );
-      });
+  const customPieces = {};
+  ['K','Q','R','B','N','P'].forEach(type => {
+    ['w','b'].forEach(color => {
+      const key = `${color}${type}`;
+      const src = getLichessPieceUrl(color, type, pieceSet);
+      customPieces[key] = ({ squareWidth }) => (
+        <img src={src} alt={key} width={squareWidth} height={squareWidth} draggable={false} className="select-none pointer-events-none" />
+      );
     });
-    return pieces;
-  }, [pieceSet]);
+  });
 
   const theme = BOARD_THEMES[boardTheme] || BOARD_THEMES.classic;
 
