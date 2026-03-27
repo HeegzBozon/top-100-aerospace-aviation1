@@ -16,15 +16,6 @@ Deno.serve(async (req) => {
     }
 
     const csvText = csvContent;
-
-    let accessToken;
-    try {
-      const conn = await base44.asServiceRole.connectors.getConnection('googledrive');
-      accessToken = conn.accessToken;
-    } catch (e) {
-      console.error('Could not get Google Drive access token:', e.message);
-      accessToken = null;
-    }
     const rows = parseCSV(csvText);
     const headers = rows[0] || [];
     const dataRows = rows.slice(1);
@@ -85,18 +76,9 @@ Generate only the response text, no preamble.`
     }
     console.log(`Generated ${responses.length} responses`);
 
-    // Create Google Doc with responses
-    let docUrl = null;
-    if (responses.length > 0 && accessToken) {
-      const docContent = buildDocContent(responses, user.full_name);
-      const docResult = await createGoogleDoc(accessToken, docContent);
-      docUrl = docResult.webViewLink;
-    }
-
     return Response.json({
       messages: messages,
-      responses: responses,
-      docUrl: docUrl
+      responses: responses
     });
   } catch (error) {
     console.error('Error analyzing inbox:', error);
@@ -138,58 +120,4 @@ function parseCSV(csvText) {
   }
 
   return rows;
-}
-
-function buildDocContent(responses, userName) {
-  let content = `LinkedIn Inbox - Generated Responses\nPrepared for: ${userName}\nDate: ${new Date().toLocaleDateString()}\n\n`;
-
-  responses.forEach((resp, idx) => {
-    content += `${idx + 1}. ${resp.senderName}\n`;
-    content += `   Title: ${resp.headline}\n\n`;
-    content += `   Their Message:\n   "${resp.originalMessage}"\n\n`;
-    content += `   Suggested Response:\n   "${resp.generatedResponse}"\n\n`;
-    content += `---\n\n`;
-  });
-
-  return content;
-}
-
-async function createGoogleDoc(accessToken, content) {
-  const createResponse = await fetch('https://docs.googleapis.com/v1/documents', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      title: `LinkedIn Inbox - ${new Date().toLocaleDateString()}`
-    })
-  });
-
-  const docData = await createResponse.json();
-  const docId = docData.documentId;
-
-  // Add content to document
-  await fetch(`https://docs.googleapis.com/v1/documents/${docId}:batchUpdate`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      requests: [
-        {
-          insertText: {
-            text: content,
-            location: { index: 1 }
-          }
-        }
-      ]
-    })
-  });
-
-  return {
-    documentId: docId,
-    webViewLink: `https://docs.google.com/document/d/${docId}/edit`
-  };
 }

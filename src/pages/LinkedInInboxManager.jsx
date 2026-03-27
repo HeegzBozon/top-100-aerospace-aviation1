@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Loader2, RefreshCw, FileText, Check } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function LinkedInInboxManager() {
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [responses, setResponses] = useState([]);
-  const [docUrl, setDocUrl] = useState(null);
+
   const [error, setError] = useState(null);
   const [csvFile, setCsvFile] = useState(null);
 
@@ -27,7 +27,6 @@ export default function LinkedInInboxManager() {
       console.log('Function returned:', result);
       setMessages(result.messages || []);
       setResponses(result.responses || []);
-      if (result.docUrl) setDocUrl(result.docUrl);
     } catch (err) {
       console.error('Function error:', err);
       setError(err.message || 'An error occurred. Check the console for details.');
@@ -118,25 +117,6 @@ export default function LinkedInInboxManager() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-8"
           >
-            {/* Doc Link */}
-            {docUrl && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6 flex items-center gap-4">
-                <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <div>
-                  <p className="font-semibold text-green-900 mb-2">Document Created!</p>
-                  <a
-                    href={docUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-green-700 hover:underline flex items-center gap-2"
-                  >
-                    <FileText className="w-4 h-4" />
-                    View Google Doc with all responses
-                  </a>
-                </div>
-              </div>
-            )}
-
             {/* Messages & Responses */}
             <div className="grid gap-6">
               {responses.map((response, idx) => (
