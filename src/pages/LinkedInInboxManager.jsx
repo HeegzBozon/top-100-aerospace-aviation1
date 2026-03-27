@@ -22,11 +22,14 @@ export default function LinkedInInboxManager() {
     setError(null);
     try {
       const text = await csvFile.text();
+      console.log('Invoking analyzeLinkedInInbox with CSV content...');
       const result = await base44.functions.invoke('analyzeLinkedInInbox', { csvContent: text });
+      console.log('Function returned:', result);
       setMessages(result.messages || []);
       setResponses(result.responses || []);
       if (result.docUrl) setDocUrl(result.docUrl);
     } catch (err) {
+      console.error('Function error:', err);
       setError(err.message || 'An error occurred. Check the console for details.');
     } finally {
       setLoading(false);
