@@ -12,13 +12,25 @@ Deno.serve(async (req) => {
     const { folderId, csvContent } = await req.json();
     
     let csvText;
+    let accessToken;
+
+    // Get Google access token for creating docs (needed regardless of input mode)
+    try {
+      const conn = await base44.asServiceRole.connectors.getConnection('googledrive');
+      accessToken = conn.accessToken;
+    } catch (e) {
+      console.error('Could not get Google Drive access token:', e.message);
+      accessToken = null;
+    }
     
     if (csvContent) {
       // Direct CSV upload
       csvText = csvContent;
     } else if (folderId) {
       // Google Drive folder
-      const { accessToken } = await base44.asServiceRole.connectors.getConnection('googledrive');
+      if (!accessToken) {
+        return Response.json({ error: 'Google Drive access not available' }, { status: 401 });
+      }
 
       const listResponse = await fetch(
         `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents&fields=files(id,name,mimeType)&pageSize=50`,
@@ -99,7 +111,7 @@ Generate only the response text, no preamble.`
 
     // Create Google Doc with responses
     let docUrl = null;
-    if (responses.length > 0) {
+    if (responses.length > 0 && accessToken) {
       const docContent = buildDocContent(responses, user.full_name);
       const docResult = await createGoogleDoc(accessToken, docContent);
       docUrl = docResult.webViewLink;
