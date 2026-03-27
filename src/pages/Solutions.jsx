@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import ConstellationBackground from '@/components/comms/ConstellationBackground';
 import { Globe, Smartphone, Share2, Zap, Volume2, Cloud, Brain, Rocket, TestTube, Briefcase, TrendingUp, Truck, Palette, Calendar } from 'lucide-react';
 
 const SOLUTIONS = [
@@ -199,6 +200,9 @@ export default function Solutions() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="relative min-h-[600px] bg-gradient-to-br from-[#1e3a5a] via-[#162842] to-[#0f2438] text-white overflow-hidden px-6 py-24">
+        {/* Constellation Background */}
+        <ConstellationBackground />
+        
         {/* Animated background accent */}
         <motion.div 
           className="absolute -top-40 -right-40 w-80 h-80 bg-[#D4A574] rounded-full opacity-5 blur-3xl"
@@ -238,7 +242,7 @@ export default function Solutions() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            The aerospace industry demands precision. We deliver it. TOP 100 OS bridges the gap between technical complexity and institutional authority—building the digital infrastructure that aerospace deserves.
+            Aerospace leaders are leaving digital authority on the table. Every competitor who moves faster gains institutional leverage. TOP 100 OS builds the canonical digital infrastructure—the institutional record your market expects.
           </motion.p>
           
           <motion.div
@@ -265,7 +269,7 @@ export default function Solutions() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          The aerospace industry is built on precision engineering and high-stakes innovation, yet its digital presence often lags behind its physical achievements. Every digital asset we build is governed by the <span className="font-semibold text-[#1e3a5a]">ASPICE V-Model</span>, ensuring rigorous alignment between your brand's strategic goals and final deployment.
+          The aerospace industry is built on precision engineering and high-stakes innovation. Your digital presence should match that rigor. Every solution we build—from talent graphs to institutional archives—is architected with aerospace-grade discipline, governed by the <span className="font-semibold text-[#1e3a5a]">ASPICE V-Model</span>, ensuring alignment between your strategic vision and flawless execution.
         </motion.p>
       </div>
 
@@ -366,7 +370,7 @@ export default function Solutions() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            Every solution we build is engineered for institutional impact. We transform technical complexity into market dominance through strategic architecture, compelling narrative, and relentless execution.
+            Leaders in aerospace, defense, and space are already building with us. Don't lose the institutional authority race. Every month of delay is a competitor gaining advantage. We transform technical complexity into market dominance through strategic architecture, compelling narrative, and relentless execution.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center"
