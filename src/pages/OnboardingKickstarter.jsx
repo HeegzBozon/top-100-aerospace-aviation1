@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Check, Upload, ExternalLink, Globe, Loader2, Settings, X, Plus, Trash2, Save, Mail } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { sendOnboardingEmail } from '@/functions/sendOnboardingEmail';
+import { saveSignatureToProfile } from '@/functions/saveSignatureToProfile';
+import SignaturePad from '@/components/onboarding/SignaturePad';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 function fmtDate(dateStr) {
@@ -65,10 +67,12 @@ export default function OnboardingKickstarter() {
 
   // client state
   const [selectedPlanIdx, setSelectedPlanIdx] = useState(0);
-  const [checklist, setChecklist] = useState({ deposit: false, questionnaire: false, assets: false, inspiration: false });
+  const [checklist, setChecklist] = useState({ deposit: false, questionnaire: false, assets: false, inspiration: false, signature: false });
   const [inspirationLinks, setInspirationLinks] = useState(['', '', '']);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [signature, setSignature] = useState(null);
+  const [savingSignature, setSavingSignature] = useState(false);
 
   // send email
   const [templates, setTemplates] = useState([]);
@@ -208,6 +212,18 @@ export default function OnboardingKickstarter() {
     } finally { setUploading(false); }
   };
 
+  const handleSignature = async (signatureData) => {
+    setSignature(signatureData);
+    setSavingSignature(true);
+    try {
+      const activePlan = plans[selectedPlanIdx] || plans[0];
+      await saveSignatureToProfile({ signatureData, planLabel: activePlan.label });
+      toggleCheck('signature');
+    } catch (err) {
+      console.error('Failed to save signature:', err);
+    } finally { setSavingSignature(false); }
+  };
+
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
@@ -218,6 +234,7 @@ export default function OnboardingKickstarter() {
   const plans = display.payment_plans || [];
   const activePlan = plans[selectedPlanIdx] || plans[0];
   const completedCount = Object.values(checklist).filter(Boolean).length;
+  const checklistTotal = Object.keys(checklist).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
@@ -541,8 +558,8 @@ export default function OnboardingKickstarter() {
           {/* Checklist */}
           <section>
             <div className="flex items-center justify-between mb-1">
-              <h2 className="text-3xl font-bold text-[#1e3a5a]" style={{fontFamily: "'Playfair Display', Georgia, serif"}}>Your First 4 Steps</h2>
-              <span className="text-sm font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">{completedCount}/4 complete</span>
+              <h2 className="text-3xl font-bold text-[#1e3a5a]" style={{fontFamily: "'Playfair Display', Georgia, serif"}}>Your First 5 Steps</h2>
+              <span className="text-sm font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">{completedCount}/{checklistTotal} complete</span>
             </div>
             <p className="text-slate-500 text-sm mb-6">Complete these to get your project moving.</p>
             <div className="space-y-4">
@@ -600,6 +617,21 @@ export default function OnboardingKickstarter() {
                     </div>
                   ))}
                 </div>
+              </ChecklistItem>
+
+              <ChecklistItem done={checklist.signature} onToggle={() => {}}
+                title="E-Sign Your Agreement"
+                description={`Sign your ${activePlan.label} payment plan agreement digitally.`}>
+                {!signature ? (
+                  <div className="mt-3">
+                    <SignaturePad onSign={handleSignature} />
+                    {savingSignature && <p className="text-xs text-slate-400 mt-2">Saving signature...</p>}
+                  </div>
+                ) : (
+                  <div className="mt-3 flex items-center gap-2 text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">
+                    <Check className="w-4 h-4" /><span className="font-medium">Signature saved!</span>
+                  </div>
+                )}
               </ChecklistItem>
 
             </div>
