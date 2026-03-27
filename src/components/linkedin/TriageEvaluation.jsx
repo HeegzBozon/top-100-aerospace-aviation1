@@ -33,7 +33,8 @@ export default function TriageEvaluation({ contact, onEvaluated }) {
       const result = await base44.functions.invoke('evaluateLinkedInMessage', {
         contactId: contact.id,
         headline: contact.headline,
-        message: contact.last_received_message || 'No message provided',
+        theirMessage: contact.last_received_message || 'No message from them',
+        yourMessage: contact.generated_response || contact.last_sent_message || 'No response yet',
         company: contact.current_company,
         position: contact.current_position
       });

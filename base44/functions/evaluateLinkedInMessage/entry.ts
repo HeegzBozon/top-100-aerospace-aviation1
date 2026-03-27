@@ -9,14 +9,14 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { contactId, headline, message, company, position } = await req.json();
+    const { contactId, headline, theirMessage, yourMessage, company, position } = await req.json();
 
-    if (!contactId || !message) {
-      return Response.json({ error: 'contactId and message are required' }, { status: 400 });
+    if (!contactId || !theirMessage) {
+      return Response.json({ error: 'contactId and theirMessage are required' }, { status: 400 });
     }
 
-    // Use InvokeLLM to evaluate the message based on TIER-S rubric
-    const evaluationPrompt = `You are an institutional alignment evaluator for TOP 100 Women in Aerospace. Score this LinkedIn message using the TIER-S Rubric on a 0-20 scale across four dimensions.
+    // Use InvokeLLM to evaluate both messages based on TIER-S rubric
+    const evaluationPrompt = `You are an institutional alignment evaluator for TOP 100 Women in Aerospace. Score this professional interaction using the TIER-S Rubric on a 0-20 scale across four dimensions.
 
 **Person Profile:**
 - Headline: ${headline || 'Not provided'}
@@ -24,7 +24,10 @@ Deno.serve(async (req) => {
 - Position: ${position || 'Not provided'}
 
 **Their Message:**
-"${message}"
+"${theirMessage}"
+
+**Your Response:**
+"${yourMessage || 'Not yet responded'}"
 
 **Scoring Rubric:**
 

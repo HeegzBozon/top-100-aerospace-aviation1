@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
       last_received_date: headers.indexOf('last_received_message_send_at_iso'),
       last_sent_message: headers.indexOf('last_sent_message_text'),
       last_sent_date: headers.indexOf('last_sent_message_send_at_iso'),
-      connection_date: headers.indexOf('connected_on_iso'),
+      connection_date: headers.indexOf('connected_at'),
       has_unread: headers.indexOf('has_unread_messages'),
       tags: headers.indexOf('tags'),
       mutual_count: headers.indexOf('mutual_count'),
