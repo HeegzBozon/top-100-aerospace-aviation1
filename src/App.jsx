@@ -26,6 +26,7 @@ const FeatureToTeamMapper     = lazy(() => import('@/pages/FeatureToTeamMapper')
 const DynamicProfilePage      = lazy(() => import('@/pages/DynamicProfilePage'));
 const AuthorityStackPortal    = lazy(() => import('@/pages/AuthorityStackPortal'));
 const Solutions               = lazy(() => import('@/pages/Solutions'));
+const LinkedInInboxManager    = lazy(() => import('@/pages/LinkedInInboxManager'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
