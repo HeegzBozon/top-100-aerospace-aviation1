@@ -403,12 +403,12 @@ export default function OnboardingKickstarter() {
       <div className={`transition-all duration-300 ${isAdmin ? 'sm:mr-[440px]' : ''}`}>
 
         {/* Hero */}
-        <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
+        <div className="bg-gradient-to-r from-[#1e3a5a] to-slate-900 text-white">
           <div className="max-w-3xl mx-auto px-6 py-14 text-center">
-            <div className="inline-block bg-amber-400 text-slate-900 text-xs font-bold uppercase tracking-widest px-4 py-1 rounded-full mb-6">
+            <div className="inline-block bg-[#c9a87c] text-[#1e3a5a] text-xs font-bold uppercase tracking-widest px-4 py-1 rounded-full mb-6">
               Welcome Aboard
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight">{display.headline}</h1>
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight" style={{fontFamily: "'Playfair Display', Georgia, serif"}}>{display.headline}</h1>
             <p className="text-slate-300 text-lg max-w-xl mx-auto mb-8">{display.subheadline}</p>
             <div className="flex flex-wrap justify-center gap-2">
               {(display.scope_items || []).map(item => (
@@ -422,7 +422,7 @@ export default function OnboardingKickstarter() {
 
           {/* Payment Plan Comparison */}
           <section>
-            <h2 className="text-2xl font-bold text-slate-800 mb-1">Your Payment Options</h2>
+            <h2 className="text-3xl font-bold text-[#1e3a5a] mb-1" style={{fontFamily: "'Playfair Display', Georgia, serif"}}>Your Payment Options</h2>
             <p className="text-slate-500 text-sm mb-6">{display.description || 'Compare and choose the option that works best for you.'}</p>
 
             {/* Side-by-side plan cards */}
@@ -443,12 +443,7 @@ export default function OnboardingKickstarter() {
                       </div>
                     )}
                     
-                    {/* Best Value tag */}
-                    {pi === 0 && (
-                      <div className="absolute top-3 left-3">
-                        <span className="inline-block bg-[#c9a87c] text-white text-xs font-bold px-2.5 py-1 rounded-full">Best Value</span>
-                      </div>
-                    )}
+
 
                     {/* Plan header */}
                     <div className={`mb-5 pb-4 border-b transition-colors ${isSelected ? 'border-[#c9a87c]/20' : 'border-slate-100'}`}>
@@ -506,7 +501,7 @@ export default function OnboardingKickstarter() {
                       onClick={() => setSelectedPlanIdx(pi)}
                       className={`w-full py-2.5 rounded-lg text-xs font-semibold transition-all ${
                         selectedPlanIdx === pi
-                          ? 'bg-indigo-600 text-white'
+                          ? 'bg-[#1e3a5a] text-[#c9a87c]'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -546,7 +541,7 @@ export default function OnboardingKickstarter() {
           {/* Checklist */}
           <section>
             <div className="flex items-center justify-between mb-1">
-              <h2 className="text-2xl font-bold text-slate-800">Your First 4 Steps</h2>
+              <h2 className="text-3xl font-bold text-[#1e3a5a]" style={{fontFamily: "'Playfair Display', Georgia, serif"}}>Your First 4 Steps</h2>
               <span className="text-sm font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">{completedCount}/4 complete</span>
             </div>
             <p className="text-slate-500 text-sm mb-6">Complete these to get your project moving.</p>
@@ -611,8 +606,8 @@ export default function OnboardingKickstarter() {
           </section>
 
           {/* Closing */}
-          <section className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-center text-white">
-            <p className="text-xl font-semibold leading-relaxed mb-3">{display.closing_quote}</p>
+          <section className="bg-gradient-to-r from-[#1e3a5a] to-slate-900 rounded-2xl p-8 text-center text-white">
+            <p className="text-xl font-semibold leading-relaxed mb-3" style={{fontFamily: "'Playfair Display', Georgia, serif"}}>{display.closing_quote}</p>
             <p className="text-slate-300 text-sm max-w-md mx-auto">{display.closing_body}</p>
             <p className="mt-6 text-slate-400 text-sm">Questions? Reply to your welcome email.</p>
           </section>
@@ -637,14 +632,14 @@ function AdminField({ label, children }) {
 }
 function ChecklistItem({ done, onToggle, title, description, children }) {
   return (
-    <div className={`bg-white rounded-2xl border p-5 transition-all ${done ? 'border-green-200 bg-green-50/30' : 'border-slate-200'}`}>
+    <div className={`bg-white rounded-2xl border p-5 transition-all ${done ? 'border-[#c9a87c]/40 bg-[#c9a87c]/5' : 'border-slate-200'}`}>
       <div className="flex items-start gap-4">
         <button onClick={onToggle}
-          className={`mt-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${done ? 'bg-green-500 border-green-500' : 'border-slate-300 hover:border-green-400'}`}>
+          className={`mt-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${done ? 'bg-[#c9a87c] border-[#c9a87c]' : 'border-slate-300 hover:border-[#c9a87c]'}`}>
           {done && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
         </button>
         <div className="flex-1">
-          <p className="font-semibold text-slate-800">{title}</p>
+          <p className="font-semibold text-[#1e3a5a]">{title}</p>
           <p className="text-slate-500 text-sm mt-1">{description}</p>
           {children}
         </div>
