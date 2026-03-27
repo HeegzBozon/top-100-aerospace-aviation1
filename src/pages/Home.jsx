@@ -4,7 +4,7 @@ import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import Landing2Hero from '@/components/landing/Landing2Hero';
 import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
 
-import TrendingSection from '@/components/landing/TrendingSection';
+const TrendingSection = lazy(() => import('@/components/landing/TrendingSection'));
 import HeroHeader from '@/components/home/HeroHeader';
 const AerospaceDashboardSection = lazy(() => import('@/components/home/AerospaceDashboardSection'));
 import IndustrySpotlight from '@/components/home/IndustrySpotlight';
