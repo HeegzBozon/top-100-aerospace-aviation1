@@ -48,7 +48,7 @@ export default function Phase03MissionControl() {
       <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-12 px-6">
         <div className="max-w-5xl mx-auto">
           <motion.h1 
-            className="text-4xl font-bold mb-2 font-serif text-[#B76E79]"
+            className="text-4xl font-bold mb-2 font-serif text-[#D4A574]"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -72,7 +72,7 @@ export default function Phase03MissionControl() {
                 transition={{ delay: idx * 0.1 }}
                 className="flex items-center gap-4"
               >
-                <div className="w-12 h-12 rounded-full bg-[#B76E79] text-white font-bold flex items-center justify-center text-lg">
+                <div className="w-12 h-12 rounded-full bg-[#D4A574] text-white font-bold flex items-center justify-center text-lg">
                   {item.phase}
                 </div>
                 <div className="flex-1">
@@ -114,7 +114,7 @@ export default function Phase03MissionControl() {
               onKeyDown={(e) => e.key === 'Enter' && handleAddMessage()}
               className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-gold"
             />
-            <Button onClick={handleAddMessage} className="bg-[#B76E79] text-white hover:bg-[#A67068]">
+            <Button onClick={handleAddMessage} className="bg-[#D4A574] text-white hover:bg-[#C19A6B]">
               <Send className="w-4 h-4" />
             </Button>
           </div>
@@ -128,17 +128,17 @@ export default function Phase03MissionControl() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-[#B76E79]/20 to-slate-50 rounded-xl p-6 border border-[#B76E79]/30"
+              className="bg-gradient-to-br from-[#D4A574]/20 to-slate-50 rounded-xl p-6 border border-[#D4A574]/30"
             >
               <div className="flex items-center gap-3 mb-4">
-                <BookOpen className="w-6 h-6 text-[#B76E79]" />
+                <BookOpen className="w-6 h-6 text-[#D4A574]" />
                 <h3 className="font-semibold text-[#1e3a5a]">Canonical Program Page</h3>
               </div>
               <p className="text-slate-700 text-sm mb-4">
                 Your institutional archive is being built. Track its evolution from blank canvas to full authority platform.
               </p>
               <div className="w-full bg-slate-300 rounded-full h-2">
-                <div className="bg-[#B76E79] h-full rounded-full" style={{ width: '65%' }} />
+                <div className="bg-[#D4A574] h-full rounded-full" style={{ width: '65%' }} />
               </div>
               <p className="text-xs text-slate-500 mt-2">65% Complete</p>
             </motion.div>
@@ -174,7 +174,7 @@ export default function Phase03MissionControl() {
         {/* Final CTA */}
         <section className="text-center py-10">
           <p className="text-slate-600 mb-6">Your mission is now live. Start building.</p>
-          <Button className="bg-[#B76E79] text-white hover:bg-[#A67068] text-lg px-8 py-4 h-auto">
+          <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-lg px-8 py-4 h-auto">
             View Your Canonical Page →
           </Button>
         </section>

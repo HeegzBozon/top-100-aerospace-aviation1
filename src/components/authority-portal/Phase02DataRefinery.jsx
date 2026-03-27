@@ -35,7 +35,7 @@ export default function Phase02DataRefinery({ onNext }) {
       <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-12 px-6">
         <div className="max-w-4xl mx-auto">
           <motion.h1 
-            className="text-4xl font-bold mb-2 font-serif text-[#B76E79]"
+            className="text-4xl font-bold mb-2 font-serif text-[#D4A574]"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -55,7 +55,7 @@ export default function Phase02DataRefinery({ onNext }) {
             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
               deposits.paid
                 ? 'bg-green-100 text-green-700 cursor-default'
-                : 'bg-[#B76E79] text-white hover:bg-[#A67068]'
+                : 'bg-[#D4A574] text-white hover:bg-[#C19A6B]'
             }`}
           >
             {deposits.paid ? <Check className="w-4 h-4" /> : null}
@@ -102,7 +102,7 @@ export default function Phase02DataRefinery({ onNext }) {
               onChange={(e) => setPeerEmail(e.target.value)}
               className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-gold"
             />
-            <Button onClick={handleAddPeer} className="bg-[#B76E79] text-white hover:bg-[#A67068]">
+            <Button onClick={handleAddPeer} className="bg-[#D4A574] text-white hover:bg-[#C19A6B]">
               Add
             </Button>
           </div>
@@ -135,7 +135,7 @@ export default function Phase02DataRefinery({ onNext }) {
           </div>
           <div className="mt-6 w-full bg-slate-200 rounded-full h-3 overflow-hidden">
             <div
-              className="bg-[#B76E79] h-full transition-all"
+              className="bg-[#D4A574] h-full transition-all"
               style={{ width: `${isComplete ? 100 : (assetCount / requiredAssets + (deposits.paid ? 0.33 : 0) + (peers.length > 0 ? 0.33 : 0)) * 33}%` }}
             />
           </div>
@@ -148,7 +148,7 @@ export default function Phase02DataRefinery({ onNext }) {
             disabled={!isComplete}
             className={`text-lg px-8 py-4 h-auto ${
               isComplete
-                ? 'bg-[#B76E79] text-white hover:bg-[#A67068]'
+                ? 'bg-[#D4A574] text-white hover:bg-[#C19A6B]'
                 : 'bg-slate-300 text-slate-500 cursor-not-allowed'
             }`}
           >

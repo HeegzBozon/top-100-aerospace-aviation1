@@ -16,7 +16,7 @@ export default function AuthorityStackPortal() {
           <div className="bg-gradient-to-r from-brand-navy to-slate-900 text-white py-16 px-6">
             <div className="max-w-4xl mx-auto text-center">
               <motion.h1 
-                className="text-4xl sm:text-5xl font-bold mb-4 leading-tight font-serif text-[#B76E79]"
+                className="text-4xl sm:text-5xl font-bold mb-4 leading-tight font-serif text-[#D4A574]"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
@@ -75,7 +75,7 @@ export default function AuthorityStackPortal() {
             <section className="text-center py-10">
               <Button 
                 onClick={() => setPhase('refinery')}
-                className="bg-[#B76E79] text-white hover:bg-[#A67068] text-lg px-8 py-4 h-auto"
+                className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-lg px-8 py-4 h-auto"
               >
                 Authorize Mission →
               </Button>

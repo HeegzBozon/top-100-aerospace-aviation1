@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Globe, Smartphone, Share2, Zap, Volume2, Cloud, Brain, Rocket, TestTube } from 'lucide-react';
+import { Globe, Smartphone, Share2, Zap, Volume2, Cloud, Brain, Rocket, TestTube, Briefcase, TrendingUp, Truck, Palette, Calendar } from 'lucide-react';
 
 const SOLUTIONS = [
   {
@@ -103,6 +103,72 @@ const SOLUTIONS = [
       'Compliance reporting aligned with ASPICE & DO-254',
     ],
   },
+  {
+    id: 10,
+    icon: Briefcase,
+    title: 'Engineering Program Management',
+    description: 'Strategic oversight and delivery of complex aerospace programs.',
+    features: [
+      'Integrated planning, scheduling, and budget tracking',
+      'Risk mitigation and milestone management frameworks',
+      'Cross-functional team coordination and reporting',
+    ],
+  },
+  {
+    id: 11,
+    icon: TrendingUp,
+    title: 'Sales & Marketing',
+    description: 'Go-to-market strategies and demand generation for aerospace products.',
+    features: [
+      'Sales enablement and collateral development',
+      'Market positioning and competitive analysis',
+      'Lead generation and pipeline acceleration',
+    ],
+  },
+  {
+    id: 12,
+    icon: Truck,
+    title: 'Delivery & Support',
+    description: 'End-to-end implementation and ongoing customer success programs.',
+    features: [
+      'Project delivery with quality assurance protocols',
+      ' 24/7 technical support and incident management',
+      'Customer training and knowledge transfer',
+    ],
+  },
+  {
+    id: 13,
+    icon: Palette,
+    title: 'Creative Strategy',
+    description: 'Brand storytelling and creative direction for aerospace organizations.',
+    features: [
+      'Brand identity development and visual design systems',
+      'Campaign creative and messaging frameworks',
+      'Editorial strategy and content roadmaps',
+    ],
+  },
+  {
+    id: 14,
+    icon: Calendar,
+    title: 'Events - Live & Virtual',
+    description: 'Full-service event production and experiential marketing.',
+    features: [
+      'Conference production and speaker management',
+      'Virtual and hybrid event platforms and execution',
+      'Networking experiences and attendee engagement',
+    ],
+  },
+  {
+    id: 15,
+    icon: Volume2,
+    title: 'Training & Workshops',
+    description: 'Custom education and professional development programs.',
+    features: [
+      'Curriculum design for aerospace certifications',
+      'Executive coaching and leadership development',
+      'Technical skills training and upskilling programs',
+    ],
+  },
 ];
 
 const DELIVERY_PHASES = [
@@ -135,12 +201,12 @@ export default function Solutions() {
       <div className="bg-gradient-to-r from-[#1e3a5a] via-[#2E5090] to-[#1e3a5a] text-white py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.h1 
-            className="text-5xl sm:text-6xl font-bold mb-4 font-serif text-[#B76E79] leading-tight"
+            className="text-5xl sm:text-6xl font-bold mb-4 font-serif text-[#D4A574] leading-tight"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            Digital Excellence & Creative Solutions
+            Top 100 Aerospace & Aviation Solutions
           </motion.h1>
           <motion.p 
             className="text-slate-300 text-lg max-w-2xl mx-auto"
@@ -177,7 +243,7 @@ export default function Solutions() {
             Digital Product Line
           </motion.h2>
           <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto">
-            Nine integrated solution categories designed to transform your digital presence.
+            Sixteen integrated solution categories designed to transform your digital presence.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -193,14 +259,14 @@ export default function Solutions() {
                   className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08 hover:shadow-xl transition-all"
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <Icon className="w-8 h-8 text-[#B76E79]" />
+                    <Icon className="w-8 h-8 text-[#D4A574]" />
                     <h3 className="text-2xl font-bold text-[#1e3a5a] font-serif">{solution.title}</h3>
                   </div>
                   <p className="text-slate-700 mb-6">{solution.description}</p>
                   <ul className="space-y-3">
                     {solution.features.map((feature, i) => (
                       <li key={i} className="flex gap-3 text-slate-600">
-                        <span className="text-[#B76E79] font-bold">•</span>
+                        <span className="text-[#D4A574] font-bold">•</span>
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -231,9 +297,9 @@ export default function Solutions() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-[#B76E79]"
+              className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-[#D4A574]"
             >
-              <div className="text-[#B76E79] font-bold text-sm uppercase tracking-widest mb-2">
+              <div className="text-[#D4A574] font-bold text-sm uppercase tracking-widest mb-2">
                 Phase {idx + 1}
               </div>
               <h3 className="text-xl font-bold text-[#1e3a5a] mb-2 font-serif">{item.phase}</h3>
@@ -271,7 +337,7 @@ export default function Solutions() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <Button className="bg-[#B76E79] text-white hover:bg-[#A67068] text-lg px-8 py-4 h-auto">
+            <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-lg px-8 py-4 h-auto">
               Launch Your Project Build
             </Button>
             <Button variant="outline" className="border-white text-white hover:bg-white/10 text-lg px-8 py-4 h-auto">
