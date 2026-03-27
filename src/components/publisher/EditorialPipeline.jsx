@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Eye, Check, Calendar, Send, ExternalLink } from 'lucide-react';
+import { Loader2, Eye, Check, Calendar, Send, ExternalLink, Rocket } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import PostDetailModal from './PostDetailModal';
@@ -44,8 +44,18 @@ export default function EditorialPipeline({ userEmail }) {
     return posts.filter(p => p.status === stageKey);
   };
 
-  const movePost = (postId, toStage) => {
+  const movePost = async (postId, toStage, post) => {
     updateMutation.mutate({ postId, newStatus: toStage });
+
+    // When moving to 'approved', publish the nominee's article on their profile page
+    if (toStage === 'approved' && post?.nominee_id) {
+      try {
+        await base44.entities.Nominee.update(post.nominee_id, { article_status: 'published' });
+        toast.success('Article published on nominee profile page');
+      } catch (err) {
+        toast.error(`Failed to publish profile: ${err.message}`);
+      }
+    }
   };
 
   if (isLoading) {
@@ -133,7 +143,22 @@ export default function EditorialPipeline({ userEmail }) {
 
                         {/* Move Actions & View Link */}
                         <div className="mt-3 pt-3 border-t border-slate-200 space-y-1 flex gap-1 flex-wrap">
-                          {post.nominee_id && (
+                          {post.nominee_id && stageKey === 'approved' && (
+                            <Link
+                              to={`/Top100Women2025/${post.nominee_id}`}
+                              target="_blank"
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-full"
+                            >
+                              <Button
+                                size="sm"
+                                className="text-xs w-full gap-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                              >
+                                <Rocket className="w-3 h-3" /> Live Profile
+                              </Button>
+                            </Link>
+                          )}
+                          {post.nominee_id && stageKey !== 'approved' && (
                             <Link
                               to={`/Top100Women2025/${post.nominee_id}`}
                               target="_blank"
@@ -156,7 +181,7 @@ export default function EditorialPipeline({ userEmail }) {
                               variant="outline"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                movePost(post.id, nextStage.key);
+                                movePost(post.id, nextStage.key, post);
                               }}
                               disabled={updateMutation.isPending}
                               className="text-xs flex-1"
