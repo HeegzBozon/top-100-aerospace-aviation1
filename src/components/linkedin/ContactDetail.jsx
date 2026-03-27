@@ -10,8 +10,10 @@ export default function ContactDetail({ contact, onUpdate }) {
   const [generatingResponse, setGeneratingResponse] = useState(false);
   const [linkedEntity, setLinkedEntity] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [currentContact, setCurrentContact] = useState(contact);
 
   useEffect(() => {
+    setCurrentContact(contact);
     detectLinkedEntity();
   }, [contact]);
 
@@ -73,10 +75,11 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
 
   const saveResponse = async () => {
     try {
-      const updated = await base44.entities.LinkedInContact.update(contact.id, {
+      const updated = await base44.entities.LinkedInContact.update(currentContact.id, {
         generated_response: response,
         response_status: 'draft'
       });
+      setCurrentContact(updated);
       onUpdate(updated);
     } catch (err) {
       console.error('Error saving:', err);
@@ -85,12 +88,13 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
 
   const markAsSent = async () => {
     try {
-      const updated = await base44.entities.LinkedInContact.update(contact.id, {
+      const updated = await base44.entities.LinkedInContact.update(currentContact.id, {
         response_status: 'sent',
         last_sent_message: response,
         last_sent_date: new Date().toISOString(),
         has_unread: false
       });
+      setCurrentContact(updated);
       onUpdate(updated);
     } catch (err) {
       console.error('Error:', err);
@@ -99,14 +103,20 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
 
   const markAsDone = async () => {
     try {
-      const updated = await base44.entities.LinkedInContact.update(contact.id, {
+      const updated = await base44.entities.LinkedInContact.update(currentContact.id, {
         response_status: 'done',
         has_unread: false
       });
+      setCurrentContact(updated);
       onUpdate(updated);
     } catch (err) {
       console.error('Error:', err);
     }
+  };
+
+  const handleEvaluated = (evaluatedContact) => {
+    setCurrentContact(evaluatedContact);
+    onUpdate(evaluatedContact);
   };
 
   return (
@@ -118,29 +128,29 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
       {/* Contact Header */}
       <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
         <div className="flex items-start gap-4 mb-4">
-          {contact.avatar_url && (
+          {currentContact.avatar_url && (
             <img
-              src={contact.avatar_url}
-              alt={contact.full_name}
+              src={currentContact.avatar_url}
+              alt={currentContact.full_name}
               className="w-16 h-16 rounded-full bg-slate-200"
             />
           )}
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-[#1e3a5a] mb-1">{contact.full_name}</h2>
-            <p className="text-sm text-slate-600 mb-3">{contact.headline}</p>
-            {contact.current_company && (
+            <h2 className="text-2xl font-bold text-[#1e3a5a] mb-1">{currentContact.full_name}</h2>
+            <p className="text-sm text-slate-600 mb-3">{currentContact.headline}</p>
+            {currentContact.current_company && (
               <p className="text-sm text-slate-700 mb-2">
-                <span className="font-semibold">Current:</span> {contact.current_position} at {contact.current_company}
+                <span className="font-semibold">Current:</span> {currentContact.current_position} at {currentContact.current_company}
               </p>
             )}
-            {contact.location && (
+            {currentContact.location && (
               <p className="text-sm text-slate-700 mb-2">
-                <span className="font-semibold">Location:</span> {contact.location}
+                <span className="font-semibold">Location:</span> {currentContact.location}
               </p>
             )}
-            {contact.connection_date && (
+            {currentContact.connection_date && (
               <p className="text-sm text-slate-600 mb-3">
-                <span className="font-semibold">Connected:</span> {new Date(contact.connection_date).toLocaleDateString()}
+                <span className="font-semibold">Connected:</span> {new Date(currentContact.connection_date).toLocaleDateString()}
               </p>
             )}
             <a
@@ -154,13 +164,19 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
           </div>
         </div>
 
-        {/* Linked Entity Badge */}
-        {linkedEntity && (
-          <div className="pt-4 border-t border-slate-200 mt-4">
+        {/* Status Badge */}
+        {currentContact.response_status && (
+          <div className="pt-4 border-t border-slate-200 mt-4 flex items-center gap-2">
             <div className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-xs font-semibold text-blue-700">
               <CheckCircle2 className="w-3 h-3" />
-              {linkedEntity.type === 'nominee' ? 'In TOP 100 Nominees' : 'User in System'}
+              Status: {currentContact.response_status}
             </div>
+            {linkedEntity && (
+              <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg text-xs font-semibold text-green-700">
+                <CheckCircle2 className="w-3 h-3" />
+                {linkedEntity.type === 'nominee' ? 'In TOP 100' : 'In System'}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -168,32 +184,32 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
       {/* Conversation Messages */}
       <div className="grid grid-cols-1 gap-4">
       {/* Their Message */}
-      {contact.last_received_message && (
+      {currentContact.last_received_message && (
         <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
           <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-3">
             💬 Their Message
-            {contact.last_received_date && (
+            {currentContact.last_received_date && (
               <span className="text-slate-500 font-normal ml-2">
-                {new Date(contact.last_received_date).toLocaleString()}
+                {new Date(currentContact.last_received_date).toLocaleString()}
               </span>
             )}
           </p>
-          <p className="text-slate-700 leading-relaxed">{contact.last_received_message}</p>
+          <p className="text-slate-700 leading-relaxed">{currentContact.last_received_message}</p>
         </div>
       )}
 
       {/* Your Previous Message */}
-      {contact.last_sent_message && (
+      {currentContact.last_sent_message && (
         <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6">
           <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">
             ✓ Your Previous Message
-            {contact.last_sent_date && (
+            {currentContact.last_sent_date && (
               <span className="text-blue-500 font-normal ml-2">
-                {new Date(contact.last_sent_date).toLocaleString()}
+                {new Date(currentContact.last_sent_date).toLocaleString()}
               </span>
             )}
           </p>
-          <p className="text-slate-700 leading-relaxed">{contact.last_sent_message}</p>
+          <p className="text-slate-700 leading-relaxed">{currentContact.last_sent_message}</p>
         </div>
       )}
       </div>
@@ -245,22 +261,16 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
           </Button>
         </div>
 
-        {contact.response_status === 'sent' && (
+        {currentContact.response_status === 'sent' && (
           <p className="text-xs text-green-600 mt-3">✓ Marked as sent</p>
         )}
       </div>
 
       {/* TIER-S Triage Evaluation */}
-      {contact.triage_status === 'unevaluated' && (
-        <TriageEvaluation contact={contact} onEvaluated={onUpdate} />
-      )}
-
-      {contact.triage_status === 'evaluated' && (
-        <TriageEvaluation contact={contact} onEvaluated={onUpdate} />
-      )}
+      <TriageEvaluation contact={currentContact} onEvaluated={handleEvaluated} />
 
       {/* Action Buttons */}
-      {contact.response_status !== 'done' && (
+      {currentContact.response_status !== 'done' && (
         <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
           <div className="flex items-center gap-3 mb-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
             <Zap className="w-4 h-4 text-amber-600" />
@@ -278,7 +288,7 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
         </div>
       )}
 
-      {contact.response_status === 'done' && (
+      {currentContact.response_status === 'done' && (
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
