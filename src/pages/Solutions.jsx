@@ -242,7 +242,7 @@ export default function Solutions() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Aerospace leaders are leaving digital authority on the table. Every competitor who moves faster gains institutional leverage. TOP 100 OS builds the canonical digital infrastructure—the institutional record your market expects.
+            Your organization operates at scale—managing billions in programs, leading teams across continents, competing for talent and investor confidence. Your digital presence should reflect that authority. TOP 100 OS builds the institutional infrastructure that aerospace and defense leaders need to win.
           </motion.p>
           
           <motion.div
@@ -252,10 +252,10 @@ export default function Solutions() {
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-base px-8 py-3 h-auto font-semibold">
-              Explore Solutions
+              Launch Your Program
             </Button>
             <Button variant="outline" className="border-[#D4A574] text-[#D4A574] hover:bg-[#D4A574]/10 text-base px-8 py-3 h-auto font-semibold">
-              Schedule a Consultation
+              Executive Brief
             </Button>
           </motion.div>
         </div>
@@ -269,7 +269,7 @@ export default function Solutions() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          The aerospace industry is built on precision engineering and high-stakes innovation. Your digital presence should match that rigor. Every solution we build—from talent graphs to institutional archives—is architected with aerospace-grade discipline, governed by the <span className="font-semibold text-[#1e3a5a]">ASPICE V-Model</span>, ensuring alignment between your strategic vision and flawless execution.
+          For the aerospace, defense, and space sectors, digital systems are now as strategic as physical operations. Your talent, programs, and market position depend on institutional credibility—the ability to signal excellence, attract investment, and lead your market. Every solution we build is architected with aerospace-grade discipline, governed by the <span className="font-semibold text-[#1e3a5a]">ASPICE V-Model</span>, ensuring alignment between your strategic vision and flawless execution.
         </motion.p>
       </div>
 
@@ -370,7 +370,7 @@ export default function Solutions() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            Leaders in aerospace, defense, and space are already building with us. Don't lose the institutional authority race. Every month of delay is a competitor gaining advantage. We transform technical complexity into market dominance through strategic architecture, compelling narrative, and relentless execution.
+            Senior leaders at the world's most advanced aerospace and defense organizations are already building institutional digital advantage with us. Your board expects it. Your investors demand it. Your talent pool depends on it. We transform technical complexity into market dominance through strategic architecture, compelling narrative, and relentless execution.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center"
@@ -379,11 +379,11 @@ export default function Solutions() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <Button className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-lg px-8 py-4 h-auto">
-              Launch Your Project Build
+            <Button className="bg-[#D4A574] text-[#1e3a5a] hover:bg-[#C19A6B] text-lg px-8 py-4 h-auto font-semibold">
+              Request Executive Briefing
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white/10 text-lg px-8 py-4 h-auto">
-              Apply for Strategic Residency
+            <Button variant="outline" className="border-[#D4A574] text-[#D4A574] hover:bg-[#D4A574]/10 text-lg px-8 py-4 h-auto font-semibold">
+              View Case Studies
             </Button>
           </motion.div>
         </div>
