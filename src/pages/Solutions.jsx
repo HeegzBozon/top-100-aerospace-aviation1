@@ -199,29 +199,21 @@ export default function Solutions() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative min-h-[700px] bg-gradient-to-br from-[#1e3a5a] via-[#162842] to-[#0f2438] text-white overflow-hidden px-6 py-24 flex items-center justify-center">
-        {/* Constellation Background */}
-        <ConstellationBackground />
-        
-        {/* Animated background accent */}
+      <div className="min-h-[700px] bg-white px-6 py-24 flex items-center justify-center">
+        {/* Glass Card Container with Constellation */}
         <motion.div 
-          className="absolute -top-40 -right-40 w-80 h-80 bg-[#D4A574] rounded-full opacity-5 blur-3xl"
-          animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
-          transition={{ duration: 20, repeat: Infinity }}
-        />
-        <motion.div 
-          className="absolute -bottom-32 -left-32 w-96 h-96 bg-[#D4A574] rounded-full opacity-3 blur-3xl"
-          animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }}
-          transition={{ duration: 25, repeat: Infinity }}
-        />
-        
-        {/* Glass Card Container */}
-        <motion.div 
-          className="relative z-10 max-w-4xl mx-auto backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-12 md:p-16 shadow-2xl"
+          className="relative max-w-4xl mx-auto backdrop-blur-xl bg-gradient-to-br from-[#1e3a5a] to-[#0f2438] border border-white/10 rounded-3xl p-12 md:p-16 shadow-2xl overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
+          {/* Constellation in Card */}
+          <div className="absolute inset-0 rounded-3xl overflow-hidden">
+            <ConstellationBackground />
+          </div>
+          
+          {/* Content Layer */}
+          <div className="relative z-10">
           <div className="text-center">
           <motion.div
             className="inline-block mb-6"
@@ -265,8 +257,6 @@ export default function Solutions() {
               Executive Brief
             </Button>
           </motion.div>
-          </div>
-        </motion.div>
       </div>
 
       {/* Intro Section */}
