@@ -56,6 +56,11 @@ export default defineConfig({
       'cmdk',
       'vaul',
       'embla-carousel-react',
+      'canvas-confetti',
+      'react-leaflet',
+      'three',
+      '@hello-pangea/dnd',
     ],
+    exclude: ['chess.js', 'h3-js'],
   },
 });
