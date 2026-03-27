@@ -11,7 +11,8 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
-// Explicit routes with custom configurations
+// Explicit routes with custom configurations (excluded from pages.config to avoid circular deps)
+const Home = lazy(() => import('@/pages/Home'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
 const OnboardingAdmin = lazy(() => import('@/pages/OnboardingAdmin'));
 const AgentSkillRegistry = lazy(() => import('@/pages/AgentSkillRegistry'));
@@ -22,16 +23,6 @@ const FeatureToTeamMapper = lazy(() => import('@/pages/FeatureToTeamMapper'));
 const DynamicProfilePage = lazy(() => import('@/pages/DynamicProfilePage'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
-const mainPageKey = mainPage ?? Object.keys(Pages)[0];
-const MainPage = mainPageKey ? Pages[mainPageKey] : () => (
-  <div className="fixed inset-0 flex flex-col items-center justify-center bg-white p-4">
-    <div className="text-center max-w-md">
-      <p className="text-lg font-bold text-red-600 mb-2">Error: No main page configured</p>
-      <p className="text-sm text-slate-500 mb-4">Check that a page is set as the home/main page.</p>
-      <p className="text-xs text-slate-400">Main page key: {mainPageKey || 'undefined'}</p>
-    </div>
-  </div>
-);
 
 const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   <Layout currentPageName={currentPageName}>{children}</Layout>
@@ -102,8 +93,8 @@ const AuthenticatedApp = () => {
     }>
     <Routes>
       <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
+        <LayoutWrapper currentPageName="Home">
+          <Home />
         </LayoutWrapper>
       } />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />

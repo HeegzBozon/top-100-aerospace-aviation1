@@ -78,7 +78,8 @@ const GamesLanding               = lazy(() => import('./pages/GamesLanding'));
 const GetStarted                 = lazy(() => import('./pages/GetStarted'));
 const GlobalIntelligence         = lazy(() => import('./pages/GlobalIntelligence'));
 const HelpCenter                 = lazy(() => import('./pages/HelpCenter'));
-const Home                       = lazy(() => import('./pages/Home'));
+// Moved to App.jsx as explicit lazy route
+// const Home                       = lazy(() => import('./pages/Home'));
 const HowWePick                  = lazy(() => import('./pages/HowWePick'));
 const Huddle                     = lazy(() => import('./pages/Huddle'));
 const IntelligenceDashboard      = lazy(() => import('./pages/IntelligenceDashboard'));
@@ -147,7 +148,7 @@ export const PAGES = {
     "GetStarted": GetStarted,
     "GlobalIntelligence": GlobalIntelligence,
     "HelpCenter": HelpCenter,
-    "Home": Home,
+    // "Home": Home,  // Moved to App.jsx
     "HowWePick": HowWePick,
     "Huddle": Huddle,
     "IntelligenceDashboard": IntelligenceDashboard,
@@ -188,7 +189,7 @@ export const PAGES = {
 }
 
 export const pagesConfig = {
-    mainPage: "Home",
+    mainPage: "Landing",  // Changed from Home (moved to App.jsx)
     Pages: PAGES,
     Layout: __Layout,
 };
