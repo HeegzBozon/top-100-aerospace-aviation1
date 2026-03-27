@@ -1,19 +1,19 @@
-import { Suspense, lazy } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
-
-const WorldMonitorGlobe = lazy(() => import('@/components/capabilities/global-intelligence/WorldMonitorGlobe'));
-const LiveFlightsPanel = lazy(() => import('@/components/capabilities/global-intelligence/LiveFlightsPanel'));
-const TickerHeader = lazy(() => import('@/components/capabilities/global-intelligence/TickerHeader'));
-const LiveNewsPanel = lazy(() => import('@/components/capabilities/global-intelligence/LiveNewsPanel'));
-const FleetORBATPanel = lazy(() => import('@/components/capabilities/global-intelligence/FleetORBATPanel'));
-const LaunchWidgetCompact = lazy(() => import('@/components/capabilities/global-intelligence/LaunchWidgetCompact'));
-const ConflictAlertsSummary = lazy(() => import('@/components/capabilities/global-intelligence/ConflictAlertsSummary'));
-const DisastersSummary = lazy(() => import('@/components/capabilities/global-intelligence/DisastersSummary'));
-const CyberThreatsSummary = lazy(() => import('@/components/capabilities/global-intelligence/CyberThreatsSummary'));
-const MaritimeSummary = lazy(() => import('@/components/capabilities/global-intelligence/MaritimeSummary'));
-const GpsJammingSummary = lazy(() => import('@/components/capabilities/global-intelligence/GpsJammingSummary'));
-const SupplyChainSummary = lazy(() => import('@/components/capabilities/global-intelligence/SupplyChainSummary'));
+import {
+  WorldMonitorGlobe,
+  LiveFlightsPanel,
+} from '@/components/capabilities/global-intelligence';
+import { TickerHeader }           from '@/components/capabilities/global-intelligence/TickerHeader';
+import { LiveNewsPanel }          from '@/components/capabilities/global-intelligence/LiveNewsPanel';
+import { FleetORBATPanel }        from '@/components/capabilities/global-intelligence/FleetORBATPanel';
+import { LaunchWidgetCompact }    from '@/components/capabilities/global-intelligence/LaunchWidgetCompact';
+import { ConflictAlertsSummary }  from '@/components/capabilities/global-intelligence/ConflictAlertsSummary';
+import { DisastersSummary }       from '@/components/capabilities/global-intelligence/DisastersSummary';
+import { CyberThreatsSummary }    from '@/components/capabilities/global-intelligence/CyberThreatsSummary';
+import { MaritimeSummary }        from '@/components/capabilities/global-intelligence/MaritimeSummary';
+import { GpsJammingSummary }      from '@/components/capabilities/global-intelligence/GpsJammingSummary';
+import { SupplyChainSummary }     from '@/components/capabilities/global-intelligence/SupplyChainSummary';
 
 // ── TerminalPanel must be defined at FILE SCOPE — not inside the page component.
 // Moving it inside would cause React to treat it as a new component type on every
@@ -60,39 +60,28 @@ const BOTTOM_PANELS = [
   { label: 'SUPPLY',      Component: SupplyChainSummary },
 ];
 
-const LoadingSpinner = () => (
-  <div className="flex items-center justify-center h-full bg-[#070b14]">
-    <div className="w-8 h-8 border-4 border-slate-700 border-t-slate-400 rounded-full animate-spin" />
-  </div>
-);
-
 export default function GlobalIntelligence() {
   return (
     <div className="bg-[#070b14] text-white h-screen flex flex-col overflow-hidden font-mono">
 
       {/* Ticker */}
-      <Suspense fallback={<LoadingSpinner />}>
-        <TickerHeader />
-      </Suspense>
+      <TickerHeader />
 
       {/* Main 3-column panel grid */}
-      <Suspense fallback={<LoadingSpinner />}>
-        <PanelGroup
-          direction="horizontal"
-          className="flex-1 min-h-0"
-          autoSaveId="gi-main"
-        >
+      <PanelGroup
+        direction="horizontal"
+        className="flex-1 min-h-0"
+        autoSaveId="gi-main"
+      >
 
-          {/* Left: Globe (40%) */}
-          <Panel defaultSize={40} minSize={20} id="globe">
-            <TerminalPanel label="GLOBAL MAP">
-              <ErrorBoundary label="Globe">
-                <Suspense fallback={<LoadingSpinner />}>
-                  <WorldMonitorGlobe />
-                </Suspense>
-              </ErrorBoundary>
-            </TerminalPanel>
-          </Panel>
+        {/* Left: Globe (40%) */}
+        <Panel defaultSize={40} minSize={20} id="globe">
+          <TerminalPanel label="GLOBAL MAP">
+            <ErrorBoundary label="Globe">
+              <WorldMonitorGlobe />
+            </ErrorBoundary>
+          </TerminalPanel>
+        </Panel>
 
         <PanelResizeHandle className="w-1 bg-slate-800 hover:bg-blue-600 transition-colors cursor-col-resize" />
 
@@ -144,26 +133,21 @@ export default function GlobalIntelligence() {
           </PanelGroup>
         </Panel>
 
-        </PanelGroup>
-      </Suspense>
+      </PanelGroup>
 
       {/* Bottom strip — fixed height, 6 panels side-by-side */}
-      <Suspense fallback={<div className="h-28 bg-[#070b14]" />}>
-        <div className="h-28 flex border-t border-slate-800 shrink-0">
-          {BOTTOM_PANELS.map(({ label, Component }, i) => (
-            <div
-              key={label}
-              className={`flex-1 min-w-0 ${i > 0 ? 'border-l border-slate-800' : ''}`}
-            >
-              <TerminalPanelCompact label={label}>
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Component />
-                </Suspense>
-              </TerminalPanelCompact>
-            </div>
-          ))}
-        </div>
-      </Suspense>
+      <div className="h-28 flex border-t border-slate-800 shrink-0">
+        {BOTTOM_PANELS.map(({ label, Component }, i) => (
+          <div
+            key={label}
+            className={`flex-1 min-w-0 ${i > 0 ? 'border-l border-slate-800' : ''}`}
+          >
+            <TerminalPanelCompact label={label}>
+              <Component />
+            </TerminalPanelCompact>
+          </div>
+        ))}
+      </div>
 
     </div>
   );
