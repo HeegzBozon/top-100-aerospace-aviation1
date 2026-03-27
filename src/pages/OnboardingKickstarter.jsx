@@ -235,18 +235,20 @@ export default function OnboardingKickstarter() {
       {isAdmin && (
         <div className="fixed top-0 right-0 h-full w-full sm:w-[440px] bg-white border-l border-slate-200 shadow-2xl z-40 overflow-y-auto">
           {/* header */}
-          <div className="sticky top-0 bg-white border-b border-slate-100 px-5 py-4 flex items-center justify-between z-10">
-            <div>
-              <p className="font-bold text-slate-800 text-sm">Edit Package</p>
-              <p className="text-xs text-slate-400">Live preview updates as you type</p>
+          <div className="sticky top-0 bg-white border-b border-slate-100 px-5 py-3 flex flex-col gap-3 z-10">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-bold text-slate-800 text-sm">Edit Package</p>
+                <p className="text-xs text-slate-400">Live preview updates as you type</p>
+              </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full">
               <button onClick={() => setShowSendPanel(v => !v)}
-                className="flex items-center gap-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg">
+                className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg">
                 <Mail className="w-3.5 h-3.5" /> Send
               </button>
               <button onClick={handleSave} disabled={saving}
-                className="flex items-center gap-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg disabled:opacity-50">
+                className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg disabled:opacity-50">
                 <Save className="w-3.5 h-3.5" />
                 {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save'}
               </button>
@@ -444,43 +446,58 @@ export default function OnboardingKickstarter() {
               </div>
             )}
 
-            {/* Active plan table */}
+            {/* Active plan card with timeline */}
             {activePlan && (
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="bg-slate-50 border-b border-slate-100">
-                      <th className="text-left px-5 py-3 font-semibold text-slate-600">Description</th>
-                      <th className="text-left px-5 py-3 font-semibold text-slate-600">Due</th>
-                      <th className="text-right px-5 py-3 font-semibold text-slate-600">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(activePlan.installments || []).map((row, i) => (
-                      <tr key={i} className="border-b border-slate-50 last:border-0">
-                        <td className="px-5 py-4 text-slate-700 font-medium">
-                          {row.label}
-                          {row.note && <span className="ml-2 text-xs text-amber-600 font-semibold">{row.note}</span>}
-                        </td>
-                        <td className="px-5 py-4 text-slate-500 text-xs">{fmtDate(row.due_date)}</td>
-                        <td className="px-5 py-4 text-right font-semibold text-slate-800">${Number(row.amount || 0).toLocaleString()}</td>
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-6">
+                {/* Plan title */}
+                <div className="mb-6 pb-4 border-b border-slate-100">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{activePlan.label}</p>
+                  <p className="text-xl font-bold text-slate-800 mt-1">{activePlan.description || 'Your Payment Schedule'}</p>
+                </div>
+
+                {/* Timeline table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left">
+                        <th className="pb-3 font-semibold text-slate-600">Month</th>
+                        <th className="pb-3 font-semibold text-slate-600">Payment</th>
+                        <th className="pb-3 font-semibold text-slate-600 text-right">Amount</th>
+                        <th className="pb-3 font-semibold text-slate-600 text-right">Collected</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="bg-slate-50 px-5 py-4 flex flex-wrap gap-6 text-sm">
-                  <div>
-                    <p className="text-slate-500">Total Value</p>
-                    <p className="text-xl font-bold text-slate-800">${Number(display.total_amount || 0).toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-500">Due Today</p>
-                    <p className="text-xl font-bold text-amber-600">${Number(activePlan.installments?.[0]?.amount || display.deposit_amount || 0).toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-500">Installments</p>
-                    <p className="text-xl font-bold text-slate-800">{activePlan.installments?.length || 0}</p>
-                  </div>
+                    </thead>
+                    <tbody>
+                      {(activePlan.installments || []).map((row, i) => {
+                        let collected = 0;
+                        for (let j = 0; j <= i; j++) {
+                          collected += Number(activePlan.installments[j]?.amount || 0);
+                        }
+                        const monthStr = row.due_date ? new Date(row.due_date).toLocaleDateString('en-US', { month: 'short' }) : 'Now';
+                        return (
+                          <tr key={i} className="border-t border-slate-100">
+                            <td className="py-4 text-slate-700 font-medium">{monthStr}</td>
+                            <td className="py-4">
+                              <span className={`inline-block px-2.5 py-1 rounded text-xs font-semibold ${
+                                row.label === 'Deposit' ? 'bg-green-100 text-green-700' :
+                                row.label === 'Final' || row.label?.includes('Final') ? 'bg-blue-100 text-blue-700' :
+                                'bg-amber-100 text-amber-700'
+                              }`}>
+                                {row.label}
+                              </span>
+                            </td>
+                            <td className="py-4 text-right text-slate-800 font-semibold">${Number(row.amount || 0).toLocaleString()}</td>
+                            <td className="py-4 text-right text-slate-800 font-semibold">${collected.toLocaleString()}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Total row */}
+                <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
+                  <p className="font-bold text-slate-800">Total</p>
+                  <p className="text-lg font-bold text-slate-800">${Number(display.total_amount || 0).toLocaleString()}</p>
                 </div>
               </div>
             )}
