@@ -507,7 +507,7 @@ export default function OnboardingKickstarter() {
                 </div>
                 {plans.map((plan, pi) => {
                   const juneTotal = (plan.installments || [])
-                    .filter(inst => inst.due_date && new Date(inst.due_date) <= new Date('2026-06-30'))
+                    .filter(inst => !inst.due_date || new Date(inst.due_date) <= new Date('2026-06-30'))
                     .reduce((sum, inst) => sum + Number(inst.amount || 0), 0);
                   return (
                     <div key={pi} className="bg-slate-50 rounded-xl p-4 text-center">
