@@ -14,27 +14,34 @@ export default function AuthorityStackPortal() {
       {phase === 'proposal' && (
         <>
           {/* Hero Section */}
-          <div className="relative bg-gradient-to-r from-[#1e3a5a] to-[#0f2438] text-white py-20 px-6 overflow-hidden">
+          <div className="relative bg-gradient-to-r from-[#1e3a5a] to-[#0f2438] text-white py-16 px-6 overflow-hidden">
             <div className="absolute inset-0 opacity-20">
               <ConstellationBackground />
             </div>
-            <div className="max-w-4xl mx-auto text-center relative z-10">
-              <motion.h1 
-                className="text-4xl sm:text-5xl font-bold mb-4 leading-tight font-serif text-[#D4A574]"
-                initial={{ opacity: 0, y: -20 }}
+            <div className="max-w-4xl mx-auto relative z-10">
+              <motion.div 
+                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 text-center"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                Your Enterprise Transformation Begins
-              </motion.h1>
-              <motion.p 
-                className="text-slate-300 text-lg max-w-2xl mx-auto"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                A live, interactive brief to establish the unfair advantage of working with us.
-              </motion.p>
+                <motion.h1 
+                  className="text-4xl sm:text-5xl font-bold mb-4 leading-tight font-serif text-[#D4A574]"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                  Your Enterprise Transformation Begins
+                </motion.h1>
+                <motion.p 
+                  className="text-slate-200 text-lg max-w-2xl mx-auto"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  A live, interactive brief to establish the unfair advantage of working with us.
+                </motion.p>
+              </motion.div>
             </div>
           </div>
 
@@ -63,17 +70,7 @@ export default function AuthorityStackPortal() {
               </motion.p>
             </section>
 
-            {/* Tiered Offer Stack */}
-            <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-              <h2 className="text-3xl font-bold text-[#1e3a5a] mb-6 font-serif">Tiered Offer Stack</h2>
-              <p className="text-slate-600">[Sponsorship Tiers $10k–$150k or Service Levels - coming soon]</p>
-            </section>
 
-            {/* Social Proof Graph */}
-            <section className="bg-white rounded-2xl shadow-lg p-8 border border-brand-navy-08">
-              <h2 className="text-3xl font-bold text-[#1e3a5a] mb-6 font-serif">Social Proof Graph</h2>
-              <p className="text-slate-600">[Talent Graph with past Programs and Contributors - coming soon]</p>
-            </section>
 
             {/* CTA */}
             <section className="text-center py-10">
