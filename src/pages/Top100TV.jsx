@@ -7,40 +7,66 @@ import StreamPlayer from '@/components/top100tv/StreamPlayer';
 import StreamContextSidecar from '@/components/top100tv/StreamContextSidecar';
 import StreamGridCard from '@/components/top100tv/StreamGridCard';
 import FlightographySidecar from '@/components/top100tv/FlightographySidecar';
-import { STARTING_9_STREAMS } from '@/lib/starting-9-streams';
 
 const DOMAIN_COLORS = {
-  'Space Exploration': 'from-purple-600 to-purple-800',
+  'Space Exploration & Systems': 'from-purple-600 to-purple-800',
   'Commercial Aviation': 'from-blue-600 to-blue-800',
-  'Defense & Policy': 'from-red-600 to-red-800',
+  'Defense & National Security': 'from-red-600 to-red-800',
 };
 
 const DOMAIN_ACCENTS = {
-  'Space Exploration': '#a855f7',
+  'Space Exploration & Systems': '#a855f7',
   'Commercial Aviation': '#3b82f6',
-  'Defense & Policy': '#ef4444',
+  'Defense & National Security': '#ef4444',
 };
 
 export default function Top100TV() {
   const [viewMode, setViewMode] = useState('grid');
-  const [selectedStreamId, setSelectedStreamId] = useState('iss_earth_view');
+  const [selectedStreamId, setSelectedStreamId] = useState(null);
 
-  // Use Starting 9 as primary source
-  const streams = STARTING_9_STREAMS;
+  // Fetch streams from backend API (cached 5 minutes)
+  const { data: streams = [], isLoading: streamsLoading } = useQuery({
+    queryKey: ['tvStreams'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('getTVStreams', {});
+      return response.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
+
+  // Set default selected stream on initial load
+  useMemo(() => {
+    if (selectedStreamId === null && streams.length > 0) {
+      setSelectedStreamId(streams[0].id);
+    }
+  }, [streams, selectedStreamId]);
 
   const selectedStream = useMemo(
     () => streams.find(s => s.id === selectedStreamId) || streams[0],
-    [selectedStreamId]
+    [selectedStreamId, streams]
   );
 
   // Group streams by row for grid layout
   const streamsByRow = useMemo(() => {
     const grouped = { 1: [], 2: [], 3: [] };
     streams.forEach(stream => {
-      if (grouped[stream.row]) grouped[stream.row].push(stream);
+      const row = stream.grid_row || 1;
+      if (grouped[row]) grouped[row].push(stream);
     });
     return grouped;
-  }, []);
+  }, [streams]);
+
+  if (streamsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white flex items-center justify-center p-4">
+        <div className="text-center space-y-3">
+          <Loader2 className="w-10 h-10 animate-spin text-amber-400 mx-auto" />
+          <p className="text-slate-400">Loading TOP 100 TV...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!streams.length) {
     return (
@@ -88,7 +114,7 @@ export default function Top100TV() {
           </div>
 
           {/* Domain legend */}
-          <div className="flex items-center gap-6 text-xs">
+          <div className="flex flex-wrap items-center gap-4 text-xs">
             {Object.entries(DOMAIN_COLORS).map(([domain, colors]) => (
               <div key={domain} className="flex items-center gap-2">
                 <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${colors}`} />
@@ -142,7 +168,7 @@ export default function Top100TV() {
           {/* ROW 1: Space Frontier */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
-              <div className={`w-2 h-6 rounded-full bg-gradient-to-b ${DOMAIN_COLORS['Space Exploration']}`} />
+              <div className={`w-2 h-6 rounded-full bg-gradient-to-b ${DOMAIN_COLORS['Space Exploration & Systems']}`} />
               <h2 className="text-lg font-bold">Row 1: Space Frontier</h2>
               <span className="text-xs text-slate-400">($600B Space Tech Market)</span>
             </div>
@@ -188,7 +214,7 @@ export default function Top100TV() {
           {/* ROW 3: Global Macro */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
-              <div className={`w-2 h-6 rounded-full bg-gradient-to-b ${DOMAIN_COLORS['Defense & Policy']}`} />
+              <div className={`w-2 h-6 rounded-full bg-gradient-to-b ${DOMAIN_COLORS['Defense & National Security']}`} />
               <h2 className="text-lg font-bold">Row 3: Global Macro, Defense & Policy</h2>
               <span className="text-xs text-slate-400">($2.2T Defense Spend)</span>
             </div>
