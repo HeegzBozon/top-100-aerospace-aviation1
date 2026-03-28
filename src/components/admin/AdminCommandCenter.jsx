@@ -180,6 +180,8 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
     const [platformLoading, setPlatformLoading] = useState(true);
     const [lastUpdated, setLastUpdated] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [selectedSeasonId, setSelectedSeasonId] = useState(null);
+    const [seasonNominationCount, setSeasonNominationCount] = useState(0);
     const loadingRef = useRef(false);
     const { toast } = useToast();
 
@@ -218,15 +220,26 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                 return now >= start && now <= end;
             }) || seasons[0] || null;
 
+            const targetSeason = selectedSeasonId 
+                ? seasons.find(s => s.id === selectedSeasonId) 
+                : activeSeason;
+
             let seasonNomineeCount = 0;
-            if (activeSeason) {
-                const seasonNominees = await base44.entities.Nominee.filter({ season_id: activeSeason.id }).catch(() => []);
+            let nominationCount = 0;
+            if (targetSeason) {
+                const [seasonNominees, seasonNominations] = await Promise.all([
+                    base44.entities.Nominee.filter({ season_id: targetSeason.id }).catch(() => []),
+                    base44.entities.Nomination.filter({ season_id: targetSeason.id }).catch(() => []),
+                ]);
                 seasonNomineeCount = seasonNominees.length;
+                nominationCount = seasonNominations.length;
             }
 
+            setSeasonNominationCount(nominationCount);
             setPlatformData({
                 activeSeason,
                 seasons,
+                selectedSeason: targetSeason,
                 seasonNomineeCount,
                 upcomingEvents: events.filter(e => new Date(e.event_date) > now).length,
             });
@@ -235,7 +248,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
         } finally {
             setPlatformLoading(false);
         }
-    }, []);
+    }, [selectedSeasonId]);
 
     useEffect(() => {
         loadStats();
@@ -356,8 +369,25 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                         </p>
                     </div>
 
-                    {/* Right: refresh / timestamp */}
+                    {/* Right: season selector + refresh / timestamp */}
                     <div className="flex items-center gap-3 flex-shrink-0 flex-wrap">
+                        {!platformLoading && platformData?.seasons?.length > 0 && (
+                            <select
+                                value={selectedSeasonId || ''}
+                                onChange={(e) => setSelectedSeasonId(e.target.value || null)}
+                                className="px-3 py-1.5 rounded-lg text-xs transition-all"
+                                style={{
+                                    background: '#ffffff08',
+                                    border: `1px solid ${B.border}`,
+                                    color: '#7a9cb8',
+                                }}
+                            >
+                                <option value="">Active Season</option>
+                                {platformData.seasons.map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                            </select>
+                        )}
                         {lastUpdated && (
                             <span className="text-xs" style={{ color: '#3a5a74' }}>
                                 {lastUpdated.toLocaleTimeString()}
@@ -387,6 +417,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                     <PulseMetric icon={Users} label="Active Voters" value={stats?.dauToday?.toLocaleString() ?? '—'} accent={B.sky} loading={statsLoading} />
                     <PulseMetric icon={UserPlus} label="New Users" value={stats?.usersToday?.toLocaleString() ?? '—'} accent="#9d7ec8" loading={statsLoading} />
                     <PulseMetric icon={Trophy} label="Nominees" value={platformLoading ? '—' : (platformData?.seasonNomineeCount?.toLocaleString() ?? '—')} accent={B.gold} loading={platformLoading} />
+                    <PulseMetric icon={Award} label="Nominations" value={platformLoading ? '—' : (seasonNominationCount?.toLocaleString() ?? '—')} accent="#c8a07e" loading={platformLoading} />
                     <PulseMetric icon={Globe} label="Total Users" value={stats?.totalUsers?.toLocaleString() ?? '—'} accent="#7ec8a8" loading={statsLoading} />
                     <PulseMetric icon={CalendarDays} label="Upcoming Events" value={platformLoading ? '—' : (platformData?.upcomingEvents?.toString() ?? '0')} accent="#7ec8c8" loading={platformLoading} />
                 </div>
