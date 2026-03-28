@@ -244,28 +244,13 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
         </div>
       </div>
 
-      {/* Conversation Messages */}
+      {/* Conversation Messages — chronological: your sent first, then their reply */}
       <div className="grid grid-cols-1 gap-4">
-      {/* Their Message */}
-      {currentContact.last_received_message && (
-        <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
-          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-3">
-            💬 Their Message
-            {currentContact.last_received_date && (
-              <span className="text-slate-500 font-normal ml-2">
-                {new Date(currentContact.last_received_date).toLocaleString()}
-              </span>
-            )}
-          </p>
-          <p className="text-slate-700 leading-relaxed">{currentContact.last_received_message}</p>
-        </div>
-      )}
-
-      {/* Your Previous Message */}
+      {/* Your Previous Message (older) */}
       {currentContact.last_sent_message && (
         <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6">
           <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">
-            ✓ Your Previous Message
+            ✓ Your Message
             {currentContact.last_sent_date && (
               <span className="text-blue-500 font-normal ml-2">
                 {new Date(currentContact.last_sent_date).toLocaleString()}
@@ -273,6 +258,21 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
             )}
           </p>
           <p className="text-slate-700 leading-relaxed">{currentContact.last_sent_message}</p>
+        </div>
+      )}
+
+      {/* Their Reply (newer — what you're responding to) */}
+      {currentContact.last_received_message && (
+        <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
+          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-3">
+            💬 Their Reply
+            {currentContact.last_received_date && (
+              <span className="text-slate-500 font-normal ml-2">
+                {new Date(currentContact.last_received_date).toLocaleString()}
+              </span>
+            )}
+          </p>
+          <p className="text-slate-700 leading-relaxed">{currentContact.last_received_message}</p>
         </div>
       )}
       </div>
