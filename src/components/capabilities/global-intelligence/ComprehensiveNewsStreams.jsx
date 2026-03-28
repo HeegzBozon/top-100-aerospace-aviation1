@@ -1,81 +1,22 @@
-import { useState, useEffect } from 'react';
-import { AlertCircle, Radio, Loader2 } from 'lucide-react';
-import { findNewsLiveStreams } from '@/functions/findNewsLiveStreams';
-
-const NEWS_SOURCES = [
-  { id: 'bloomberg', name: 'Bloomberg', icon: '📊' },
-  { id: 'sky', name: 'Sky News', icon: '🌐' },
-  { id: 'bbc', name: 'BBC World', icon: '🎬' },
-  { id: 'aljazeera', name: 'Al Jazeera', icon: '📡' },
-];
-
-function NewsStreamEmbed({ source, videoId, isLoading }) {
-  const [embedError, setEmbedError] = useState(false);
-
-  if (isLoading) {
-    return (
-      <div className="w-full h-96 bg-black/40 rounded-lg border border-white/10 flex items-center justify-center gap-2">
-        <Loader2 className="w-4 h-4 animate-spin text-[#c9a87c]" />
-        <p className="text-white/50 text-xs">Finding stream…</p>
-      </div>
-    );
-  }
-
-  if (!videoId || embedError) {
-    return (
-      <div className="w-full h-96 bg-black/40 rounded-lg border border-white/10 flex flex-col items-center justify-center gap-2">
-        <AlertCircle className="w-6 h-6 text-[#c9a87c]" />
-        <p className="text-white/50 text-xs">No live stream currently available</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative w-full">
-      <iframe
-        width="100%"
-        height="400"
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title={`${source.name} Live`}
-        frameBorder="0"
-        referrerPolicy="strict-origin-when-cross-origin"
-        allowFullScreen
-        allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        className="rounded-lg border border-white/10"
-        onError={() => setEmbedError(true)}
-      />
-      <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold bg-red-600 text-white animate-pulse z-10">
-        <Radio className="w-2.5 h-2.5" /> LIVE
-      </span>
-    </div>
-  );
-}
+import { useState } from 'react';
+import { Radio } from 'lucide-react';
+import { HLS_STREAMS } from '@/lib/hls-streams-config';
+import HLSVideoPlayer from './HLSVideoPlayer';
 
 export default function ComprehensiveNewsStreams() {
-  const [activeSource, setActiveSource] = useState('bloomberg');
-  const [videoIds, setVideoIds] = useState({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    findNewsLiveStreams({})
-      .then(res => {
-        setVideoIds(res.data || {});
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  const active = NEWS_SOURCES.find(s => s.id === activeSource);
+  const [activeSource, setActiveSource] = useState('aljazeera');
+  const sources = Object.entries(HLS_STREAMS).map(([id, data]) => ({ id, ...data }));
+  const active = sources.find(s => s.id === activeSource);
 
   return (
     <div className="h-full flex flex-col bg-[#0a0f1e] text-white overflow-hidden rounded-xl border border-white/5">
       <div className="shrink-0 px-4 py-3 border-b border-white/5 bg-black/40">
         <div className="flex items-center gap-2 mb-3">
           <Radio className="w-4 h-4 text-[#c9a87c]" />
-          <h2 className="text-sm font-bold">Live News</h2>
+          <h2 className="text-sm font-bold">Live News Streams</h2>
         </div>
         <div className="flex gap-2 overflow-x-auto">
-          {NEWS_SOURCES.map(source => (
+          {sources.map(source => (
             <button
               key={source.id}
               onClick={() => setActiveSource(source.id)}
@@ -92,7 +33,13 @@ export default function ComprehensiveNewsStreams() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
-        {active && <NewsStreamEmbed source={active} videoId={videoIds[active.id]} isLoading={loading} />}
+        {active && (
+          <HLSVideoPlayer
+            hlsUrl={active.hls}
+            youtubeId={active.youtube}
+            title={`${active.name} Live`}
+          />
+        )}
       </div>
     </div>
   );
