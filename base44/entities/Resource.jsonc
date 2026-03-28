@@ -44,6 +44,20 @@
       ],
       "description": "Method an agent would use to retrieve information or interact with this resource"
     },
+    "file_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Uploaded file URLs attached to this resource (PDFs, docs, images, etc.)"
+    },
+    "reference_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Reference URLs (web pages, APIs, documentation links) associated with this resource"
+    },
     "tags": {
       "type": "array",
       "items": {
@@ -69,7 +83,7 @@
         "beach"
       ],
       "default": "unassigned",
-      "description": "Team assignment status. Inherits team's topology, coherence anchor, and data access policies when assigned."
+      "description": "Team assignment status."
     }
   },
   "required": [

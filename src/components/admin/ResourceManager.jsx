@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Upload, Link, X, FileText, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const RESOURCE_TYPES = [
@@ -32,6 +32,8 @@ const EMPTY_RESOURCE = {
   type: 'api_endpoint',
   access_config: {},
   data_retrieval_method: 'api_call',
+  file_urls: [],
+  reference_urls: [],
   tags: [],
   is_active: true,
   team_id: '',
@@ -44,6 +46,9 @@ export default function ResourceManager() {
   const [editingResource, setEditingResource] = useState(null);
   const [form, setForm] = useState(EMPTY_RESOURCE);
   const [filterTeam, setFilterTeam] = useState('all');
+  const [uploading, setUploading] = useState(false);
+  const [newUrl, setNewUrl] = useState('');
+  const fileInputRef = useRef(null);
 
   const { data: resources = [], isLoading } = useQuery({
     queryKey: ['resources'],
@@ -95,6 +100,39 @@ export default function ResourceManager() {
     setEditingResource(resource);
     setForm(resource);
     setEditorOpen(true);
+  };
+
+  const handleFileUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploading(true);
+    try {
+      const uploaded = await Promise.all(
+        files.map(file => base44.integrations.Core.UploadFile({ file }))
+      );
+      const urls = uploaded.map(r => r.file_url);
+      setForm(f => ({ ...f, file_urls: [...(f.file_urls || []), ...urls] }));
+      toast.success(`${urls.length} file(s) uploaded`);
+    } catch {
+      toast.error('Upload failed');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  const removeFileUrl = (url) => {
+    setForm(f => ({ ...f, file_urls: f.file_urls.filter(u => u !== url) }));
+  };
+
+  const addReferenceUrl = () => {
+    if (!newUrl.trim()) return;
+    setForm(f => ({ ...f, reference_urls: [...(f.reference_urls || []), newUrl.trim()] }));
+    setNewUrl('');
+  };
+
+  const removeReferenceUrl = (url) => {
+    setForm(f => ({ ...f, reference_urls: f.reference_urls.filter(u => u !== url) }));
   };
 
   const handleSave = async () => {
@@ -274,6 +312,69 @@ export default function ResourceManager() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {/* File Uploads */}
+            <div className="space-y-2">
+              <Label>Attached Files</Label>
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-3 p-3 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-green-400 hover:bg-green-50/30 transition-colors"
+              >
+                {uploading
+                  ? <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
+                  : <Upload className="w-4 h-4 text-slate-400" />}
+                <span className="text-sm text-slate-500">{uploading ? 'Uploading…' : 'Click to upload files (PDF, DOCX, images, etc.)'}</span>
+              </div>
+              <input ref={fileInputRef} type="file" multiple onChange={handleFileUpload} className="hidden" />
+              {(form.file_urls || []).length > 0 && (
+                <div className="space-y-1.5">
+                  {form.file_urls.map(url => (
+                    <div key={url} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
+                      <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                      <a href={url} target="_blank" rel="noopener noreferrer"
+                        className="text-xs text-blue-600 hover:underline truncate flex-1">
+                        {url.split('/').pop() || url}
+                      </a>
+                      <button onClick={() => removeFileUrl(url)} className="text-slate-400 hover:text-red-500 flex-shrink-0">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Reference URLs */}
+            <div className="space-y-2">
+              <Label>Reference URLs</Label>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="https://docs.example.com/api"
+                  value={newUrl}
+                  onChange={e => setNewUrl(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && addReferenceUrl()}
+                />
+                <Button type="button" onClick={addReferenceUrl} variant="outline" className="flex-shrink-0">
+                  <Link className="w-4 h-4" />
+                </Button>
+              </div>
+              {(form.reference_urls || []).length > 0 && (
+                <div className="space-y-1.5">
+                  {form.reference_urls.map(url => (
+                    <div key={url} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
+                      <Link className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                      <a href={url} target="_blank" rel="noopener noreferrer"
+                        className="text-xs text-blue-600 hover:underline truncate flex-1">
+                        {url}
+                      </a>
+                      <button onClick={() => removeReferenceUrl(url)} className="text-slate-400 hover:text-red-500 flex-shrink-0">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end gap-3 pt-4 border-t">
