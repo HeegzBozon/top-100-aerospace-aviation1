@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import ProfileView from '@/pages/ProfileView';
 import LandingHeroSection from '@/components/landing/LandingHeroSection';
-
 import Landing2Hero from '@/components/landing/Landing2Hero';
 import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
 
@@ -26,7 +25,7 @@ import { useQuery } from '@tanstack/react-query';
 import { subDays } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 
-// Stable module-level shuffle — avoids re-creation on every render
+// Stable module-level shuffle utility
 function shuffleArray(array) {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
