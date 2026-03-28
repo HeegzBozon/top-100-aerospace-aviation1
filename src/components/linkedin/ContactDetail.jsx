@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Loader2, MessageCircle, ExternalLink, CheckCircle2, Zap } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import TriageEvaluation from './TriageEvaluation';
@@ -11,6 +12,7 @@ export default function ContactDetail({ contact, onUpdate }) {
   const [linkedEntity, setLinkedEntity] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentContact, setCurrentContact] = useState(contact);
+  const [showEvaluationModal, setShowEvaluationModal] = useState(false);
 
   useEffect(() => {
     setCurrentContact(contact);
@@ -164,14 +166,17 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
                 <h2 className="text-2xl font-bold text-[#1e3a5a]">{currentContact.full_name}</h2>
                 <p className="text-sm text-slate-600">{currentContact.headline}</p>
               </div>
-              {/* Tier Badge in Header */}
+              {/* Tier Badge in Header - Clickable */}
               {currentContact.tier_classification && (
-                <div className="flex-shrink-0 text-right">
-                  <div className="inline-flex flex-col items-center px-3 py-2 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
+                <button
+                  onClick={() => setShowEvaluationModal(true)}
+                  className="flex-shrink-0 text-right hover:scale-105 transition-transform duration-200"
+                >
+                  <div className="inline-flex flex-col items-center px-3 py-2 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg hover:border-purple-400 cursor-pointer">
                     <span className="text-xs font-semibold text-purple-600 uppercase tracking-wide">{currentContact.tier_classification}</span>
                     <span className="text-lg font-bold text-purple-700">{currentContact.tier_score || 0}/20</span>
                   </div>
-                </div>
+                </button>
               )}
             </div>
             
@@ -324,8 +329,15 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
         )}
       </div>
 
-      {/* TIER-S Triage Evaluation */}
-      <TriageEvaluation contact={currentContact} onEvaluated={handleEvaluated} />
+      {/* Evaluation Modal */}
+      <Dialog open={showEvaluationModal} onOpenChange={setShowEvaluationModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">{currentContact.full_name} - TIER-S Evaluation</DialogTitle>
+          </DialogHeader>
+          <TriageEvaluation contact={currentContact} onEvaluated={handleEvaluated} />
+        </DialogContent>
+      </Dialog>
 
       {/* Action Buttons */}
       {currentContact.response_status !== 'done' && (
