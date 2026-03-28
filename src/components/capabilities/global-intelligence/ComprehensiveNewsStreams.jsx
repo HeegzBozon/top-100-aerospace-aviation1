@@ -36,6 +36,7 @@ export default function ComprehensiveNewsStreams() {
           <HLSVideoPlayer
             hlsUrl={active.hls}
             youtubeId={active.youtube}
+            geoBlocked={active.geoBlocked}
             title={`${active.name} Live`}
             onError={(err) => console.warn(`[${active.name}]`, err)}
           />

@@ -14,16 +14,21 @@ const loadHls = async () => {
   }
 };
 
-export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, onError }) {
+export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, geoBlocked, onError }) {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [hlsError, setHlsError] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
 
+  // Use proxy for geo-blocked channels
+  const proxiedHlsUrl = geoBlocked && hlsUrl
+    ? `/api/hlsProxy?url=${encodeURIComponent(hlsUrl)}`
+    : hlsUrl;
+
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !hlsUrl) {
+    if (!video || !proxiedHlsUrl) {
       setLoading(false);
       if (!youtubeId) setShowFallback(true);
       return;
@@ -62,7 +67,7 @@ export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, onError }) {
             }
           });
 
-          hls.loadSource(hlsUrl);
+          hls.loadSource(proxiedHlsUrl);
           hls.attachMedia(video);
           hlsRef.current = hls;
 
@@ -75,7 +80,7 @@ export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, onError }) {
           });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
           // Native HLS support (Safari)
-          video.src = hlsUrl;
+          video.src = proxiedHlsUrl;
           video.addEventListener(
             'loadedmetadata',
             () => {
@@ -103,7 +108,7 @@ export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, onError }) {
       controller.abort();
       hlsRef.current?.destroy();
     };
-  }, [hlsUrl, youtubeId, onError]);
+  }, [proxiedHlsUrl, youtubeId, geoBlocked, onError]);
 
   if (!hlsUrl && !youtubeId) {
     return (
@@ -115,7 +120,7 @@ export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, onError }) {
   }
 
   // Show HLS stream (try primary)
-  if (!showFallback && hlsUrl) {
+  if (!showFallback && proxiedHlsUrl) {
     return (
       <div className="relative w-full rounded-lg border border-white/10 overflow-hidden bg-black">
         {loading && (

@@ -10,6 +10,7 @@ export const NEWS_CHANNELS = [
     icon: '🇺🇸',
     hls: null,
     youtube: 'ABCNews',
+    geoBlocked: true,
   },
   {
     id: 'abc_australia',
@@ -73,6 +74,7 @@ export const NEWS_CHANNELS = [
     icon: '🇺🇸',
     hls: null,
     youtube: 'CBSNews',
+    geoBlocked: true,
   },
   {
     id: 'cgtv_arabic',
@@ -101,6 +103,7 @@ export const NEWS_CHANNELS = [
     icon: '📈',
     hls: 'https://www.cnbc.com/tv/live-tv/',
     youtube: 'CNBC',
+    geoBlocked: true,
   },
   {
     id: 'cnn',
@@ -108,6 +111,7 @@ export const NEWS_CHANNELS = [
     icon: '🇺🇸',
     hls: null,
     youtube: 'CNN',
+    geoBlocked: true,
   },
   {
     id: 'cnn_brasil',
@@ -157,6 +161,7 @@ export const NEWS_CHANNELS = [
     icon: '🇺🇸',
     hls: null,
     youtube: 'foxnewschannel',
+    geoBlocked: true,
   },
   {
     id: 'globo_news',
@@ -185,6 +190,7 @@ export const NEWS_CHANNELS = [
     icon: '🇺🇸',
     hls: null,
     youtube: 'NBCNews',
+    geoBlocked: true,
   },
   {
     id: 'ndtv',
@@ -248,6 +254,7 @@ export const NEWS_CHANNELS = [
     icon: '🇩🇪',
     hls: null,
     youtube: 'WELTofficial',
+    geoBlocked: true,
   },
   {
     id: 'wion',
@@ -375,6 +382,7 @@ export const NEWS_CHANNELS = [
     icon: '🇪🇸',
     hls: 'https://rtvelivestream.akamaized.net/groupc/g247/master.m3u8',
     youtube: 'RTVE',
+    geoBlocked: true,
   },
   {
     id: 'tbs_news',
