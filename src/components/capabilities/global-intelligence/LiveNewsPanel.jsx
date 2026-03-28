@@ -1,182 +1,158 @@
-import { useState, useEffect } from 'react';
-import { getSpaceNews } from '@/functions/getSpaceNews';
-import { getNewsFeedDigest } from '@/functions/getNewsFeedDigest';
-import { ExternalLink, Radio, Tv, RefreshCw, Clock, Loader2 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { useState, useEffect, useMemo } from 'react';
+import { getUpcomingLaunches } from '@/functions/getUpcomingLaunches';
+import { Radio, Loader2, AlertCircle, Clock, Rocket } from 'lucide-react';
+import { parseISO, differenceInSeconds } from 'date-fns';
 
-const LIVE_CHANNELS = [
-  { id: 'bloomberg',  name: 'Bloomberg TV',  color: '#1e3a5a', url: 'https://www.youtube.com/@BloombergTelevision/live', query: 'bloomberg markets finance' },
-  { id: 'bbc',        name: 'BBC News',      color: '#b91c1c', url: 'https://www.youtube.com/@BBCNews/live',             query: 'bbc news international world' },
-  { id: 'aljazeera',  name: 'Al Jazeera',    color: '#c9a87c', url: 'https://www.youtube.com/@aljazeeraenglish/live',     query: 'al jazeera world news' },
-  { id: 'france24',   name: 'France 24',     color: '#3b82f6', url: 'https://www.youtube.com/@France24_en/live',         query: 'france 24 europe international' },
-  { id: 'nasa',       name: 'NASA Live',     color: '#0f4d8a', url: 'https://www.youtube.com/@NASA/live',               query: 'nasa space launch iss' },
-  { id: 'dw',         name: 'DW News',       color: '#ef4444', url: 'https://www.youtube.com/@dwnews/live',             query: 'dw news international germany' },
-  { id: 'euronews',   name: 'Euronews',      color: '#10b981', url: 'https://www.youtube.com/@euronews/live',           query: 'euronews european union' },
-];
-
-function TimeAgo({ date }) {
-  if (!date) return null;
+function extractYouTubeId(url) {
+  if (!url) return null;
   try {
-    return (
-      <span className="text-[10px] text-slate-500 whitespace-nowrap">
-        {formatDistanceToNow(new Date(date), { addSuffix: true })}
-      </span>
-    );
+    const u = new URL(url);
+    if (u.hostname.includes('youtube.com')) return u.searchParams.get('v');
+    if (u.hostname === 'youtu.be') return u.pathname.slice(1).split('?')[0];
   } catch {
     return null;
   }
+  return null;
+}
+
+function useCountdown(targetIso) {
+  const [seconds, setSeconds] = useState(() =>
+    targetIso ? differenceInSeconds(parseISO(targetIso), new Date()) : null
+  );
+
+  useEffect(() => {
+    if (!targetIso) return;
+    const interval = setInterval(() => {
+      setSeconds(differenceInSeconds(parseISO(targetIso), new Date()));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [targetIso]);
+
+  return seconds;
+}
+
+function formatCountdown(totalSeconds) {
+  if (totalSeconds == null) return '--:--:--';
+  const abs = Math.abs(totalSeconds);
+  const d = Math.floor(abs / 86400);
+  const h = Math.floor((abs % 86400) / 3600);
+  const m = Math.floor((abs % 3600) / 60);
+  const s = abs % 60;
+  const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  const prefix = totalSeconds <= 0 ? 'T+' : 'T-';
+  return d > 0 ? `${prefix}${d}d ${time}` : `${prefix}${time}`;
 }
 
 export function LiveNewsPanel() {
-  const [activeChannel, setActiveChannel] = useState(LIVE_CHANNELS[0]);
-  const [articles, setArticles] = useState([]);
+  const [launch, setLaunch] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    setLoading(true);
-    setArticles([]);
-
-    // Try Space News API for aerospace channels, generic news digest for others
-    const isAerospace = ['nasa'].includes(activeChannel.id);
-
-    const fetcher = isAerospace
-      ? getSpaceNews({ type: 'articles', search: activeChannel.query, limit: 12 })
-      : getNewsFeedDigest({ query: activeChannel.query, limit: 12 });
-
-    fetcher
+    getUpcomingLaunches({ limit: 1 })
       .then(res => {
-        const data = res?.data;
-        // Space News API
-        if (data?.results) return setArticles(data.results.slice(0, 10));
-        // News digest format
-        if (data?.articles) return setArticles(data.articles.slice(0, 10));
-        if (Array.isArray(data)) return setArticles(data.slice(0, 10));
+        if (res?.data?.launches?.length > 0) {
+          setLaunch(res.data.launches[0]);
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [activeChannel.id, refreshKey]);
+  }, []);
 
-  const ch = activeChannel;
+  const secondsToLaunch = useCountdown(launch?.net);
+  const isLaunched = secondsToLaunch !== null && secondsToLaunch <= 0;
+
+  const youtubeId = useMemo(() => {
+    if (!launch?.vidURLs?.length) return null;
+    for (const v of launch.vidURLs) {
+      const id = extractYouTubeId(v?.url || v);
+      if (id) return id;
+    }
+    return null;
+  }, [launch?.vidURLs]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-500 bg-[#0a0f1e] rounded-xl">
+        <Loader2 className="w-5 h-5 animate-spin" />
+        <span className="text-[10px] font-mono tracking-wider">ESTABLISHING LINK...</span>
+      </div>
+    );
+  }
+
+  if (!launch) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-500 px-4 text-center bg-[#0a0f1e] rounded-xl">
+        <Radio className="w-8 h-8 opacity-30" />
+        <p className="text-xs">No upcoming launches available.</p>
+      </div>
+    );
+  }
+
+  const providerName = launch.launch_service_provider?.name || launch.rocket?.configuration?.name || 'Launch';
+  const launchName = launch.name?.split('|')[0]?.trim() || 'Next Mission';
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0f1e] text-white overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0a0f1e] text-white overflow-hidden relative rounded-xl border border-white/5">
+      {/* Background if no video */}
+      {!youtubeId && launch.image && (
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <img src={launch.image} alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1e] to-transparent" />
+        </div>
+      )}
 
-      {/* Channel selector */}
-      <div className="shrink-0 overflow-x-auto scrollbar-hide border-b border-white/5">
-        <div className="flex gap-1 p-1.5 min-w-max">
-          {LIVE_CHANNELS.map(c => (
-            <button
-              key={c.id}
-              onClick={() => setActiveChannel(c)}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-bold tracking-wide whitespace-nowrap transition-all ${
-                ch.id === c.id
-                  ? 'text-white shadow-md'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
-              }`}
-              style={ch.id === c.id ? { background: c.color } : {}}
-            >
-              <Radio className="w-2.5 h-2.5" />
-              {c.name}
-            </button>
-          ))}
+      {/* Info Header */}
+      <div className="shrink-0 flex flex-col px-3 py-2.5 border-b border-white/5 relative z-10 bg-black/40 backdrop-blur-sm">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold text-[#c9a87c] tracking-wider uppercase mb-0.5 truncate">
+              {providerName}
+            </p>
+            <h3 className="text-sm font-semibold text-white/90 truncate leading-snug">
+              {launchName}
+            </h3>
+          </div>
+          
+          <div className="shrink-0 text-right">
+            <div className="inline-flex items-center gap-1.5 bg-black/50 border border-white/10 rounded px-2 py-1">
+              <Clock className="w-3 h-3 text-slate-400" />
+              <span className="font-mono text-xs font-bold text-white tracking-wider">
+                {formatCountdown(secondsToLaunch)}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Watch Live header for active channel */}
-      <div
-        className="shrink-0 flex items-center justify-between px-3 py-2 border-b border-white/5"
-        style={{ background: `${ch.color}22` }}
-      >
-        <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1 bg-red-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            ON AIR
-          </span>
-          <span className="text-xs font-semibold text-white/80">{ch.name}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setRefreshKey(k => k + 1)}
-            className="text-white/30 hover:text-white/70 transition-colors p-1"
-            title="Refresh feed"
-          >
-            <RefreshCw className="w-3 h-3" />
-          </button>
-          <a
-            href={ch.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1.5 rounded-md text-white transition-all hover:opacity-80"
-            style={{ background: ch.color }}
-          >
-            <Tv className="w-3 h-3" />
-            Watch Live
-            <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-          </a>
-        </div>
-      </div>
-
-      {/* News articles feed */}
-      <div className="flex-1 overflow-y-auto min-h-0">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-500">
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span className="text-[10px] font-mono tracking-wider">LOADING FEED...</span>
-          </div>
-        ) : articles.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-500 px-4 text-center">
-            <Radio className="w-8 h-8 opacity-30" />
-            <p className="text-xs">No articles found. Try refreshing or watch live on YouTube.</p>
-            <a
-              href={ch.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-2 rounded-lg text-white transition-all hover:opacity-80"
-              style={{ background: ch.color }}
-            >
-              <Tv className="w-3.5 h-3.5" />
-              Open {ch.name} Live
-              <ExternalLink className="w-3 h-3 opacity-70" />
-            </a>
-          </div>
+      {/* Video or Fallback */}
+      <div className="flex-1 relative bg-black flex items-center justify-center z-10 min-h-[220px]">
+        {youtubeId ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${youtubeId}?rel=0&autoplay=1&mute=1`}
+            title="Launch webcast"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full border-0"
+          />
         ) : (
-          <div className="divide-y divide-white/[0.04]">
-            {articles.map((article, i) => (
-              <a
-                key={article.id || article.url || i}
-                href={article.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex gap-2.5 p-2.5 hover:bg-white/5 transition-colors group"
-              >
-                {article.image_url && (
-                  <img
-                    src={article.image_url}
-                    alt=""
-                    className="w-14 h-10 object-cover rounded shrink-0 opacity-80 group-hover:opacity-100 transition-opacity"
-                    loading="lazy"
-                    onError={e => { e.target.style.display = 'none'; }}
-                  />
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-medium text-slate-200 line-clamp-2 leading-snug group-hover:text-white transition-colors">
-                    {article.title}
-                  </p>
-                  <div className="flex items-center gap-1.5 mt-1">
-                    <Clock className="w-2.5 h-2.5 text-slate-600 shrink-0" />
-                    <TimeAgo date={article.published_at || article.updated_at} />
-                    {article.news_site && (
-                      <span className="text-[9px] text-slate-600 truncate">{article.news_site}</span>
-                    )}
-                  </div>
-                </div>
-                <ExternalLink className="w-3 h-3 text-slate-700 group-hover:text-slate-400 shrink-0 mt-0.5 transition-colors" />
-              </a>
-            ))}
+          <div className="flex flex-col items-center gap-3 text-white/40 p-4 text-center">
+            <Rocket className="w-10 h-10 opacity-50" />
+            <p className="text-xs max-w-[200px] leading-relaxed">
+              Live video stream is not yet available for this launch. Check back closer to T-0.
+            </p>
           </div>
         )}
       </div>
+      
+      {/* Bottom bar if live */}
+      {isLaunched && (
+        <div className="shrink-0 flex items-center justify-center gap-2 bg-red-900/40 border-t border-red-500/20 py-1.5 z-10 relative">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          <span className="text-[10px] font-bold text-red-200 tracking-widest uppercase">
+            Mission Underway
+          </span>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Radio } from 'lucide-react';
+import { Rocket } from 'lucide-react';
 import { LiveNewsPanel } from '@/components/capabilities/global-intelligence/LiveNewsPanel';
 
 export default function EditorialLiveFeeds() {
@@ -14,16 +14,16 @@ export default function EditorialLiveFeeds() {
           borderColor: 'rgba(30,58,90,0.2)',
         }}
       >
-        <Radio className="w-3.5 h-3.5 text-red-400" />
+        <Rocket className="w-3.5 h-3.5 text-amber-400" />
         <span
           className="text-xs font-bold text-white tracking-wide"
           style={{ fontFamily: "var(--brand-font-serif, 'Playfair Display', Georgia, serif)" }}
         >
-          Live Feeds
+          Next Launch Livestream
         </span>
         <div className="flex-1" />
-        <span className="flex items-center gap-1 text-[9px] text-red-300 font-mono">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" /> ON AIR
+        <span className="flex items-center gap-1 text-[9px] text-amber-300 font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" /> STANDBY
         </span>
       </div>
       <div className="flex-1 min-h-0 bg-[#0a0f1e] p-2">
