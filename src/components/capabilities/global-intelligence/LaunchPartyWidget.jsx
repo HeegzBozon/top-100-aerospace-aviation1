@@ -63,6 +63,7 @@ export function LaunchPartyWidget() {
   const [isError, setIsError] = useState(false);
   const [youtubeId, setYoutubeId] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [embedError, setEmbedError] = useState(false);
 
   const countdown = useCountdown(launch?.net);
 
@@ -109,6 +110,9 @@ export function LaunchPartyWidget() {
       .finally(() => setIsSearching(false));
   }, [launch, ll2YoutubeId]);
 
+  // Reset embed error when youtubeId changes
+  useEffect(() => { setEmbedError(false); }, [finalYoutubeId]);
+
   if (isLoading) {
     return (
       <Card className="border-[#1e3a5a]/10 bg-gradient-to-br from-[#0f1d2d] to-[#1e3a5a]">
@@ -144,13 +148,14 @@ export function LaunchPartyWidget() {
     >
       {/* Hero image or micro player strip */}
       <div className="relative h-48 sm:h-56 bg-gradient-to-br from-[#0f1d2d] to-[#1e3a5a] overflow-hidden">
-        {finalYoutubeId ? (
+        {finalYoutubeId && !embedError ? (
           <iframe
             src={`https://www.youtube.com/embed/${finalYoutubeId}?rel=0&modestbranding=1&mute=1&autoplay=1`}
             title={`${launchName} webcast`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             className="absolute inset-0 w-full h-full border-0 z-0"
+            onError={() => setEmbedError(true)}
           />
         ) : launch.image ? (
           <img
@@ -165,8 +170,24 @@ export function LaunchPartyWidget() {
           </div>
         )}
 
+        {/* Embed error fallback */}
+        {embedError && finalYoutubeId && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 backdrop-blur-sm z-20">
+            <AlertCircle className="w-6 h-6 text-[#c9a87c]" />
+            <p className="text-white/60 text-xs text-center px-2">Stream can't be embedded</p>
+            <a
+              href={`https://www.youtube.com/watch?v=${finalYoutubeId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 mt-1 px-2 py-1 rounded bg-red-600/80 hover:bg-red-600 text-white text-[10px] font-semibold transition-colors"
+            >
+              Watch on YouTube →
+            </a>
+          </div>
+        )}
+
         {/* Overlaid gradient for text legibility (skip on video) */}
-        {!finalYoutubeId && <div className="absolute inset-0 bg-gradient-to-t from-[#0f1d2d]/90 via-[#0f1d2d]/40 to-transparent" />}
+        {(!finalYoutubeId || embedError) && <div className="absolute inset-0 bg-gradient-to-t from-[#0f1d2d]/90 via-[#0f1d2d]/40 to-transparent" />}
 
         {/* Tag */}
         <div className="absolute top-3 left-3 flex items-center gap-1.5 z-10">
@@ -178,7 +199,7 @@ export function LaunchPartyWidget() {
               GO
             </span>
           )}
-          {finalYoutubeId && (
+          {finalYoutubeId && !embedError && (
             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600/90 text-white animate-pulse">
               LIVE
             </span>
