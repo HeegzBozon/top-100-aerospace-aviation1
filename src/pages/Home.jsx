@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import ProfileView from '@/pages/ProfileView';
 import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import Landing2Hero from '@/components/landing/Landing2Hero';
@@ -44,6 +44,8 @@ export default function HomePage() {
   const [sectionConfig, setSectionConfig] = useState(() =>
     DEFAULT_SECTIONS.map(s => ({ ...s, visible: true }))
   );
+  const [sectionConfigSeeded, setSectionConfigSeeded] = useState(false);
+
 
   const isVisible = (id) => {
     const found = sectionConfig.find(s => s.id === id);
@@ -103,8 +105,12 @@ export default function HomePage() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-        const saved = loadSectionConfig(currentUser);
-        if (saved) setSectionConfig(saved);
+        // Seed section config from user's globally-persisted record
+        if (!sectionConfigSeeded) {
+          const saved = loadSectionConfig(currentUser);
+          if (saved) setSectionConfig(saved);
+          setSectionConfigSeeded(true);
+        }
       } catch (e) {
         setUser(null);
       }
@@ -154,24 +160,30 @@ export default function HomePage() {
       if (d && d >= thirtyDaysAgo) map[m.nominee_id] = (map[m.nominee_id] || 0) + 1;
     });
     return map;
-  }, [recentSignals, recentMentions, thirtyDaysAgo]);
+  }, [recentSignals, recentMentions]);
+
+  const computeTrendingScore = useCallback((n) => {
+    let score = 0;
+    // is_on_fire boost (40 pts)
+    if (n.is_on_fire) score += 40;
+    // Win percentage (up to 30 pts)
+    score += ((n.win_percentage || 0) / 100) * 30;
+    // Intelligence feed appearances last 30 days (up to 20 pts, capped at 5 signals)
+    const feedHits = signalCountMap[n.id] || 0;
+    score += Math.min(feedHits, 5) * 4;
+    // Recent activity proxy: direct_vote_count normalized (up to 10 pts)
+    const updatedRecently = n.updated_date && new Date(n.updated_date) >= thirtyDaysAgo;
+    if (updatedRecently) score += Math.min((n.direct_vote_count || 0) / 10, 10);
+    return score;
+  }, [signalCountMap]);
 
   // Trending profiles - sorted by composite score
-  const trendingProfiles = useMemo(() => {
-    return [...nominees]
-      .map(n => {
-        let score = 0;
-        if (n.is_on_fire) score += 40;
-        score += ((n.win_percentage || 0) / 100) * 30;
-        const feedHits = signalCountMap[n.id] || 0;
-        score += Math.min(feedHits, 5) * 4;
-        const updatedRecently = n.updated_date && new Date(n.updated_date) >= thirtyDaysAgo;
-        if (updatedRecently) score += Math.min((n.direct_vote_count || 0) / 10, 10);
-        return { ...n, _trendingScore: score };
-      })
+  const trendingProfiles = useMemo(() =>
+    [...nominees]
+      .map(n => ({ ...n, _trendingScore: computeTrendingScore(n) }))
       .sort((a, b) => b._trendingScore - a._trendingScore)
-      .slice(0, 12);
-  }, [nominees, signalCountMap, thirtyDaysAgo]);
+      .slice(0, 12),
+  [nominees, computeTrendingScore]);
 
   const serviceItems = services.map(s => ({
     type: "service",

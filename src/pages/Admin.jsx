@@ -108,24 +108,23 @@ export default function Admin() {
 
   // ── Auth & Data ──
   useEffect(() => {
-    const init = async () => {
-      try {
-        const user = await User.me();
-        setCurrentUser(user);
-        if (user.role === 'admin' || user.email.includes('admin') || user.email.includes('owner')) {
-          await loadAllData();
-        }
-      } catch (error) {
-        console.error('Error checking authorization:', error);
-        setCurrentUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    init();
+    checkAuthAndLoadData();
   }, []);
 
-
+  const checkAuthAndLoadData = async () => {
+    try {
+      const user = await User.me();
+      setCurrentUser(user);
+      if (user.role === 'admin' || user.email.includes('admin') || user.email.includes('owner')) {
+        await loadAllData();
+      }
+    } catch (error) {
+      console.error('Error checking authorization:', error);
+      setCurrentUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadAllData = async (retries = 3) => {
     try {
