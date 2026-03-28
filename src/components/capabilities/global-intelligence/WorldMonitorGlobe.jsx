@@ -98,8 +98,8 @@ export function WorldMonitorGlobe() {
   const [selectedIcao24, setSelectedIcao24] = useState(null);
   const { data: wbFlightsRaw }  = useWingbitsLiveFlights();
   const { data: wbGpsData }      = useWingbitsGpsJam();
-  const { data: wbDetailData }   = useWingbitsFlightDetail(selectedIcao24);
-  const { data: wbPathData }     = useWingbitsFlightPath(selectedIcao24);
+  const { data: wbDetailData }   = useWingbitsFlightDetail(selectedIcao24 || null);
+  const { data: wbPathData }     = useWingbitsFlightPath(selectedIcao24 || null);
 
   // Animate satellite positions every 30 s
   useEffect(() => {
