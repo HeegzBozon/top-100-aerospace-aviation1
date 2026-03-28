@@ -49,6 +49,8 @@ export default function InboxManagerChat({ selectedContact }) {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showEvalModal, setShowEvalModal] = useState(false);
+  const [globalOkrs, setGlobalOkrs] = useState([]);
+  const [globalOkrInput, setGlobalOkrInput] = useState('');
   const [okrs, setOkrs] = useState({});
   const [editingOkr, setEditingOkr] = useState(null);
   const [okrInput, setOkrInput] = useState('');
@@ -104,6 +106,20 @@ export default function InboxManagerChat({ selectedContact }) {
   };
 
   const currentContactOkrs = selectedContact?.id ? (okrs[selectedContact.id] || []) : [];
+
+  const handleAddGlobalOkr = () => {
+    if (!globalOkrInput.trim()) return;
+    setGlobalOkrs(prev => [...prev, { id: Date.now(), text: globalOkrInput, completed: false }]);
+    setGlobalOkrInput('');
+  };
+
+  const handleToggleGlobalOkr = (okrId) => {
+    setGlobalOkrs(prev => prev.map(o => o.id === okrId ? { ...o, completed: !o.completed } : o));
+  };
+
+  const handleRemoveGlobalOkr = (okrId) => {
+    setGlobalOkrs(prev => prev.filter(o => o.id !== okrId));
+  };
 
   const initConversation = async () => {
     setLoading(true);
@@ -172,6 +188,66 @@ export default function InboxManagerChat({ selectedContact }) {
 
   return (
     <div className="flex flex-col h-full bg-slate-50 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+      {/* Global OKRs Bar */}
+      <div className="px-4 py-3 bg-gradient-to-r from-indigo-50 to-slate-50 border-b border-indigo-200 flex-shrink-0">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xs font-bold text-slate-900 flex items-center gap-2">
+            <span>🎯</span> Inbox Manager OKRs
+          </h3>
+          <span className="text-xs text-slate-500">
+            {globalOkrs.filter(o => o.completed).length}/{globalOkrs.length} completed
+          </span>
+        </div>
+        <div className="flex items-center gap-2 mb-2">
+          {globalOkrs.length === 0 ? (
+            <p className="text-xs text-slate-500 italic">No global OKRs. Add one to track your inbox goals.</p>
+          ) : (
+            <div className="flex flex-wrap gap-1.5 flex-1">
+              {globalOkrs.map(okr => (
+                <div
+                  key={okr.id}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border ${
+                    okr.completed
+                      ? 'bg-green-50 text-green-700 border-green-200 line-through'
+                      : 'bg-white text-indigo-700 border-indigo-200'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={okr.completed}
+                    onChange={() => handleToggleGlobalOkr(okr.id)}
+                    className="w-3 h-3 cursor-pointer"
+                  />
+                  <span>{okr.text}</span>
+                  <button
+                    onClick={() => handleRemoveGlobalOkr(okr.id)}
+                    className="text-red-500 hover:text-red-700 ml-1"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={globalOkrInput}
+            onChange={e => setGlobalOkrInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleAddGlobalOkr()}
+            placeholder="Add a global OKR (e.g., 'Reply to all S-Tier by Friday')"
+            className="flex-1 text-xs px-2 py-1.5 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+          <button
+            onClick={handleAddGlobalOkr}
+            className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex-shrink-0"
+          >
+            Add
+          </button>
+        </div>
+      </div>
 
       {/* Contact Header Card */}
       {selectedContact && (
