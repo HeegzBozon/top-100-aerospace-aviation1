@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import {
   GitBranch, Bot, Zap, Package, Plus, Pencil, Trash2,
-  ChevronDown, ChevronUp, ToggleLeft, ToggleRight, X, Save, Upload, FileText
+  ChevronDown, ChevronUp, ToggleLeft, ToggleRight, X, Save, Upload, FileText, ClipboardPaste
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -55,6 +55,8 @@ function HarnessModal({ open, onClose, harness, agentSkills }) {
   const fileInputRef = useEffect ? React.useRef(null) : null;
   const mdFileRef = React.useRef(null);
   const [mdFileName, setMdFileName] = useState(null);
+  const [pasteText, setPasteText] = useState('');
+  const [showPaste, setShowPaste] = useState(false);
   const [form, setForm] = useState(harness || {
     name: '',
     description: '',
@@ -73,7 +75,23 @@ function HarnessModal({ open, onClose, harness, agentSkills }) {
       is_active: true, model_preference: 'automatic', temperature_hint: 'balanced',
     });
     setMdFileName(null);
+    setPasteText('');
+    setShowPaste(false);
   }, [harness, open]);
+
+  const applyPaste = () => {
+    if (!pasteText.trim()) return;
+    const parsed = parseMdToHarness(pasteText);
+    setForm(f => ({
+      ...f,
+      name: parsed.name || f.name,
+      description: parsed.description || f.description,
+      use_case: parsed.use_case || f.use_case,
+      model_preference: parsed.model_preference || f.model_preference,
+      routing_rules: parsed.routing_rules?.length ? parsed.routing_rules : f.routing_rules,
+    }));
+    setShowPaste(false);
+  };
 
   const handleMdUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -137,6 +155,43 @@ function HarnessModal({ open, onClose, harness, agentSkills }) {
                 )}
               </div>
               <input ref={mdFileRef} type="file" accept=".md,.txt" onChange={handleMdUpload} className="hidden" />
+            </div>
+          )}
+
+          {/* Paste import */}
+          {!isEdit && (
+            <div>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Paste Content</label>
+              {!showPaste ? (
+                <button
+                  onClick={() => setShowPaste(true)}
+                  className="flex items-center gap-2 w-full p-3 rounded-lg border-2 border-dashed border-slate-300 hover:border-indigo-400 hover:bg-indigo-50/30 text-xs text-slate-500 transition-colors"
+                >
+                  <ClipboardPaste className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  Paste markdown or text to pre-fill fields
+                </button>
+              ) : (
+                <div className="space-y-2">
+                  <textarea
+                    autoFocus
+                    rows={6}
+                    value={pasteText}
+                    onChange={e => setPasteText(e.target.value)}
+                    placeholder="Paste markdown, YAML, or plain text here…"
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-400/50 resize-none"
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <button onClick={() => setShowPaste(false)} className="text-xs text-slate-400 hover:text-slate-600 px-2 py-1">Cancel</button>
+                    <button
+                      onClick={applyPaste}
+                      disabled={!pasteText.trim()}
+                      className="text-xs font-semibold bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700 disabled:opacity-40"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
