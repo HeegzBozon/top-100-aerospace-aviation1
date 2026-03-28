@@ -1,9 +1,22 @@
 import { useState, useEffect } from 'react';
-import { Rocket, Clock, Loader2, AlertCircle, ArrowRight, MapPin } from 'lucide-react';
+import { useMemo } from 'react';
+import { Rocket, Clock, Loader2, AlertCircle, ArrowRight, MapPin, Tv } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { getUpcomingLaunches } from '@/functions/getUpcomingLaunches';
+
+function extractYouTubeId(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('youtube.com')) return u.searchParams.get('v');
+    if (u.hostname === 'youtu.be') return u.pathname.slice(1).split('?')[0];
+  } catch {
+    return null;
+  }
+  return null;
+}
 
 function useCountdown(targetDate) {
   const [parts, setParts] = useState({ days: 0, hours: 0, mins: 0, secs: 0, past: false });
@@ -89,14 +102,31 @@ export function LaunchPartyWidget() {
   const isGo         = launch.status?.abbrev === 'Go';
   const hasStream    = launch.vidURLs?.length > 0;
 
+  const youtubeId = useMemo(() => {
+    if (!hasStream || !launch?.vidURLs) return null;
+    for (const v of launch.vidURLs) {
+      const id = extractYouTubeId(v?.url || v);
+      if (id) return id;
+    }
+    return null;
+  }, [launch?.vidURLs, hasStream]);
+
   return (
     <Card
       className="overflow-hidden border-[#c9a87c]/30 shadow-md"
       aria-label="Next upcoming rocket launch"
     >
-      {/* Hero image strip */}
-      <div className="relative h-32 sm:h-40 bg-gradient-to-br from-[#0f1d2d] to-[#1e3a5a] overflow-hidden">
-        {launch.image ? (
+      {/* Hero image or micro player strip */}
+      <div className="relative h-48 sm:h-56 bg-gradient-to-br from-[#0f1d2d] to-[#1e3a5a] overflow-hidden">
+        {youtubeId ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&mute=1&autoplay=1`}
+            title={`${launchName} webcast`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full border-0 z-0"
+          />
+        ) : launch.image ? (
           <img
             src={launch.image}
             alt={launchName}
@@ -109,11 +139,11 @@ export function LaunchPartyWidget() {
           </div>
         )}
 
-        {/* Overlaid gradient for text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f1d2d]/90 via-[#0f1d2d]/40 to-transparent" />
+        {/* Overlaid gradient for text legibility (skip on video) */}
+        {!youtubeId && <div className="absolute inset-0 bg-gradient-to-t from-[#0f1d2d]/90 via-[#0f1d2d]/40 to-transparent" />}
 
         {/* Tag */}
-        <div className="absolute top-3 left-3 flex items-center gap-1.5">
+        <div className="absolute top-3 left-3 flex items-center gap-1.5 z-10">
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-[#c9a87c] text-[#1e3a5a] uppercase">
             🚀 Launch Party
           </span>
@@ -122,30 +152,32 @@ export function LaunchPartyWidget() {
               GO
             </span>
           )}
-          {hasStream && (
+          {youtubeId && (
             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600/90 text-white animate-pulse">
               LIVE
             </span>
           )}
         </div>
 
-        {/* Countdown */}
-        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
-          <div>
-            <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1 flex items-center gap-1">
-              <Clock className="w-3 h-3" aria-hidden="true" />
-              {countdown.past ? 'Launched / Underway' : 'T-minus'}
-            </p>
-            {!countdown.past && (
-              <div className="flex items-center gap-3">
-                <CountdownUnit value={countdown.days}  label="d" />
-                <CountdownUnit value={countdown.hours} label="h" />
-                <CountdownUnit value={countdown.mins}  label="m" />
-                <CountdownUnit value={countdown.secs}  label="s" />
-              </div>
-            )}
+        {/* Countdown (only when no video) */}
+        {!youtubeId && (
+          <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between z-10">
+            <div>
+              <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <Clock className="w-3 h-3" aria-hidden="true" />
+                {countdown.past ? 'Launched / Underway' : 'T-minus'}
+              </p>
+              {!countdown.past && (
+                <div className="flex items-center gap-3">
+                  <CountdownUnit value={countdown.days}  label="d" />
+                  <CountdownUnit value={countdown.hours} label="h" />
+                  <CountdownUnit value={countdown.mins}  label="m" />
+                  <CountdownUnit value={countdown.secs}  label="s" />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Body */}

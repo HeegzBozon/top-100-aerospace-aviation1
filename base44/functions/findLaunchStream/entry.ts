@@ -16,6 +16,7 @@ async function searchYouTubeStream(query) {
       q: query,
       type: 'video',
       eventType: broadcastType === 'none' ? 'completed' : broadcastType,
+      videoEmbeddable: 'true',
       maxResults: '3',
       order: 'relevance',
       key: YOUTUBE_API_KEY,
