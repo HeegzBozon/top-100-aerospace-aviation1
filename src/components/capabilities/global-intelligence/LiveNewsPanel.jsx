@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
 const LIVE_CHANNELS = [
-  { id: 'bbc',       name: 'BBC',        ytId: 'w_Ma8oQLmSM' },
-  { id: 'aljazeera', name: 'AJ',         ytId: 'h3MuIUNCCLI' },
-  { id: 'nasa',      name: 'NASA',       ytId: 'jn-LnY6k-h4' },
-  { id: 'sky',       name: 'Sky',        ytId: '9Auq9mYxFEE' },
-  { id: 'dw',        name: 'DW',         ytId: 'Z9FV6gu9vj4' },
+  { id: 'aljazeera', name: 'AJ',         ytId: 'gCNeDWCI0vo' },
+  { id: 'france24',  name: 'F24',        ytId: 'h3MuIUNCCLI' },
+  { id: 'nasa',      name: 'NASA',       ytId: '21X5lGlDOfg' },
+  { id: 'dw',        name: 'DW',         ytId: 'V1FNCH3yQcg' },
+  { id: 'euronews',  name: 'Euro',       ytId: 'pykpO5kQJ98' },
 ];
 
 export function LiveNewsPanel() {

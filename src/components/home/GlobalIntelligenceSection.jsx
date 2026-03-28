@@ -1,11 +1,10 @@
 import { lazy, Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Globe, ArrowRight, Radio, Crosshair, Rocket, AlertTriangle, Loader2 } from 'lucide-react';
+import { Globe, ArrowRight, Radio, Crosshair, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { LiveNewsPanel } from '@/components/capabilities/global-intelligence/LiveNewsPanel';
-import { LaunchWidgetCompact } from '@/components/capabilities/global-intelligence/LaunchWidgetCompact';
 import { ConflictAlertsSummary } from '@/components/capabilities/global-intelligence/ConflictAlertsSummary';
 import { CyberThreatsSummary } from '@/components/capabilities/global-intelligence/CyberThreatsSummary';
 import { GpsJammingSummary } from '@/components/capabilities/global-intelligence/GpsJammingSummary';
@@ -36,7 +35,7 @@ function MiniPanel({ label, icon: Icon, children }) {
 }
 
 export default function GlobalIntelligenceSection() {
-  const [showGlobe, setShowGlobe] = useState(false);
+  const [showGlobe, setShowGlobe] = useState(true);
 
   return (
     <section className="mx-3 md:mx-4 mt-4 md:mt-6">
@@ -108,16 +107,9 @@ export default function GlobalIntelligenceSection() {
         {/* Right column: stacked feed panels */}
         <div className="flex flex-col gap-3">
           {/* Live News */}
-          <div className="h-[200px] md:h-[220px]">
+          <div className="h-[240px] md:h-[300px]">
             <MiniPanel label="Live Feeds" icon={Radio}>
               <LiveNewsPanel />
-            </MiniPanel>
-          </div>
-
-          {/* Launch Schedule */}
-          <div className="h-[130px]">
-            <MiniPanel label="Launches" icon={Rocket}>
-              <LaunchWidgetCompact />
             </MiniPanel>
           </div>
 
