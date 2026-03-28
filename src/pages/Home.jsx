@@ -5,23 +5,20 @@ import Landing2Hero from '@/components/landing/Landing2Hero';
 import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
 
 import TrendingSection from '@/components/landing/TrendingSection';
-// HeroHeader is now integrated as a slide in Landing2Hero
-import AerospaceDashboardSection from '@/components/home/AerospaceDashboardSection';
+import TrendingTalent from '@/components/home/TrendingTalent';
+import DomainExplorer from '@/components/home/DomainExplorer';
 import IndustrySpotlight from '@/components/home/IndustrySpotlight';
 import FeaturedToday from '@/components/home/FeaturedToday';
 import TrendingPrograms from '@/components/home/TrendingPrograms';
-import TrendingTalent from '@/components/home/TrendingTalent';
 import CommunityFavorites from '@/components/home/CommunityFavorites';
 import UpcomingMissions from '@/components/home/UpcomingMissions';
 import TopPrograms from '@/components/home/TopPrograms';
-import DomainExplorer from '@/components/home/DomainExplorer';
 import TopOriginals from '@/components/home/TopOriginals';
 
-import GlobalIntelligenceSection from '@/components/home/GlobalIntelligenceSection';
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HomeSectionReorderPopover, { loadSectionConfig, DEFAULT_SECTIONS } from '@/components/admin/HomeSectionReorderPopover';
 
-const BloombergTerminal = lazy(() => import('@/components/terminal/BloombergTerminal'));
+const EditorialTerminal = lazy(() => import('@/components/terminal/EditorialTerminal'));
 
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
@@ -42,13 +39,6 @@ export default function HomePage() {
   const [publicUserEmail, setPublicUserEmail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
-
-  const [viewMode, setViewMode] = useState(() => {
-    if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem('home-view-mode') || 'terminal';
-    }
-    return 'terminal';
-  });
 
   // Section config: seeded from user record (global) once user loads
   const [sectionConfig, setSectionConfig] = useState(() =>
@@ -229,35 +219,12 @@ export default function HomePage() {
     return <LandingHeroSection user={null} />;
   }
 
-  // Terminal view for logged-in users
-  if (viewMode === 'terminal') {
-    return (
-      <div className="relative">
-        <Suspense fallback={
-          <div className="flex items-center justify-center h-screen bg-[#070b14]">
-            <Loader2 className="w-10 h-10 animate-spin text-sky-400" />
-          </div>
-        }>
-          <BloombergTerminal />
-        </Suspense>
-        {/* Floating toggle to switch to classic view */}
-        <button
-          onClick={() => { setViewMode('classic'); localStorage.setItem('home-view-mode', 'classic'); }}
-          className="fixed bottom-4 right-4 z-50 px-3 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase bg-slate-800/90 border border-slate-600/50 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors shadow-xl backdrop-blur-sm"
-        >
-          Classic View
-        </button>
-      </div>
-    );
-  }
-
   const userRole = user?.role || 'user';
   const isMemberOnly = userRole === 'user';
 
   const SECTION_COMPONENTS = {
     spotlight: isMemberOnly ? null : <IndustrySpotlight />,
     featured: isMemberOnly ? null : <FeaturedToday />,
-    dashboard: <AerospaceDashboardSection />,
     programs: isMemberOnly ? null : <TrendingPrograms />,
     talent: <TrendingTalent nominees={trendingProfiles} />,
     favorites: isMemberOnly ? null : <CommunityFavorites />,
@@ -269,44 +236,35 @@ export default function HomePage() {
   };
 
   return (
-    <div className="pb-8">
-      {/* Hero Carousel (includes personalized welcome slide) */}
-      <Landing2Hero user={user} />
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-10 h-10 animate-spin" style={{ color: '#c9a87c' }} />
+      </div>
+    }>
+      <EditorialTerminal>
+        {/* Hero + Promo */}
+        <Landing2Hero user={user} />
+        <Landing2PromoBanner />
 
-      {/* Promo Banners */}
-      <Landing2PromoBanner />
+        {/* Ordered, togglable editorial sections */}
+        {orderedSectionIds.map(id => {
+          if (!isVisible(id)) return null;
+          const component = SECTION_COMPONENTS[id];
+          if (!component) return null;
+          return (
+            <ErrorBoundary key={id}>
+              {component}
+            </ErrorBoundary>
+          );
+        })}
 
-      {/* Global Intelligence Section */}
-      <ErrorBoundary>
-        <GlobalIntelligenceSection />
-      </ErrorBoundary>
-
-      {/* Ordered, togglable sections */}
-      {orderedSectionIds.map(id => {
-        if (!isVisible(id)) return null;
-        const component = SECTION_COMPONENTS[id];
-        if (!component) return null;
-        return (
-          <ErrorBoundary key={id}>
-            {component}
-          </ErrorBoundary>
-        );
-      })}
-
-      {/* Admin-only section reorder toggle */}
-      <HomeSectionReorderPopover
-        isAdmin={user?.role === 'admin'}
-        user={user}
-        onConfigChange={setSectionConfig}
-      />
-
-      {/* Floating toggle to switch to terminal view */}
-      <button
-        onClick={() => { setViewMode('terminal'); localStorage.setItem('home-view-mode', 'terminal'); }}
-        className="fixed bottom-4 right-4 z-50 px-3 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase bg-slate-800/90 border border-slate-600/50 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors shadow-xl backdrop-blur-sm"
-      >
-        Terminal View
-      </button>
-    </div>
+        {/* Admin-only section reorder toggle */}
+        <HomeSectionReorderPopover
+          isAdmin={user?.role === 'admin'}
+          user={user}
+          onConfigChange={setSectionConfig}
+        />
+      </EditorialTerminal>
+    </Suspense>
   );
 }
