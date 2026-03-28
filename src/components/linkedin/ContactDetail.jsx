@@ -244,13 +244,13 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
         </div>
       </div>
 
-      {/* Conversation Messages — chronological order */}
+      {/* Conversation Messages — chronological order (oldest → newest, most recent at bottom) */}
       <div className="grid grid-cols-1 gap-3">
-        {/* Your outbound message (oldest) */}
+        {/* 1. My outbound message */}
         {currentContact.last_sent_message && (
           <div className="bg-blue-50 rounded-2xl border border-blue-200 p-5">
             <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">
-              ✓ Your Message
+              ✓ Me
               {currentContact.last_sent_date && (
                 <span className="text-blue-400 font-normal ml-2">
                   {new Date(currentContact.last_sent_date).toLocaleString()}
@@ -261,7 +261,7 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
           </div>
         )}
 
-        {/* Their first reply */}
+        {/* 2. Their older reply (last_sent_message_text) */}
         {currentContact.second_received_message && (
           <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5">
             <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
@@ -276,11 +276,11 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
           </div>
         )}
 
-        {/* Their most recent reply */}
+        {/* 3. Their most recent reply (replied_message_1_text) — newest, at bottom */}
         {currentContact.last_received_message && (
-          <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+          <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5 border-l-4 border-l-amber-400">
             <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-              💬 {currentContact.first_name || currentContact.full_name}
+              💬 {currentContact.first_name || currentContact.full_name} <span className="text-amber-500 normal-case font-normal">(latest)</span>
               {currentContact.last_received_date && (
                 <span className="text-slate-400 font-normal ml-2">
                   {new Date(currentContact.last_received_date).toLocaleString()}
