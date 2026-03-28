@@ -1,0 +1,69 @@
+{
+  "name": "Stream",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Display name (e.g., 'JFK Airport Runway 4R')"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "news",
+        "aviation",
+        "space",
+        "defense"
+      ],
+      "description": "Stream category aligned with industry domains"
+    },
+    "stream_url": {
+      "type": "string",
+      "description": "HLS m3u8 URL or YouTube/Twitch video ID"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "hls",
+        "youtube",
+        "twitch"
+      ],
+      "description": "Type of stream source"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description or subtitle"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Thumbnail image for grid view"
+    },
+    "linked_program_id": {
+      "type": "string",
+      "description": "Foreign key to Program page for contextual linking"
+    },
+    "region": {
+      "type": "string",
+      "description": "Geographic region (e.g., 'North America', 'Europe')"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the stream is currently active"
+    },
+    "sponsor_name": {
+      "type": "string",
+      "description": "Optional sponsor name for overlay/attribution"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order in grid"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "stream_url",
+    "source_type"
+  ]
+}

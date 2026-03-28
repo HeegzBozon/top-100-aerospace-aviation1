@@ -29,6 +29,7 @@ const Solutions               = lazy(() => import('@/pages/Solutions'));
 const LinkedInManager         = lazy(() => import('@/pages/LinkedInManager'));
 const LaunchParty             = lazy(() => import('@/pages/LaunchParty'));
 const Top100AerospaceAviationTV = lazy(() => import('@/pages/Top100AerospaceAviationTV'));
+const Top100TV = lazy(() => import('@/pages/Top100TV'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -121,9 +122,14 @@ const AuthenticatedApp = () => {
           <LinkedInManager />
         </LayoutWrapper>
       } />
-      <Route path="/top100-tv" element={
+      <Route path="/top100-tv-channels" element={
         <LayoutWrapper currentPageName="Top100AerospaceAviationTV">
           <Top100AerospaceAviationTV />
+        </LayoutWrapper>
+      } />
+      <Route path="/top100-tv" element={
+        <LayoutWrapper currentPageName="Top100TV">
+          <Top100TV />
         </LayoutWrapper>
       } />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
