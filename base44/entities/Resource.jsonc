@@ -31,7 +31,8 @@
         "process",
         "methodology",
         "strategy",
-        "tactic"
+        "tactic",
+        "script"
       ],
       "description": "Classification of the resource type"
     },

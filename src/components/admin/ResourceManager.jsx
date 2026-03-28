@@ -27,6 +27,7 @@ const RESOURCE_TYPES = [
   'methodology',
   'strategy',
   'tactic',
+  'script',
 ];
 
 const RETRIEVAL_METHODS = ['api_call', 'database_query', 'file_read', 'search_engine', 'none'];

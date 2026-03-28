@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 
 const RESOURCE_TYPES = [
   'knowledge_base', 'system', 'framework', 'process', 'methodology',
-  'strategy', 'tactic', 'llm', 'api_endpoint', 'external_service',
+  'strategy', 'tactic', 'script', 'llm', 'api_endpoint', 'external_service',
   'tool_runner', 'rag_pipeline', 'database_access', 'sandbox_environment',
   'model_serving_infrastructure',
 ];
