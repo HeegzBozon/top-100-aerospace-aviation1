@@ -1,6 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 
+// Lazy load HLS.js at module level
+let HlsLoaded = null;
+const loadHls = async () => {
+  if (HlsLoaded) return HlsLoaded;
+  try {
+    HlsLoaded = (await import('hls.js')).default;
+    return HlsLoaded;
+  } catch (err) {
+    console.error('[HLS] Failed to load hls.js:', err);
+    return null;
+  }
+};
+
 export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, onError }) {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
@@ -9,18 +22,18 @@ export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, onError }) {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
-
-    // If no HLS URL, skip and show fallback
-    if (!hlsUrl) {
+    if (!video || !hlsUrl) {
       setLoading(false);
       return;
     }
 
     const initHls = async () => {
       try {
-        // Dynamically import hls.js to avoid bundle bloat
-        const Hls = (await import('hls.js')).default;
+        const Hls = await loadHls();
+        if (!Hls) {
+          setError(true);
+          return;
+        }
 
         if (Hls.isSupported()) {
           const hls = new Hls({
@@ -31,7 +44,7 @@ export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, onError }) {
 
           hls.on(Hls.Events.ERROR, (event, data) => {
             if (data.fatal) {
-              console.warn('[HLS] Fatal error, attempting recovery:', data);
+              console.warn('[HLS] Fatal error:', data.details);
               setError(true);
               onError?.(data);
             }
@@ -44,16 +57,17 @@ export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, onError }) {
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             setLoading(false);
             video.play().catch(() => {
-              // Autoplay may be blocked; user will click play
+              // Autoplay may be blocked
             });
           });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          // Fallback for Safari (native HLS support)
           video.src = hlsUrl;
           video.addEventListener('loadedmetadata', () => setLoading(false), { once: true });
+        } else {
+          setError(true);
         }
       } catch (err) {
-        console.error('[HLS] Failed to initialize:', err);
+        console.error('[HLS] Init failed:', err);
         setError(true);
         onError?.(err);
       }
