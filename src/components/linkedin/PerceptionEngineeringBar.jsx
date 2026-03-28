@@ -6,14 +6,55 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import {
   GitBranch, Bot, Zap, Package, Plus, Pencil, Trash2,
-  ChevronDown, ChevronUp, ToggleLeft, ToggleRight, X, Save
+  ChevronDown, ChevronUp, ToggleLeft, ToggleRight, X, Save, Upload, FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// ─── MD Parser for Harness ───────────────────────────────────────────────────
+function parseMdToHarness(text) {
+  const lines = text.split('\n');
+  const result = { name: '', description: '', routing_rules: [] };
+
+  // Extract title from first H1
+  const h1 = lines.find(l => l.startsWith('# '));
+  if (h1) result.name = h1.replace(/^#\s+/, '').trim();
+
+  // Extract description — lines after title until next heading or blank block
+  const h1idx = lines.findIndex(l => l.startsWith('# '));
+  if (h1idx >= 0) {
+    const descLines = [];
+    for (let i = h1idx + 1; i < lines.length; i++) {
+      if (lines[i].startsWith('#')) break;
+      descLines.push(lines[i]);
+    }
+    result.description = descLines.join('\n').trim();
+  }
+
+  // Extract use_case from metadata line like "use_case: linkedin_outreach"
+  const ucMatch = text.match(/use[_\s]case[:\s]+([a-z_]+)/i);
+  if (ucMatch) result.use_case = ucMatch[1].toLowerCase().replace(/\s+/g, '_');
+
+  // Extract model preference
+  const modelMatch = text.match(/model[_\s]preference[:\s]+([a-z0-9_]+)/i);
+  if (modelMatch) result.model_preference = modelMatch[1];
+
+  // Extract routing rules from "- condition → agent" or bullet patterns
+  const ruleLines = lines.filter(l => /^[-*]\s+.+[→>].+/.test(l));
+  result.routing_rules = ruleLines.map(l => {
+    const [condition, agent] = l.replace(/^[-*]\s+/, '').split(/[→>]/);
+    return { condition: condition?.trim(), agent_skill_id: '' };
+  });
+
+  return result;
+}
 
 // ─── Harness Modal ────────────────────────────────────────────────────────────
 function HarnessModal({ open, onClose, harness, agentSkills }) {
   const qc = useQueryClient();
   const isEdit = !!harness;
+  const fileInputRef = useEffect ? React.useRef(null) : null;
+  const mdFileRef = React.useRef(null);
+  const [mdFileName, setMdFileName] = useState(null);
   const [form, setForm] = useState(harness || {
     name: '',
     description: '',
@@ -31,7 +72,24 @@ function HarnessModal({ open, onClose, harness, agentSkills }) {
       default_agent_skill_id: '', active_agent_skill_ids: [],
       is_active: true, model_preference: 'automatic', temperature_hint: 'balanced',
     });
-  }, [harness]);
+    setMdFileName(null);
+  }, [harness, open]);
+
+  const handleMdUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const parsed = parseMdToHarness(text);
+    setMdFileName(file.name);
+    setForm(f => ({
+      ...f,
+      name: parsed.name || f.name,
+      description: parsed.description || f.description,
+      use_case: parsed.use_case || f.use_case,
+      model_preference: parsed.model_preference || f.model_preference,
+      routing_rules: parsed.routing_rules?.length ? parsed.routing_rules : f.routing_rules,
+    }));
+  };
 
   const save = useMutation({
     mutationFn: () => isEdit
@@ -56,6 +114,32 @@ function HarnessModal({ open, onClose, harness, agentSkills }) {
           <DialogTitle className="text-[#1e3a5a]">{isEdit ? 'Edit Harness' : 'New Harness'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
+          {/* MD Upload */}
+          {!isEdit && (
+            <div>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Import from Markdown</label>
+              <div
+                onClick={() => mdFileRef.current?.click()}
+                className={`flex items-center gap-3 p-3 rounded-lg border-2 border-dashed cursor-pointer transition-colors
+                  ${mdFileName ? 'border-amber-400 bg-amber-50' : 'border-slate-300 hover:border-amber-400 hover:bg-amber-50/30'}`}
+              >
+                {mdFileName
+                  ? <FileText className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                  : <Upload className="w-4 h-4 text-slate-400 flex-shrink-0" />}
+                <span className={`text-xs ${mdFileName ? 'text-amber-700 font-semibold' : 'text-slate-500'}`}>
+                  {mdFileName ? `Loaded: ${mdFileName}` : 'Upload .md file to pre-fill fields'}
+                </span>
+                {mdFileName && (
+                  <button onClick={e => { e.stopPropagation(); setMdFileName(null); }}
+                    className="ml-auto text-slate-400 hover:text-red-500">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+              <input ref={mdFileRef} type="file" accept=".md,.txt" onChange={handleMdUpload} className="hidden" />
+            </div>
+          )}
+
           <div>
             <label className="text-xs font-semibold text-slate-600 mb-1 block">Name</label>
             <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
