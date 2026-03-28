@@ -156,6 +156,34 @@ export default function Base44AgentPanel() {
     });
   };
 
+  const handleSaveConfig = async () => {
+    if (!editingAgent) return;
+    
+    try {
+      const response = await fetch('/api/linkHarnessToAgent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agentName: editingAgent.name,
+          harnessId: selectedHarnessId || null,
+          skillIds: Array.from(selectedSkillIds),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        toast.error(error.error || 'Failed to save config');
+        return;
+      }
+
+      toast.success(`Linked ${editingAgent.display_name} successfully`);
+      handleCloseModal();
+    } catch (err) {
+      console.error('Save error:', err);
+      toast.error('Failed to save config');
+    }
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex items-start justify-between">
@@ -237,8 +265,8 @@ export default function Base44AgentPanel() {
               <Button variant="outline" onClick={handleCloseModal}>
                 Cancel
               </Button>
-              <Button onClick={handleCloseModal} className="bg-[#1e3a5a] hover:bg-[#0f2438] text-white">
-                Save Config
+              <Button onClick={handleSaveConfig} className="bg-[#1e3a5a] hover:bg-[#0f2438] text-white">
+                Link and Save Config
               </Button>
             </div>
           </div>
