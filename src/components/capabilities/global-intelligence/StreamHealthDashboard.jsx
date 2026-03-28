@@ -135,7 +135,7 @@ export default function StreamHealthDashboard() {
       {/* Channel List */}
       <div className="space-y-2 max-h-64 overflow-y-auto">
         <p className="text-xs font-semibold text-white/50 uppercase tracking-wider">Detailed Status</p>
-        {health?.channels.slice(0, 10).map(channel => (
+        {(health?.channels || []).slice(0, 10).map(channel => (
           <div
             key={channel.id}
             className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/10 text-xs"
