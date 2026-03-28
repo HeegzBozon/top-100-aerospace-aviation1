@@ -160,7 +160,7 @@ export default function HomePage() {
       if (d && d >= thirtyDaysAgo) map[m.nominee_id] = (map[m.nominee_id] || 0) + 1;
     });
     return map;
-  }, [recentSignals, recentMentions]);
+  }, [recentSignals, recentMentions, thirtyDaysAgo]);
 
   // Trending profiles - sorted by composite score
   const trendingProfiles = useMemo(() => {
