@@ -6,6 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 const LIVE_CHANNELS = [
   { id: 'bloomberg',  name: 'Bloomberg TV',  color: '#1e3a5a', url: 'https://www.youtube.com/@BloombergTelevision/live', query: 'bloomberg markets finance' },
+  { id: 'bbc',        name: 'BBC News',      color: '#b91c1c', url: 'https://www.youtube.com/@BBCNews/live',             query: 'bbc news international world' },
   { id: 'aljazeera',  name: 'Al Jazeera',    color: '#c9a87c', url: 'https://www.youtube.com/@aljazeeraenglish/live',     query: 'al jazeera world news' },
   { id: 'france24',   name: 'France 24',     color: '#3b82f6', url: 'https://www.youtube.com/@France24_en/live',         query: 'france 24 europe international' },
   { id: 'nasa',       name: 'NASA Live',     color: '#0f4d8a', url: 'https://www.youtube.com/@NASA/live',               query: 'nasa space launch iss' },
