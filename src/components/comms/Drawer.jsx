@@ -305,6 +305,18 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
             onShowNewModal={() => setShowNewModal(true)}
             onShowChannelManager={() => setShowChannelManager(true)}
           />
+          
+          {/* Nominations - Direct Link */}
+          <div className="mt-3 pt-3 border-t border-white/10">
+            <Link
+              to="/Nominations"
+              onClick={onMobileClose}
+              className="w-full flex items-center gap-3 pl-4 pr-2 py-2 rounded-lg transition-all text-white/75 hover:bg-white/10 hover:text-white"
+            >
+              <span className="text-lg">🗳️</span>
+              <span className="text-[14px] truncate flex-1 text-left tracking-wide font-medium">Nominations</span>
+            </Link>
+          </div>
         </div>
       )}
 
