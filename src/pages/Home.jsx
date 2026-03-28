@@ -162,28 +162,22 @@ export default function HomePage() {
     return map;
   }, [recentSignals, recentMentions]);
 
-  const computeTrendingScore = useCallback((n) => {
-    let score = 0;
-    // is_on_fire boost (40 pts)
-    if (n.is_on_fire) score += 40;
-    // Win percentage (up to 30 pts)
-    score += ((n.win_percentage || 0) / 100) * 30;
-    // Intelligence feed appearances last 30 days (up to 20 pts, capped at 5 signals)
-    const feedHits = signalCountMap[n.id] || 0;
-    score += Math.min(feedHits, 5) * 4;
-    // Recent activity proxy: direct_vote_count normalized (up to 10 pts)
-    const updatedRecently = n.updated_date && new Date(n.updated_date) >= thirtyDaysAgo;
-    if (updatedRecently) score += Math.min((n.direct_vote_count || 0) / 10, 10);
-    return score;
-  }, [signalCountMap]);
-
   // Trending profiles - sorted by composite score
-  const trendingProfiles = useMemo(() =>
-    [...nominees]
-      .map(n => ({ ...n, _trendingScore: computeTrendingScore(n) }))
+  const trendingProfiles = useMemo(() => {
+    return [...nominees]
+      .map(n => {
+        let score = 0;
+        if (n.is_on_fire) score += 40;
+        score += ((n.win_percentage || 0) / 100) * 30;
+        const feedHits = signalCountMap[n.id] || 0;
+        score += Math.min(feedHits, 5) * 4;
+        const updatedRecently = n.updated_date && new Date(n.updated_date) >= thirtyDaysAgo;
+        if (updatedRecently) score += Math.min((n.direct_vote_count || 0) / 10, 10);
+        return { ...n, _trendingScore: score };
+      })
       .sort((a, b) => b._trendingScore - a._trendingScore)
-      .slice(0, 12),
-  [nominees, computeTrendingScore]);
+      .slice(0, 12);
+  }, [nominees, signalCountMap, thirtyDaysAgo]);
 
   const serviceItems = services.map(s => ({
     type: "service",
