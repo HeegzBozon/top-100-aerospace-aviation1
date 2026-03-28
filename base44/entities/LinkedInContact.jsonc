@@ -42,23 +42,32 @@
       "type": "string",
       "description": "Profile avatar image URL"
     },
-    "last_received_message": {
-      "type": "string",
-      "description": "Most recent message received from this contact"
-    },
-    "last_received_date": {
-      "type": "string",
-      "format": "date-time",
-      "description": "When the last message was received"
-    },
     "last_sent_message": {
       "type": "string",
-      "description": "Most recent message sent to this contact"
+      "description": "Your most recent outbound message (last_sent_message_text)"
     },
     "last_sent_date": {
       "type": "string",
       "format": "date-time",
-      "description": "When the last message was sent"
+      "description": "When you sent your last message"
+    },
+    "last_received_message": {
+      "type": "string",
+      "description": "Their most recent reply (replied_message_1_text)"
+    },
+    "last_received_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When they sent their most recent reply"
+    },
+    "second_received_message": {
+      "type": "string",
+      "description": "Their second most recent message if available"
+    },
+    "second_received_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When they sent their second message"
     },
     "connection_date": {
       "type": "string",
@@ -144,7 +153,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Tags like angelAerospaceWomenSF"
+      "description": "Tags"
     },
     "mutual_connections_count": {
       "type": "number",

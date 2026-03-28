@@ -244,37 +244,52 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
         </div>
       </div>
 
-      {/* Conversation Messages — chronological: your sent first, then their reply */}
-      <div className="grid grid-cols-1 gap-4">
-      {/* Your Previous Message (older) */}
-      {currentContact.last_sent_message && (
-        <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6">
-          <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">
-            ✓ Your Message
-            {currentContact.last_sent_date && (
-              <span className="text-blue-500 font-normal ml-2">
-                {new Date(currentContact.last_sent_date).toLocaleString()}
-              </span>
-            )}
-          </p>
-          <p className="text-slate-700 leading-relaxed">{currentContact.last_sent_message}</p>
-        </div>
-      )}
+      {/* Conversation Messages — chronological order */}
+      <div className="grid grid-cols-1 gap-3">
+        {/* Your outbound message (oldest) */}
+        {currentContact.last_sent_message && (
+          <div className="bg-blue-50 rounded-2xl border border-blue-200 p-5">
+            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">
+              ✓ Your Message
+              {currentContact.last_sent_date && (
+                <span className="text-blue-400 font-normal ml-2">
+                  {new Date(currentContact.last_sent_date).toLocaleString()}
+                </span>
+              )}
+            </p>
+            <p className="text-slate-700 leading-relaxed text-sm">{currentContact.last_sent_message}</p>
+          </div>
+        )}
 
-      {/* Their Reply (newer — what you're responding to) */}
-      {currentContact.last_received_message && (
-        <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
-          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-3">
-            💬 Their Reply
-            {currentContact.last_received_date && (
-              <span className="text-slate-500 font-normal ml-2">
-                {new Date(currentContact.last_received_date).toLocaleString()}
-              </span>
-            )}
-          </p>
-          <p className="text-slate-700 leading-relaxed">{currentContact.last_received_message}</p>
-        </div>
-      )}
+        {/* Their first reply */}
+        {currentContact.second_received_message && (
+          <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+              💬 {currentContact.first_name || currentContact.full_name}
+              {currentContact.second_received_date && (
+                <span className="text-slate-400 font-normal ml-2">
+                  {new Date(currentContact.second_received_date).toLocaleString()}
+                </span>
+              )}
+            </p>
+            <p className="text-slate-700 leading-relaxed text-sm">{currentContact.second_received_message}</p>
+          </div>
+        )}
+
+        {/* Their most recent reply */}
+        {currentContact.last_received_message && (
+          <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+              💬 {currentContact.first_name || currentContact.full_name}
+              {currentContact.last_received_date && (
+                <span className="text-slate-400 font-normal ml-2">
+                  {new Date(currentContact.last_received_date).toLocaleString()}
+                </span>
+              )}
+            </p>
+            <p className="text-slate-700 leading-relaxed text-sm">{currentContact.last_received_message}</p>
+          </div>
+        )}
       </div>
 
       {/* Response Composer */}
