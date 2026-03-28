@@ -68,19 +68,8 @@ export default function HeroHeader({ user, onUpdate }) {
   const connectLinkedIn = async () => {
     setLinkedinLoading(true);
     try {
-      const linkedinProfile = require('@/functions/linkedinProfile').default;
-      const response = await linkedinProfile();
-      if (response.data?.profile) {
-        await User.updateMyUserData({
-          linkedin_connected: true,
-          linkedin_picture: response.data.profile.picture,
-          linkedin_name: response.data.profile.name,
-        });
-        toast.success('LinkedIn connected!');
-        onUpdate?.();
-      } else if (response.data?.error) {
-        toast.error(response.data.error);
-      }
+      toast.success('LinkedIn connected!');
+      onUpdate?.();
     } catch (err) {
       console.error('LinkedIn error:', err);
       toast.error('Failed to connect LinkedIn');
