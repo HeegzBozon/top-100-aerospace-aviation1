@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 const LIVE_CHANNELS = [
-  { id: 'bloomberg', name: 'BBG',        ytId: 'dp8PhLsUcFE' },
+  { id: 'bloomberg', name: 'BBG',        channelId: 'UCIALMKvObZNtJ6AmdCLP7Lg' },
   { id: 'aljazeera', name: 'AJ',         ytId: 'gCNeDWCI0vo' },
   { id: 'france24',  name: 'F24',        ytId: 'h3MuIUNCCLI' },
   { id: 'nasa',      name: 'NASA',       ytId: '21X5lGlDOfg' },
@@ -39,8 +39,12 @@ export function LiveNewsPanel() {
       {/* Embed */}
       <div className="flex-1 min-h-0 bg-black rounded overflow-hidden">
         <iframe
-          key={ch.ytId}
-          src={`https://www.youtube-nocookie.com/embed/${ch.ytId}?autoplay=1&mute=1&controls=1&rel=0`}
+          key={ch.channelId || ch.ytId}
+          src={
+            ch.channelId
+              ? `https://www.youtube-nocookie.com/embed/live_stream?channel=${ch.channelId}&autoplay=1&mute=1&controls=1&rel=0`
+              : `https://www.youtube-nocookie.com/embed/${ch.ytId}?autoplay=1&mute=1&controls=1&rel=0`
+          }
           className="w-full h-full"
           allow="autoplay; encrypted-media"
           allowFullScreen
