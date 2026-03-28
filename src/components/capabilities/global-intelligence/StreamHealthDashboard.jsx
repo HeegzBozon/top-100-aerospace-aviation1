@@ -51,8 +51,8 @@ export default function StreamHealthDashboard() {
   }
 
   const healthPercentage = health ? Math.round((health.healthyChannels / health.totalChannels) * 100) : 0;
-  const healthyChannels = health?.channels.filter(c => c.healthy) || [];
-  const unhealthyChannels = health?.channels.filter(c => !c.healthy) || [];
+  const healthyChannels = (health?.channels || []).filter(c => c.healthy);
+  const unhealthyChannels = (health?.channels || []).filter(c => !c.healthy);
 
   return (
     <div className="space-y-4 p-4 bg-[#0a0f1e] rounded-xl border border-white/5">
