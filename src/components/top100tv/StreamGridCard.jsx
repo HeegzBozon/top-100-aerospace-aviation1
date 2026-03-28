@@ -1,10 +1,11 @@
 import { Play, Volume2, MapPin } from 'lucide-react';
 
-export default function StreamGridCard({ stream, isSelected, onClick }) {
+export default function StreamGridCard({ stream, isSelected, onClick, accentColor }) {
   const categoryColors = {
     news: 'from-blue-500/20 to-blue-600/10',
     aviation: 'from-green-500/20 to-green-600/10',
     space: 'from-purple-500/20 to-purple-600/10',
+    macro: 'from-red-500/20 to-red-600/10',
     defense: 'from-red-500/20 to-red-600/10',
   };
 
@@ -13,9 +14,13 @@ export default function StreamGridCard({ stream, isSelected, onClick }) {
       onClick={onClick}
       className={`relative group overflow-hidden rounded-lg border-2 transition-all h-48 ${
         isSelected
-          ? 'border-amber-400 shadow-lg shadow-amber-400/20'
+          ? `border-opacity-100 shadow-lg shadow-opacity-20`
           : 'border-white/10 hover:border-white/30'
       }`}
+      style={isSelected && accentColor ? {
+        borderColor: accentColor,
+        boxShadow: `0 0 20px ${accentColor}33`,
+      } : {}}
     >
       {/* Thumbnail / Background */}
       <div
