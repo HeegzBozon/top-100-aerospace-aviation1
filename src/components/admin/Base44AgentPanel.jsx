@@ -160,27 +160,17 @@ export default function Base44AgentPanel() {
     if (!editingAgent) return;
     
     try {
-      const response = await fetch('/api/linkHarnessToAgent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          agentName: editingAgent.name,
-          harnessId: selectedHarnessId || null,
-          skillIds: Array.from(selectedSkillIds),
-        }),
+      const result = await base44.functions.invoke('linkHarnessToAgent', {
+        agentName: editingAgent.name,
+        harnessId: selectedHarnessId || null,
+        skillIds: Array.from(selectedSkillIds),
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to save config');
-        return;
-      }
 
       toast.success(`Linked ${editingAgent.display_name} successfully`);
       handleCloseModal();
     } catch (err) {
       console.error('Save error:', err);
-      toast.error('Failed to save config');
+      toast.error(err.message || 'Failed to save config');
     }
   };
 
