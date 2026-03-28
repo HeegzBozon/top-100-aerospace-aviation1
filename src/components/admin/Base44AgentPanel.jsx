@@ -166,11 +166,12 @@ export default function Base44AgentPanel() {
         skillIds: Array.from(selectedSkillIds),
       });
 
+      console.log('Link result:', result);
       toast.success(`Linked ${editingAgent.display_name} successfully`);
       handleCloseModal();
     } catch (err) {
       console.error('Save error:', err);
-      toast.error(err.message || 'Failed to save config');
+      toast.error(`Error: ${err.message || 'Failed to save config'}`);
     }
   };
 
