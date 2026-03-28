@@ -291,31 +291,50 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
             </>
             ) : (
         /* Default channels view for all other pages */
-        <div className="flex-1 overflow-y-auto scrollbar-hide px-3 py-3">
-          <ChannelsList
-            channels={channelsWithoutNominations}
-            channelCategories={channelCategories}
-            collapsedCategories={collapsedCategories}
-            onToggleCategory={(catId) => setCollapsedCategories(prev => ({ ...prev, [catId]: !prev[catId] }))}
-            onSelectConversation={(conv) => {
-              selectConversation(conv);
-              onMobileClose?.();
-            }}
-            isAdmin={isAdmin}
-            onShowNewModal={() => setShowNewModal(true)}
-            onShowChannelManager={() => setShowChannelManager(true)}
-          />
-          
-          {/* Nominations - Direct Link */}
-          <div className="mt-3 pt-3 border-t border-white/10">
-            <Link
-              to="/Nominations"
+        <div className="flex-1 overflow-y-auto scrollbar-hide px-3 py-3 flex flex-col gap-3">
+          {/* Nominations - Direct Link (top) */}
+          <Link
+            to="/Nominations"
+            onClick={onMobileClose}
+            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all text-white/75 hover:bg-white/10 hover:text-white border-l-2 border-l-transparent hover:border-l-amber-400/50"
+          >
+            <span className="text-lg">🗳️</span>
+            <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">Nominations</span>
+          </Link>
+
+          {/* Divider */}
+          <div className="border-t border-gray-800/50" />
+
+          {/* Channels */}
+          <div className="flex-1 overflow-y-auto">
+            <ChannelsList
+              channels={channelsWithoutNominations}
+              channelCategories={channelCategories}
+              collapsedCategories={collapsedCategories}
+              onToggleCategory={(catId) => setCollapsedCategories(prev => ({ ...prev, [catId]: !prev[catId] }))}
+              onSelectConversation={(conv) => {
+                selectConversation(conv);
+                onMobileClose?.();
+              }}
+              isAdmin={isAdmin}
+              onShowNewModal={() => setShowNewModal(true)}
+              onShowChannelManager={() => setShowChannelManager(true)}
+            />
+          </div>
+
+          {/* Contact Us */}
+          <div className="border-t border-gray-800/50 pt-2">
+            <a
+              href="mailto:hello@top100os.com"
               onClick={onMobileClose}
-              className="w-full flex items-center gap-3 pl-4 pr-2 py-2 rounded-lg transition-all text-white/75 hover:bg-white/10 hover:text-white"
+              className="w-full px-3 py-3 rounded-lg transition-all text-white/75 hover:bg-white/10 hover:text-white flex items-center gap-3 border-l-2 border-l-transparent group hover:border-l-cyan-500/50"
             >
-              <span className="text-lg">🗳️</span>
-              <span className="text-[14px] truncate flex-1 text-left tracking-wide font-medium">Nominations</span>
-            </Link>
+              <span className="text-lg">✉️</span>
+              <div className="flex-1 min-w-0 text-left">
+                <p className="text-sm font-semibold text-white truncate">Contact Us</p>
+                <p className="text-xs text-gray-400 truncate">Get in touch</p>
+              </div>
+            </a>
           </div>
         </div>
       )}
