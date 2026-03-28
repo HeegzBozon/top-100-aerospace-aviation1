@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Loader2, MessageCircle, ExternalLink, CheckCircle2, PenSquare, Bot, ChevronDown } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import TriageEvaluation from './TriageEvaluation';
+import PerceptionEngineering from './PerceptionEngineering';
 
 const PIPELINE_STAGES = [
   { key: 'new',      label: 'New',      color: 'bg-slate-400',   activeColor: 'bg-slate-500',   ring: 'ring-slate-300',   dot: '⬜' },
@@ -74,6 +75,7 @@ export default function ContactDetail({ contact, onUpdate }) {
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
   const [showComposer, setShowComposer] = useState(false);
   const [agentSkills, setAgentSkills] = useState([]);
+  const [resources, setResources] = useState([]);
   const [selectedSkillId, setSelectedSkillId] = useState('');
 
   useEffect(() => {
@@ -84,6 +86,9 @@ export default function ContactDetail({ contact, onUpdate }) {
   useEffect(() => {
     base44.entities.AgentSkill.filter({ is_active: true }, '-updated_date', 20)
       .then(skills => setAgentSkills(skills))
+      .catch(() => {});
+    base44.entities.Resource.filter({ is_active: true }, '-updated_date', 20)
+      .then(res => setResources(res))
       .catch(() => {});
   }, []);
 
@@ -372,6 +377,13 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
           </div>
         </div>
       </div>
+
+      {/* Perception Engineering */}
+      <PerceptionEngineering
+        contact={currentContact}
+        agentSkills={agentSkills}
+        resources={resources}
+      />
 
       {/* Conversation thread — reverse chronological (newest first) */}
       {(() => {
