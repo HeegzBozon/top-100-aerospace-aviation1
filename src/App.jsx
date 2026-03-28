@@ -27,6 +27,7 @@ const DynamicProfilePage      = lazy(() => import('@/pages/DynamicProfilePage'))
 const AuthorityStackPortal    = lazy(() => import('@/pages/AuthorityStackPortal'));
 const Solutions               = lazy(() => import('@/pages/Solutions'));
 const LinkedInManager         = lazy(() => import('@/pages/LinkedInManager'));
+const LaunchParty             = lazy(() => import('@/pages/LaunchParty'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -85,6 +86,11 @@ const AuthenticatedApp = () => {
       <Route path="/GlobalIntelligence" element={<GlobalIntelligence />} />
       <Route path="/global-intelligence" element={<GlobalIntelligence />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
+      <Route path="/LaunchParty" element={
+        <LayoutWrapper currentPageName="LaunchParty">
+          <LaunchParty />
+        </LayoutWrapper>
+      } />
       <Route path="/AgentSkillRegistry" element={
         <LayoutWrapper currentPageName="AgentSkillRegistry">
           <AgentSkillRegistry />
