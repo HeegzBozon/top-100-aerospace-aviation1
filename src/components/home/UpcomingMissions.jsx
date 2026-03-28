@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Loader2, Calendar } from 'lucide-react';
 import { BRAND_COLORS } from '@/components/core/brandConstants';
@@ -11,8 +10,9 @@ export default function UpcomingMissions() {
   useEffect(() => {
     const fetchMissions = async () => {
       try {
-        const response = await base44.asServiceRole.functions.invoke('fetchSpaceDevsPrograms');
-        setMissions((response.upcoming || []).slice(0, 6));
+        const { fetchSpaceDevsPrograms } = await import('@/functions/fetchSpaceDevsPrograms');
+        const response = await fetchSpaceDevsPrograms();
+        setMissions((response.data?.upcoming || []).slice(0, 6));
       } catch (err) {
         console.error('Error fetching upcoming missions:', err);
         setMissions([]);

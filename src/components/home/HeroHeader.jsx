@@ -6,7 +6,6 @@ import { Crown, Award, Briefcase, Users, Star, Building, Edit, CheckCircle2, Lin
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { base44 } from '@/api/base44Client';
-import { User } from '@/entities/User';
 import { toast } from 'sonner';
 
 const brandColors = {
@@ -71,7 +70,7 @@ export default function HeroHeader({ user, onUpdate }) {
       const { linkedinProfile } = await import('@/functions/linkedinProfile');
       const response = await linkedinProfile();
       if (response.data?.profile) {
-        await User.updateMyUserData({
+        await base44.auth.updateMe({
           linkedin_connected: true,
           linkedin_picture: response.data.profile.picture,
           linkedin_name: response.data.profile.name,
