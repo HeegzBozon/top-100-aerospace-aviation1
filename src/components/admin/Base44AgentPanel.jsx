@@ -168,6 +168,11 @@ export default function Base44AgentPanel() {
 
       console.log('Link result:', result);
       toast.success(`Linked ${editingAgent.display_name} successfully`);
+      
+      // Invalidate and refetch queries
+      await qc.invalidateQueries({ queryKey: ['agent-skills'] });
+      await qc.invalidateQueries({ queryKey: ['harnesses'] });
+      
       handleCloseModal();
     } catch (err) {
       console.error('Save error:', err);
