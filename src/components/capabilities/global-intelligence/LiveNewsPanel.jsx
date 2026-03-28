@@ -9,8 +9,12 @@ const LIVE_CHANNELS = [
 ];
 
 export function LiveNewsPanel() {
-  const [activeChannel, setActiveChannel] = useState('aljazeera');
-  const ch = LIVE_CHANNELS.find(c => c.id === activeChannel);
+  const [activeChannel, setActiveChannel] = useState(LIVE_CHANNELS[0]?.id || 'aljazeera');
+  const ch = LIVE_CHANNELS.find(c => c.id === activeChannel) || LIVE_CHANNELS[0];
+
+  if (!ch) {
+    return <p className="text-[10px] text-slate-600 font-mono text-center py-4">No channels available</p>;
+  }
 
   return (
     <div className="h-full flex flex-col">

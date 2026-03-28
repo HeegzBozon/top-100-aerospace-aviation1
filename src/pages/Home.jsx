@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import ProfileView from '@/pages/ProfileView';
 import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import Landing2Hero from '@/components/landing/Landing2Hero';
@@ -21,6 +21,8 @@ import GlobalIntelligenceSection from '@/components/home/GlobalIntelligenceSecti
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HomeSectionReorderPopover, { loadSectionConfig, DEFAULT_SECTIONS } from '@/components/admin/HomeSectionReorderPopover';
 
+const BloombergTerminal = lazy(() => import('@/components/terminal/BloombergTerminal'));
+
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { subDays } from 'date-fns';
@@ -40,6 +42,13 @@ export default function HomePage() {
   const [publicUserEmail, setPublicUserEmail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
+
+  const [viewMode, setViewMode] = useState(() => {
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('home-view-mode') || 'terminal';
+    }
+    return 'terminal';
+  });
 
   // Section config: seeded from user record (global) once user loads
   const [sectionConfig, setSectionConfig] = useState(() =>
@@ -220,6 +229,28 @@ export default function HomePage() {
     return <LandingHeroSection user={null} />;
   }
 
+  // Terminal view for logged-in users
+  if (viewMode === 'terminal') {
+    return (
+      <div className="relative">
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-screen bg-[#070b14]">
+            <Loader2 className="w-10 h-10 animate-spin text-sky-400" />
+          </div>
+        }>
+          <BloombergTerminal />
+        </Suspense>
+        {/* Floating toggle to switch to classic view */}
+        <button
+          onClick={() => { setViewMode('classic'); localStorage.setItem('home-view-mode', 'classic'); }}
+          className="fixed bottom-4 right-4 z-50 px-3 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase bg-slate-800/90 border border-slate-600/50 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors shadow-xl backdrop-blur-sm"
+        >
+          Classic View
+        </button>
+      </div>
+    );
+  }
+
   const userRole = user?.role || 'user';
   const isMemberOnly = userRole === 'user';
 
@@ -268,6 +299,14 @@ export default function HomePage() {
         user={user}
         onConfigChange={setSectionConfig}
       />
+
+      {/* Floating toggle to switch to terminal view */}
+      <button
+        onClick={() => { setViewMode('terminal'); localStorage.setItem('home-view-mode', 'terminal'); }}
+        className="fixed bottom-4 right-4 z-50 px-3 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase bg-slate-800/90 border border-slate-600/50 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors shadow-xl backdrop-blur-sm"
+      >
+        Terminal View
+      </button>
     </div>
   );
 }
