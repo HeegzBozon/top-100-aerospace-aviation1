@@ -47,7 +47,7 @@ export default function FlightographySidecar({ stream }) {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
-        {loading && (
+        {isLoading && (
           <div className="flex items-center justify-center py-8 gap-2">
             <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
             <span className="text-xs text-slate-400">Loading...</span>
@@ -61,7 +61,7 @@ export default function FlightographySidecar({ stream }) {
           </div>
         )}
 
-        {!loading && !error && contributors.length === 0 && (
+        {!isLoading && !error && contributors.length === 0 && (
           <p className="text-xs text-slate-400 text-center py-6">
             No contributors found for this program.
           </p>
