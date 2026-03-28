@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { AlertCircle, Radio } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { AlertCircle, Radio, Loader2 } from 'lucide-react';
+import { findNewsLiveStreams } from '@/functions/findNewsLiveStreams';
 
 const NEWS_SOURCES = [
   { id: 'bloomberg', name: 'Bloomberg', icon: '📊' },
@@ -8,14 +9,23 @@ const NEWS_SOURCES = [
   { id: 'aljazeera', name: 'Al Jazeera', icon: '📡' },
 ];
 
-function NewsStreamEmbed({ source }) {
+function NewsStreamEmbed({ source, videoId, isLoading }) {
   const [embedError, setEmbedError] = useState(false);
 
-  if (embedError) {
+  if (isLoading) {
+    return (
+      <div className="w-full h-96 bg-black/40 rounded-lg border border-white/10 flex items-center justify-center gap-2">
+        <Loader2 className="w-4 h-4 animate-spin text-[#c9a87c]" />
+        <p className="text-white/50 text-xs">Finding stream…</p>
+      </div>
+    );
+  }
+
+  if (!videoId || embedError) {
     return (
       <div className="w-full h-96 bg-black/40 rounded-lg border border-white/10 flex flex-col items-center justify-center gap-2">
         <AlertCircle className="w-6 h-6 text-[#c9a87c]" />
-        <p className="text-white/50 text-xs">Stream unavailable</p>
+        <p className="text-white/50 text-xs">No live stream currently available</p>
       </div>
     );
   }
@@ -25,7 +35,7 @@ function NewsStreamEmbed({ source }) {
       <iframe
         width="100%"
         height="400"
-        src={`https://www.youtube.com/@${source.id}/live`}
+        src={`https://www.youtube.com/embed/${videoId}`}
         title={`${source.name} Live`}
         frameBorder="0"
         referrerPolicy="strict-origin-when-cross-origin"
@@ -43,6 +53,18 @@ function NewsStreamEmbed({ source }) {
 
 export default function ComprehensiveNewsStreams() {
   const [activeSource, setActiveSource] = useState('bloomberg');
+  const [videoIds, setVideoIds] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    findNewsLiveStreams({})
+      .then(res => {
+        setVideoIds(res.data || {});
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
   const active = NEWS_SOURCES.find(s => s.id === activeSource);
 
   return (
@@ -70,7 +92,7 @@ export default function ComprehensiveNewsStreams() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
-        {active && <NewsStreamEmbed source={active} />}
+        {active && <NewsStreamEmbed source={active} videoId={videoIds[active.id]} isLoading={loading} />}
       </div>
     </div>
   );
