@@ -12,8 +12,8 @@ export default function StreamHealthDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const result = await checkStreamHealth({});
-      setHealth(result);
+      const response = await checkStreamHealth({});
+      setHealth(response.data || response);
       setLastChecked(new Date());
     } catch (err) {
       setError(err.message);
