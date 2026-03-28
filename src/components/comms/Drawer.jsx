@@ -43,8 +43,15 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
     refetchOnWindowFocus: false,
   });
 
-  // Filter out Nominations channel and filter DMs by selected RRF stage
-  const channelsWithoutNominations = channels.filter(ch => ch.name?.toLowerCase() !== 'nominations');
+  // Separate top-priority channels and filter DMs by selected RRF stage
+  const topChannels = channels.filter(ch => {
+    const name = ch.name?.toLowerCase();
+    return name === 'welcome-and-rules' || name === 'nominations';
+  });
+  const remainingChannels = channels.filter(ch => {
+    const name = ch.name?.toLowerCase();
+    return name !== 'welcome-and-rules' && name !== 'nominations';
+  });
   const filteredDMs = selectedStage
     ? dms.filter(dm => dm.rrf_stage === selectedStage)
     : dms;
@@ -157,28 +164,7 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
 
           {/* DM List (Comms only) */}
           <div className="flex-1 overflow-y-auto scrollbar-hide px-2 py-3 space-y-1.5 flex flex-col">
-            {/* Welcome Rules */}
-            <Link
-              to="/Comms?welcome=true"
-              onClick={onMobileClose}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all text-white/75 hover:bg-slate-800/30 hover:text-white border-l-2 border-l-transparent hover:border-l-amber-400/50"
-            >
-              <span className="text-lg">📖</span>
-              <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">Welcome • Rules</span>
-            </Link>
-
-            {/* Nominations */}
-            <Link
-              to="/Nominations"
-              onClick={onMobileClose}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all text-white/75 hover:bg-white/10 hover:text-white border-l-2 border-l-transparent hover:border-l-amber-400/50"
-            >
-              <span className="text-lg">🗳️</span>
-              <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">Nominations</span>
-            </Link>
-
-            {/* Divider */}
-            <div className="border-t border-gray-800/50" />
+            {/* Welcome Rules + Nominations at top (reordered channels) */}
 
             {/* You - Notes to Self */}
             <button
@@ -271,25 +257,37 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
             ) : (
         /* Default channels view for all other pages */
         <div className="flex-1 overflow-y-auto scrollbar-hide px-3 py-3 flex flex-col gap-3">
-          {/* Welcome Rules */}
-          <Link
-            to="/Comms?welcome=true"
-            onClick={onMobileClose}
-            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all text-white/75 hover:bg-slate-800/30 hover:text-white border-l-2 border-l-transparent hover:border-l-amber-400/50"
-          >
-            <span className="text-lg">📖</span>
-            <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">Welcome • Rules</span>
-          </Link>
-
-          {/* Nominations */}
-          <Link
-            to="/Nominations"
-            onClick={onMobileClose}
-            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all text-white/75 hover:bg-white/10 hover:text-white border-l-2 border-l-transparent hover:border-l-amber-400/50"
-          >
-            <span className="text-lg">🗳️</span>
-            <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">Nominations</span>
-          </Link>
+          {/* Top-priority channels (Welcome Rules, Nominations) */}
+          <div className="space-y-1.5">
+            {topChannels.map(ch => {
+              const IconComponent = ch.name?.toLowerCase() === 'welcome-and-rules' ? () => <span className="text-lg">📖</span> : () => <span className="text-lg">🗳️</span>;
+              const isActive = activeConversation?.id === ch.id;
+              const unread = unreadCounts[ch.id] || 0;
+              return (
+                <button
+                  key={ch.id}
+                  onClick={() => {
+                    selectConversation(ch);
+                    onMobileClose?.();
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all border-l-2",
+                    isActive
+                      ? "text-white bg-slate-800/50 border-l-blue-400"
+                      : "text-white/75 hover:bg-white/10 hover:text-white border-l-transparent hover:border-l-amber-400/50"
+                  )}
+                >
+                  <IconComponent />
+                  <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">{ch.name}</span>
+                  {unread > 0 && (
+                    <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-[11px] font-bold text-white rounded-full shrink-0" style={{ background: '#E01E5A' }}>
+                      {unread}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
           {/* Divider */}
           <div className="border-t border-gray-800/50" />
@@ -297,7 +295,7 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
           {/* Channels */}
           <div className="flex-1 overflow-y-auto">
             <ChannelsList
-              channels={channelsWithoutNominations}
+              channels={remainingChannels}
               channelCategories={channelCategories}
               collapsedCategories={collapsedCategories}
               onToggleCategory={(catId) => setCollapsedCategories(prev => ({ ...prev, [catId]: !prev[catId] }))}
