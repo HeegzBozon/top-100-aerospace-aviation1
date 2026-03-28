@@ -63,6 +63,15 @@ export function LaunchPartyWidget() {
 
   const countdown = useCountdown(launch?.net);
 
+  const youtubeId = useMemo(() => {
+    if (!launch?.vidURLs) return null;
+    for (const v of launch.vidURLs) {
+      const id = extractYouTubeId(v?.url || v);
+      if (id) return id;
+    }
+    return null;
+  }, [launch?.vidURLs]);
+
   useEffect(() => {
     getUpcomingLaunches({ limit: 1 })
       .then(res => {
@@ -101,15 +110,6 @@ export function LaunchPartyWidget() {
   const locationName = launch.pad?.location?.name || launch.pad?.name || null;
   const isGo         = launch.status?.abbrev === 'Go';
   const hasStream    = launch.vidURLs?.length > 0;
-
-  const youtubeId = useMemo(() => {
-    if (!hasStream || !launch?.vidURLs) return null;
-    for (const v of launch.vidURLs) {
-      const id = extractYouTubeId(v?.url || v);
-      if (id) return id;
-    }
-    return null;
-  }, [launch?.vidURLs, hasStream]);
 
   return (
     <Card
