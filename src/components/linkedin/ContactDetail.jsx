@@ -2,41 +2,65 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Loader2, MessageCircle, ExternalLink, CheckCircle2, Zap, PenSquare } from 'lucide-react';
+import { Loader2, MessageCircle, ExternalLink, CheckCircle2, PenSquare } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import TriageEvaluation from './TriageEvaluation';
 
 const PIPELINE_STAGES = [
-  { key: 'new',      label: 'New',      color: 'bg-slate-400' },
-  { key: 'engaged',  label: 'Engaged',  color: 'bg-blue-400' },
-  { key: 'replied',  label: 'Replied',  color: 'bg-amber-400' },
-  { key: 'sent',     label: 'Sent',     color: 'bg-indigo-400' },
-  { key: 'done',     label: 'Done',     color: 'bg-green-500' },
+  { key: 'new',      label: 'New',      color: 'bg-slate-400',   activeColor: 'bg-slate-500',   ring: 'ring-slate-300',   dot: '⬜' },
+  { key: 'engaged',  label: 'Engaged',  color: 'bg-blue-400',    activeColor: 'bg-blue-500',    ring: 'ring-blue-300',    dot: '🔵' },
+  { key: 'replied',  label: 'Replied',  color: 'bg-amber-400',   activeColor: 'bg-amber-500',   ring: 'ring-amber-300',   dot: '🟡' },
+  { key: 'sent',     label: 'Sent',     color: 'bg-indigo-400',  activeColor: 'bg-indigo-500',  ring: 'ring-indigo-300',  dot: '🟣' },
+  { key: 'done',     label: 'Done ✓',  color: 'bg-green-500',   activeColor: 'bg-green-600',   ring: 'ring-green-300',   dot: '✅' },
 ];
 
 function getPipelineStageIndex(tier, status) {
   if (status === 'done') return 4;
   if (status === 'sent') return 3;
   if (status === 'draft') return 2;
-  if (tier) return 1; // evaluated = engaged
+  if (tier) return 1;
   return 0;
 }
 
-function PipelineStage({ tier, status }) {
+function PipelineStage({ tier, status, onStageClick }) {
   const activeIdx = getPipelineStageIndex(tier, status);
+  const activeStage = PIPELINE_STAGES[activeIdx];
+
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-end gap-1.5">
       <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Pipeline</span>
       <div className="flex items-center gap-1">
-        {PIPELINE_STAGES.map((stage, idx) => (
-          <div key={stage.key} className="flex flex-col items-center gap-0.5">
-            <div
-              className={`w-5 h-2 rounded-full transition-all ${idx <= activeIdx ? stage.color : 'bg-slate-200'}`}
-            />
-          </div>
-        ))}
+        {PIPELINE_STAGES.map((stage, idx) => {
+          const isActive = idx === activeIdx;
+          const isPast = idx < activeIdx;
+          const isFuture = idx > activeIdx;
+          return (
+            <button
+              key={stage.key}
+              onClick={() => onStageClick(idx)}
+              title={stage.label}
+              className={`group relative transition-all duration-200 rounded-full focus:outline-none
+                ${isActive ? `w-8 h-3 ${stage.activeColor} ring-2 ${stage.ring} ring-offset-1 scale-110` :
+                  isPast ? `w-6 h-2.5 ${stage.color} opacity-70 hover:opacity-100 hover:scale-105` :
+                  `w-5 h-2 bg-slate-200 hover:bg-slate-300 hover:scale-105`}
+              `}
+            >
+              {/* Tooltip */}
+              <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                {stage.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
-      <span className="text-xs font-bold text-slate-600">{PIPELINE_STAGES[activeIdx].label}</span>
+      <motion.span
+        key={activeStage.key}
+        initial={{ opacity: 0, y: -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-xs font-bold text-slate-700"
+      >
+        {activeStage.label}
+      </motion.span>
     </div>
   );
 }
@@ -152,6 +176,22 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
     }
   };
 
+  const handlePipelineStageClick = async (idx) => {
+    const statusMap = ['pending', 'pending', 'draft', 'sent', 'done'];
+    const newStatus = statusMap[idx];
+    try {
+      const updated = await base44.entities.LinkedInContact.update(currentContact.id, {
+        response_status: newStatus,
+        ...(newStatus === 'done' ? { has_unread: false } : {}),
+        ...(newStatus === 'sent' ? { has_unread: false } : {}),
+      });
+      setCurrentContact(updated);
+      onUpdate(updated);
+    } catch (err) {
+      console.error('Pipeline update error:', err);
+    }
+  };
+
   const handleEvaluated = (evaluatedContact) => {
     setCurrentContact(evaluatedContact);
     onUpdate(evaluatedContact);
@@ -216,7 +256,24 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
                   </button>
                 )}
                 {/* Pipeline Stage Indicator */}
-                <PipelineStage tier={currentContact.tier_classification} status={currentContact.response_status} />
+                <PipelineStage
+                  tier={currentContact.tier_classification}
+                  status={currentContact.response_status}
+                  onStageClick={handlePipelineStageClick}
+                />
+                {/* Done Checkbox */}
+                <button
+                  onClick={markAsDone}
+                  title={currentContact.response_status === 'done' ? 'Marked Done' : 'Mark as Done'}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all duration-200
+                    ${currentContact.response_status === 'done'
+                      ? 'bg-green-500 border-green-500 text-white shadow-md'
+                      : 'bg-white border-slate-300 text-slate-500 hover:border-green-400 hover:text-green-600 hover:bg-green-50'
+                    }`}
+                >
+                  <CheckCircle2 className={`w-4 h-4 transition-transform duration-200 ${currentContact.response_status === 'done' ? 'scale-110' : ''}`} />
+                  {currentContact.response_status === 'done' ? 'Done!' : 'Mark Done'}
+                </button>
               </div>
             </div>
             
@@ -391,34 +448,13 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
         </DialogContent>
       </Dialog>
 
-      {/* Action Buttons */}
-      {currentContact.response_status !== 'done' && (
-        <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
-          <div className="flex items-center gap-3 mb-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
-            <Zap className="w-4 h-4 text-amber-600" />
-            <span className="text-sm text-amber-700 font-semibold">Complete this outreach to get closer to inbox zero!</span>
-          </div>
-          <div className="flex gap-3">
-            <Button
-              onClick={markAsDone}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold"
-            >
-              <CheckCircle2 className="w-4 h-4 mr-2" />
-              Mark Done
-            </Button>
-          </div>
-        </div>
-      )}
-
       {currentContact.response_status === 'done' && (
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-300 p-6 text-center"
+          className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-300 p-4 text-center"
         >
-          <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-3" />
-          <p className="text-lg font-bold text-green-700">Outreach Complete! 🎉</p>
-          <p className="text-sm text-green-600 mt-1">One step closer to inbox zero.</p>
+          <p className="text-sm font-bold text-green-700">🎉 Outreach Complete! One step closer to inbox zero.</p>
         </motion.div>
       )}
     </motion.div>
