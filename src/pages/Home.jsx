@@ -117,7 +117,7 @@ export default function HomePage() {
       setIsLoading(false);
     };
     init();
-  }, []);
+  }, [sectionConfigSeeded]);
 
   // Transform nominees for featured sections - no scores, random shuffle
   const mapNomineeToCard = (n, badge) => ({
