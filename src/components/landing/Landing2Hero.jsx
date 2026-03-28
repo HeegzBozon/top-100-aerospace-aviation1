@@ -192,7 +192,7 @@ export default function Landing2Hero({ user }) {
   return (
     <div className="relative">
       {/* Main Hero Carousel */}
-      <div className="relative h-[320px] md:h-[400px] rounded-xl md:rounded-2xl overflow-hidden mx-3 md:mx-4 mt-3 md:mt-4" style={{ border: `1px solid ${brandColors.skyBlue}20` }}>
+      <div className="relative h-[160px] md:h-[200px] rounded-xl md:rounded-2xl overflow-hidden mx-3 md:mx-4 mt-3 md:mt-4" style={{ border: `1px solid ${brandColors.skyBlue}20` }}>
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center transition-all duration-700"
