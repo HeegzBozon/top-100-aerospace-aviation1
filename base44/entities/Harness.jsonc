@@ -1,0 +1,83 @@
+{
+  "name": "Harness",
+  "type": "object",
+  "description": "Orchestrator/router config that wires agents, skills, and resources together for a specific use case",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name of the harness"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this harness is for and how it routes"
+    },
+    "use_case": {
+      "type": "string",
+      "enum": [
+        "linkedin_outreach",
+        "triage",
+        "content_generation",
+        "research",
+        "custom"
+      ],
+      "default": "linkedin_outreach",
+      "description": "Primary use case this harness serves"
+    },
+    "active_agent_skill_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of AgentSkills this harness can route to"
+    },
+    "default_agent_skill_id": {
+      "type": "string",
+      "description": "Default AgentSkill used when no routing rule matches"
+    },
+    "routing_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "type": "string"
+          },
+          "agent_skill_id": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Ordered list of routing rules \u2014 condition string maps to an agent skill"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this harness is currently enabled"
+    },
+    "model_preference": {
+      "type": "string",
+      "enum": [
+        "automatic",
+        "gpt_5_mini",
+        "gpt_5",
+        "claude_sonnet_4_6",
+        "gemini_3_flash"
+      ],
+      "default": "automatic",
+      "description": "Preferred LLM model for this harness"
+    },
+    "temperature_hint": {
+      "type": "string",
+      "enum": [
+        "precise",
+        "balanced",
+        "creative"
+      ],
+      "default": "balanced"
+    }
+  },
+  "required": [
+    "name",
+    "use_case"
+  ]
+}

@@ -5,6 +5,7 @@ import { Loader2, Upload, Mail, Check, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ContactList from '@/components/linkedin/ContactList';
 import ContactDetail from '@/components/linkedin/ContactDetail';
+import PerceptionEngineeringBar from '@/components/linkedin/PerceptionEngineeringBar';
 
 export default function LinkedInManager() {
   const [csvFile, setCsvFile] = useState(null);
@@ -70,7 +71,11 @@ export default function LinkedInManager() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-12">
+      <div className="max-w-6xl mx-auto px-6 pt-8 pb-4">
+        <PerceptionEngineeringBar />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 pb-12">
         {!imported ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
