@@ -4,60 +4,136 @@
   "properties": {
     "title": {
       "type": "string",
-      "description": "Display name (e.g., 'JFK Airport Runway 4R')"
+      "description": "Display name (e.g., 'Starbase Boca Chica 24/7')"
     },
     "category": {
       "type": "string",
       "enum": [
-        "news",
-        "aviation",
-        "space",
-        "defense"
+        "Space Exploration & Systems",
+        "Commercial Aviation",
+        "Defense & National Security",
+        "Manufacturing & Operations",
+        "Engineering & R&D",
+        "Policy & Governance",
+        "Entrepreneurship & Startups",
+        "Education & Workforce"
       ],
-      "description": "Stream category aligned with industry domains"
+      "description": "Industry domain classification"
     },
     "stream_url": {
       "type": "string",
-      "description": "HLS m3u8 URL or YouTube/Twitch video ID"
+      "description": "HLS m3u8 URL, YouTube video ID, or web embed URL"
     },
     "source_type": {
       "type": "string",
       "enum": [
-        "hls",
         "youtube",
-        "twitch"
+        "hls",
+        "twitch",
+        "web_embed"
       ],
       "description": "Type of stream source"
     },
+    "subtitle": {
+      "type": "string",
+      "description": "Optional subtitle or description"
+    },
     "description": {
       "type": "string",
-      "description": "Optional description or subtitle"
+      "description": "Longer description of the stream content"
     },
     "thumbnail_url": {
       "type": "string",
-      "description": "Thumbnail image for grid view"
-    },
-    "linked_program_id": {
-      "type": "string",
-      "description": "Foreign key to Program page for contextual linking"
+      "description": "Thumbnail image for grid display"
     },
     "region": {
       "type": "string",
-      "description": "Geographic region (e.g., 'North America', 'Europe')"
+      "description": "Geographic region or orbital designation (e.g., 'South Texas, USA', 'LEO')"
     },
     "is_active": {
       "type": "boolean",
       "default": true,
-      "description": "Whether the stream is currently active"
+      "description": "Whether the stream is currently active and should display in the grid"
     },
-    "sponsor_name": {
+    "status": {
       "type": "string",
-      "description": "Optional sponsor name for overlay/attribution"
+      "enum": [
+        "LIVE",
+        "OFFLINE",
+        "SCHEDULED"
+      ],
+      "default": "OFFLINE",
+      "description": "Current status of the stream"
     },
-    "order": {
+    "sponsorship": {
+      "type": "object",
+      "properties": {
+        "is_sponsored": {
+          "type": "boolean",
+          "default": false
+        },
+        "sponsor_name": {
+          "type": "string",
+          "description": "Name of the sponsor (e.g., 'Lockheed Martin')"
+        },
+        "sponsor_logo_url": {
+          "type": "string",
+          "description": "URL to sponsor logo"
+        },
+        "overlay_asset_url": {
+          "type": "string",
+          "description": "URL to L-Bar overlay asset"
+        },
+        "overlay_position": {
+          "type": "string",
+          "enum": [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right"
+          ],
+          "default": "bottom-left"
+        }
+      },
+      "description": "Sponsorship metadata for monetization tiers"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "icon": {
+          "type": "string",
+          "description": "Emoji or icon identifier"
+        },
+        "domain": {
+          "type": "string",
+          "description": "Industry domain classification"
+        },
+        "signal_value": {
+          "type": "string",
+          "enum": [
+            "highest",
+            "high",
+            "medium"
+          ]
+        },
+        "grid_row": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 3,
+          "description": "Grid row position (1-3)"
+        },
+        "grid_column": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 3,
+          "description": "Grid column position (1-3)"
+        }
+      }
+    },
+    "display_order": {
       "type": "number",
       "default": 0,
-      "description": "Display order in grid"
+      "description": "Sort order for display"
     }
   },
   "required": [

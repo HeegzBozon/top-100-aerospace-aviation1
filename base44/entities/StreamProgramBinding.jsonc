@@ -1,0 +1,42 @@
+{
+  "name": "StreamProgramBinding",
+  "type": "object",
+  "description": "Join table linking live streams to aerospace programs for talent graph bridging",
+  "properties": {
+    "stream_id": {
+      "type": "string",
+      "description": "ID of the Stream entity"
+    },
+    "program_id": {
+      "type": "string",
+      "description": "ID of the linked Program (e.g., Artemis, Falcon 9, F-35)"
+    },
+    "program_name": {
+      "type": "string",
+      "description": "Cached program name for quick display"
+    },
+    "organization": {
+      "type": "string",
+      "description": "Organization responsible (e.g., NASA, SpaceX, DoD)"
+    },
+    "relationship_type": {
+      "type": "string",
+      "enum": [
+        "primary_program",
+        "related_initiative",
+        "supporting_mission"
+      ],
+      "default": "primary_program",
+      "description": "Type of relationship between stream and program"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this binding is currently active"
+    }
+  },
+  "required": [
+    "stream_id",
+    "program_id"
+  ]
+}
