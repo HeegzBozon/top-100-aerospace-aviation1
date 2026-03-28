@@ -1,46 +1,39 @@
-// Primary HLS stream URLs for news channels
-// These are direct m3u8 feeds that bypass YouTube restrictions and provide better stability
+// News channel configurations
+// HLS streams are geo-restricted/CORS-blocked; relying on YouTube as primary fallback
 export const HLS_STREAMS = {
   bloomberg: {
     name: 'Bloomberg',
     icon: '📊',
-    hls: null, // Bloomberg actively blocks HLS access, fallback to YouTube
-    youtube: 'Bloomberg', // Search term for YouTube
+    youtube: 'UUVHFbqXqoYvEWM1Ddxl0QDg', // Bloomberg channel ID
   },
   sky: {
     name: 'Sky News',
     icon: '🌐',
-    hls: 'https://skydvn-nowtv-atv-prod.skydvn.com/atv/skynews/1404/live/index.m3u8',
-    youtube: 'SKY News Live',
+    youtube: 'UCAbqEHcMuyOsoVnE3fMYYxg', // Sky News channel ID
   },
   bbc: {
     name: 'BBC World',
     icon: '🎬',
-    hls: null, // BBC restricts geographic access, fallback to YouTube
-    youtube: 'BBC News Live',
+    youtube: 'UCn84jAPeC7nUIJNbwHI5ocQ', // BBC News channel ID
   },
   aljazeera: {
     name: 'Al Jazeera',
     icon: '📡',
-    hls: 'https://live-hls-web-aje.getaj.net/AJE/01.m3u8',
-    youtube: 'Al Jazeera English',
+    youtube: 'UCNsMjmQg5dAuaX78nbreKAA', // Al Jazeera channel ID
   },
   dw: {
     name: 'DW English',
     icon: '📺',
-    hls: 'https://dwstream4-lh.akamaihd.net/i/dwstream4_live@131329/master.m3u8',
-    youtube: 'DW News',
+    youtube: 'UCknLrEdhBC8TNz4yXrMLstA', // DW channel ID
   },
   france24: {
     name: 'France 24',
     icon: '🇫🇷',
-    hls: 'https://static.france24.com/live/F24_EN_LO_HLS/live_web.m3u8',
-    youtube: 'France 24 English',
+    youtube: 'UCTM6CBvnUcFA-2uo0DV-ozw', // France 24 channel ID
   },
   nhk: {
     name: 'NHK World',
     icon: '🌏',
-    hls: 'https://nhkwlive-ojp.akamaized.net/hls/live/2003459/nhkwlive-ojp-en/master.m3u8',
-    youtube: 'NHK World',
+    youtube: 'UCuBlJV_eIMf7sG0BHXrC1rw', // NHK World channel ID
   },
 };
