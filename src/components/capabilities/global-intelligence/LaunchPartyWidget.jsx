@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { getUpcomingLaunches } from '@/functions/getUpcomingLaunches';
+import { findLaunchStream } from '@/functions/findLaunchStream';
 
 function extractYouTubeId(url) {
   if (!url) return null;
@@ -60,10 +61,13 @@ export function LaunchPartyWidget() {
   const [launch, setLaunch] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [youtubeId, setYoutubeId] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   const countdown = useCountdown(launch?.net);
 
-  const youtubeId = useMemo(() => {
+  // Extract YouTube ID from LL2 vidURLs
+  const ll2YoutubeId = useMemo(() => {
     if (!launch?.vidURLs) return null;
     for (const v of launch.vidURLs) {
       const id = extractYouTubeId(v?.url || v);
@@ -72,6 +76,7 @@ export function LaunchPartyWidget() {
     return null;
   }, [launch?.vidURLs]);
 
+  // Fetch launch data
   useEffect(() => {
     getUpcomingLaunches({ limit: 1 })
       .then(res => {
@@ -82,6 +87,27 @@ export function LaunchPartyWidget() {
       .catch(() => setIsError(true))
       .finally(() => setIsLoading(false));
   }, []);
+
+  // Search YouTube if no LL2 stream
+  useEffect(() => {
+    if (!launch || ll2YoutubeId) return;
+    
+    setIsSearching(true);
+    findLaunchStream({
+      launchId: launch.id,
+      launchName: launch.name,
+      provider: launch.launch_service_provider?.name || '',
+    })
+      .then(res => {
+        const url = res?.data?.url;
+        if (url) {
+          const id = extractYouTubeId(url);
+          if (id) setYoutubeId(id);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setIsSearching(false));
+  }, [launch, ll2YoutubeId]);
 
   if (isLoading) {
     return (
@@ -109,7 +135,7 @@ export function LaunchPartyWidget() {
   const launchName   = launch.name?.split('|')[0]?.trim() || 'Upcoming Launch';
   const locationName = launch.pad?.location?.name || launch.pad?.name || null;
   const isGo         = launch.status?.abbrev === 'Go';
-  const hasStream    = launch.vidURLs?.length > 0;
+  const finalYoutubeId = ll2YoutubeId || youtubeId;
 
   return (
     <Card
@@ -118,9 +144,9 @@ export function LaunchPartyWidget() {
     >
       {/* Hero image or micro player strip */}
       <div className="relative h-48 sm:h-56 bg-gradient-to-br from-[#0f1d2d] to-[#1e3a5a] overflow-hidden">
-        {youtubeId ? (
+        {finalYoutubeId ? (
           <iframe
-            src={`https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&mute=1&autoplay=1`}
+            src={`https://www.youtube.com/embed/${finalYoutubeId}?rel=0&modestbranding=1&mute=1&autoplay=1`}
             title={`${launchName} webcast`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -140,7 +166,7 @@ export function LaunchPartyWidget() {
         )}
 
         {/* Overlaid gradient for text legibility (skip on video) */}
-        {!youtubeId && <div className="absolute inset-0 bg-gradient-to-t from-[#0f1d2d]/90 via-[#0f1d2d]/40 to-transparent" />}
+        {!finalYoutubeId && <div className="absolute inset-0 bg-gradient-to-t from-[#0f1d2d]/90 via-[#0f1d2d]/40 to-transparent" />}
 
         {/* Tag */}
         <div className="absolute top-3 left-3 flex items-center gap-1.5 z-10">
@@ -152,7 +178,7 @@ export function LaunchPartyWidget() {
               GO
             </span>
           )}
-          {youtubeId && (
+          {finalYoutubeId && (
             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600/90 text-white animate-pulse">
               LIVE
             </span>
@@ -160,7 +186,7 @@ export function LaunchPartyWidget() {
         </div>
 
         {/* Countdown (only when no video) */}
-        {!youtubeId && (
+        {!finalYoutubeId && (
           <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between z-10">
             <div>
               <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1 flex items-center gap-1">
