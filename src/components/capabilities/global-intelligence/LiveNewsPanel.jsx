@@ -1,145 +1,181 @@
-import { useState, useEffect, useCallback } from 'react';
-import { resolveYoutubeLive } from '@/functions/resolveYoutubeLive';
-import { Loader2, MonitorPlay, Radio, ExternalLink, AlertTriangle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { getSpaceNews } from '@/functions/getSpaceNews';
+import { getNewsFeedDigest } from '@/functions/getNewsFeedDigest';
+import { ExternalLink, Radio, Tv, RefreshCw, Clock, Loader2 } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 const LIVE_CHANNELS = [
-  { id: 'bloomberg', name: 'Bloomberg', query: 'Bloomberg Global Financial News Live', url: 'https://www.youtube.com/@BloombergGlobalNews/live', color: '#1e3a5a' },
-  { id: 'aljazeera', name: 'Al Jazeera', query: 'Al Jazeera English Live', url: 'https://www.youtube.com/@aljazeeraenglish/live', color: '#c9a87c' },
-  { id: 'france24',  name: 'France 24', query: 'France 24 English Live', url: 'https://www.youtube.com/@France24_en/live', color: '#3b82f6' },
-  { id: 'nasa',      name: 'NASA Live', query: 'NASA Live Official Stream', url: 'https://www.youtube.com/@NASA/live', color: '#0f1d2d' },
-  { id: 'dw',        name: 'DW News',   query: 'DW News Live', url: 'https://www.youtube.com/@dwnews/live', color: '#ef4444' },
-  { id: 'euronews',  name: 'Euronews',  query: 'Euronews English Live', url: 'https://www.youtube.com/@euronews/live', color: '#10b981' },
+  { id: 'bloomberg',  name: 'Bloomberg TV',  color: '#1e3a5a', url: 'https://www.youtube.com/@BloombergTelevision/live', query: 'bloomberg markets finance' },
+  { id: 'aljazeera',  name: 'Al Jazeera',    color: '#c9a87c', url: 'https://www.youtube.com/@aljazeeraenglish/live',     query: 'al jazeera world news' },
+  { id: 'france24',   name: 'France 24',     color: '#3b82f6', url: 'https://www.youtube.com/@France24_en/live',         query: 'france 24 europe international' },
+  { id: 'nasa',       name: 'NASA Live',     color: '#0f4d8a', url: 'https://www.youtube.com/@NASA/live',               query: 'nasa space launch iss' },
+  { id: 'dw',         name: 'DW News',       color: '#ef4444', url: 'https://www.youtube.com/@dwnews/live',             query: 'dw news international germany' },
+  { id: 'euronews',   name: 'Euronews',      color: '#10b981', url: 'https://www.youtube.com/@euronews/live',           query: 'euronews european union' },
 ];
 
-export function LiveNewsPanel() {
-  const [activeChannel, setActiveChannel] = useState(LIVE_CHANNELS[0]?.id || 'bloomberg');
-  const [resolvedIds, setResolvedIds] = useState({});
-  const [resolving, setResolving] = useState(false);
+function TimeAgo({ date }) {
+  if (!date) return null;
+  try {
+    return (
+      <span className="text-[10px] text-slate-500 whitespace-nowrap">
+        {formatDistanceToNow(new Date(date), { addSuffix: true })}
+      </span>
+    );
+  } catch {
+    return null;
+  }
+}
 
-  const resolveChannel = useCallback(async (channel) => {
-    if (resolvedIds[channel.id]) return;
-    setResolving(true);
-    try {
-      const res = await resolveYoutubeLive({ query: channel.query });
-      if (res.data?.videoId) {
-        setResolvedIds(prev => ({ ...prev, [channel.id]: res.data.videoId }));
-      }
-    } catch (e) {
-      console.error('Failed to resolve live stream:', e);
-    } finally {
-      setResolving(false);
-    }
-  }, [resolvedIds]);
+export function LiveNewsPanel() {
+  const [activeChannel, setActiveChannel] = useState(LIVE_CHANNELS[0]);
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    const ch = LIVE_CHANNELS.find(c => c.id === activeChannel);
-    if (ch && !resolvedIds[ch.id]) {
-      resolveChannel(ch);
-    }
-  }, [activeChannel, resolvedIds, resolveChannel]);
+    setLoading(true);
+    setArticles([]);
 
-  const ch = LIVE_CHANNELS.find(c => c.id === activeChannel) || LIVE_CHANNELS[0];
-  const videoId = resolvedIds[ch.id];
-  const needsResolve = !videoId;
+    // Try Space News API for aerospace channels, generic news digest for others
+    const isAerospace = ['nasa'].includes(activeChannel.id);
+
+    const fetcher = isAerospace
+      ? getSpaceNews({ type: 'articles', search: activeChannel.query, limit: 12 })
+      : getNewsFeedDigest({ query: activeChannel.query, limit: 12 });
+
+    fetcher
+      .then(res => {
+        const data = res?.data;
+        // Space News API
+        if (data?.results) return setArticles(data.results.slice(0, 10));
+        // News digest format
+        if (data?.articles) return setArticles(data.articles.slice(0, 10));
+        if (Array.isArray(data)) return setArticles(data.slice(0, 10));
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [activeChannel.id, refreshKey]);
+
+  const ch = activeChannel;
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0f1e] text-white">
-      {/* Top Main Video */}
-      <div className="relative w-full aspect-video bg-black shrink-0 overflow-hidden border-b border-[#1e3a5a]/50">
-        {needsResolve ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-             <div className="relative">
-                <div className="absolute inset-0 border-t-2 border-[#c9a87c] rounded-full animate-spin w-8 h-8 opacity-70"></div>
-                <div className="w-8 h-8 rounded-full border-2 border-slate-800"></div>
-             </div>
-             <div className="text-[10px] text-slate-400 font-mono tracking-wider animate-pulse">CONNECTING SATELLITE LINK...</div>
+    <div className="h-full flex flex-col bg-[#0a0f1e] text-white overflow-hidden">
+
+      {/* Channel selector */}
+      <div className="shrink-0 overflow-x-auto scrollbar-hide border-b border-white/5">
+        <div className="flex gap-1 p-1.5 min-w-max">
+          {LIVE_CHANNELS.map(c => (
+            <button
+              key={c.id}
+              onClick={() => setActiveChannel(c)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-bold tracking-wide whitespace-nowrap transition-all ${
+                ch.id === c.id
+                  ? 'text-white shadow-md'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+              style={ch.id === c.id ? { background: c.color } : {}}
+            >
+              <Radio className="w-2.5 h-2.5" />
+              {c.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Watch Live header for active channel */}
+      <div
+        className="shrink-0 flex items-center justify-between px-3 py-2 border-b border-white/5"
+        style={{ background: `${ch.color}22` }}
+      >
+        <div className="flex items-center gap-2">
+          <span className="flex items-center gap-1 bg-red-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            ON AIR
+          </span>
+          <span className="text-xs font-semibold text-white/80">{ch.name}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setRefreshKey(k => k + 1)}
+            className="text-white/30 hover:text-white/70 transition-colors p-1"
+            title="Refresh feed"
+          >
+            <RefreshCw className="w-3 h-3" />
+          </button>
+          <a
+            href={ch.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1.5 rounded-md text-white transition-all hover:opacity-80"
+            style={{ background: ch.color }}
+          >
+            <Tv className="w-3 h-3" />
+            Watch Live
+            <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+          </a>
+        </div>
+      </div>
+
+      {/* News articles feed */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-500">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span className="text-[10px] font-mono tracking-wider">LOADING FEED...</span>
+          </div>
+        ) : articles.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-500 px-4 text-center">
+            <Radio className="w-8 h-8 opacity-30" />
+            <p className="text-xs">No articles found. Try refreshing or watch live on YouTube.</p>
+            <a
+              href={ch.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-2 rounded-lg text-white transition-all hover:opacity-80"
+              style={{ background: ch.color }}
+            >
+              <Tv className="w-3.5 h-3.5" />
+              Open {ch.name} Live
+              <ExternalLink className="w-3 h-3 opacity-70" />
+            </a>
           </div>
         ) : (
-          <iframe
-            key={videoId}
-            src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`}
-            className="w-full h-full border-0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-            allowFullScreen
-            title={ch.name}
-          />
-        )}
-        
-        {/* Top Left Indicators */}
-        <div className="absolute top-2 left-2 flex items-center gap-2 pointer-events-none">
-            <span className="bg-red-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider flex items-center gap-1 shadow-lg">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                LIVE
-            </span>
-            <span className="bg-black/60 backdrop-blur text-white text-[10px] px-2 py-0.5 rounded font-medium border border-white/10 shadow-lg">
-                {ch.name}
-            </span>
-        </div>
-
-        {/* Top Right External Fallback */}
-        <div className="absolute top-2 right-2 flex items-center gap-2 z-10">
-            <a 
-                href={ch.url || `https://www.youtube.com/results?search_query=${encodeURIComponent(ch.query)}`} 
-                target="_blank" 
+          <div className="divide-y divide-white/[0.04]">
+            {articles.map((article, i) => (
+              <a
+                key={article.id || article.url || i}
+                href={article.url}
+                target="_blank"
                 rel="noopener noreferrer"
-                className="bg-black/70 hover:bg-red-600/90 backdrop-blur text-white text-[10px] px-2.5 py-1.5 rounded border border-white/10 shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
-                title="If stream shows Error 150/153, click to watch directly on YouTube"
-            >
-                <AlertTriangle className="w-3 h-3 text-amber-400" />
-                Stream Error? Watch Direct
-                <ExternalLink className="w-3 h-3 ml-0.5 opacity-70" />
-            </a>
-        </div>
-      </div>
-
-      {/* Grid of channels */}
-      <div className="flex-1 p-2 overflow-y-auto custom-scrollbar">
-        <div className="grid grid-cols-2 gap-2">
-          {LIVE_CHANNELS.map(c => {
-             const isActive = activeChannel === c.id;
-             return (
-               <button
-                 key={c.id}
-                 onClick={() => setActiveChannel(c.id)}
-                 className={`relative flex flex-col items-start p-2 rounded-lg border transition-all duration-300 ${
-                   isActive 
-                   ? 'bg-[#1e3a5a]/40 border-[#c9a87c]/50 shadow-[0_0_10px_rgba(201,168,124,0.1)]' 
-                   : 'bg-slate-900/50 border-white/5 hover:bg-slate-800 hover:border-white/10'
-                 }`}
-               >
-                 <div className="flex items-center justify-between w-full mb-1">
-                   <span className="text-[10px] font-bold text-slate-300 tracking-wider truncate">{c.name}</span>
-                   {isActive && <MonitorPlay className="w-3 h-3 text-[#c9a87c]" />}
-                 </div>
-                 
-                 <div className="w-full h-12 bg-black rounded overflow-hidden relative">
-                    <div className="absolute inset-0 flex items-center justify-center opacity-30" style={{ backgroundColor: c.color }}>
-                        <Radio className="w-5 h-5 text-white" />
-                    </div>
-                    {isActive ? (
-                        <div className="absolute inset-0 bg-red-500/10 flex items-center justify-center">
-                             <div className="flex items-end gap-0.5 h-4">
-                                 {[1,2,3,4].map(i => (
-                                     <div key={i} className="w-[3px] bg-red-400 animate-pulse" style={{ height: `${Math.random()*60 + 40}%`, animationDuration: `${0.5 + Math.random()}s` }}></div>
-                                 ))}
-                             </div>
-                        </div>
-                    ) : (
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                className="flex gap-2.5 p-2.5 hover:bg-white/5 transition-colors group"
+              >
+                {article.image_url && (
+                  <img
+                    src={article.image_url}
+                    alt=""
+                    className="w-14 h-10 object-cover rounded shrink-0 opacity-80 group-hover:opacity-100 transition-opacity"
+                    loading="lazy"
+                    onError={e => { e.target.style.display = 'none'; }}
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] font-medium text-slate-200 line-clamp-2 leading-snug group-hover:text-white transition-colors">
+                    {article.title}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <Clock className="w-2.5 h-2.5 text-slate-600 shrink-0" />
+                    <TimeAgo date={article.published_at || article.updated_at} />
+                    {article.news_site && (
+                      <span className="text-[9px] text-slate-600 truncate">{article.news_site}</span>
                     )}
-                 </div>
-               </button>
-             );
-          })}
-        </div>
+                  </div>
+                </div>
+                <ExternalLink className="w-3 h-3 text-slate-700 group-hover:text-slate-400 shrink-0 mt-0.5 transition-colors" />
+              </a>
+            ))}
+          </div>
+        )}
       </div>
-      
-      <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
-      `}} />
     </div>
   );
 }
