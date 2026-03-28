@@ -6,6 +6,41 @@ import { Loader2, MessageCircle, ExternalLink, CheckCircle2, Zap, PenSquare } fr
 import { base44 } from '@/api/base44Client';
 import TriageEvaluation from './TriageEvaluation';
 
+const PIPELINE_STAGES = [
+  { key: 'new',      label: 'New',      color: 'bg-slate-400' },
+  { key: 'engaged',  label: 'Engaged',  color: 'bg-blue-400' },
+  { key: 'replied',  label: 'Replied',  color: 'bg-amber-400' },
+  { key: 'sent',     label: 'Sent',     color: 'bg-indigo-400' },
+  { key: 'done',     label: 'Done',     color: 'bg-green-500' },
+];
+
+function getPipelineStageIndex(tier, status) {
+  if (status === 'done') return 4;
+  if (status === 'sent') return 3;
+  if (status === 'draft') return 2;
+  if (tier) return 1; // evaluated = engaged
+  return 0;
+}
+
+function PipelineStage({ tier, status }) {
+  const activeIdx = getPipelineStageIndex(tier, status);
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Pipeline</span>
+      <div className="flex items-center gap-1">
+        {PIPELINE_STAGES.map((stage, idx) => (
+          <div key={stage.key} className="flex flex-col items-center gap-0.5">
+            <div
+              className={`w-5 h-2 rounded-full transition-all ${idx <= activeIdx ? stage.color : 'bg-slate-200'}`}
+            />
+          </div>
+        ))}
+      </div>
+      <span className="text-xs font-bold text-slate-600">{PIPELINE_STAGES[activeIdx].label}</span>
+    </div>
+  );
+}
+
 export default function ContactDetail({ contact, onUpdate }) {
   const [response, setResponse] = useState(contact.generated_response || '');
   const [generatingResponse, setGeneratingResponse] = useState(false);
@@ -167,18 +202,22 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
                 <h2 className="text-2xl font-bold text-[#1e3a5a]">{currentContact.full_name}</h2>
                 <p className="text-sm text-slate-600">{currentContact.headline}</p>
               </div>
-              {/* Tier Badge in Header - Clickable */}
-              {currentContact.tier_classification && (
-                <button
-                  onClick={() => setShowEvaluationModal(true)}
-                  className="flex-shrink-0 text-right hover:scale-105 transition-transform duration-200"
-                >
-                  <div className="inline-flex flex-col items-center px-3 py-2 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg hover:border-purple-400 cursor-pointer">
-                    <span className="text-xs font-semibold text-purple-600 uppercase tracking-wide">{currentContact.tier_classification}</span>
-                    <span className="text-lg font-bold text-purple-700">{currentContact.tier_score || 0}/20</span>
-                  </div>
-                </button>
-              )}
+              {/* Tier Badge + Pipeline Stage */}
+              <div className="flex-shrink-0 flex flex-col items-end gap-2">
+                {currentContact.tier_classification && (
+                  <button
+                    onClick={() => setShowEvaluationModal(true)}
+                    className="hover:scale-105 transition-transform duration-200"
+                  >
+                    <div className="inline-flex flex-col items-center px-3 py-2 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg hover:border-purple-400 cursor-pointer">
+                      <span className="text-xs font-semibold text-purple-600 uppercase tracking-wide">{currentContact.tier_classification}</span>
+                      <span className="text-lg font-bold text-purple-700">{currentContact.tier_score || 0}/20</span>
+                    </div>
+                  </button>
+                )}
+                {/* Pipeline Stage Indicator */}
+                <PipelineStage tier={currentContact.tier_classification} status={currentContact.response_status} />
+              </div>
             </div>
             
             {currentContact.current_company && (
@@ -266,7 +305,7 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
           { text: currentContact.last_received_message, date: currentContact.last_received_date, isMe: false },
         ]
           .filter(m => m.text)
-          .sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+          .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
         return (
           <div className="grid grid-cols-1 gap-3">
