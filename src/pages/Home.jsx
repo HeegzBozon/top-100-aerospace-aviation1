@@ -5,7 +5,7 @@ import Landing2Hero from '@/components/landing/Landing2Hero';
 import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
 
 import TrendingSection from '@/components/landing/TrendingSection';
-import HeroHeader from '@/components/home/HeroHeader';
+// HeroHeader is now integrated as a slide in Landing2Hero
 import AerospaceDashboardSection from '@/components/home/AerospaceDashboardSection';
 import IndustrySpotlight from '@/components/home/IndustrySpotlight';
 import FeaturedToday from '@/components/home/FeaturedToday';
@@ -238,12 +238,7 @@ export default function HomePage() {
 
   return (
     <div className="pb-8">
-      {/* Hero Header */}
-      <div className="px-4 pt-4">
-        <HeroHeader user={user} onUpdate={() => base44.auth.me().then(setUser)} />
-      </div>
-
-      {/* Hero Carousel */}
+      {/* Hero Carousel (includes personalized welcome slide) */}
       <Landing2Hero user={user} />
 
       {/* Promo Banners */}

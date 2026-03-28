@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, ArrowRight, Rocket, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, Rocket, Clock, Crown, Award, Briefcase, Users, Star, Building, Edit, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -77,6 +77,23 @@ function useCountdown(targetDate) {
   return parts;
 }
 
+const heroRoleConfig = {
+  admin: { label: 'Platform Admin', icon: Crown, gradient: 'from-purple-600 to-indigo-600' },
+  honoree: { label: 'Honoree', icon: Award, gradient: 'from-amber-500 to-yellow-400' },
+  nominee: { label: 'Nominee', icon: Star, gradient: 'from-blue-500 to-cyan-400' },
+  nominator: { label: 'Nominator', icon: Users, gradient: 'from-green-500 to-emerald-400' },
+  employer: { label: 'Employer', icon: Building, gradient: 'from-slate-600 to-slate-500' },
+  sponsor: { label: 'Sponsor', icon: Briefcase, gradient: 'from-rose-500 to-pink-400' },
+  user: { label: 'Member', icon: Users, gradient: 'from-sky-500 to-blue-400' },
+};
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
 export default function Landing2Hero({ user }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showNominationModal, setShowNominationModal] = useState(false);
@@ -96,6 +113,28 @@ export default function Landing2Hero({ user }) {
   }, []);
 
   const allSlides = [];
+
+  // Personalized welcome slide (first slide when logged in)
+  if (user) {
+    const userRole = user.platform_role || user.role || 'user';
+    const rc = heroRoleConfig[userRole] || heroRoleConfig.user;
+    const displayName = user.full_name || user.email?.split('@')[0] || 'Champion';
+    allSlides.push({
+      isProfile: true,
+      user,
+      displayName,
+      roleConfig: rc,
+      greeting: getGreeting(),
+      tag: `✦ ${rc.label.toUpperCase()}`,
+      title: displayName,
+      subtitle: '',
+      description: '',
+      cta: 'Edit Profile',
+      ctaLink: 'EditProfile',
+      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&auto=format',
+    });
+  }
+
   if (nextLaunch) {
     const provider = nextLaunch.launch_service_provider?.name || nextLaunch.rocket?.configuration?.name || 'Upcoming Mission';
     const launchDate = nextLaunch.net ? new Date(nextLaunch.net).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD';
@@ -164,39 +203,90 @@ export default function Landing2Hero({ user }) {
         
         {/* Content */}
         <div className="relative h-full flex items-center p-4 md:p-8 lg:p-12">
-          <div className="max-w-md md:max-w-lg pr-8 md:pr-0">
-            <span 
-              className="inline-block px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-bold tracking-wider mb-2 md:mb-4"
-              style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, color: 'white', fontFamily: "'Montserrat', sans-serif" }}
-            >
-              {slide.tag}
-            </span>
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2 leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-              {slide.title}
-            </h1>
-            <p className="text-sm md:text-xl font-medium mb-2 md:mb-3" style={{ color: brandColors.goldLight, fontFamily: "'Playfair Display', Georgia, serif" }}>{slide.subtitle}</p>
-            <p className="text-white/70 mb-4 md:mb-6 text-xs md:text-sm lg:text-base line-clamp-2 md:line-clamp-none" style={{ fontFamily: "'Montserrat', sans-serif" }}>{slide.description}</p>
-            {slide.ctaLink === "auth" ? (
-              <Button
-                onClick={handleCTA}
-                className="text-white font-semibold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm"
-                style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
+          {slide.isProfile ? (
+            /* Personalized profile slide */
+            <div className="flex items-center gap-3 md:gap-6 max-w-lg">
+              <div className="relative shrink-0">
+                <div 
+                  className="w-16 h-16 md:w-24 md:h-24 rounded-xl md:rounded-2xl overflow-hidden border-2"
+                  style={{ borderColor: brandColors.goldPrestige }}
+                >
+                  <img
+                    src={slide.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(slide.displayName)}&background=1e3a5a&color=c9a87c&size=128`}
+                    alt={slide.displayName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className={`absolute -bottom-1 -right-1 w-6 h-6 md:w-8 md:h-8 rounded-lg bg-gradient-to-br ${slide.roleConfig.gradient} flex items-center justify-center shadow-lg`}>
+                  {(() => { const RIcon = slide.roleConfig.icon; return <RIcon className="w-3 h-3 md:w-4 md:h-4 text-white" />; })()}
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white/60 text-[10px] md:text-sm font-medium" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                  {slide.greeting}
+                </p>
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2 truncate" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  {slide.displayName}
+                </h1>
+                <div className="flex items-center gap-1.5 md:gap-2 flex-wrap mb-3 md:mb-4">
+                  <span className={`inline-flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-semibold bg-gradient-to-r ${slide.roleConfig.gradient} text-white`}>
+                    {(() => { const RIcon = slide.roleConfig.icon; return <RIcon className="w-2.5 h-2.5 md:w-3 md:h-3" />; })()}
+                    {slide.roleConfig.label}
+                  </span>
+                  {slide.user?.aura_rank_name && (
+                    <span className="px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-semibold"
+                      style={{ background: `${brandColors.goldPrestige}20`, color: brandColors.goldLight, border: `1px solid ${brandColors.goldPrestige}40` }}>
+                      {slide.user.aura_rank_name}
+                    </span>
+                  )}
+                </div>
+                <Link to={createPageUrl('EditProfile')}>
+                  <Button
+                    className="text-white font-semibold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm"
+                    style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
+                  >
+                    <Edit className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+                    Edit Profile
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            /* Standard content slide */
+            <div className="max-w-md md:max-w-lg pr-8 md:pr-0">
+              <span 
+                className="inline-block px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-bold tracking-wider mb-2 md:mb-4"
+                style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, color: 'white', fontFamily: "'Montserrat', sans-serif" }}
               >
-                {slide.cta}
-                <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-1.5 md:ml-2" />
-              </Button>
-            ) : (
-              <Link to={getSlideLink(slide)}>
+                {slide.tag}
+              </span>
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2 leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                {slide.title}
+              </h1>
+              <p className="text-sm md:text-xl font-medium mb-2 md:mb-3" style={{ color: brandColors.goldLight, fontFamily: "'Playfair Display', Georgia, serif" }}>{slide.subtitle}</p>
+              <p className="text-white/70 mb-4 md:mb-6 text-xs md:text-sm lg:text-base line-clamp-2 md:line-clamp-none" style={{ fontFamily: "'Montserrat', sans-serif" }}>{slide.description}</p>
+              {slide.ctaLink === "auth" ? (
                 <Button
+                  onClick={handleCTA}
                   className="text-white font-semibold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm"
                   style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
                 >
                   {slide.cta}
                   <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-1.5 md:ml-2" />
                 </Button>
-              </Link>
-            )}
-          </div>
+              ) : (
+                <Link to={getSlideLink(slide)}>
+                  <Button
+                    className="text-white font-semibold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm"
+                    style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
+                  >
+                    {slide.cta}
+                    <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-1.5 md:ml-2" />
+                  </Button>
+                </Link>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Prototype badge */}
