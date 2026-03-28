@@ -21,7 +21,7 @@ import RegistryTeamManager from '@/components/admin/RegistryTeamManager';
 import SAFeHierarchyViewer from '@/components/admin/SAFeHierarchyViewer';
 import SkillManager from '@/components/admin/SkillManager';
 import ResourceManager from '@/components/admin/ResourceManager';
-import AgentManager from '@/components/admin/AgentManager';
+import Base44AgentPanel from '@/components/admin/Base44AgentPanel';
 import SmartEntityCreator from '@/components/admin/SmartEntityCreator';
 import { skillToMarkdown, markdownToSkill, downloadMarkdown } from '@/lib/agentSkillMarkdown';
 
@@ -188,9 +188,9 @@ export default function AgentSkillRegistry() {
         <TabsContent value="teams" className="mt-6 space-y-6">
           <Tabs value={agentSubTab} onValueChange={setAgentSubTab} className="space-y-4">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="manage">Manage Teams</TabsTrigger>
+              <TabsTrigger value="manage">Teams</TabsTrigger>
               <TabsTrigger value="agents">Agents</TabsTrigger>
-              <TabsTrigger value="skills">Skills</TabsTrigger>
+              <TabsTrigger value="skills">Skills (AgentSkill)</TabsTrigger>
               <TabsTrigger value="resources">Resources</TabsTrigger>
             </TabsList>
 
@@ -199,8 +199,8 @@ export default function AgentSkillRegistry() {
             </TabsContent>
 
             <TabsContent value="agents" className="space-y-6">
-              <AgentManager />
-              
+              <Base44AgentPanel />
+
               {/* Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
