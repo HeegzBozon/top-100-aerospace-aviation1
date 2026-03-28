@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 const LIVE_CHANNELS = [
+  { id: 'bloomberg', name: 'BBG',        ytId: 'dp8PhLsUcFE' },
   { id: 'aljazeera', name: 'AJ',         ytId: 'gCNeDWCI0vo' },
   { id: 'france24',  name: 'F24',        ytId: 'h3MuIUNCCLI' },
   { id: 'nasa',      name: 'NASA',       ytId: '21X5lGlDOfg' },

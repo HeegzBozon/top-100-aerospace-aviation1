@@ -241,9 +241,8 @@ export default function HomePage() {
         <Loader2 className="w-10 h-10 animate-spin" style={{ color: '#c9a87c' }} />
       </div>
     }>
-      <EditorialTerminal>
-        {/* Hero + Promo */}
-        <Landing2Hero user={user} />
+      <EditorialTerminal heroSlot={<Landing2Hero user={user} />}>
+        {/* Promo */}
         <Landing2PromoBanner />
 
         {/* Ordered, togglable editorial sections */}

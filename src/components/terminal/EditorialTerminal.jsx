@@ -7,7 +7,7 @@ import EditorialIntelFeed from './EditorialIntelFeed';
 import EditorialIntelStrip from './EditorialIntelStrip';
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 
-export default function EditorialTerminal({ children }) {
+export default function EditorialTerminal({ children, heroSlot }) {
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #faf8f5 0%, #f5efe8 40%, #faf8f5 100%)' }}>
       {/* Ticker bar */}
@@ -15,6 +15,9 @@ export default function EditorialTerminal({ children }) {
 
       {/* Main content area */}
       <div className="max-w-[1600px] mx-auto px-3 md:px-5 py-4 space-y-5">
+
+        {/* ── Hero header above globe ── */}
+        {heroSlot}
 
         {/* ── Top row: Globe + Live Feeds ── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

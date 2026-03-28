@@ -9,7 +9,7 @@ const WorldMonitorGlobe = lazy(() =>
 );
 
 export default function EditorialGlobeSection() {
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(true);
 
   return (
     <div className="rounded-2xl overflow-hidden border" style={{ borderColor: 'rgba(30,58,90,0.1)' }}>
