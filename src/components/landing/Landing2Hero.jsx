@@ -201,151 +201,164 @@ export default function Landing2Hero({ user }) {
         {/* Stronger gradient on mobile for better text readability */}
         <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${brandColors.navyDeep}f8, ${brandColors.navyDeep}e0, ${brandColors.navyDeep}80)` }} />
         
-        {/* Content */}
-        <div className="relative h-full flex items-center p-4 md:p-8 lg:p-12">
+        {/* Content — compact layout for reduced height */}
+        <div className="relative h-full flex items-center px-4 md:px-10 lg:px-12 py-3 md:py-0">
           {slide.isProfile ? (
             /* Personalized profile slide */
-            <div className="flex items-center gap-3 md:gap-6 max-w-lg">
+            <div className="flex items-center gap-3 md:gap-5 w-full">
               <div className="relative shrink-0">
                 <div 
-                  className="w-16 h-16 md:w-24 md:h-24 rounded-xl md:rounded-2xl overflow-hidden border-2"
+                  className="w-12 h-12 md:w-16 md:h-16 rounded-xl overflow-hidden border-2"
                   style={{ borderColor: brandColors.goldPrestige }}
                 >
                   <img
                     src={slide.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(slide.displayName)}&background=1e3a5a&color=c9a87c&size=128`}
                     alt={slide.displayName}
                     className="w-full h-full object-cover"
+                    width={64}
+                    height={64}
                   />
                 </div>
-                <div className={`absolute -bottom-1 -right-1 w-6 h-6 md:w-8 md:h-8 rounded-lg bg-gradient-to-br ${slide.roleConfig.gradient} flex items-center justify-center shadow-lg`}>
-                  {(() => { const RIcon = slide.roleConfig.icon; return <RIcon className="w-3 h-3 md:w-4 md:h-4 text-white" />; })()}
+                <div className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 md:w-6 md:h-6 rounded-md bg-gradient-to-br ${slide.roleConfig.gradient} flex items-center justify-center shadow-lg`}>
+                  {(() => { const RIcon = slide.roleConfig.icon; return <RIcon className="w-2.5 h-2.5 md:w-3 md:h-3 text-white" />; })()}
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white/60 text-[10px] md:text-sm font-medium" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                <p className="text-white/50 text-[10px] md:text-xs font-medium leading-none mb-0.5" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                   {slide.greeting}
                 </p>
-                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2 truncate" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <h2 className="text-lg md:text-2xl font-bold text-white truncate leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                   {slide.displayName}
-                </h1>
-                <div className="flex items-center gap-1.5 md:gap-2 flex-wrap mb-3 md:mb-4">
-                  <span className={`inline-flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-semibold bg-gradient-to-r ${slide.roleConfig.gradient} text-white`}>
-                    {(() => { const RIcon = slide.roleConfig.icon; return <RIcon className="w-2.5 h-2.5 md:w-3 md:h-3" />; })()}
+                </h2>
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] md:text-xs font-semibold bg-gradient-to-r ${slide.roleConfig.gradient} text-white`}>
+                    {(() => { const RIcon = slide.roleConfig.icon; return <RIcon className="w-2.5 h-2.5" />; })()}
                     {slide.roleConfig.label}
                   </span>
                   {slide.user?.aura_rank_name && (
-                    <span className="px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-semibold"
+                    <span className="px-2 py-0.5 rounded-full text-[10px] md:text-xs font-semibold"
                       style={{ background: `${brandColors.goldPrestige}20`, color: brandColors.goldLight, border: `1px solid ${brandColors.goldPrestige}40` }}>
                       {slide.user.aura_rank_name}
                     </span>
                   )}
                 </div>
+              </div>
+              <div className="shrink-0">
                 <Link to={createPageUrl('EditProfile')}>
                   <Button
-                    className="text-white font-semibold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm"
+                    className="text-white font-semibold px-3 md:px-5 h-8 md:h-9 text-[11px] md:text-xs cursor-pointer"
                     style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
                   >
-                    <Edit className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+                    <Edit className="w-3 h-3 mr-1.5" />
                     Edit Profile
                   </Button>
                 </Link>
               </div>
             </div>
           ) : (
-            /* Standard content slide */
-            <div className="max-w-md md:max-w-lg pr-8 md:pr-0">
-              <span 
-                className="inline-block px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-bold tracking-wider mb-2 md:mb-4"
-                style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, color: 'white', fontFamily: "'Montserrat', sans-serif" }}
-              >
-                {slide.tag}
-              </span>
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2 leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                {slide.title}
-              </h1>
-              <p className="text-sm md:text-xl font-medium mb-2 md:mb-3" style={{ color: brandColors.goldLight, fontFamily: "'Playfair Display', Georgia, serif" }}>{slide.subtitle}</p>
-              <p className="text-white/70 mb-4 md:mb-6 text-xs md:text-sm lg:text-base line-clamp-2 md:line-clamp-none" style={{ fontFamily: "'Montserrat', sans-serif" }}>{slide.description}</p>
-              {slide.ctaLink === "auth" ? (
-                <Button
-                  onClick={handleCTA}
-                  className="text-white font-semibold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm"
-                  style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
-                >
-                  {slide.cta}
-                  <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-1.5 md:ml-2" />
-                </Button>
-              ) : (
-                <Link to={getSlideLink(slide)}>
+            /* Standard content slide — horizontal layout: text left, CTA right */
+            <div className="flex items-center justify-between w-full gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span 
+                    className="inline-block px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-bold tracking-wider whitespace-nowrap"
+                    style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, color: 'white', fontFamily: "'Montserrat', sans-serif" }}
+                  >
+                    {slide.tag}
+                  </span>
+                  {slide.isPrototype && (
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-amber-400/20 border border-amber-400/50 text-amber-300 whitespace-nowrap">
+                      Prototype
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white leading-tight truncate" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  {slide.title}
+                </h2>
+                <p className="text-[11px] md:text-sm font-medium mt-0.5 truncate" style={{ color: brandColors.goldLight, fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  {slide.subtitle}
+                </p>
+                <p className="text-white/50 text-[10px] md:text-xs mt-1 line-clamp-1 hidden sm:block" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                  {slide.description}
+                </p>
+                {/* Inline countdown for launch slides */}
+                {slide.isLaunch && !countdown.past && (
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <Clock className="w-3 h-3 text-amber-300 shrink-0" />
+                    {[
+                      { v: countdown.days, l: 'd' },
+                      { v: countdown.hours, l: 'h' },
+                      { v: countdown.mins, l: 'm' },
+                      { v: countdown.secs, l: 's' },
+                    ].map(({ v, l }) => (
+                      <div key={l} className="flex items-baseline gap-px">
+                        <span className="text-white font-bold text-xs tabular-nums">{String(v ?? 0).padStart(2, '0')}</span>
+                        <span className="text-white/40 text-[9px]">{l}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {slide.isLaunch && countdown.past && (
+                  <div className="flex items-center gap-1 mt-1.5">
+                    <Rocket className="w-3 h-3 text-amber-300" />
+                    <span className="text-amber-300 text-[10px] font-semibold">Launched / Underway</span>
+                  </div>
+                )}
+              </div>
+              <div className="shrink-0">
+                {slide.ctaLink === "auth" ? (
                   <Button
-                    className="text-white font-semibold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm"
+                    onClick={handleCTA}
+                    className="text-white font-semibold px-3 md:px-5 h-8 md:h-9 text-[11px] md:text-xs cursor-pointer whitespace-nowrap"
                     style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
                   >
                     {slide.cta}
-                    <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-1.5 md:ml-2" />
+                    <ArrowRight className="w-3 h-3 ml-1.5" />
                   </Button>
-                </Link>
-              )}
+                ) : (
+                  <Link to={getSlideLink(slide)}>
+                    <Button
+                      className="text-white font-semibold px-3 md:px-5 h-8 md:h-9 text-[11px] md:text-xs cursor-pointer whitespace-nowrap"
+                      style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
+                    >
+                      {slide.cta}
+                      <ArrowRight className="w-3 h-3 ml-1.5" />
+                    </Button>
+                  </Link>
+                )}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Prototype badge */}
-        {slide.isPrototype && (
-          <div className="absolute top-3 right-3 md:top-4 md:right-14 px-2 py-0.5 rounded text-[10px] font-black tracking-[0.2em] uppercase bg-amber-400/20 border border-amber-400/50 text-amber-300">
-            ⚗ Prototype
-          </div>
-        )}
-
-        {/* Countdown bar for launch slide */}
-        {slide.isLaunch && !countdown.past && (
-          <div className="absolute bottom-10 md:bottom-14 left-4 md:left-8 flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-            {[
-              { v: countdown.days, l: 'd' },
-              { v: countdown.hours, l: 'h' },
-              { v: countdown.mins, l: 'm' },
-              { v: countdown.secs, l: 's' },
-            ].map(({ v, l }) => (
-              <div key={l} className="flex items-baseline gap-0.5">
-                <span className="text-white font-bold text-sm md:text-base tabular-nums">{String(v ?? 0).padStart(2, '0')}</span>
-                <span className="text-white/50 text-[10px]">{l}</span>
-              </div>
-            ))}
-            <span className="text-white/50 text-[10px] ml-1 hidden md:inline">until launch</span>
-          </div>
-        )}
-        {slide.isLaunch && countdown.past && (
-          <div className="absolute bottom-10 md:bottom-14 left-4 md:left-8 flex items-center gap-1.5">
-            <Rocket className="w-3.5 h-3.5 text-amber-300" />
-            <span className="text-amber-300 text-xs font-semibold">Launched / Underway</span>
-          </div>
-        )}
-
-        {/* Navigation Arrows - Hidden on mobile, use dots/swipe */}
+        {/* Navigation Arrows — compact */}
         <button
           onClick={() => setCurrentSlide(prev => (prev - 1 + allSlides.length) % allSlides.length)}
-          className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full hidden md:flex items-center justify-center text-white transition-all"
-          style={{ background: `${brandColors.navyDeep}80` }}
+          className="absolute left-1.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full hidden md:flex items-center justify-center text-white/70 hover:text-white transition-colors cursor-pointer"
+          style={{ background: `${brandColors.navyDeep}90` }}
+          aria-label="Previous slide"
         >
-          <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
+          <ChevronLeft className="w-4 h-4" />
         </button>
         <button
           onClick={() => setCurrentSlide(prev => (prev + 1) % allSlides.length)}
-          className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full hidden md:flex items-center justify-center text-white transition-all"
-          style={{ background: `${brandColors.navyDeep}80` }}
+          className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full hidden md:flex items-center justify-center text-white/70 hover:text-white transition-colors cursor-pointer"
+          style={{ background: `${brandColors.navyDeep}90` }}
+          aria-label="Next slide"
         >
-          <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
+          <ChevronRight className="w-4 h-4" />
         </button>
 
-        {/* Dots */}
-        <div className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 md:gap-2">
+        {/* Dots — compact, bottom-aligned */}
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
           {orderedSlides.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setCurrentSlide(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
               className={cn(
-                "h-1.5 md:h-2 rounded-full transition-all",
-                idx === currentSlide ? "w-4 md:w-6" : "w-1.5 md:w-2"
+                "h-1 rounded-full transition-all duration-200 cursor-pointer",
+                idx === currentSlide ? "w-4" : "w-1"
               )}
               style={{ background: idx === currentSlide ? brandColors.goldPrestige : `${brandColors.goldLight}40` }}
             />
@@ -356,7 +369,7 @@ export default function Landing2Hero({ user }) {
         {user?.role === 'admin' && (
           <button
             onClick={() => setShowReorder(v => !v)}
-            className="absolute top-2 right-2 px-2 py-0.5 rounded text-[9px] font-bold tracking-widest uppercase text-amber-400 border border-amber-400/40 bg-black/40 hover:bg-black/60 transition-colors"
+            className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[8px] font-bold tracking-widest uppercase text-amber-400 border border-amber-400/40 bg-black/40 hover:bg-black/60 transition-colors cursor-pointer"
             aria-label="Toggle slide reorder panel"
           >
             {showReorder ? 'Done' : 'Reorder'}
