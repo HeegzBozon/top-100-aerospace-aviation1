@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import RobustYouTubePlayer from '@/components/video/RobustYouTubePlayer';
 
 let HlsLoaded = null;
 const loadHls = async () => {
@@ -94,15 +95,12 @@ export default function StreamPlayer({ stream, onError }) {
 
   if (stream?.source_type === 'youtube') {
     return (
-      <iframe
-        width="100%"
-        height="100%"
-        src={`https://www.youtube.com/embed/${stream.stream_url}`}
+      <RobustYouTubePlayer
+        videoId={stream.stream_url}
         title={stream.title}
-        frameBorder="0"
-        allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="rounded-lg"
+        height="100%"
+        onError={onError}
+        showFallbackButton={true}
       />
     );
   }
