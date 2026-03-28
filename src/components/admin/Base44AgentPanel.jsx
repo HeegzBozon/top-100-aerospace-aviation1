@@ -36,14 +36,19 @@ const KNOWN_AGENTS = [
   },
 ];
 
-function AgentCard({ agent, agentSkills, harnesses, onEditAgent }) {
+function AgentCard({ agent, agentSkills, harnesses, agentLinkages, onEditAgent }) {
   const [expanded, setExpanded] = useState(false);
 
-  // Find skills that are linked to this agent by name match or tags
-  const linkedSkills = agentSkills.filter(s =>
-    s.tags?.some(t => t.toLowerCase().includes(agent.name.toLowerCase())) ||
-    s.name?.toLowerCase().includes(agent.name.toLowerCase().replace('ltperry', 'perry'))
-  );
+  // Get the stored linkage for this agent
+  const linkage = agentLinkages.find(l => l.agent_name === agent.name);
+  
+  // Get the linked skills either from stored linkage or fallback to name matching
+  const linkedSkills = linkage && linkage.linked_skill_ids?.length > 0
+    ? agentSkills.filter(s => linkage.linked_skill_ids.includes(s.id))
+    : agentSkills.filter(s =>
+        s.tags?.some(t => t.toLowerCase().includes(agent.name.toLowerCase())) ||
+        s.name?.toLowerCase().includes(agent.name.toLowerCase().replace('ltperry', 'perry'))
+      );
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -132,10 +137,23 @@ export default function Base44AgentPanel() {
     queryFn: () => base44.entities.Harness.list('-updated_date', 50),
   });
 
-  const handleEditAgent = (agent) => {
+  const { data: agentLinkages = [] } = useQuery({
+    queryKey: ['agent-linkages'],
+    queryFn: () => base44.entities.AgentLinkage.list(),
+  });
+
+  const handleEditAgent = async (agent) => {
     setEditingAgent(agent);
-    setSelectedHarnessId('');
-    setSelectedSkillIds(new Set());
+    
+    // Load existing linkage if it exists
+    const linkage = agentLinkages.find(l => l.agent_name === agent.name);
+    if (linkage) {
+      setSelectedHarnessId(linkage.linked_harness_id || '');
+      setSelectedSkillIds(new Set(linkage.linked_skill_ids || []));
+    } else {
+      setSelectedHarnessId('');
+      setSelectedSkillIds(new Set());
+    }
   };
 
   const handleCloseModal = () => {
@@ -197,7 +215,7 @@ export default function Base44AgentPanel() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {KNOWN_AGENTS.map(agent => (
-          <AgentCard key={agent.name} agent={agent} agentSkills={agentSkills} harnesses={harnesses} onEditAgent={handleEditAgent} />
+          <AgentCard key={agent.name} agent={agent} agentSkills={agentSkills} harnesses={harnesses} agentLinkages={agentLinkages} onEditAgent={handleEditAgent} />
         ))}
       </div>
 

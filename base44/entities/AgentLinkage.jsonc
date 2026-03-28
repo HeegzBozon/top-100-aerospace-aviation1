@@ -1,0 +1,24 @@
+{
+  "name": "AgentLinkage",
+  "type": "object",
+  "properties": {
+    "agent_name": {
+      "type": "string",
+      "description": "Name of the Base44 agent (e.g., 'inbox_manager', 'ltPerry')"
+    },
+    "linked_harness_id": {
+      "type": "string",
+      "description": "ID of the linked Harness entity (optional)"
+    },
+    "linked_skill_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of AgentSkill IDs linked to this agent"
+    }
+  },
+  "required": [
+    "agent_name"
+  ]
+}
