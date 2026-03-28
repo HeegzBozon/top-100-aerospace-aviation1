@@ -150,9 +150,11 @@ export function LaunchPartyWidget() {
       <div className="relative h-48 sm:h-56 bg-gradient-to-br from-[#0f1d2d] to-[#1e3a5a] overflow-hidden">
         {finalYoutubeId && !embedError ? (
           <iframe
-            src={`https://www.youtube.com/embed/${finalYoutubeId}?rel=0&modestbranding=1&mute=1&autoplay=1`}
+            width="560"
+            height="315"
+            src={`https://www.youtube.com/embed/${finalYoutubeId}`}
             title={`${launchName} webcast`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            frameBorder="0"
             allowFullScreen
             className="absolute inset-0 w-full h-full border-0 z-0"
             onError={() => setEmbedError(true)}
