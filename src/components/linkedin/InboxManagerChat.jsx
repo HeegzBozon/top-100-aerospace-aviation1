@@ -10,6 +10,7 @@ const QUICK_ACTIONS = [
   { label: 'Priority Queue', prompt: 'Give me my priority queue — who should I respond to first and why?', icon: ClipboardList },
   { label: 'Inbox Audit', prompt: 'Do a full audit of my inbox. How many are waiting? What patterns do you see? What should I focus on?', icon: Inbox },
   { label: 'Draft a Reply', prompt: "I need to draft a reply. Let's start with my highest-priority unanswered contact.", icon: MessageSquare },
+  { label: 'OKR Check-In', prompt: 'Where are we on OKRs for my contacts? Which ones am I tracking well and which need attention?', icon: ClipboardList },
   { label: 'Top Opportunities', prompt: 'Who in my inbox represents the biggest strategic opportunities? Focus on S-Tier and A-Tier contacts.', icon: Sparkles },
 ];
 
@@ -48,6 +49,9 @@ export default function InboxManagerChat({ selectedContact }) {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showEvalModal, setShowEvalModal] = useState(false);
+  const [okrs, setOkrs] = useState({});
+  const [editingOkr, setEditingOkr] = useState(null);
+  const [okrInput, setOkrInput] = useState('');
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -64,8 +68,42 @@ export default function InboxManagerChat({ selectedContact }) {
     if (selectedContact) {
       setInput(`Tell me about ${selectedContact.full_name} and what I should say to them next.`);
       inputRef.current?.focus();
+      // Load OKRs for this contact
+      if (selectedContact.id && okrs[selectedContact.id]) {
+        // OKRs loaded from state
+      }
     }
   }, [selectedContact]);
+
+  const handleAddOkr = () => {
+    if (!selectedContact || !okrInput.trim()) return;
+    const contactId = selectedContact.id;
+    setOkrs(prev => ({
+      ...prev,
+      [contactId]: [...(prev[contactId] || []), { id: Date.now(), text: okrInput, completed: false }]
+    }));
+    setOkrInput('');
+  };
+
+  const handleToggleOkr = (okrId) => {
+    if (!selectedContact) return;
+    const contactId = selectedContact.id;
+    setOkrs(prev => ({
+      ...prev,
+      [contactId]: prev[contactId].map(o => o.id === okrId ? { ...o, completed: !o.completed } : o)
+    }));
+  };
+
+  const handleRemoveOkr = (okrId) => {
+    if (!selectedContact) return;
+    const contactId = selectedContact.id;
+    setOkrs(prev => ({
+      ...prev,
+      [contactId]: prev[contactId].filter(o => o.id !== okrId)
+    }));
+  };
+
+  const currentContactOkrs = selectedContact?.id ? (okrs[selectedContact.id] || []) : [];
 
   const initConversation = async () => {
     setLoading(true);
@@ -294,6 +332,59 @@ export default function InboxManagerChat({ selectedContact }) {
                       : 'Actively seeking a solution. Now is the time to move them forward.'}
                   </p>
                 </div>
+              </div>
+
+              {/* OKRs FOR THIS CONTACT */}
+              <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                  <span>🎯</span> Objectives & Key Results
+                </h4>
+                <div className="space-y-2 mb-3">
+                  {currentContactOkrs.length === 0 ? (
+                    <p className="text-xs text-slate-600 italic">No OKRs set. Add one to track goals for this contact.</p>
+                  ) : (
+                    currentContactOkrs.map(okr => (
+                      <div key={okr.id} className="flex items-start gap-2 p-2 bg-white rounded-lg border border-indigo-200">
+                        <input
+                          type="checkbox"
+                          checked={okr.completed}
+                          onChange={() => handleToggleOkr(okr.id)}
+                          className="mt-1 w-4 h-4 cursor-pointer"
+                        />
+                        <span className={`flex-1 text-sm ${okr.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>
+                          {okr.text}
+                        </span>
+                        <button
+                          onClick={() => handleRemoveOkr(okr.id)}
+                          className="text-xs text-red-600 hover:text-red-700 font-semibold"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={okrInput}
+                    onChange={e => setOkrInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleAddOkr()}
+                    placeholder="Add an OKR (e.g., 'Schedule discovery call by Friday')"
+                    className="flex-1 text-xs px-2 py-1.5 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  />
+                  <button
+                    onClick={handleAddOkr}
+                    className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    Add
+                  </button>
+                </div>
+                {currentContactOkrs.length > 0 && (
+                  <p className="text-xs text-slate-600 mt-2">
+                    Progress: {currentContactOkrs.filter(o => o.completed).length}/{currentContactOkrs.length} completed
+                  </p>
+                )}
               </div>
 
               {/* PROBLEM HYPOTHESIS */}
