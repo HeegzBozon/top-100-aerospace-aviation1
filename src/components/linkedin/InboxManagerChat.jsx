@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Bot, Send, Loader2, Inbox, Sparkles, ClipboardList, MessageSquare, Building2, Star, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { calculateThreeTensCertainty, calculateActionThreshold, calculatePainThreshold, identifyLowestTen } from '@/lib/straightLineScoring';
 
 const QUICK_ACTIONS = [
   { label: 'Priority Queue', prompt: 'Give me my priority queue — who should I respond to first and why?', icon: ClipboardList },
@@ -117,6 +118,11 @@ export default function InboxManagerChat({ selectedContact }) {
 
   const visibleMessages = messages.filter(m => m.role === 'user' || (m.role === 'assistant' && m.content));
 
+  const certainties = useMemo(() => calculateThreeTensCertainty(selectedContact), [selectedContact]);
+  const actionThreshold = useMemo(() => calculateActionThreshold(selectedContact), [selectedContact]);
+  const painThreshold = useMemo(() => calculatePainThreshold(selectedContact), [selectedContact]);
+  const lowestTen = useMemo(() => identifyLowestTen(certainties), [certainties]);
+
   const tierColors = {
     'S-Tier': 'bg-purple-100 text-purple-700 border-purple-200',
     'A-Tier': 'bg-blue-100 text-blue-700 border-blue-200',
@@ -206,7 +212,7 @@ export default function InboxManagerChat({ selectedContact }) {
                 <h3 className="font-bold text-slate-900 flex items-center gap-2">
                   <span className="text-lg">📊</span> The Three Tens Certainty
                 </h3>
-                <p className="text-xs text-slate-600 mb-3">All three must be 8+ before they commit. Which are lowest?</p>
+                <p className="text-xs text-slate-600 mb-3">All three must be 8+ before they commit. Lowest bottleneck: <strong>{lowestTen.lowest}</strong></p>
                 <div className="grid grid-cols-3 gap-3">
                   {/* Product Certainty */}
                   <div className="p-3 bg-white rounded-lg border border-blue-200">
@@ -214,9 +220,9 @@ export default function InboxManagerChat({ selectedContact }) {
                     <p className="text-xs text-slate-600 mb-2">Do they understand how this solves their problem?</p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-500" style={{ width: `${(selectedContact.institutional_revenue_score || 0) * 20}%` }} />
+                        <div className="h-full bg-blue-500" style={{ width: `${(certainties.product / 10) * 100}%` }} />
                       </div>
-                      <span className="text-xs font-bold text-blue-600">{selectedContact.institutional_revenue_score || 0}/5</span>
+                      <span className="text-xs font-bold text-blue-600">{certainties.product.toFixed(1)}/10</span>
                     </div>
                   </div>
 
@@ -226,9 +232,9 @@ export default function InboxManagerChat({ selectedContact }) {
                     <p className="text-xs text-slate-600 mb-2">Do they trust you? See you as sharp & invested?</p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-500" style={{ width: `${(selectedContact.talent_graph_score || 0) * 20}%` }} />
+                        <div className="h-full bg-green-500" style={{ width: `${(certainties.personal / 10) * 100}%` }} />
                       </div>
-                      <span className="text-xs font-bold text-green-600">{selectedContact.talent_graph_score || 0}/5</span>
+                      <span className="text-xs font-bold text-green-600">{certainties.personal.toFixed(1)}/10</span>
                     </div>
                   </div>
 
@@ -238,9 +244,9 @@ export default function InboxManagerChat({ selectedContact }) {
                     <p className="text-xs text-slate-600 mb-2">Do they trust your organization? See credibility?</p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-purple-500" style={{ width: `${(selectedContact.ecosystem_gravity_score || 0) * 20}%` }} />
+                        <div className="h-full bg-purple-500" style={{ width: `${(certainties.entity / 10) * 100}%` }} />
                       </div>
-                      <span className="text-xs font-bold text-purple-600">{selectedContact.ecosystem_gravity_score || 0}/5</span>
+                      <span className="text-xs font-bold text-purple-600">{certainties.entity.toFixed(1)}/10</span>
                     </div>
                   </div>
                 </div>
@@ -256,7 +262,7 @@ export default function InboxManagerChat({ selectedContact }) {
                   <p className="text-xs text-slate-600 mb-3">How much certainty do they need before they move?</p>
                   <div className="inline-block px-3 py-1.5 bg-white border border-amber-300 rounded-lg">
                     <span className="text-sm font-bold text-amber-700">
-                      {selectedContact.tier_classification === 'S-Tier' || selectedContact.tier_classification === 'A-Tier' ? '7-8' : '8-9'}
+                      {actionThreshold.toFixed(1)}
                     </span>
                     <span className="text-xs text-slate-600 ml-1">/10</span>
                   </div>
@@ -273,9 +279,9 @@ export default function InboxManagerChat({ selectedContact }) {
                     <span>📍</span> Pain Threshold
                   </h4>
                   <p className="text-xs text-slate-600 mb-3">How much discomfort are they feeling about their situation?</p>
-                  <div className="inline-block px-3 py-1.5 bg-white border border-red-300 rounded-lg">
+                  <div className="inline-block px-3 py-1.5 bg-white border border-red-300 rounded-lg capitalize">
                     <span className="text-sm font-bold text-red-700">
-                      {selectedContact.response_status === 'done' ? 'Resolved' : selectedContact.response_status === 'sent' ? 'Medium' : 'High'}
+                      {painThreshold}
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 mt-3">
