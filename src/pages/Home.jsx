@@ -45,7 +45,6 @@ export default function HomePage() {
     DEFAULT_SECTIONS.map(s => ({ ...s, visible: true }))
   );
 
-
   const isVisible = (id) => {
     const found = sectionConfig.find(s => s.id === id);
     return found ? found.visible : true;
