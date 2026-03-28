@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { resolveYoutubeLive } from '@/functions/resolveYoutubeLive';
-import { Loader2, MonitorPlay, Radio } from 'lucide-react';
+import { Loader2, MonitorPlay, Radio, ExternalLink, AlertTriangle } from 'lucide-react';
 
 const LIVE_CHANNELS = [
-  { id: 'bloomberg', name: 'Bloomberg', query: 'Bloomberg Global Financial News Live', color: '#1e3a5a' },
-  { id: 'aljazeera', name: 'Al Jazeera', query: 'Al Jazeera English Live', color: '#c9a87c' },
-  { id: 'france24',  name: 'France 24', query: 'France 24 English Live', color: '#3b82f6' },
-  { id: 'nasa',      name: 'NASA Live', query: 'NASA Live Official Stream', color: '#0f1d2d' },
-  { id: 'dw',        name: 'DW News',   query: 'DW News Live', color: '#ef4444' },
-  { id: 'euronews',  name: 'Euronews',  query: 'Euronews English Live', color: '#10b981' },
+  { id: 'bloomberg', name: 'Bloomberg', query: 'Bloomberg Global Financial News Live', url: 'https://www.youtube.com/@BloombergGlobalNews/live', color: '#1e3a5a' },
+  { id: 'aljazeera', name: 'Al Jazeera', query: 'Al Jazeera English Live', url: 'https://www.youtube.com/@aljazeeraenglish/live', color: '#c9a87c' },
+  { id: 'france24',  name: 'France 24', query: 'France 24 English Live', url: 'https://www.youtube.com/@France24_en/live', color: '#3b82f6' },
+  { id: 'nasa',      name: 'NASA Live', query: 'NASA Live Official Stream', url: 'https://www.youtube.com/@NASA/live', color: '#0f1d2d' },
+  { id: 'dw',        name: 'DW News',   query: 'DW News Live', url: 'https://www.youtube.com/@dwnews/live', color: '#ef4444' },
+  { id: 'euronews',  name: 'Euronews',  query: 'Euronews English Live', url: 'https://www.youtube.com/@euronews/live', color: '#10b981' },
 ];
 
 export function LiveNewsPanel() {
@@ -57,13 +57,15 @@ export function LiveNewsPanel() {
         ) : (
           <iframe
             key={videoId}
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`}
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`}
             className="w-full h-full border-0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
             allowFullScreen
             title={ch.name}
           />
         )}
+        
+        {/* Top Left Indicators */}
         <div className="absolute top-2 left-2 flex items-center gap-2 pointer-events-none">
             <span className="bg-red-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider flex items-center gap-1 shadow-lg">
                 <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
@@ -72,6 +74,21 @@ export function LiveNewsPanel() {
             <span className="bg-black/60 backdrop-blur text-white text-[10px] px-2 py-0.5 rounded font-medium border border-white/10 shadow-lg">
                 {ch.name}
             </span>
+        </div>
+
+        {/* Top Right External Fallback */}
+        <div className="absolute top-2 right-2 flex items-center gap-2 z-10">
+            <a 
+                href={ch.url || `https://www.youtube.com/results?search_query=${encodeURIComponent(ch.query)}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-black/70 hover:bg-red-600/90 backdrop-blur text-white text-[10px] px-2.5 py-1.5 rounded border border-white/10 shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
+                title="If stream shows Error 150/153, click to watch directly on YouTube"
+            >
+                <AlertTriangle className="w-3 h-3 text-amber-400" />
+                Stream Error? Watch Direct
+                <ExternalLink className="w-3 h-3 ml-0.5 opacity-70" />
+            </a>
         </div>
       </div>
 
