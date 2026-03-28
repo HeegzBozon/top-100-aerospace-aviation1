@@ -44,7 +44,6 @@ export default function HomePage() {
   const [sectionConfig, setSectionConfig] = useState(() =>
     DEFAULT_SECTIONS.map(s => ({ ...s, visible: true }))
   );
-  const [sectionConfigSeeded, setSectionConfigSeeded] = useState(false);
 
 
   const isVisible = (id) => {
@@ -105,19 +104,15 @@ export default function HomePage() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-        // Seed section config from user's globally-persisted record
-        if (!sectionConfigSeeded) {
-          const saved = loadSectionConfig(currentUser);
-          if (saved) setSectionConfig(saved);
-          setSectionConfigSeeded(true);
-        }
+        const saved = loadSectionConfig(currentUser);
+        if (saved) setSectionConfig(saved);
       } catch (e) {
         setUser(null);
       }
       setIsLoading(false);
     };
     init();
-  }, [sectionConfigSeeded]);
+  }, []);
 
   // Transform nominees for featured sections - no scores, random shuffle
   const mapNomineeToCard = (n, badge) => ({
