@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Bot, Send, Loader2, Inbox, Sparkles, ClipboardList, MessageSquare, Building2, Star } from 'lucide-react';
+import { Bot, Send, Loader2, Inbox, Sparkles, ClipboardList, MessageSquare, Building2, Star, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const QUICK_ACTIONS = [
   { label: 'Priority Queue', prompt: 'Give me my priority queue — who should I respond to first and why?', icon: ClipboardList },
@@ -45,6 +46,7 @@ export default function InboxManagerChat({ selectedContact }) {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showEvalModal, setShowEvalModal] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -127,7 +129,10 @@ export default function InboxManagerChat({ selectedContact }) {
 
       {/* Contact Header Card */}
       {selectedContact && (
-        <div className="flex items-center gap-4 px-4 py-3 bg-white border-b border-slate-200 flex-shrink-0">
+        <button
+          onClick={() => setShowEvalModal(true)}
+          className="flex items-center gap-4 px-4 py-3 bg-white border-b border-slate-200 flex-shrink-0 hover:bg-slate-50 transition-colors text-left w-full"
+        >
           {selectedContact.avatar_url ? (
             <img src={selectedContact.avatar_url} alt={selectedContact.full_name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
           ) : (
@@ -160,8 +165,99 @@ export default function InboxManagerChat({ selectedContact }) {
               <p className="text-xs text-slate-400">TIER-S</p>
             </div>
           )}
-        </div>
+        </button>
       )}
+
+      {/* Evaluation Modal */}
+      <Dialog open={showEvalModal} onOpenChange={setShowEvalModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-[#1e3a5a]">Contact Evaluation</DialogTitle>
+          </DialogHeader>
+          {selectedContact && (
+            <div className="space-y-6">
+              {/* Contact Intro */}
+              <div className="flex items-start gap-4 pb-4 border-b border-slate-200">
+                {selectedContact.avatar_url ? (
+                  <img src={selectedContact.avatar_url} alt={selectedContact.full_name} className="w-16 h-16 rounded-full object-cover" />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-[#1e3a5a] flex items-center justify-center text-white font-bold text-xl">
+                    {selectedContact.full_name?.[0]}
+                  </div>
+                )}
+                <div className="flex-1">
+                  <h2 className="text-xl font-bold text-slate-900">{selectedContact.full_name}</h2>
+                  <p className="text-sm text-slate-600">{selectedContact.headline}</p>
+                  {selectedContact.current_company && (
+                    <p className="text-sm text-slate-500 mt-1">{selectedContact.current_company}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* TIER-S Scores */}
+              {(selectedContact.talent_graph_score || selectedContact.institutional_revenue_score || selectedContact.ecosystem_gravity_score || selectedContact.rigor_scalability_score) && (
+                <div className="space-y-3">
+                  <h3 className="font-bold text-slate-900">TIER-S Evaluation</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedContact.talent_graph_score > 0 && (
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-xs text-slate-600 font-semibold">Talent Graph</p>
+                        <p className="text-2xl font-bold text-blue-600">{selectedContact.talent_graph_score}/5</p>
+                      </div>
+                    )}
+                    {selectedContact.institutional_revenue_score > 0 && (
+                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-xs text-slate-600 font-semibold">Institutional Revenue</p>
+                        <p className="text-2xl font-bold text-green-600">{selectedContact.institutional_revenue_score}/5</p>
+                      </div>
+                    )}
+                    {selectedContact.ecosystem_gravity_score > 0 && (
+                      <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                        <p className="text-xs text-slate-600 font-semibold">Ecosystem Gravity</p>
+                        <p className="text-2xl font-bold text-purple-600">{selectedContact.ecosystem_gravity_score}/5</p>
+                      </div>
+                    )}
+                    {selectedContact.rigor_scalability_score > 0 && (
+                      <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                        <p className="text-xs text-slate-600 font-semibold">Rigor & Scalability</p>
+                        <p className="text-2xl font-bold text-amber-600">{selectedContact.rigor_scalability_score}/5</p>
+                      </div>
+                    )}
+                  </div>
+                  {selectedContact.triage_reasoning && (
+                    <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                      <p className="text-xs text-slate-600 font-semibold mb-2">Reasoning</p>
+                      <p className="text-sm text-slate-700">{selectedContact.triage_reasoning}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Stats */}
+              <div className="space-y-2 pt-4">
+                {selectedContact.mutual_connections_count > 0 && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-600">Mutual Connections</span>
+                    <span className="font-semibold text-slate-900">{selectedContact.mutual_connections_count}</span>
+                  </div>
+                )}
+                {selectedContact.followers && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-600">LinkedIn Followers</span>
+                    <span className="font-semibold text-slate-900">{selectedContact.followers.toLocaleString()}</span>
+                  </div>
+                )}
+                {selectedContact.connections_count && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-600">Connections</span>
+                    <span className="font-semibold text-slate-900">{selectedContact.connections_count.toLocaleString()}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Agent Header */}
       <div className="flex items-center gap-3 px-4 py-3 bg-[#1e3a5a] text-white flex-shrink-0">

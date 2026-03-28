@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, AlertCircle, Search, Filter } from 'lucide-react';
+import { Mail, AlertCircle, Search, Filter, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 
@@ -8,6 +8,7 @@ export default function ContactList({ contacts, selectedContact, onSelectContact
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('unread'); // 'unread', 'tier', 'name', 'recent'
   const [filterTier, setFilterTier] = useState('all'); // 'all', 'S-Tier', 'A-Tier', 'B-Tier', 'C-Tier'
+  const [checkedIds, setCheckedIds] = useState(new Set());
 
   const getTierColor = (tier) => {
     const colors = {
@@ -121,22 +122,50 @@ export default function ContactList({ contacts, selectedContact, onSelectContact
           </div>
         ) : (
           <div className="space-y-2 p-4">
-            {filteredAndSorted.map((contact, idx) => (
-              <motion.button
-                key={contact.id}
-                onClick={() => onSelectContact(contact)}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className={cn(
-                  'w-full text-left p-4 rounded-lg border transition-all text-sm',
-                  selectedContact?.id === contact.id
-                    ? 'bg-[#D4A574]/10 border-[#D4A574]'
-                    : 'border-slate-200 hover:bg-slate-50'
-                )}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
+            {filteredAndSorted.map((contact, idx) => {
+              const isChecked = checkedIds.has(contact.id);
+              return (
+                <motion.div
+                  key={contact.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className={cn(
+                    'w-full flex items-start gap-3 p-4 rounded-lg border transition-all text-sm',
+                    selectedContact?.id === contact.id
+                      ? 'bg-[#D4A574]/10 border-[#D4A574]'
+                      : 'border-slate-200 hover:bg-slate-50'
+                  )}
+                >
+                  {/* Checkbox */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCheckedIds(prev => {
+                        const next = new Set(prev);
+                        if (next.has(contact.id)) {
+                          next.delete(contact.id);
+                        } else {
+                          next.add(contact.id);
+                        }
+                        return next;
+                      });
+                    }}
+                    className={cn(
+                      'flex-shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center mt-0.5 transition-colors',
+                      isChecked
+                        ? 'bg-[#1e3a5a] border-[#1e3a5a]'
+                        : 'border-slate-300 hover:border-[#1e3a5a]'
+                    )}
+                  >
+                    {isChecked && <Check className="w-3 h-3 text-white" />}
+                  </button>
+
+                  {/* Contact Info */}
+                  <button
+                    onClick={() => onSelectContact(contact)}
+                    className="flex-1 min-w-0 text-left"
+                  >
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <p className="font-semibold text-[#1e3a5a] truncate">{contact.full_name}</p>
                       {/* Tier Badge with Color Coding */}
@@ -153,13 +182,15 @@ export default function ContactList({ contacts, selectedContact, onSelectContact
                         "{contact.last_received_message.substring(0, 60)}..."
                       </p>
                     )}
-                  </div>
+                  </button>
+
+                  {/* Unread Indicator */}
                   {contact.has_unread && (
                     <div className="flex-shrink-0 w-2 h-2 bg-orange-500 rounded-full mt-2" />
                   )}
-                </div>
-              </motion.button>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>
