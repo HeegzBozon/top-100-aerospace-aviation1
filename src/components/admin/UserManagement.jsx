@@ -45,6 +45,7 @@ import {
   Download,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import HonoreeUserCrossRef from '@/components/admin/HonoreeUserCrossRef';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -500,6 +501,9 @@ export default function UserManagement() {
           </CardContent>
         </Card>
       </div>
+
+      {/* TOP 100 Cross-Reference */}
+      <HonoreeUserCrossRef users={users} />
 
       {/* Filters */}
       <Card>
