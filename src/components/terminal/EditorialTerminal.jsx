@@ -14,45 +14,49 @@ export default function EditorialTerminal({ children, heroSlot }) {
       <EditorialTickerBar />
 
       {/* Main content area */}
-      <div className="max-w-[1600px] mx-auto px-3 md:px-5 py-4 space-y-5">
+      <div className="max-w-[1800px] mx-auto px-3 md:px-5 py-4">
 
         {/* ── Hero header above globe ── */}
-        {heroSlot}
-
-        {/* ── Top row: Globe + Live Feeds ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2">
-            <ErrorBoundary>
-              <EditorialGlobeSection />
-            </ErrorBoundary>
-          </div>
-          <div className="h-[420px] lg:h-auto">
-            <ErrorBoundary>
-              <EditorialLiveFeeds />
-            </ErrorBoundary>
-          </div>
+        <div className="w-full mb-6">
+          {heroSlot}
         </div>
 
-        {/* ── Intel strip: 6 compact summary panels ── */}
-        <ErrorBoundary>
-          <EditorialIntelStrip />
-        </ErrorBoundary>
+        <div className="max-w-[1400px] mx-auto space-y-5">
+          {/* ── Top row: Globe + Live Feeds ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2">
+              <ErrorBoundary>
+                <EditorialGlobeSection />
+              </ErrorBoundary>
+            </div>
+            <div className="h-[420px] lg:h-auto">
+              <ErrorBoundary>
+                <EditorialLiveFeeds />
+              </ErrorBoundary>
+            </div>
+          </div>
 
-        {/* ── Three-column intelligence grid ── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* ── Intel strip: 6 compact summary panels ── */}
           <ErrorBoundary>
-            <EditorialNewsFeed />
+            <EditorialIntelStrip />
           </ErrorBoundary>
-          <ErrorBoundary>
-            <EditorialIntelFeed />
-          </ErrorBoundary>
-          <ErrorBoundary>
-            <EditorialLaunchWidget />
-          </ErrorBoundary>
+
+          {/* ── Three-column intelligence grid ── */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <ErrorBoundary>
+              <EditorialNewsFeed />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <EditorialIntelFeed />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <EditorialLaunchWidget />
+            </ErrorBoundary>
+          </div>
+
+          {/* ── Existing editorial sections injected as children ── */}
+          {children}
         </div>
-
-        {/* ── Existing editorial sections injected as children ── */}
-        {children}
       </div>
     </div>
   );
