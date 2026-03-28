@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Loader2, MessageCircle, ExternalLink, CheckCircle2, PenSquare } from 'lucide-react';
+import { Loader2, MessageCircle, ExternalLink, CheckCircle2, PenSquare, Bot, ChevronDown } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import TriageEvaluation from './TriageEvaluation';
 
@@ -73,11 +73,19 @@ export default function ContactDetail({ contact, onUpdate }) {
   const [currentContact, setCurrentContact] = useState(contact);
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
   const [showComposer, setShowComposer] = useState(false);
+  const [agentSkills, setAgentSkills] = useState([]);
+  const [selectedSkillId, setSelectedSkillId] = useState('');
 
   useEffect(() => {
     setCurrentContact(contact);
     detectLinkedEntity();
   }, [contact]);
+
+  useEffect(() => {
+    base44.entities.AgentSkill.filter({ is_active: true }, '-updated_date', 20)
+      .then(skills => setAgentSkills(skills))
+      .catch(() => {});
+  }, []);
 
   const detectLinkedEntity = async () => {
     setLoading(true);
@@ -115,12 +123,24 @@ export default function ContactDetail({ contact, onUpdate }) {
   const generateResponse = async () => {
     setGeneratingResponse(true);
     try {
+      const selectedSkill = agentSkills.find(s => s.id === selectedSkillId);
+      const agentContext = selectedSkill
+        ? `You are acting as: ${selectedSkill.display_name || selectedSkill.name} (${selectedSkill.persona_role}).
+Agent instructions: ${selectedSkill.instructions || selectedSkill.description || ''}
+
+`
+        : `You are a professional networking assistant for TOP 100 Women in Aerospace.
+
+`;
+
       const llmResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a professional networking assistant. Generate a thoughtful, personalized response to this LinkedIn message from ${contact.full_name} (${contact.headline}).
+        prompt: `${agentContext}Generate a thoughtful, personalized LinkedIn reply to ${contact.full_name} (${contact.headline}${contact.current_company ? `, ${contact.current_company}` : ''}).
 
 Their message: "${contact.last_received_message}"
 
-Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversation naturally.`
+${contact.tier_classification ? `Contact tier: ${contact.tier_classification} (score: ${contact.tier_score}/20). Calibrate your tone accordingly.` : ''}
+
+Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversation naturally. Do not use generic filler phrases.`
       });
 
       setResponse(llmResult);
@@ -398,10 +418,38 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
               Reply to {currentContact.first_name || currentContact.full_name}
             </DialogTitle>
           </DialogHeader>
+
+          {/* Agent Skill Picker */}
+          {agentSkills.length > 0 && (
+            <div className="flex items-center gap-2 p-3 bg-indigo-50 border border-indigo-100 rounded-lg">
+              <Bot className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-indigo-700 mb-1">Agent Voice</p>
+                <select
+                  value={selectedSkillId}
+                  onChange={e => setSelectedSkillId(e.target.value)}
+                  className="w-full text-xs bg-white border border-indigo-200 rounded-md px-2 py-1.5 text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                >
+                  <option value="">Default (Networking Assistant)</option>
+                  {agentSkills.map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.display_name || s.name} {s.persona_role ? `· ${s.persona_role}` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {selectedSkillId && (
+                <div className="text-xs text-indigo-500 flex-shrink-0">
+                  {agentSkills.find(s => s.id === selectedSkillId)?.version || ''}
+                </div>
+              )}
+            </div>
+          )}
+
           <textarea
             value={response}
             onChange={(e) => setResponse(e.target.value)}
-            placeholder="Type your response here..."
+            placeholder="Type your response here, or use AI Generate..."
             className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4A574]/50 text-sm resize-none"
             rows={6}
           />
@@ -410,15 +458,18 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
               onClick={generateResponse}
               disabled={generatingResponse}
               variant="outline"
-              className="text-sm"
+              className="text-sm gap-1.5"
             >
               {generatingResponse ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Generating...
                 </>
               ) : (
-                'AI Generate'
+                <>
+                  <Bot className="w-4 h-4 text-indigo-500" />
+                  AI Generate
+                </>
               )}
             </Button>
             <Button onClick={saveResponse} variant="outline" className="text-sm">
