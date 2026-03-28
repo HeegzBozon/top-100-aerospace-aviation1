@@ -155,6 +155,7 @@ export function LaunchPartyWidget() {
             src={`https://www.youtube.com/embed/${finalYoutubeId}`}
             title={`${launchName} webcast`}
             frameBorder="0"
+            referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
             className="absolute inset-0 w-full h-full border-0 z-0"
             onError={() => setEmbedError(true)}
