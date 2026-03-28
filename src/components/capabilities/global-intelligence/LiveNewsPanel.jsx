@@ -3,12 +3,12 @@ import { resolveYoutubeLive } from '@/functions/resolveYoutubeLive';
 import { Loader2 } from 'lucide-react';
 
 const LIVE_CHANNELS = [
-  { id: 'bloomberg', name: 'BBG',   resolveChannelId: 'UCIALMKvObZNtJ6AmdCLP7Lg' },
-  { id: 'aljazeera', name: 'AJ',    ytId: 'gCNeDWCI0vo' },
-  { id: 'france24',  name: 'F24',   ytId: 'h3MuIUNCCLI' },
-  { id: 'nasa',      name: 'NASA',  ytId: '21X5lGlDOfg' },
-  { id: 'dw',        name: 'DW',    ytId: 'V1FNCH3yQcg' },
-  { id: 'euronews',  name: 'Euro',  ytId: 'pykpO5kQJ98' },
+  { id: 'bloomberg', name: 'BBG',   query: 'Bloomberg Global Financial News Live' },
+  { id: 'aljazeera', name: 'AJ',    query: 'Al Jazeera English Live' },
+  { id: 'france24',  name: 'F24',   query: 'France 24 English Live' },
+  { id: 'nasa',      name: 'NASA',  query: 'NASA Live Official Stream' },
+  { id: 'dw',        name: 'DW',    query: 'DW News Live' },
+  { id: 'euronews',  name: 'Euro',  query: 'Euronews English Live' },
 ];
 
 export function LiveNewsPanel() {
@@ -19,10 +19,10 @@ export function LiveNewsPanel() {
   const ch = LIVE_CHANNELS.find(c => c.id === activeChannel) || LIVE_CHANNELS[0];
 
   const resolveChannel = useCallback(async (channel) => {
-    if (!channel.resolveChannelId || resolvedIds[channel.id]) return;
+    if (resolvedIds[channel.id]) return;
     setResolving(true);
     try {
-      const res = await resolveYoutubeLive({ channelId: channel.resolveChannelId });
+      const res = await resolveYoutubeLive({ query: channel.query });
       if (res.data?.videoId) {
         setResolvedIds(prev => ({ ...prev, [channel.id]: res.data.videoId }));
       }
@@ -34,13 +34,13 @@ export function LiveNewsPanel() {
   }, [resolvedIds]);
 
   useEffect(() => {
-    if (ch?.resolveChannelId) {
+    if (ch && !resolvedIds[ch.id]) {
       resolveChannel(ch);
     }
-  }, [ch?.id]);
+  }, [ch?.id, resolvedIds, resolveChannel]);
 
-  const videoId = ch.ytId || resolvedIds[ch.id];
-  const needsResolve = ch.resolveChannelId && !videoId;
+  const videoId = resolvedIds[ch.id];
+  const needsResolve = !videoId;
 
   if (!ch) {
     return <p className="text-[10px] text-slate-600 font-mono text-center py-4">No channels available</p>;
@@ -89,9 +89,10 @@ export function LiveNewsPanel() {
         ) : videoId ? (
           <iframe
             key={videoId}
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0`}
-            className="w-full h-full"
-            allow="autoplay; encrypted-media; storage-access"
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&origin=${encodeURIComponent(window.location.origin)}`}
+            className="w-full h-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            sandbox="allow-scripts allow-same-origin allow-presentation"
             allowFullScreen
             title={ch.name}
           />

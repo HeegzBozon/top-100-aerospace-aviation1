@@ -12,17 +12,29 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { channelId } = await req.json();
-    if (!channelId) {
-      return Response.json({ error: 'Missing channelId parameter' }, { status: 400 });
+    const { channelId, query } = await req.json();
+    if (!channelId && !query) {
+      return Response.json({ error: 'Missing channelId or query parameter' }, { status: 400 });
     }
 
     if (!API_KEY) {
       return Response.json({ error: 'YOUTUBE_API_KEY not configured' }, { status: 500 });
     }
 
-    // Search for live broadcasts on this channel
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${API_KEY}`;
+    // Build search params
+    const params = new URLSearchParams({
+      part: 'snippet',
+      eventType: 'live',
+      type: 'video',
+      videoEmbeddable: 'true',
+      maxResults: '1',
+      key: API_KEY,
+    });
+
+    if (channelId) params.append('channelId', channelId);
+    if (query) params.append('q', query);
+
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?${params.toString()}`;
     
     const res = await fetch(searchUrl);
     const data = await res.json();
@@ -40,6 +52,23 @@ Deno.serve(async (req) => {
         title: item.snippet.title,
         channelName: item.snippet.channelTitle,
       });
+    }
+
+    // If channelId failed to find an embeddable stream, and we have a query, try just the query
+    if (channelId && query) {
+      params.delete('channelId');
+      const fallbackUrl = `https://www.googleapis.com/youtube/v3/search?${params.toString()}`;
+      const fbRes = await fetch(fallbackUrl);
+      const fbData = await fbRes.json();
+      if (fbRes.ok && fbData.items && fbData.items.length > 0) {
+        const item = fbData.items[0];
+        return Response.json({
+          videoId: item.id.videoId,
+          isLive: true,
+          title: item.snippet.title,
+          channelName: item.snippet.channelTitle,
+        });
+      }
     }
 
     return Response.json({ videoId: null, isLive: false, channelName: null });
