@@ -8,6 +8,7 @@ import { TickerHeader }           from '@/components/capabilities/global-intelli
 import { LiveNewsPanel }          from '@/components/capabilities/global-intelligence/LiveNewsPanel';
 import { FleetORBATPanel }        from '@/components/capabilities/global-intelligence/FleetORBATPanel';
 import { LaunchWidgetCompact }    from '@/components/capabilities/global-intelligence/LaunchWidgetCompact';
+import StreamHealthDashboard      from '@/components/capabilities/global-intelligence/StreamHealthDashboard';
 import { ConflictAlertsSummary }  from '@/components/capabilities/global-intelligence/ConflictAlertsSummary';
 import { DisastersSummary }       from '@/components/capabilities/global-intelligence/DisastersSummary';
 import { CyberThreatsSummary }    from '@/components/capabilities/global-intelligence/CyberThreatsSummary';
@@ -112,11 +113,11 @@ export default function GlobalIntelligence() {
 
         <PanelResizeHandle className="w-1 bg-slate-800 hover:bg-blue-600 transition-colors cursor-col-resize" />
 
-        {/* Right: Live feeds (top) + Launches (bottom) — 25% */}
+        {/* Right: Live feeds (top) + Launches (middle) + Health (bottom) — 25% */}
         <Panel defaultSize={25} minSize={15} id="streams-col">
           <PanelGroup direction="vertical" autoSaveId="gi-streams-col">
 
-            <Panel defaultSize={60} minSize={30} id="live-news">
+            <Panel defaultSize={50} minSize={25} id="live-news">
               <TerminalPanel label="LIVE FEEDS">
                 <LiveNewsPanel />
               </TerminalPanel>
@@ -124,9 +125,17 @@ export default function GlobalIntelligence() {
 
             <PanelResizeHandle className="h-1 bg-slate-800 hover:bg-blue-600 transition-colors cursor-row-resize" />
 
-            <Panel defaultSize={40} minSize={20} id="launches">
+            <Panel defaultSize={30} minSize={20} id="launches">
               <TerminalPanel label="LAUNCH SCHEDULE">
                 <LaunchWidgetCompact />
+              </TerminalPanel>
+            </Panel>
+
+            <PanelResizeHandle className="h-1 bg-slate-800 hover:bg-blue-600 transition-colors cursor-row-resize" />
+
+            <Panel defaultSize={20} minSize={15} id="stream-health">
+              <TerminalPanel label="STREAM HEALTH">
+                <StreamHealthDashboard />
               </TerminalPanel>
             </Panel>
 
