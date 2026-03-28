@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import StreamPlayer from '@/components/top100tv/StreamPlayer';
 import StreamContextSidecar from '@/components/top100tv/StreamContextSidecar';
 import StreamGridCard from '@/components/top100tv/StreamGridCard';
+import FlightographySidecar from '@/components/top100tv/FlightographySidecar';
 import { STARTING_9_STREAMS } from '@/lib/starting-9-streams';
 
 const DOMAIN_COLORS = {
@@ -114,8 +115,8 @@ export default function Top100TV() {
           </div>
 
           {/* Sidecar */}
-          <div className="w-80 hidden lg:flex flex-col border-l border-white/10 overflow-hidden bg-black/20 p-4 space-y-4">
-            <StreamContextSidecar stream={selectedStream} />
+          <div className="w-80 hidden lg:flex flex-col border-l border-white/10 overflow-hidden bg-black/20">
+            <FlightographySidecar stream={selectedStream} />
             <div className="border-t border-white/10 pt-4">
               <p className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Quick Access</p>
               <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">

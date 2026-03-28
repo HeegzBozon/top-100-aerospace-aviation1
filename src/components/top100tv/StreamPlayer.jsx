@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import RobustYouTubePlayer from '@/components/video/RobustYouTubePlayer';
+import SponsorOverlay from '@/components/top100tv/SponsorOverlay';
 
 let HlsLoaded = null;
 const loadHls = async () => {
@@ -95,13 +96,19 @@ export default function StreamPlayer({ stream, onError }) {
 
   if (stream?.source_type === 'youtube') {
     return (
-      <RobustYouTubePlayer
-        videoId={stream.stream_url}
-        title={stream.title}
-        height="100%"
-        onError={onError}
-        showFallbackButton={true}
-      />
+      <div className="relative w-full h-full">
+        <RobustYouTubePlayer
+          videoId={stream.stream_url}
+          title={stream.title}
+          height="100%"
+          onError={onError}
+          showFallbackButton={true}
+        />
+        <SponsorOverlay 
+          sponsorship={stream.sponsorship} 
+          position={stream.sponsorship?.overlay_position || 'bottom-left'}
+        />
+      </div>
     );
   }
 
@@ -125,6 +132,10 @@ export default function StreamPlayer({ stream, onError }) {
         controls
         className="w-full h-full"
         playsInline
+      />
+      <SponsorOverlay 
+        sponsorship={stream?.sponsorship} 
+        position={stream?.sponsorship?.overlay_position || 'bottom-left'}
       />
     </div>
   );
