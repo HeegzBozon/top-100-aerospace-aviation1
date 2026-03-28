@@ -253,7 +253,7 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
           { text: currentContact.last_received_message, date: currentContact.last_received_date, isMe: false },
         ]
           .filter(m => m.text)
-          .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+          .sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
 
         return (
           <div className="grid grid-cols-1 gap-3">
