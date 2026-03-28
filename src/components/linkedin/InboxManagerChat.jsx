@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Bot, Send, Loader2, Inbox, Sparkles, ClipboardList, MessageSquare, Building2, Star, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { calculateThreeTensCertainty, calculateActionThreshold, calculatePainThreshold, identifyLowestTen } from '@/lib/straightLineScoring';
+import { calculateThreeTensCertainty, calculateActionThreshold, calculatePainThreshold, identifyLowestTen, hypothesizeProblem, proposeSolutionRange } from '@/lib/straightLineScoring';
 
 const QUICK_ACTIONS = [
   { label: 'Priority Queue', prompt: 'Give me my priority queue — who should I respond to first and why?', icon: ClipboardList },
@@ -122,6 +122,8 @@ export default function InboxManagerChat({ selectedContact }) {
   const actionThreshold = useMemo(() => calculateActionThreshold(selectedContact), [selectedContact]);
   const painThreshold = useMemo(() => calculatePainThreshold(selectedContact), [selectedContact]);
   const lowestTen = useMemo(() => identifyLowestTen(certainties), [certainties]);
+  const problemHypothesis = useMemo(() => hypothesizeProblem(selectedContact), [selectedContact]);
+  const solutionRange = useMemo(() => proposeSolutionRange(selectedContact), [selectedContact]);
 
   const tierColors = {
     'S-Tier': 'bg-purple-100 text-purple-700 border-purple-200',
@@ -291,6 +293,41 @@ export default function InboxManagerChat({ selectedContact }) {
                       ? 'Waiting for their reply. Use future pacing to increase urgency.'
                       : 'Actively seeking a solution. Now is the time to move them forward.'}
                   </p>
+                </div>
+              </div>
+
+              {/* PROBLEM HYPOTHESIS */}
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h4 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                  <span>🎯</span> Hypothesized Problem
+                </h4>
+                <div className="mb-3">
+                  <p className="text-sm font-semibold text-slate-800">{problemHypothesis.problem}</p>
+                  <p className="text-xs text-slate-600 mt-1">Confidence: {problemHypothesis.confidence}%</p>
+                </div>
+                {problemHypothesis.signals.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {problemHypothesis.signals.map((signal, i) => (
+                      <span key={i} className="text-xs px-2 py-1 bg-white border border-blue-200 rounded-full text-slate-700">
+                        {signal}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* SOLUTION RANGE */}
+              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                  <span>💡</span> Initial Solution Range
+                </h4>
+                <div className="space-y-2">
+                  {solutionRange.map((solution, i) => (
+                    <div key={i} className="p-2 bg-white rounded-lg border border-green-200">
+                      <p className="text-xs font-semibold text-slate-800">{solution.type}</p>
+                      <p className="text-xs text-slate-600 mt-0.5">{solution.desc}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
 

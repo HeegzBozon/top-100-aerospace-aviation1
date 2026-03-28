@@ -131,3 +131,111 @@ export function identifyLowestTen(certainties) {
     return { lowest: 'entity', score: entity, action: 'Share social proof and organizational credibility' };
   }
 }
+
+/**
+ * Hypothesize the contact's primary problem based on their profile
+ */
+export function hypothesizeProblem(contact) {
+  if (!contact) return { problem: 'Unknown', confidence: 0, signals: [] };
+
+  const signals = [];
+  let problem = 'Unknown';
+
+  // Check pain level
+  if (contact.response_status === 'draft' || contact.response_status === 'pending') {
+    signals.push('actively engaged');
+  }
+  if (contact.response_status === 'sent') {
+    signals.push('considering a solution');
+  }
+
+  // Check tier and role signals
+  if (contact.headline) {
+    const role = contact.headline.toLowerCase();
+    if (role.includes('founder') || role.includes('ceo') || role.includes('executive')) {
+      problem = 'Scaling operations or strategic growth';
+      signals.push('leadership role');
+    } else if (role.includes('engineer') || role.includes('developer') || role.includes('architect')) {
+      problem = 'Technical implementation or infrastructure challenges';
+      signals.push('technical role');
+    } else if (role.includes('sales') || role.includes('business dev')) {
+      problem = 'Revenue growth or pipeline development';
+      signals.push('sales/biz dev role');
+    } else if (role.includes('operations') || role.includes('product')) {
+      problem = 'Process optimization or product direction';
+      signals.push('ops/product role');
+    }
+  }
+
+  // Check tier for problem scale
+  if (contact.tier_classification === 'S-Tier' || contact.tier_classification === 'A-Tier') {
+    signals.push('high-value target');
+  }
+
+  // If actively seeking, they likely have urgency
+  if (contact.response_status === 'pending' || contact.response_status === 'draft') {
+    signals.push('urgent need');
+  }
+
+  const confidence = Math.min(100, signals.length * 25);
+
+  return { problem, confidence, signals };
+}
+
+/**
+ * Propose initial solution range based on contact profile
+ */
+export function proposeSolutionRange(contact) {
+  if (!contact) return [];
+
+  const solutions = [];
+
+  // Base solutions on their role/industry
+  if (contact.headline) {
+    const role = contact.headline.toLowerCase();
+    if (role.includes('founder') || role.includes('ceo') || role.includes('executive')) {
+      solutions.push(
+        { type: 'Strategic Advisory', desc: 'Executive coaching or strategic planning guidance' },
+        { type: 'Network Expansion', desc: 'Introductions to key stakeholders or investors' },
+        { type: 'Growth Infrastructure', desc: 'Systems or processes to scale operations' }
+      );
+    } else if (role.includes('engineer') || role.includes('developer') || role.includes('architect')) {
+      solutions.push(
+        { type: 'Technical Solutions', desc: 'Tools, frameworks, or technical implementation' },
+        { type: 'Team Building', desc: 'Recruitment or team expansion services' },
+        { type: 'Mentorship', desc: 'Technical mentorship from domain experts' }
+      );
+    } else if (role.includes('sales') || role.includes('business dev')) {
+      solutions.push(
+        { type: 'Sales Acceleration', desc: 'Sales training, process optimization, or tooling' },
+        { type: 'Lead Generation', desc: 'Pipeline building or market expansion strategies' },
+        { type: 'Partnership Development', desc: 'Strategic partnerships or channel strategy' }
+      );
+    } else if (role.includes('operations') || role.includes('product')) {
+      solutions.push(
+        { type: 'Process Optimization', desc: 'Efficiency improvements or workflow automation' },
+        { type: 'Product Strategy', desc: 'Product direction, roadmapping, or customer insights' },
+        { type: 'Team Enablement', desc: 'Training or tools to improve team capabilities' }
+      );
+    }
+  }
+
+  // Add tier-specific solutions
+  if (contact.tier_classification === 'S-Tier') {
+    solutions.push({
+      type: 'Custom Enterprise Solution',
+      desc: 'Bespoke solution tailored to their unique scale and complexity'
+    });
+  }
+
+  // Default if no match
+  if (solutions.length === 0) {
+    solutions.push(
+      { type: 'Discovery Consultation', desc: 'Initial deep-dive to understand their situation' },
+      { type: 'Industry-Specific Solution', desc: 'Solution tailored to their sector' },
+      { type: 'Custom Engagement', desc: 'Flexible arrangement based on their needs' }
+    );
+  }
+
+  return solutions;
+}
