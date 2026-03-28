@@ -7,8 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Plus, Edit, Trash2, Upload, Link, X, FileText, Loader2, Calendar } from 'lucide-react';
+import { Plus, Edit, Trash2, Upload, Link, X, FileText, Loader2, Calendar, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import ResourceImportWizard from './ResourceImportWizard';
 
 const RESOURCE_TYPES = [
   'llm',
@@ -54,6 +55,7 @@ export default function ResourceManager() {
   const [filterTeam, setFilterTeam] = useState('all');
   const [uploading, setUploading] = useState(false);
   const [newUrl, setNewUrl] = useState('');
+  const [importOpen, setImportOpen] = useState(false);
   const fileInputRef = useRef(null);
 
   const { data: resources = [], isLoading } = useQuery({
@@ -183,8 +185,11 @@ export default function ResourceManager() {
           <Button onClick={handleNewBookingLink} variant="outline" className="gap-2 border-blue-300 text-blue-700 hover:bg-blue-50">
             <Calendar className="w-4 h-4" /> Add Booking Link
           </Button>
-          <Button onClick={handleNew} className="bg-green-600 hover:bg-green-700 text-white gap-2">
-            <Plus className="w-4 h-4" /> New Resource
+          <Button onClick={() => setImportOpen(true)} className="bg-[#1e3a5a] hover:bg-[#0f2438] text-white gap-2">
+            <Sparkles className="w-4 h-4" /> Import Resource
+          </Button>
+          <Button onClick={handleNew} variant="outline" className="gap-2">
+            <Plus className="w-4 h-4" /> Manual
           </Button>
         </div>
       </div>
@@ -264,6 +269,13 @@ export default function ResourceManager() {
           ))}
         </div>
       )}
+
+      <ResourceImportWizard
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        agentSkills={[]}
+        teams={teams}
+      />
 
       <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
