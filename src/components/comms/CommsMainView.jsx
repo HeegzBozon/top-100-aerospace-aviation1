@@ -19,6 +19,7 @@ import MobileSearch from "./MobileSearch";
 import PerryDMThread from "./PerryDMThread";
 import YouDMThread from "./YouDMThread";
 import TribeCRPHeader from "./TribeCRPHeader";
+import NominationsInline from "./NominationsInline";
 import { useCommsTheme } from "@/components/contexts/CommsThemeContext";
 import { base44 } from "@/api/base44Client";
 
@@ -56,6 +57,7 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
   const isPollChannel = activeConversation?.name?.toLowerCase().includes('poll');
   const isWelcomeRulesChannel = activeConversation?.name?.toLowerCase().includes('welcome') &&
     activeConversation?.name?.toLowerCase().includes('rules');
+  const isNominationsChannel = activeConversation?.name?.toLowerCase() === 'nominations';
   const isStatusChannel = activeConversation?.name?.toLowerCase().includes('status') ||
     activeConversation?.name?.toLowerCase().includes('operations');
   const isGettingStartedChannel = activeConversation?.name?.toLowerCase().includes('getting-started') ||
@@ -273,6 +275,8 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
       {/* Special landing pages for specific channels */}
       {isWelcomeRulesChannel ? (
         <WelcomeRulesLanding />
+      ) : isNominationsChannel ? (
+        <NominationsInline />
       ) : isStatusChannel ? (
         <CommsOverview />
       ) : isGettingStartedChannel ? (
