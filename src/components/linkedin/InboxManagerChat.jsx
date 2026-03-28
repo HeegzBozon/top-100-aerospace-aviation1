@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Bot, Send, Loader2, Inbox, Sparkles, ClipboardList, MessageSquare, Building2, Star, X } from 'lucide-react';
