@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Bot, ExternalLink, MessageSquare, Zap, BookOpen, Settings } from 'lucide-react';
+import { Bot, ExternalLink, MessageSquare, Zap, BookOpen, Settings, Edit2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
 
 // Known Base44 agents in this app (from agents/ directory)
 const KNOWN_AGENTS = [
@@ -32,7 +36,7 @@ const KNOWN_AGENTS = [
   },
 ];
 
-function AgentCard({ agent, agentSkills }) {
+function AgentCard({ agent, agentSkills, harnesses, onEditAgent }) {
   const [expanded, setExpanded] = useState(false);
 
   // Find skills that are linked to this agent by name match or tags
@@ -61,14 +65,21 @@ function AgentCard({ agent, agentSkills }) {
 
         <p className="text-sm text-slate-600 mt-3">{agent.description}</p>
 
-        <div className="flex items-center gap-3 mt-4 pt-3 border-t border-slate-100">
+        <div className="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
           <span className="text-xs text-slate-500">
             <Zap className="w-3 h-3 inline mr-1 text-amber-500" />
             {linkedSkills.length} linked skill{linkedSkills.length !== 1 ? 's' : ''}
           </span>
           <button
+            onClick={() => onEditAgent(agent)}
+            className="ml-auto text-xs text-slate-500 hover:text-slate-700 p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+            title="Link harness and skills"
+          >
+            <Edit2 className="w-3.5 h-3.5" />
+          </button>
+          <button
             onClick={() => setExpanded(e => !e)}
-            className="ml-auto text-xs text-indigo-600 hover:text-indigo-800 font-semibold"
+            className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold"
           >
             {expanded ? 'Hide' : 'Details'}
           </button>
@@ -106,10 +117,44 @@ function AgentCard({ agent, agentSkills }) {
 }
 
 export default function Base44AgentPanel() {
+  const qc = useQueryClient();
+  const [editingAgent, setEditingAgent] = useState(null);
+  const [selectedHarnessId, setSelectedHarnessId] = useState('');
+  const [selectedSkillIds, setSelectedSkillIds] = useState(new Set());
+
   const { data: agentSkills = [] } = useQuery({
     queryKey: ['agent-skills'],
     queryFn: () => base44.entities.AgentSkill.list('-updated_date', 100),
   });
+
+  const { data: harnesses = [] } = useQuery({
+    queryKey: ['harnesses'],
+    queryFn: () => base44.entities.Harness.list('-updated_date', 50),
+  });
+
+  const handleEditAgent = (agent) => {
+    setEditingAgent(agent);
+    setSelectedHarnessId('');
+    setSelectedSkillIds(new Set());
+  };
+
+  const handleCloseModal = () => {
+    setEditingAgent(null);
+    setSelectedHarnessId('');
+    setSelectedSkillIds(new Set());
+  };
+
+  const handleToggleSkill = (skillId) => {
+    setSelectedSkillIds(prev => {
+      const next = new Set(prev);
+      if (next.has(skillId)) {
+        next.delete(skillId);
+      } else {
+        next.add(skillId);
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-5">
@@ -128,9 +173,77 @@ export default function Base44AgentPanel() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {KNOWN_AGENTS.map(agent => (
-          <AgentCard key={agent.name} agent={agent} agentSkills={agentSkills} />
+          <AgentCard key={agent.name} agent={agent} agentSkills={agentSkills} harnesses={harnesses} onEditAgent={handleEditAgent} />
         ))}
       </div>
+
+      {/* Edit Agent Modal */}
+      <Dialog open={!!editingAgent} onOpenChange={(open) => !open && handleCloseModal()}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-[#1e3a5a]">Link Harness & Skills to {editingAgent?.display_name}</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Harness Selection */}
+            <div>
+              <label className="text-xs font-semibold text-slate-600 mb-2 block">Default Harness</label>
+              <Select value={selectedHarnessId} onValueChange={setSelectedHarnessId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a harness (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>None</SelectItem>
+                  {harnesses.map(h => (
+                    <SelectItem key={h.id} value={h.id}>
+                      {h.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Skills Selection */}
+            <div>
+              <label className="text-xs font-semibold text-slate-600 mb-2 block">Link AgentSkills</label>
+              <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto p-2 border border-slate-200 rounded-lg bg-slate-50">
+                {agentSkills.length === 0 ? (
+                  <p className="text-xs text-slate-400">No agent skills available</p>
+                ) : (
+                  agentSkills.map(skill => (
+                    <button
+                      key={skill.id}
+                      onClick={() => handleToggleSkill(skill.id)}
+                      className={`flex items-center gap-2 p-2 rounded-lg text-xs font-medium transition-colors text-left ${
+                        selectedSkillIds.has(skill.id)
+                          ? 'bg-indigo-100 border border-indigo-300 text-indigo-700'
+                          : 'bg-white border border-slate-200 text-slate-700 hover:border-indigo-300'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedSkillIds.has(skill.id)}
+                        onChange={() => {}}
+                        className="w-4 h-4 rounded cursor-pointer"
+                      />
+                      {skill.display_name || skill.name}
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button variant="outline" onClick={handleCloseModal}>
+                Cancel
+              </Button>
+              <Button onClick={handleCloseModal} className="bg-[#1e3a5a] hover:bg-[#0f2438] text-white">
+                Save Config
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
         <div className="flex items-start gap-3">
