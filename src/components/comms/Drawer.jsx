@@ -42,7 +42,8 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
     refetchOnWindowFocus: false,
   });
 
-  // Filter DMs by selected RRF stage
+  // Filter out Nominations channel and filter DMs by selected RRF stage
+  const channelsWithoutNominations = channels.filter(ch => ch.name?.toLowerCase() !== 'nominations');
   const filteredDMs = selectedStage
     ? dms.filter(dm => dm.rrf_stage === selectedStage)
     : dms;
@@ -279,7 +280,7 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
         /* Default channels view for all other pages */
         <div className="flex-1 overflow-y-auto scrollbar-hide px-3 py-3">
           <ChannelsList
-            channels={channels}
+            channels={channelsWithoutNominations}
             channelCategories={channelCategories}
             collapsedCategories={collapsedCategories}
             onToggleCategory={(catId) => setCollapsedCategories(prev => ({ ...prev, [catId]: !prev[catId] }))}
@@ -291,6 +292,18 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
             onShowNewModal={() => setShowNewModal(true)}
             onShowChannelManager={() => setShowChannelManager(true)}
           />
+          
+          {/* Nominations - Direct Link */}
+          <div className="mt-3 pt-3 border-t border-white/10">
+            <a
+              href="/Nominations"
+              className="w-full flex items-center gap-3 pl-4 pr-2 py-2 rounded-lg transition-all text-white/75 hover:bg-white/10 hover:text-white"
+              onClick={onMobileClose}
+            >
+              <span className="text-lg">🗳️</span>
+              <span className="text-[14px] truncate flex-1 text-left tracking-wide font-medium">Nominations</span>
+            </a>
+          </div>
         </div>
       )}
 
