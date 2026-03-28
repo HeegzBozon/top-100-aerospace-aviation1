@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Activity, AlertCircle, CheckCircle2, Clock, Loader2 } from 'lucide-react';
+import { Activity, AlertCircle, CheckCircle2, Clock, Loader2, ExternalLink } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { checkStreamHealth } from '@/functions/checkStreamHealth';
 
 export default function StreamHealthDashboard() {
@@ -73,14 +78,88 @@ export default function StreamHealthDashboard() {
 
       {/* Health Overview */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-          <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Total Channels</p>
-          <p className="text-lg font-bold text-white">{health?.totalChannels || 0}</p>
-        </div>
-        <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-          <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Healthy</p>
-          <p className="text-lg font-bold text-green-400">{health?.healthyChannels || 0}</p>
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-left cursor-pointer">
+              <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Total Channels</p>
+              <p className="text-lg font-bold text-white">{health?.totalChannels || 0}</p>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-96 p-0 bg-[#0a0f1e] border-white/10 max-h-96 overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-white/10 sticky top-0 bg-[#0a0f1e]">
+              <p className="text-sm font-bold text-white">All Channels ({health?.totalChannels || 0})</p>
+            </div>
+            <div className="overflow-y-auto">
+              {(health?.channels || []).map(channel => (
+                <div key={channel.id} className="p-3 border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${channel.healthy ? 'bg-green-400' : 'bg-red-400'}`} />
+                        <p className="text-sm font-semibold text-white truncate">{channel.name}</p>
+                      </div>
+                      <p className="text-xs text-white/50 mt-1">{channel.region} • {channel.language}</p>
+                      {channel.youtube && (
+                        <a
+                          href={`https://www.youtube.com/@${channel.youtube}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#c9a87c] hover:text-[#d4b896] flex items-center gap-1 mt-1"
+                        >
+                          YouTube <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+                    <span className={`text-xs font-semibold flex-shrink-0 ${channel.healthy ? 'text-green-400' : 'text-red-400'}`}>
+                      {channel.healthy ? 'Online' : 'Offline'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-left cursor-pointer">
+              <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Healthy</p>
+              <p className="text-lg font-bold text-green-400">{health?.healthyChannels || 0}</p>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-96 p-0 bg-[#0a0f1e] border-white/10 max-h-96 overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-white/10 sticky top-0 bg-[#0a0f1e]">
+              <p className="text-sm font-bold text-white">Active Channels ({health?.healthyChannels || 0})</p>
+            </div>
+            <div className="overflow-y-auto">
+              {healthyChannels.map(channel => (
+                <div key={channel.id} className="p-3 border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full flex-shrink-0 bg-green-400" />
+                        <p className="text-sm font-semibold text-white truncate">{channel.name}</p>
+                      </div>
+                      <p className="text-xs text-white/50 mt-1">{channel.region} • {channel.language}</p>
+                      {channel.youtube && (
+                        <a
+                          href={`https://www.youtube.com/@${channel.youtube}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#c9a87c] hover:text-[#d4b896] flex items-center gap-1 mt-1"
+                        >
+                          YouTube <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+                    <span className="text-xs font-semibold flex-shrink-0 text-green-400">Online</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+
         <div className="p-3 rounded-lg bg-white/5 border border-white/10">
           <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Uptime</p>
           <p className="text-lg font-bold text-[#c9a87c]">{healthPercentage}%</p>
