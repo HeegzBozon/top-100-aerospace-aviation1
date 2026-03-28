@@ -351,6 +351,7 @@ export default function ChannelManagerModal({ open, onClose }) {
   const handleDragEnd = async (result) => {
     const { source, destination, draggableId, type } = result;
     if (!destination) return;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
     if (type === 'CATEGORY') {
       // Reorder categories
@@ -363,29 +364,29 @@ export default function ChannelManagerModal({ open, onClose }) {
     }
 
     if (type === 'CHANNEL') {
-      const srcCatId = source.droppableId;
       const dstCatId = destination.droppableId;
       const channelId = draggableId;
 
-      // Optimistically reorder channels in cache
-      const updatedChannels = Array.from(channels);
-      const channelIdx = updatedChannels.findIndex(c => c.id === channelId);
-      if (channelIdx === -1) return;
-      const [movedChannel] = updatedChannels.splice(channelIdx, 1);
-      movedChannel.category_id = dstCatId === '__uncategorized__' ? '' : dstCatId;
-      updatedChannels.splice(destination.index, 0, movedChannel);
-      queryClient.setQueryData(['admin-channels'], updatedChannels);
+      // Get the destination category's channels
+      const dstChannels = grouped[dstCatId] || [];
+      const movedChannel = channels.find(c => c.id === channelId);
+      if (!movedChannel) return;
 
-      // Persist
+      // Update category and order
       await base44.entities.Conversation.update(channelId, {
         category_id: dstCatId === '__uncategorized__' ? '' : dstCatId,
         order: destination.index,
       });
-      // Reorder siblings
-      const siblings = updatedChannels.filter(c =>
+
+      // Reorder all siblings in destination category
+      const siblings = channels.filter(c =>
         (c.category_id || '') === (dstCatId === '__uncategorized__' ? '' : dstCatId)
-      );
+      ).sort((a, b) => (a.order || 0) - (b.order || 0));
+
       await Promise.all(siblings.map((ch, idx) => base44.entities.Conversation.update(ch.id, { order: idx })));
+      
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['admin-channels'] });
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
     }
   };
