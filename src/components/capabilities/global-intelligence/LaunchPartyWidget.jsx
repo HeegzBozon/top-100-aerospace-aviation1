@@ -92,7 +92,7 @@ export function LaunchPartyWidget() {
   // Search YouTube if no LL2 stream
   useEffect(() => {
     if (!launch || ll2YoutubeId) return;
-    
+
     setIsSearching(true);
     findLaunchStream({
       launchId: launch.id,
@@ -111,7 +111,7 @@ export function LaunchPartyWidget() {
   }, [launch, ll2YoutubeId]);
 
   // Reset embed error when youtubeId changes
-  useEffect(() => { setEmbedError(false); }, [finalYoutubeId]);
+  useEffect(() => { setEmbedError(false); }, [ll2YoutubeId, youtubeId]);
 
   if (isLoading) {
     return (
