@@ -339,9 +339,9 @@ export default function PerceptionEngineeringBar() {
     queryFn: () => base44.entities.AgentSkill.list('-updated_date', 50),
   });
 
-  const { data: agentTeams = [] } = useQuery({
-    queryKey: ['pe-agent-teams'],
-    queryFn: () => base44.entities.AgentTeam.list('-updated_date', 20),
+  const { data: resources = [] } = useQuery({
+    queryKey: ['pe-resources'],
+    queryFn: () => base44.entities.Resource.list('-updated_date', 50),
   });
 
   const deleteHarness = useMutation({
@@ -468,28 +468,32 @@ export default function PerceptionEngineeringBar() {
           {agentSkills.length === 0 && <p className="text-xs text-slate-400 text-center py-2">No skills yet</p>}
         </PECard>
 
-        {/* ── Resources / Teams ── */}
+        {/* ── Resources ── */}
         <PECard
           icon={Package}
           label="Resources"
           color="text-teal-500"
-          count={agentTeams.length}
+          count={resources.length}
         >
-          {agentTeams.map(t => (
-            <div key={t.id} className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-semibold text-slate-800 truncate">{t.name}</p>
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${t.is_active ? 'bg-green-400' : 'bg-slate-300'}`} />
+          {resources.map(r => {
+            const bookingUrl = r.tags?.includes('booking') ? r.reference_urls?.[0] : null;
+            return (
+              <div key={r.id} className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-slate-800 truncate">{r.display_name}</p>
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${r.is_active ? 'bg-green-400' : 'bg-slate-300'}`} />
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">{r.type?.replace(/_/g, ' ')}</p>
+                {bookingUrl && (
+                  <a href={bookingUrl} target="_blank" rel="noopener noreferrer"
+                    className="text-xs text-teal-600 hover:underline truncate block mt-1">
+                    📅 {bookingUrl}
+                  </a>
+                )}
               </div>
-              {t.team_topology_type && (
-                <p className="text-xs text-slate-500 mt-0.5">{t.team_topology_type.replace(/_/g, ' ')}</p>
-              )}
-              {t.description && (
-                <p className="text-xs text-slate-400 mt-1 line-clamp-2">{t.description}</p>
-              )}
-            </div>
-          ))}
-          {agentTeams.length === 0 && <p className="text-xs text-slate-400 text-center py-2">No teams/resources yet</p>}
+            );
+          })}
+          {resources.length === 0 && <p className="text-xs text-slate-400 text-center py-2">No resources yet</p>}
         </PECard>
 
       </div>
