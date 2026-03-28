@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Loader2, MessageCircle, ExternalLink, CheckCircle2, Zap } from 'lucide-react';
+import { Loader2, MessageCircle, ExternalLink, CheckCircle2, Zap, PenSquare } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import TriageEvaluation from './TriageEvaluation';
 
@@ -13,6 +13,7 @@ export default function ContactDetail({ contact, onUpdate }) {
   const [loading, setLoading] = useState(false);
   const [currentContact, setCurrentContact] = useState(contact);
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
+  const [showComposer, setShowComposer] = useState(false);
 
   useEffect(() => {
     setCurrentContact(contact);
@@ -223,24 +224,36 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
             )}
           </div>
 
-          {/* Quick Evaluate Button if not evaluated */}
-          {currentContact.triage_status !== 'evaluated' && (
+          <div className="flex items-center gap-2">
+            {/* Composer Button */}
             <Button
-              onClick={handleQuickEvaluate}
-              disabled={loading}
+              onClick={() => setShowComposer(true)}
               size="sm"
-              className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-xs font-semibold"
+              className="bg-[#1e3a5a] text-white hover:bg-[#0f2438] text-xs font-semibold"
             >
-              {loading ? (
-                <>
-                  <div className="animate-spin mr-1.5 w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
-                  Evaluating...
-                </>
-              ) : (
-                'Evaluate'
-              )}
+              <PenSquare className="w-3 h-3 mr-1.5" />
+              Compose
             </Button>
-          )}
+
+            {/* Quick Evaluate Button if not evaluated */}
+            {currentContact.triage_status !== 'evaluated' && (
+              <Button
+                onClick={handleQuickEvaluate}
+                disabled={loading}
+                size="sm"
+                className="bg-[#D4A574] text-white hover:bg-[#C19A6B] text-xs font-semibold"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin mr-1.5 w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
+                    Evaluating...
+                  </>
+                ) : (
+                  'Evaluate'
+                )}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -280,57 +293,54 @@ Keep it warm, professional, and 2-3 sentences. Focus on continuing the conversat
         );
       })()}
 
-      {/* Response Composer */}
-      <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
-        <h3 className="text-lg font-bold text-[#1e3a5a] mb-4 flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" />
-          Your Response
-        </h3>
-
-        <textarea
-          value={response}
-          onChange={(e) => setResponse(e.target.value)}
-          placeholder="Type your response here..."
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4A574]/50 text-sm resize-none"
-          rows={5}
-        />
-
-        <div className="flex gap-3 mt-4">
-          <Button
-            onClick={generateResponse}
-            disabled={generatingResponse}
-            variant="outline"
-            className="text-sm"
-          >
-            {generatingResponse ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              'AI Generate'
-            )}
-          </Button>
-          <Button
-            onClick={saveResponse}
-            className="text-sm"
-            variant="outline"
-          >
-            Save Draft
-          </Button>
-          <Button
-            onClick={markAsSent}
-            disabled={!response}
-            className="text-sm bg-[#D4A574] text-white hover:bg-[#C19A6B] ml-auto"
-          >
-            Mark as Sent
-          </Button>
-        </div>
-
-        {currentContact.response_status === 'sent' && (
-          <p className="text-xs text-green-600 mt-3">✓ Marked as sent</p>
-        )}
-      </div>
+      {/* Composer Modal */}
+      <Dialog open={showComposer} onOpenChange={setShowComposer}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[#1e3a5a]">
+              <MessageCircle className="w-5 h-5" />
+              Reply to {currentContact.first_name || currentContact.full_name}
+            </DialogTitle>
+          </DialogHeader>
+          <textarea
+            value={response}
+            onChange={(e) => setResponse(e.target.value)}
+            placeholder="Type your response here..."
+            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4A574]/50 text-sm resize-none"
+            rows={6}
+          />
+          <div className="flex gap-3 mt-2">
+            <Button
+              onClick={generateResponse}
+              disabled={generatingResponse}
+              variant="outline"
+              className="text-sm"
+            >
+              {generatingResponse ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                'AI Generate'
+              )}
+            </Button>
+            <Button onClick={saveResponse} variant="outline" className="text-sm">
+              Save Draft
+            </Button>
+            <Button
+              onClick={() => { markAsSent(); setShowComposer(false); }}
+              disabled={!response}
+              className="text-sm bg-[#D4A574] text-white hover:bg-[#C19A6B] ml-auto"
+            >
+              Mark as Sent
+            </Button>
+          </div>
+          {currentContact.response_status === 'sent' && (
+            <p className="text-xs text-green-600 mt-1">✓ Marked as sent</p>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Evaluation Modal */}
       <Dialog open={showEvaluationModal} onOpenChange={setShowEvaluationModal}>
