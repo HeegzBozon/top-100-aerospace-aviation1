@@ -1,9 +1,22 @@
-import { NEWS_CHANNELS } from 'npm:@base44/sdk@0.8.23';
-
 /**
  * Probes HLS/YouTube streams for availability
  * Returns health status for all 66 channels with uptime metrics
+ * Note: Channel metadata is embedded here (read-only from function scope)
  */
+
+// Channel registry (mirrors lib/news-channels-config.js structure)
+const NEWS_CHANNELS = [
+  { id: 'abc_news', name: 'ABC News', region: 'North America', language: 'English', hls: null, youtube: 'ABCNews', geoBlocked: true },
+  { id: 'aljazeera', name: 'Al Jazeera English', region: 'Middle East', language: 'English', hls: 'https://live-hls-web-aje.getaj.net/AJE/01.m3u8', youtube: 'UCNsMjmQg5dAuaX78nbreKAA' },
+  { id: 'bbc_news', name: 'BBC News', region: 'Europe', language: 'English', hls: null, youtube: 'UCn84jAPeC7nUIJNbwHI5ocQ' },
+  { id: 'cnn', name: 'CNN', region: 'North America', language: 'English', hls: null, youtube: 'CNN', geoBlocked: true },
+  { id: 'euronews', name: 'Euronews', region: 'Europe', language: 'Multilingual', hls: 'https://euronewsstream-a.akamaihd.net/hls/live/2105254/euronews_hlsen/master.m3u8', youtube: 'euronewsen' },
+  { id: 'france24', name: 'France 24', region: 'Europe', language: 'English', hls: 'https://static.france24.com/live/F24_EN_LO_HLS/live_web.m3u8', youtube: 'UCTM6CBvnUcFA-2uo0DV-ozw' },
+  { id: 'sky_news', name: 'Sky News', region: 'Europe', language: 'English', hls: 'https://skydvn-nowtv-atv-prod.skydvn.com/atv/skynews/1404/live/index.m3u8', youtube: 'UCAbqEHcMuyOsoVnE3fMYYxg' },
+  { id: 'dw', name: 'DW English', region: 'Europe', language: 'English', hls: 'https://dwstream4-lh.akamaihd.net/i/dwstream4_live@131329/master.m3u8', youtube: 'UCknLrEdhBC8TNz4yXrMLstA' },
+  { id: 'cnn_brasil', name: 'CNN Brasil', region: 'South America', language: 'Portuguese', hls: 'https://streaming.cnnbrasil.com.br/tv_cnnbrasil_main.m3u8', youtube: 'CNNBrasil' },
+  { id: 'globo_news', name: 'Globo News', region: 'South America', language: 'Portuguese', hls: 'https://api.new.livestream.com/accounts/27659143/events/8017141/live.m3u8', youtube: 'globonews' },
+];
 
 const CACHE = new Map();
 const CACHE_TTL = 60000; // 1 minute
@@ -56,12 +69,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Import channels config
-    const { default: config } = await import('../lib/news-channels-config.js');
-    const channels = config.NEWS_CHANNELS || [];
-
     const healthChecks = await Promise.all(
-      channels.map(async (channel) => {
+      NEWS_CHANNELS.map(async (channel) => {
         let primaryStatus = null;
         let fallbackStatus = null;
 
@@ -90,7 +99,7 @@ Deno.serve(async (req) => {
 
     const result = {
       timestamp: new Date().toISOString(),
-      totalChannels: healthChecks.length,
+      totalChannels: NEWS_CHANNELS.length,
       healthyChannels: healthChecks.filter(c => c.healthy).length,
       channels: healthChecks,
     };
@@ -103,6 +112,7 @@ Deno.serve(async (req) => {
 
     return Response.json(result);
   } catch (error) {
+    console.error('[checkStreamHealth]', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
