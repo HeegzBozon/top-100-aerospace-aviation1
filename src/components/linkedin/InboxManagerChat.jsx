@@ -170,9 +170,9 @@ export default function InboxManagerChat({ selectedContact }) {
 
       {/* Evaluation Modal */}
       <Dialog open={showEvalModal} onOpenChange={setShowEvalModal}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-[#1e3a5a]">Contact Evaluation</DialogTitle>
+            <DialogTitle className="text-[#1e3a5a]">Straight Line Evaluation</DialogTitle>
           </DialogHeader>
           {selectedContact && (
             <div className="space-y-6">
@@ -186,7 +186,14 @@ export default function InboxManagerChat({ selectedContact }) {
                   </div>
                 )}
                 <div className="flex-1">
-                  <h2 className="text-xl font-bold text-slate-900">{selectedContact.full_name}</h2>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h2 className="text-xl font-bold text-slate-900">{selectedContact.full_name}</h2>
+                    {selectedContact.tier_classification && (
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${tierColors[selectedContact.tier_classification] || tierColors['C-Tier']}`}>
+                        {selectedContact.tier_classification}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-slate-600">{selectedContact.headline}</p>
                   {selectedContact.current_company && (
                     <p className="text-sm text-slate-500 mt-1">{selectedContact.current_company}</p>
@@ -194,14 +201,117 @@ export default function InboxManagerChat({ selectedContact }) {
                 </div>
               </div>
 
-              {/* TIER-S Scores */}
+              {/* THREE TENS CERTAINTIES */}
+              <div className="space-y-3 p-4 bg-gradient-to-r from-blue-50 to-slate-50 rounded-lg border border-blue-200">
+                <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                  <span className="text-lg">📊</span> The Three Tens Certainty
+                </h3>
+                <p className="text-xs text-slate-600 mb-3">All three must be 8+ before they commit. Which are lowest?</p>
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Product Certainty */}
+                  <div className="p-3 bg-white rounded-lg border border-blue-200">
+                    <p className="text-xs font-semibold text-slate-700 mb-2">Product Certainty</p>
+                    <p className="text-xs text-slate-600 mb-2">Do they understand how this solves their problem?</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-500" style={{ width: `${(selectedContact.institutional_revenue_score || 0) * 20}%` }} />
+                      </div>
+                      <span className="text-xs font-bold text-blue-600">{selectedContact.institutional_revenue_score || 0}/5</span>
+                    </div>
+                  </div>
+
+                  {/* Personal Certainty */}
+                  <div className="p-3 bg-white rounded-lg border border-green-200">
+                    <p className="text-xs font-semibold text-slate-700 mb-2">Personal Certainty</p>
+                    <p className="text-xs text-slate-600 mb-2">Do they trust you? See you as sharp & invested?</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-green-500" style={{ width: `${(selectedContact.talent_graph_score || 0) * 20}%` }} />
+                      </div>
+                      <span className="text-xs font-bold text-green-600">{selectedContact.talent_graph_score || 0}/5</span>
+                    </div>
+                  </div>
+
+                  {/* Entity Certainty */}
+                  <div className="p-3 bg-white rounded-lg border border-purple-200">
+                    <p className="text-xs font-semibold text-slate-700 mb-2">Entity Certainty</p>
+                    <p className="text-xs text-slate-600 mb-2">Do they trust your organization? See credibility?</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-purple-500" style={{ width: `${(selectedContact.ecosystem_gravity_score || 0) * 20}%` }} />
+                      </div>
+                      <span className="text-xs font-bold text-purple-600">{selectedContact.ecosystem_gravity_score || 0}/5</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ACTION & PAIN THRESHOLDS */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Action Threshold */}
+                <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
+                    <span>🎯</span> Action Threshold
+                  </h4>
+                  <p className="text-xs text-slate-600 mb-3">How much certainty do they need before they move?</p>
+                  <div className="inline-block px-3 py-1.5 bg-white border border-amber-300 rounded-lg">
+                    <span className="text-sm font-bold text-amber-700">
+                      {selectedContact.tier_classification === 'S-Tier' || selectedContact.tier_classification === 'A-Tier' ? '7-8' : '8-9'}
+                    </span>
+                    <span className="text-xs text-slate-600 ml-1">/10</span>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-3">
+                    {selectedContact.tier_classification === 'S-Tier' || selectedContact.tier_classification === 'A-Tier'
+                      ? 'High-value contact. They move faster. Lower their threshold with smaller commitments.'
+                      : 'Needs more certainty before committing. Focus on removing objections.'}
+                  </p>
+                </div>
+
+                {/* Pain Threshold */}
+                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+                  <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
+                    <span>📍</span> Pain Threshold
+                  </h4>
+                  <p className="text-xs text-slate-600 mb-3">How much discomfort are they feeling about their situation?</p>
+                  <div className="inline-block px-3 py-1.5 bg-white border border-red-300 rounded-lg">
+                    <span className="text-sm font-bold text-red-700">
+                      {selectedContact.response_status === 'done' ? 'Resolved' : selectedContact.response_status === 'sent' ? 'Medium' : 'High'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-3">
+                    {selectedContact.response_status === 'done'
+                      ? 'They moved forward. Follow up to maintain momentum.'
+                      : selectedContact.response_status === 'sent'
+                      ? 'Waiting for their reply. Use future pacing to increase urgency.'
+                      : 'Actively seeking a solution. Now is the time to move them forward.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* RECOMMENDED NEXT ACTION */}
+              <div className="p-4 bg-slate-900 text-white rounded-lg">
+                <h4 className="font-bold mb-2 flex items-center gap-2">
+                  <span>⚡</span> Recommended Next Action
+                </h4>
+                <p className="text-sm leading-relaxed">
+                  {selectedContact.response_status === 'done'
+                    ? '✅ This contact has committed. Send a follow-up to confirm next steps and maintain momentum.'
+                    : selectedContact.response_status === 'sent'
+                    ? '⏳ Your reply is waiting for their response. If 48+ hours, send a light loop addressing one unstated objection.'
+                    : selectedContact.response_status === 'draft'
+                    ? '📝 You have a draft reply. Review it for the Straight Line: does it move them from their current certainty to the next level?'
+                    : '🎯 They just reached out. Strike now. Draft a reply that addresses their lowest Ten (Product, Personal, or Entity certainty) and moves them toward commitment.'}
+                </p>
+              </div>
+
+              {/* TIER-S DIMENSION SCORES */}
               {(selectedContact.talent_graph_score || selectedContact.institutional_revenue_score || selectedContact.ecosystem_gravity_score || selectedContact.rigor_scalability_score) && (
                 <div className="space-y-3">
-                  <h3 className="font-bold text-slate-900">TIER-S Evaluation</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <h3 className="font-bold text-slate-900">TIER-S Dimensions</h3>
+                  <div className="grid grid-cols-2 gap-3">
                     {selectedContact.talent_graph_score > 0 && (
                       <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-xs text-slate-600 font-semibold">Talent Graph</p>
+                        <p className="text-xs text-slate-600 font-semibold">Talent Graph Authority</p>
                         <p className="text-2xl font-bold text-blue-600">{selectedContact.talent_graph_score}/5</p>
                       </div>
                     )}
@@ -226,7 +336,7 @@ export default function InboxManagerChat({ selectedContact }) {
                   </div>
                   {selectedContact.triage_reasoning && (
                     <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                      <p className="text-xs text-slate-600 font-semibold mb-2">Reasoning</p>
+                      <p className="text-xs text-slate-600 font-semibold mb-2">Evaluation Reasoning</p>
                       <p className="text-sm text-slate-700">{selectedContact.triage_reasoning}</p>
                     </div>
                   )}
@@ -234,7 +344,7 @@ export default function InboxManagerChat({ selectedContact }) {
               )}
 
               {/* Stats */}
-              <div className="space-y-2 pt-4">
+              <div className="pt-4 border-t border-slate-200 space-y-2">
                 {selectedContact.mutual_connections_count > 0 && (
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-slate-600">Mutual Connections</span>
