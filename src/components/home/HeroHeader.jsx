@@ -68,7 +68,7 @@ export default function HeroHeader({ user, onUpdate }) {
   const connectLinkedIn = async () => {
     setLinkedinLoading(true);
     try {
-      const { linkedinProfile } = await import('@/functions/linkedinProfile');
+      const linkedinProfile = require('@/functions/linkedinProfile').default;
       const response = await linkedinProfile();
       if (response.data?.profile) {
         await User.updateMyUserData({
