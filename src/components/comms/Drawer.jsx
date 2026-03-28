@@ -156,75 +156,66 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
           </div>
 
           {/* DM List (Comms only) */}
-          <div className="flex-1 overflow-y-auto scrollbar-hide px-2 py-3 space-y-1.5">
-        {/* You - Notes to Self */}
-        <button
-          onClick={() => {
-            selectConversation({ id: '__you__', type: 'dm', is_you: true, name: 'You' });
-            onMobileClose?.();
-          }}
-          className={cn(
-            "w-full px-3 py-3 rounded-lg transition-all duration-300 group flex items-start gap-3 border-l-2",
-            activeConversation?.is_you
-              ? "bg-gradient-to-r from-indigo-900/40 to-indigo-900/20 border-l-indigo-500 shadow-lg shadow-indigo-500/10"
-              : "hover:bg-slate-800/30 border-l-transparent group-hover:border-l-indigo-500/50"
-          )}
-        >
-          <div className={cn(
-            "w-11 h-11 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 transition-all duration-200",
-            activeConversation?.is_you
-              ? "bg-gradient-to-br from-indigo-500 to-indigo-600"
-              : "bg-slate-700 group-hover:bg-slate-600"
-          )}>
-            Y
-          </div>
-          <div className="flex-1 min-w-0 text-left">
-            <p className="text-sm font-semibold text-white truncate">You</p>
-            <p className="text-xs text-gray-400 truncate">Notes • Tasks • Strategy</p>
-          </div>
-          {unreadCounts['__you__'] > 0 && (
-            <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold shrink-0 ml-auto">
-              {unreadCounts['__you__']}
-            </div>
-          )}
-        </button>
+          <div className="flex-1 overflow-y-auto scrollbar-hide px-2 py-3 space-y-1.5 flex flex-col">
+            {/* Welcome Rules */}
+            <Link
+              to="/Comms?welcome=true"
+              onClick={onMobileClose}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all text-white/75 hover:bg-slate-800/30 hover:text-white border-l-2 border-l-transparent hover:border-l-amber-400/50"
+            >
+              <span className="text-lg">📖</span>
+              <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">Welcome • Rules</span>
+            </Link>
 
-        {/* Lt. Perry */}
-        <button
-          onClick={() => {
-            selectConversation({ id: '__perry__', type: 'dm', is_perry: true, name: 'Lt. Perry' });
-            onMobileClose?.();
-          }}
-          className={cn(
-            "w-full px-3 py-3 rounded-lg transition-all duration-300 group flex items-start gap-3 border-l-2",
-            activeConversation?.is_perry
-              ? "bg-gradient-to-r from-amber-900/40 to-amber-900/20 border-l-amber-600 shadow-lg shadow-amber-600/10"
-              : "hover:bg-slate-800/30 border-l-transparent group-hover:border-l-amber-600/50"
-          )}
-        >
-          <div className={cn(
-            "w-11 h-11 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 transition-all duration-200",
-            activeConversation?.is_perry
-              ? "bg-gradient-to-br from-amber-600 to-amber-700"
-              : "bg-slate-700 group-hover:bg-slate-600"
-          )}>
-            P
-          </div>
-          <div className="flex-1 min-w-0 text-left">
-            <p className="text-sm font-semibold text-white truncate">Lt. Perry</p>
-            <p className="text-xs text-gray-400 truncate">AI Agent • Straight Line</p>
-          </div>
-          {unreadCounts['__perry__'] > 0 && (
-            <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0 ml-auto">
-              {unreadCounts['__perry__']}
-            </div>
-          )}
-        </button>
+            {/* Nominations */}
+            <Link
+              to="/Nominations"
+              onClick={onMobileClose}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all text-white/75 hover:bg-white/10 hover:text-white border-l-2 border-l-transparent hover:border-l-amber-400/50"
+            >
+              <span className="text-lg">🗳️</span>
+              <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">Nominations</span>
+            </Link>
 
-        {/* DM Divider */}
-        {filteredDMs.length > 0 && (
-          <div className="my-3 border-t border-gray-800/50" />
-        )}
+            {/* Divider */}
+            <div className="border-t border-gray-800/50" />
+
+            {/* You - Notes to Self */}
+            <button
+              onClick={() => {
+                selectConversation({ id: '__you__', type: 'dm', is_you: true, name: 'You' });
+                onMobileClose?.();
+              }}
+              className={cn(
+                "w-full px-3 py-3 rounded-lg transition-all duration-300 group flex items-start gap-3 border-l-2",
+                activeConversation?.is_you
+                  ? "bg-gradient-to-r from-indigo-900/40 to-indigo-900/20 border-l-indigo-500 shadow-lg shadow-indigo-500/10"
+                  : "hover:bg-slate-800/30 border-l-transparent group-hover:border-l-indigo-500/50"
+              )}
+            >
+              <div className={cn(
+                "w-11 h-11 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 transition-all duration-200",
+                activeConversation?.is_you
+                  ? "bg-gradient-to-br from-indigo-500 to-indigo-600"
+                  : "bg-slate-700 group-hover:bg-slate-600"
+              )}>
+                Y
+              </div>
+              <div className="flex-1 min-w-0 text-left">
+                <p className="text-sm font-semibold text-white truncate">You</p>
+                <p className="text-xs text-gray-400 truncate">Notes • Tasks • Strategy</p>
+              </div>
+              {unreadCounts['__you__'] > 0 && (
+                <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold shrink-0 ml-auto">
+                  {unreadCounts['__you__']}
+                </div>
+              )}
+            </button>
+
+            {/* DM Divider */}
+            {filteredDMs.length > 0 && (
+              <div className="my-3 border-t border-gray-800/50" />
+            )}
 
         {/* User DMs */}
         {filteredDMs.map(conv => {
@@ -273,18 +264,6 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
                  <p className="text-sm" style={{ color: 'rgba(201, 168, 124, 0.4)' }}>No conversations in {selectedStage} stage</p>
                </div>
              )}
-            </div>
-            
-            {/* Nominations - Direct Link (under Welcome Rules) */}
-            <div className="mt-3 pt-3 border-t border-gray-800/50 px-2">
-              <Link
-                to="/Nominations"
-                onClick={onMobileClose}
-                className="w-full flex items-center gap-3 pl-2 pr-2 py-2 rounded-lg transition-all text-white/75 hover:bg-slate-800/30 hover:text-white"
-              >
-                <span className="text-lg">🗳️</span>
-                <span className="text-[14px] truncate flex-1 text-left tracking-wide font-medium">Nominations</span>
-              </Link>
             </div>
             </>
             )}
