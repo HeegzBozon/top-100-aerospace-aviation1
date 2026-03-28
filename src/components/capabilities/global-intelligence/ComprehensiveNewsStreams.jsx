@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Radio } from 'lucide-react';
-import { NEWS_CHANNELS } from '@/lib/news-channels-config';
+import { STREAMS_DB } from '@/lib/channels-db';
 import HLSVideoPlayer from './HLSVideoPlayer';
 
 export default function ComprehensiveNewsStreams() {
   const [activeSource, setActiveSource] = useState('aljazeera');
-  const active = NEWS_CHANNELS.find(c => c.id === activeSource);
+  const active = STREAMS_DB.find(c => c.id === activeSource);
 
   return (
     <div className="h-full flex flex-col bg-[#0a0f1e] text-white overflow-hidden rounded-xl border border-white/5">
@@ -15,7 +15,7 @@ export default function ComprehensiveNewsStreams() {
           <h2 className="text-sm font-bold">Live News Streams (66 channels)</h2>
         </div>
         <div className="flex gap-2 overflow-x-auto">
-          {NEWS_CHANNELS.map(channel => (
+          {STREAMS_DB.map(channel => (
             <button
               key={channel.id}
               onClick={() => setActiveSource(channel.id)}

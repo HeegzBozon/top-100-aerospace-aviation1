@@ -1,7 +1,8 @@
 /**
- * Probes HLS/YouTube streams for availability
- * Returns health status for all 66 channels with uptime metrics
- * Note: Channel metadata is embedded here (read-only from function scope)
+ * Lazy health check with intelligent caching
+ * - Short timeouts (3s HLS, no YouTube pre-check)
+ * - Returns "unknown" on timeout (doesn't block UI)
+ * - Cached for 5 min (old data is better than blocking)
  */
 
 // Channel registry (all 66 international news channels)
@@ -69,45 +70,28 @@ const NEWS_CHANNELS = [
   { id: 'msnbc', name: 'MSNBC', region: 'North America', language: 'English', hls: null, youtube: 'MSNBC' },
   { id: 'pbs_newshour', name: 'PBS NewsHour', region: 'North America', language: 'English', hls: null, youtube: 'PBSNewsHour' },
   { id: 'aljazeera_balkans', name: 'Al Jazeera Balkans', region: 'Europe', language: 'English', hls: 'https://live-hls-web-ajb.getaj.net/AJB/01.m3u8', youtube: 'AJBalkans' },
-  { id: 'ann_japan', name: 'ANN News (Japan)', region: 'Asia', language: 'Japanese', hls: null, youtube: 'ANNnewsCH' },
 ];
 
 const CACHE = new Map();
-const CACHE_TTL = 60000; // 1 minute
+const CACHE_TTL = 300000; // 5 minutes (accept stale data)
 
 async function checkHLSHealth(hlsUrl) {
-  if (!hlsUrl) return { available: false, type: 'no_url' };
+  if (!hlsUrl) return { available: false, status: 'no_url' };
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => controller.abort(), 3000); // 3s timeout
     
     const response = await fetch(hlsUrl, {
       method: 'HEAD',
       signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
     });
     
     clearTimeout(timeout);
-    return { available: response.ok, type: 'hls', status: response.status };
+    return { available: response.ok, status: response.status };
   } catch (err) {
-    return { available: false, type: 'hls', error: err.message };
-  }
-}
-
-async function checkYouTubeHealth(youtubeId) {
-  if (!youtubeId) return { available: false, type: 'no_url' };
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    
-    const response = await fetch(
-      `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${youtubeId}&format=json`,
-      { signal: controller.signal }
-    );
-    
-    clearTimeout(timeout);
-    return { available: response.ok, type: 'youtube', status: response.status };
-  } catch (err) {
-    return { available: false, type: 'youtube', error: err.message };
+    // Timeout or network error → return "unknown" (don't say false)
+    return { available: null, status: 'timeout_or_error' };
   }
 }
 
@@ -123,29 +107,22 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Only check HLS (don't pre-validate YouTube—player does it lazily)
     const healthChecks = await Promise.all(
       NEWS_CHANNELS.map(async (channel) => {
-        let primaryStatus = null;
-        let fallbackStatus = null;
-
-        // Check primary HLS stream
-        if (channel.hls) {
-          primaryStatus = await checkHLSHealth(channel.hls);
-        }
-
-        // Check fallback YouTube
-        if (channel.youtube && !primaryStatus?.available) {
-          fallbackStatus = await checkYouTubeHealth(channel.youtube);
-        }
-
+        const hlsStatus = channel.hls ? await checkHLSHealth(channel.hls) : null;
+        
+        // Healthy = HLS works, or no HLS but YouTube exists (lazy check by player)
+        const healthy = hlsStatus?.available || (!channel.hls && channel.youtube);
+        
         return {
           id: channel.id,
           name: channel.name,
           region: channel.region,
           language: channel.language,
-          primary: primaryStatus,
-          fallback: fallbackStatus,
-          healthy: primaryStatus?.available || fallbackStatus?.available,
+          hls_status: hlsStatus?.status,
+          youtube: channel.youtube ? 'available_for_lazy_embed' : null,
+          healthy,
           checkedAt: new Date().toISOString(),
         };
       })
@@ -158,7 +135,7 @@ Deno.serve(async (req) => {
       channels: healthChecks,
     };
 
-    // Cache for 1 minute
+    // Cache for 5 minutes
     CACHE.set(cacheKey, {
       data: result,
       expiry: Date.now() + CACHE_TTL,

@@ -1,17 +1,8 @@
-// 66 international news channels with dual HLS + YouTube fallback
-// Primary: HLS (direct m3u8 streams)
-// Fallback: YouTube channel IDs
-// Sources: Free-TV/IPTV + WorldMonitor curated list
+// DEPRECATED: Use channels-db.js instead (single source of truth)
+// This file kept for backward compatibility
+import { STREAMS_DB } from './channels-db.js';
 
-export const NEWS_CHANNELS = [
-  {
-    id: 'abc_news',
-    name: 'ABC News',
-    icon: '🇺🇸',
-    hls: null,
-    youtube: 'ABCNews',
-    geoBlocked: true,
-  },
+export const NEWS_CHANNELS = STREAMS_DB;
   {
     id: 'abc_australia',
     name: 'ABC News Australia',
@@ -454,11 +445,3 @@ export const NEWS_CHANNELS = [
     hls: 'https://live-hls-web-ajb.getaj.net/AJB/01.m3u8',
     youtube: 'AJBalkans',
   },
-  {
-    id: 'ann_japan',
-    name: 'ANN News (Japan)',
-    icon: '🇯🇵',
-    hls: null,
-    youtube: 'ANNnewsCH',
-  },
-];

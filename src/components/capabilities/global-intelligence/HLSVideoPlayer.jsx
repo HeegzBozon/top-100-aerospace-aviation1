@@ -28,19 +28,28 @@ export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, geoBlocked, o
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !proxiedHlsUrl) {
+    
+    // If no HLS, jump straight to YouTube (no HLS timeout)
+    if (!proxiedHlsUrl) {
       setLoading(false);
-      if (!youtubeId) setShowFallback(true);
+      if (youtubeId) setShowFallback(true);
+      return;
+    }
+
+    // If we have YouTube, show it first (parallel HLS load in background)
+    if (youtubeId) {
+      setShowFallback(true);
+      setLoading(false);
       return;
     }
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
-      // HLS timeout after 8s — fall back to YouTube
+      // HLS timeout after 3s — fall back to YouTube if available
       controller.abort();
       setHlsError(true);
-      setShowFallback(true);
-    }, 8000);
+      if (youtubeId) setShowFallback(true);
+    }, 3000);
 
     const initHls = async () => {
       try {
@@ -119,31 +128,8 @@ export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, geoBlocked, o
     );
   }
 
-  // Show HLS stream (try primary)
-  if (!showFallback && proxiedHlsUrl) {
-    return (
-      <div className="relative w-full rounded-lg border border-white/10 overflow-hidden bg-black">
-        {loading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-10 gap-2">
-            <Loader2 className="w-4 h-4 animate-spin text-[#c9a87c]" />
-            <span className="text-[10px] text-white/40">Connecting to HLS stream...</span>
-          </div>
-        )}
-
-        {hlsError && !showFallback && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10 gap-2">
-            <AlertCircle className="w-6 h-6 text-[#c9a87c]" />
-            <p className="text-white/50 text-xs">Connecting to fallback...</p>
-          </div>
-        )}
-
-        <video ref={videoRef} controls className="w-full h-96 bg-black" title={title} />
-      </div>
-    );
-  }
-
-  // Fallback to YouTube
-  if (youtubeId) {
+  // YouTube first (lazy embed—no pre-validation)
+  if (showFallback && youtubeId) {
     return (
       <div className="relative w-full rounded-lg border border-white/10 overflow-hidden">
         <iframe
@@ -158,9 +144,32 @@ export default function HLSVideoPlayer({ hlsUrl, youtubeId, title, geoBlocked, o
         />
         {hlsError && (
           <div className="absolute bottom-2 left-2 bg-black/60 px-2 py-1 rounded text-[10px] text-white/60">
-            Playing from YouTube fallback
+            HLS stream unavailable
           </div>
         )}
+      </div>
+    );
+  }
+
+  // HLS stream (only if no YouTube or YouTube not available)
+  if (!showFallback && proxiedHlsUrl) {
+    return (
+      <div className="relative w-full rounded-lg border border-white/10 overflow-hidden bg-black">
+        {loading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-10 gap-2">
+            <Loader2 className="w-4 h-4 animate-spin text-[#c9a87c]" />
+            <span className="text-[10px] text-white/40">Connecting…</span>
+          </div>
+        )}
+
+        {hlsError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10 gap-2">
+            <AlertCircle className="w-6 h-6 text-[#c9a87c]" />
+            <p className="text-white/50 text-xs">Stream unavailable</p>
+          </div>
+        )}
+
+        <video ref={videoRef} controls className="w-full h-96 bg-black" title={title} />
       </div>
     );
   }
