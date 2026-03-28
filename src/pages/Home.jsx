@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import ProfileView from '@/pages/ProfileView';
 import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import Landing2Hero from '@/components/landing/Landing2Hero';
