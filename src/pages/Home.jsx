@@ -17,6 +17,7 @@ import TopPrograms from '@/components/home/TopPrograms';
 import DomainExplorer from '@/components/home/DomainExplorer';
 import TopOriginals from '@/components/home/TopOriginals';
 
+import GlobalIntelligenceSection from '@/components/home/GlobalIntelligenceSection';
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HomeSectionReorderPopover, { loadSectionConfig, DEFAULT_SECTIONS } from '@/components/admin/HomeSectionReorderPopover';
 
@@ -243,6 +244,11 @@ export default function HomePage() {
 
       {/* Promo Banners */}
       <Landing2PromoBanner />
+
+      {/* Global Intelligence Section */}
+      <ErrorBoundary>
+        <GlobalIntelligenceSection />
+      </ErrorBoundary>
 
       {/* Ordered, togglable sections */}
       {orderedSectionIds.map(id => {
