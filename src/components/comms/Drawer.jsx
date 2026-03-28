@@ -271,7 +271,17 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
             ) : (
         /* Default channels view for all other pages */
         <div className="flex-1 overflow-y-auto scrollbar-hide px-3 py-3 flex flex-col gap-3">
-          {/* Nominations - Direct Link (top) */}
+          {/* Welcome Rules */}
+          <Link
+            to="/Comms?welcome=true"
+            onClick={onMobileClose}
+            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all text-white/75 hover:bg-slate-800/30 hover:text-white border-l-2 border-l-transparent hover:border-l-amber-400/50"
+          >
+            <span className="text-lg">📖</span>
+            <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">Welcome • Rules</span>
+          </Link>
+
+          {/* Nominations */}
           <Link
             to="/Nominations"
             onClick={onMobileClose}
