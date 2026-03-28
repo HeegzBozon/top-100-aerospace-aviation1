@@ -1,164 +1,166 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Loader2, Upload, Mail, Check, X } from 'lucide-react';
+import { Loader2, Upload, Check, X, Users, RefreshCw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ContactList from '@/components/linkedin/ContactList';
-import ContactDetail from '@/components/linkedin/ContactDetail';
-import PerceptionEngineeringBar from '@/components/linkedin/PerceptionEngineeringBar';
+import InboxManagerChat from '@/components/linkedin/InboxManagerChat';
 
 export default function LinkedInManager() {
   const [csvFile, setCsvFile] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [contacts, setContacts] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
   const [error, setError] = useState(null);
-  const [imported, setImported] = useState(false);
+  const [loadingContacts, setLoadingContacts] = useState(true);
+  const [showImport, setShowImport] = useState(false);
 
-  // Fetch contacts on mount
   useEffect(() => {
     fetchContacts();
   }, []);
 
   const fetchContacts = async () => {
+    setLoadingContacts(true);
     try {
       const data = await base44.entities.LinkedInContact.list('-updated_date', 100);
       setContacts(data);
     } catch (err) {
       console.error('Error fetching contacts:', err);
+    } finally {
+      setLoadingContacts(false);
     }
   };
 
   const handleImportCSV = async () => {
-    if (!csvFile) {
-      setError('Please select a CSV file');
-      return;
-    }
-
-    setLoading(true);
+    if (!csvFile) return;
+    setImporting(true);
     setError(null);
     try {
       const text = await csvFile.text();
-      console.log('CSV content length:', text.length);
-      
       const result = await base44.functions.invoke('importLinkedInCSV', { csvContent: text });
-      console.log('Import result:', result);
-      
       if (result.data?.success || result.success) {
         const contactsData = result.data?.contacts || result.contacts || [];
-        console.log('Imported contacts:', contactsData);
         setContacts(contactsData);
-        setImported(true);
         setCsvFile(null);
+        setShowImport(false);
       } else {
         throw new Error(result.error || 'Import failed');
       }
     } catch (err) {
-      console.error('Import error:', err);
       setError(err.message || 'Failed to import CSV');
     } finally {
-      setLoading(false);
+      setImporting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-slate-50">
+    <div className="h-screen flex flex-col bg-slate-50 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#1e3a5a] to-[#0f2438] text-white py-12 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2 font-serif text-[#D4A574]">LinkedIn Contact Manager</h1>
-          <p className="text-slate-300">Import, manage, and engage with your LinkedIn inbox</p>
+      <div className="bg-gradient-to-r from-[#1e3a5a] to-[#0f2438] text-white px-6 py-4 flex-shrink-0">
+        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-[#D4A574] font-serif">LinkedIn Inbox Manager</h1>
+            <p className="text-xs text-slate-300 mt-0.5">
+              <Users className="w-3 h-3 inline mr-1" />
+              {contacts.length} contacts loaded
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={fetchContacts}
+              variant="outline"
+              size="sm"
+              className="gap-1.5 border-white/20 text-white hover:bg-white/10 text-xs"
+            >
+              <RefreshCw className="w-3.5 h-3.5" /> Refresh
+            </Button>
+            <Button
+              onClick={() => setShowImport(v => !v)}
+              size="sm"
+              className="gap-1.5 bg-[#D4A574] hover:bg-[#C19A6B] text-white text-xs"
+            >
+              <Upload className="w-3.5 h-3.5" /> Import CSV
+            </Button>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 pt-8 pb-4">
-        <PerceptionEngineeringBar />
-      </div>
-
-      <div className="max-w-6xl mx-auto px-6 pb-12">
-        {!imported ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl shadow-md border border-slate-200 p-8 mb-8"
-          >
-            <h2 className="text-2xl font-bold text-[#1e3a5a] mb-6">Import Contacts</h2>
-            
-            <div className="space-y-6">
-              <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center">
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-                  className="hidden"
-                  id="csv-input"
-                />
-                <label htmlFor="csv-input" className="cursor-pointer">
-                  <Upload className="w-12 h-12 text-[#D4A574] mx-auto mb-3" />
-                  <p className="text-slate-700 font-semibold mb-1">Drop CSV or click to select</p>
-                  <p className="text-sm text-slate-500">Export from LinkedIn using the provided format</p>
-                </label>
+      {/* Import Bar (collapsible) */}
+      {showImport && (
+        <div className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0">
+          <div className="max-w-[1400px] mx-auto flex items-center gap-4">
+            <label
+              htmlFor="csv-input"
+              className="flex items-center gap-3 px-4 py-2 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-[#D4A574] transition-colors text-sm text-slate-600"
+            >
+              <Upload className="w-4 h-4 text-[#D4A574]" />
+              {csvFile ? (
+                <span className="flex items-center gap-1.5 text-green-700 font-medium">
+                  <Check className="w-4 h-4" /> {csvFile.name}
+                </span>
+              ) : (
+                'Choose CSV file'
+              )}
+            </label>
+            <input
+              id="csv-input"
+              type="file"
+              accept=".csv"
+              onChange={e => { setCsvFile(e.target.files?.[0] || null); setError(null); }}
+              className="hidden"
+            />
+            <Button
+              onClick={handleImportCSV}
+              disabled={!csvFile || importing}
+              className="bg-[#1e3a5a] hover:bg-[#0f2438] text-white gap-2"
+              size="sm"
+            >
+              {importing ? <><Loader2 className="w-4 h-4 animate-spin" /> Importing…</> : 'Import'}
+            </Button>
+            {error && (
+              <div className="flex items-center gap-2 text-sm text-red-600">
+                <X className="w-4 h-4" /> {error}
               </div>
+            )}
+          </div>
+        </div>
+      )}
 
-              {csvFile && (
-                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <Check className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <span className="text-sm text-blue-700">{csvFile.name}</span>
-                </div>
-              )}
+      {/* Main 3-panel layout */}
+      <div className="flex-1 min-h-0 max-w-[1400px] mx-auto w-full px-6 py-4 flex gap-4">
 
-              {error && (
-                <div className="flex items-center gap-3 p-4 bg-red-50 rounded-lg border border-red-200">
-                  <X className="w-5 h-5 text-red-600 flex-shrink-0" />
-                  <span className="text-sm text-red-700">{error}</span>
-                </div>
-              )}
-
+        {/* Left: Contact List */}
+        <div className="w-72 flex-shrink-0 flex flex-col min-h-0">
+          {loadingContacts ? (
+            <div className="flex items-center justify-center h-full">
+              <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
+            </div>
+          ) : contacts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center p-6">
+              <Users className="w-10 h-10 text-slate-300 mb-3" />
+              <p className="text-sm font-semibold text-slate-600">No contacts yet</p>
+              <p className="text-xs text-slate-400 mt-1">Import a LinkedIn CSV to get started</p>
               <Button
-                onClick={handleImportCSV}
-                disabled={!csvFile || loading}
-                className="w-full bg-[#D4A574] text-white hover:bg-[#C19A6B] h-auto py-3 text-base font-semibold rounded-lg"
+                onClick={() => setShowImport(true)}
+                size="sm"
+                className="mt-4 bg-[#D4A574] hover:bg-[#C19A6B] text-white gap-2"
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Importing...
-                  </>
-                ) : (
-                  'Import Contacts'
-                )}
+                <Upload className="w-3.5 h-3.5" /> Import CSV
               </Button>
             </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
-          >
-            <div className="lg:col-span-1">
-              <ContactList 
-                contacts={contacts} 
-                selectedContact={selectedContact}
-                onSelectContact={setSelectedContact}
-              />
-            </div>
-            <div className="lg:col-span-2">
-              {selectedContact ? (
-                <ContactDetail 
-                  contact={selectedContact}
-                  onUpdate={(updated) => {
-                    setContacts(contacts.map(c => c.id === updated.id ? updated : c));
-                  }}
-                />
-              ) : (
-                <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-8 text-center h-full flex items-center justify-center">
-                  <p className="text-slate-600">Select a contact to view details and compose responses</p>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
+          ) : (
+            <ContactList
+              contacts={contacts}
+              selectedContact={selectedContact}
+              onSelectContact={setSelectedContact}
+            />
+          )}
+        </div>
+
+        {/* Right: Agent Chat */}
+        <div className="flex-1 min-h-0">
+          <InboxManagerChat selectedContact={selectedContact} />
+        </div>
+
       </div>
     </div>
   );

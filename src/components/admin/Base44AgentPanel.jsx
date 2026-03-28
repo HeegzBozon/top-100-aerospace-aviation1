@@ -24,6 +24,12 @@ const KNOWN_AGENTS = [
     description: 'Advises on partnership opportunities, sponsorships, and strategic connections.',
     file: 'agents/partnership_advisor.json',
   },
+  {
+    name: 'inbox_manager',
+    display_name: 'Inbox Manager',
+    description: 'AI chief-of-staff for LinkedIn outreach — priority queuing, reply drafting, inbox audits, and triage coaching. Powers the LinkedIn Inbox Manager page.',
+    file: 'agents/inbox_manager.json',
+  },
 ];
 
 function AgentCard({ agent, agentSkills }) {
