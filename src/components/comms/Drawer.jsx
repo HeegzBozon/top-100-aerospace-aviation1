@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import { useUnread } from "@/components/contexts/UnreadContext";
 import NewConversationModal from "./NewConversationModal";
@@ -273,6 +274,18 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
                </div>
              )}
             </div>
+            
+            {/* Nominations - Direct Link (under Welcome Rules) */}
+            <div className="mt-3 pt-3 border-t border-gray-800/50 px-2">
+              <Link
+                to="/Nominations"
+                onClick={onMobileClose}
+                className="w-full flex items-center gap-3 pl-2 pr-2 py-2 rounded-lg transition-all text-white/75 hover:bg-slate-800/30 hover:text-white"
+              >
+                <span className="text-lg">🗳️</span>
+                <span className="text-[14px] truncate flex-1 text-left tracking-wide font-medium">Nominations</span>
+              </Link>
+            </div>
             </>
             )}
             </>
@@ -292,18 +305,6 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
             onShowNewModal={() => setShowNewModal(true)}
             onShowChannelManager={() => setShowChannelManager(true)}
           />
-          
-          {/* Nominations - Direct Link */}
-          <div className="mt-3 pt-3 border-t border-white/10">
-            <a
-              href="/Nominations"
-              className="w-full flex items-center gap-3 pl-4 pr-2 py-2 rounded-lg transition-all text-white/75 hover:bg-white/10 hover:text-white"
-              onClick={onMobileClose}
-            >
-              <span className="text-lg">🗳️</span>
-              <span className="text-[14px] truncate flex-1 text-left tracking-wide font-medium">Nominations</span>
-            </a>
-          </div>
         </div>
       )}
 
