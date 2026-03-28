@@ -14,7 +14,7 @@ async function fetchLiveVideoInfo(channelHandle) {
   }
 
   try {
-    const res = await fetch(`/api/youtube/live?channel=${encodeURIComponent(channelHandle)}`);
+    const res = await fetch(`/api/resolveYouTubeLive?channel=${encodeURIComponent(channelHandle)}`);
     if (!res.ok) throw new Error('API error');
     const data = await res.json();
     const videoId = data.videoId || null;

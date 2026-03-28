@@ -28,6 +28,7 @@ const AuthorityStackPortal    = lazy(() => import('@/pages/AuthorityStackPortal'
 const Solutions               = lazy(() => import('@/pages/Solutions'));
 const LinkedInManager         = lazy(() => import('@/pages/LinkedInManager'));
 const LaunchParty             = lazy(() => import('@/pages/LaunchParty'));
+const Top100AerospaceAviationTV = lazy(() => import('@/pages/Top100AerospaceAviationTV'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -118,6 +119,11 @@ const AuthenticatedApp = () => {
       <Route path="/linkedin-manager" element={
         <LayoutWrapper currentPageName="LinkedInManager">
           <LinkedInManager />
+        </LayoutWrapper>
+      } />
+      <Route path="/top100-tv" element={
+        <LayoutWrapper currentPageName="Top100AerospaceAviationTV">
+          <Top100AerospaceAviationTV />
         </LayoutWrapper>
       } />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
