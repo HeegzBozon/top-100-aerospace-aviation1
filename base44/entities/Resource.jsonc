@@ -25,7 +25,13 @@
         "model_serving_infrastructure",
         "rag_pipeline",
         "tool_runner",
-        "external_service"
+        "external_service",
+        "system",
+        "framework",
+        "process",
+        "methodology",
+        "strategy",
+        "tactic"
       ],
       "description": "Classification of the resource type"
     },

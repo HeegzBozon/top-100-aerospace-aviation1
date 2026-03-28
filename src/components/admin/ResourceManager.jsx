@@ -20,6 +20,12 @@ const RESOURCE_TYPES = [
   'rag_pipeline',
   'tool_runner',
   'external_service',
+  'system',
+  'framework',
+  'process',
+  'methodology',
+  'strategy',
+  'tactic',
 ];
 
 const RETRIEVAL_METHODS = ['api_call', 'database_query', 'file_read', 'search_engine', 'none'];
