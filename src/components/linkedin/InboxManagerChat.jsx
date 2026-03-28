@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Bot, Send, Loader2, Inbox, Sparkles, ClipboardList, MessageSquare } from 'lucide-react';
+import { Bot, Send, Loader2, Inbox, Sparkles, ClipboardList, MessageSquare, Building2, Star } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 const QUICK_ACTIONS = [
@@ -115,9 +115,55 @@ export default function InboxManagerChat({ selectedContact }) {
 
   const visibleMessages = messages.filter(m => m.role === 'user' || (m.role === 'assistant' && m.content));
 
+  const tierColors = {
+    'S-Tier': 'bg-purple-100 text-purple-700 border-purple-200',
+    'A-Tier': 'bg-blue-100 text-blue-700 border-blue-200',
+    'B-Tier': 'bg-green-100 text-green-700 border-green-200',
+    'C-Tier': 'bg-slate-100 text-slate-600 border-slate-200',
+  };
+
   return (
     <div className="flex flex-col h-full bg-slate-50 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      {/* Header */}
+
+      {/* Contact Header Card */}
+      {selectedContact && (
+        <div className="flex items-center gap-4 px-4 py-3 bg-white border-b border-slate-200 flex-shrink-0">
+          {selectedContact.avatar_url ? (
+            <img src={selectedContact.avatar_url} alt={selectedContact.full_name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-[#1e3a5a] flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
+              {selectedContact.full_name?.[0]}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="font-bold text-slate-900 text-sm">{selectedContact.full_name}</p>
+              {selectedContact.tier_classification && (
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${tierColors[selectedContact.tier_classification] || tierColors['C-Tier']}`}>
+                  {selectedContact.tier_classification}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-500 truncate">{selectedContact.headline}</p>
+            {selectedContact.current_company && (
+              <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                <Building2 className="w-3 h-3" /> {selectedContact.current_company}
+              </p>
+            )}
+          </div>
+          {selectedContact.tier_score > 0 && (
+            <div className="flex-shrink-0 text-right">
+              <div className="flex items-center gap-1 text-amber-500">
+                <Star className="w-3.5 h-3.5 fill-amber-400" />
+                <span className="text-sm font-bold text-slate-700">{selectedContact.tier_score}</span>
+              </div>
+              <p className="text-xs text-slate-400">TIER-S</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Agent Header */}
       <div className="flex items-center gap-3 px-4 py-3 bg-[#1e3a5a] text-white flex-shrink-0">
         <div className="w-8 h-8 rounded-lg bg-[#D4A574]/20 flex items-center justify-center">
           <Bot className="w-5 h-5 text-[#D4A574]" />
@@ -180,12 +226,6 @@ export default function InboxManagerChat({ selectedContact }) {
 
       {/* Input */}
       <div className="px-4 py-3 border-t border-slate-200 bg-white flex-shrink-0">
-        {selectedContact && (
-          <div className="mb-2 px-2 py-1 bg-[#1e3a5a]/5 rounded-lg text-xs text-slate-600 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D4A574]" />
-            Context: <strong>{selectedContact.full_name}</strong> selected
-          </div>
-        )}
         <div className="flex gap-2">
           <textarea
             ref={inputRef}
