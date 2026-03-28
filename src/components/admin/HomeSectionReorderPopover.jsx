@@ -17,6 +17,7 @@ export const DEFAULT_SECTIONS = [
   { id: 'domain',      label: 'Domain Explorer' },
   { id: 'originals',   label: 'TOP 100 Originals' },
   { id: 'trending',    label: 'Trending Now' },
+  { id: 'newsstream',  label: 'Live News Stream' },
 ];
 
 export function loadSectionConfig(user) {
