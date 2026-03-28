@@ -9,7 +9,7 @@ const LIVE_CHANNELS = [
 ];
 
 export function LiveNewsPanel() {
-  const [activeChannel, setActiveChannel] = useState('bbc');
+  const [activeChannel, setActiveChannel] = useState('aljazeera');
   const ch = LIVE_CHANNELS.find(c => c.id === activeChannel);
 
   return (
