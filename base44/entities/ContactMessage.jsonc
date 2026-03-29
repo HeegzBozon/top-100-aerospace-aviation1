@@ -1,0 +1,32 @@
+{
+  "name": "ContactMessage",
+  "type": "object",
+  "properties": {
+    "sender_name": {
+      "type": "string",
+      "description": "Name of the person sending the message"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Email of the sender for reply"
+    },
+    "message": {
+      "type": "string",
+      "description": "The message content"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "read",
+        "replied"
+      ],
+      "default": "new",
+      "description": "Status of the contact message"
+    }
+  },
+  "required": [
+    "sender_email",
+    "message"
+  ]
+}
