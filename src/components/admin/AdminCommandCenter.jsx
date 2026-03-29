@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { getDashboardStats } from '@/functions/getDashboardStats';
 import { useToast } from '@/components/ui/use-toast';
@@ -8,7 +8,7 @@ import {
     LayoutDashboard, Users, Trophy, Camera, Briefcase, Rocket, Award,
     CalendarDays, DollarSign, Settings, FileText, Activity,
     RefreshCw, AlertCircle, CheckCircle2, ArrowRight, Vote, UserPlus,
-    Globe, BarChart3, Flame
+    Globe, BarChart3, Flame, Bot, Send, Loader2, Minimize2, Maximize2, ChevronDown
 } from 'lucide-react';
 
 // ── Brand tokens ──────────────────────────────────────────────────────────────
@@ -167,6 +167,152 @@ function SectionTile({ tile, onNavigate, statusBadge }) {
                 <ArrowRight style={{ width: '14px', height: '14px', color: tile.accent }} />
             </div>
         </button>
+    );
+}
+
+// ── Agent Skill Panel ─────────────────────────────────────────────────────────
+
+const AGENT_SKILLS = [
+    {
+        id: 'qa-engineer',
+        label: 'QA Engineer',
+        agentName: 'qa_engineer',
+        color: '#7ec8a8',
+        description: 'Test plans, bug triage, release readiness',
+        icon: '🧪',
+    },
+    {
+        id: 'principal-engineer',
+        label: 'Principal Engineer',
+        agentName: 'principal_engineer',
+        color: '#c9a87c',
+        description: 'Architecture, cross-system design',
+        icon: '⚙️',
+    },
+];
+
+function AgentSkillPanel({ skill }) {
+    const [minimized, setMinimized] = useState(true);
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState('');
+    const [sending, setSending] = useState(false);
+    const [conversation, setConversation] = useState(null);
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        if (!minimized) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages, minimized]);
+
+    const initConversation = async () => {
+        if (conversation) return conversation;
+        const conv = await base44.agents.createConversation({
+            agent_name: skill.agentName,
+            metadata: { name: `${skill.label} — Admin`, source: 'admin-command-center' }
+        });
+        setConversation(conv);
+        return conv;
+    };
+
+    const sendMessage = async () => {
+        const text = input.trim();
+        if (!text || sending) return;
+        setInput('');
+        setSending(true);
+        const userMsg = { role: 'user', content: text, id: Date.now() };
+        setMessages(prev => [...prev, userMsg]);
+        try {
+            let conv = conversation;
+            if (!conv) conv = await initConversation();
+            const updated = await base44.agents.addMessage(conv, { role: 'user', content: text });
+            setConversation(updated);
+            setMessages(updated.messages || []);
+        } catch {
+            setMessages(prev => [...prev, { role: 'assistant', content: 'Something went wrong. Try again.', id: Date.now() + 1 }]);
+        } finally {
+            setSending(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!conversation?.id) return;
+        const unsub = base44.agents.subscribeToConversation(conversation.id, (data) => {
+            setMessages(data.messages || []);
+        });
+        return () => unsub();
+    }, [conversation?.id]);
+
+    return (
+        <div className="rounded-xl overflow-hidden flex flex-col" style={{ border: `1px solid ${skill.color}28`, background: '#0a1622' }}>
+            {/* Header */}
+            <button
+                onClick={() => setMinimized(!minimized)}
+                className="flex items-center gap-3 px-4 py-3 w-full text-left"
+                style={{ background: `${skill.color}0e`, borderBottom: minimized ? 'none' : `1px solid ${skill.color}18` }}
+            >
+                <span className="text-lg">{skill.icon}</span>
+                <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm" style={{ color: '#d4e0ec' }}>{skill.label}</p>
+                    <p className="text-xs truncate" style={{ color: `${skill.color}90` }}>{skill.description}</p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: skill.color }} />
+                    {minimized ? <Maximize2 style={{ width: 13, height: 13, color: '#3d6080' }} /> : <Minimize2 style={{ width: 13, height: 13, color: '#3d6080' }} />}
+                </div>
+            </button>
+
+            {!minimized && (
+                <>
+                    <div className="overflow-y-auto p-3 space-y-2.5" style={{ minHeight: 180, maxHeight: 260 }}>
+                        {messages.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-full py-6 text-center gap-1.5">
+                                <span className="text-2xl">{skill.icon}</span>
+                                <p className="text-xs" style={{ color: '#3d6080' }}>Ask {skill.label} anything…</p>
+                            </div>
+                        ) : (
+                            messages.map((msg, i) => (
+                                <div key={msg.id || i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                    <div
+                                        className="max-w-[88%] rounded-lg px-3 py-2 text-xs leading-relaxed"
+                                        style={msg.role === 'user'
+                                            ? { background: '#1e3a5a', color: '#c8d8e8' }
+                                            : { background: `${skill.color}12`, color: '#a8c0d4', border: `1px solid ${skill.color}18` }}
+                                    >
+                                        {msg.content}
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                        {sending && (
+                            <div className="flex justify-start">
+                                <div className="px-3 py-2 rounded-lg" style={{ background: `${skill.color}12` }}>
+                                    <Loader2 className="w-3 h-3 animate-spin" style={{ color: skill.color }} />
+                                </div>
+                            </div>
+                        )}
+                        <div ref={messagesEndRef} />
+                    </div>
+                    <div className="px-3 pb-3 pt-2 flex gap-2" style={{ borderTop: `1px solid ${skill.color}12` }}>
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={e => setInput(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                            placeholder={`Ask ${skill.label}…`}
+                            className="flex-1 rounded-lg px-3 py-1.5 text-xs outline-none transition-colors"
+                            style={{ background: '#ffffff08', border: `1px solid ${skill.color}20`, color: '#c8d8e8' }}
+                        />
+                        <button
+                            onClick={sendMessage}
+                            disabled={!input.trim() || sending}
+                            className="px-2.5 py-1.5 rounded-lg transition-all disabled:opacity-40 flex items-center justify-center"
+                            style={{ background: skill.color, color: '#0a1622' }}
+                        >
+                            <Send style={{ width: 13, height: 13 }} />
+                        </button>
+                    </div>
+                </>
+            )}
+        </div>
     );
 }
 
@@ -528,6 +674,22 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                             Stats unavailable
                         </div>
                     )}
+                </div>
+            </div>
+
+            {/* ── Engineering Agents ───────────────────────────────────────── */}
+            <div>
+                <div className="mb-3 flex items-center gap-2">
+                    <Bot style={{ width: 14, height: 14, color: B.gold }} />
+                    <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#3d6080' }}>
+                        Engineering Agents
+                    </h2>
+                    <span className="text-xs ml-1" style={{ color: '#2a4a60' }}>— Season 4 ready</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {AGENT_SKILLS.map(skill => (
+                        <AgentSkillPanel key={skill.id} skill={skill} />
+                    ))}
                 </div>
             </div>
 
