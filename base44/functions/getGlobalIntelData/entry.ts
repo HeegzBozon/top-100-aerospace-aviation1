@@ -92,7 +92,7 @@ async function fetchWingbitsFlights(apiKey) {
     }
   }
 
-  console.log(`[Wingbits] ${flights.size} unique aircraft (${errors}/${WINGBITS_REGIONS.length} regions failed)`);
+
   return flights;
 }
 
@@ -144,7 +144,7 @@ async function fetchOpenSkyFlights() {
   const username = Deno.env.get('OPENSKY_USERNAME');
   const password = Deno.env.get('OPENSKY_PASSWORD');
   const authHeader = username && password
-    ? `Basic ${btoa(`${username}:${password}`)}`
+    ? `Basic ${btoa(username + ':' + password)}`
     : null;
 
   const results = await Promise.allSettled(
@@ -179,7 +179,7 @@ async function fetchOpenSkyFlights() {
     }
   }
 
-  console.log(`[OpenSky] ${flights.size} unique aircraft (${errors}/${OPENSKY_BOXES.length} boxes failed)`);
+
   return flights;
 }
 
@@ -232,7 +232,7 @@ function mergeFlightMaps(wingbitsMap, openskyMap) {
   const corroborated = flights.filter(f => f.sources.length > 1).length;
   const anomalies    = flights.filter(f => f.anomaly).length;
 
-  console.log(`[Merge] ${flights.length} total | ${corroborated} corroborated | ${anomalies} anomalies`);
+
   return { flights, corroborated, anomalies };
 }
 
@@ -368,7 +368,7 @@ Deno.serve(async (req) => {
 
   const { flights, corroborated, anomalies } = mergeFlightMaps(wingbitsMap, openskyMap);
 
-  console.log(`[Globe] ${flights.length} merged flights | GPS jam zones: ${gpsJam.hexes.length}`);
+
 
   return Response.json({
     flights,

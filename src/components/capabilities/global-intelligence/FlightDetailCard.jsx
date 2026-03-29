@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Navigation, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
-import { getGlobalIntelData } from '@/functions/getGlobalIntelData';
 
 const STATUS_COLORS = {
   military: { bg: '#f97316', text: '#fff', label: 'MILITARY' },
@@ -190,7 +189,12 @@ function AircraftPhoto({ registration, isMilitary }) {
   useEffect(() => {
     if (!registration) return;
     // Route through backend to avoid CORS issues with planespotters.net
-    getGlobalIntelData({ action: 'photo', registration })
+    fetch('/api/functions/getGlobalIntelData', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'photo', registration })
+    })
+      .then(r => r.json())
       .then(res => {
         const thumb = res?.data?.thumbnail;
         if (thumb) setPhotoUrl(thumb);
