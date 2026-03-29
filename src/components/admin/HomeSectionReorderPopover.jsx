@@ -15,7 +15,6 @@ export const DEFAULT_SECTIONS = [
   { id: 'topPrograms', label: 'Top Programs' },
   { id: 'domain',      label: 'Domain Explorer' },
   { id: 'originals',   label: 'TOP 100 Originals' },
-  { id: 'trending',    label: 'Trending Now' },
 ];
 
 export function loadSectionConfig(user) {

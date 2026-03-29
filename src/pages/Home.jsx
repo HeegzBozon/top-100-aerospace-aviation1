@@ -232,7 +232,6 @@ export default function HomePage() {
     topPrograms: isMemberOnly ? null : <TopPrograms />,
     domain: <DomainExplorer />,
     originals: isMemberOnly ? null : <TopOriginals />,
-    trending: trendingProfiles.length > 0 ? <TrendingSection trendingProfiles={trendingProfiles} pageViews={pageViews} /> : null,
   };
 
   return (
