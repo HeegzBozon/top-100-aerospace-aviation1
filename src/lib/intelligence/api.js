@@ -384,6 +384,34 @@ export async function fetchWingbitsFlightPath(icao24, signal) {
   }
 }
 
+// ── Wingbits Flight Search (by callsign, ICAO hex, or registration) ──────────
+const _flightSearchCache = new Map();
+const FLIGHT_SEARCH_TTL = 15 * 1000;
+
+export async function fetchWingbitsFlightSearch(query, signal) {
+  const key = (query || '').toLowerCase().trim();
+  if (!key || key.length < 3) return null;
+
+  const cached = _flightSearchCache.get(key);
+  if (cached && Date.now() - cached.fetchedAt < FLIGHT_SEARCH_TTL) return cached.data;
+
+  const apiKey = _wingbitsKey();
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetch(
+      `https://customer-api.wingbits.com/v1/flights/search?query=${encodeURIComponent(key)}`,
+      { headers: { 'x-api-key': apiKey }, signal }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    _flightSearchCache.set(key, { data, fetchedAt: Date.now() });
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 // ── Baltic Dry Index (Nasdaq Data Link, public — no API key required) ────────
 // Dataset: CHRIS/CME_BF1 (BDI futures front month). Returns last 30 rows.
 export async function fetchBDITrend(signal) {

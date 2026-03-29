@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Globe as GlobeIcon, ChevronUp, ChevronDown, Loader2,
   Plane, Radio, Crosshair, Map, Satellite, Rocket, AlertTriangle,
+  Search, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,6 +16,7 @@ import {
   useWingbitsLiveFlights,
   useWingbitsFlightDetail,
   useWingbitsFlightPath,
+  useWingbitsFlightSearch,
 } from '@/lib/intelligence/hooks';
 import { cellToLatLng } from 'h3-js';
 import { THEATER_DEFS } from '@/lib/intelligence/constants';
@@ -96,10 +98,13 @@ export function WorldMonitorGlobe() {
   const { data: theaterData  } = useTheaterPosture();
 
   const [selectedIcao24, setSelectedIcao24] = useState(null);
+  const [searchQuery, setSearchQuery]       = useState('');
+  const [searchInput, setSearchInput]       = useState('');
   const { data: wbFlightsRaw }  = useWingbitsLiveFlights();
   const { data: wbGpsData }      = useWingbitsGpsJam();
   const { data: wbDetailData }   = useWingbitsFlightDetail(selectedIcao24 || null);
   const { data: wbPathData }     = useWingbitsFlightPath(selectedIcao24 || null);
+  const { data: searchResult, isFetching: searchFetching } = useWingbitsFlightSearch(searchQuery);
 
   // Animate satellite positions every 30 s
   useEffect(() => {
@@ -446,6 +451,37 @@ export function WorldMonitorGlobe() {
   const emergencyCount = (wbFlightsRaw || []).flatMap(a => a.data || [])
     .filter(f => ['7700', '7600', '7500'].includes(f.sq)).length;
 
+  // ─── When search result arrives, zoom globe to the found flight ─────────────
+  useEffect(() => {
+    if (!searchResult?.flight || !globeRef.current) return;
+    const f = searchResult.flight;
+    if (f.la && f.lo) {
+      globeRef.current.pointOfView({ lat: f.la, lng: f.lo, altitude: 0.8 }, 1200);
+      // Also select this flight to load detail + path
+      if (f.h) setSelectedIcao24(f.h.toLowerCase());
+      setTooltip({
+        type: 'flight',
+        data: {
+          _callsign: f.f, _icao24: f.h, _altFt: f.ab,
+          _speed: null, _operator: f.c, _flag: null,
+          _isEmergency: ['7700','7600','7500'].includes(f.sq),
+          _squawk: f.sq, _source: 'wingbits-search',
+        },
+      });
+    }
+  }, [searchResult]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const q = searchInput.trim();
+    if (q.length >= 3) setSearchQuery(q);
+  };
+
+  const clearSearch = () => {
+    setSearchInput('');
+    setSearchQuery('');
+  };
+
   const toggleLayer = id => setLayers(l => ({ ...l, [id]: !l[id] }));
 
   return (
@@ -506,6 +542,41 @@ export function WorldMonitorGlobe() {
             )}
 
             <div ref={containerRef} style={{ height: 500 }} />
+
+            {/* Search bar */}
+            {loaded && (
+              <div className="absolute top-3 left-1/2 -translate-x-1/2" style={{ zIndex: 4, width: 280 }}>
+                <form onSubmit={handleSearch} className="flex items-center gap-1">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={searchInput}
+                      onChange={e => setSearchInput(e.target.value)}
+                      placeholder="Search callsign, ICAO, reg…"
+                      className="w-full pl-8 pr-7 py-1.5 rounded-lg text-xs text-white placeholder-slate-500 outline-none focus:ring-1 focus:ring-sky-500/60"
+                      style={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(71,85,105,0.6)', backdropFilter: 'blur(8px)' }}
+                    />
+                    {searchInput && (
+                      <button type="button" onClick={clearSearch} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white">
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={searchInput.trim().length < 3}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-sky-300 border border-sky-700/50 disabled:opacity-40 transition-colors hover:bg-sky-900/40"
+                    style={{ background: 'rgba(15,23,42,0.85)', backdropFilter: 'blur(8px)' }}
+                  >
+                    {searchFetching ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Go'}
+                  </button>
+                </form>
+                {searchQuery && searchResult && !searchResult.flight && (
+                  <p className="text-center text-[10px] text-slate-500 mt-1">No aircraft found for "{searchQuery}"</p>
+                )}
+              </div>
+            )}
 
             {/* Layer toggle controls */}
             {loaded && (

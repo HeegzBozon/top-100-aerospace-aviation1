@@ -19,6 +19,7 @@ import {
   fetchWingbitsGpsJam,
   fetchWingbitsFlightDetail,
   fetchWingbitsFlightPath,
+  fetchWingbitsFlightSearch,
 } from './api';
 import {
   ALL_RSS_FEEDS,
@@ -537,6 +538,18 @@ export function useWingbitsFlightDetail(icao24) {
     staleTime: 10_000,
     refetchInterval: 15_000,
     enabled: hasKey && !!icao24,
+  });
+}
+
+// ── Wingbits Flight Search ────────────────────────────────────────────────
+export function useWingbitsFlightSearch(query) {
+  const hasKey = !!(import.meta.env.VITE_WINGBITS_API_KEY);
+  return useQuery({
+    queryKey: ['intel', 'wingbits-flight-search', (query || '').toLowerCase().trim()],
+    queryFn: ({ signal }) => fetchWingbitsFlightSearch(query, signal),
+    staleTime: 15_000,
+    enabled: hasKey && !!query && query.trim().length >= 3,
+    placeholderData: null,
   });
 }
 
