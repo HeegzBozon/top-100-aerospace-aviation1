@@ -6,6 +6,7 @@ import { base44 } from '@/api/base44Client';
 const STORAGE_KEY = 'home_section_config_v1';
 
 export const DEFAULT_SECTIONS = [
+  { id: 'missionControl', label: 'Mission Control' },
   { id: 'spotlight',   label: 'Industry Spotlight' },
   { id: 'featured',    label: 'Featured Today' },
   { id: 'programs',    label: 'Trending Programs' },

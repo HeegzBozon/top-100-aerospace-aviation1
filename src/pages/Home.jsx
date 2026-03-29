@@ -14,6 +14,7 @@ import CommunityFavorites from '@/components/home/CommunityFavorites';
 import UpcomingMissions from '@/components/home/UpcomingMissions';
 import TopPrograms from '@/components/home/TopPrograms';
 import TopOriginals from '@/components/home/TopOriginals';
+import MissionControlHeader from '@/components/home/MissionControlHeader';
 
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HomeSectionReorderPopover, { loadSectionConfig, DEFAULT_SECTIONS } from '@/components/admin/HomeSectionReorderPopover';
@@ -223,6 +224,7 @@ export default function HomePage() {
   const isMemberOnly = userRole === 'user';
 
   const SECTION_COMPONENTS = {
+    missionControl: <MissionControlHeader />,
     spotlight: isMemberOnly ? null : <IndustrySpotlight />,
     featured: isMemberOnly ? null : <FeaturedToday />,
     programs: isMemberOnly ? null : <TrendingPrograms />,

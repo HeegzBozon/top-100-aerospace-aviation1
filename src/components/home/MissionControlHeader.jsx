@@ -1,0 +1,127 @@
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { Rocket, Send, Award, Clock } from 'lucide-react';
+
+function useCountdown(targetDate) {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  if (!targetDate) return null;
+  const diff = new Date(targetDate).getTime() - now.getTime();
+  if (diff <= 0) return { days: 0, hours: 0, mins: 0, secs: 0, past: true };
+  return {
+    days: Math.floor(diff / 86400000),
+    hours: Math.floor((diff % 86400000) / 3600000),
+    mins: Math.floor((diff % 3600000) / 60000),
+    secs: Math.floor((diff % 60000) / 1000),
+    past: false,
+  };
+}
+
+function CountdownUnit({ value, label }) {
+  return (
+    <div className="text-center">
+      <div className="text-3xl md:text-4xl font-bold text-white tabular-nums">{String(value).padStart(2, '0')}</div>
+      <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider mt-1">{label}</div>
+    </div>
+  );
+}
+
+const brand = {
+  navy: '#1e3a5a',
+  gold: '#c9a87c',
+};
+
+export default function MissionControlHeader() {
+  const [selectedSeasonId, setSelectedSeasonId] = useState(null);
+
+  const { data: seasons = [] } = useQuery({
+    queryKey: ['home-mc-seasons'],
+    queryFn: () => base44.entities.Season.list('-created_date', 5),
+  });
+
+  useEffect(() => {
+    if (!seasons.length || selectedSeasonId) return;
+    const s4 = seasons.find(s => s.name?.toLowerCase().includes('season 4'));
+    setSelectedSeasonId(s4?.id || seasons[0]?.id);
+  }, [seasons]);
+
+  const activeSeason = seasons.find(s => s.id === selectedSeasonId) || seasons[0];
+  const countdown = useCountdown(activeSeason?.nomination_end);
+
+  if (!activeSeason) return null;
+
+  return (
+    <div className="relative overflow-hidden rounded-3xl" style={{ background: `linear-gradient(135deg, ${brand.navy} 0%, #0f1f33 100%)` }}>
+      <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-10" style={{ background: brand.gold }} />
+      <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl opacity-5" style={{ background: '#4a90b8' }} />
+
+      <div className="relative z-10 px-4 md:px-8 py-8 md:py-12">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <Badge className="text-xs font-bold px-3 py-1" style={{ background: brand.gold, color: 'white' }}>
+            <Rocket className="w-3 h-3 mr-1" />
+            {activeSeason.name || 'Season'}
+          </Badge>
+          <Badge variant="outline" className="text-xs border-white/30 text-white/70">
+            NOMINATIONS OPEN
+          </Badge>
+          {seasons.length > 1 && (
+            <select
+              value={selectedSeasonId}
+              onChange={(e) => setSelectedSeasonId(e.target.value)}
+              className="px-3 py-1.5 text-xs font-medium text-white rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 transition-all"
+            >
+              {seasons.map(s => (
+                <option key={s.id} value={s.id} style={{ color: 'black' }}>
+                  {s.name || 'Season'}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        <h2 className="text-3xl md:text-5xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          Mission Control
+        </h2>
+        <p className="text-white/60 text-sm md:text-base max-w-xl mb-6">
+          {activeSeason.name || 'TOP 100'} — Driving nominations across 30+ countries to recognize aerospace excellence.
+        </p>
+
+        {/* Countdown */}
+        {countdown && !countdown.past && (
+          <div className="inline-flex items-center gap-4 md:gap-6 px-6 py-4 rounded-2xl mb-6" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
+            <div className="text-white/50 text-xs uppercase tracking-widest mr-2">
+              <Clock className="w-4 h-4 mb-1 mx-auto" />
+              Nominations Close
+            </div>
+            <CountdownUnit value={countdown.days} label="Days" />
+            <span className="text-white/30 text-2xl font-light">:</span>
+            <CountdownUnit value={countdown.hours} label="Hours" />
+            <span className="text-white/30 text-2xl font-light">:</span>
+            <CountdownUnit value={countdown.mins} label="Min" />
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div className="flex flex-wrap gap-3">
+          <Link to="/Nominations">
+            <Button className="text-white font-semibold" style={{ background: brand.gold }}>
+              <Send className="w-4 h-4 mr-2" /> Submit Nomination
+            </Button>
+          </Link>
+          <Link to="/Top100Women2025">
+            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+              <Award className="w-4 h-4 mr-2" /> View 2025 Index
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
