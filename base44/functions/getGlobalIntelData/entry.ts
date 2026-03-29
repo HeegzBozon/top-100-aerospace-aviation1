@@ -1,236 +1,181 @@
-// ── Theater bounding boxes [lamin, lomin, lamax, lomax] ──
-const THEATER_BOUNDS = {
-  EUCOM:    [35,  -10,  72,  40],
-  CENTCOM:  [12,   25,  42,  60],
-  INDOPACOM:[-10,  60,  50, 145],
-  NORTHCOM: [15, -140,  70, -50],
-};
+import { cellToLatLng } from 'npm:h3-js@4.1.0';
 
+// ── Military ICAO hex prefixes ─────────────────────────────────────────────────
 const MILITARY_HEX_PREFIXES = [
   'AE', 'A0', '43', '44', '45', '46', '47', '48',
   '3C', '3D', '3E', '3F', '50', '51', '52',
   '7C', '76', '77', '78', '34', '35', '36', '40',
+  // UK mil
+  '43', '44', '45',
+  // French mil
+  '3B',
+  // Russian
+  'A0',
 ];
 
-function isMilitary(icao24) {
-  const hex = (icao24 || '').toUpperCase();
-  return MILITARY_HEX_PREFIXES.some(p => hex.startsWith(p));
+function isMilitary(hex) {
+  const h = (hex || '').toUpperCase();
+  return MILITARY_HEX_PREFIXES.some(p => h.startsWith(p));
 }
 
-// ── OpenSky OAuth2 token fetch ─────────────────────────────────────────────────
-async function getOpenSkyToken() {
-  const clientId = Deno.env.get('OPENSKY_CLIENT_ID');
-  const clientSecret = Deno.env.get('OPENSKY_CLIENT_SECRET');
-  if (!clientId || !clientSecret) return null;
-
-  const body = new URLSearchParams({
-    grant_type: 'client_credentials',
-    client_id: clientId,
-    client_secret: clientSecret,
-  });
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 6000);
-  try {
-    const r = await fetch('https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: body.toString(),
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-    if (!r.ok) {
-      const t = await r.text().catch(() => '');
-      console.error(`[OpenSky] token error ${r.status}: ${t.slice(0, 200)}`);
-      return null;
-    }
-    const json = await r.json();
-    return json.access_token || null;
-  } catch (err) {
-    clearTimeout(timer);
-    console.warn(`[OpenSky] token fetch failed (${err.message}), falling back to anonymous`);
-    return null;
-  }
-}
-
-// ── OpenSky fetch — uses bounded regional queries instead of global endpoint ──
-// The global /states/all endpoint is ~7MB and consistently times out from Deno edge.
-// Bounded regional queries are ~10x smaller and respond within the timeout window.
-async function fetchOpenSky() {
-  const token = await getOpenSkyToken();
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  console.log(`[OpenSky] using ${token ? 'OAuth2' : 'anonymous'} access`);
-
-  // Fetch all 4 theater regions in parallel — each bbox is a fraction of the global payload
-  const regionFetches = Object.entries(THEATER_BOUNDS).map(([region, [lamin, lomin, lamax, lomax]]) => {
-    const url = `https://opensky-network.org/api/states/all?lamin=${lamin}&lomin=${lomin}&lamax=${lamax}&lomax=${lomax}`;
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 10000);
-    return fetch(url, { headers, signal: controller.signal })
-      .then(r => {
-        clearTimeout(timer);
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then(json => ({ region, states: json.states || [] }))
-      .catch(err => {
-        clearTimeout(timer);
-        console.warn(`[OpenSky] ${region} failed: ${err.message}`);
-        return { region, states: [] };
-      });
-  });
-
-  const results = await Promise.all(regionFetches);
-
-  // Deduplicate by icao24 (aircraft near region boundaries appear in multiple fetches)
-  const seen = new Set();
-  const allStates = [];
-  for (const { states } of results) {
-    for (const s of states) {
-      if (s[0] && !seen.has(s[0])) {
-        seen.add(s[0]);
-        allStates.push(s);
-      }
-    }
-  }
-
-  const airborne = allStates.filter(s => s[5] && s[6] && !s[8]);
-  const flights = airborne
-    .filter(s => isMilitary(s[0]))
-    .map(s => ({
-      icao24: s[0],
-      callsign: (s[1] || '').trim(),
-      country: s[2],
-      lon: s[5],
-      lat: s[6],
-      altitudeFt: s[7] ? Math.round(s[7] * 3.28084) : null,
-      velocity: s[9],
-      heading: s[10],
-    }));
-
-  console.log(`[OpenSky] ${flights.length} military flights from ${airborne.length} airborne (${allStates.length} total across theaters)`);
-  return { flights, total: flights.length };
-}
-
-// ── Wingbits Live Flights ──────────────────────────────────────────────────────
-async function fetchWingbitsFlights() {
-  const apiKey = Deno.env.get('WINGBITS_API_KEY');
-  if (!apiKey) return null;
-
-  const body = [
-    { alias: 'cape_canaveral', by: 'radius', la: 28.3922,  lo: -80.6077,  rad: 250, unit: 'km' },
-    { alias: 'boca_chica',     by: 'radius', la: 25.9969,  lo: -97.1572,  rad: 250, unit: 'km' },
-    { alias: 'vandenberg',     by: 'radius', la: 34.7420,  lo: -120.5724, rad: 250, unit: 'km' },
-    { alias: 'mahia',          by: 'radius', la: -39.2594, lo: 177.8645,  rad: 250, unit: 'km' },
-    { alias: 'eastern_med_n',  by: 'radius', la: 36.0,     lo: 33.0,      rad: 250, unit: 'km' },
-    { alias: 'eastern_med_s',  by: 'radius', la: 32.0,     lo: 35.0,      rad: 250, unit: 'km' },
-    { alias: 'baltic_n',       by: 'radius', la: 60.0,     lo: 20.0,      rad: 250, unit: 'km' },
-    { alias: 'baltic_s',       by: 'radius', la: 56.0,     lo: 20.0,      rad: 250, unit: 'km' },
-    { alias: 'black_sea',      by: 'radius', la: 43.0,     lo: 34.0,      rad: 250, unit: 'km' },
-    { alias: 'persian_gulf',   by: 'radius', la: 26.5,     lo: 52.5,      rad: 250, unit: 'km' },
-    { alias: 'south_china_sea',by: 'radius', la: 14.0,     lo: 114.0,     rad: 250, unit: 'km' },
+// ── Wingbits Live Flights — broad global coverage via radius queries ──────────
+// We use many overlapping 500km radius circles to blanket all inhabited airspace.
+// Each call costs 1 API credit; responses are fast (~200ms).
+async function fetchWingbitsFlights(apiKey) {
+  const areas = [
+    // North America
+    { alias: 'northeast_us',    by: 'radius', la: 41.0,   lo: -74.0,   rad: 600, unit: 'km' },
+    { alias: 'southeast_us',    by: 'radius', la: 30.0,   lo: -82.0,   rad: 600, unit: 'km' },
+    { alias: 'midwest_us',      by: 'radius', la: 41.0,   lo: -93.0,   rad: 600, unit: 'km' },
+    { alias: 'west_us',         by: 'radius', la: 36.0,   lo: -118.0,  rad: 600, unit: 'km' },
+    { alias: 'northwest_us',    by: 'radius', la: 47.0,   lo: -122.0,  rad: 500, unit: 'km' },
+    { alias: 'canada_east',     by: 'radius', la: 45.5,   lo: -73.5,   rad: 600, unit: 'km' },
+    { alias: 'canada_west',     by: 'radius', la: 51.0,   lo: -114.0,  rad: 600, unit: 'km' },
+    { alias: 'mexico',          by: 'radius', la: 23.0,   lo: -102.0,  rad: 600, unit: 'km' },
+    { alias: 'caribbean',       by: 'radius', la: 18.0,   lo: -75.0,   rad: 600, unit: 'km' },
+    // Europe
+    { alias: 'uk_ireland',      by: 'radius', la: 52.0,   lo: -2.0,    rad: 500, unit: 'km' },
+    { alias: 'west_europe',     by: 'radius', la: 48.5,   lo: 4.0,     rad: 600, unit: 'km' },
+    { alias: 'central_europe',  by: 'radius', la: 50.0,   lo: 14.0,    rad: 600, unit: 'km' },
+    { alias: 'east_europe',     by: 'radius', la: 50.0,   lo: 28.0,    rad: 600, unit: 'km' },
+    { alias: 'scandinavia',     by: 'radius', la: 59.0,   lo: 14.0,    rad: 600, unit: 'km' },
+    { alias: 'med_west',        by: 'radius', la: 40.0,   lo: 5.0,     rad: 600, unit: 'km' },
+    { alias: 'med_east',        by: 'radius', la: 37.0,   lo: 26.0,    rad: 600, unit: 'km' },
+    { alias: 'baltic',          by: 'radius', la: 58.0,   lo: 22.0,    rad: 500, unit: 'km' },
+    // Middle East & Africa
+    { alias: 'middle_east',     by: 'radius', la: 28.0,   lo: 45.0,    rad: 700, unit: 'km' },
+    { alias: 'north_africa',    by: 'radius', la: 30.0,   lo: 15.0,    rad: 700, unit: 'km' },
+    { alias: 'east_africa',     by: 'radius', la: 5.0,    lo: 37.0,    rad: 700, unit: 'km' },
+    { alias: 'south_africa',    by: 'radius', la: -26.0,  lo: 28.0,    rad: 700, unit: 'km' },
+    { alias: 'west_africa',     by: 'radius', la: 9.0,    lo: 5.0,     rad: 700, unit: 'km' },
+    // Asia & Pacific
+    { alias: 'russia_west',     by: 'radius', la: 55.5,   lo: 37.5,    rad: 700, unit: 'km' },
+    { alias: 'russia_sib',      by: 'radius', la: 56.0,   lo: 60.0,    rad: 700, unit: 'km' },
+    { alias: 'central_asia',    by: 'radius', la: 43.0,   lo: 68.0,    rad: 700, unit: 'km' },
+    { alias: 'south_asia',      by: 'radius', la: 22.0,   lo: 78.0,    rad: 700, unit: 'km' },
+    { alias: 'southeast_asia',  by: 'radius', la: 12.0,   lo: 105.0,   rad: 700, unit: 'km' },
+    { alias: 'china_east',      by: 'radius', la: 32.0,   lo: 115.0,   rad: 700, unit: 'km' },
+    { alias: 'china_north',     by: 'radius', la: 40.0,   lo: 116.0,   rad: 600, unit: 'km' },
+    { alias: 'japan_korea',     by: 'radius', la: 35.5,   lo: 134.0,   rad: 600, unit: 'km' },
+    { alias: 'australia',       by: 'radius', la: -25.0,  lo: 134.0,   rad: 900, unit: 'km' },
+    { alias: 'south_america_n', by: 'radius', la: -5.0,   lo: -56.0,   rad: 700, unit: 'km' },
+    { alias: 'south_america_s', by: 'radius', la: -30.0,  lo: -62.0,   rad: 700, unit: 'km' },
+    // Key launch/military areas
+    { alias: 'cape_canaveral',  by: 'radius', la: 28.4,   lo: -80.6,   rad: 300, unit: 'km' },
+    { alias: 'boca_chica',      by: 'radius', la: 26.0,   lo: -97.2,   rad: 300, unit: 'km' },
+    { alias: 'black_sea',       by: 'radius', la: 43.0,   lo: 34.0,    rad: 400, unit: 'km' },
+    { alias: 'persian_gulf',    by: 'radius', la: 26.5,   lo: 52.5,    rad: 400, unit: 'km' },
+    { alias: 'south_china_sea', by: 'radius', la: 14.0,   lo: 114.0,   rad: 400, unit: 'km' },
   ];
 
-  try {
-    const res = await fetch('https://customer-api.wingbits.com/v1/flights', {
-      method: 'POST',
-      headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-      const errText = await res.text().catch(() => '');
-      console.error(`[Wingbits flights] HTTP ${res.status}: ${errText}`);
-      return null;
-    }
-    return await res.json();
-  } catch (err) {
-    console.error('[Wingbits flights] fetch error:', err.message);
-    return null;
+  const res = await fetch('https://customer-api.wingbits.com/v1/flights', {
+    method: 'POST',
+    headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify(areas),
+  });
+
+  if (!res.ok) {
+    const err = await res.text().catch(() => '');
+    throw new Error(`Wingbits flights HTTP ${res.status}: ${err.slice(0, 200)}`);
   }
+  return res.json();
 }
 
 // ── Wingbits GPS Jamming ───────────────────────────────────────────────────────
-async function fetchWingbitsGpsJam() {
-  const apiKey = Deno.env.get('WINGBITS_API_KEY');
-  if (!apiKey) return { hexes: [] };
-
+async function fetchWingbitsGpsJam(apiKey) {
   const boxes = [
-    { min_lat: 30, max_lat: 42, min_lng: 25, max_lng: 42 },
-    { min_lat: 54, max_lat: 64, min_lng: 14, max_lng: 28 },
-    { min_lat: 46, max_lat: 56, min_lng: 22, max_lng: 40 },
-    { min_lat: 22, max_lat: 32, min_lng: 44, max_lng: 60 },
-    { min_lat: 5,  max_lat: 25, min_lng: 100, max_lng: 125 },
+    { min_lat: 30, max_lat: 42, min_lng: 25, max_lng: 42 },  // Eastern Med
+    { min_lat: 54, max_lat: 64, min_lng: 14, max_lng: 28 },  // Baltic
+    { min_lat: 46, max_lat: 56, min_lng: 22, max_lng: 40 },  // Eastern Europe
+    { min_lat: 22, max_lat: 32, min_lng: 44, max_lng: 60 },  // Persian Gulf
+    { min_lat: 5,  max_lat: 25, min_lng: 100, max_lng: 125}, // South China Sea
+    { min_lat: 10, max_lat: 35, min_lng: 55, max_lng: 80 },  // South Asia
+    { min_lat: 35, max_lat: 55, min_lng: 38, max_lng: 60 },  // Caucasus/Caspian
   ];
 
   const results = await Promise.allSettled(
     boxes.map(box => {
-      const params = new URLSearchParams(box);
+      const params = new URLSearchParams(Object.entries(box).map(([k, v]) => [k, String(v)]));
       return fetch(`https://customer-api.wingbits.com/v1/gps/jam?${params}`, {
         headers: { 'x-api-key': apiKey },
-      }).then(r => r.ok ? r.json() : Promise.reject(r.status));
+      }).then(r => r.ok ? r.json() : null);
     })
   );
 
   const allHexes = results
-    .filter(r => r.status === 'fulfilled')
+    .filter(r => r.status === 'fulfilled' && r.value)
     .flatMap(r => r.value?.hexes || []);
 
   const seen = new Set();
-  const hexes = allHexes.filter(h => {
-    if (!h?.h3Index || seen.has(h.h3Index)) return false;
-    seen.add(h.h3Index);
-    return true;
-  });
+  const hexes = allHexes
+    .filter(h => {
+      if (!h?.h3Index || seen.has(h.h3Index)) return false;
+      seen.add(h.h3Index);
+      return true;
+    })
+    .map(h => {
+      try {
+        const [lat, lng] = cellToLatLng(h.h3Index);
+        return { ...h, lat, lng };
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
 
   return { hexes, lastUpdated: new Date().toISOString() };
 }
 
-// ── Wingbits Flight Search ─────────────────────────────────────────────────────
-async function searchWingbitsFlights(query) {
-  const apiKey = Deno.env.get('WINGBITS_API_KEY');
-  if (!apiKey || !query) return null;
-  try {
-    const res = await fetch(
-      `https://customer-api.wingbits.com/v1/flights/search?query=${encodeURIComponent(query)}`,
-      { headers: { 'x-api-key': apiKey } }
-    );
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
+// ── Wingbits detail / search / path ──────────────────────────────────────────
+async function getWingbitsFlightDetail(apiKey, icao24) {
+  if (!icao24) return null;
+  const res = await fetch(`https://customer-api.wingbits.com/v1/flights/${icao24.toLowerCase()}`, {
+    headers: { 'x-api-key': apiKey },
+  });
+  return res.ok ? res.json() : null;
 }
 
-// ── Wingbits Flight Detail ─────────────────────────────────────────────────────
-async function getWingbitsFlightDetail(icao24) {
-  const apiKey = Deno.env.get('WINGBITS_API_KEY');
-  if (!apiKey || !icao24) return null;
-  try {
-    const res = await fetch(
-      `https://customer-api.wingbits.com/v1/flights/${icao24.toLowerCase()}`,
-      { headers: { 'x-api-key': apiKey } }
-    );
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
+async function getWingbitsFlightPath(apiKey, icao24) {
+  if (!icao24) return null;
+  const res = await fetch(`https://customer-api.wingbits.com/v1/flights/${icao24.toLowerCase()}/path`, {
+    headers: { 'x-api-key': apiKey },
+  });
+  return res.ok ? res.json() : null;
 }
 
-// ── Wingbits Flight Path ───────────────────────────────────────────────────────
-async function getWingbitsFlightPath(icao24) {
-  const apiKey = Deno.env.get('WINGBITS_API_KEY');
-  if (!apiKey || !icao24) return null;
-  try {
-    const res = await fetch(
-      `https://customer-api.wingbits.com/v1/flights/${icao24.toLowerCase()}/path`,
-      { headers: { 'x-api-key': apiKey } }
-    );
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
+async function searchWingbitsFlights(apiKey, query) {
+  if (!query || query.trim().length < 3) return null;
+  const res = await fetch(
+    `https://customer-api.wingbits.com/v1/flights/search?query=${encodeURIComponent(query.trim())}`,
+    { headers: { 'x-api-key': apiKey } }
+  );
+  return res.ok ? res.json() : null;
+}
+
+// ── Flatten all Wingbits region data into a single deduplicated list ──────────
+function flattenWingbits(regionsData) {
+  const seen = new Set();
+  const flights = [];
+  for (const region of (regionsData || [])) {
+    for (const f of (region.data || [])) {
+      if (f.h && !seen.has(f.h) && f.la && f.lo && !f.og) {
+        seen.add(f.h);
+        flights.push({
+          icao24: f.h,
+          callsign: f.f || null,
+          lat: f.la,
+          lon: f.lo,
+          altitude: f.ab || null,   // feet
+          heading: f.th || null,
+          speed: f.gs || null,      // knots
+          squawk: f.sq || null,
+          isMilitary: isMilitary(f.h),
+          region: region.alias,
+        });
+      }
+    }
   }
+  return flights;
 }
 
 // ── Main handler ───────────────────────────────────────────────────────────────
@@ -240,54 +185,55 @@ Deno.serve(async (req) => {
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+  const apiKey = Deno.env.get('WINGBITS_API_KEY');
+  if (!apiKey) {
+    return Response.json({ error: 'WINGBITS_API_KEY not set' }, { status: 500, headers: corsHeaders });
   }
 
-  try {
-    let body = {};
-    try { body = await req.json(); } catch { /* GET or no body */ }
+  let body = {};
+  try { body = await req.json(); } catch { /* GET or no body */ }
+  const action = body.action || 'live';
 
-    const action = body.action || 'live';
+  if (action === 'search') {
+    const result = await searchWingbitsFlights(apiKey, body.q || '');
+    return Response.json({ result }, { headers: corsHeaders });
+  }
 
-    if (action === 'search') {
-      const query = body.q || '';
-      if (query.trim().length < 3) {
-        return Response.json({ error: 'Query too short' }, { status: 400, headers: corsHeaders });
-      }
-      const result = await searchWingbitsFlights(query);
-      return Response.json({ result }, { headers: corsHeaders });
-    }
-
-    if (action === 'detail') {
-      const icao24 = body.icao24 || '';
-      const [detail, path] = await Promise.all([
-        getWingbitsFlightDetail(icao24),
-        getWingbitsFlightPath(icao24),
-      ]);
-      return Response.json({ detail, path }, { headers: corsHeaders });
-    }
-
-    // ── live: fetch all layers in parallel ──
-    const [openSkyData, wingbitsFlights, gpsJam] = await Promise.allSettled([
-      fetchOpenSky(),
-      fetchWingbitsFlights(),
-      fetchWingbitsGpsJam(),
+  if (action === 'detail') {
+    const icao24 = body.icao24 || '';
+    const [detail, path] = await Promise.all([
+      getWingbitsFlightDetail(apiKey, icao24),
+      getWingbitsFlightPath(apiKey, icao24),
     ]);
-
-    return Response.json({
-      openSky: openSkyData.status === 'fulfilled' ? openSkyData.value : { flights: [], total: 0, error: openSkyData.reason?.message },
-      wingbitsFlights: wingbitsFlights.status === 'fulfilled' ? wingbitsFlights.value : null,
-      gpsJam: gpsJam.status === 'fulfilled' ? gpsJam.value : { hexes: [] },
-      meta: {
-        hasWingbits: !!Deno.env.get('WINGBITS_API_KEY'),
-        hasOpenSky: !!Deno.env.get('OPENSKY_USERNAME'),
-        fetchedAt: new Date().toISOString(),
-      },
-    }, { headers: corsHeaders });
-
-  } catch (error) {
-    return Response.json({ error: error.message }, { status: 500, headers: corsHeaders });
+    return Response.json({ detail, path }, { headers: corsHeaders });
   }
+
+  // ── live: flights + GPS jam in parallel ──────────────────────────────────────
+  const [flightsResult, jamResult] = await Promise.allSettled([
+    fetchWingbitsFlights(apiKey),
+    fetchWingbitsGpsJam(apiKey),
+  ]);
+
+  const rawRegions = flightsResult.status === 'fulfilled' ? flightsResult.value : [];
+  const flights = flattenWingbits(rawRegions);
+  const militaryFlights = flights.filter(f => f.isMilitary);
+  const gpsJam = jamResult.status === 'fulfilled' ? jamResult.value : { hexes: [] };
+
+  console.log(`[Globe] ${flights.length} total flights (${militaryFlights.length} military), ${gpsJam.hexes.length} GPS jam zones`);
+
+  return Response.json({
+    flights,          // all deduplicated flights (flat array)
+    militaryFlights,  // subset for easy access
+    wingbitsFlights: rawRegions,  // raw regions for backward compat with globe component
+    gpsJam,
+    openSky: { flights: [], total: 0 },  // kept for compat, OpenSky skipped (too slow)
+    meta: {
+      totalFlights: flights.length,
+      militaryCount: militaryFlights.length,
+      jamCount: gpsJam.hexes.length,
+      fetchedAt: new Date().toISOString(),
+    },
+  }, { headers: corsHeaders });
 });
