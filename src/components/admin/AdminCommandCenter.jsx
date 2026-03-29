@@ -8,7 +8,7 @@ import {
     LayoutDashboard, Users, Trophy, Camera, Briefcase, Rocket, Award,
     CalendarDays, DollarSign, Settings, FileText, Activity,
     RefreshCw, AlertCircle, CheckCircle2, ArrowRight, Vote, UserPlus,
-    Globe, BarChart3, Flame, Bot, Send, Loader2, Minimize2, Maximize2, ChevronDown
+    Globe, BarChart3, Flame, ShieldCheck, Zap, Clock
 } from 'lucide-react';
 
 // ── Brand tokens ──────────────────────────────────────────────────────────────
@@ -170,162 +170,7 @@ function SectionTile({ tile, onNavigate, statusBadge }) {
     );
 }
 
-// ── Agent Skill Panel ─────────────────────────────────────────────────────────
 
-const AGENT_SKILLS = [
-    {
-        id: 'qa-engineer',
-        label: 'QA Engineer',
-        agentName: 'qa_engineer',
-        color: '#7ec8a8',
-        description: 'Test plans, bug triage, release readiness',
-        icon: '🧪',
-    },
-    {
-        id: 'principal-engineer',
-        label: 'Principal Engineer',
-        agentName: 'principal_engineer',
-        color: '#c9a87c',
-        description: 'Architecture, cross-system design',
-        icon: '⚙️',
-    },
-];
-
-function AgentSkillPanel({ skill }) {
-    const [minimized, setMinimized] = useState(true);
-    const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState('');
-    const [sending, setSending] = useState(false);
-    const [conversation, setConversation] = useState(null);
-    const messagesEndRef = useRef(null);
-
-    useEffect(() => {
-        if (!minimized) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages, minimized]);
-
-    // Listen for quick-ask events from the hero header
-    useEffect(() => {
-        const handler = (e) => {
-            if (e.detail?.agentName !== skill.agentName) return;
-            setMinimized(false);
-            setInput(e.detail.prompt || '');
-        };
-        window.addEventListener('agent-quick-ask', handler);
-        return () => window.removeEventListener('agent-quick-ask', handler);
-    }, [skill.agentName]);
-
-    const initConversation = async () => {
-        if (conversation) return conversation;
-        const conv = await base44.agents.createConversation({
-            agent_name: skill.agentName,
-            metadata: { name: `${skill.label} — Admin`, source: 'admin-command-center' }
-        });
-        setConversation(conv);
-        return conv;
-    };
-
-    const sendMessage = async () => {
-        const text = input.trim();
-        if (!text || sending) return;
-        setInput('');
-        setSending(true);
-        const userMsg = { role: 'user', content: text, id: Date.now() };
-        setMessages(prev => [...prev, userMsg]);
-        try {
-            let conv = conversation;
-            if (!conv) conv = await initConversation();
-            const updated = await base44.agents.addMessage(conv, { role: 'user', content: text });
-            setConversation(updated);
-            setMessages(updated.messages || []);
-        } catch {
-            setMessages(prev => [...prev, { role: 'assistant', content: 'Something went wrong. Try again.', id: Date.now() + 1 }]);
-        } finally {
-            setSending(false);
-        }
-    };
-
-    useEffect(() => {
-        if (!conversation?.id) return;
-        const unsub = base44.agents.subscribeToConversation(conversation.id, (data) => {
-            setMessages(data.messages || []);
-        });
-        return () => unsub();
-    }, [conversation?.id]);
-
-    return (
-        <div className="rounded-xl overflow-hidden flex flex-col" style={{ border: `1px solid ${skill.color}28`, background: '#0a1622' }}>
-            {/* Header */}
-            <button
-                onClick={() => setMinimized(!minimized)}
-                className="flex items-center gap-3 px-4 py-3 w-full text-left"
-                style={{ background: `${skill.color}0e`, borderBottom: minimized ? 'none' : `1px solid ${skill.color}18` }}
-            >
-                <span className="text-lg">{skill.icon}</span>
-                <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm" style={{ color: '#d4e0ec' }}>{skill.label}</p>
-                    <p className="text-xs truncate" style={{ color: `${skill.color}90` }}>{skill.description}</p>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: skill.color }} />
-                    {minimized ? <Maximize2 style={{ width: 13, height: 13, color: '#3d6080' }} /> : <Minimize2 style={{ width: 13, height: 13, color: '#3d6080' }} />}
-                </div>
-            </button>
-
-            {!minimized && (
-                <>
-                    <div className="overflow-y-auto p-3 space-y-2.5" style={{ minHeight: 180, maxHeight: 260 }}>
-                        {messages.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-full py-6 text-center gap-1.5">
-                                <span className="text-2xl">{skill.icon}</span>
-                                <p className="text-xs" style={{ color: '#3d6080' }}>Ask {skill.label} anything…</p>
-                            </div>
-                        ) : (
-                            messages.map((msg, i) => (
-                                <div key={msg.id || i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div
-                                        className="max-w-[88%] rounded-lg px-3 py-2 text-xs leading-relaxed"
-                                        style={msg.role === 'user'
-                                            ? { background: '#1e3a5a', color: '#c8d8e8' }
-                                            : { background: `${skill.color}12`, color: '#a8c0d4', border: `1px solid ${skill.color}18` }}
-                                    >
-                                        {msg.content}
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                        {sending && (
-                            <div className="flex justify-start">
-                                <div className="px-3 py-2 rounded-lg" style={{ background: `${skill.color}12` }}>
-                                    <Loader2 className="w-3 h-3 animate-spin" style={{ color: skill.color }} />
-                                </div>
-                            </div>
-                        )}
-                        <div ref={messagesEndRef} />
-                    </div>
-                    <div className="px-3 pb-3 pt-2 flex gap-2" style={{ borderTop: `1px solid ${skill.color}12` }}>
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={e => setInput(e.target.value)}
-                            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                            placeholder={`Ask ${skill.label}…`}
-                            className="flex-1 rounded-lg px-3 py-1.5 text-xs outline-none transition-colors"
-                            style={{ background: '#ffffff08', border: `1px solid ${skill.color}20`, color: '#c8d8e8' }}
-                        />
-                        <button
-                            onClick={sendMessage}
-                            disabled={!input.trim() || sending}
-                            className="px-2.5 py-1.5 rounded-lg transition-all disabled:opacity-40 flex items-center justify-center"
-                            style={{ background: skill.color, color: '#0a1622' }}
-                        >
-                            <Send style={{ width: 13, height: 13 }} />
-                        </button>
-                    </div>
-                </>
-            )}
-        </div>
-    );
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main component
@@ -368,12 +213,12 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                 base44.entities.Event.list('-created_date', 3).catch(() => []),
             ]);
 
-            const now = new Date();
-            const activeSeason = seasons.find(s => {
-                const start = new Date(s.voting_start);
-                const end = new Date(s.voting_end);
-                return now >= start && now <= end;
-            }) || seasons[0] || null;
+            const ACTIVE_STATUSES = ['nominations_open', 'voting_open', 'review', 'rollover'];
+            const activeSeason =
+                seasons.find(s => ACTIVE_STATUSES.includes(s.status)) ||
+                seasons.find(s => s.status === 'planning') ||
+                seasons[0] ||
+                null;
 
             let seasonNomineeCount = 0;
             if (activeSeason) {
@@ -473,7 +318,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                                 <h1 className="text-2xl font-black tracking-tight" style={{ color: '#e8eef4' }}>
                                     Mission Control
                                 </h1>
-                                <p className="text-xs" style={{ color: '#4a6880' }}>TOP 100 — Season 4 Command Center</p>
+                                <p className="text-xs" style={{ color: '#4a6880' }}>TOP 100 — Admin Command Center</p>
                             </div>
                         </div>
 
@@ -528,32 +373,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                             );
                         })()}
 
-                        {/* Agent quick-ask strip */}
-                        <div className="flex flex-wrap gap-2 mt-3">
-                            {[
-                                { label: '🧪 QA: Release ready?', skill: 'qa_engineer', prompt: 'Run a Season 4 release readiness check. What are the current P0/P1 risks?' },
-                                { label: '⚙️ Arch: Schema review', skill: 'principal_engineer', prompt: 'Review the Season 4 entity schema. Any cross-system risks before nominations open?' },
-                                { label: '🧪 QA: Voting gates', skill: 'qa_engineer', prompt: 'What are the quality gates that must pass before voting_open phase can begin for Season 4?' },
-                                { label: '⚙️ Arch: Scoring stack', skill: 'principal_engineer', prompt: 'Walk me through the Season 4 scoring stack architecture and flag any downstream risks.' },
-                            ].map(({ label, skill, prompt }) => (
-                                <button
-                                    key={label}
-                                    onClick={async () => {
-                                        // Open the agent panel and pre-fill a message
-                                        const skillDef = AGENT_SKILLS.find(s => s.agentName === skill);
-                                        if (!skillDef) return;
-                                        // Dispatch a custom event that AgentSkillPanel listens to
-                                        window.dispatchEvent(new CustomEvent('agent-quick-ask', { detail: { agentName: skill, prompt } }));
-                                    }}
-                                    className="px-2.5 py-1 rounded-lg text-xs transition-all"
-                                    style={{ background: '#ffffff06', border: `1px solid ${B.border}`, color: '#5d7a94' }}
-                                    onMouseEnter={e => { e.currentTarget.style.borderColor = `${B.gold}40`; e.currentTarget.style.color = B.gold; e.currentTarget.style.background = `${B.gold}08`; }}
-                                    onMouseLeave={e => { e.currentTarget.style.borderColor = B.border; e.currentTarget.style.color = '#5d7a94'; e.currentTarget.style.background = '#ffffff06'; }}
-                                >
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
+
                     </div>
 
                     {/* Right: refresh / timestamp */}
@@ -727,19 +547,132 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                 </div>
             </div>
 
-            {/* ── Engineering Agents ───────────────────────────────────────── */}
-            <div>
-                <div className="mb-3 flex items-center gap-2">
-                    <Bot style={{ width: 14, height: 14, color: B.gold }} />
-                    <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#3d6080' }}>
-                        Engineering Agents
-                    </h2>
-                    <span className="text-xs ml-1" style={{ color: '#2a4a60' }}>— Season 4 ready</span>
+            {/* ── Season 4 Readiness Panel ─────────────────────────────────── */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+
+                {/* QA Gate Checklist */}
+                <div className="rounded-xl p-5" style={{ background: B.surface, border: `1px solid #7ec8a830` }}>
+                    <div className="flex items-center gap-2 mb-4">
+                        <ShieldCheck className="w-4 h-4" style={{ color: '#7ec8a8' }} />
+                        <span className="text-sm font-semibold" style={{ color: '#c8d8e8' }}>Season 4 QA Gates</span>
+                        <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: '#7ec8a860' }}>Release Readiness</span>
+                    </div>
+                    {platformLoading ? (
+                        <div className="space-y-2">{[1,2,3,4].map(i => <div key={i} className="h-5 rounded animate-pulse" style={{ background: '#ffffff08' }} />)}</div>
+                    ) : (() => {
+                        const s = platformData?.activeSeason;
+                        const now = new Date();
+                        const gates = [
+                            {
+                                label: 'Active season configured',
+                                pass: !!s,
+                                detail: s ? s.name : 'No active season found',
+                            },
+                            {
+                                label: 'Nomination dates set',
+                                pass: !!(s?.nomination_start && s?.nomination_end),
+                                detail: s?.nomination_start ? `Closes ${new Date(s.nomination_end).toLocaleDateString()}` : 'Missing dates',
+                            },
+                            {
+                                label: 'Voting dates set',
+                                pass: !!(s?.voting_start && s?.voting_end),
+                                detail: s?.voting_start ? `Opens ${new Date(s.voting_start).toLocaleDateString()}` : 'Missing dates',
+                            },
+                            {
+                                label: 'Nominees enrolled',
+                                pass: (platformData?.seasonNomineeCount || 0) > 0,
+                                detail: `${platformData?.seasonNomineeCount ?? 0} nominees`,
+                            },
+                            {
+                                label: 'Scoring config active',
+                                pass: !!(s?.scoring_config?.use_holistic_v3),
+                                detail: s?.scoring_config?.use_holistic_v3 ? 'Holistic V3 enabled' : 'Check scoring config',
+                            },
+                            {
+                                label: 'Voting modes configured',
+                                pass: !!(s?.voting_modes?.pairwise || s?.voting_modes?.ranked_choice),
+                                detail: s?.voting_modes ? Object.entries(s.voting_modes).filter(([,v]) => v).map(([k]) => k).join(', ') || 'None enabled' : 'Not set',
+                            },
+                        ];
+                        const passed = gates.filter(g => g.pass).length;
+                        return (
+                            <div className="space-y-2.5">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: '#ffffff0a' }}>
+                                        <div className="h-full rounded-full transition-all" style={{ width: `${(passed / gates.length) * 100}%`, background: passed === gates.length ? '#7ec8a8' : '#c9a87c' }} />
+                                    </div>
+                                    <span className="text-xs tabular-nums" style={{ color: passed === gates.length ? '#7ec8a8' : '#c9a87c' }}>{passed}/{gates.length}</span>
+                                </div>
+                                {gates.map(gate => (
+                                    <div key={gate.label} className="flex items-start gap-2.5">
+                                        {gate.pass
+                                            ? <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: '#7ec8a8' }} />
+                                            : <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: '#c9a87c' }} />
+                                        }
+                                        <div className="min-w-0">
+                                            <p className="text-xs" style={{ color: gate.pass ? '#8ab8a8' : '#b89870' }}>{gate.label}</p>
+                                            <p className="text-[10px]" style={{ color: '#3d6080' }}>{gate.detail}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        );
+                    })()}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {AGENT_SKILLS.map(skill => (
-                        <AgentSkillPanel key={skill.id} skill={skill} />
-                    ))}
+
+                {/* Architecture Health */}
+                <div className="rounded-xl p-5" style={{ background: B.surface, border: `1px solid ${B.gold}25` }}>
+                    <div className="flex items-center gap-2 mb-4">
+                        <Zap className="w-4 h-4" style={{ color: B.gold }} />
+                        <span className="text-sm font-semibold" style={{ color: '#c8d8e8' }}>Architecture Health</span>
+                        <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: `${B.gold}60` }}>System Signals</span>
+                    </div>
+                    {platformLoading ? (
+                        <div className="space-y-2">{[1,2,3,4].map(i => <div key={i} className="h-5 rounded animate-pulse" style={{ background: '#ffffff08' }} />)}</div>
+                    ) : (() => {
+                        const s = platformData?.activeSeason;
+                        const nomineeCount = platformData?.seasonNomineeCount ?? 0;
+                        const signals = [
+                            {
+                                label: 'Season lifecycle status',
+                                value: s?.status?.replace(/_/g, ' ') || 'Unknown',
+                                color: ['nominations_open','voting_open'].includes(s?.status) ? '#7ec8a8' : s?.status === 'planning' ? '#c9a87c' : '#5d7a94',
+                            },
+                            {
+                                label: 'Rollover config',
+                                value: s?.rollover_config?.enabled ? `Enabled · ${s.rollover_config.eligibility_window_years}yr window` : 'Disabled',
+                                color: s?.rollover_config?.enabled ? '#7ec8a8' : '#5d7a94',
+                            },
+                            {
+                                label: 'Scoring layers',
+                                value: s?.scoring_config ? `P${s.scoring_config.perception_weight} O${s.scoring_config.objective_weight} S${s.scoring_config.sme_weight} N${s.scoring_config.narrative_weight} Norm${s.scoring_config.normalization_weight}` : 'Not configured',
+                                color: s?.scoring_config ? '#7ec8c8' : '#c9a87c',
+                            },
+                            {
+                                label: 'Nominee load',
+                                value: nomineeCount > 400 ? `${nomineeCount} — near target` : nomineeCount > 0 ? `${nomineeCount} enrolled` : 'No nominees yet',
+                                color: nomineeCount > 400 ? '#7ec8a8' : nomineeCount > 0 ? '#c9a87c' : '#5d7a94',
+                            },
+                            {
+                                label: 'Upcoming events',
+                                value: `${platformData?.upcomingEvents ?? 0} scheduled`,
+                                color: (platformData?.upcomingEvents ?? 0) > 0 ? '#7ec8c8' : '#5d7a94',
+                            },
+                        ];
+                        return (
+                            <div className="space-y-3">
+                                {signals.map(sig => (
+                                    <div key={sig.label} className="flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-2" style={{ color: '#5d7a94' }}>
+                                            <Clock style={{ width: 12, height: 12, color: sig.color, flexShrink: 0 }} />
+                                            <span className="text-xs">{sig.label}</span>
+                                        </div>
+                                        <span className="text-xs font-medium tabular-nums text-right" style={{ color: sig.color }}>{sig.value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        );
+                    })()}
                 </div>
             </div>
 
