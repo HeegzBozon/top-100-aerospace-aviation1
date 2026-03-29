@@ -244,7 +244,7 @@ export default function Landing2Hero({ user }) {
                 </div>
               </div>
               <div className="shrink-0">
-                <Link to={createPageUrl('EditProfile')}>
+                <Link to={`/profiles/${slide.user?.id}`}>
                   <Button
                     className="text-white font-semibold px-3 md:px-5 h-8 md:h-9 text-[11px] md:text-xs cursor-pointer"
                     style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
