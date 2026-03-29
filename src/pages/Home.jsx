@@ -14,7 +14,6 @@ import CommunityFavorites from '@/components/home/CommunityFavorites';
 import UpcomingMissions from '@/components/home/UpcomingMissions';
 import TopPrograms from '@/components/home/TopPrograms';
 import TopOriginals from '@/components/home/TopOriginals';
-import { NewsStreamWidget } from '@/components/capabilities/global-intelligence/NewsStreamWidget';
 
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HomeSectionReorderPopover, { loadSectionConfig, DEFAULT_SECTIONS } from '@/components/admin/HomeSectionReorderPopover';
@@ -234,7 +233,6 @@ export default function HomePage() {
     domain: <DomainExplorer />,
     originals: isMemberOnly ? null : <TopOriginals />,
     trending: trendingProfiles.length > 0 ? <TrendingSection trendingProfiles={trendingProfiles} pageViews={pageViews} /> : null,
-    newsstream: <NewsStreamWidget />,
   };
 
   return (
