@@ -398,14 +398,31 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                 </div>
 
                 {/* ── Pulse Metrics ── */}
-                <div className="relative mt-5 flex flex-wrap gap-2">
-                    <PulseMetric icon={Vote} label="Votes Today" value={stats?.votesToday?.toLocaleString() ?? '—'} accent={B.gold} loading={statsLoading} />
-                    <PulseMetric icon={Users} label="Active Voters" value={stats?.dauToday?.toLocaleString() ?? '—'} accent={B.sky} loading={statsLoading} />
-                    <PulseMetric icon={UserPlus} label="New Users" value={stats?.usersToday?.toLocaleString() ?? '—'} accent="#9d7ec8" loading={statsLoading} />
-                    <PulseMetric icon={Trophy} label="Nominees" value={platformLoading ? '—' : (platformData?.seasonNomineeCount?.toLocaleString() ?? '—')} accent={B.gold} loading={platformLoading} />
-                    <PulseMetric icon={Globe} label="Total Users" value={stats?.totalUsers?.toLocaleString() ?? '—'} accent="#7ec8a8" loading={statsLoading} />
-                    <PulseMetric icon={CalendarDays} label="Upcoming Events" value={platformLoading ? '—' : (platformData?.upcomingEvents?.toString() ?? '0')} accent="#7ec8c8" loading={platformLoading} />
-                </div>
+                {(() => {
+                    const isNomPhase = platformData?.activeSeason?.status === 'nominations_open' ||
+                        (!['voting_open','review','completed','archived'].includes(platformData?.activeSeason?.status));
+                    return (
+                        <div className="relative mt-5 flex flex-wrap gap-2">
+                            {isNomPhase ? (
+                                <>
+                                    <PulseMetric icon={FileText} label="Nominations Today" value={stats?.nominationsToday?.toLocaleString() ?? '—'} accent={B.gold} loading={statsLoading} />
+                                    <PulseMetric icon={Users} label="Nominators Today" value={stats?.uniqueNominatorsToday?.toLocaleString() ?? '—'} accent={B.sky} loading={statsLoading} />
+                                    <PulseMetric icon={BarChart3} label="Noms This Week" value={stats?.nominationsLast7Days?.toLocaleString() ?? '—'} accent="#7ec8a8" loading={statsLoading} />
+                                    <PulseMetric icon={Trophy} label="Total Nominated" value={platformLoading ? '—' : (platformData?.seasonNomineeCount?.toLocaleString() ?? '—')} accent={B.gold} loading={platformLoading} />
+                                </>
+                            ) : (
+                                <>
+                                    <PulseMetric icon={Vote} label="Votes Today" value={stats?.votesToday?.toLocaleString() ?? '—'} accent={B.gold} loading={statsLoading} />
+                                    <PulseMetric icon={Users} label="Active Voters" value={stats?.dauToday?.toLocaleString() ?? '—'} accent={B.sky} loading={statsLoading} />
+                                    <PulseMetric icon={BarChart3} label="Votes (7d)" value={stats?.votesLast7Days?.toLocaleString() ?? '—'} accent="#7ec8a8" loading={statsLoading} />
+                                    <PulseMetric icon={Trophy} label="Nominees" value={platformLoading ? '—' : (platformData?.seasonNomineeCount?.toLocaleString() ?? '—')} accent={B.gold} loading={platformLoading} />
+                                </>
+                            )}
+                            <PulseMetric icon={UserPlus} label="New Users" value={stats?.usersToday?.toLocaleString() ?? '—'} accent="#9d7ec8" loading={statsLoading} />
+                            <PulseMetric icon={Globe} label="Total Users" value={stats?.totalUsers?.toLocaleString() ?? '—'} accent="#7ec8a8" loading={statsLoading} />
+                        </div>
+                    );
+                })()}
             </div>
 
             {/* ── Operations Grid ──────────────────────────────────────────── */}
@@ -520,13 +537,23 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                         </div>
                     ) : stats ? (
                         <div className="space-y-3">
-                            {[
-                                { label: 'Votes today', value: stats.votesToday?.toLocaleString(), icon: Vote, accent: B.gold },
-                                { label: 'Active voters (DAU)', value: stats.dauToday?.toLocaleString(), icon: Users, accent: B.sky },
-                                { label: 'New signups today', value: stats.usersToday?.toLocaleString(), icon: UserPlus, accent: '#9d7ec8' },
-                                { label: 'Votes last 7 days', value: stats.votesLast7Days?.toLocaleString(), icon: BarChart3, accent: '#7ec8a8' },
-                                { label: 'Total platform users', value: stats.totalUsers?.toLocaleString(), icon: Globe, accent: '#c8a07e' },
-                            ].map(({ label, value, icon: Icon, accent }) => (
+                            {(() => {
+                                const isNomPhase = platformData?.activeSeason?.status === 'nominations_open' ||
+                                    (!['voting_open','review','completed','archived'].includes(platformData?.activeSeason?.status));
+                                return isNomPhase ? [
+                                    { label: 'Nominations today', value: stats.nominationsToday?.toLocaleString(), icon: FileText, accent: B.gold },
+                                    { label: 'Unique nominators today', value: stats.uniqueNominatorsToday?.toLocaleString(), icon: Users, accent: B.sky },
+                                    { label: 'Nominations this week', value: stats.nominationsLast7Days?.toLocaleString(), icon: BarChart3, accent: '#7ec8a8' },
+                                    { label: 'Total unique nominators', value: stats.uniqueNominatorsTotal?.toLocaleString(), icon: UserPlus, accent: '#9d7ec8' },
+                                    { label: 'Total platform users', value: stats.totalUsers?.toLocaleString(), icon: Globe, accent: '#c8a07e' },
+                                ] : [
+                                    { label: 'Votes today', value: stats.votesToday?.toLocaleString(), icon: Vote, accent: B.gold },
+                                    { label: 'Active voters (DAU)', value: stats.dauToday?.toLocaleString(), icon: Users, accent: B.sky },
+                                    { label: 'New signups today', value: stats.usersToday?.toLocaleString(), icon: UserPlus, accent: '#9d7ec8' },
+                                    { label: 'Votes last 7 days', value: stats.votesLast7Days?.toLocaleString(), icon: BarChart3, accent: '#7ec8a8' },
+                                    { label: 'Total platform users', value: stats.totalUsers?.toLocaleString(), icon: Globe, accent: '#c8a07e' },
+                                ];
+                            })().map(({ label, value, icon: Icon, accent }) => (
                                 <div key={label} className="flex items-center justify-between text-sm">
                                     <div className="flex items-center gap-2" style={{ color: '#5d7a94' }}>
                                         <Icon style={{ width: 13, height: 13, color: accent }} />
