@@ -203,6 +203,17 @@ function AgentSkillPanel({ skill }) {
         if (!minimized) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, minimized]);
 
+    // Listen for quick-ask events from the hero header
+    useEffect(() => {
+        const handler = (e) => {
+            if (e.detail?.agentName !== skill.agentName) return;
+            setMinimized(false);
+            setInput(e.detail.prompt || '');
+        };
+        window.addEventListener('agent-quick-ask', handler);
+        return () => window.removeEventListener('agent-quick-ask', handler);
+    }, [skill.agentName]);
+
     const initConversation = async () => {
         if (conversation) return conversation;
         const conv = await base44.agents.createConversation({
@@ -444,37 +455,17 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                     boxShadow: `0 0 60px ${B.navy}40`,
                 }}
             >
-                {/* Subtle accent orb — gold, top-right */}
-                <div
-                    className="absolute pointer-events-none"
-                    style={{
-                        width: 300, height: 300,
-                        borderRadius: '50%',
-                        background: `radial-gradient(circle, ${B.gold}18, transparent 70%)`,
-                        top: -80, right: -60,
-                    }}
-                />
-                {/* Subtle accent orb — sky, bottom-left */}
-                <div
-                    className="absolute pointer-events-none"
-                    style={{
-                        width: 220, height: 220,
-                        borderRadius: '50%',
-                        background: `radial-gradient(circle, ${B.sky}14, transparent 70%)`,
-                        bottom: -60, left: -40,
-                    }}
-                />
+                {/* Accent orbs */}
+                <div className="absolute pointer-events-none" style={{ width: 300, height: 300, borderRadius: '50%', background: `radial-gradient(circle, ${B.gold}18, transparent 70%)`, top: -80, right: -60 }} />
+                <div className="absolute pointer-events-none" style={{ width: 220, height: 220, borderRadius: '50%', background: `radial-gradient(circle, ${B.sky}14, transparent 70%)`, bottom: -60, left: -40 }} />
 
                 <div className="relative flex flex-col md:flex-row md:items-start md:justify-between gap-5">
                     {/* Left: title + greeting */}
-                    <div>
-                        <div className="flex items-center gap-3 mb-3">
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2">
                             <div
                                 className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                                style={{
-                                    background: `linear-gradient(135deg, ${B.gold}, ${B.sky})`,
-                                    boxShadow: `0 4px 16px ${B.gold}30`,
-                                }}
+                                style={{ background: `linear-gradient(135deg, ${B.gold}, ${B.sky})`, boxShadow: `0 4px 16px ${B.gold}30` }}
                             >
                                 <LayoutDashboard className="w-5 h-5 text-white" />
                             </div>
@@ -482,24 +473,87 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                                 <h1 className="text-2xl font-black tracking-tight" style={{ color: '#e8eef4' }}>
                                     Mission Control
                                 </h1>
-                                <p className="text-xs" style={{ color: '#4a6880' }}>
-                                    TOP 100 — Admin Command Center
-                                </p>
+                                <p className="text-xs" style={{ color: '#4a6880' }}>TOP 100 — Season 4 Command Center</p>
                             </div>
                         </div>
-                        <p className="text-sm" style={{ color: '#7a9cb8' }}>
+
+                        <p className="text-sm mb-3" style={{ color: '#7a9cb8' }}>
                             {greeting},{' '}
                             <span className="font-semibold" style={{ color: '#c8d8e8' }}>{firstName}</span>.{' '}
                             {platformData?.activeSeason ? (
-                                <>
-                                    Running{' '}
-                                    <span className="font-semibold" style={{ color: B.gold }}>
-                                        {platformData.activeSeason.name}
-                                    </span>
-                                    .
-                                </>
+                                <>Running <span className="font-semibold" style={{ color: B.gold }}>{platformData.activeSeason.name}</span>.</>
                             ) : 'No active season running.'}
                         </p>
+
+                        {/* Season 4 Phase Banner */}
+                        {platformData?.activeSeason && (() => {
+                            const s = platformData.activeSeason;
+                            const now = new Date();
+                            const phases = [
+                                { key: 'nominations_open', label: 'Nominations', start: s.nomination_start, end: s.nomination_end, color: B.sky, icon: '📋' },
+                                { key: 'voting_open', label: 'Voting', start: s.voting_start, end: s.voting_end, color: B.gold, icon: '🗳️' },
+                                { key: 'review', label: 'Review', start: s.review_start, end: s.review_end, color: '#9d7ec8', icon: '🔍' },
+                            ];
+                            const activePhase = phases.find(p => p.start && p.end && now >= new Date(p.start) && now <= new Date(p.end));
+                            const nextPhase = phases.find(p => p.start && now < new Date(p.start));
+                            const displayPhase = activePhase || nextPhase;
+                            if (!displayPhase) return null;
+                            const isActive = !!activePhase;
+                            const daysLeft = displayPhase.end ? Math.ceil((new Date(displayPhase.end) - now) / 86400000) : null;
+                            const daysUntil = !isActive && displayPhase.start ? Math.ceil((new Date(displayPhase.start) - now) / 86400000) : null;
+                            return (
+                                <div className="flex flex-wrap items-center gap-2 mb-1">
+                                    <div
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold"
+                                        style={{
+                                            background: `${displayPhase.color}15`,
+                                            border: `1px solid ${displayPhase.color}35`,
+                                            color: displayPhase.color,
+                                        }}
+                                    >
+                                        <span>{displayPhase.icon}</span>
+                                        <span>{isActive ? 'Phase Active:' : 'Next Phase:'} {displayPhase.label}</span>
+                                        {isActive && daysLeft !== null && (
+                                            <span className="ml-1 opacity-70">· {daysLeft}d left</span>
+                                        )}
+                                        {!isActive && daysUntil !== null && (
+                                            <span className="ml-1 opacity-70">· in {daysUntil}d</span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs" style={{ background: '#7ec8a815', border: '1px solid #7ec8a830', color: '#7ec8a8' }}>
+                                        <Rocket style={{ width: 11, height: 11 }} />
+                                        Season 4
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
+                        {/* Agent quick-ask strip */}
+                        <div className="flex flex-wrap gap-2 mt-3">
+                            {[
+                                { label: '🧪 QA: Release ready?', skill: 'qa_engineer', prompt: 'Run a Season 4 release readiness check. What are the current P0/P1 risks?' },
+                                { label: '⚙️ Arch: Schema review', skill: 'principal_engineer', prompt: 'Review the Season 4 entity schema. Any cross-system risks before nominations open?' },
+                                { label: '🧪 QA: Voting gates', skill: 'qa_engineer', prompt: 'What are the quality gates that must pass before voting_open phase can begin for Season 4?' },
+                                { label: '⚙️ Arch: Scoring stack', skill: 'principal_engineer', prompt: 'Walk me through the Season 4 scoring stack architecture and flag any downstream risks.' },
+                            ].map(({ label, skill, prompt }) => (
+                                <button
+                                    key={label}
+                                    onClick={async () => {
+                                        // Open the agent panel and pre-fill a message
+                                        const skillDef = AGENT_SKILLS.find(s => s.agentName === skill);
+                                        if (!skillDef) return;
+                                        // Dispatch a custom event that AgentSkillPanel listens to
+                                        window.dispatchEvent(new CustomEvent('agent-quick-ask', { detail: { agentName: skill, prompt } }));
+                                    }}
+                                    className="px-2.5 py-1 rounded-lg text-xs transition-all"
+                                    style={{ background: '#ffffff06', border: `1px solid ${B.border}`, color: '#5d7a94' }}
+                                    onMouseEnter={e => { e.currentTarget.style.borderColor = `${B.gold}40`; e.currentTarget.style.color = B.gold; e.currentTarget.style.background = `${B.gold}08`; }}
+                                    onMouseLeave={e => { e.currentTarget.style.borderColor = B.border; e.currentTarget.style.color = '#5d7a94'; e.currentTarget.style.background = '#ffffff06'; }}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Right: refresh / timestamp */}
@@ -513,11 +567,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                             onClick={handleRefresh}
                             disabled={refreshing || statsLoading}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all"
-                            style={{
-                                background: '#ffffff08',
-                                border: `1px solid ${B.border}`,
-                                color: '#7a9cb8',
-                            }}
+                            style={{ background: '#ffffff08', border: `1px solid ${B.border}`, color: '#7a9cb8' }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = `${B.gold}40`; e.currentTarget.style.color = B.gold; }}
                             onMouseLeave={e => { e.currentTarget.style.borderColor = B.border; e.currentTarget.style.color = '#7a9cb8'; }}
                         >
