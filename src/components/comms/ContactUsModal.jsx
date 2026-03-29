@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Mail, Linkedin, X, ArrowLeft, Send, Loader2, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { sendContactMessage } from '@/functions/sendContactMessage';
 import { useToast } from '@/components/ui/use-toast';
 
 const VIEWS = { MENU: 'menu', FORM: 'form', DONE: 'done' };
@@ -31,19 +31,10 @@ export default function ContactUsModal({ open, onClose }) {
     }
     setSending(true);
     try {
-      // Store on platform
-      await base44.entities.ContactMessage.create({
+      await sendContactMessage({
         sender_name: name.trim() || undefined,
         sender_email: email.trim(),
         message: message.trim(),
-        status: 'new',
-      });
-
-      // Send email notification
-      await base44.integrations.Core.SendEmail({
-        to: 'matthew@top100aero.space',
-        subject: `New Contact Message from ${name.trim() || email.trim()}`,
-        body: `<p><strong>From:</strong> ${name.trim() || 'Anonymous'} &lt;${email.trim()}&gt;</p><p><strong>Message:</strong></p><p>${message.trim().replace(/\n/g, '<br/>')}</p>`,
       });
 
       setView(VIEWS.DONE);
