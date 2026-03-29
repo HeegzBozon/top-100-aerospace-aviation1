@@ -8,7 +8,6 @@ const STORAGE_KEY = 'home_section_config_v1';
 export const DEFAULT_SECTIONS = [
   { id: 'spotlight',   label: 'Industry Spotlight' },
   { id: 'featured',    label: 'Featured Today' },
-  { id: 'dashboard',   label: 'Aerospace Dashboard' },
   { id: 'programs',    label: 'Trending Programs' },
   { id: 'talent',      label: 'Trending Talent' },
   { id: 'favorites',   label: 'Community Favorites' },
@@ -17,7 +16,6 @@ export const DEFAULT_SECTIONS = [
   { id: 'domain',      label: 'Domain Explorer' },
   { id: 'originals',   label: 'TOP 100 Originals' },
   { id: 'trending',    label: 'Trending Now' },
-  { id: 'newsstream',  label: 'Live News Stream' },
 ];
 
 export function loadSectionConfig(user) {
