@@ -4,6 +4,7 @@ import { useConversation } from "@/components/contexts/ConversationContext";
 import { useUnread } from "@/components/contexts/UnreadContext";
 import NewConversationModal from "./NewConversationModal";
 import ChannelManagerModal from "./ChannelManagerModal";
+import ContactUsModal from "./ContactUsModal";
 import { ChannelsList } from "./ChannelsList";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -23,6 +24,7 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
 
   const [showNewModal, setShowNewModal] = useState(false);
   const [showChannelManager, setShowChannelManager] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
   const [selectedStage, setSelectedStage] = useState(null);
   const [collapsedCategories, setCollapsedCategories] = useState({});
 
@@ -311,17 +313,13 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
 
           {/* Contact Us */}
           <div className="border-t border-gray-800/50 pt-2">
-            <a
-              href="mailto:hello@top100os.com"
-              onClick={onMobileClose}
-              className="w-full px-3 py-3 rounded-lg transition-all text-white/75 hover:bg-white/10 hover:text-white flex items-center gap-3 border-l-2 border-l-transparent group hover:border-l-cyan-500/50"
+            <button
+              onClick={() => setShowContactModal(true)}
+              className="w-full px-4 py-3 rounded-xl transition-all text-white font-semibold text-sm flex items-center gap-3 border-2 border-gray-700/50 hover:border-gray-600 hover:bg-white/5"
             >
               <span className="text-lg">✉️</span>
-              <div className="flex-1 min-w-0 text-left">
-                <p className="text-sm font-semibold text-white truncate">Contact Us</p>
-                <p className="text-xs text-gray-400 truncate">Get in touch</p>
-              </div>
-            </a>
+              <span>Contact Us</span>
+            </button>
           </div>
         </div>
       )}
@@ -357,6 +355,11 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
           onClose={() => setShowChannelManager(false)}
         />
       )}
+
+      <ContactUsModal
+        open={showContactModal}
+        onClose={() => setShowContactModal(false)}
+      />
     </div>
   );
 }
