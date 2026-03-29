@@ -17,7 +17,7 @@ import TopOriginals from '@/components/home/TopOriginals';
 import MissionControlHeader from '@/components/home/MissionControlHeader';
 
 import ErrorBoundary from '@/components/core/ErrorBoundary';
-import HomeSectionReorderPopover, { loadSectionConfig, DEFAULT_SECTIONS } from '@/components/admin/HomeSectionReorderPopover';
+import HomeSectionReorderPopover, { loadSectionConfig } from '@/components/admin/HomeSectionReorderPopover';
 
 const EditorialTerminal = lazy(() => import('@/components/terminal/EditorialTerminal'));
 
@@ -42,6 +42,20 @@ export default function HomePage() {
   const [user, setUser] = useState(null);
 
   // Section config: seeded from user record (global) once user loads
+  // Get DEFAULT_SECTIONS from HomeSectionReorderPopover
+  const DEFAULT_SECTIONS = [
+    { id: 'missionControl', label: 'Mission Control' },
+    { id: 'spotlight',   label: 'Industry Spotlight' },
+    { id: 'featured',    label: 'Featured Today' },
+    { id: 'programs',    label: 'Trending Programs' },
+    { id: 'talent',      label: 'Trending Talent' },
+    { id: 'favorites',   label: 'Community Favorites' },
+    { id: 'missions',    label: 'Upcoming Missions' },
+    { id: 'topPrograms', label: 'Top Programs' },
+    { id: 'domain',      label: 'Domain Explorer' },
+    { id: 'originals',   label: 'TOP 100 Originals' },
+  ];
+
   const [sectionConfig, setSectionConfig] = useState(() =>
     DEFAULT_SECTIONS.map(s => ({ ...s, visible: true }))
   );
@@ -109,7 +123,14 @@ export default function HomePage() {
         // Seed section config from user's globally-persisted record
         if (!sectionConfigSeeded) {
           const saved = loadSectionConfig(currentUser);
-          if (saved) setSectionConfig(saved);
+          if (saved) {
+            // Merge saved config with DEFAULT_SECTIONS to include new sections
+            const merged = DEFAULT_SECTIONS.map(defaultSection => {
+              const saved_ = saved.find(s => s.id === defaultSection.id);
+              return saved_ || { ...defaultSection, visible: true };
+            });
+            setSectionConfig(merged);
+          }
           setSectionConfigSeeded(true);
         }
       } catch (e) {
