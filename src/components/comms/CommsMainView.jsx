@@ -65,8 +65,7 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
   const isIndexChannel = activeConversation?.name?.toLowerCase().includes('index') ||
     activeConversation?.name?.toLowerCase().includes('top-100') ||
     activeConversation?.name?.toLowerCase().includes('top 100');
-  const isSlackChannel = activeConversation?.name?.toLowerCase() === 'chit-chat' ||
-    activeConversation?.name?.toLowerCase() === 'hangar-talk';
+  const isSlackChannel = activeConversation?.name?.toLowerCase() === 'chit-chat';
 
   // All non-special channels use ChannelPostFeed (general or forum)
   const isPostFeedChannel = activeConversation?.type === 'channel' &&
