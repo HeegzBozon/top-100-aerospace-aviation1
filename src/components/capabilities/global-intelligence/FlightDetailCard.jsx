@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { X, Share2, Navigation, Play, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Navigation, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
 import { getGlobalIntelData } from '@/functions/getGlobalIntelData';
 
 const STATUS_COLORS = {
@@ -36,15 +36,24 @@ function SourceBadge({ sources = [], anomaly }) {
 export default function FlightDetailCard({ flight, onClose }) {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(false);
+  const activeIcaoRef = useRef(null);
 
   useEffect(() => {
     if (!flight?.icao24) return;
+    const icao = flight.icao24;
+    activeIcaoRef.current = icao;
     setDetail(null);
     setLoading(true);
-    getGlobalIntelData({ action: 'detail', icao24: flight.icao24 })
-      .then(res => setDetail(res?.data))
+    getGlobalIntelData({ action: 'detail', icao24: icao })
+      .then(res => {
+        // Guard against stale responses from rapid flight switching
+        if (activeIcaoRef.current !== icao) return;
+        setDetail(res?.data);
+      })
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (activeIcaoRef.current === icao) setLoading(false);
+      });
   }, [flight?.icao24]);
 
   if (!flight) return null;
@@ -56,11 +65,6 @@ export default function FlightDetailCard({ flight, onClose }) {
   const hdg = flight.heading != null ? Math.round(flight.heading) : null;
   const alt = flight.altitude != null ? flight.altitude.toLocaleString() : null;
   const spd = flight.speed    != null ? Math.round(flight.speed)    : null;
-
-  // Photo from jetphotos / planespotters thumbnail (public, no auth needed)
-  const photoUrl = d.registration
-    ? `https://api.planespotters.net/pub/photos/reg/${d.registration}`
-    : null;
 
   return (
     <div
@@ -185,11 +189,10 @@ function AircraftPhoto({ registration, isMilitary }) {
 
   useEffect(() => {
     if (!registration) return;
-    // planespotters.net public API — no auth needed
-    fetch(`https://api.planespotters.net/pub/photos/reg/${registration}`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        const thumb = data?.photos?.[0]?.thumbnail_large?.src || data?.photos?.[0]?.thumbnail?.src;
+    // Route through backend to avoid CORS issues with planespotters.net
+    getGlobalIntelData({ action: 'photo', registration })
+      .then(res => {
+        const thumb = res?.data?.thumbnail;
         if (thumb) setPhotoUrl(thumb);
       })
       .catch(() => {});

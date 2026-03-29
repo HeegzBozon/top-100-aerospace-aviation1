@@ -125,10 +125,10 @@ const OPENSKY_BOXES = [
   [15, 40,  -20, 20],   [15, 40,  20, 50],
 ];
 
-async function fetchOpenSkyBox(minLat, maxLat, minLon, maxLon) {
+async function fetchOpenSkyBox(minLat, maxLat, minLon, maxLon, authHeader) {
   const url = `https://opensky-network.org/api/states/all?lamin=${minLat}&lamax=${maxLat}&lomin=${minLon}&lomax=${maxLon}`;
   const res = await fetch(url, {
-    headers: { 'Accept': 'application/json' },
+    headers: { 'Accept': 'application/json', ...(authHeader ? { 'Authorization': authHeader } : {}) },
     signal: AbortSignal.timeout(10000),
   });
   if (!res.ok) throw new Error(`OpenSky ${res.status}`);
@@ -140,8 +140,15 @@ async function fetchOpenSkyBox(minLat, maxLat, minLon, maxLon) {
 const OS = { icao: 0, callsign: 1, country: 2, lon: 5, lat: 6, alt: 7, onGnd: 8, speed: 9, heading: 10, squawk: 14 };
 
 async function fetchOpenSkyFlights() {
+  // Use authenticated requests if credentials are available (4000 req/day vs 400 anon)
+  const username = Deno.env.get('OPENSKY_USERNAME');
+  const password = Deno.env.get('OPENSKY_PASSWORD');
+  const authHeader = username && password
+    ? `Basic ${btoa(`${username}:${password}`)}`
+    : null;
+
   const results = await Promise.allSettled(
-    OPENSKY_BOXES.map(([a, b, c, d]) => fetchOpenSkyBox(a, b, c, d))
+    OPENSKY_BOXES.map(([a, b, c, d]) => fetchOpenSkyBox(a, b, c, d, authHeader))
   );
 
   const seen = new Set();
@@ -318,6 +325,23 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch {}
   const action = body.action || 'live';
 
+  if (action === 'photo') {
+    // Proxy planespotters.net to avoid browser CORS issues
+    const reg = (body.registration || '').trim().toUpperCase();
+    if (!reg) return Response.json({ thumbnail: null }, { headers: cors });
+    try {
+      const r = await fetch(`https://api.planespotters.net/pub/photos/reg/${reg}`, {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(5000),
+      });
+      const data = r.ok ? await r.json() : null;
+      const thumbnail = data?.photos?.[0]?.thumbnail_large?.src || data?.photos?.[0]?.thumbnail?.src || null;
+      return Response.json({ thumbnail }, { headers: cors });
+    } catch {
+      return Response.json({ thumbnail: null }, { headers: cors });
+    }
+  }
+
   if (action === 'search') {
     const result = await searchFlights(wingbitsKey, body.q || '');
     return Response.json({ result }, { headers: cors });
@@ -348,7 +372,6 @@ Deno.serve(async (req) => {
 
   return Response.json({
     flights,
-    militaryFlights: flights.filter(f => f.isMilitary),
     gpsJam,
     meta: {
       totalFlights:    flights.length,
