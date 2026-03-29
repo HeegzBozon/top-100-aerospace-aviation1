@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { useGlobeIntelLive, useGlobeFlightDetail } from '@/lib/intelligence/globeHooks';
+import { useGlobeIntelLive } from '@/lib/intelligence/globeHooks';
+import FlightDetailCard from './FlightDetailCard';
 
 export function WorldMonitorGlobe() {
   const globeRef = useRef(null);
@@ -8,7 +9,6 @@ export function WorldMonitorGlobe() {
   const [GlobeGL, setGlobeGL] = useState(null);
 
   const { data, isLoading } = useGlobeIntelLive();
-  const { data: detailData } = useGlobeFlightDetail(selectedFlight?.icao24);
 
   // Lazy-load globe.gl
   useEffect(() => {
@@ -42,44 +42,63 @@ export function WorldMonitorGlobe() {
     };
   }, [GlobeGL]);
 
-  // Update flight points whenever data arrives
+  // Update flights as HTML elements (plane icons) + GPS jam rings
   useEffect(() => {
     const globe = globeInstanceRef.current;
     if (!globe || !data) return;
 
-    // Use the flat flights array from the updated backend
     const flights = (data.flights || []).map(f => ({
-      lat: f.lat,
-      lng: f.lon,
-      label: f.callsign || f.icao24,
-      icao24: f.icao24,
-      color: f.isMilitary ? '#f97316' : '#60a5fa',
-      size: f.isMilitary ? 0.5 : 0.25,
+      lat:        f.lat,
+      lng:        f.lon,
+      label:      f.callsign || f.icao24,
+      icao24:     f.icao24,
+      callsign:   f.callsign,
       isMilitary: f.isMilitary,
-      altitude: f.altitude,
-      speed: f.speed,
-      heading: f.heading,
+      anomaly:    f.anomaly,
+      altitude:   f.altitude,
+      speed:      f.speed,
+      heading:    f.heading,
+      country:    f.country,
+      sources:    f.sources,
+      anomalyDetails: f.anomalyDetails,
     }));
 
-    // GPS jamming rings — hexes now have lat/lng decoded server-side
+    // ── Plane HTML elements ───────────────────────────────────────────────────
+    globe
+      .htmlElementsData(flights)
+      .htmlLat('lat')
+      .htmlLng('lng')
+      .htmlAltitude(0.005)
+      .htmlElement(d => {
+        const el = document.createElement('div');
+        const color = d.isMilitary ? '#f97316' : d.anomaly ? '#ef4444' : '#60a5fa';
+        const size  = d.isMilitary ? 14 : 11;
+        const hdg   = d.heading ?? 0;
+        el.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          color: ${color};
+          font-size: ${size}px;
+          line-height: 1;
+          transform: rotate(${hdg}deg);
+          cursor: pointer;
+          filter: drop-shadow(0 0 3px ${color}88);
+          transition: transform 0.3s ease;
+          user-select: none;
+        `;
+        el.textContent = '✈';
+        el.title = d.label || d.icao24;
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setSelectedFlight(d);
+        });
+        return el;
+      });
+
+    // ── GPS Jamming rings ─────────────────────────────────────────────────────
     const gpsHexes = (data.gpsJam?.hexes || [])
       .filter(h => h.lat && h.lng)
       .slice(0, 300);
-
-    globe
-      .pointsData(flights)
-      .pointLat('lat')
-      .pointLng('lng')
-      .pointColor('color')
-      .pointRadius('size')
-      .pointAltitude(0.005)
-      .pointLabel(d => `<div style="background:#0f172a;color:#e2e8f0;padding:6px 10px;border-radius:6px;font-family:monospace;font-size:12px;border:1px solid ${d.isMilitary ? '#f97316' : '#3b82f6'}">
-        ${d.isMilitary ? '🔴' : '✈️'} <b>${d.label}</b><br/>
-        <span style="color:#94a3b8;font-size:10px">
-          ${d.icao24?.toUpperCase()}${d.altitude ? ` · ${Math.round(d.altitude / 100) * 100}ft` : ''}${d.speed ? ` · ${Math.round(d.speed)}kts` : ''}
-        </span>
-      </div>`)
-      .onPointClick(d => setSelectedFlight(d));
 
     if (gpsHexes.length > 0) {
       globe
@@ -94,8 +113,10 @@ export function WorldMonitorGlobe() {
   }, [data]);
 
   const totalFlights = data?.meta?.totalFlights ?? data?.flights?.length ?? 0;
-  const milCount = data?.meta?.militaryCount ?? data?.militaryFlights?.length ?? 0;
-  const jamCount = data?.meta?.jamCount ?? data?.gpsJam?.hexes?.length ?? 0;
+  const milCount     = data?.meta?.militaryCount ?? 0;
+  const jamCount     = data?.meta?.jamCount ?? data?.gpsJam?.hexes?.length ?? 0;
+  const corroborated = data?.meta?.corroborated ?? 0;
+  const anomalies    = data?.meta?.anomalies ?? 0;
 
   return (
     <div className="relative w-full h-full bg-[#070b14]">
@@ -115,11 +136,21 @@ export function WorldMonitorGlobe() {
       {data && (
         <div className="absolute top-2 left-2 flex flex-col gap-1 pointer-events-none">
           <div className="bg-slate-900/80 border border-slate-700 rounded px-2 py-1 text-[10px] font-mono text-slate-300">
-            ✈️ {totalFlights.toLocaleString()} flights tracked
+            ✈️ {totalFlights.toLocaleString()} flights
           </div>
+          {corroborated > 0 && (
+            <div className="bg-green-900/80 border border-green-700 rounded px-2 py-1 text-[10px] font-mono text-green-300">
+              ✓ {corroborated} verified
+            </div>
+          )}
           {milCount > 0 && (
             <div className="bg-orange-900/80 border border-orange-700 rounded px-2 py-1 text-[10px] font-mono text-orange-300">
               🔴 {milCount} military
+            </div>
+          )}
+          {anomalies > 0 && (
+            <div className="bg-red-900/80 border border-red-700 rounded px-2 py-1 text-[10px] font-mono text-red-300">
+              ⚠ {anomalies} anomalies
             </div>
           )}
           {jamCount > 0 && (
@@ -132,32 +163,17 @@ export function WorldMonitorGlobe() {
 
       {/* Legend */}
       <div className="absolute bottom-2 left-2 bg-slate-900/80 border border-slate-700 rounded px-2 py-1.5 text-[9px] font-mono text-slate-400 pointer-events-none space-y-0.5">
-        <div><span className="text-orange-400">●</span> Military</div>
-        <div><span className="text-blue-400">●</span> Civil Aviation</div>
+        <div><span className="text-orange-400">✈</span> Military</div>
+        <div><span className="text-blue-400">✈</span> Civil Aviation</div>
+        <div><span className="text-red-400">✈</span> Anomaly</div>
         {jamCount > 0 && <div><span className="text-yellow-400">◉</span> GPS Jamming</div>}
       </div>
 
-      {/* Flight detail panel */}
-      {selectedFlight && (
-        <div className="absolute top-2 right-2 bg-slate-900/90 border border-slate-600 rounded-lg p-3 text-xs font-mono text-slate-200 max-w-52 shadow-xl">
-          <div className="flex items-center justify-between mb-2">
-            <span className={`font-bold ${selectedFlight.isMilitary ? 'text-orange-400' : 'text-sky-400'}`}>
-              {selectedFlight.label}
-            </span>
-            <button onClick={() => setSelectedFlight(null)} className="text-slate-500 hover:text-white ml-2">✕</button>
-          </div>
-          <div className="text-slate-400 text-[10px] space-y-0.5">
-            <div>ICAO: {selectedFlight.icao24?.toUpperCase()}</div>
-            {selectedFlight.altitude && <div>Alt: {selectedFlight.altitude.toLocaleString()} ft</div>}
-            {selectedFlight.speed && <div>Speed: {Math.round(selectedFlight.speed)} kts</div>}
-            {selectedFlight.heading && <div>Hdg: {Math.round(selectedFlight.heading)}°</div>}
-            {selectedFlight.isMilitary && <div className="text-orange-400">⚠ MILITARY</div>}
-            {detailData?.detail?.registration && <div>Reg: {detailData.detail.registration}</div>}
-            {detailData?.detail?.model && <div>Type: {detailData.detail.model}</div>}
-            {detailData?.detail?.operator && <div>Op: {detailData.detail.operator}</div>}
-          </div>
-        </div>
-      )}
+      {/* Enhanced flight detail card */}
+      <FlightDetailCard
+        flight={selectedFlight}
+        onClose={() => setSelectedFlight(null)}
+      />
     </div>
   );
 }
