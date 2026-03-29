@@ -21,34 +21,36 @@ function isMilitary(icao24) {
 async function fetchOpenSky() {
   const user = Deno.env.get('OPENSKY_USERNAME');
   const pass = Deno.env.get('OPENSKY_PASSWORD');
-  const headers = user && pass
-    ? { Authorization: `Basic ${btoa(`${user}:${pass}`)}` }
-    : {};
 
-  const regions = Object.entries(THEATER_BOUNDS);
-  const results = await Promise.allSettled(
-    regions.map(([, [lamin, lomin, lamax, lomax]]) =>
-      fetch(
-        `https://opensky-network.org/api/states/all?lamin=${lamin}&lomin=${lomin}&lamax=${lamax}&lomax=${lomax}`,
-        { headers }
-      ).then(r => r.ok ? r.json() : Promise.reject(r.status))
-    )
-  );
+  // Try credential-in-URL first (works better from server environments)
+  // OpenSky often blocks cloud IPs on the standard endpoint; try both auth methods
+  const authUrl = user && pass
+    ? `https://${encodeURIComponent(user)}:${encodeURIComponent(pass)}@opensky-network.org/api/states/all`
+    : 'https://opensky-network.org/api/states/all';
 
-  const allStates = results
-    .filter(r => r.status === 'fulfilled')
-    .flatMap(r => r.value?.states || []);
+  // Single global call (no bounding box) — less quota usage, less likely to be blocked
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12000);
 
-  // Deduplicate by icao24
-  const seen = new Set();
-  const states = allStates.filter(s => {
-    if (!s[0] || seen.has(s[0])) return false;
-    seen.add(s[0]);
-    return true;
-  });
+  let allStates = [];
+  try {
+    const r = await fetch(authUrl, { signal: controller.signal });
+    clearTimeout(timer);
+    if (r.ok) {
+      const json = await r.json();
+      allStates = json.states || [];
+      console.log(`[OpenSky] global: ${allStates.length} total states`);
+    } else {
+      const t = await r.text().catch(() => '');
+      console.error(`[OpenSky] HTTP ${r.status}: ${t.slice(0, 200)}`);
+    }
+  } catch (err) {
+    clearTimeout(timer);
+    console.error(`[OpenSky] error: ${err.message}`);
+  }
 
-  const flights = states
-    .filter(s => s[5] && s[6] && !s[8]) // has lon, lat, not on ground
+  const airborne = allStates.filter(s => s[5] && s[6] && !s[8]);
+  const flights = airborne
     .filter(s => isMilitary(s[0]))
     .map(s => ({
       icao24: s[0],
@@ -61,6 +63,7 @@ async function fetchOpenSky() {
       heading: s[10],
     }));
 
+  console.log(`[OpenSky] ${flights.length} military flights from ${airborne.length} airborne`);
   return { flights, total: flights.length };
 }
 
@@ -69,16 +72,24 @@ async function fetchWingbitsFlights() {
   const apiKey = Deno.env.get('WINGBITS_API_KEY');
   if (!apiKey) return null;
 
+  // Wingbits max radius is 277.8km (150nm) — use radius queries for all areas
   const body = [
-    { alias: 'cape_canaveral', by: 'radius', la: 28.3922,  lo: -80.6077,  rad: 200, unit: 'km' },
-    { alias: 'boca_chica',     by: 'radius', la: 25.9969,  lo: -97.1572,  rad: 200, unit: 'km' },
-    { alias: 'vandenberg',     by: 'radius', la: 34.7420,  lo: -120.5724, rad: 200, unit: 'km' },
-    { alias: 'mahia',          by: 'radius', la: -39.2594, lo: 177.8645,  rad: 200, unit: 'km' },
-    { alias: 'eastern_med',    by: 'box',    la: 34.5,     lo: 28.0,      w: 900,   h: 700, unit: 'km' },
-    { alias: 'baltic',         by: 'box',    la: 58.0,     lo: 14.0,      w: 900,   h: 700, unit: 'km' },
-    { alias: 'black_sea',      by: 'box',    la: 43.0,     lo: 28.0,      w: 900,   h: 600, unit: 'km' },
-    { alias: 'persian_gulf',   by: 'box',    la: 26.0,     lo: 48.0,      w: 1200,  h: 800, unit: 'km' },
-    { alias: 'south_china_sea',by: 'box',    la: 14.0,     lo: 108.0,     w: 1400,  h: 1200, unit: 'km' },
+    { alias: 'cape_canaveral', by: 'radius', la: 28.3922,  lo: -80.6077,  rad: 250, unit: 'km' },
+    { alias: 'boca_chica',     by: 'radius', la: 25.9969,  lo: -97.1572,  rad: 250, unit: 'km' },
+    { alias: 'vandenberg',     by: 'radius', la: 34.7420,  lo: -120.5724, rad: 250, unit: 'km' },
+    { alias: 'mahia',          by: 'radius', la: -39.2594, lo: 177.8645,  rad: 250, unit: 'km' },
+    // Eastern Med: split into radius queries
+    { alias: 'eastern_med_n',  by: 'radius', la: 36.0,     lo: 33.0,      rad: 250, unit: 'km' },
+    { alias: 'eastern_med_s',  by: 'radius', la: 32.0,     lo: 35.0,      rad: 250, unit: 'km' },
+    // Baltic
+    { alias: 'baltic_n',       by: 'radius', la: 60.0,     lo: 20.0,      rad: 250, unit: 'km' },
+    { alias: 'baltic_s',       by: 'radius', la: 56.0,     lo: 20.0,      rad: 250, unit: 'km' },
+    // Black Sea
+    { alias: 'black_sea',      by: 'radius', la: 43.0,     lo: 34.0,      rad: 250, unit: 'km' },
+    // Persian Gulf
+    { alias: 'persian_gulf',   by: 'radius', la: 26.5,     lo: 52.5,      rad: 250, unit: 'km' },
+    // South China Sea
+    { alias: 'south_china_sea',by: 'radius', la: 14.0,     lo: 114.0,     rad: 250, unit: 'km' },
   ];
 
   try {
@@ -87,9 +98,14 @@ async function fetchWingbitsFlights() {
       headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      console.error(`[Wingbits flights] HTTP ${res.status}: ${errText}`);
+      return null;
+    }
     return await res.json();
-  } catch {
+  } catch (err) {
+    console.error('[Wingbits flights] fetch error:', err.message);
     return null;
   }
 }
