@@ -17,24 +17,58 @@ function isMilitary(icao24) {
   return MILITARY_HEX_PREFIXES.some(p => hex.startsWith(p));
 }
 
+// ── OpenSky OAuth2 token fetch ─────────────────────────────────────────────────
+async function getOpenSkyToken() {
+  const clientId = Deno.env.get('OPENSKY_CLIENT_ID');
+  const clientSecret = Deno.env.get('OPENSKY_CLIENT_SECRET');
+  if (!clientId || !clientSecret) return null;
+
+  const body = new URLSearchParams({
+    grant_type: 'client_credentials',
+    client_id: clientId,
+    client_secret: clientSecret,
+  });
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+  try {
+    const r = await fetch('https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    if (!r.ok) {
+      const t = await r.text().catch(() => '');
+      console.error(`[OpenSky] token error ${r.status}: ${t.slice(0, 200)}`);
+      return null;
+    }
+    const json = await r.json();
+    return json.access_token || null;
+  } catch (err) {
+    clearTimeout(timer);
+    console.warn(`[OpenSky] token fetch failed (${err.message}), falling back to anonymous`);
+    return null;
+  }
+}
+
 // ── OpenSky fetch ──────────────────────────────────────────────────────────────
 async function fetchOpenSky() {
-  const user = Deno.env.get('OPENSKY_USERNAME');
-  const pass = Deno.env.get('OPENSKY_PASSWORD');
+  const token = await getOpenSkyToken();
 
-  // Try credential-in-URL first (works better from server environments)
-  // OpenSky often blocks cloud IPs on the standard endpoint; try both auth methods
-  const authUrl = user && pass
-    ? `https://${encodeURIComponent(user)}:${encodeURIComponent(pass)}@opensky-network.org/api/states/all`
-    : 'https://opensky-network.org/api/states/all';
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  console.log(`[OpenSky] using ${token ? 'OAuth2' : 'anonymous'} access`);
 
-  // Single global call (no bounding box) — less quota usage, less likely to be blocked
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 12000);
 
   let allStates = [];
   try {
-    const r = await fetch(authUrl, { signal: controller.signal });
+    const r = await fetch('https://opensky-network.org/api/states/all', {
+      headers,
+      signal: controller.signal,
+    });
     clearTimeout(timer);
     if (r.ok) {
       const json = await r.json();

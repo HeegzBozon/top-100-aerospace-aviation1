@@ -1,4 +1,4 @@
-export { WorldMonitorGlobe } from './WorldMonitorGlobe.jsx';
+export { WorldMonitorGlobe } from './WorldMonitorGlobe';
 export { AviationNewsFeed } from './AviationNewsFeed';
 export { LiveFlightsPanel } from './LiveFlightsPanel';
 export { SatelliteTracker } from './SatelliteTracker';
