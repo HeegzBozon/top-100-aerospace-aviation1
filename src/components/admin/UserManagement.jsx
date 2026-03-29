@@ -256,41 +256,76 @@ export default function UserManagement() {
     }
   };
 
-  const handleBulkExport = async () => {
+  const handleBulkExport = async (format = 'csv') => {
     setBulkExporting(true);
     try {
-      const exportData = {
-        export_date: new Date().toISOString(),
-        export_version: '1.0',
-        total_users: filteredUsers.length,
-        users: filteredUsers.map(user => ({
-          id: user.id,
-          email: user.email,
-          full_name: user.full_name,
-          role: user.role,
-          app_role: user.app_role,
-          handle: user.handle,
-          location: user.location,
-          industry_role: user.industry_role,
-          created_date: user.created_date,
-          aura_score: user.aura_score,
-          stardust_points: user.stardust_points,
-          hype_level: user.hype_level,
-          is_service_provider: user.is_service_provider,
-        })),
-      };
+      if (format === 'csv') {
+        const headers = ['ID', 'Email', 'Full Name', 'Base Role', 'App Roles', 'Handle', 'Location', 'Industry Role', 'Joined', 'Aura Score', 'Stardust Points', 'Hype Level', 'Service Provider'];
+        const rows = filteredUsers.map(user => [
+          user.id,
+          user.email,
+          user.full_name || '',
+          user.role || '',
+          (user.app_roles || []).join(';'),
+          user.handle || '',
+          user.location || '',
+          user.industry_role || '',
+          user.created_date ? new Date(user.created_date).toISOString().split('T')[0] : '',
+          user.aura_score || '',
+          user.stardust_points || '',
+          user.hype_level || '',
+          user.is_service_provider ? 'Yes' : 'No',
+        ]);
 
-      const jsonData = JSON.stringify(exportData, null, 2);
-      const blob = new Blob([jsonData], { type: 'application/json' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `users_backup_${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      a.remove();
-      toast.success(`Exported ${filteredUsers.length} users`);
+        const csvContent = [
+          headers.map(h => `"${h}"`).join(','),
+          ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')),
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `users_export_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        toast.success(`Exported ${filteredUsers.length} users to CSV`);
+      } else {
+        const exportData = {
+          export_date: new Date().toISOString(),
+          export_version: '1.0',
+          total_users: filteredUsers.length,
+          users: filteredUsers.map(user => ({
+            id: user.id,
+            email: user.email,
+            full_name: user.full_name,
+            role: user.role,
+            app_roles: user.app_roles || [],
+            handle: user.handle,
+            location: user.location,
+            industry_role: user.industry_role,
+            created_date: user.created_date,
+            aura_score: user.aura_score,
+            stardust_points: user.stardust_points,
+            hype_level: user.hype_level,
+            is_service_provider: user.is_service_provider,
+          })),
+        };
+
+        const jsonData = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `users_backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        toast.success(`Exported ${filteredUsers.length} users to JSON`);
+      }
     } catch (error) {
       console.error('Bulk export failed:', error);
       toast.error('Failed to export users');
@@ -401,23 +436,34 @@ export default function UserManagement() {
           <p className="text-sm text-[var(--muted)] mt-1">Manage users and IAM privileges</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            onClick={handleBulkExport} 
-            disabled={bulkExporting || filteredUsers.length === 0}
-          >
-            {bulkExporting ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Download className="w-4 h-4 mr-2" />
-            )}
-            Export All
-          </Button>
-          <Button variant="outline" onClick={() => refetch()} disabled={isLoading}>
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-        </div>
+           <DropdownMenu>
+             <DropdownMenuTrigger asChild>
+               <Button 
+                 variant="outline" 
+                 disabled={bulkExporting || filteredUsers.length === 0}
+               >
+                 {bulkExporting ? (
+                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                 ) : (
+                   <Download className="w-4 h-4 mr-2" />
+                 )}
+                 Export All
+               </Button>
+             </DropdownMenuTrigger>
+             <DropdownMenuContent align="end">
+               <DropdownMenuItem onClick={() => handleBulkExport('csv')}>
+                 CSV
+               </DropdownMenuItem>
+               <DropdownMenuItem onClick={() => handleBulkExport('json')}>
+                 JSON
+               </DropdownMenuItem>
+             </DropdownMenuContent>
+           </DropdownMenu>
+           <Button variant="outline" onClick={() => refetch()} disabled={isLoading}>
+             <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+             Refresh
+           </Button>
+         </div>
       </div>
 
       {/* Stats Cards - Season 4+ IAM */}
