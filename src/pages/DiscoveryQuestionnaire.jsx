@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Check, Sparkles } from 'lucide-react';
 import DiscoveryQuestionnaireForm from '@/components/discovery/DiscoveryQuestionnaireForm';
@@ -16,10 +16,23 @@ const SECTIONS = [
 ];
 
 export default function DiscoveryQuestionnaire() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState({});
+  const LS_KEY = 'discovery_questionnaire_v1';
+  const [currentStep, setCurrentStep] = useState(() => {
+    try { return parseInt(localStorage.getItem(`${LS_KEY}_step`) || '0', 10); } catch { return 0; }
+  });
+  const [formData, setFormData] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
+  });
   const [direction, setDirection] = useState(0);
   const [showReview, setShowReview] = useState(false);
+
+  // Persist formData and step to localStorage on change
+  useEffect(() => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(formData)); } catch {}
+  }, [formData]);
+  useEffect(() => {
+    try { localStorage.setItem(`${LS_KEY}_step`, String(currentStep)); } catch {}
+  }, [currentStep]);
 
   const handleNext = () => {
     if (currentStep < SECTIONS.length - 1) {
@@ -47,7 +60,13 @@ export default function DiscoveryQuestionnaire() {
   }, [currentStep]);
 
   if (showReview) {
-    return <DiscoveryQuestionnaireReview formData={formData} onBack={() => setShowReview(false)} />;
+    return <DiscoveryQuestionnaireReview
+      formData={formData}
+      onBack={() => setShowReview(false)}
+      onSubmitComplete={() => {
+        try { localStorage.removeItem(LS_KEY); localStorage.removeItem(`${LS_KEY}_step`); } catch {}
+      }}
+    />;
   }
 
   const section = SECTIONS[currentStep];
@@ -158,7 +177,7 @@ export default function DiscoveryQuestionnaire() {
         </div>
 
         {/* Save prompt */}
-        <p className="text-center text-xs text-[#c9a87c]/40 mt-6">Your responses are auto-saved as you go.</p>
+        <p className="text-center text-xs text-[#c9a87c]/40 mt-6">Your progress is saved locally and will persist if you refresh.</p>
       </div>
     </div>
   );

@@ -30,7 +30,7 @@ async function getOpenSkyToken() {
   });
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 8000);
+  const timer = setTimeout(() => controller.abort(), 6000);
   try {
     const r = await fetch('https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token', {
       method: 'POST',
@@ -53,34 +53,45 @@ async function getOpenSkyToken() {
   }
 }
 
-// ── OpenSky fetch ──────────────────────────────────────────────────────────────
+// ── OpenSky fetch — uses bounded regional queries instead of global endpoint ──
+// The global /states/all endpoint is ~7MB and consistently times out from Deno edge.
+// Bounded regional queries are ~10x smaller and respond within the timeout window.
 async function fetchOpenSky() {
   const token = await getOpenSkyToken();
-
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   console.log(`[OpenSky] using ${token ? 'OAuth2' : 'anonymous'} access`);
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 12000);
+  // Fetch all 4 theater regions in parallel — each bbox is a fraction of the global payload
+  const regionFetches = Object.entries(THEATER_BOUNDS).map(([region, [lamin, lomin, lamax, lomax]]) => {
+    const url = `https://opensky-network.org/api/states/all?lamin=${lamin}&lomin=${lomin}&lamax=${lamax}&lomax=${lomax}`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    return fetch(url, { headers, signal: controller.signal })
+      .then(r => {
+        clearTimeout(timer);
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(json => ({ region, states: json.states || [] }))
+      .catch(err => {
+        clearTimeout(timer);
+        console.warn(`[OpenSky] ${region} failed: ${err.message}`);
+        return { region, states: [] };
+      });
+  });
 
-  let allStates = [];
-  try {
-    const r = await fetch('https://opensky-network.org/api/states/all', {
-      headers,
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-    if (r.ok) {
-      const json = await r.json();
-      allStates = json.states || [];
-      console.log(`[OpenSky] global: ${allStates.length} total states`);
-    } else {
-      const t = await r.text().catch(() => '');
-      console.error(`[OpenSky] HTTP ${r.status}: ${t.slice(0, 200)}`);
+  const results = await Promise.all(regionFetches);
+
+  // Deduplicate by icao24 (aircraft near region boundaries appear in multiple fetches)
+  const seen = new Set();
+  const allStates = [];
+  for (const { states } of results) {
+    for (const s of states) {
+      if (s[0] && !seen.has(s[0])) {
+        seen.add(s[0]);
+        allStates.push(s);
+      }
     }
-  } catch (err) {
-    clearTimeout(timer);
-    console.error(`[OpenSky] error: ${err.message}`);
   }
 
   const airborne = allStates.filter(s => s[5] && s[6] && !s[8]);
@@ -97,7 +108,7 @@ async function fetchOpenSky() {
       heading: s[10],
     }));
 
-  console.log(`[OpenSky] ${flights.length} military flights from ${airborne.length} airborne`);
+  console.log(`[OpenSky] ${flights.length} military flights from ${airborne.length} airborne (${allStates.length} total across theaters)`);
   return { flights, total: flights.length };
 }
 
@@ -106,23 +117,17 @@ async function fetchWingbitsFlights() {
   const apiKey = Deno.env.get('WINGBITS_API_KEY');
   if (!apiKey) return null;
 
-  // Wingbits max radius is 277.8km (150nm) — use radius queries for all areas
   const body = [
     { alias: 'cape_canaveral', by: 'radius', la: 28.3922,  lo: -80.6077,  rad: 250, unit: 'km' },
     { alias: 'boca_chica',     by: 'radius', la: 25.9969,  lo: -97.1572,  rad: 250, unit: 'km' },
     { alias: 'vandenberg',     by: 'radius', la: 34.7420,  lo: -120.5724, rad: 250, unit: 'km' },
     { alias: 'mahia',          by: 'radius', la: -39.2594, lo: 177.8645,  rad: 250, unit: 'km' },
-    // Eastern Med: split into radius queries
     { alias: 'eastern_med_n',  by: 'radius', la: 36.0,     lo: 33.0,      rad: 250, unit: 'km' },
     { alias: 'eastern_med_s',  by: 'radius', la: 32.0,     lo: 35.0,      rad: 250, unit: 'km' },
-    // Baltic
     { alias: 'baltic_n',       by: 'radius', la: 60.0,     lo: 20.0,      rad: 250, unit: 'km' },
     { alias: 'baltic_s',       by: 'radius', la: 56.0,     lo: 20.0,      rad: 250, unit: 'km' },
-    // Black Sea
     { alias: 'black_sea',      by: 'radius', la: 43.0,     lo: 34.0,      rad: 250, unit: 'km' },
-    // Persian Gulf
     { alias: 'persian_gulf',   by: 'radius', la: 26.5,     lo: 52.5,      rad: 250, unit: 'km' },
-    // South China Sea
     { alias: 'south_china_sea',by: 'radius', la: 14.0,     lo: 114.0,     rad: 250, unit: 'km' },
   ];
 
@@ -150,11 +155,11 @@ async function fetchWingbitsGpsJam() {
   if (!apiKey) return { hexes: [] };
 
   const boxes = [
-    { min_lat: 30, max_lat: 42, min_lng: 25, max_lng: 42 }, // Eastern Med
-    { min_lat: 54, max_lat: 64, min_lng: 14, max_lng: 28 }, // Baltic
-    { min_lat: 46, max_lat: 56, min_lng: 22, max_lng: 40 }, // Eastern Europe
-    { min_lat: 22, max_lat: 32, min_lng: 44, max_lng: 60 }, // Persian Gulf
-    { min_lat: 5,  max_lat: 25, min_lng: 100, max_lng: 125 }, // South China Sea
+    { min_lat: 30, max_lat: 42, min_lng: 25, max_lng: 42 },
+    { min_lat: 54, max_lat: 64, min_lng: 14, max_lng: 28 },
+    { min_lat: 46, max_lat: 56, min_lng: 22, max_lng: 40 },
+    { min_lat: 22, max_lat: 32, min_lng: 44, max_lng: 60 },
+    { min_lat: 5,  max_lat: 25, min_lng: 100, max_lng: 125 },
   ];
 
   const results = await Promise.allSettled(
@@ -170,7 +175,6 @@ async function fetchWingbitsGpsJam() {
     .filter(r => r.status === 'fulfilled')
     .flatMap(r => r.value?.hexes || []);
 
-  // Deduplicate by h3Index
   const seen = new Set();
   const hexes = allHexes.filter(h => {
     if (!h?.h3Index || seen.has(h.h3Index)) return false;
@@ -242,13 +246,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Accept params from JSON body (SDK sends POST with JSON)
     let body = {};
     try { body = await req.json(); } catch { /* GET or no body */ }
 
     const action = body.action || 'live';
 
-    // ── Route: search ──
     if (action === 'search') {
       const query = body.q || '';
       if (query.trim().length < 3) {
@@ -258,7 +260,6 @@ Deno.serve(async (req) => {
       return Response.json({ result }, { headers: corsHeaders });
     }
 
-    // ── Route: flight detail ──
     if (action === 'detail') {
       const icao24 = body.icao24 || '';
       const [detail, path] = await Promise.all([
@@ -268,23 +269,20 @@ Deno.serve(async (req) => {
       return Response.json({ detail, path }, { headers: corsHeaders });
     }
 
-    // ── Route: live (default) — fetch all layers in parallel ──
+    // ── live: fetch all layers in parallel ──
     const [openSkyData, wingbitsFlights, gpsJam] = await Promise.allSettled([
       fetchOpenSky(),
       fetchWingbitsFlights(),
       fetchWingbitsGpsJam(),
     ]);
 
-    const hasWingbits = !!Deno.env.get('WINGBITS_API_KEY');
-    const hasOpenSky = !!Deno.env.get('OPENSKY_USERNAME');
-
     return Response.json({
       openSky: openSkyData.status === 'fulfilled' ? openSkyData.value : { flights: [], total: 0, error: openSkyData.reason?.message },
       wingbitsFlights: wingbitsFlights.status === 'fulfilled' ? wingbitsFlights.value : null,
       gpsJam: gpsJam.status === 'fulfilled' ? gpsJam.value : { hexes: [] },
       meta: {
-        hasWingbits,
-        hasOpenSky,
+        hasWingbits: !!Deno.env.get('WINGBITS_API_KEY'),
+        hasOpenSky: !!Deno.env.get('OPENSKY_USERNAME'),
         fetchedAt: new Date().toISOString(),
       },
     }, { headers: corsHeaders });
