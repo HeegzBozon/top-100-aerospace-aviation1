@@ -4,98 +4,175 @@ import { cellToLatLng } from 'npm:h3-js@4.1.0';
 const MILITARY_HEX_PREFIXES = [
   'AE', 'A0', '43', '44', '45', '46', '47', '48',
   '3C', '3D', '3E', '3F', '50', '51', '52',
-  '7C', '76', '77', '78', '34', '35', '36', '40',
-  // UK mil
-  '43', '44', '45',
-  // French mil
-  '3B',
-  // Russian
-  'A0',
+  '7C', '76', '77', '78', '34', '35', '36', '40', '3B',
 ];
-
 function isMilitary(hex) {
   const h = (hex || '').toUpperCase();
   return MILITARY_HEX_PREFIXES.some(p => h.startsWith(p));
 }
 
-// ── Wingbits Live Flights — broad global coverage via radius queries ──────────
-// We use many overlapping 500km radius circles to blanket all inhabited airspace.
-// Each call costs 1 API credit; responses are fast (~200ms).
-async function fetchWingbitsFlights(apiKey) {
-  const areas = [
-    // North America
-    { alias: 'northeast_us',    by: 'radius', la: 41.0,   lo: -74.0,   rad: 600, unit: 'km' },
-    { alias: 'southeast_us',    by: 'radius', la: 30.0,   lo: -82.0,   rad: 600, unit: 'km' },
-    { alias: 'midwest_us',      by: 'radius', la: 41.0,   lo: -93.0,   rad: 600, unit: 'km' },
-    { alias: 'west_us',         by: 'radius', la: 36.0,   lo: -118.0,  rad: 600, unit: 'km' },
-    { alias: 'northwest_us',    by: 'radius', la: 47.0,   lo: -122.0,  rad: 500, unit: 'km' },
-    { alias: 'canada_east',     by: 'radius', la: 45.5,   lo: -73.5,   rad: 600, unit: 'km' },
-    { alias: 'canada_west',     by: 'radius', la: 51.0,   lo: -114.0,  rad: 600, unit: 'km' },
-    { alias: 'mexico',          by: 'radius', la: 23.0,   lo: -102.0,  rad: 600, unit: 'km' },
-    { alias: 'caribbean',       by: 'radius', la: 18.0,   lo: -75.0,   rad: 600, unit: 'km' },
-    // Europe
-    { alias: 'uk_ireland',      by: 'radius', la: 52.0,   lo: -2.0,    rad: 500, unit: 'km' },
-    { alias: 'west_europe',     by: 'radius', la: 48.5,   lo: 4.0,     rad: 600, unit: 'km' },
-    { alias: 'central_europe',  by: 'radius', la: 50.0,   lo: 14.0,    rad: 600, unit: 'km' },
-    { alias: 'east_europe',     by: 'radius', la: 50.0,   lo: 28.0,    rad: 600, unit: 'km' },
-    { alias: 'scandinavia',     by: 'radius', la: 59.0,   lo: 14.0,    rad: 600, unit: 'km' },
-    { alias: 'med_west',        by: 'radius', la: 40.0,   lo: 5.0,     rad: 600, unit: 'km' },
-    { alias: 'med_east',        by: 'radius', la: 37.0,   lo: 26.0,    rad: 600, unit: 'km' },
-    { alias: 'baltic',          by: 'radius', la: 58.0,   lo: 22.0,    rad: 500, unit: 'km' },
-    // Middle East & Africa
-    { alias: 'middle_east',     by: 'radius', la: 28.0,   lo: 45.0,    rad: 700, unit: 'km' },
-    { alias: 'north_africa',    by: 'radius', la: 30.0,   lo: 15.0,    rad: 700, unit: 'km' },
-    { alias: 'east_africa',     by: 'radius', la: 5.0,    lo: 37.0,    rad: 700, unit: 'km' },
-    { alias: 'south_africa',    by: 'radius', la: -26.0,  lo: 28.0,    rad: 700, unit: 'km' },
-    { alias: 'west_africa',     by: 'radius', la: 9.0,    lo: 5.0,     rad: 700, unit: 'km' },
-    // Asia & Pacific
-    { alias: 'russia_west',     by: 'radius', la: 55.5,   lo: 37.5,    rad: 700, unit: 'km' },
-    { alias: 'russia_sib',      by: 'radius', la: 56.0,   lo: 60.0,    rad: 700, unit: 'km' },
-    { alias: 'central_asia',    by: 'radius', la: 43.0,   lo: 68.0,    rad: 700, unit: 'km' },
-    { alias: 'south_asia',      by: 'radius', la: 22.0,   lo: 78.0,    rad: 700, unit: 'km' },
-    { alias: 'southeast_asia',  by: 'radius', la: 12.0,   lo: 105.0,   rad: 700, unit: 'km' },
-    { alias: 'china_east',      by: 'radius', la: 32.0,   lo: 115.0,   rad: 700, unit: 'km' },
-    { alias: 'china_north',     by: 'radius', la: 40.0,   lo: 116.0,   rad: 600, unit: 'km' },
-    { alias: 'japan_korea',     by: 'radius', la: 35.5,   lo: 134.0,   rad: 600, unit: 'km' },
-    { alias: 'australia',       by: 'radius', la: -25.0,  lo: 134.0,   rad: 900, unit: 'km' },
-    { alias: 'south_america_n', by: 'radius', la: -5.0,   lo: -56.0,   rad: 700, unit: 'km' },
-    { alias: 'south_america_s', by: 'radius', la: -30.0,  lo: -62.0,   rad: 700, unit: 'km' },
-    // Key launch/military areas
-    { alias: 'cape_canaveral',  by: 'radius', la: 28.4,   lo: -80.6,   rad: 300, unit: 'km' },
-    { alias: 'boca_chica',      by: 'radius', la: 26.0,   lo: -97.2,   rad: 300, unit: 'km' },
-    { alias: 'black_sea',       by: 'radius', la: 43.0,   lo: 34.0,    rad: 400, unit: 'km' },
-    { alias: 'persian_gulf',    by: 'radius', la: 26.5,   lo: 52.5,    rad: 400, unit: 'km' },
-    { alias: 'south_china_sea', by: 'radius', la: 14.0,   lo: 114.0,   rad: 400, unit: 'km' },
-  ];
-
-  const res = await fetch('https://customer-api.wingbits.com/v1/flights', {
-    method: 'POST',
-    headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
-    body: JSON.stringify(areas),
+// ── Single GET request for one region — the actual working endpoint ────────────
+async function fetchRegion(apiKey, la, lo, rad) {
+  const params = new URLSearchParams({ by: 'radius', la, lo, rad, unit: 'km' });
+  const res = await fetch(`https://customer-api.wingbits.com/v1/flights?${params}`, {
+    headers: { 'x-api-key': apiKey },
   });
-
   if (!res.ok) {
     const err = await res.text().catch(() => '');
-    throw new Error(`Wingbits flights HTTP ${res.status}: ${err.slice(0, 200)}`);
+    throw new Error(`Wingbits GET ${res.status}: ${err.slice(0, 200)}`);
   }
-  return res.json();
+  return res.json(); // returns flat Flight[]
+}
+
+// ── Cover global airspace with parallel GET requests ─────────────────────────
+// Each region is ~500-700km radius. We spread them to maximize coverage.
+// Wingbits network is densest in US/EU; sparser in Asia/Africa — still worth querying.
+// Max radius: 150nm = 277.8km — use 250km per region for safety margin
+const R = 250;
+const REGIONS = [
+  // North America — dense Wingbits coverage
+  [40.7,  -74.0,  R],   // new york
+  [33.7,  -84.4,  R],   // atlanta
+  [41.9,  -87.6,  R],   // chicago
+  [29.8,  -95.4,  R],   // houston
+  [33.4,  -112.1, R],   // phoenix
+  [34.0,  -118.2, R],   // los angeles
+  [47.6,  -122.3, R],   // seattle
+  [37.8,  -122.4, R],   // san francisco
+  [44.9,  -93.2,  R],   // minneapolis
+  [45.5,  -73.6,  R],   // montreal
+  [43.7,  -79.4,  R],   // toronto
+  [49.3,  -123.1, R],   // vancouver
+  [51.0,  -114.1, R],   // calgary
+  [23.6,  -102.5, R],   // mexico city
+  [20.0,  -75.0,  R],   // caribbean
+  [25.8,  -80.2,  R],   // miami
+  [32.8,  -97.0,  R],   // dallas
+  [39.9,  -82.9,  R],   // columbus
+  // Europe — very dense coverage
+  [51.5,  -0.1,   R],   // london
+  [52.4,  13.4,   R],   // berlin
+  [48.9,  2.3,    R],   // paris
+  [52.4,  4.9,    R],   // amsterdam
+  [53.3,  -6.3,   R],   // dublin
+  [48.2,  16.4,   R],   // vienna
+  [59.3,  18.1,   R],   // stockholm
+  [60.2,  25.0,   R],   // helsinki
+  [55.7,  12.6,   R],   // copenhagen
+  [50.1,  14.4,   R],   // prague
+  [52.2,  21.0,   R],   // warsaw
+  [47.5,  19.1,   R],   // budapest
+  [45.5,  9.2,    R],   // milan
+  [41.9,  12.5,   R],   // rome
+  [40.4,  -3.7,   R],   // madrid
+  [37.0,  22.9,   R],   // athens
+  [44.8,  20.5,   R],   // belgrade
+  [55.8,  37.6,   R],   // moscow
+  [59.9,  30.3,   R],   // st petersburg
+  [50.5,  30.5,   R],   // kyiv
+  // Middle East
+  [30.1,  31.4,   R],   // cairo
+  [31.8,  35.2,   R],   // jerusalem / tel aviv
+  [33.9,  35.5,   R],   // beirut
+  [33.3,  44.4,   R],   // baghdad
+  [25.3,  55.4,   R],   // dubai
+  [24.7,  46.7,   R],   // riyadh
+  [35.7,  51.4,   R],   // tehran
+  // Asia
+  [39.9,  116.4,  R],   // beijing
+  [31.2,  121.5,  R],   // shanghai
+  [22.3,  114.2,  R],   // hong kong
+  [23.0,  113.3,  R],   // guangzhou
+  [35.7,  139.7,  R],   // tokyo
+  [37.6,  127.0,  R],   // seoul
+  [1.4,   103.8,  R],   // singapore
+  [13.8,  100.5,  R],   // bangkok
+  [21.0,  105.8,  R],   // hanoi
+  [28.6,  77.2,   R],   // delhi
+  [19.1,  72.9,   R],   // mumbai
+  [12.9,  77.6,   R],   // bangalore
+  [34.5,  69.2,   R],   // kabul
+  [33.7,  73.1,   R],   // islamabad
+  [41.3,  69.3,   R],   // tashkent
+  // Oceania
+  [-33.9, 151.2,  R],   // sydney
+  [-37.8, 145.0,  R],   // melbourne
+  [-27.5, 153.0,  R],   // brisbane
+  [-31.9, 115.9,  R],   // perth
+  [-36.9, 174.8,  R],   // auckland
+  // South America
+  [-23.5, -46.6,  R],   // sao paulo
+  [-34.6, -58.4,  R],   // buenos aires
+  [-33.5, -70.7,  R],   // santiago
+  [-12.0, -77.0,  R],   // lima
+  [4.7,   -74.1,  R],   // bogota
+  [10.5,  -66.9,  R],   // caracas
+  // Africa
+  [33.9,  -6.9,   R],   // casablanca
+  [36.8,  10.2,   R],   // tunis
+  [6.5,   3.4,    R],   // lagos
+  [5.6,   -0.2,   R],   // accra
+  [-26.2, 28.0,   R],   // johannesburg
+  [-33.9, 18.4,   R],   // cape town
+  [-4.3,  15.3,   R],   // kinshasa
+  [9.0,   38.7,   R],   // addis ababa
+  [-1.3,  36.8,   R],   // nairobi
+];
+
+async function fetchAllFlights(apiKey) {
+  const results = await Promise.allSettled(
+    REGIONS.map(([la, lo, rad]) => fetchRegion(apiKey, la, lo, rad))
+  );
+
+  const seen = new Set();
+  const flights = [];
+  let errors = 0;
+
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    if (r.status === 'rejected') {
+      errors++;
+      console.warn(`[Wingbits] region[${i}] failed: ${r.reason?.message}`);
+      continue;
+    }
+    const arr = Array.isArray(r.value) ? r.value : [];
+    for (const f of arr) {
+      if (f.h && !seen.has(f.h) && f.la != null && f.lo != null && !f.og) {
+        seen.add(f.h);
+        flights.push({
+          icao24:     f.h,
+          callsign:   f.f || null,
+          lat:        f.la,
+          lon:        f.lo,
+          altitude:   f.ab || null,
+          heading:    f.th || null,
+          speed:      f.gs || null,
+          squawk:     f.sq || null,
+          isMilitary: isMilitary(f.h),
+        });
+      }
+    }
+  }
+
+  console.log(`[Wingbits] ${flights.length} flights from ${REGIONS.length - errors} regions (${errors} errors)`);
+  return flights;
 }
 
 // ── Wingbits GPS Jamming ───────────────────────────────────────────────────────
-async function fetchWingbitsGpsJam(apiKey) {
+async function fetchGpsJam(apiKey) {
   const boxes = [
-    { min_lat: 30, max_lat: 42, min_lng: 25, max_lng: 42 },  // Eastern Med
-    { min_lat: 54, max_lat: 64, min_lng: 14, max_lng: 28 },  // Baltic
-    { min_lat: 46, max_lat: 56, min_lng: 22, max_lng: 40 },  // Eastern Europe
-    { min_lat: 22, max_lat: 32, min_lng: 44, max_lng: 60 },  // Persian Gulf
-    { min_lat: 5,  max_lat: 25, min_lng: 100, max_lng: 125}, // South China Sea
-    { min_lat: 10, max_lat: 35, min_lng: 55, max_lng: 80 },  // South Asia
-    { min_lat: 35, max_lat: 55, min_lng: 38, max_lng: 60 },  // Caucasus/Caspian
+    { min_lat: 28, max_lat: 44, min_lng: 22, max_lng: 42 },  // Eastern Med / Israel / Lebanon
+    { min_lat: 54, max_lat: 64, min_lng: 14, max_lng: 30 },  // Baltic / Finland
+    { min_lat: 46, max_lat: 58, min_lng: 22, max_lng: 42 },  // Eastern Europe / Ukraine
+    { min_lat: 20, max_lat: 34, min_lng: 44, max_lng: 62 },  // Persian Gulf / Iraq
+    { min_lat: 5,  max_lat: 25, min_lng: 98, max_lng: 126 }, // South China Sea
+    { min_lat: 32, max_lat: 56, min_lng: 38, max_lng: 62 },  // Caucasus / Caspian
+    { min_lat: 50, max_lat: 70, min_lng: 30, max_lng: 55 },  // Russia / Black Sea north
   ];
 
   const results = await Promise.allSettled(
     boxes.map(box => {
-      const params = new URLSearchParams(Object.entries(box).map(([k, v]) => [k, String(v)]));
+      const params = new URLSearchParams(Object.fromEntries(Object.entries(box).map(([k, v]) => [k, String(v)])));
       return fetch(`https://customer-api.wingbits.com/v1/gps/jam?${params}`, {
         headers: { 'x-api-key': apiKey },
       }).then(r => r.ok ? r.json() : null);
@@ -117,9 +194,7 @@ async function fetchWingbitsGpsJam(apiKey) {
       try {
         const [lat, lng] = cellToLatLng(h.h3Index);
         return { ...h, lat, lng };
-      } catch {
-        return null;
-      }
+      } catch { return null; }
     })
     .filter(Boolean);
 
@@ -127,113 +202,70 @@ async function fetchWingbitsGpsJam(apiKey) {
 }
 
 // ── Wingbits detail / search / path ──────────────────────────────────────────
-async function getWingbitsFlightDetail(apiKey, icao24) {
+async function getFlightDetail(apiKey, icao24) {
   if (!icao24) return null;
-  const res = await fetch(`https://customer-api.wingbits.com/v1/flights/${icao24.toLowerCase()}`, {
-    headers: { 'x-api-key': apiKey },
-  });
+  const res = await fetch(`https://customer-api.wingbits.com/v1/flights/${icao24.toLowerCase()}`, { headers: { 'x-api-key': apiKey } });
   return res.ok ? res.json() : null;
 }
-
-async function getWingbitsFlightPath(apiKey, icao24) {
+async function getFlightPath(apiKey, icao24) {
   if (!icao24) return null;
-  const res = await fetch(`https://customer-api.wingbits.com/v1/flights/${icao24.toLowerCase()}/path`, {
-    headers: { 'x-api-key': apiKey },
-  });
+  const res = await fetch(`https://customer-api.wingbits.com/v1/flights/${icao24.toLowerCase()}/path`, { headers: { 'x-api-key': apiKey } });
   return res.ok ? res.json() : null;
 }
-
-async function searchWingbitsFlights(apiKey, query) {
+async function searchFlights(apiKey, query) {
   if (!query || query.trim().length < 3) return null;
-  const res = await fetch(
-    `https://customer-api.wingbits.com/v1/flights/search?query=${encodeURIComponent(query.trim())}`,
-    { headers: { 'x-api-key': apiKey } }
-  );
+  const res = await fetch(`https://customer-api.wingbits.com/v1/flights/search?query=${encodeURIComponent(query.trim())}`, { headers: { 'x-api-key': apiKey } });
   return res.ok ? res.json() : null;
-}
-
-// ── Flatten all Wingbits region data into a single deduplicated list ──────────
-function flattenWingbits(regionsData) {
-  const seen = new Set();
-  const flights = [];
-  for (const region of (regionsData || [])) {
-    for (const f of (region.data || [])) {
-      if (f.h && !seen.has(f.h) && f.la && f.lo && !f.og) {
-        seen.add(f.h);
-        flights.push({
-          icao24: f.h,
-          callsign: f.f || null,
-          lat: f.la,
-          lon: f.lo,
-          altitude: f.ab || null,   // feet
-          heading: f.th || null,
-          speed: f.gs || null,      // knots
-          squawk: f.sq || null,
-          isMilitary: isMilitary(f.h),
-          region: region.alias,
-        });
-      }
-    }
-  }
-  return flights;
 }
 
 // ── Main handler ───────────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
-  const corsHeaders = {
+  const cors = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
-  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+  if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
 
   const apiKey = Deno.env.get('WINGBITS_API_KEY');
-  if (!apiKey) {
-    return Response.json({ error: 'WINGBITS_API_KEY not set' }, { status: 500, headers: corsHeaders });
-  }
+  if (!apiKey) return Response.json({ error: 'WINGBITS_API_KEY not set' }, { status: 500, headers: cors });
 
   let body = {};
-  try { body = await req.json(); } catch { /* GET or no body */ }
+  try { body = await req.json(); } catch {}
   const action = body.action || 'live';
 
   if (action === 'search') {
-    const result = await searchWingbitsFlights(apiKey, body.q || '');
-    return Response.json({ result }, { headers: corsHeaders });
+    const result = await searchFlights(apiKey, body.q || '');
+    return Response.json({ result }, { headers: cors });
   }
-
   if (action === 'detail') {
-    const icao24 = body.icao24 || '';
-    const [detail, path] = await Promise.all([
-      getWingbitsFlightDetail(apiKey, icao24),
-      getWingbitsFlightPath(apiKey, icao24),
-    ]);
-    return Response.json({ detail, path }, { headers: corsHeaders });
+    const [detail, path] = await Promise.all([getFlightDetail(apiKey, body.icao24), getFlightPath(apiKey, body.icao24)]);
+    return Response.json({ detail, path }, { headers: cors });
   }
 
-  // ── live: flights + GPS jam in parallel ──────────────────────────────────────
+  // live — parallel fetch
   const [flightsResult, jamResult] = await Promise.allSettled([
-    fetchWingbitsFlights(apiKey),
-    fetchWingbitsGpsJam(apiKey),
+    fetchAllFlights(apiKey),
+    fetchGpsJam(apiKey),
   ]);
 
-  const rawRegions = flightsResult.status === 'fulfilled' ? flightsResult.value : [];
-  const flights = flattenWingbits(rawRegions);
-  const militaryFlights = flights.filter(f => f.isMilitary);
-  const gpsJam = jamResult.status === 'fulfilled' ? jamResult.value : { hexes: [] };
+  const flights = flightsResult.status === 'fulfilled' ? flightsResult.value : [];
+  const gpsJam  = jamResult.status === 'fulfilled'    ? jamResult.value    : { hexes: [] };
 
-  console.log(`[Globe] ${flights.length} total flights (${militaryFlights.length} military), ${gpsJam.hexes.length} GPS jam zones`);
+  console.log(`[Globe] ${flights.length} flights, ${gpsJam.hexes.length} GPS jam zones`);
 
   return Response.json({
-    flights,          // all deduplicated flights (flat array)
-    militaryFlights,  // subset for easy access
-    wingbitsFlights: rawRegions,  // raw regions for backward compat with globe component
+    flights,
+    militaryFlights: flights.filter(f => f.isMilitary),
     gpsJam,
-    openSky: { flights: [], total: 0 },  // kept for compat, OpenSky skipped (too slow)
+    // compat fields
+    wingbitsFlights: [],
+    openSky: { flights: [], total: 0 },
     meta: {
       totalFlights: flights.length,
-      militaryCount: militaryFlights.length,
+      militaryCount: flights.filter(f => f.isMilitary).length,
       jamCount: gpsJam.hexes.length,
       fetchedAt: new Date().toISOString(),
     },
-  }, { headers: corsHeaders });
+  }, { headers: cors });
 });
