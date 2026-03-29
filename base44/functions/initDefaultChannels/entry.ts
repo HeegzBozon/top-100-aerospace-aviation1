@@ -34,17 +34,7 @@ const DEFAULT_CHANNELS = [
     icon: '👋',
     participants: [],
   },
-  {
-    type: 'channel',
-    name: 'community-polls',
-    description: 'Community voting and poll discussions',
-    is_private: false,
-    is_default: true,
-    is_readonly: false,
-    channel_category: 'community',
-    icon: '🗳️',
-    participants: [],
-  },
+
   {
     type: 'channel',
     name: 'development',
@@ -89,17 +79,7 @@ const DEFAULT_CHANNELS = [
     icon: '❓',
     participants: [],
   },
-  {
-    type: 'channel',
-    name: 'hangar-talk',
-    description: 'Casual off-topic hangout and watercooler conversations',
-    is_private: false,
-    is_default: true,
-    is_readonly: false,
-    channel_category: 'hangout',
-    icon: '☕',
-    participants: [],
-  },
+
 ];
 
 Deno.serve(async (req) => {
