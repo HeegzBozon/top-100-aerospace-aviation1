@@ -69,9 +69,6 @@ export default function ContactUsModal({ open, onClose }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-white text-sm">Email</p>
-              <p className="text-xs truncate" style={{ color: 'rgba(201,168,124,0.7)' }}>
-                matthew@top100aero.space
-              </p>
             </div>
             <span className="text-white/30 group-hover:text-white/60 transition-colors text-lg">→</span>
           </motion.a>
@@ -100,9 +97,6 @@ export default function ContactUsModal({ open, onClose }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-white text-sm">LinkedIn</p>
-              <p className="text-xs truncate" style={{ color: 'rgba(74,144,184,0.8)' }}>
-                TOP 100 Aerospace & Aviation
-              </p>
             </div>
             <span className="text-white/30 group-hover:text-white/60 transition-colors text-lg">→</span>
           </motion.a>
