@@ -14,7 +14,6 @@ import { ConversationProvider } from "@/components/contexts/ConversationContext"
 import { UnreadProvider } from "@/components/contexts/UnreadContext";
 import { SidebarProvider } from "@/components/contexts/SidebarContext";
 import { CommsThemeProvider } from "@/components/contexts/CommsThemeContext";
-const Admin = React.lazy(() => import("@/pages/Admin"));
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);

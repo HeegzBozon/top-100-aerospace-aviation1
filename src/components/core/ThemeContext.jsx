@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { User } from "@/entities/User";
+import { base44 } from "@/api/base44Client";
 import { themes, getAutoTheme, getCSSVariables } from "./brandTheme";
 
 export const ThemeContext = createContext(null);
@@ -22,7 +22,7 @@ export function ThemeProvider({ children, initialMode = 'auto' }) {
   const setTheme = async (newMode) => {
     setThemeMode(newMode);
     try {
-      await User.updateMyUserData({ theme_mode: newMode });
+      await base44.auth.updateMe({ theme_mode: newMode });
     } catch {}
   };
 
