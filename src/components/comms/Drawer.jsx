@@ -109,35 +109,9 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
       </div>
 
       {/* Conditional content based on page */}
-       {isCommsPage ? (
+       {isCommsPage && !!user ? (
          <>
-           {/* Auth gate for Comms */}
-           {!user ? (
-             <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 text-center">
-               <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mb-4">
-                 <Plus className="w-6 h-6 text-amber-400" />
-               </div>
-               <h3 className="text-lg font-bold text-white mb-2">Sign in to message</h3>
-               <p className="text-sm text-white/60 mb-6">Connect with other aerospace professionals in real-time.</p>
-               <div className="flex flex-col gap-2 w-full">
-                 <button
-                   onClick={() => base44.auth.redirectToLogin()}
-                   className="w-full px-4 py-2.5 rounded-lg font-medium text-white transition-all"
-                   style={{ background: 'linear-gradient(135deg, #4a90b8, #2d5a8c)' }}
-                 >
-                   Sign In
-                 </button>
-                 <button
-                   onClick={() => base44.auth.redirectToLogin()}
-                   className="w-full px-4 py-2.5 rounded-lg font-medium text-white/80 border border-white/20 hover:bg-white/5 transition-all"
-                 >
-                   Create Account
-                 </button>
-               </div>
-             </div>
-           ) : (
-             <>
-               {/* RRF Stage Filter (Comms only) */}
+           {/* RRF Stage Filter (Comms only) */}
           <div className="px-4 py-4 border-b backdrop-blur-sm" style={{ background: 'rgba(201, 168, 124, 0.05)', borderColor: 'rgba(201, 168, 124, 0.15)' }}>
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: 'rgba(201, 168, 124, 0.5)' }}>Filter by stage</p>
             <div className="flex gap-2 flex-wrap">
@@ -166,8 +140,6 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
 
           {/* DM List (Comms only) */}
           <div className="flex-1 overflow-y-auto scrollbar-hide px-2 py-3 space-y-1.5 flex flex-col">
-            {/* Welcome Rules + Nominations at top (reordered channels) */}
-
             {/* You - Notes to Self */}
             <button
               onClick={() => {
@@ -200,63 +172,55 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
               )}
             </button>
 
-            {/* DM Divider */}
             {filteredDMs.length > 0 && (
               <div className="my-3 border-t border-gray-800/50" />
             )}
 
-        {/* User DMs */}
-        {filteredDMs.map(conv => {
-          const isActive = activeConversation?.id === conv.id;
-          const unread = unreadCounts[conv.id] || 0;
-          const displayName = getDisplayName(conv);
-          const subtitle = getSubtitle(conv);
-          const initials = getInitials(conv.participants?.find(p => p !== user?.email) || '');
-          const gradientClass = getAvatarGradient(conv);
+            {filteredDMs.map(conv => {
+              const isActive = activeConversation?.id === conv.id;
+              const unread = unreadCounts[conv.id] || 0;
+              const displayName = getDisplayName(conv);
+              const subtitle = getSubtitle(conv);
+              const initials = getInitials(conv.participants?.find(p => p !== user?.email) || '');
 
-          return (
-            <button
-              key={conv.id}
-              onClick={() => {
-                selectConversation(conv);
-                onMobileClose?.();
-              }}
-              className={cn(
-                "w-full px-3 py-3 rounded-lg transition-all duration-300 group flex items-start gap-3 border-l-2",
-                isActive
-                  ? "bg-gradient-to-r from-rose-900/40 to-rose-900/20 border-l-rose-500 shadow-lg shadow-rose-500/10"
-                  : "hover:bg-slate-800/30 border-l-transparent group-hover:border-l-rose-500/50"
-              )}
-            >
-              <div className={cn(
-                "w-11 h-11 rounded-lg flex items-center justify-center font-bold text-sm text-white shrink-0 transition-all duration-200",
-                "bg-gradient-to-br from-slate-600 to-slate-700"
-              )}>
-                {initials}
-              </div>
-              <div className="flex-1 min-w-0 text-left">
-                <p className="text-sm font-semibold text-white truncate">{displayName}</p>
-                <p className="text-xs text-gray-400 truncate">{subtitle}</p>
-              </div>
-              {unread > 0 && (
-                <div className="w-6 h-6 rounded-full bg-cyan-500 flex items-center justify-center text-white text-xs font-bold shrink-0 ml-auto">
-                  {unread}
-                </div>
-              )}
-            </button>
-          );
-        })}
+              return (
+                <button
+                  key={conv.id}
+                  onClick={() => {
+                    selectConversation(conv);
+                    onMobileClose?.();
+                  }}
+                  className={cn(
+                    "w-full px-3 py-3 rounded-lg transition-all duration-300 group flex items-start gap-3 border-l-2",
+                    isActive
+                      ? "bg-gradient-to-r from-rose-900/40 to-rose-900/20 border-l-rose-500 shadow-lg shadow-rose-500/10"
+                      : "hover:bg-slate-800/30 border-l-transparent group-hover:border-l-rose-500/50"
+                  )}
+                >
+                  <div className="w-11 h-11 rounded-lg flex items-center justify-center font-bold text-sm text-white shrink-0 bg-gradient-to-br from-slate-600 to-slate-700">
+                    {initials}
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="text-sm font-semibold text-white truncate">{displayName}</p>
+                    <p className="text-xs text-gray-400 truncate">{subtitle}</p>
+                  </div>
+                  {unread > 0 && (
+                    <div className="w-6 h-6 rounded-full bg-cyan-500 flex items-center justify-center text-white text-xs font-bold shrink-0 ml-auto">
+                      {unread}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
 
             {filteredDMs.length === 0 && selectedStage && (
-               <div className="py-8 text-center">
-                 <p className="text-sm" style={{ color: 'rgba(201, 168, 124, 0.4)' }}>No conversations in {selectedStage} stage</p>
-               </div>
-             )}
-            </div>
-            </>
+              <div className="py-8 text-center">
+                <p className="text-sm" style={{ color: 'rgba(201, 168, 124, 0.4)' }}>No conversations in {selectedStage} stage</p>
+              </div>
             )}
-            </>
-            ) : (
+          </div>
+         </>
+         ) : (
         /* Default channels view for all other pages */
         <div className="flex-1 overflow-y-auto scrollbar-hide px-3 py-3 flex flex-col gap-3">
           {/* Top-priority channels (Welcome Rules, Nominations) */}
