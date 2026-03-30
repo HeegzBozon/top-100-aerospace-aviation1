@@ -119,8 +119,8 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
     },
   });
 
-  // Auth gate: only show for DMs or non-public channels
-  if (!user && !isPublicChannel) {
+  // Auth gate: only show for DMs or non-public channels (nominations has internal auth handling)
+  if (!user && !isPublicChannel && !isNominationsChannel) {
     return (
       <CommsAuthGate
         onSignIn={() => base44.auth.redirectToLogin()}
