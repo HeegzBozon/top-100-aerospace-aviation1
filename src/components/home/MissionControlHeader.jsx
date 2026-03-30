@@ -148,8 +148,8 @@ function SeasonSchedule({ season }) {
     { label: 'Nominations Close', date: season.nomination_end },
     { label: 'Voting Opens',      date: season.voting_start },
     { label: 'Voting Closes',     date: season.voting_end },
-    { label: 'Review Phase',      date: season.review_start },
-    { label: 'Season Ends',       date: season.end_date },
+    { label: 'Review & Editorial Phase', date: season.review_start },
+    { label: 'Publication',              date: season.end_date },
   ].filter(p => p.date);
 
   if (!phases.length) return null;
