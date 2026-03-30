@@ -45,8 +45,7 @@ export default function CommsLayoutDesktop({
 
           <CommsIconRail currentPageName={currentPageName} totalUnread={0} />
 
-          {!!user && (
-            <div className={`
+          <div className={`
               fixed md:relative inset-y-0 left-0 z-50 md:z-auto
               ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
               transition-transform duration-300 ease-out
@@ -57,7 +56,6 @@ export default function CommsLayoutDesktop({
                 user={user}
               />
             </div>
-          )}
         </>
       )}
 

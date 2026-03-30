@@ -20,7 +20,7 @@ function MobileCommsContent({
 }) {
   const { activeConversation } = useConversation();
   const [composerActive, setComposerActive] = useState(false);
-  const showDock = !isBare && !!user && !activeConversation || (!isBare && !!user && activeConversation && !composerActive);
+  const showDock = (!isBare && !activeConversation) || (!isBare && activeConversation && !composerActive);
 
   return (
     <>
@@ -33,7 +33,7 @@ function MobileCommsContent({
 
       {!isBare && !!user && currentPageName?.toLowerCase() === 'comms' ? (
         <MobileCommsView isDarkMode={isDarkMode} onComposerActiveChange={setComposerActive} />
-      ) : !isBare && !!user && currentPageName?.toLowerCase() === 'home' ? (
+      ) : !isBare && currentPageName?.toLowerCase() === 'home' ? (
         <MobileHomeView
           isDarkMode={isDarkMode}
           setIsDarkMode={setIsDarkMode}
@@ -44,7 +44,7 @@ function MobileCommsContent({
         </div>
       )}
 
-      {!isBare && !!user && <NewYearCountdownBar />}
+      {!isBare && <NewYearCountdownBar />}
 
       {showDock && (
         <MobileDock
