@@ -38,8 +38,9 @@ function RailIcon({ iconName, className }) {
   return <Icon className={className} />;
 }
 
-export default function CommsIconRail({ currentPageName, totalUnread }) {
-  const { user, selectConversation } = useConversation();
+export default function CommsIconRail({ currentPageName, totalUnread, user: propsUser }) {
+  const { user: contextUser, selectConversation } = useConversation();
+  const user = propsUser || contextUser;
   const [profileOpen, setProfileOpen] = useState(false);
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -201,7 +202,7 @@ export default function CommsIconRail({ currentPageName, totalUnread }) {
                    <RailIcon iconName={item.icon} className="w-5 h-5" />
                 </div>
                 <span className={cn(
-                  "text-[9px] font-bold uppercase tracking-wider transition-opacity duration-300",
+                  "text-[9px] font-bold uppercase tracking-wider transition-opacity duration-300 line-clamp-1",
                   isActive ? "text-white opacity-100" : "text-white/40 group-hover:opacity-80"
                 )}>
                   {item.label}
