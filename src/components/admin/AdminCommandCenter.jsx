@@ -230,7 +230,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                 activeSeason,
                 seasons,
                 seasonNomineeCount,
-                upcomingEvents: events.filter(e => new Date(e.event_date) > now).length,
+                upcomingEvents: events.filter(e => new Date(e.event_date) > new Date()).length,
             });
         } catch (err) {
             console.error('AdminCommandCenter loadPlatformData error:', err);
