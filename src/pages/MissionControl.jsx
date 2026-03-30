@@ -394,11 +394,11 @@ export default function MissionControl() {
 
           {/* Quick Actions */}
           <div className="flex flex-wrap gap-3 mt-6">
-            <Link to={createPageUrl('Nominations')}>
+            <a href="/Nominations">
               <Button className="text-white font-semibold" style={{ background: brand.gold }}>
                 <Send className="w-4 h-4 mr-2" /> Submit Nomination
               </Button>
-            </Link>
+            </a>
             <Link to={createPageUrl('Top100Women2025')}>
               <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
                 <Award className="w-4 h-4 mr-2" /> View 2025 Index
