@@ -133,7 +133,11 @@ const AuthenticatedApp = () => {
       } />
       <Route path="/payment-plan" element={<PaymentPlan />} />
       <Route path="/season4" element={<Season4Launch />} />
-      <Route path="/Nominations" element={<Nominations />} />
+      <Route path="/Nominations" element={
+        <LayoutWrapper currentPageName="Nominations">
+          <Nominations />
+        </LayoutWrapper>
+      } />
       <Route path="/top100-tv" element={
         <LayoutWrapper currentPageName="Top100TV">
           <Top100TV />
