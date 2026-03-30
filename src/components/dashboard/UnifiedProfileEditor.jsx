@@ -75,7 +75,7 @@ export default function UnifiedProfileEditor({ user }) {
 
   const visibleTabs = [
     { id: 'user', label: 'User Profile', icon: UserIcon, description: 'Basic account info' },
-    ...(nominee ? [{ id: 'nominee', label: 'Nominee Profile', icon: Star, description: 'TOP 100 competition' }] : []),
+    ...(nominee ? [{ id: 'nominee', label: 'Flightography', icon: Star, description: 'TOP 100 competition' }] : []),
   ];
 
   const calculateCompleteness = (type) => {

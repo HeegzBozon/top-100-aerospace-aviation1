@@ -10,7 +10,7 @@ import { Camera, Loader2, Save, Star, AlertTriangle, ExternalLink } from 'lucide
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import SocialStatsCard from '@/components/profile/SocialStatsCard';
+
 
 export default function NomineeProfileEditor({ user, nominee, onUpdate }) {
   const [formData, setFormData] = useState({
@@ -24,7 +24,6 @@ export default function NomineeProfileEditor({ user, nominee, onUpdate }) {
     youtube_url: nominee?.youtube_url || '',
     website_url: nominee?.website_url || '',
   });
-  const [nomineeData, setNomineeData] = useState(nominee);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
@@ -78,7 +77,7 @@ export default function NomineeProfileEditor({ user, nominee, onUpdate }) {
       <div className="flex items-start gap-4">
         <Star className="w-6 h-6 text-amber-500 mt-1" />
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">Nominee Profile</h2>
+          <h2 className="text-lg font-semibold text-slate-800">Flightography</h2>
           <p className="text-sm text-slate-500">Your TOP 100 competition profile</p>
         </div>
       </div>
@@ -206,17 +205,6 @@ export default function NomineeProfileEditor({ user, nominee, onUpdate }) {
           </div>
         </div>
       </div>
-
-      {/* Social Stats */}
-      <SocialStatsCard
-        nominee={nomineeData}
-        user={user}
-        onUpdate={(newStats) => {
-          const updated = { ...nomineeData, social_stats: newStats };
-          setNomineeData(updated);
-          onUpdate?.(updated);
-        }}
-      />
 
       {/* Actions */}
       <div className="flex items-center justify-between pt-4 border-t border-slate-100">
