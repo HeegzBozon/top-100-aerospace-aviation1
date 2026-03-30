@@ -38,13 +38,8 @@ const brand = {
   gold: '#c9a87c',
 };
 
-export default function MissionControlHeader() {
+export default function MissionControlHeader({ seasons = [] }) {
   const [selectedSeasonId, setSelectedSeasonId] = useState('');
-
-  const { data: seasons = [] } = useQuery({
-    queryKey: ['home-mc-seasons'],
-    queryFn: () => base44.entities.Season.list('-created_date', 5),
-  });
 
   useEffect(() => {
     if (!seasons.length || selectedSeasonId) return;
