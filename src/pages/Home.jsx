@@ -264,8 +264,7 @@ export default function HomePage() {
       </div>
     }>
       <EditorialTerminal heroSlot={<Landing2Hero user={user} />}>
-        {/* Promo */}
-        <Landing2PromoBanner />
+        {/* Promo removed */}
 
         {/* Ordered, togglable editorial sections */}
         {orderedSectionIds.map(id => {

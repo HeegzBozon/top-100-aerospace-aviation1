@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Rocket, Send, Award, Clock } from 'lucide-react';
+import { Rocket, Send, Award, Clock, CalendarDays, CheckCircle2, Circle, Loader } from 'lucide-react';
 
 function useCountdown(targetDate) {
   const [now, setNow] = useState(new Date());
@@ -111,7 +111,7 @@ export default function MissionControlHeader() {
         )}
 
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3 mb-8">
           <Link to="/Nominations">
             <Button className="text-white font-semibold" style={{ background: brand.gold }}>
               <Send className="w-4 h-4 mr-2" /> Submit Nomination
@@ -123,6 +123,57 @@ export default function MissionControlHeader() {
             </Button>
           </Link>
         </div>
+
+        {/* Season Schedule */}
+        <SeasonSchedule season={activeSeason} />
+      </div>
+    </div>
+  );
+}
+
+function SeasonSchedule({ season }) {
+  const today = new Date();
+
+  const phases = [
+    { label: 'Nominations Open',  date: season.nomination_start },
+    { label: 'Nominations Close', date: season.nomination_end },
+    { label: 'Voting Opens',      date: season.voting_start },
+    { label: 'Voting Closes',     date: season.voting_end },
+    { label: 'Review Phase',      date: season.review_start },
+    { label: 'Season Ends',       date: season.end_date },
+  ].filter(p => p.date);
+
+  if (!phases.length) return null;
+
+  return (
+    <div className="rounded-2xl px-5 py-4" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+      <div className="flex items-center gap-2 mb-4">
+        <CalendarDays className="w-4 h-4" style={{ color: brand.gold }} />
+        <span className="text-xs font-bold uppercase tracking-widest text-white/60">Season Schedule</span>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+        {phases.map(({ label, date }) => {
+          const d = new Date(date);
+          const isPast = d < today;
+          const isNow = phases.some(p => {
+            const pd = new Date(p.date);
+            return pd <= today;
+          }) && !isPast ? false : false; // simplified: just past/future
+          return (
+            <div key={label} className="flex flex-col gap-1">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                {isPast
+                  ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: brand.gold }} />
+                  : <Circle className="w-3.5 h-3.5 shrink-0 text-white/30" />
+                }
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${isPast ? 'text-white/80' : 'text-white/40'}`}>{label}</span>
+              </div>
+              <span className={`text-sm font-semibold tabular-nums ml-5 ${isPast ? 'text-white' : 'text-white/50'}`}>
+                {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
