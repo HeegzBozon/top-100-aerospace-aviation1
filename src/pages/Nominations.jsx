@@ -280,26 +280,28 @@ export default function Nominations() {
           </div>
         </div>
 
-        {/* Right: Nomination History Feed */}
-        <div
-          className="w-full md:w-1/2 lg:w-[55%] overflow-y-auto"
-        >
+        {/* Right: Nomination History Feed - Only for authenticated users */}
+        {isAuthenticated && (
           <div
-            className="sticky top-0 z-10 px-4 py-3 border-b"
-            style={{
-              background: brandColors.cream,
-              borderColor: `${brandColors.navyDeep}10`
-            }}
+            className="w-full md:w-1/2 lg:w-[55%] overflow-y-auto"
           >
-            <h2 className="font-semibold" style={{ color: brandColors.navyDeep }}>
-              Your Nominations
-            </h2>
-            <p className="text-xs" style={{ color: `${brandColors.navyDeep}60` }}>
-              Track nominations you've submitted and received
-            </p>
+            <div
+              className="sticky top-0 z-10 px-4 py-3 border-b"
+              style={{
+                background: brandColors.cream,
+                borderColor: `${brandColors.navyDeep}10`
+              }}
+            >
+              <h2 className="font-semibold" style={{ color: brandColors.navyDeep }}>
+                Your Nominations
+              </h2>
+              <p className="text-xs" style={{ color: `${brandColors.navyDeep}60` }}>
+                Track nominations you've submitted and received
+              </p>
+            </div>
+            <NominationHistoryFeed />
           </div>
-          <NominationHistoryFeed />
-        </div>
+        )}
       </div>
 
       {/* Mobile: Floating Action Button for Form */}
