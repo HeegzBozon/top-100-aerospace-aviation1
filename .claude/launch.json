@@ -69,6 +69,13 @@
       "runtimeArgs": ["run", "dev"],
       "cwd": "/Users/heegzbozon/Downloads/worldmonitor",
       "port": 5173
+    },
+    {
+      "name": "adoring-jemison-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5178"],
+      "cwd": "/Users/heegzbozon/Downloads/inventing-me-vault/top-100-aerospace-aviation1/.claude/worktrees/adoring-jemison",
+      "port": 5178
     }
   ]
 }

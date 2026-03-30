@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import ErrorBoundary from '@/components/core/ErrorBoundary';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
@@ -173,16 +174,18 @@ if (typeof document !== 'undefined') {
 function App() {
 
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <NavigationTracker />
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-        <VisualEditAgent />
-      </QueryClientProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <QueryClientProvider client={queryClientInstance}>
+          <Router>
+            <NavigationTracker />
+            <AuthenticatedApp />
+          </Router>
+          <Toaster />
+          <VisualEditAgent />
+        </QueryClientProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }
 
