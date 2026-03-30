@@ -145,7 +145,7 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
        } />
 
-      <Route path="/Profile" element={<Navigate to="/ProfileView" replace />} />
+      {/* /Profile is the profile editor — do not redirect */}
       <Route path="/PublicProfile" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/Nominee" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/UserProfile" element={<Navigate to="/ProfileView" replace />} />
