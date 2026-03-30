@@ -31,13 +31,19 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
   const [searchOpen, setSearchOpen] = useState(false);
   const [crpExpanded, setCrpExpanded] = useState(false);
 
+  // Channels readable without auth
+  const PUBLIC_CHANNEL_NAMES = ['welcome', 'rules', 'getting-started', 'getting started', 'bug', 'feature', 'help', 'announcement', 'operations'];
+  const isPublicChannel = activeConversation?.type === 'channel' &&
+    PUBLIC_CHANNEL_NAMES.some(n => activeConversation?.name?.toLowerCase().includes(n));
+
   const { data: messages = [], isLoading: msgsLoading } = useQuery({
     queryKey: ["messages", activeConversation?.id],
     queryFn: () => Message.filter({ conversation_id: activeConversation.id }, "created_date", 200),
-    enabled: !!activeConversation?.id && !!user?.email,
+    enabled: !!activeConversation?.id && (!!user?.email || isPublicChannel),
     staleTime: 5000,
     refetchInterval: 8000,
     onSuccess: (all) => {
+      if (!user?.email) return;
       // Fire-and-forget batch read — does not block render
       const unread = all.filter(m =>
         m.sender_email !== user.email &&
@@ -113,8 +119,8 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
     },
   });
 
-  // Auth gate: show sign-in CTA if no user
-  if (!user) {
+  // Auth gate: only show for DMs or non-public channels
+  if (!user && !isPublicChannel) {
     return (
       <CommsAuthGate
         onSignIn={() => base44.auth.redirectToLogin()}
