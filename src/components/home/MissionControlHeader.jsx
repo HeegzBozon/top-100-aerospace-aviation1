@@ -39,7 +39,7 @@ const brand = {
 };
 
 export default function MissionControlHeader() {
-  const [selectedSeasonId, setSelectedSeasonId] = useState(null);
+  const [selectedSeasonId, setSelectedSeasonId] = useState('');
 
   const { data: seasons = [] } = useQuery({
     queryKey: ['home-mc-seasons'],
@@ -105,6 +105,8 @@ export default function MissionControlHeader() {
             <CountdownUnit value={countdown.hours} label="Hours" />
             <span className="text-white/30 text-2xl font-light">:</span>
             <CountdownUnit value={countdown.mins} label="Min" />
+            <span className="text-white/30 text-2xl font-light">:</span>
+            <CountdownUnit value={countdown.secs} label="Sec" />
           </div>
         )}
 
