@@ -26,7 +26,8 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes('/node_modules/')) return;
           if (id.includes('/three/') || id.includes('/globe.gl/')) return 'vendor-3d';
-          if (id.includes('/recharts/') || id.includes('/d3-') || id.includes('/d3/')) return 'vendor-charts';
+          if (id.includes('/recharts/')) return 'vendor-recharts';
+          if (id.includes('/d3-') || id.includes('/d3/')) return 'vendor-d3';
           if (id.includes('/react-leaflet/') || id.includes('/leaflet/')) return 'vendor-maps';
           if (id.includes('/@radix-ui/') || id.includes('/framer-motion/') || id.includes('/@floating-ui/') || id.includes('/cmdk/') || id.includes('/vaul/') || id.includes('/react-day-picker/') || id.includes('/embla-carousel')) return 'vendor-ui';
           if (id.includes('/@tanstack/')) return 'vendor-query';
