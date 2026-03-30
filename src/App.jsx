@@ -32,6 +32,7 @@ const LaunchParty             = lazy(() => import('@/pages/LaunchParty'));
 const Top100AerospaceAviationTV = lazy(() => import('@/pages/Top100AerospaceAviationTV'));
 const Top100TV = lazy(() => import('@/pages/Top100TV'));
 const PaymentPlan = lazy(() => import('@/pages/PaymentPlan'));
+const Season4Launch = lazy(() => import('@/pages/Season4Launch'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -130,6 +131,7 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
       } />
       <Route path="/payment-plan" element={<PaymentPlan />} />
+      <Route path="/season4" element={<Season4Launch />} />
       <Route path="/top100-tv" element={
         <LayoutWrapper currentPageName="Top100TV">
           <Top100TV />
