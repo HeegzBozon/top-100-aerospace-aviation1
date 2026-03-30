@@ -5,9 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Loader2, Save, UserCircle } from 'lucide-react';
+import { Camera, Loader2, Save, UserCircle, Upload, Info, ExternalLink } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import LinkedInConnect from '@/components/linkedin/LinkedInConnect';
 
 export default function UserProfileEditor({ user }) {
   const [formData, setFormData] = useState({
@@ -17,6 +16,8 @@ export default function UserProfileEditor({ user }) {
   });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [pdfUploading, setPdfUploading] = useState(false);
+  const [pdfUploaded, setPdfUploaded] = useState(false);
   const { toast } = useToast();
 
   const handlePhotoUpload = async (e) => {
@@ -32,6 +33,21 @@ export default function UserProfileEditor({ user }) {
       toast({ variant: 'destructive', title: 'Upload failed' });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handlePdfUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPdfUploading(true);
+    try {
+      await base44.integrations.Core.UploadFile({ file });
+      setPdfUploaded(true);
+      toast({ title: 'LinkedIn profile uploaded! Our team will process it shortly.' });
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Upload failed. Please try again.' });
+    } finally {
+      setPdfUploading(false);
     }
   };
 
@@ -113,21 +129,44 @@ export default function UserProfileEditor({ user }) {
         </div>
       </div>
 
-      {/* Social Integrations */}
-      <div className="pt-4 border-t border-slate-100">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <LinkedInConnect 
-            user={user}
-            onProfileFetched={(linkedinData) => {
-              if (!formData.avatar_url && linkedinData.picture) {
-                setFormData(prev => ({ ...prev, avatar_url: linkedinData.picture }));
-              }
-              if (!formData.full_name && linkedinData.name) {
-                setFormData(prev => ({ ...prev, full_name: linkedinData.name }));
-              }
-            }} 
-          />
+      {/* LinkedIn PDF Upload */}
+      <div className="pt-4 border-t border-slate-100 space-y-3">
+        <div className="flex items-center gap-2">
+          <Upload className="w-5 h-5 text-blue-600" />
+          <h3 className="text-sm font-semibold text-slate-800">Import from LinkedIn</h3>
         </div>
+
+        {/* Instructions */}
+        <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 space-y-2">
+          <div className="flex items-start gap-2">
+            <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+            <p className="text-xs font-semibold text-blue-800">How to export your LinkedIn profile as a PDF:</p>
+          </div>
+          <ol className="text-xs text-blue-700 space-y-1 ml-6 list-decimal">
+            <li>Go to your <a href="https://www.linkedin.com/in/me/" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">LinkedIn profile <ExternalLink className="w-3 h-3" /></a></li>
+            <li>Click the <strong>"More"</strong> button (below your name)</li>
+            <li>Select <strong>"Save to PDF"</strong></li>
+            <li>Upload the downloaded PDF below</li>
+          </ol>
+        </div>
+
+        {/* Upload button */}
+        <label className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border-2 border-dashed cursor-pointer transition-all ${pdfUploaded ? 'border-green-400 bg-green-50 text-green-700' : 'border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50 text-slate-600'}`}>
+          {pdfUploading ? (
+            <><Loader2 className="w-4 h-4 animate-spin" /><span className="text-sm">Uploading…</span></>
+          ) : pdfUploaded ? (
+            <><span className="text-sm font-medium">✓ PDF uploaded successfully</span></>
+          ) : (
+            <><Upload className="w-4 h-4" /><span className="text-sm">Upload LinkedIn PDF</span></>
+          )}
+          <input
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={handlePdfUpload}
+            disabled={pdfUploading}
+          />
+        </label>
       </div>
 
       {/* Save */}
