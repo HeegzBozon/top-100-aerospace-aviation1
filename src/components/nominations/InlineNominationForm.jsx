@@ -102,7 +102,11 @@ export default function InlineNominationForm({ onSuccess = undefined }) {
 
     setIsSubmitting(true);
     try {
-      const user = await base44.auth.me();
+      const user = await base44.auth.me().catch(() => {
+        base44.auth.redirectToLogin();
+        throw new Error('Not authenticated');
+      });
+
       await base44.entities.Nominee.create({
         name: formData.name,
         description: formData.reason,
