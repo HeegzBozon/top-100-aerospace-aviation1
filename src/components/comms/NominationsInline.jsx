@@ -1,7 +1,9 @@
-import { Trophy, Star, Rocket, Award } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Trophy, Star, Rocket, Award, LogIn, UserPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import NominationHistoryFeed from '@/components/nominations/NominationHistoryFeed';
 import InlineNominationForm from '@/components/nominations/InlineNominationForm';
+import { base44 } from '@/api/base44Client';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -11,6 +13,24 @@ const brandColors = {
 };
 
 export default function NominationsInline() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    base44.auth.me()
+      .then(u => setUser(u))
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center" style={{ background: brandColors.cream }}>
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col overflow-hidden" style={{ background: brandColors.cream }}>
       {/* Hero Header */}
@@ -111,25 +131,62 @@ export default function NominationsInline() {
 
       {/* Main Content - Two Column Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left: Inline Nomination Form */}
+        {/* Left: Inline Nomination Form or Auth Gate */}
         <div
           className="hidden md:flex md:w-1/2 lg:w-[45%] flex-col border-r"
           style={{ background: 'white', borderColor: `${brandColors.navyDeep}10` }}
         >
-          <div
-            className="px-4 py-3 border-b"
-            style={{ borderColor: `${brandColors.navyDeep}10` }}
-          >
-            <h2 className="font-semibold" style={{ color: brandColors.navyDeep }}>
-              Nominate Someone
-            </h2>
-            <p className="text-xs" style={{ color: `${brandColors.navyDeep}60` }}>
-              Know someone extraordinary? Submit a nomination
-            </p>
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <InlineNominationForm />
-          </div>
+          {user ? (
+            <>
+              <div
+                className="px-4 py-3 border-b"
+                style={{ borderColor: `${brandColors.navyDeep}10` }}
+              >
+                <h2 className="font-semibold" style={{ color: brandColors.navyDeep }}>
+                  Nominate Someone
+                </h2>
+                <p className="text-xs" style={{ color: `${brandColors.navyDeep}60` }}>
+                  Know someone extraordinary? Submit a nomination
+                </p>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <InlineNominationForm />
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                style={{ background: `${brandColors.goldPrestige}20` }}
+              >
+                <Trophy className="w-8 h-8" style={{ color: brandColors.goldPrestige }} />
+              </div>
+              <h3 className="text-lg font-semibold mb-2" style={{ color: brandColors.navyDeep }}>
+                Join to Nominate
+              </h3>
+              <p className="text-sm mb-6" style={{ color: `${brandColors.navyDeep}70` }}>
+                We verify all nominators to ensure integrity and prevent duplicate submissions across the global community.
+              </p>
+              <div className="flex flex-col gap-3 w-full">
+                <button
+                  onClick={() => base44.auth.redirectToLogin()}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-lg"
+                  style={{ background: brandColors.navyDeep }}
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </button>
+                <button
+                  onClick={() => base44.auth.redirectToLogin()}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all hover:shadow-lg"
+                  style={{ background: `${brandColors.goldPrestige}20`, color: brandColors.goldPrestige, border: `1.5px solid ${brandColors.goldPrestige}40` }}
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Create Account
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right: Nomination History Feed */}
@@ -144,10 +201,10 @@ export default function NominationsInline() {
             }}
           >
             <h2 className="font-semibold" style={{ color: brandColors.navyDeep }}>
-              Your Nominations
+              Recent Nominations
             </h2>
             <p className="text-xs" style={{ color: `${brandColors.navyDeep}60` }}>
-              Track nominations you've submitted and received
+              {user ? 'Track nominations you\'ve submitted and received' : 'See recent community nominations'}
             </p>
           </div>
           <NominationHistoryFeed />
