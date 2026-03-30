@@ -154,19 +154,16 @@ export default function NominationsInline() {
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                style={{ background: `${brandColors.goldPrestige}20` }}
-              >
-                <Trophy className="w-8 h-8" style={{ color: brandColors.goldPrestige }} />
+            <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+              <div className="mb-8">
+                <Award className="w-12 h-12 mx-auto mb-4" style={{ color: brandColors.goldPrestige }} />
+                <h2 className="text-2xl font-bold mb-4" style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  Every Nomination Matters
+                </h2>
+                <p className="text-sm leading-relaxed mb-6" style={{ color: `${brandColors.navyDeep}75` }}>
+                  Every nomination is tied to a real person with a real account. That's not bureaucracy — that's the anti-gaming mechanism. Sign up, back someone worthy, and let the record show you called it.
+                </p>
               </div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: brandColors.navyDeep }}>
-                Join to Nominate
-              </h3>
-              <p className="text-sm mb-6" style={{ color: `${brandColors.navyDeep}70` }}>
-                We verify all nominators to ensure integrity and prevent duplicate submissions across the global community.
-              </p>
               <div className="flex flex-col gap-3 w-full">
                 <button
                   onClick={() => base44.auth.redirectToLogin()}
