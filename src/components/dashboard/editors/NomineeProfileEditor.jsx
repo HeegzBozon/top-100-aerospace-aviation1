@@ -20,7 +20,7 @@ export default function NomineeProfileEditor({ user, nominee, onUpdate }) {
     avatar_url: nominee?.avatar_url || '',
     linkedin_profile_url: nominee?.linkedin_profile_url || '',
     instagram_url: nominee?.instagram_url || '',
-    tiktok_url: nominee?.tiktok_url || '',
+    threads_url: nominee?.threads_url || '',
     youtube_url: nominee?.youtube_url || '',
     website_url: nominee?.website_url || '',
   });
@@ -78,7 +78,7 @@ export default function NomineeProfileEditor({ user, nominee, onUpdate }) {
         <Star className="w-6 h-6 text-amber-500 mt-1" />
         <div>
           <h2 className="text-lg font-semibold text-slate-800">Flightography</h2>
-          <p className="text-sm text-slate-500">Your TOP 100 competition profile</p>
+
         </div>
       </div>
 
@@ -106,10 +106,7 @@ export default function NomineeProfileEditor({ user, nominee, onUpdate }) {
             />
           </label>
         </div>
-        <div>
-          <p className="text-sm font-medium text-slate-700">Nominee Photo</p>
-          <p className="text-xs text-slate-500">This appears on leaderboards</p>
-        </div>
+
       </div>
 
       {/* Form */}
@@ -184,12 +181,12 @@ export default function NomineeProfileEditor({ user, nominee, onUpdate }) {
             />
           </div>
           <div>
-            <Label htmlFor="tiktok">TikTok URL</Label>
+            <Label htmlFor="threads">Threads URL</Label>
             <Input
-              id="tiktok"
-              value={formData.tiktok_url}
-              onChange={(e) => setFormData(prev => ({ ...prev, tiktok_url: e.target.value }))}
-              placeholder="https://tiktok.com/@..."
+              id="threads"
+              value={formData.threads_url}
+              onChange={(e) => setFormData(prev => ({ ...prev, threads_url: e.target.value }))}
+              placeholder="https://threads.net/@..."
               className="mt-1"
             />
           </div>
