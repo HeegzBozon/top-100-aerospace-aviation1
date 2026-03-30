@@ -20,6 +20,9 @@ export default function Nominations() {
     base44.auth.isAuthenticated().then((auth) => {
       setIsAuthenticated(auth);
       setAuthChecked(true);
+    }).catch(() => {
+      setIsAuthenticated(false);
+      setAuthChecked(true);
     });
   }, []);
 
