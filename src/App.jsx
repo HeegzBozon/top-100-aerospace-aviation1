@@ -31,6 +31,7 @@ const LinkedInManager         = lazy(() => import('@/pages/LinkedInManager'));
 const LaunchParty             = lazy(() => import('@/pages/LaunchParty'));
 const Top100AerospaceAviationTV = lazy(() => import('@/pages/Top100AerospaceAviationTV'));
 const Top100TV = lazy(() => import('@/pages/Top100TV'));
+const PaymentPlan = lazy(() => import('@/pages/PaymentPlan'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -128,6 +129,7 @@ const AuthenticatedApp = () => {
           <Top100AerospaceAviationTV />
         </LayoutWrapper>
       } />
+      <Route path="/payment-plan" element={<PaymentPlan />} />
       <Route path="/top100-tv" element={
         <LayoutWrapper currentPageName="Top100TV">
           <Top100TV />
