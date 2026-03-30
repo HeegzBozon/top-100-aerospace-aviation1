@@ -249,11 +249,11 @@ export default function HomePage() {
     spotlight: isMemberOnly ? null : <IndustrySpotlight />,
     featured: isMemberOnly ? null : <FeaturedToday />,
     programs: isMemberOnly ? null : <TrendingPrograms />,
-    talent: <TrendingTalent nominees={trendingProfiles} />,
+    talent: null,
     favorites: isMemberOnly ? null : <CommunityFavorites />,
     missions: isMemberOnly ? null : <UpcomingMissions />,
     topPrograms: isMemberOnly ? null : <TopPrograms />,
-    domain: <DomainExplorer />,
+    domain: null,
     originals: isMemberOnly ? null : <TopOriginals />,
   };
 
