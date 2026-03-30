@@ -48,11 +48,16 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
   // Separate top-priority channels and filter DMs by selected RRF stage
   const topChannels = channels.filter(ch => {
     const name = ch.name?.toLowerCase();
-    return name === 'welcome-and-rules' || name === 'nominations';
+    return name === 'welcome-and-rules' || name === 'announcements' || name === 'nominations';
+  }).sort((a, b) => {
+    const order = { 'welcome-and-rules': 0, 'announcements': 1, 'nominations': 2 };
+    const aOrder = order[a.name?.toLowerCase()] ?? 999;
+    const bOrder = order[b.name?.toLowerCase()] ?? 999;
+    return aOrder - bOrder;
   });
   const remainingChannels = channels.filter(ch => {
     const name = ch.name?.toLowerCase();
-    return name !== 'welcome-and-rules' && name !== 'nominations';
+    return name !== 'welcome-and-rules' && name !== 'announcements' && name !== 'nominations' && name !== 'operations';
   });
   const filteredDMs = selectedStage
     ? dms.filter(dm => dm.rrf_stage === selectedStage)
@@ -226,7 +231,8 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
           {/* Top-priority channels (Welcome Rules, Nominations) */}
           <div className="space-y-1.5">
             {topChannels.map(ch => {
-              const IconComponent = ch.name?.toLowerCase() === 'welcome-and-rules' ? () => <span className="text-lg">📖</span> : () => <span className="text-lg">🗳️</span>;
+              const name = ch.name?.toLowerCase();
+              const IconComponent = name === 'welcome-and-rules' ? () => <span className="text-lg">📖</span> : name === 'announcements' ? () => <span className="text-lg">📢</span> : () => <span className="text-lg">🗳️</span>;
               const isActive = activeConversation?.id === ch.id;
               const unread = unreadCounts[ch.id] || 0;
               return (
