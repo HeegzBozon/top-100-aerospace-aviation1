@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createPageUrl } from "@/utils";
-import { User } from '@/entities/User';
+import { base44 } from "@/api/base44Client";
 import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -27,7 +27,7 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     const handleAuth = async () => {
       try {
-        const currentUser = await User.me();
+        const currentUser = await base44.auth.me();
         setUser(currentUser);
         if (currentUser.theme_mode) setInitialThemeMode(currentUser.theme_mode);
         if (currentPageName === 'MissionControl' && !currentUser.season3_reonboarding_seen) {
@@ -55,7 +55,7 @@ export default function Layout({ children, currentPageName }) {
   const handleReOnboardingDone = async () => {
     setShowReOnboarding(false);
     if (user) {
-      try { await User.updateMyUserData({ season3_reonboarding_seen: true }); } catch { }
+      try { await base44.auth.updateMe({ season3_reonboarding_seen: true }); } catch { }
     }
   };
 
