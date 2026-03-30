@@ -1,19 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { base44 } from "@/api/base44Client";
 import { getStandingsData } from "@/functions/getStandingsData";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import EditorialMasthead from "@/components/publication/EditorialMasthead";
-import EditorialTableOfContents from "@/components/publication/EditorialTableOfContents";
-import EditorialManifesto from "@/components/publication/EditorialManifesto";
-import EditorialPortraits from "@/components/publication/EditorialPortraits";
-import EditorialLedger from "@/components/publication/EditorialLedger";
-import SignalReport from "@/components/publication/SignalReport";
-import ArchiveExport from "@/components/publication/ArchiveExport";
-import EditorialClosing from "@/components/publication/EditorialClosing";
-import EnhancedProfilePanel from "@/components/publication/EnhancedProfilePanel";
-import ShareableCard from "@/components/publication/ShareableCard";
-import CountdownLanding from "@/components/publication/CountdownLanding";
+
+const EditorialMasthead = lazy(() => import("@/components/publication/EditorialMasthead"));
+const EditorialTableOfContents = lazy(() => import("@/components/publication/EditorialTableOfContents"));
+const EditorialManifesto = lazy(() => import("@/components/publication/EditorialManifesto"));
+const EditorialPortraits = lazy(() => import("@/components/publication/EditorialPortraits"));
+const EditorialLedger = lazy(() => import("@/components/publication/EditorialLedger"));
+const SignalReport = lazy(() => import("@/components/publication/SignalReport"));
+const ArchiveExport = lazy(() => import("@/components/publication/ArchiveExport"));
+const EditorialClosing = lazy(() => import("@/components/publication/EditorialClosing"));
+const EnhancedProfilePanel = lazy(() => import("@/components/publication/EnhancedProfilePanel"));
+const ShareableCard = lazy(() => import("@/components/publication/ShareableCard"));
+const CountdownLanding = lazy(() => import("@/components/publication/CountdownLanding"));
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -104,7 +105,14 @@ export default function IndexLanding() {
     );
   }
 
+  const fallback = (
+    <div className="flex items-center justify-center py-12">
+      <Loader2 className="w-6 h-6 animate-spin" style={{ color: brandColors.goldPrestige }} />
+    </div>
+  );
+
   return (
+    <Suspense fallback={fallback}>
     <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide" style={{ background: brandColors.cream }}>
       {showCountdown && <CountdownLanding onReveal={() => setShowCountdown(false)} />}
 
@@ -141,5 +149,6 @@ export default function IndexLanding() {
         />
       )}
     </div>
+    </Suspense>
   );
 }

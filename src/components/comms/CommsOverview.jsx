@@ -7,8 +7,8 @@ import {
   Activity, CheckCircle2, Rocket, CalendarDays,
   Sparkles, Shield, Settings
 } from 'lucide-react';
-import { RoadmapItem } from '@/entities/RoadmapItem';
 import { base44 } from '@/api/base44Client';
+const RoadmapItem = base44.entities.RoadmapItem;
 import CalendarView from '@/components/calendar/CalendarView';
 import RoadmapTab from '@/components/calendar/RoadmapTab';
 import Season4Tracker from '@/components/comms/Season4Tracker.jsx';
