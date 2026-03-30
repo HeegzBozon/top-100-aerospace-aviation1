@@ -103,7 +103,7 @@ export default function MissionControlHeader() {
 
             {/* Quick Actions */}
             <div className="flex flex-wrap gap-3">
-              <Link to="/Comms">
+              <Link to="/Nominations">
                 <Button className="text-white font-semibold" style={{ background: brand.gold }}>
                   <Send className="w-4 h-4 mr-2" /> Submit Nomination
                 </Button>
