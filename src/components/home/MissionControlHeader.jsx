@@ -151,7 +151,7 @@ function SeasonSchedule({ season }) {
         <CalendarDays className="w-4 h-4" style={{ color: brand.gold }} />
         <span className="text-xs font-bold uppercase tracking-widest text-white/60">Season Schedule</span>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+      <div className="flex flex-col gap-3">
         {phases.map(({ label, date }) => {
           const d = new Date(date);
           const isPast = d < today;
