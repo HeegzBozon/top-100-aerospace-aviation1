@@ -29,12 +29,20 @@ export function ConversationProvider({ children }) {
     refetchInterval: 15000,
   });
 
-  const channels = useMemo(
-    () => conversations
+  // Public channels for unauthenticated users
+  const { data: publicChannels = [] } = useQuery({
+    queryKey: ["public-channels"],
+    queryFn: () => base44.entities.Conversation.filter({ type: "channel", is_private: false }, "order", 100),
+    enabled: !user,
+    staleTime: 60 * 1000,
+  });
+
+  const channels = useMemo(() => {
+    const source = user ? conversations : publicChannels;
+    return source
       .filter(c => c.type === "channel")
-      .sort((a, b) => (a.order ?? 999) - (b.order ?? 999)),
-    [conversations]
-  );
+      .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+  }, [conversations, publicChannels, user]);
 
   const dms = useMemo(
     () => conversations.filter(c => c.type === "dm"),
