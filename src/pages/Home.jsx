@@ -237,10 +237,6 @@ export default function HomePage() {
     return <ProfileView />;
   }
 
-  if (!user) {
-    return <LandingHeroSection user={null} />;
-  }
-
   const userRole = user?.role || 'user';
   const isMemberOnly = userRole === 'user';
 
