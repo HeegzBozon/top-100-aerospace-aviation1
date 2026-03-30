@@ -98,11 +98,11 @@ export default function MissionControlHeader({ seasons = [] }) {
 
             {/* Quick Actions */}
             <div className="flex flex-wrap gap-3">
-              <a href="/Nominations" style={{ textDecoration: 'none' }}>
+              <Link to="/Nominations" style={{ textDecoration: 'none' }}>
                 <Button className="text-white font-semibold" style={{ background: brand.gold }}>
                   <Send className="w-4 h-4 mr-2" /> Submit Nomination
                 </Button>
-              </a>
+              </Link>
               <Link to="/Top100Women2025">
                 <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
                   <Award className="w-4 h-4 mr-2" /> View 2025 Index

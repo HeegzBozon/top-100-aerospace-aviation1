@@ -173,9 +173,9 @@ export default function Landing2Hero({ user }) {
     }
   };
 
-  // "Nominate Now" slide goes to Nominations page directly
+  // "Nominate Now" slide uses client-side routing
   const getSlideLink = (s) => {
-    if (s.ctaLink === "nominate") return createPageUrl("Nominations");
+    if (s.ctaLink === "nominate") return "/Nominations";
     return createPageUrl(s.ctaLink);
   };
 
