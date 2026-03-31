@@ -206,7 +206,7 @@ function EmptySubmitted() {
         No nominations submitted yet
       </h3>
       <p className="text-sm" style={{ color: `${brandColors.navyDeep}60` }}>
-        Use the form on the left to nominate an aerospace leader.
+        Switch to the "Nominate" tab to put someone forward.
       </p>
     </div>
   );
