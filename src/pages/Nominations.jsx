@@ -3,6 +3,9 @@ import { Trophy, Star, Rocket, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 import NominationHistoryFeed from '@/components/nominations/NominationHistoryFeed';
 import InlineNominationForm from '@/components/nominations/InlineNominationForm';
+import CommsIconRail from '@/components/comms/CommsIconRail';
+import { useConversation } from '@/components/contexts/ConversationContext';
+import { useUnread } from '@/components/contexts/UnreadContext';
 import { base44 } from '@/api/base44Client';
 
 const brandColors = {
@@ -15,11 +18,16 @@ const brandColors = {
 export default function Nominations() {
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const { totalUnread } = useUnread();
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((auth) => {
       setIsAuthenticated(auth);
       setAuthChecked(true);
+      if (auth) {
+        base44.auth.me().then(u => setUser(u)).catch(() => setUser(null));
+      }
     }).catch(() => {
       setIsAuthenticated(false);
       setAuthChecked(true);
@@ -146,7 +154,12 @@ export default function Nominations() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden" style={{ background: brandColors.cream }}>
+    <div className="h-full flex overflow-hidden" style={{ background: brandColors.cream }}>
+      {/* Icon Rail */}
+      <CommsIconRail currentPageName="Nominations" totalUnread={totalUnread || 0} user={user} />
+      
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
       {/* Hero Header - Elevated Design */}
       <div
         className="shrink-0 relative overflow-hidden"
@@ -337,6 +350,7 @@ export default function Nominations() {
           </h2>
         </div>
         <InlineNominationForm />
+      </div>
       </div>
     </div>
   );
