@@ -7,10 +7,9 @@ import CommsMainView from "./CommsMainView";
 import MobileHomeHero from "./mobile-home/MobileHomeHero";
 import MobileUnreadPulse from "./mobile-home/MobileUnreadPulse";
 import MobilePinnedChannels from "./mobile-home/MobilePinnedChannels";
-import MobileDMsList from "./mobile-home/MobileDMsList";
 
 export default function MobileHomeView({ isDarkMode = false, setIsDarkMode, onSearchOpen }) {
-  const { user, channels, dms, selectConversation, activeConversation } = useConversation();
+  const { user, channels, selectConversation, activeConversation } = useConversation();
   const { unreadCounts } = useUnread();
 
   const theme = getMobileTheme(isDarkMode, brandColors);
@@ -20,7 +19,7 @@ export default function MobileHomeView({ isDarkMode = false, setIsDarkMode, onSe
     return <CommsMainView onOpenMobileSidebar={() => {}} />;
   }
 
-  const unreads = [...channels, ...dms].filter(c => (unreadCounts[c.id] || 0) > 0);
+  const unreads = channels.filter(c => (unreadCounts[c.id] || 0) > 0);
 
   const handleNominationsClick = () => {
     const ch = channels.find(c => c.name?.toLowerCase() === "nominations");
@@ -75,15 +74,6 @@ export default function MobileHomeView({ isDarkMode = false, setIsDarkMode, onSe
       {/* Zone 3: Pinned Channels */}
       <MobilePinnedChannels
         channels={channels}
-        onSelect={selectConversation}
-        unreadCounts={unreadCounts}
-        isDarkMode={isDarkMode}
-      />
-
-      {/* Zone 4: Direct Messages (collapsed by default) */}
-      <MobileDMsList
-        dms={dms}
-        user={user}
         onSelect={selectConversation}
         unreadCounts={unreadCounts}
         isDarkMode={isDarkMode}
