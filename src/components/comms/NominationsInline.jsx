@@ -184,13 +184,15 @@ export default function NominationsInline() {
         */}
         <div
           className={`
-            flex flex-col overflow-hidden bg-white
-            md:flex md:w-[45%] md:border-r
+            flex flex-col overflow-y-auto bg-white
+            md:flex md:w-[45%] md:border-r md:overflow-hidden
             ${!user || showNominateForm ? 'flex w-full' : 'hidden'}
           `}
           style={{ borderColor: `${brand.navyDeep}10` }}
         >
           {user ? <InlineNominationForm /> : <AuthGate />}
+          {/* Dock clearance spacer — mobile only. Dock is fixed bottom-6 + h-16 = 88px */}
+          <div className="md:hidden shrink-0" style={{ height: 100 }} aria-hidden="true" />
         </div>
 
         {/*
