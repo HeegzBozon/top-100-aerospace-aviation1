@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Rocket, Send, Award, Clock, CalendarDays, CheckCircle2, Circle, Loader } from 'lucide-react';
+import { useConversation } from '@/components/contexts/ConversationContext';
 
 function useCountdown(targetDate) {
   const [now, setNow] = useState(new Date());
@@ -40,6 +41,14 @@ const brand = {
 
 export default function MissionControlHeader() {
   const [selectedSeasonId, setSelectedSeasonId] = useState('');
+  const { channels, selectConversation } = useConversation();
+
+  const handleNominationsClick = () => {
+    const nominationsChannel = channels.find(c => c.name?.toLowerCase() === 'nominations');
+    if (nominationsChannel) {
+      selectConversation(nominationsChannel);
+    }
+  };
 
   const { data: seasons = [] } = useQuery({
     queryKey: ['home-mc-seasons'],
@@ -103,11 +112,9 @@ export default function MissionControlHeader() {
 
             {/* Quick Actions */}
             <div className="flex flex-wrap gap-3">
-              <Link to="/Comms?conv=nominations">
-                <Button className="text-white font-semibold" style={{ background: brand.gold }}>
-                  <Send className="w-4 h-4 mr-2" /> Submit Nomination
-                </Button>
-              </Link>
+              <Button className="text-white font-semibold" style={{ background: brand.gold }} onClick={handleNominationsClick}>
+                <Send className="w-4 h-4 mr-2" /> Submit Nomination
+              </Button>
               <Link to="/Top100Women2025">
                 <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
                   <Award className="w-4 h-4 mr-2" /> View 2025 Index
