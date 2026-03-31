@@ -16,10 +16,10 @@ import TopPrograms from '@/components/home/TopPrograms';
 import TopOriginals from '@/components/home/TopOriginals';
 import MissionControlHeader from '@/components/home/MissionControlHeader';
 
-const EditorialTerminal = lazy(() => import('@/components/terminal/EditorialTerminal'));
-
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HomeSectionReorderPopover, { loadSectionConfig } from '@/components/admin/HomeSectionReorderPopover';
+
+const EditorialTerminal = lazy(() => import('@/components/terminal/EditorialTerminal'));
 
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
@@ -74,12 +74,6 @@ export default function HomePage() {
   const { data: nominees = [] } = useQuery({
     queryKey: ['landing-nominees'],
     queryFn: () => base44.entities.Nominee.filter({ status: 'active' }, '-aura_score', 150),
-  });
-
-  // Fetch seasons for MissionControlHeader
-  const { data: seasons = [] } = useQuery({
-    queryKey: ['home-seasons'],
-    queryFn: () => base44.entities.Season.list('-created_date', 5),
   });
 
   // Memoize shuffled nominees (reshuffles on page load)
@@ -247,7 +241,7 @@ export default function HomePage() {
   const isMemberOnly = userRole === 'user';
 
   const SECTION_COMPONENTS = {
-    missionControl: <MissionControlHeader seasons={seasons} />,
+    missionControl: <MissionControlHeader />,
     spotlight: isMemberOnly ? null : <IndustrySpotlight />,
     featured: isMemberOnly ? null : <FeaturedToday />,
     programs: isMemberOnly ? null : <TrendingPrograms />,
