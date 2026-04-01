@@ -4,7 +4,44 @@ import { findLaunchStream } from '@/functions/findLaunchStream';
 import { parseISO, differenceInSeconds, format } from 'date-fns';
 import LaunchPartyModal from './LaunchPartyModal';
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+// ── EmbeddablePlayer ─────────────────────────────────────────────────────────
+// Uses youtube-nocookie.com + YouTube IFrame API postMessage to detect error 150
+// (embedding disabled by owner) and surface a "Watch on YouTube" fallback.
+
+function EmbeddablePlayer({ youtubeId, title, onEmbedError }) {
+  const iframeRef = useRef(null);
+
+  useEffect(() => {
+    const handler = (event) => {
+      if (!event.origin.includes('youtube')) return;
+      try {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        // YouTube IFrame API sends error events: code 100 = not found, 101/150 = embedding disabled
+        if (data?.event === 'onError' && [100, 101, 150].includes(data?.info)) {
+          onEmbedError();
+        }
+      } catch {}
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [onEmbedError]);
+
+  return (
+    <iframe
+      ref={iframeRef}
+      key={youtubeId}
+      src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1&enablejsapi=1`}
+      title={title}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+      allowFullScreen
+      referrerPolicy="strict-origin-when-cross-origin"
+      className="w-full h-full border-0"
+      onError={onEmbedError}
+    />
+  );
+}
+
+// ── helpers ───────────────────────────────────────────────────────────────────
 
 function extractYouTubeId(url) {
   if (!url) return null;
@@ -264,14 +301,10 @@ export default function LaunchTheatre({ launch, onScrollDown }) {
                   </a>
                 </div>
               ) : (
-                <iframe
-                  key={youtubeId}
-                  src={`https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1`}
+                <EmbeddablePlayer
+                  youtubeId={youtubeId}
                   title={`${launch.name} webcast`}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                  allowFullScreen
-                  className="w-full h-full border-0"
-                  onError={() => setEmbedError(true)}
+                  onEmbedError={() => setEmbedError(true)}
                 />
               )}
               {/* Hover control bar */}
