@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Rocket, Send, Award, Clock, CalendarDays, CheckCircle2, Circle, Loader } from 'lucide-react';
 import { useConversation } from '@/components/contexts/ConversationContext';
+import MissionControlAdminPanel from './MissionControlAdminPanel';
 
 function useCountdown(targetDate) {
   const [now, setNow] = useState(new Date());
@@ -42,6 +43,12 @@ const brand = {
 export default function MissionControlHeader() {
   const [selectedSeasonId, setSelectedSeasonId] = useState('');
   const { channels, selectConversation } = useConversation();
+
+  const { data: user } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: () => base44.auth.me(),
+    staleTime: 5 * 60 * 1000,
+  });
 
   const handleNominationsClick = () => {
     const nominationsChannel = channels.find(c => c.name?.toLowerCase() === 'nominations');
@@ -130,6 +137,15 @@ export default function MissionControlHeader() {
           </div>
 
         </div>
+
+        {/* ── Admin CRUD panel — visible to admins only ── */}
+        {user?.role === 'admin' && (
+          <MissionControlAdminPanel
+            seasons={seasons}
+            activeSeason={activeSeason}
+            onSeasonChange={setSelectedSeasonId}
+          />
+        )}
       </div>
     </div>
   );
