@@ -4,7 +4,7 @@ export { brandColors };
 
 export const CORE_NAV_ITEMS = [
     { icon: 'Home', label: "Home", pageName: "Home" },
-    { icon: 'MessageCircle', label: "Comms", pageName: "Comms" },
+    { icon: 'Award', label: "Noms", pageName: "Nominations" },
     { icon: 'CircuitBoard', label: "Index", pageName: "Top100Women2025" },
 ];
 
