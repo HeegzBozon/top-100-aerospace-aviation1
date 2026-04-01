@@ -9,6 +9,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const brand = { navyDeep: '#1e3a5a', skyBlue: '#4a90b8', gold: '#c9a87c' };
 
+const LIST_TYPES = [
+  { value: 'women',  label: '🚀 Top 100 Women in Aerospace & Aviation' },
+  { value: 'men',    label: '🛩️ Top 100 Men in Aerospace & Aviation' },
+  { value: 'angels', label: '👼 Top 100 Angels in Aerospace & Aviation' },
+];
+
 const STEPS = [
   { id: 1, title: 'Who are you nominating?' },
   { id: 2, title: 'How do we find them?' },
@@ -38,7 +44,7 @@ function FieldError({ id, message }) {
 export default function InlineNominationForm({ onSuccess }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    name: '', category: '', nominee_email: '', linkedin_url: '', reason: '', season_id: '',
+    name: '', category: '', nominee_email: '', linkedin_url: '', reason: '', season_id: '', list_type: '',
   });
   const [errors, setErrors] = useState({});
   const [seasons, setSeasons] = useState([]);
@@ -62,6 +68,7 @@ export default function InlineNominationForm({ onSuccess }) {
   const validateStep = (s) => {
     const e = {};
     if (s === 1) {
+      if (!formData.list_type)    e.list_type = 'Please select a list to nominate for.';
       if (!formData.name.trim())  e.name = 'Nominee name is required.';
       if (!formData.category)     e.category = 'Please select a category.';
     }
@@ -94,10 +101,11 @@ export default function InlineNominationForm({ onSuccess }) {
         nomination_reason: formData.reason.trim(),
         nominated_by: user.email,
         season_id: formData.season_id,
+        league_id: formData.list_type,
         status: 'pending',
       });
       toast({ title: '🎉 Nomination Submitted!', description: 'Thank you! It will be reviewed shortly.' });
-      setFormData({ name: '', category: '', nominee_email: '', linkedin_url: '', reason: '', season_id: seasons[0]?.id || '' });
+      setFormData({ name: '', category: '', nominee_email: '', linkedin_url: '', reason: '', season_id: seasons[0]?.id || '', list_type: '' });
       setStep(1);
       queryClient.invalidateQueries({ queryKey: ['nominations-submitted'] });
       onSuccess?.();
@@ -148,6 +156,40 @@ export default function InlineNominationForm({ onSuccess }) {
               transition={{ duration: 0.18 }}
               className="flex flex-col gap-4 h-full"
             >
+              <div>
+                <p className="text-sm font-semibold mb-2" style={{ color: brand.navyDeep }} id="list-type-label">
+                  Nominating for <span className="text-red-500" aria-hidden="true">*</span>
+                </p>
+                <div className="flex flex-col gap-2" role="group" aria-labelledby="list-type-label">
+                  {LIST_TYPES.map(lt => {
+                    const selected = formData.list_type === lt.value;
+                    return (
+                      <button
+                        key={lt.value}
+                        type="button"
+                        onClick={() => set('list_type', lt.value)}
+                        aria-pressed={selected}
+                        className="px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center gap-2"
+                        style={{
+                          background: selected ? brand.navyDeep : `${brand.navyDeep}08`,
+                          color: selected ? 'white' : brand.navyDeep,
+                          border: `1.5px solid ${selected ? brand.navyDeep : `${brand.navyDeep}15`}`,
+                        }}
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center"
+                          style={{ borderColor: selected ? 'white' : `${brand.navyDeep}40` }}
+                        >
+                          {selected && <span className="w-2 h-2 rounded-full bg-white" />}
+                        </span>
+                        {lt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <FieldError id="nom-list-err" message={errors.list_type} />
+              </div>
+
               <div>
                 <label htmlFor="nom-name" className="block text-sm font-semibold mb-1.5" style={{ color: brand.navyDeep }}>
                   Full Name <span className="text-red-500" aria-hidden="true">*</span>
