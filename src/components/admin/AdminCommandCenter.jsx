@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { getDashboardStats } from '@/functions/getDashboardStats';
+import { getAnalyticsData } from '@/functions/getAnalyticsData';
+import AnalyticsPanel from '@/components/analytics/AnalyticsPanel';
 import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -182,6 +184,9 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
     const [platformLoading, setPlatformLoading] = useState(true);
     const [lastUpdated, setLastUpdated] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [selectedSeasonId, setSelectedSeasonId] = useState('all');
+    const [gaProperties, setGaProperties] = useState([]);
+    const [selectedGaProperty, setSelectedGaProperty] = useState('');
     const loadingRef = useRef(false);
     const { toast } = useToast();
 
@@ -209,27 +214,27 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
         setPlatformLoading(true);
         try {
             const [seasons, events] = await Promise.all([
-                base44.entities.Season.list('-created_date', 5).catch(() => []),
+                base44.entities.Season.list('-created_date', 50).catch(() => []),
                 base44.entities.Event.list('-created_date', 3).catch(() => []),
             ]);
 
             const ACTIVE_STATUSES = ['nominations_open', 'voting_open', 'review', 'rollover'];
-            const activeSeason =
-                seasons.find(s => ACTIVE_STATUSES.includes(s.status)) ||
-                seasons.find(s => s.status === 'planning') ||
-                seasons[0] ||
-                null;
+            const activeSeasons = seasons.filter(s => ACTIVE_STATUSES.includes(s.status) || s.status === 'planning');
+            const primaryActiveSeason = activeSeasons[0] || seasons[0] || null;
 
-            let seasonNomineeCount = 0;
-            if (activeSeason) {
-                const seasonNominees = await base44.entities.Nominee.filter({ season_id: activeSeason.id }).catch(() => []);
-                seasonNomineeCount = seasonNominees.length;
+            let allSeasonNominees = [];
+            if (activeSeasons.length > 0) {
+                // we can just fetch all and filter by active season ids
+                const allNominees = await base44.entities.Nominee.filter({}, '-created_date', 100000).catch(() => []);
+                const activeSeasonIds = activeSeasons.map(s => s.id);
+                allSeasonNominees = allNominees.filter(n => activeSeasonIds.includes(n.season_id));
             }
 
             setPlatformData({
-                activeSeason,
+                primaryActiveSeason,
+                activeSeasons,
                 seasons,
-                seasonNomineeCount,
+                allSeasonNominees,
                 upcomingEvents: events.filter(e => new Date(e.event_date) > new Date()).length,
             });
         } catch (err) {
@@ -239,16 +244,29 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
         }
     }, []);
 
+    const loadAnalytics = useCallback(async () => {
+        try {
+            const gaRes = await getAnalyticsData({});
+            const props = gaRes.data?.properties || [];
+            setGaProperties(props);
+            const known = props.find(p => p.name?.includes('FKVD6VNDVS') || p.displayName);
+            setSelectedGaProperty(known?.name || props[0]?.name || '');
+        } catch (e) {
+            console.error('Analytics load error:', e);
+        }
+    }, []);
+
     useEffect(() => {
         loadStats();
         loadPlatformData();
+        loadAnalytics();
         const interval = setInterval(loadStats, 5 * 60 * 1000);
         return () => clearInterval(interval);
-    }, [loadStats, loadPlatformData]);
+    }, [loadStats, loadPlatformData, loadAnalytics]);
 
     const handleRefresh = async () => {
         setRefreshing(true);
-        await Promise.all([loadStats(), loadPlatformData()]);
+        await Promise.all([loadStats(), loadPlatformData(), loadAnalytics()]);
         setRefreshing(false);
         toast({ title: 'Refreshed', description: 'Mission Control data updated.' });
     };
@@ -256,7 +274,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
     // ── Season status badge ──
     const getSeasonStatus = () => {
         if (platformLoading) return null;
-        const s = platformData?.activeSeason;
+        const s = platformData?.primaryActiveSeason;
         if (!s) return (
             <Badge className="text-xs" style={{ background: '#ffffff0a', color: '#6b8199', border: '1px solid #2a4a60' }}>
                 No Active Season
@@ -325,14 +343,14 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                         <p className="text-sm mb-3" style={{ color: '#7a9cb8' }}>
                             {greeting},{' '}
                             <span className="font-semibold" style={{ color: '#c8d8e8' }}>{firstName}</span>.{' '}
-                            {platformData?.activeSeason ? (
-                                <>Running <span className="font-semibold" style={{ color: B.gold }}>{platformData.activeSeason.name}</span>.</>
+                            {platformData?.primaryActiveSeason ? (
+                                <>Running <span className="font-semibold" style={{ color: B.gold }}>{platformData.primaryActiveSeason.name}</span>.</>
                             ) : 'No active season running.'}
                         </p>
 
                         {/* Season 4 Phase Banner */}
-                        {platformData?.activeSeason && (() => {
-                            const s = platformData.activeSeason;
+                        {platformData?.primaryActiveSeason && (() => {
+                            const s = platformData.primaryActiveSeason;
                             const now = new Date();
                             const phases = [
                                 { key: 'nominations_open', label: 'Nominations', start: s.nomination_start, end: s.nomination_end, color: B.sky, icon: '📋' },
@@ -399,8 +417,11 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
 
                 {/* ── Pulse Metrics ── */}
                 {(() => {
-                    const isNomPhase = platformData?.activeSeason?.status === 'nominations_open' ||
-                        (!['voting_open','review','completed','archived'].includes(platformData?.activeSeason?.status));
+                    const isNomPhase = platformData?.primaryActiveSeason?.status === 'nominations_open' ||
+                        (!['voting_open','review','completed','archived'].includes(platformData?.primaryActiveSeason?.status));
+                    
+                    const displayNomineeCount = platformData ? platformData.allSeasonNominees.length : '—';
+                    
                     return (
                         <div className="relative mt-5 flex flex-wrap gap-2">
                             {isNomPhase ? (
@@ -408,14 +429,14 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                                     <PulseMetric icon={FileText} label="Nominations Today" value={stats?.nominationsToday?.toLocaleString() ?? '—'} accent={B.gold} loading={statsLoading} />
                                     <PulseMetric icon={Users} label="Nominators Today" value={stats?.uniqueNominatorsToday?.toLocaleString() ?? '—'} accent={B.sky} loading={statsLoading} />
                                     <PulseMetric icon={BarChart3} label="Noms This Week" value={stats?.nominationsLast7Days?.toLocaleString() ?? '—'} accent="#7ec8a8" loading={statsLoading} />
-                                    <PulseMetric icon={Trophy} label="Total Nominated" value={platformLoading ? '—' : (platformData?.seasonNomineeCount?.toLocaleString() ?? '—')} accent={B.gold} loading={platformLoading} />
+                                    <PulseMetric icon={Trophy} label="Active Nominees" value={platformLoading ? '—' : displayNomineeCount.toLocaleString()} accent={B.gold} loading={platformLoading} />
                                 </>
                             ) : (
                                 <>
                                     <PulseMetric icon={Vote} label="Votes Today" value={stats?.votesToday?.toLocaleString() ?? '—'} accent={B.gold} loading={statsLoading} />
                                     <PulseMetric icon={Users} label="Active Voters" value={stats?.dauToday?.toLocaleString() ?? '—'} accent={B.sky} loading={statsLoading} />
                                     <PulseMetric icon={BarChart3} label="Votes (7d)" value={stats?.votesLast7Days?.toLocaleString() ?? '—'} accent="#7ec8a8" loading={statsLoading} />
-                                    <PulseMetric icon={Trophy} label="Nominees" value={platformLoading ? '—' : (platformData?.seasonNomineeCount?.toLocaleString() ?? '—')} accent={B.gold} loading={platformLoading} />
+                                    <PulseMetric icon={Trophy} label="Active Nominees" value={platformLoading ? '—' : displayNomineeCount.toLocaleString()} accent={B.gold} loading={platformLoading} />
                                 </>
                             )}
                             <PulseMetric icon={UserPlus} label="New Users" value={stats?.usersToday?.toLocaleString() ?? '—'} accent="#9d7ec8" loading={statsLoading} />
@@ -456,6 +477,20 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                     <div className="flex items-center gap-2 mb-4">
                         <Trophy className="w-4 h-4" style={{ color: B.gold }} />
                         <span className="text-sm font-semibold" style={{ color: '#c8d8e8' }}>Season Health</span>
+                        
+                        {platformData?.activeSeasons?.length > 0 && (
+                            <select
+                                value={selectedSeasonId}
+                                onChange={e => setSelectedSeasonId(e.target.value)}
+                                className="ml-2 appearance-none bg-[#ffffff06] text-[#7a9cb8] hover:text-[#c8d8e8] text-xs rounded-lg px-2 py-1 border border-[#1e3a5a60] focus:outline-none focus:ring-1 focus:ring-[#c9a87c]"
+                            >
+                                <option value="all">All Active Seasons</option>
+                                {platformData.activeSeasons.map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                            </select>
+                        )}
+
                         <button
                             onClick={() => onNavigate('season-command-center')}
                             className="ml-auto flex items-center gap-1 text-xs transition-colors"
@@ -472,34 +507,49 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                                 <div key={i} className="h-5 rounded animate-pulse" style={{ background: '#ffffff08' }} />
                             ))}
                         </div>
-                    ) : platformData?.activeSeason ? (
+                    ) : platformData?.activeSeasons?.length > 0 ? (
                         <div className="space-y-3">
-                            <div className="flex justify-between items-center text-sm">
-                                <span style={{ color: '#5d7a94' }}>Active season</span>
-                                <span className="text-xs font-semibold" style={{ color: '#c8d8e8' }}>{platformData.activeSeason.name}</span>
-                            </div>
-                            <div className="flex justify-between items-center text-sm">
-                                <span style={{ color: '#5d7a94' }}>Nominees enrolled</span>
-                                <span className="font-bold" style={{ color: B.gold }}>{platformData.seasonNomineeCount}</span>
-                            </div>
-                            <div className="flex justify-between items-center text-sm">
-                                <span style={{ color: '#5d7a94' }}>Votes today</span>
-                                <span className="font-semibold" style={{ color: '#c8d8e8' }}>
-                                    {statsLoading ? '...' : (stats?.votesToday?.toLocaleString() ?? '—')}
-                                </span>
-                            </div>
                             {(() => {
-                                const end = new Date(platformData.activeSeason.voting_end);
-                                const start = new Date(platformData.activeSeason.voting_start);
-                                const pct = Math.min(100, Math.max(0, ((new Date() - start) / (end - start)) * 100));
+                                const isAll = selectedSeasonId === 'all';
+                                const viewingSeason = isAll ? null : platformData.activeSeasons.find(s => s.id === selectedSeasonId);
+                                const displayNominees = isAll 
+                                    ? platformData.allSeasonNominees.length 
+                                    : platformData.allSeasonNominees.filter(n => n.season_id === selectedSeasonId).length;
+                                
                                 return (
-                                    <div>
-                                        <div className="flex justify-between text-xs mb-1.5" style={{ color: '#3d6080' }}>
-                                            <span>Season progress</span>
-                                            <span>{Math.round(pct)}%</span>
+                                    <>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span style={{ color: '#5d7a94' }}>Viewing</span>
+                                            <span className="text-xs font-semibold" style={{ color: '#c8d8e8' }}>
+                                                {isAll ? 'Aggregate metrics' : viewingSeason?.name}
+                                            </span>
                                         </div>
-                                        <Progress value={pct} className="h-1.5" />
-                                    </div>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span style={{ color: '#5d7a94' }}>Nominees enrolled</span>
+                                            <span className="font-bold" style={{ color: B.gold }}>{displayNominees.toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span style={{ color: '#5d7a94' }}>{isAll ? 'Platform votes today' : 'Total votes today'}</span>
+                                            <span className="font-semibold" style={{ color: '#c8d8e8' }}>
+                                                {statsLoading ? '...' : (stats?.votesToday?.toLocaleString() ?? '—')}
+                                            </span>
+                                        </div>
+                                        {viewingSeason && (() => {
+                                            if (!viewingSeason.voting_start || !viewingSeason.voting_end) return null;
+                                            const end = new Date(viewingSeason.voting_end);
+                                            const start = new Date(viewingSeason.voting_start);
+                                            const pct = Math.min(100, Math.max(0, ((new Date() - start) / (end - start)) * 100));
+                                            return (
+                                                <div>
+                                                    <div className="flex justify-between text-xs mb-1.5" style={{ color: '#3d6080' }}>
+                                                        <span>Voting progress</span>
+                                                        <span>{Math.round(pct)}%</span>
+                                                    </div>
+                                                    <Progress value={pct} className="h-1.5" />
+                                                </div>
+                                            );
+                                        })()}
+                                    </>
                                 );
                             })()}
                         </div>
@@ -701,6 +751,15 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                         );
                     })()}
                 </div>
+            </div>
+
+            {/* ── Site Traffic ─────────────────────────────────────────────── */}
+            <div className="rounded-xl p-5" style={{ background: B.surface, border: `1px solid ${B.border}` }}>
+                <AnalyticsPanel 
+                    propertyId={selectedGaProperty} 
+                    onPropertyChange={setSelectedGaProperty} 
+                    properties={gaProperties} 
+                />
             </div>
 
             {/* ── Quick Launch ─────────────────────────────────────────────── */}

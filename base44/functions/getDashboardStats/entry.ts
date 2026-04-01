@@ -21,15 +21,15 @@ Deno.serve(async (req) => {
     let totalNominees = [];
 
     try {
-      recentUsers = await base44.asServiceRole.entities.User.list('-created_date', 500);
+      recentUsers = await base44.asServiceRole.entities.User.list('-created_date', 100000);
     } catch (e) { console.error('User fetch error:', e.message); }
 
     try {
-      recentVotes = await base44.asServiceRole.entities.PairwiseVote.list('-created_date', 1000);
+      recentVotes = await base44.asServiceRole.entities.PairwiseVote.list('-created_date', 100000);
     } catch (e) { console.error('Vote fetch error:', e.message); }
 
     try {
-      totalNominees = await base44.asServiceRole.entities.Nominee.list('-created_date', 2000);
+      totalNominees = await base44.asServiceRole.entities.Nominee.list('-created_date', 100000);
     } catch (e) { console.error('Nominee fetch error:', e.message); }
 
     const totalUsers = recentUsers.length;
