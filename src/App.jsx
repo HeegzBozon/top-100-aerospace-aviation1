@@ -176,7 +176,7 @@ if (typeof document !== 'undefined') {
 }
 
 function App() {
-
+  // Force HMR cache clear
   return (
     <ErrorBoundary>
       <AuthProvider>
