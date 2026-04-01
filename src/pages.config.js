@@ -78,7 +78,7 @@ const GamesLanding               = lazy(() => import('./pages/GamesLanding'));
 const GetStarted                 = lazy(() => import('./pages/GetStarted'));
 const GlobalIntelligence         = lazy(() => import('./pages/GlobalIntelligence'));
 const HelpCenter                 = lazy(() => import('./pages/HelpCenter'));
-const Home                       = lazy(() => import('./pages/Home'));
+const Home                       = lazy(() => import('./pages/Home.jsx'));
 const HowWePick                  = lazy(() => import('./pages/HowWePick'));
 const Huddle                     = lazy(() => import('./pages/Huddle'));
 const IntelligenceDashboard      = lazy(() => import('./pages/IntelligenceDashboard'));

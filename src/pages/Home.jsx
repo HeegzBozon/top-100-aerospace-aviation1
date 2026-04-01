@@ -1,10 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import ProfileView from '@/pages/ProfileView';
-import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import Landing2Hero from '@/components/landing/Landing2Hero';
-import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
 
-import TrendingSection from '@/components/landing/TrendingSection';
 import TrendingTalent from '@/components/home/TrendingTalent';
 import DomainExplorer from '@/components/home/DomainExplorer';
 import IndustrySpotlight from '@/components/home/IndustrySpotlight';
@@ -41,7 +38,6 @@ export default function HomePage() {
   const [user, setUser] = useState(null);
 
   // Section config: seeded from user record (global) once user loads
-  // Get DEFAULT_SECTIONS from HomeSectionReorderPopover
   const DEFAULT_SECTIONS = [
     { id: 'missionControl', label: 'Mission Control' },
     { id: 'spotlight',   label: 'Industry Spotlight' },
@@ -60,7 +56,6 @@ export default function HomePage() {
   );
   const [sectionConfigSeeded, setSectionConfigSeeded] = useState(false);
 
-
   const isVisible = (id) => {
     const found = sectionConfig.find(s => s.id === id);
     return found ? found.visible : true;
@@ -68,14 +63,11 @@ export default function HomePage() {
 
   const orderedSectionIds = sectionConfig.map(s => s.id);
 
-  // Fetch nominees and services for discovery sections
-  // Fetch real data - get more nominees for random shuffling
   const { data: nominees = [] } = useQuery({
     queryKey: ['landing-nominees'],
     queryFn: () => base44.entities.Nominee.filter({ status: 'active' }, '-aura_score', 150),
   });
 
-  // Memoize shuffled nominees (reshuffles on page load)
   const shuffledNominees = useMemo(() => shuffleArray(nominees), [nominees]);
 
   const { data: services = [] } = useQuery({
@@ -83,7 +75,6 @@ export default function HomePage() {
     queryFn: () => base44.entities.Service.filter({ is_active: true }, '-created_date', 6),
   });
 
-  // Fetch recent signals for trending score computation
   const { data: recentSignals = [] } = useQuery({
     queryKey: ['trending-signals'],
     queryFn: () => base44.entities.SignalCard.list('-signal_date', 100),
@@ -94,10 +85,6 @@ export default function HomePage() {
     queryFn: () => base44.entities.HonoreeMention.list('-published_at', 100),
   });
 
-  // pageViews: empty map — analytics aggregate not yet wired to a real endpoint
-  const pageViews = {};
-
-  // Flight Plan milestones (hardcoded to match FlightPlanTab)
   const FLIGHT_PLAN_MILESTONES = [
     { id: 1, title: 'Final Round of Voting', date: 'December 12, 2025', status: 'completed', image: 'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?w=400&auto=format' },
     { id: 2, title: 'Publication & Season 4 Launch', date: 'End of 2025', status: 'completed', image: 'https://images.unsplash.com/photo-1517976487492-5750f3195933?w=400&auto=format' },
@@ -115,15 +102,12 @@ export default function HomePage() {
         setPublicUserEmail(userEmail);
       }
 
-      // Check if user is logged in
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-        // Seed section config from user's globally-persisted record
         if (!sectionConfigSeeded) {
           const saved = loadSectionConfig(currentUser);
           if (saved) {
-            // Merge saved config with DEFAULT_SECTIONS to include new sections
             const merged = DEFAULT_SECTIONS.map(defaultSection => {
               const saved_ = saved.find(s => s.id === defaultSection.id);
               return saved_ || { ...defaultSection, visible: true };
@@ -140,7 +124,6 @@ export default function HomePage() {
     init();
   }, []);
 
-  // Transform nominees for featured sections - no scores, random shuffle
   const mapNomineeToCard = (n, badge) => ({
     type: "honoree",
     id: n.id,
@@ -150,24 +133,19 @@ export default function HomePage() {
     badge: badge,
   });
 
-  // TOP 100 Honorees - sort by aura_score to get actual ranks, then take top and shuffle for display variety
   const sortedByScore = [...nominees].sort((a, b) => (b.aura_score || 0) - (a.aura_score || 0));
   const top100WithRanks = sortedByScore.slice(0, 100).map((n, idx) => ({
     ...mapNomineeToCard(n, `#${idx + 1}`),
     rank: idx + 1,
   }));
-  // Shuffle for display but keep rank badges
   const topHonorees = shuffleArray(top100WithRanks).slice(0, 24);
 
-  // Nominees - those not in top 100, no badge
   const nomineeIds = new Set(sortedByScore.slice(0, 100).map(n => n.id));
   const remainingNominees = shuffledNominees.filter(n => !nomineeIds.has(n.id));
   const nomineeItems = remainingNominees.slice(0, 24).map(n => mapNomineeToCard(n, null));
 
-  // Stable date boundary — memoized so useMemo deps don't churn on every render
   const thirtyDaysAgo = useMemo(() => subDays(new Date(), 30), []);
 
-  // Build feed signal count map by nominee_id (last 30 days)
   const signalCountMap = useMemo(() => {
     const map = {};
     recentSignals.forEach(s => {
@@ -185,44 +163,21 @@ export default function HomePage() {
 
   const computeTrendingScore = useCallback((n) => {
     let score = 0;
-    // is_on_fire boost (40 pts)
     if (n.is_on_fire) score += 40;
-    // Win percentage (up to 30 pts)
     score += ((n.win_percentage || 0) / 100) * 30;
-    // Intelligence feed appearances last 30 days (up to 20 pts, capped at 5 signals)
     const feedHits = signalCountMap[n.id] || 0;
     score += Math.min(feedHits, 5) * 4;
-    // Recent activity proxy: direct_vote_count normalized (up to 10 pts)
     const updatedRecently = n.updated_date && new Date(n.updated_date) >= thirtyDaysAgo;
     if (updatedRecently) score += Math.min((n.direct_vote_count || 0) / 10, 10);
     return score;
   }, [signalCountMap]);
 
-  // Trending profiles - sorted by composite score
   const trendingProfiles = useMemo(() =>
     [...nominees]
       .map(n => ({ ...n, _trendingScore: computeTrendingScore(n) }))
       .sort((a, b) => b._trendingScore - a._trendingScore)
       .slice(0, 12),
   [nominees, computeTrendingScore]);
-
-  const serviceItems = services.map(s => ({
-    type: "service",
-    id: s.id,
-    image: s.image_url || "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&auto=format",
-    title: s.title,
-    subtitle: s.description?.slice(0, 50) + (s.description?.length > 50 ? '...' : '') || '',
-    badge: s.provider_type === 'platform' ? "Official" : "Community",
-  }));
-
-  const flightPlanItems = FLIGHT_PLAN_MILESTONES.map(m => ({
-    type: "flightplan",
-    id: m.id,
-    image: m.image,
-    title: m.title,
-    subtitle: m.date,
-    badge: m.status === 'completed' ? "Completed" : m.status === 'in_progress' ? "In Progress" : "Planned",
-  }));
 
   if (isLoading) {
     return (
@@ -244,11 +199,11 @@ export default function HomePage() {
     spotlight: isMemberOnly ? null : <IndustrySpotlight />,
     featured: isMemberOnly ? null : <FeaturedToday />,
     programs: isMemberOnly ? null : <TrendingPrograms />,
-    talent: null,
+    talent: isMemberOnly ? null : <TrendingTalent />,
     favorites: isMemberOnly ? null : <CommunityFavorites />,
     missions: isMemberOnly ? null : <UpcomingMissions />,
     topPrograms: isMemberOnly ? null : <TopPrograms />,
-    domain: null,
+    domain: isMemberOnly ? null : <DomainExplorer />,
     originals: isMemberOnly ? null : <TopOriginals />,
   };
 
@@ -259,9 +214,6 @@ export default function HomePage() {
       </div>
     }>
       <EditorialTerminal heroSlot={<Landing2Hero user={user} />}>
-        {/* Promo removed */}
-
-        {/* Ordered, togglable editorial sections */}
         {orderedSectionIds.map(id => {
           if (!isVisible(id)) return null;
           const component = SECTION_COMPONENTS[id];
@@ -273,7 +225,6 @@ export default function HomePage() {
           );
         })}
 
-        {/* Admin-only section reorder toggle */}
         <HomeSectionReorderPopover
           isAdmin={user?.role === 'admin'}
           user={user}
