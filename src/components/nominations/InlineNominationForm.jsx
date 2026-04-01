@@ -9,10 +9,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const brand = { navyDeep: '#1e3a5a', skyBlue: '#4a90b8', gold: '#c9a87c' };
 
-const LIST_TYPES = [
-  { value: 'women',  label: 'Top 100 Women in Aerospace & Aviation' },
-  { value: 'men',    label: 'Top 100 Men in Aerospace & Aviation' },
-  { value: 'angels', label: 'Top 100 Angels in Aerospace & Aviation' },
+const GENDER_LISTS = [
+  { value: 'women', label: 'Top 100 Women in Aerospace & Aviation' },
+  { value: 'men',   label: 'Top 100 Men in Aerospace & Aviation' },
 ];
 
 const STEPS = [
@@ -44,7 +43,7 @@ function FieldError({ id, message }) {
 export default function InlineNominationForm({ onSuccess }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    name: '', category: '', nominee_email: '', linkedin_url: '', reason: '', season_id: '', list_type: '',
+    name: '', category: '', nominee_email: '', linkedin_url: '', reason: '', season_id: '', list_type: '', include_angels: false,
   });
   const [errors, setErrors] = useState({});
   const [seasons, setSeasons] = useState([]);
@@ -68,7 +67,7 @@ export default function InlineNominationForm({ onSuccess }) {
   const validateStep = (s) => {
     const e = {};
     if (s === 1) {
-      if (!formData.list_type)    e.list_type = 'Please select a list to nominate for.';
+      if (!formData.list_type) e.list_type = 'Please select Top 100 Women or Top 100 Men.';
       if (!formData.name.trim())  e.name = 'Nominee name is required.';
       if (!formData.category)     e.category = 'Please select a category.';
     }
@@ -101,11 +100,11 @@ export default function InlineNominationForm({ onSuccess }) {
         nomination_reason: formData.reason.trim(),
         nominated_by: user.email,
         season_id: formData.season_id,
-        league_id: formData.list_type,
+        league_id: formData.include_angels ? `${formData.list_type},angels` : formData.list_type,
         status: 'pending',
       });
       toast({ title: '🎉 Nomination Submitted!', description: 'Thank you! It will be reviewed shortly.' });
-      setFormData({ name: '', category: '', nominee_email: '', linkedin_url: '', reason: '', season_id: seasons[0]?.id || '', list_type: '' });
+      setFormData({ name: '', category: '', nominee_email: '', linkedin_url: '', reason: '', season_id: seasons[0]?.id || '', list_type: '', include_angels: false });
       setStep(1);
       queryClient.invalidateQueries({ queryKey: ['nominations-submitted'] });
       onSuccess?.();
@@ -178,8 +177,9 @@ export default function InlineNominationForm({ onSuccess }) {
                 <p className="text-sm font-semibold mb-2" style={{ color: brand.navyDeep }} id="list-type-label">
                   Nominating for <span className="text-red-500" aria-hidden="true">*</span>
                 </p>
-                <div className="flex flex-col gap-2" role="group" aria-labelledby="list-type-label">
-                  {LIST_TYPES.map(lt => {
+                {/* Women / Men — mutually exclusive */}
+                <div className="flex flex-col gap-2 mb-3" role="radiogroup" aria-labelledby="list-type-label">
+                  {GENDER_LISTS.map(lt => {
                     const selected = formData.list_type === lt.value;
                     return (
                       <button
@@ -205,6 +205,27 @@ export default function InlineNominationForm({ onSuccess }) {
                     );
                   })}
                 </div>
+                {/* Angels — optional add-on toggle */}
+                <button
+                  type="button"
+                  onClick={() => set('include_angels', !formData.include_angels)}
+                  aria-pressed={formData.include_angels}
+                  className="w-full px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center gap-2"
+                  style={{
+                    background: formData.include_angels ? `${brand.gold}18` : `${brand.navyDeep}08`,
+                    color: formData.include_angels ? brand.gold : `${brand.navyDeep}70`,
+                    border: `1.5px solid ${formData.include_angels ? brand.gold : `${brand.navyDeep}15`}`,
+                  }}
+                >
+                  <span
+                    className="w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center"
+                    style={{ borderColor: formData.include_angels ? brand.gold : `${brand.navyDeep}40`, background: formData.include_angels ? brand.gold : 'transparent' }}
+                  >
+                    {formData.include_angels && <span className="text-white text-[10px] font-bold leading-none">✓</span>}
+                  </span>
+                  Also nominate for Top 100 Angels in Aerospace & Aviation
+                  <span className="ml-auto text-[10px] font-semibold uppercase tracking-wide opacity-60">Optional</span>
+                </button>
                 <FieldError id="nom-list-err" message={errors.list_type} />
               </div>
 
