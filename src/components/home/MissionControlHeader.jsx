@@ -57,8 +57,8 @@ export default function MissionControlHeader() {
 
   useEffect(() => {
     if (!seasons.length || selectedSeasonId) return;
-    const s4 = seasons.find(s => s.name?.toLowerCase().includes('season 4'));
-    setSelectedSeasonId(s4?.id || seasons[0]?.id);
+    const women = seasons.find(s => s.name?.toLowerCase().includes('women'));
+    setSelectedSeasonId(women?.id || seasons[0]?.id);
   }, [seasons]);
 
   const activeSeason = seasons.find(s => s.id === selectedSeasonId) || seasons[0];
@@ -125,19 +125,6 @@ export default function MissionControlHeader() {
 
           {/* ── Right column ── */}
           <div className="w-full md:w-72 shrink-0 flex flex-col gap-3">
-            {seasons.length > 1 && (
-              <select
-                value={selectedSeasonId}
-                onChange={(e) => setSelectedSeasonId(e.target.value)}
-                className="w-full px-3 py-2 text-xs font-medium text-white rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 transition-all"
-              >
-                {seasons.map(s => (
-                  <option key={s.id} value={s.id} style={{ color: 'black' }}>
-                    {s.name || 'Season'}
-                  </option>
-                ))}
-              </select>
-            )}
             <SeasonSchedule season={activeSeason} />
           </div>
 
@@ -165,7 +152,7 @@ function SeasonSchedule({ season }) {
     <div className="rounded-2xl px-5 py-4" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
       <div className="flex items-center gap-2 mb-4">
         <CalendarDays className="w-4 h-4" style={{ color: brand.gold }} />
-        <span className="text-xs font-bold uppercase tracking-widest text-white/60">Season Schedule</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-white/60">{season.name || 'Season Schedule'}</span>
       </div>
       <div className="flex flex-col gap-3">
         {phases.map(({ label, date }) => {
