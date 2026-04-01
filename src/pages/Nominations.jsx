@@ -66,13 +66,13 @@ export default function Nominations() {
           ))}
         </div>
 
-        <div className="relative px-6 py-1.5 md:py-14">
+        <div className="relative px-6 py-6 md:py-14">
           <div className="max-w-5xl mx-auto">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-3"
               style={{ background: 'rgba(201, 168, 124, 0.2)', border: '1px solid rgba(201, 168, 124, 0.3)' }}
             >
               <Award className="w-3.5 h-3.5" style={{ color: brandColors.goldPrestige }} />
@@ -89,13 +89,12 @@ export default function Nominations() {
                 className="flex-1"
               >
                 <h1
-                  className="text-base md:text-4xl lg:text-5xl font-bold text-white md:mb-3 leading-tight"
+                  className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-3 leading-tight"
                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                 >
-                  <span className="md:hidden">Nominate </span>
-                  <span className="hidden md:inline">Nominate the Next</span>
+                  Nominate the Next
                   <span
-                    className="md:block md:mt-1 ml-1 md:ml-0"
+                    className="block mt-1"
                     style={{
                       background: `linear-gradient(90deg, ${brandColors.goldPrestige}, ${brandColors.goldPrestige}cc, ${brandColors.skyBlue})`,
                       WebkitBackgroundClip: 'text',
@@ -105,7 +104,7 @@ export default function Nominations() {
                     Aerospace Leaders
                   </span>
                 </h1>
-                <p className="hidden md:block text-white/70 text-base md:text-lg max-w-xl">
+                <p className="text-white/70 text-sm md:text-lg max-w-xl">
                   Know someone shaping the future of flight? Put their name forward for the TOP 100.
                 </p>
               </motion.div>
@@ -115,7 +114,7 @@ export default function Nominations() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="hidden md:flex gap-3"
+                className="flex gap-3"
               >
                 <div
                   className="px-4 py-3 rounded-xl backdrop-blur-sm"
