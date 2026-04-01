@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
-import ProfileView from '@/pages/ProfileView';
+const ProfileView = lazy(() => import('@/pages/ProfileView'));
 import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import Landing2Hero from '@/components/landing/Landing2Hero';
 import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
