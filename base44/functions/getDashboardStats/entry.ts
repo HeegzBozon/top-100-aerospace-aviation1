@@ -8,6 +8,9 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
     }
 
+    const payload = await req.json().catch(() => ({}));
+    const seasonId = payload.seasonId;
+
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today);
@@ -21,15 +24,23 @@ Deno.serve(async (req) => {
     let totalNominees = [];
 
     try {
-      recentUsers = await base44.asServiceRole.entities.User.list('-created_date', 100000);
+      recentUsers = await base44.asServiceRole.entities.User.list('-created_date', 5000);
     } catch (e) { console.error('User fetch error:', e.message); }
 
     try {
-      recentVotes = await base44.asServiceRole.entities.PairwiseVote.list('-created_date', 100000);
+      if (seasonId && seasonId !== 'all') {
+        recentVotes = await base44.asServiceRole.entities.PairwiseVote.filter({ season_id: seasonId }, '-created_date', 5000);
+      } else {
+        recentVotes = await base44.asServiceRole.entities.PairwiseVote.list('-created_date', 5000);
+      }
     } catch (e) { console.error('Vote fetch error:', e.message); }
 
     try {
-      totalNominees = await base44.asServiceRole.entities.Nominee.list('-created_date', 100000);
+      if (seasonId && seasonId !== 'all') {
+        totalNominees = await base44.asServiceRole.entities.Nominee.filter({ season_id: seasonId }, '-created_date', 5000);
+      } else {
+        totalNominees = await base44.asServiceRole.entities.Nominee.list('-created_date', 5000);
+      }
     } catch (e) { console.error('Nominee fetch error:', e.message); }
 
     const totalUsers = recentUsers.length;

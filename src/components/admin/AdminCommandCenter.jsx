@@ -191,12 +191,12 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
     const { toast } = useToast();
 
     // ── Load dashboard KPI stats ──
-    const loadStats = useCallback(async () => {
+    const loadStats = useCallback(async (seasonId = 'all') => {
         if (loadingRef.current) return;
         loadingRef.current = true;
         setStatsLoading(true);
         try {
-            const { data } = await getDashboardStats();
+            const { data } = await getDashboardStats({ seasonId });
             if (data?.success) {
                 setStats(data.data);
                 setLastUpdated(new Date());
@@ -257,16 +257,16 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
     }, []);
 
     useEffect(() => {
-        loadStats();
+        loadStats(selectedSeasonId);
         loadPlatformData();
         loadAnalytics();
-        const interval = setInterval(loadStats, 5 * 60 * 1000);
+        const interval = setInterval(() => loadStats(selectedSeasonId), 5 * 60 * 1000);
         return () => clearInterval(interval);
-    }, [loadStats, loadPlatformData, loadAnalytics]);
+    }, [loadStats, loadPlatformData, loadAnalytics, selectedSeasonId]);
 
     const handleRefresh = async () => {
         setRefreshing(true);
-        await Promise.all([loadStats(), loadPlatformData(), loadAnalytics()]);
+        await Promise.all([loadStats(selectedSeasonId), loadPlatformData(), loadAnalytics()]);
         setRefreshing(false);
         toast({ title: 'Refreshed', description: 'Mission Control data updated.' });
     };
@@ -340,17 +340,36 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                             </div>
                         </div>
 
-                        <p className="text-sm mb-3" style={{ color: '#7a9cb8' }}>
-                            {greeting},{' '}
-                            <span className="font-semibold" style={{ color: '#c8d8e8' }}>{firstName}</span>.{' '}
-                            {platformData?.primaryActiveSeason ? (
-                                <>Running <span className="font-semibold" style={{ color: B.gold }}>{platformData.primaryActiveSeason.name}</span>.</>
-                            ) : 'No active season running.'}
-                        </p>
+                        <div className="text-sm mb-3 flex flex-wrap items-center gap-2" style={{ color: '#7a9cb8' }}>
+                            <span>{greeting}, <span className="font-semibold" style={{ color: '#c8d8e8' }}>{firstName}</span>.</span>
+                            
+                            {platformData?.activeSeasons?.length > 0 ? (
+                                <span className="flex items-center gap-2">
+                                    Running:
+                                    <select
+                                        value={selectedSeasonId}
+                                        onChange={e => setSelectedSeasonId(e.target.value)}
+                                        className="appearance-none bg-[#ffffff06] text-[#c8d8e8] font-semibold text-sm rounded-lg px-2 py-1 border border-[#1e3a5a60] focus:outline-none focus:ring-1 focus:ring-[#c9a87c]"
+                                    >
+                                        <option value="all">All Active Seasons ({platformData.activeSeasons.length})</option>
+                                        {platformData.activeSeasons.map(s => (
+                                            <option key={s.id} value={s.id}>{s.name}</option>
+                                        ))}
+                                    </select>
+                                </span>
+                            ) : (
+                                <span>No active season running.</span>
+                            )}
+                        </div>
 
                         {/* Season 4 Phase Banner */}
-                        {platformData?.primaryActiveSeason && (() => {
-                            const s = platformData.primaryActiveSeason;
+                        {platformData?.activeSeasons && (() => {
+                            const s = selectedSeasonId === 'all' 
+                                ? platformData.primaryActiveSeason 
+                                : platformData.activeSeasons.find(sz => sz.id === selectedSeasonId);
+                                
+                            if (!s) return null;
+                                
                             const now = new Date();
                             const phases = [
                                 { key: 'nominations_open', label: 'Nominations', start: s.nomination_start, end: s.nomination_end, color: B.sky, icon: '📋' },
@@ -385,7 +404,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                                     </div>
                                     <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs" style={{ background: '#7ec8a815', border: '1px solid #7ec8a830', color: '#7ec8a8' }}>
                                         <Rocket style={{ width: 11, height: 11 }} />
-                                        Season 4
+                                        {s.name?.split(' -')[0] || 'Season'}
                                     </div>
                                 </div>
                             );
@@ -417,10 +436,18 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
 
                 {/* ── Pulse Metrics ── */}
                 {(() => {
-                    const isNomPhase = platformData?.primaryActiveSeason?.status === 'nominations_open' ||
-                        (!['voting_open','review','completed','archived'].includes(platformData?.primaryActiveSeason?.status));
+                    const viewingSeason = selectedSeasonId === 'all' 
+                        ? platformData?.primaryActiveSeason 
+                        : platformData?.activeSeasons?.find(s => s.id === selectedSeasonId);
+                        
+                    const isNomPhase = viewingSeason?.status === 'nominations_open' ||
+                        (!['voting_open','review','completed','archived'].includes(viewingSeason?.status));
                     
-                    const displayNomineeCount = platformData ? platformData.allSeasonNominees.length : '—';
+                    const displayNomineeCount = platformData 
+                        ? (selectedSeasonId === 'all' 
+                            ? platformData.allSeasonNominees.length 
+                            : platformData.allSeasonNominees.filter(n => n.season_id === selectedSeasonId).length)
+                        : '—';
                     
                     return (
                         <div className="relative mt-5 flex flex-wrap gap-2">
@@ -588,8 +615,11 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                     ) : stats ? (
                         <div className="space-y-3">
                             {(() => {
-                                const isNomPhase = platformData?.activeSeason?.status === 'nominations_open' ||
-                                    (!['voting_open','review','completed','archived'].includes(platformData?.activeSeason?.status));
+                                const viewingSeason = selectedSeasonId === 'all' 
+                                    ? platformData?.primaryActiveSeason 
+                                    : platformData?.activeSeasons?.find(s => s.id === selectedSeasonId);
+                                const isNomPhase = viewingSeason?.status === 'nominations_open' ||
+                                    (!['voting_open','review','completed','archived'].includes(viewingSeason?.status));
                                 return isNomPhase ? [
                                     { label: 'Nominations today', value: stats.nominationsToday?.toLocaleString(), icon: FileText, accent: B.gold },
                                     { label: 'Unique nominators today', value: stats.uniqueNominatorsToday?.toLocaleString(), icon: Users, accent: B.sky },
@@ -637,7 +667,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                     {platformLoading ? (
                         <div className="space-y-2">{[1,2,3,4].map(i => <div key={i} className="h-5 rounded animate-pulse" style={{ background: '#ffffff08' }} />)}</div>
                     ) : (() => {
-                        const s = platformData?.activeSeason;
+                        const s = selectedSeasonId === 'all' ? platformData?.primaryActiveSeason : platformData?.activeSeasons?.find(sz => sz.id === selectedSeasonId);
                         const now = new Date();
                         const gates = [
                             {
@@ -707,8 +737,11 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                     {platformLoading ? (
                         <div className="space-y-2">{[1,2,3,4].map(i => <div key={i} className="h-5 rounded animate-pulse" style={{ background: '#ffffff08' }} />)}</div>
                     ) : (() => {
-                        const s = platformData?.activeSeason;
-                        const nomineeCount = platformData?.seasonNomineeCount ?? 0;
+                        const s = selectedSeasonId === 'all' ? platformData?.primaryActiveSeason : platformData?.activeSeasons?.find(sz => sz.id === selectedSeasonId);
+                        let nomineeCount = selectedSeasonId === 'all' 
+                            ? platformData?.allSeasonNominees?.length 
+                            : platformData?.allSeasonNominees?.filter(n => n.season_id === selectedSeasonId).length;
+                        nomineeCount = nomineeCount ?? 0;
                         const signals = [
                             {
                                 label: 'Season lifecycle status',
