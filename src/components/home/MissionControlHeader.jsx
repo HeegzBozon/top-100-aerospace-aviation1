@@ -57,7 +57,8 @@ export default function MissionControlHeader() {
 
   useEffect(() => {
     if (!seasons.length || selectedSeasonId) return;
-    const women = seasons.find(s => s.name?.toLowerCase().includes('women'));
+    const women2026 = seasons.find(s => s.name?.toLowerCase().includes('women') && s.name?.includes('2026'));
+    const women = women2026 || seasons.find(s => s.name?.toLowerCase().includes('women'));
     setSelectedSeasonId(women?.id || seasons[0]?.id);
   }, [seasons]);
 
