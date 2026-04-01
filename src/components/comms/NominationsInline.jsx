@@ -100,15 +100,15 @@ function HeroHeader() {
       className="shrink-0 relative overflow-hidden"
       style={{ background: `linear-gradient(135deg, ${brand.navyDeep} 0%, #0d2137 100%)` }}
     >
-      <div className="relative px-5 py-5 md:py-8">
-        <div className="flex items-center gap-2 mb-2">
-          <Award className="w-3.5 h-3.5" style={{ color: brand.gold }} aria-hidden="true" />
-          <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: brand.gold }}>
+      <div className="relative px-5 py-3 md:py-8">
+        <div className="flex items-center gap-2 mb-1">
+          <Award className="w-3 h-3" style={{ color: brand.gold }} aria-hidden="true" />
+          <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: brand.gold }}>
             Season 4 Now Open
           </span>
         </div>
         <h1
-          className="text-xl md:text-3xl font-bold text-white leading-tight mb-1"
+          className="text-base md:text-3xl font-bold text-white leading-tight mb-1"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
           Nominate the Next{' '}
@@ -122,7 +122,7 @@ function HeroHeader() {
             Aerospace Leaders
           </span>
         </h1>
-        <p className="text-white/65 text-xs md:text-sm max-w-lg">
+        <p className="text-white/65 text-[11px] md:text-sm max-w-lg hidden md:block">
           Know someone shaping the future of flight? Put their name forward.
         </p>
 
