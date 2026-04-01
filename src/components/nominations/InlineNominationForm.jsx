@@ -10,9 +10,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 const brand = { navyDeep: '#1e3a5a', skyBlue: '#4a90b8', gold: '#c9a87c' };
 
 const LIST_TYPES = [
-  { value: 'women',  label: '🚀 Top 100 Women in Aerospace & Aviation' },
-  { value: 'men',    label: '🛩️ Top 100 Men in Aerospace & Aviation' },
-  { value: 'angels', label: '👼 Top 100 Angels in Aerospace & Aviation' },
+  { value: 'women',  label: 'Top 100 Women in Aerospace & Aviation' },
+  { value: 'men',    label: 'Top 100 Men in Aerospace & Aviation' },
+  { value: 'angels', label: 'Top 100 Angels in Aerospace & Aviation' },
 ];
 
 const STEPS = [
@@ -157,6 +157,24 @@ export default function InlineNominationForm({ onSuccess }) {
               className="flex flex-col gap-4 h-full"
             >
               <div>
+                <label htmlFor="nom-name" className="block text-sm font-semibold mb-1.5" style={{ color: brand.navyDeep }}>
+                  Full Name <span className="text-red-500" aria-hidden="true">*</span>
+                </label>
+                <Input
+                  id="nom-name"
+                  placeholder="e.g. Dr. Evelyn Reed"
+                  value={formData.name}
+                  onChange={e => set('name', e.target.value)}
+                  aria-required="true"
+                  aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? 'nom-name-err' : undefined}
+                  className="text-base h-12"
+                  autoComplete="off"
+                />
+                <FieldError id="nom-name-err" message={errors.name} />
+              </div>
+
+              <div>
                 <p className="text-sm font-semibold mb-2" style={{ color: brand.navyDeep }} id="list-type-label">
                   Nominating for <span className="text-red-500" aria-hidden="true">*</span>
                 </p>
@@ -188,24 +206,6 @@ export default function InlineNominationForm({ onSuccess }) {
                   })}
                 </div>
                 <FieldError id="nom-list-err" message={errors.list_type} />
-              </div>
-
-              <div>
-                <label htmlFor="nom-name" className="block text-sm font-semibold mb-1.5" style={{ color: brand.navyDeep }}>
-                  Full Name <span className="text-red-500" aria-hidden="true">*</span>
-                </label>
-                <Input
-                  id="nom-name"
-                  placeholder="e.g. Dr. Evelyn Reed"
-                  value={formData.name}
-                  onChange={e => set('name', e.target.value)}
-                  aria-required="true"
-                  aria-invalid={!!errors.name}
-                  aria-describedby={errors.name ? 'nom-name-err' : undefined}
-                  className="text-base h-12"
-                  autoComplete="off"
-                />
-                <FieldError id="nom-name-err" message={errors.name} />
               </div>
 
               <div>
