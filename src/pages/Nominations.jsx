@@ -66,7 +66,7 @@ export default function Nominations() {
           ))}
         </div>
 
-        <div className="relative px-6 py-10 md:py-14">
+        <div className="relative px-6 py-3 md:py-14">
           <div className="max-w-5xl mx-auto">
             {/* Badge */}
             <motion.div
