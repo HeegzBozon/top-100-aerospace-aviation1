@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Loader2, Calendar } from 'lucide-react';
 import { BRAND_COLORS } from '@/components/core/brandConstants';
+import { fetchSpaceDevsPrograms } from '@/functions/fetchSpaceDevsPrograms';
 
 export default function UpcomingMissions() {
   const [missions, setMissions] = useState([]);
@@ -10,7 +11,6 @@ export default function UpcomingMissions() {
   useEffect(() => {
     const fetchMissions = async () => {
       try {
-        const { fetchSpaceDevsPrograms } = await import('@/functions/fetchSpaceDevsPrograms');
         const response = await fetchSpaceDevsPrograms();
         setMissions((response.data?.upcoming || []).slice(0, 6));
       } catch (err) {

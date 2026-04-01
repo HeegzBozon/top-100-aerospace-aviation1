@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Loader2, TrendingUp } from 'lucide-react';
 import { BRAND_COLORS } from '@/components/core/brandConstants';
+import { fetchSpaceDevsPrograms } from '@/functions/fetchSpaceDevsPrograms';
 
 export default function TrendingPrograms() {
   const [trendingPrograms, setTrendingPrograms] = useState([]);
@@ -10,7 +11,6 @@ export default function TrendingPrograms() {
   useEffect(() => {
     const fetchTrending = async () => {
       try {
-        const { fetchSpaceDevsPrograms } = await import('@/functions/fetchSpaceDevsPrograms');
         const response = await fetchSpaceDevsPrograms();
         setTrendingPrograms((response.data?.trending || []).slice(0, 6));
       } catch (err) {

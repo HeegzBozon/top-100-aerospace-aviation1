@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Loader2, Trophy } from 'lucide-react';
 import { BRAND_COLORS } from '@/components/core/brandConstants';
+import { fetchSpaceDevsPrograms } from '@/functions/fetchSpaceDevsPrograms';
 
 export default function TopPrograms() {
   const [programs, setPrograms] = useState([]);
@@ -10,7 +11,6 @@ export default function TopPrograms() {
   useEffect(() => {
     const fetchPrograms = async () => {
       try {
-        const { fetchSpaceDevsPrograms } = await import('@/functions/fetchSpaceDevsPrograms');
         const response = await fetchSpaceDevsPrograms();
         setPrograms((response.data?.top || []).slice(0, 6));
       } catch (err) {
