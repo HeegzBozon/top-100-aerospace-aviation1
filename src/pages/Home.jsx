@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
+import ProfileView from '@/pages/ProfileView';
 import LandingHeroSection from '@/components/landing/LandingHeroSection';
 import Landing2Hero from '@/components/landing/Landing2Hero';
 import Landing2PromoBanner from '@/components/landing/Landing2PromoBanner';
+
 import TrendingSection from '@/components/landing/TrendingSection';
 import TrendingTalent from '@/components/home/TrendingTalent';
 import DomainExplorer from '@/components/home/DomainExplorer';
@@ -13,15 +15,16 @@ import UpcomingMissions from '@/components/home/UpcomingMissions';
 import TopPrograms from '@/components/home/TopPrograms';
 import TopOriginals from '@/components/home/TopOriginals';
 import MissionControlHeader from '@/components/home/MissionControlHeader';
+
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HomeSectionReorderPopover, { loadSectionConfig } from '@/components/admin/HomeSectionReorderPopover';
+
+const EditorialTerminal = lazy(() => import('@/components/terminal/EditorialTerminal'));
+
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { subDays } from 'date-fns';
 import { Loader2 } from 'lucide-react';
-
-const ProfileView = lazy(() => import('@/pages/ProfileView'));
-const EditorialTerminal = lazy(() => import('@/components/terminal/EditorialTerminal'));
 
 // Stable module-level shuffle utility
 function shuffleArray(array) {
