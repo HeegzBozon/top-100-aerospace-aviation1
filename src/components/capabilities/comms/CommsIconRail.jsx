@@ -9,7 +9,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { iconMap, DefaultIcon } from "@/components/icons";
 import { brandColors } from "@/components/layout/navConfig";
 import { useState, useEffect } from "react";
-import GlobalSearch from "./GlobalSearch";
 import CreateMenu from "./CreateMenu";
 import UserProfilePopover from "./UserProfilePopover";
 
@@ -117,9 +116,6 @@ export default function CommsIconRail({ currentPageName, totalUnread }) {
             }}
           />
         ))}
-
-        {/* Global Search */}
-        <GlobalSearch />
 
         {/* More menu */}
         <Popover>
