@@ -6,12 +6,39 @@
       "type": "string",
       "description": "The poll question"
     },
+    "type": {
+      "type": "string",
+      "enum": [
+        "poll",
+        "trivia"
+      ],
+      "default": "poll"
+    },
+    "poll_type": {
+      "type": "string",
+      "enum": [
+        "multiple_choice",
+        "yes_no",
+        "emoji"
+      ],
+      "default": "multiple_choice"
+    },
     "options": {
       "type": "array",
       "items": {
         "type": "string"
       },
       "description": "Available options"
+    },
+    "correct_answer": {
+      "type": "string"
+    },
+    "explanation": {
+      "type": "string"
+    },
+    "order": {
+      "type": "number",
+      "default": 0
     },
     "is_active": {
       "type": "boolean",
