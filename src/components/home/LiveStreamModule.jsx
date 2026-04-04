@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { PlayCircle } from 'lucide-react';
 import LiveReactionPoll from './LiveReactionPoll';
+import ExpertCommentaryCards from './ExpertCommentaryCards';
 
 export default function LiveStreamModule() {
   return (
@@ -41,6 +42,9 @@ export default function LiveStreamModule() {
              </div>
              <span className="text-xs text-slate-400 font-semibold tracking-wider uppercase">Experts in Studio</span>
           </div>
+        </div>
+        <div className="px-6 pb-6 md:px-8 md:pb-8">
+           <ExpertCommentaryCards />
         </div>
       </Card>
     </div>

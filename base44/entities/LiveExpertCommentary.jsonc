@@ -1,0 +1,26 @@
+{
+  "name": "LiveExpertCommentary",
+  "type": "object",
+  "properties": {
+    "expert_name": {
+      "type": "string"
+    },
+    "expert_title": {
+      "type": "string"
+    },
+    "expert_avatar": {
+      "type": "string"
+    },
+    "comment": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "expert_name",
+    "comment"
+  ]
+}
