@@ -33,6 +33,7 @@ const Top100AerospaceAviationTV = lazy(() => import('@/pages/Top100AerospaceAvia
 const Top100TV = lazy(() => import('@/pages/Top100TV'));
 const PaymentPlan = lazy(() => import('@/pages/PaymentPlan'));
 const Season4Launch = lazy(() => import('@/pages/Season4Launch'));
+const ArtemisArticle = lazy(() => import('@/pages/ArtemisArticle'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -132,6 +133,11 @@ const AuthenticatedApp = () => {
       } />
       <Route path="/payment-plan" element={<PaymentPlan />} />
       <Route path="/season4" element={<Season4Launch />} />
+      <Route path="/artemis-2" element={
+        <LayoutWrapper currentPageName="ArtemisArticle">
+          <ArtemisArticle />
+        </LayoutWrapper>
+      } />
       <Route path="/top100-tv" element={
         <LayoutWrapper currentPageName="Top100TV">
           <Top100TV />
