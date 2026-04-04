@@ -3,10 +3,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import EmailCaptureModal from './EmailCaptureModal';
 
 export default function LiveReactionPoll() {
   const queryClient = useQueryClient();
   const [voterId, setVoterId] = useState(null);
+
+  const { data: user } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: () => base44.auth.me().catch(() => null),
+  });
+
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [pendingOption, setPendingOption] = useState(null);
 
   useEffect(() => {
     let id = localStorage.getItem('voter_id');
@@ -43,6 +52,15 @@ export default function LiveReactionPoll() {
       queryClient.invalidateQueries({ queryKey: ['poll-votes', poll.id] });
     }
   });
+
+  const handleVoteClick = (option) => {
+    if (!user && !localStorage.getItem('captured_email')) {
+      setPendingOption(option);
+      setShowEmailModal(true);
+      return;
+    }
+    voteMutation.mutate(option);
+  };
 
   if (isLoading) return <div className="animate-pulse w-full h-32 bg-slate-900 rounded-xl border border-slate-800"></div>;
   if (!poll) return (
@@ -92,7 +110,7 @@ export default function LiveReactionPoll() {
               variant="outline" 
               size="sm"
               className="w-full justify-start text-xs border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors"
-              onClick={() => voteMutation.mutate(option)}
+              onClick={() => handleVoteClick(option)}
               disabled={voteMutation.isPending}
             >
               {voteMutation.isPending && voteMutation.variables === option ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : null}
@@ -104,6 +122,20 @@ export default function LiveReactionPoll() {
       <div className="mt-4 text-[10px] text-slate-500 text-right uppercase tracking-wider font-semibold">
         {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
       </div>
+      <EmailCaptureModal 
+        isOpen={showEmailModal} 
+        onClose={() => {
+          setShowEmailModal(false);
+          setPendingOption(null);
+        }}
+        onSuccess={() => {
+          setShowEmailModal(false);
+          if (pendingOption) {
+            voteMutation.mutate(pendingOption);
+            setPendingOption(null);
+          }
+        }}
+      />
     </div>
   );
 }

@@ -1,0 +1,15 @@
+{
+  "name": "LiveStreamLead",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "email"
+  ]
+}
