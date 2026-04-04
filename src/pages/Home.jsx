@@ -12,6 +12,7 @@ import UpcomingMissions from '@/components/home/UpcomingMissions';
 import TopPrograms from '@/components/home/TopPrograms';
 import TopOriginals from '@/components/home/TopOriginals';
 import MissionControlHeader from '@/components/home/MissionControlHeader';
+import LiveStreamModule from '@/components/home/LiveStreamModule';
 
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HomeSectionReorderPopover, { loadSectionConfig } from '@/components/admin/HomeSectionReorderPopover';
@@ -39,6 +40,7 @@ export default function HomePage() {
 
   // Section config: seeded from user record (global) once user loads
   const DEFAULT_SECTIONS = [
+    { id: 'liveStream',  label: 'Live Stream Theater' },
     { id: 'missionControl', label: 'Mission Control' },
     { id: 'spotlight',   label: 'Industry Spotlight' },
     { id: 'featured',    label: 'Featured Today' },
@@ -195,6 +197,7 @@ export default function HomePage() {
   const isMemberOnly = userRole === 'user';
 
   const SECTION_COMPONENTS = {
+    liveStream: <LiveStreamModule />,
     missionControl: <MissionControlHeader />,
     spotlight: isMemberOnly ? null : <IndustrySpotlight />,
     featured: isMemberOnly ? null : <FeaturedToday />,
