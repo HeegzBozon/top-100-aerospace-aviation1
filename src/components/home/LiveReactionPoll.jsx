@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Loader2, RefreshCw, ChevronLeft, ChevronRight, CheckCircle2, XCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import EmailCaptureModal from './EmailCaptureModal';
 
 export default function LiveReactionPoll() {
@@ -61,6 +62,9 @@ export default function LiveReactionPoll() {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['poll-votes', poll.id] });
+      setTimeout(() => {
+        handleNext();
+      }, 2500);
     }
   });
 
@@ -100,7 +104,7 @@ export default function LiveReactionPoll() {
 
   return (
     <div 
-      className="w-full bg-slate-900/80 border border-slate-800/80 rounded-xl p-5 shadow-lg backdrop-blur-md relative"
+      className="w-full bg-slate-900/50 border border-slate-800/50 rounded-xl p-5 shadow-lg backdrop-blur-sm relative overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -126,8 +130,16 @@ export default function LiveReactionPoll() {
           </button>
         )}
       </div>
-      <h4 className="text-slate-200 font-semibold mb-4 text-sm leading-snug">{poll.question}</h4>
-      <div className={`grid gap-3 ${poll.poll_type === 'emoji' ? 'grid-cols-4' : 'grid-cols-1'}`}>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={poll.id}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.3 }}
+        >
+          <h4 className="text-slate-200 font-semibold mb-4 text-sm leading-snug">{poll.question}</h4>
+          <div className={`grid gap-3 ${poll.poll_type === 'emoji' ? 'grid-cols-4' : 'grid-cols-1'}`}>
         {poll.options.map(option => {
           const optionVotes = votes.filter(v => v.selected_option === option).length;
           const percentage = totalVotes === 0 ? 0 : Math.round((optionVotes / totalVotes) * 100);
@@ -213,14 +225,16 @@ export default function LiveReactionPoll() {
         })}
       </div>
 
-      {userVote && poll.type === 'trivia' && poll.explanation && (
-          <div className="mt-4 p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-300">
-              <span className="font-bold text-white block mb-1">Explanation:</span>
-              {poll.explanation}
-          </div>
-      )}
+          {userVote && poll.type === 'trivia' && poll.explanation && (
+              <div className="mt-4 p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-300">
+                  <span className="font-bold text-white block mb-1">Explanation:</span>
+                  {poll.explanation}
+              </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
 
-      <div className="mt-4 flex items-center justify-between">
+      <div className="mt-4 flex items-center justify-between relative z-10">
         <div className="flex gap-2">
             {activePolls.length > 1 && (
                 <>
