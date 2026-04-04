@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import EmailCaptureModal from './EmailCaptureModal';
 
 export default function LiveReactionPoll() {
@@ -53,6 +53,18 @@ export default function LiveReactionPoll() {
     }
   });
 
+  const resetMutation = useMutation({
+    mutationFn: async () => {
+      const votesToDelete = await base44.entities.LiveReactionVote.filter({ poll_id: poll.id }, '', 5000);
+      for (const v of votesToDelete) {
+        await base44.entities.LiveReactionVote.delete(v.id);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['poll-votes', poll.id] });
+    }
+  });
+
   const handleVoteClick = (option) => {
     if (!user && !localStorage.getItem('captured_email')) {
       setPendingOption(option);
@@ -74,9 +86,26 @@ export default function LiveReactionPoll() {
 
   return (
     <div className="w-full bg-slate-900/80 border border-slate-800/80 rounded-xl p-5 shadow-lg backdrop-blur-md">
-      <div className="text-[10px] uppercase tracking-widest text-red-500 font-bold mb-3 flex items-center gap-1.5">
-        <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-        Live Reaction Poll
+      <div className="text-[10px] uppercase tracking-widest text-red-500 font-bold mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          Live Reaction Poll
+        </div>
+        {user?.role === 'admin' && (
+          <button 
+            onClick={() => {
+              if (window.confirm('Are you sure you want to reset all votes for this poll?')) {
+                resetMutation.mutate();
+              }
+            }}
+            disabled={resetMutation.isPending}
+            className="text-slate-500 hover:text-red-400 transition-colors flex items-center gap-1"
+            title="Reset Poll Votes"
+          >
+            <RefreshCw className={`w-3 h-3 ${resetMutation.isPending ? 'animate-spin' : ''}`} />
+            {resetMutation.isPending ? 'Resetting...' : 'Reset'}
+          </button>
+        )}
       </div>
       <h4 className="text-slate-200 font-semibold mb-4 text-sm leading-snug">{poll.question}</h4>
       <div className="space-y-3">
