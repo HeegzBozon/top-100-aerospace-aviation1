@@ -1,38 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Activity, Target } from 'lucide-react';
+import { Clock, Activity, Target, Loader2 } from 'lucide-react';
+import { getUpcomingLaunches } from '@/functions/getUpcomingLaunches';
 
 export default function MissionStatsTicker() {
-  const [met, setMet] = useState(0);
-  const [countdown, setCountdown] = useState(3600); // 1 hour to next milestone
+  const [launch, setLaunch] = useState(null);
+  const [timeDiff, setTimeDiff] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate Mission Elapsed Time (MET) starting from 48 hours ago
-    const startTime = new Date().getTime() - 1000 * 60 * 60 * 48;
+    getUpcomingLaunches({ limit: 1 })
+      .then(res => {
+        const nextLaunch = res?.data?.launches?.[0];
+        if (nextLaunch) setLaunch(nextLaunch);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!launch?.net) return;
+    
+    const launchTime = new Date(launch.net).getTime();
     
     const interval = setInterval(() => {
       const now = new Date().getTime();
-      setMet(Math.floor((now - startTime) / 1000));
-      setCountdown(prev => (prev > 0 ? prev - 1 : 0));
+      setTimeDiff(Math.floor((now - launchTime) / 1000));
     }, 1000);
 
+    // Initial calculation
+    const now = new Date().getTime();
+    setTimeDiff(Math.floor((now - launchTime) / 1000));
+
     return () => clearInterval(interval);
-  }, []);
+  }, [launch]);
 
   const formatTime = (seconds) => {
-    const d = Math.floor(seconds / (3600 * 24));
-    const h = Math.floor((seconds % (3600 * 24)) / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
+    const isPast = seconds >= 0;
+    const absSeconds = Math.abs(seconds);
+    const d = Math.floor(absSeconds / (3600 * 24));
+    const h = Math.floor((absSeconds % (3600 * 24)) / 3600);
+    const m = Math.floor((absSeconds % 3600) / 60);
+    const s = absSeconds % 60;
     
-    if (d > 0) return `T+ ${d}d ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    return `T+ ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    const sign = isPast ? 'T+' : 'T-';
+    
+    if (d > 0) return `${sign} ${d}d ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${sign} ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
   
-  const formatCountdown = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `T- ${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
+  if (loading) {
+    return (
+      <div className="w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-center px-4 py-3 min-h-[56px]">
+        <Loader2 className="w-5 h-5 text-slate-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!launch) return null;
+
+  const isPast = timeDiff >= 0;
 
   return (
     <div className="w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800 flex flex-col sm:flex-row items-center justify-between px-4 py-3 gap-4">
@@ -43,31 +71,31 @@ export default function MissionStatsTicker() {
           <Activity className="w-4 h-4 text-[#c9a87c] animate-pulse" />
           <div className="flex flex-col">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Current Phase</span>
-            <span className="text-sm font-semibold text-slate-200">Translunar Injection</span>
+            <span className="text-sm font-semibold text-slate-200 truncate max-w-[200px]">{launch.status?.name || 'Scheduled'}</span>
           </div>
         </div>
 
         {/* Separator */}
         <div className="w-px h-8 bg-slate-800 hidden sm:block shrink-0"></div>
 
-        {/* MET Counter */}
+        {/* Time Counter */}
         <div className="flex items-center gap-2 shrink-0">
-          <Clock className="w-4 h-4 text-sky-400" />
+          <Clock className={`w-4 h-4 ${isPast ? 'text-sky-400' : 'text-amber-400'}`} />
           <div className="flex flex-col">
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Mission Elapsed Time</span>
-            <span className="text-sm font-mono font-bold text-sky-400">{formatTime(met)}</span>
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{isPast ? 'Mission Elapsed Time' : 'Countdown to Launch'}</span>
+            <span className={`text-sm font-mono font-bold ${isPast ? 'text-sky-400' : 'text-amber-400'}`}>{formatTime(timeDiff)}</span>
           </div>
         </div>
 
         {/* Separator */}
         <div className="w-px h-8 bg-slate-800 hidden sm:block shrink-0"></div>
 
-        {/* Milestone Countdown */}
+        {/* Mission Name */}
         <div className="flex items-center gap-2 shrink-0">
           <Target className="w-4 h-4 text-emerald-400" />
           <div className="flex flex-col">
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Next Milestone: Lunar Orbit</span>
-            <span className="text-sm font-mono font-bold text-emerald-400">{formatCountdown(countdown)}</span>
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Mission / Payload</span>
+            <span className="text-sm font-mono font-bold text-emerald-400 truncate max-w-[250px]">{launch.mission?.name || launch.name.split('|')[1]?.trim() || launch.name}</span>
           </div>
         </div>
 
