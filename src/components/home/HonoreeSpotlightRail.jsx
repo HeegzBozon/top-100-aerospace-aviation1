@@ -7,11 +7,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { createPageUrl } from '@/utils';
 
 export default function HonoreeSpotlightRail() {
-  const { data: nominees, isLoading } = useQuery({
-    queryKey: ['artemis-fellows'],
+  const { data: fellows, isLoading } = useQuery({
+    queryKey: ['artemis-fellows-csv'],
     queryFn: async () => {
-      // Fetch some active nominees, sorting by score to get notable fellows
-      return base44.entities.Nominee.filter({ status: 'active' }, '-aura_score', 10);
+      // Fetch the imported Artemis fellows
+      return base44.entities.ArtemisFellow.list();
     }
   });
 
@@ -41,20 +41,20 @@ export default function HonoreeSpotlightRail() {
                 </div>
               </div>
             ))
-          ) : nominees?.map((nominee) => (
+          ) : fellows?.map((fellow) => (
             <a 
-              key={nominee.id}
-              href={`/profiles/${nominee.id}`}
+              key={fellow.id}
+              href={fellow.profile_url || '#'}
               className="w-[280px] shrink-0 rounded-xl bg-slate-900/50 hover:bg-slate-900 border border-slate-800 hover:border-[#c9a87c]/50 p-4 flex items-center gap-4 transition-all group"
             >
               <img 
-                src={nominee.avatar_url || nominee.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nominee.name)}&background=1e3a5a&color=c9a87c`} 
-                alt={nominee.name}
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(fellow.name)}&background=1e3a5a&color=c9a87c`} 
+                alt={fellow.name}
                 className="w-14 h-14 rounded-full object-cover border-2 border-slate-800 group-hover:border-[#c9a87c] transition-colors shrink-0"
               />
               <div className="flex-1 min-w-0 whitespace-normal">
-                <h5 className="font-bold text-sm text-slate-100 truncate group-hover:text-white transition-colors">{nominee.name}</h5>
-                <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{nominee.title || nominee.industry || 'Space Pioneer'}</p>
+                <h5 className="font-bold text-sm text-slate-100 truncate group-hover:text-white transition-colors">{fellow.name}</h5>
+                <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{fellow.rail_copy || fellow.title}</p>
                 <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-[#c9a87c]/10 text-[#c9a87c] border border-[#c9a87c]/20">
                   Mission Fellow
                 </div>
