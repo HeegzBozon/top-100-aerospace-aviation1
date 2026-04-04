@@ -1,0 +1,25 @@
+{
+  "name": "LiveReactionPoll",
+  "type": "object",
+  "properties": {
+    "question": {
+      "type": "string",
+      "description": "The poll question"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Available options"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "question",
+    "options"
+  ]
+}
