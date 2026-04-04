@@ -60,7 +60,7 @@ export default function HonoreeSpotlightRail() {
           ) : fellows?.map((fellow) => (
             <a 
               key={fellow.id}
-              href={fellow.actual_profile_id ? `/profiles/${fellow.actual_profile_id}` : (fellow.profile_url || '#')}
+              href={fellow.actual_profile_id ? `/ProfileView?id=${fellow.actual_profile_id}` : (fellow.profile_url || '#')}
               className="w-[280px] shrink-0 rounded-xl bg-slate-900/50 hover:bg-slate-900 border border-slate-800 hover:border-[#c9a87c]/50 p-4 flex items-center gap-4 transition-all group"
             >
               <img 
