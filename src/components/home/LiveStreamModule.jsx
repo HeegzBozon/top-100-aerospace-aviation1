@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { PlayCircle } from 'lucide-react';
 import LiveReactionPoll from './LiveReactionPoll';
 import ExpertCommentaryCards from './ExpertCommentaryCards';
+import LiveStreamComments from './LiveStreamComments';
 
 export default function LiveStreamModule() {
   const [isLive, setIsLive] = useState(true);
@@ -36,8 +37,9 @@ export default function LiveStreamModule() {
                </div>
              )}
           </div>
-          <div className="lg:w-[30%] bg-slate-950 p-4 md:p-6 flex flex-col justify-center items-center">
+          <div className="lg:w-[30%] bg-slate-950 p-4 md:p-6 flex flex-col gap-6 lg:max-h-[600px] overflow-y-auto">
              <LiveReactionPoll />
+             <LiveStreamComments />
           </div>
         </div>
         <div className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:items-center justify-between border-t border-slate-800/50">
