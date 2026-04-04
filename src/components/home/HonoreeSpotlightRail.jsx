@@ -8,10 +8,26 @@ import { createPageUrl } from '@/utils';
 
 export default function HonoreeSpotlightRail() {
   const { data: fellows, isLoading } = useQuery({
-    queryKey: ['artemis-fellows-csv'],
+    queryKey: ['artemis-fellows-csv-matched'],
     queryFn: async () => {
-      // Fetch the imported Artemis fellows
-      return base44.entities.ArtemisFellow.list();
+      const [fellowsData, nomineesData] = await Promise.all([
+        base44.entities.ArtemisFellow.list(),
+        base44.entities.Nominee.filter({ status: 'active' }, '', 1000)
+      ]);
+      
+      return fellowsData.map((fellow) => {
+        const match = nomineesData.find(n => 
+          n.name.toLowerCase() === fellow.name.toLowerCase() || 
+          n.name.toLowerCase().includes(fellow.name.toLowerCase()) ||
+          fellow.name.toLowerCase().includes(n.name.toLowerCase())
+        );
+        
+        return {
+          ...fellow,
+          actual_profile_id: match?.id,
+          actual_avatar_url: match?.avatar_url || match?.photo_url || null,
+        };
+      });
     }
   });
 
@@ -44,11 +60,11 @@ export default function HonoreeSpotlightRail() {
           ) : fellows?.map((fellow) => (
             <a 
               key={fellow.id}
-              href={fellow.profile_url || '#'}
+              href={fellow.actual_profile_id ? `/profiles/${fellow.actual_profile_id}` : (fellow.profile_url || '#')}
               className="w-[280px] shrink-0 rounded-xl bg-slate-900/50 hover:bg-slate-900 border border-slate-800 hover:border-[#c9a87c]/50 p-4 flex items-center gap-4 transition-all group"
             >
               <img 
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(fellow.name)}&background=1e3a5a&color=c9a87c`} 
+                src={fellow.actual_avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fellow.name)}&background=1e3a5a&color=c9a87c`} 
                 alt={fellow.name}
                 className="w-14 h-14 rounded-full object-cover border-2 border-slate-800 group-hover:border-[#c9a87c] transition-colors shrink-0"
               />
