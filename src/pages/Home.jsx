@@ -13,6 +13,7 @@ import TopPrograms from '@/components/home/TopPrograms';
 import TopOriginals from '@/components/home/TopOriginals';
 import MissionControlHeader from '@/components/home/MissionControlHeader';
 import LiveStreamModule from '@/components/home/LiveStreamModule';
+import WefunderStickyBar from '@/components/home/WefunderStickyBar';
 
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HomeSectionReorderPopover, { loadSectionConfig } from '@/components/admin/HomeSectionReorderPopover';
@@ -234,6 +235,7 @@ export default function HomePage() {
           onConfigChange={setSectionConfig}
         />
       </EditorialTerminal>
+      <WefunderStickyBar />
     </Suspense>
   );
 }
