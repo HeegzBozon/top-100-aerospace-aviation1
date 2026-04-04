@@ -1,10 +1,34 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Rocket, Award, ChevronRight, ArrowUpRight } from 'lucide-react';
+import { ArrowLeft, Rocket, Award, ChevronRight, ArrowUpRight, Edit2, Save, X } from 'lucide-react';
 import EditorialTerminal from '@/components/terminal/EditorialTerminal';
+
+const EditableText = ({ value, onChange, isEditing, className, as: Component = 'span', isMultiline = false }) => {
+    if (isEditing) {
+        if (isMultiline) {
+            return (
+                <textarea 
+                    value={value} 
+                    onChange={(e) => onChange(e.target.value)} 
+                    className={`w-full bg-slate-900 border border-[#c9a87c]/50 rounded p-2 focus:outline-none focus:border-[#c9a87c] text-white ${className}`}
+                    rows={4}
+                />
+            );
+        }
+        return (
+            <input 
+                type="text" 
+                value={value} 
+                onChange={(e) => onChange(e.target.value)} 
+                className={`w-full bg-slate-900 border border-[#c9a87c]/50 rounded px-2 py-1 focus:outline-none focus:border-[#c9a87c] text-white ${className}`}
+            />
+        );
+    }
+    return <Component className={className}>{value}</Component>;
+};
 
 const CATEGORIES = [
   {
@@ -103,11 +127,69 @@ const CATEGORIES = [
   }
 ];
 
+const DEFAULT_CONTENT = {
+  hero: {
+    badge: "Special Report • April 2026",
+    title1: "The Women Behind",
+    title2: "The Artemis 2 Mission",
+    subtitle: "On April 4, 2026, four humans will ride the most powerful rocket ever built and fly around the Moon. We looked at who built what gets them there."
+  },
+  intro: {
+    p1: "TOP 100 Aerospace & Aviation recognizes and measures accomplished professionals across the global aerospace and aviation industry. Our directory spans 100 verified Fellows across 49 countries. When Artemis 2 lifted off, we went through every profile to answer a simple question: who in our community has a direct connection to this mission?",
+    p2: "The answer: ten women. Systems engineers. Bioastronautics researchers. Lunar landing AI developers. Analog astronaut commanders. Space architects. A NASA headquarters communications lead. A space programme manager at a NASA commercial partner. A policy architect who has spent decades building the institutional infrastructure that makes missions like this possible.",
+    quote: "\"They are not bystanders to history. They are threads in its fabric.\""
+  },
+  categories: CATEGORIES,
+  conclusion: {
+    title: "What This Moment Means",
+    p1: "Artemis 2 is a mission. It is also a symbol — proof that humanity did not stop at low Earth orbit. That we decided to go back, and further.",
+    p2: "But symbols are made of specifics. The signal that reaches Earth because of communications infrastructure. The trajectory calculated by navigation systems. The landing algorithms being refined right now. The analog training that turns a simulation into muscle memory. The policy architecture that kept the budget intact through four administrations.",
+    p3: "Every one of those specifics has people behind it. Ten of those people are in our directory.",
+    p4: "We built TOP 100 Aerospace & Aviation because we believe the aerospace industry deserves a record — not of missions, but of people. The platform measures contribution, verification, and engagement over time. It does not rank. It documents.",
+    quote: "This is what that documentation looks like when history is in motion."
+  }
+};
+
 export default function ArtemisArticle() {
+  const { data: user } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: () => base44.auth.me().catch(() => null)
+  });
+  const isAdmin = user?.role === 'admin';
+
   const { data: nomineesData = [] } = useQuery({
     queryKey: ['artemis-nominees-match'],
     queryFn: async () => base44.entities.Nominee.filter({ status: 'active' }, '', 1000)
   });
+
+  const { data: articleData, refetch } = useQuery({
+    queryKey: ['artemis-article-data'],
+    queryFn: async () => {
+        const records = await base44.entities.ArtemisArticleData.filter({ singleton_key: 'main' });
+        if (records.length > 0) return records[0];
+        return { content: DEFAULT_CONTENT };
+    }
+  });
+
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedContent, setEditedContent] = useState(null);
+
+  useEffect(() => {
+    if (articleData?.content) {
+        setEditedContent(JSON.parse(JSON.stringify(articleData.content)));
+    }
+  }, [articleData]);
+
+  const handleSave = async () => {
+    const records = await base44.entities.ArtemisArticleData.filter({ singleton_key: 'main' });
+    if (records.length > 0) {
+        await base44.entities.ArtemisArticleData.update(records[0].id, { content: editedContent });
+    } else {
+        await base44.entities.ArtemisArticleData.create({ singleton_key: 'main', content: editedContent });
+    }
+    setIsEditMode(false);
+    refetch();
+  };
 
   const getProfileInfo = (name) => {
     const match = nomineesData.find(n => 
@@ -121,10 +203,31 @@ export default function ArtemisArticle() {
     };
   };
 
+  if (!editedContent) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-[#c9a87c]">Loading...</div>;
+
   return (
     <EditorialTerminal>
-      <div className="min-h-screen bg-slate-950 font-sans pb-24">
+      <div className="min-h-screen bg-slate-950 font-sans pb-24 relative">
         
+        {isAdmin && (
+          <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+            {isEditMode ? (
+              <>
+                <Button onClick={() => setIsEditMode(false)} variant="outline" className="bg-slate-900 border-red-500/50 hover:bg-red-950/50 text-red-400 backdrop-blur-md">
+                  <X className="w-4 h-4 mr-2" /> Cancel
+                </Button>
+                <Button onClick={handleSave} className="bg-[#c9a87c] hover:bg-[#b09268] text-slate-950 backdrop-blur-md">
+                  <Save className="w-4 h-4 mr-2" /> Save Changes
+                </Button>
+              </>
+            ) : (
+              <Button onClick={() => setIsEditMode(true)} variant="outline" className="bg-slate-900 border-[#c9a87c]/50 hover:bg-slate-800 text-[#c9a87c] backdrop-blur-md">
+                <Edit2 className="w-4 h-4 mr-2" /> Edit Page
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* HERO SECTION */}
         <div className="relative w-full h-[60vh] md:h-[75vh] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0">
@@ -147,17 +250,37 @@ export default function ArtemisArticle() {
             
             <div className="inline-flex items-center justify-center px-3 py-1 mb-6 rounded-full border border-[#c9a87c]/30 bg-[#c9a87c]/10 text-[#c9a87c] text-xs font-bold uppercase tracking-widest backdrop-blur-sm">
               <Rocket className="w-3.5 h-3.5 mr-2" />
-              Special Report • April 2026
+              <EditableText 
+                value={editedContent.hero.badge}
+                onChange={v => setEditedContent({...editedContent, hero: {...editedContent.hero, badge: v}})}
+                isEditing={isEditMode}
+              />
             </div>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight mb-6 tracking-tight" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
-              The Women Behind <br className="hidden md:block"/>
-              <span className="text-[#c9a87c]">The Artemis 2 Mission</span>
+              <EditableText 
+                value={editedContent.hero.title1}
+                onChange={v => setEditedContent({...editedContent, hero: {...editedContent.hero, title1: v}})}
+                isEditing={isEditMode}
+              />
+              <br className="hidden md:block"/>
+              <span className="text-[#c9a87c]">
+                <EditableText 
+                  value={editedContent.hero.title2}
+                  onChange={v => setEditedContent({...editedContent, hero: {...editedContent.hero, title2: v}})}
+                  isEditing={isEditMode}
+                />
+              </span>
             </h1>
             
-            <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto font-serif leading-relaxed">
-              On April 4, 2026, four humans will ride the most powerful rocket ever built and fly around the Moon. We looked at who built what gets them there.
-            </p>
+            <EditableText 
+                value={editedContent.hero.subtitle}
+                onChange={v => setEditedContent({...editedContent, hero: {...editedContent.hero, subtitle: v}})}
+                isEditing={isEditMode}
+                isMultiline={true}
+                className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto font-serif leading-relaxed block"
+                as="p"
+            />
           </div>
         </div>
 
@@ -165,29 +288,63 @@ export default function ArtemisArticle() {
           
           {/* INTRO TEXT */}
           <div className="bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl p-8 md:p-12 rounded-3xl shadow-2xl mb-16 text-center max-w-4xl mx-auto">
-            <p className="text-slate-300 text-lg md:text-xl leading-relaxed mb-6 font-serif">
-              TOP 100 Aerospace & Aviation recognizes and measures accomplished professionals across the global aerospace and aviation industry. Our directory spans 100 verified Fellows across 49 countries. When Artemis 2 lifted off, we went through every profile to answer a simple question: <strong className="text-white">who in our community has a direct connection to this mission?</strong>
-            </p>
-            <p className="text-slate-300 text-lg md:text-xl leading-relaxed font-serif">
-              The answer: ten women. Systems engineers. Bioastronautics researchers. Lunar landing AI developers. Analog astronaut commanders. Space architects. A NASA headquarters communications lead. A space programme manager at a NASA commercial partner. A policy architect who has spent decades building the institutional infrastructure that makes missions like this possible.
-            </p>
+            <EditableText 
+                value={editedContent.intro.p1}
+                onChange={v => setEditedContent({...editedContent, intro: {...editedContent.intro, p1: v}})}
+                isEditing={isEditMode}
+                isMultiline={true}
+                className="text-slate-300 text-lg md:text-xl leading-relaxed mb-6 font-serif block"
+                as="p"
+            />
+            <EditableText 
+                value={editedContent.intro.p2}
+                onChange={v => setEditedContent({...editedContent, intro: {...editedContent.intro, p2: v}})}
+                isEditing={isEditMode}
+                isMultiline={true}
+                className="text-slate-300 text-lg md:text-xl leading-relaxed font-serif block"
+                as="p"
+            />
             <div className="mt-8 pt-8 border-t border-slate-800">
-              <p className="text-[#c9a87c] text-2xl font-serif italic">
-                "They are not bystanders to history. They are threads in its fabric."
-              </p>
+              <EditableText 
+                  value={editedContent.intro.quote}
+                  onChange={v => setEditedContent({...editedContent, intro: {...editedContent.intro, quote: v}})}
+                  isEditing={isEditMode}
+                  isMultiline={true}
+                  className="text-[#c9a87c] text-2xl font-serif italic block"
+                  as="p"
+              />
             </div>
           </div>
 
           {/* PEOPLE GRID */}
           <div className="space-y-24">
-            {CATEGORIES.map((category, idx) => (
+            {editedContent.categories.map((category, idx) => (
               <div key={idx}>
                 <div className="mb-10 text-center md:text-left">
                   <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-4 flex items-center justify-center md:justify-start gap-3">
                     <span className="text-[#c9a87c]">—</span>
-                    {category.title}
+                    <EditableText 
+                        value={category.title}
+                        onChange={v => {
+                            const newContent = JSON.parse(JSON.stringify(editedContent));
+                            newContent.categories[idx].title = v;
+                            setEditedContent(newContent);
+                        }}
+                        isEditing={isEditMode}
+                    />
                   </h2>
-                  <p className="text-slate-400 text-lg max-w-2xl">{category.description}</p>
+                  <EditableText 
+                      value={category.description}
+                      onChange={v => {
+                          const newContent = JSON.parse(JSON.stringify(editedContent));
+                          newContent.categories[idx].description = v;
+                          setEditedContent(newContent);
+                      }}
+                      isEditing={isEditMode}
+                      isMultiline={true}
+                      className="text-slate-400 text-lg max-w-2xl block"
+                      as="p"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -203,16 +360,65 @@ export default function ArtemisArticle() {
                             alt={person.name}
                             className="w-16 h-16 rounded-full object-cover border-2 border-slate-800 group-hover:border-[#c9a87c] transition-colors"
                           />
-                          <div>
-                            <h3 className="text-xl font-bold text-white group-hover:text-[#c9a87c] transition-colors">{person.name}</h3>
-                            <div className="text-[#c9a87c] text-xs font-bold uppercase tracking-wider mb-1">Fellow #{person.fellowId}</div>
-                            <div className="text-slate-400 text-sm">{person.role}</div>
-                            <div className="text-slate-500 text-xs">{person.company}</div>
+                          <div className="flex-1">
+                            <EditableText 
+                                value={person.name}
+                                onChange={v => {
+                                    const newContent = JSON.parse(JSON.stringify(editedContent));
+                                    newContent.categories[idx].people[pIdx].name = v;
+                                    setEditedContent(newContent);
+                                }}
+                                isEditing={isEditMode}
+                                className="text-xl font-bold text-white group-hover:text-[#c9a87c] transition-colors block"
+                                as="h3"
+                            />
+                            <div className="text-[#c9a87c] text-xs font-bold uppercase tracking-wider mb-1">
+                              Fellow #<EditableText 
+                                  value={person.fellowId}
+                                  onChange={v => {
+                                      const newContent = JSON.parse(JSON.stringify(editedContent));
+                                      newContent.categories[idx].people[pIdx].fellowId = v;
+                                      setEditedContent(newContent);
+                                  }}
+                                  isEditing={isEditMode}
+                              />
+                            </div>
+                            <EditableText 
+                                value={person.role}
+                                onChange={v => {
+                                    const newContent = JSON.parse(JSON.stringify(editedContent));
+                                    newContent.categories[idx].people[pIdx].role = v;
+                                    setEditedContent(newContent);
+                                }}
+                                isEditing={isEditMode}
+                                className="text-slate-400 text-sm block"
+                                as="div"
+                            />
+                            <EditableText 
+                                value={person.company}
+                                onChange={v => {
+                                    const newContent = JSON.parse(JSON.stringify(editedContent));
+                                    newContent.categories[idx].people[pIdx].company = v;
+                                    setEditedContent(newContent);
+                                }}
+                                isEditing={isEditMode}
+                                className="text-slate-500 text-xs block"
+                                as="div"
+                            />
                           </div>
                         </div>
-                        <p className="text-slate-300 text-sm leading-relaxed flex-1 mb-6">
-                          {person.copy}
-                        </p>
+                        <EditableText 
+                            value={person.copy}
+                            onChange={v => {
+                                const newContent = JSON.parse(JSON.stringify(editedContent));
+                                newContent.categories[idx].people[pIdx].copy = v;
+                                setEditedContent(newContent);
+                            }}
+                            isEditing={isEditMode}
+                            isMultiline={true}
+                            className="text-slate-300 text-sm leading-relaxed flex-1 mb-6 block"
+                            as="p"
+                        />
                         
                         <div className="mt-auto pt-4 border-t border-slate-800/50">
                           {info.actual_profile_id ? (
@@ -238,23 +444,54 @@ export default function ArtemisArticle() {
           <div className="mt-32 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 md:p-16 relative overflow-hidden">
             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-[#c9a87c]/5 rounded-full blur-3xl"></div>
             <div className="relative z-10 max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-8">What This Moment Means</h2>
+              <EditableText 
+                  value={editedContent.conclusion.title}
+                  onChange={v => setEditedContent({...editedContent, conclusion: {...editedContent.conclusion, title: v}})}
+                  isEditing={isEditMode}
+                  className="text-3xl md:text-4xl font-serif font-bold text-white mb-8 block"
+                  as="h2"
+              />
               <div className="space-y-6 text-slate-300 text-lg leading-relaxed font-serif">
-                <p>
-                  Artemis 2 is a mission. It is also a symbol — proof that humanity did not stop at low Earth orbit. That we decided to go back, and further.
-                </p>
-                <p>
-                  But symbols are made of specifics. The signal that reaches Earth because of communications infrastructure. The trajectory calculated by navigation systems. The landing algorithms being refined right now. The analog training that turns a simulation into muscle memory. The policy architecture that kept the budget intact through four administrations.
-                </p>
-                <p className="text-xl font-bold text-white">
-                  Every one of those specifics has people behind it. Ten of those people are in our directory.
-                </p>
-                <p>
-                  We built TOP 100 Aerospace & Aviation because we believe the aerospace industry deserves a record — not of missions, but of people. The platform measures contribution, verification, and engagement over time. It does not rank. It documents.
-                </p>
-                <p className="text-[#c9a87c] text-2xl italic pt-4">
-                  This is what that documentation looks like when history is in motion.
-                </p>
+                <EditableText 
+                    value={editedContent.conclusion.p1}
+                    onChange={v => setEditedContent({...editedContent, conclusion: {...editedContent.conclusion, p1: v}})}
+                    isEditing={isEditMode}
+                    isMultiline={true}
+                    className="block"
+                    as="p"
+                />
+                <EditableText 
+                    value={editedContent.conclusion.p2}
+                    onChange={v => setEditedContent({...editedContent, conclusion: {...editedContent.conclusion, p2: v}})}
+                    isEditing={isEditMode}
+                    isMultiline={true}
+                    className="block"
+                    as="p"
+                />
+                <EditableText 
+                    value={editedContent.conclusion.p3}
+                    onChange={v => setEditedContent({...editedContent, conclusion: {...editedContent.conclusion, p3: v}})}
+                    isEditing={isEditMode}
+                    isMultiline={true}
+                    className="text-xl font-bold text-white block"
+                    as="p"
+                />
+                <EditableText 
+                    value={editedContent.conclusion.p4}
+                    onChange={v => setEditedContent({...editedContent, conclusion: {...editedContent.conclusion, p4: v}})}
+                    isEditing={isEditMode}
+                    isMultiline={true}
+                    className="block"
+                    as="p"
+                />
+                <EditableText 
+                    value={editedContent.conclusion.quote}
+                    onChange={v => setEditedContent({...editedContent, conclusion: {...editedContent.conclusion, quote: v}})}
+                    isEditing={isEditMode}
+                    isMultiline={true}
+                    className="text-[#c9a87c] text-2xl italic pt-4 block"
+                    as="p"
+                />
               </div>
 
               <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-center gap-4">
