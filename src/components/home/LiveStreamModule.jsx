@@ -4,6 +4,7 @@ import { PlayCircle } from 'lucide-react';
 import LiveReactionPoll from './LiveReactionPoll';
 import ExpertCommentaryCards from './ExpertCommentaryCards';
 import LiveStreamComments from './LiveStreamComments';
+import HonoreeSpotlightRail from './HonoreeSpotlightRail';
 
 export default function LiveStreamModule() {
   const [isLive, setIsLive] = useState(true);
@@ -63,6 +64,7 @@ export default function LiveStreamModule() {
         <div className="px-6 pb-6 md:px-8 md:pb-8">
            <ExpertCommentaryCards />
         </div>
+        <HonoreeSpotlightRail />
       </Card>
     </div>
   );
