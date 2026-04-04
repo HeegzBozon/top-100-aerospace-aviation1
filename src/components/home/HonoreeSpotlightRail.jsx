@@ -40,7 +40,7 @@ export default function HonoreeSpotlightRail() {
           Artemis-Adjacent Fellows
         </h4>
         <Link to="/artemis-2" className="text-xs text-[#c9a87c] hover:text-white font-semibold uppercase tracking-wider flex items-center transition-colors">
-          View Directory <ChevronRight className="w-4 h-4 ml-1" />
+          Read the Special Report <ChevronRight className="w-4 h-4 ml-1" />
         </Link>
       </div>
 
