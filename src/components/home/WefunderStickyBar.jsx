@@ -44,7 +44,7 @@ export default function WefunderStickyBar() {
 
         <div className="flex items-center gap-3 w-full sm:w-auto z-10 shrink-0">
           <a 
-            href="https://wefunder.com" 
+            href="https://wefunder.com/top.100.aerospace.aviation" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex-1 sm:flex-none whitespace-nowrap bg-[#c9a87c] text-slate-950 hover:bg-[#c9a87c]/90 px-6 py-2 rounded-lg font-bold text-sm transition-colors text-center"
