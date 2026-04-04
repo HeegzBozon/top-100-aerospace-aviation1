@@ -5,7 +5,6 @@ import LiveReactionPoll from './LiveReactionPoll';
 import ExpertCommentaryCards from './ExpertCommentaryCards';
 import LiveStreamComments from './LiveStreamComments';
 import HonoreeSpotlightRail from './HonoreeSpotlightRail';
-import MissionStatsTicker from './MissionStatsTicker';
 
 export default function LiveStreamModule() {
   const [isLive, setIsLive] = useState(true);
@@ -13,7 +12,6 @@ export default function LiveStreamModule() {
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
       <Card className="overflow-hidden bg-slate-950 border-slate-800 text-white shadow-xl">
-        <MissionStatsTicker />
         <div className="flex flex-col lg:flex-row">
           <div className="lg:w-[70%] aspect-video bg-black relative flex items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-800">
              {isLive ? (
