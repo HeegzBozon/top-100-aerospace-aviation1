@@ -20,6 +20,7 @@ export default function LiveStreamModule() {
                  frameBorder="0" 
                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                  allowFullScreen
+                 referrerPolicy="strict-origin-when-cross-origin"
                ></iframe>
              ) : (
                <div className="absolute inset-0 w-full h-full group cursor-pointer">
