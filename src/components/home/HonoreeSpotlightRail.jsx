@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { ChevronRight, Award } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createPageUrl } from '@/utils';
@@ -38,9 +39,9 @@ export default function HonoreeSpotlightRail() {
           <Award className="w-5 h-5 text-[#c9a87c]" />
           Artemis-Adjacent Fellows
         </h4>
-        <button className="text-xs text-[#c9a87c] hover:text-white font-semibold uppercase tracking-wider flex items-center transition-colors">
+        <Link to="/artemis-2" className="text-xs text-[#c9a87c] hover:text-white font-semibold uppercase tracking-wider flex items-center transition-colors">
           View Directory <ChevronRight className="w-4 h-4 ml-1" />
-        </button>
+        </Link>
       </div>
 
       <ScrollArea className="w-full whitespace-nowrap pb-4">
