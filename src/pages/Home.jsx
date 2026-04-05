@@ -1,72 +1,237 @@
-import { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
+import ProfileView from '@/pages/ProfileView';
 import Landing2Hero from '@/components/landing/Landing2Hero';
-import HomeSectionReorderPopover, { loadSectionConfig, DEFAULT_SECTIONS } from '@/components/admin/HomeSectionReorderPopover';
 
-// Home Sections
+import TrendingTalent from '@/components/home/TrendingTalent';
+import DomainExplorer from '@/components/home/DomainExplorer';
 import IndustrySpotlight from '@/components/home/IndustrySpotlight';
 import FeaturedToday from '@/components/home/FeaturedToday';
 import TrendingPrograms from '@/components/home/TrendingPrograms';
-import TrendingTalent from '@/components/home/TrendingTalent';
 import CommunityFavorites from '@/components/home/CommunityFavorites';
 import UpcomingMissions from '@/components/home/UpcomingMissions';
 import TopPrograms from '@/components/home/TopPrograms';
-import DomainExplorer from '@/components/home/DomainExplorer';
 import TopOriginals from '@/components/home/TopOriginals';
 import MissionControlHeader from '@/components/home/MissionControlHeader';
+import LiveStreamModule from '@/components/home/LiveStreamModule';
 
-const SECTION_COMPONENTS = {
-  missionControl: MissionControlHeader,
-  spotlight: IndustrySpotlight,
-  featured: FeaturedToday,
-  programs: TrendingPrograms,
-  talent: TrendingTalent,
-  favorites: CommunityFavorites,
-  missions: UpcomingMissions,
-  topPrograms: TopPrograms,
-  domain: DomainExplorer,
-  originals: TopOriginals,
-};
+import ErrorBoundary from '@/components/core/ErrorBoundary';
+import HomeSectionReorderPopover, { loadSectionConfig } from '@/components/admin/HomeSectionReorderPopover';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
+import { subDays } from 'date-fns';
+import { Loader2 } from 'lucide-react';
 
-export default function Home() {
+const EditorialTerminal = lazy(() => import('@/components/terminal/EditorialTerminal'));
+
+// Stable module-level shuffle utility
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+export default function HomePage() {
+  const [publicUserEmail, setPublicUserEmail] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const [sectionConfig, setSectionConfig] = useState(DEFAULT_SECTIONS.map(s => ({ ...s, visible: true })));
+
+  // Section config: seeded from user record (global) once user loads
+  const DEFAULT_SECTIONS = [
+    { id: 'liveStream',  label: 'Live Stream Theater' },
+    { id: 'spotlight',   label: 'Industry Spotlight' },
+    { id: 'featured',    label: 'Featured Today' },
+    { id: 'programs',    label: 'Trending Programs' },
+    { id: 'talent',      label: 'Trending Talent' },
+    { id: 'favorites',   label: 'Community Favorites' },
+    { id: 'missions',    label: 'Upcoming Missions' },
+    { id: 'topPrograms', label: 'Top Programs' },
+    { id: 'domain',      label: 'Domain Explorer' },
+    { id: 'originals',   label: 'TOP 100 Originals' },
+  ];
+
+  const [sectionConfig, setSectionConfig] = useState(() =>
+    DEFAULT_SECTIONS.map(s => ({ ...s, visible: true }))
+  );
+  const [sectionConfigSeeded, setSectionConfigSeeded] = useState(false);
+
+  const isVisible = (id) => {
+    const found = sectionConfig.find(s => s.id === id);
+    return found ? found.visible : true;
+  };
+
+  const orderedSectionIds = sectionConfig.map(s => s.id);
+
+  const { data: nominees = [] } = useQuery({
+    queryKey: ['landing-nominees'],
+    queryFn: () => base44.entities.Nominee.filter({ status: 'active' }, '-aura_score', 150),
+  });
+
+  const shuffledNominees = useMemo(() => shuffleArray(nominees), [nominees]);
+
+  const { data: services = [] } = useQuery({
+    queryKey: ['landing-services'],
+    queryFn: () => base44.entities.Service.filter({ is_active: true }, '-created_date', 6),
+  });
+
+  const { data: recentSignals = [] } = useQuery({
+    queryKey: ['trending-signals'],
+    queryFn: () => base44.entities.SignalCard.list('-signal_date', 100),
+  });
+
+  const { data: recentMentions = [] } = useQuery({
+    queryKey: ['trending-mentions'],
+    queryFn: () => base44.entities.HonoreeMention.list('-published_at', 100),
+  });
+
+  const FLIGHT_PLAN_MILESTONES = [
+    { id: 1, title: 'Final Round of Voting', date: 'December 12, 2025', status: 'completed', image: 'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?w=400&auto=format' },
+    { id: 2, title: 'Publication & Season 4 Launch', date: 'End of 2025', status: 'completed', image: 'https://images.unsplash.com/photo-1517976487492-5750f3195933?w=400&auto=format' },
+    { id: 3, title: 'Nominations Phase', date: 'Q1 2026', status: 'in_progress', image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&auto=format' },
+    { id: 4, title: 'Nominations & Voting', date: 'Q2 2026', status: 'planned', image: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=400&auto=format' },
+    { id: 5, title: 'Voting Phase', date: 'Q3 2026', status: 'planned', image: 'https://images.unsplash.com/photo-1494172961521-33799ddd43a5?w=400&auto=format' },
+    { id: 6, title: 'Voting & Publication', date: 'Q3 2026', status: 'planned', image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&auto=format' },
+  ];
 
   useEffect(() => {
-    const fetchUserAndConfig = async () => {
+    const init = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const userEmail = urlParams.get('user');
+      if (userEmail) {
+        setPublicUserEmail(userEmail);
+      }
+
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-        const config = loadSectionConfig(currentUser);
-        if (config) {
-          setSectionConfig(config);
+        if (!sectionConfigSeeded) {
+          const saved = loadSectionConfig(currentUser);
+          if (saved) {
+            const merged = DEFAULT_SECTIONS.map(defaultSection => {
+              const saved_ = saved.find(s => s.id === defaultSection.id);
+              return saved_ || { ...defaultSection, visible: true };
+            });
+            setSectionConfig(merged);
+          }
+          setSectionConfigSeeded(true);
         }
-      } catch (err) {
+      } catch (e) {
         setUser(null);
-        const config = loadSectionConfig(null);
-        if (config) setSectionConfig(config);
       }
+      setIsLoading(false);
     };
-    fetchUserAndConfig();
+    init();
   }, []);
 
-  return (
-    <div className="min-h-screen bg-[#faf8f5] pb-24">
-      <Landing2Hero user={user} />
-      
-      <div className="flex flex-col gap-6 md:gap-10 mt-6 md:mt-10">
-        {sectionConfig.filter(s => s.visible).map(section => {
-          const Component = SECTION_COMPONENTS[section.id];
-          if (!Component) return null;
-          return <Component key={section.id} />;
-        })}
-      </div>
+  const mapNomineeToCard = (n, badge) => ({
+    type: "honoree",
+    id: n.id,
+    image: n.avatar_url || n.photo_url || "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&auto=format",
+    title: n.name,
+    subtitle: n.title ? `${n.title}${n.company ? `, ${n.company}` : ''}` : n.company || n.industry || '',
+    badge: badge,
+  });
 
-      <HomeSectionReorderPopover 
-        isAdmin={user?.role === 'admin'} 
-        user={user} 
-        onConfigChange={setSectionConfig} 
-      />
-    </div>
+  const sortedByScore = [...nominees].sort((a, b) => (b.aura_score || 0) - (a.aura_score || 0));
+  const top100WithRanks = sortedByScore.slice(0, 100).map((n, idx) => ({
+    ...mapNomineeToCard(n, `#${idx + 1}`),
+    rank: idx + 1,
+  }));
+  const topHonorees = shuffleArray(top100WithRanks).slice(0, 24);
+
+  const nomineeIds = new Set(sortedByScore.slice(0, 100).map(n => n.id));
+  const remainingNominees = shuffledNominees.filter(n => !nomineeIds.has(n.id));
+  const nomineeItems = remainingNominees.slice(0, 24).map(n => mapNomineeToCard(n, null));
+
+  const thirtyDaysAgo = useMemo(() => subDays(new Date(), 30), []);
+
+  const signalCountMap = useMemo(() => {
+    const map = {};
+    recentSignals.forEach(s => {
+      if (!s.nominee_id) return;
+      const d = s.signal_date ? new Date(s.signal_date) : null;
+      if (d && d >= thirtyDaysAgo) map[s.nominee_id] = (map[s.nominee_id] || 0) + 1;
+    });
+    recentMentions.forEach(m => {
+      if (!m.nominee_id) return;
+      const d = m.published_at ? new Date(m.published_at) : null;
+      if (d && d >= thirtyDaysAgo) map[m.nominee_id] = (map[m.nominee_id] || 0) + 1;
+    });
+    return map;
+  }, [recentSignals, recentMentions]);
+
+  const computeTrendingScore = useCallback((n) => {
+    let score = 0;
+    if (n.is_on_fire) score += 40;
+    score += ((n.win_percentage || 0) / 100) * 30;
+    const feedHits = signalCountMap[n.id] || 0;
+    score += Math.min(feedHits, 5) * 4;
+    const updatedRecently = n.updated_date && new Date(n.updated_date) >= thirtyDaysAgo;
+    if (updatedRecently) score += Math.min((n.direct_vote_count || 0) / 10, 10);
+    return score;
+  }, [signalCountMap]);
+
+  const trendingProfiles = useMemo(() =>
+    [...nominees]
+      .map(n => ({ ...n, _trendingScore: computeTrendingScore(n) }))
+      .sort((a, b) => b._trendingScore - a._trendingScore)
+      .slice(0, 12),
+  [nominees, computeTrendingScore]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-10 h-10 animate-spin text-amber-400" />
+      </div>
+    );
+  }
+
+  if (publicUserEmail) {
+    return <ProfileView />;
+  }
+
+  const userRole = user?.role || 'user';
+  const isMemberOnly = userRole === 'user';
+
+  const SECTION_COMPONENTS = {
+    liveStream: <LiveStreamModule />,
+    spotlight: isMemberOnly ? null : <IndustrySpotlight />,
+    featured: isMemberOnly ? null : <FeaturedToday />,
+    programs: isMemberOnly ? null : <TrendingPrograms />,
+    talent: isMemberOnly ? null : <TrendingTalent />,
+    favorites: isMemberOnly ? null : <CommunityFavorites />,
+    missions: isMemberOnly ? null : <UpcomingMissions />,
+    topPrograms: isMemberOnly ? null : <TopPrograms />,
+    domain: isMemberOnly ? null : <DomainExplorer />,
+    originals: isMemberOnly ? null : <TopOriginals />,
+  };
+
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-10 h-10 animate-spin" style={{ color: '#c9a87c' }} />
+      </div>
+    }>
+      <EditorialTerminal heroSlot={<Landing2Hero user={user} />}>
+        {orderedSectionIds.map(id => {
+          if (!isVisible(id)) return null;
+          const component = SECTION_COMPONENTS[id];
+          if (!component) return null;
+          return (
+            <ErrorBoundary key={id}>
+              {component}
+            </ErrorBoundary>
+          );
+        })}
+
+        <HomeSectionReorderPopover
+          isAdmin={user?.role === 'admin'}
+          user={user}
+          onConfigChange={setSectionConfig}
+        />
+      </EditorialTerminal>
+    </Suspense>
   );
 }
