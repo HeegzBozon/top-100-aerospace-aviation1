@@ -23,14 +23,14 @@ export default function LiveStreamComments() {
 
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['live-stream-comments'],
-    queryFn: () => base44.entities.LiveStreamComment.list('+created_date', 100),
+    queryFn: () => base44.entities.LiveStreamComment.list('-created_date', 100),
     refetchInterval: 2000,
   });
 
-  // Auto scroll to bottom when new comments arrive
+  // Auto scroll to top when new comments arrive
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTop = 0;
     }
   }, [comments]);
 
