@@ -12,14 +12,15 @@ export default function LiveStreamModule() {
   const [isLive, setIsLive] = useState(true);
   const [carouselApi, setCarouselApi] = useState(null);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    if (!carouselApi || !isPlaying) return;
+    if (!carouselApi || !isPlaying || isHovered) return;
     const interval = setInterval(() => {
       carouselApi.scrollNext();
     }, 8000);
     return () => clearInterval(interval);
-  }, [carouselApi, isPlaying]);
+  }, [carouselApi, isPlaying, isHovered]);
 
   return (
     <div className="px-4 pb-2 md:pb-3 max-w-7xl mx-auto relative">
@@ -63,7 +64,13 @@ export default function LiveStreamModule() {
              <LiveStreamComments />
           </div>
         </div>
-        <Carousel setApi={setCarouselApi} opts={{ loop: true }} className="w-full relative group">
+        <Carousel 
+          setApi={setCarouselApi} 
+          opts={{ loop: true }} 
+          className="w-full relative group"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <CarouselContent>
             {/* Slide 1: Mission Theater Bottom Half */}
             <CarouselItem>
