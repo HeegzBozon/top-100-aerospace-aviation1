@@ -76,7 +76,7 @@ export default function LiveStreamModule() {
             onMouseLeave={() => setIsHovered(false)}
           >
             <CarouselContent>
-              <CarouselItem className="flex flex-col h-full min-h-[450px] xl:min-h-[480px]">
+              <CarouselItem className="flex flex-col h-[600px] md:h-[550px] xl:h-[600px]">
                 <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden">
                   <div className="p-3 md:p-4 flex flex-col md:flex-row gap-3 md:items-center justify-between">
                     <div className="pr-12 md:pr-16">
@@ -105,7 +105,7 @@ export default function LiveStreamModule() {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="flex flex-col h-full min-h-[450px] xl:min-h-[480px]">
+              <CarouselItem className="flex flex-col h-[600px] md:h-[550px] xl:h-[600px]">
                 <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden">
                    <div className="w-full h-full [&>div]:rounded-none [&>div]:h-full">
                       <MissionControlHeader />
@@ -113,7 +113,7 @@ export default function LiveStreamModule() {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="flex flex-col h-full min-h-[450px] xl:min-h-[480px]">
+              <CarouselItem className="flex flex-col h-[600px] md:h-[550px] xl:h-[600px]">
                 <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden">
                   <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#1e3a5a] blur-[100px] opacity-30 pointer-events-none" />
                   <div className="absolute bottom-[-20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-[#c9a87c] blur-[120px] opacity-10 pointer-events-none" />
@@ -162,8 +162,8 @@ export default function LiveStreamModule() {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="flex flex-col h-full min-h-[450px] xl:min-h-[480px]">
-                <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 bg-[#1e3a5a]/40 relative overflow-hidden shadow-inner backdrop-blur-md">
+              <CarouselItem className="flex flex-col h-[600px] md:h-[550px] xl:h-[600px]">
+                <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden">
                    <div className="absolute top-8 right-8 w-32 h-32 opacity-10 pointer-events-none text-[#4a90b8]">
                      <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
                    </div>
