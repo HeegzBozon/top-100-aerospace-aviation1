@@ -40,7 +40,7 @@ const brand = {
   gold: '#c9a87c',
 };
 
-export default function MissionControlHeader() {
+export default function MissionControlHeader({ className = '' }) {
   const [selectedSeasonId, setSelectedSeasonId] = useState('');
   const { channels, selectConversation } = useConversation();
 
@@ -75,12 +75,13 @@ export default function MissionControlHeader() {
   if (!activeSeason) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl" style={{ background: `linear-gradient(135deg, ${brand.navy} 0%, #0f1f33 100%)` }}>
+    <div className={`relative overflow-hidden rounded-3xl flex flex-col h-full w-full ${className || ''}`} style={{ background: `linear-gradient(135deg, ${brand.navy} 0%, #0f1f33 100%)` }}>
       <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-10" style={{ background: brand.gold }} />
       <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl opacity-5" style={{ background: '#4a90b8' }} />
 
-      <div className="relative z-10 px-4 md:px-6 py-4 md:py-5">
-        <div className="flex flex-col md:flex-row gap-5 md:gap-6">
+      <div className="relative z-10 flex flex-col h-full w-full">
+        <div className="flex-1 flex flex-col justify-center px-4 md:px-6 pt-4 md:pt-5">
+          <div className="flex flex-col md:flex-row gap-5 md:gap-6">
 
           {/* ── Left column ── */}
           <div className="flex-1 min-w-0">
@@ -143,8 +144,11 @@ export default function MissionControlHeader() {
           </div>
 
         </div>
+        </div>
 
-        <Top100WomenRail />
+        <div className="shrink-0 px-4 md:px-6 pb-4 md:pb-5">
+          <Top100WomenRail />
+        </div>
       </div>
     </div>
   );

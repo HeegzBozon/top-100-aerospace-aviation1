@@ -76,7 +76,7 @@ export default function LiveStreamModule() {
             onMouseLeave={() => setIsHovered(false)}
           >
             <CarouselContent>
-              <CarouselItem className="flex flex-col h-[600px] md:h-[550px] xl:h-[600px]">
+              <CarouselItem className="flex flex-col h-full">
                 <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden">
                   <div className="p-3 md:p-4 flex flex-col md:flex-row gap-3 md:items-center justify-between">
                     <div className="pr-12 md:pr-16">
@@ -105,51 +105,49 @@ export default function LiveStreamModule() {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="flex flex-col h-[600px] md:h-[550px] xl:h-[600px]">
+              <CarouselItem className="flex flex-col h-full">
                 <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden">
-                   <div className="w-full h-full [&>div]:rounded-none [&>div]:h-full">
-                      <MissionControlHeader />
-                   </div>
+                   <MissionControlHeader className="!rounded-none flex-1" />
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="flex flex-col h-[600px] md:h-[550px] xl:h-[600px]">
+              <CarouselItem className="flex flex-col h-full">
                 <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden">
                   <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#1e3a5a] blur-[100px] opacity-30 pointer-events-none" />
                   <div className="absolute bottom-[-20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-[#c9a87c] blur-[120px] opacity-10 pointer-events-none" />
                   
-                  <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 text-center relative z-10">
+                  <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 text-center relative z-10">
                     <div className="max-w-3xl mx-auto flex flex-col items-center">
-                      <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-[10px] md:text-xs font-bold uppercase tracking-widest backdrop-blur-sm shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+                      <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1 md:py-1.5 mb-4 md:mb-5 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-[10px] md:text-xs font-bold uppercase tracking-widest backdrop-blur-sm shadow-[0_0_15px_rgba(34,197,94,0.2)]">
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                         Live on Wefunder
                       </div>
                       
-                      <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white leading-tight mb-2 md:mb-3" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                         Aerospace recognition infrastructure that turns influence into <span className="text-[#c9a87c]">institutional power.</span>
                       </h2>
                       
-                      <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-8 max-w-2xl font-medium">
+                      <p className="text-slate-300 text-xs md:text-sm leading-relaxed mb-5 md:mb-6 max-w-xl font-medium">
                         A human-verified talent graph that connects recognition to sponsorship, mentorship to capital, and siloed programs to coordinated action.
                       </p>
                       
-                      <div className="flex flex-col sm:flex-row gap-4 items-center justify-center flex-wrap">
+                      <div className="flex flex-row gap-3 items-center justify-center flex-wrap">
                         <a href="https://wefunder.com/top.100.aerospace.aviation" target="_blank" rel="noopener noreferrer">
-                          <Button className="bg-[#c9a87c] hover:bg-[#b09268] text-slate-950 font-bold px-6 py-2.5 rounded-full text-sm shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:shadow-[0_0_30px_rgba(201,168,124,0.5)] transition-all flex items-center gap-2">
+                          <Button className="bg-[#c9a87c] hover:bg-[#b09268] text-slate-950 font-bold px-5 py-2 rounded-full text-xs md:text-sm shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:shadow-[0_0_30px_rgba(201,168,124,0.5)] transition-all flex items-center gap-2">
                             <Rocket className="w-4 h-4" />
-                            Reserve your spot now
+                            Reserve your spot
                           </Button>
                         </a>
                         <a href="https://calendar.app.google/TrL8saY6XS6tdVj1A" target="_blank" rel="noopener noreferrer">
-                          <Button variant="outline" className="border-slate-700 bg-slate-900/50 hover:bg-slate-800 text-slate-300 font-bold px-6 py-2.5 rounded-full text-sm backdrop-blur-md flex items-center gap-2">
+                          <Button variant="outline" className="border-slate-700 bg-slate-900/50 hover:bg-slate-800 text-slate-300 font-bold px-5 py-2 rounded-full text-xs md:text-sm backdrop-blur-md flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
                             Let's Talk
                           </Button>
                         </a>
                         <a href="mailto:matthew@top100os.com?subject=Data%20Room%20Access%20Request">
-                          <Button variant="outline" className="border-slate-700 bg-slate-900/50 hover:bg-slate-800 text-slate-300 font-bold px-6 py-2.5 rounded-full text-sm backdrop-blur-md flex items-center gap-2">
+                          <Button variant="outline" className="border-slate-700 bg-slate-900/50 hover:bg-slate-800 text-slate-300 font-bold px-5 py-2 rounded-full text-xs md:text-sm backdrop-blur-md flex items-center gap-2">
                             <Lock className="w-4 h-4" />
-                            Request Data Room
+                            Data Room
                           </Button>
                         </a>
                       </div>
@@ -162,7 +160,7 @@ export default function LiveStreamModule() {
                 </div>
               </CarouselItem>
 
-              <CarouselItem className="flex flex-col h-[600px] md:h-[550px] xl:h-[600px]">
+              <CarouselItem className="flex flex-col h-full">
                 <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden">
                    <div className="absolute top-8 right-8 w-32 h-32 opacity-10 pointer-events-none text-[#4a90b8]">
                      <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
