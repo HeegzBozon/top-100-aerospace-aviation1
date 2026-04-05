@@ -91,9 +91,9 @@ export default function LiveReactionPoll() {
 
   if (isLoading) return <div className="animate-pulse w-full h-32 bg-slate-900 rounded-xl border border-slate-800"></div>;
   if (!poll) return (
-    <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 border border-[#4a90b8]/20 rounded-xl bg-[#0b3d91]/20 shadow-[0_0_15px_rgba(11,61,145,0.1)]">
-       <span className="text-[#4a90b8] text-sm font-semibold tracking-widest uppercase mb-2">Live Polling</span>
-       <span className="text-blue-200/70 text-xs">Waiting for the next mission prompt...</span>
+    <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 border border-[#4a90b8]/30 rounded-xl bg-[#0b3d91]/40 shadow-[0_0_15px_rgba(11,61,145,0.1)]">
+       <span className="text-[#4a90b8] text-sm font-bold tracking-widest uppercase mb-2">Live Polling</span>
+       <span className="text-blue-50 font-medium text-xs">Waiting for the next mission prompt...</span>
     </div>
   );
 
@@ -104,7 +104,7 @@ export default function LiveReactionPoll() {
 
   return (
     <div 
-      className="w-full bg-[#0b3d91]/20 border border-[#4a90b8]/30 rounded-xl p-3 shadow-[0_0_20px_rgba(11,61,145,0.15)] backdrop-blur-md relative overflow-hidden"
+      className="w-full bg-[#0b3d91]/40 border border-[#4a90b8]/40 rounded-xl p-4 shadow-[0_0_20px_rgba(11,61,145,0.15)] backdrop-blur-md relative overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -139,7 +139,7 @@ export default function LiveReactionPoll() {
           transition={{ duration: 0.3 }}
         >
           <h4 className="text-blue-100 font-semibold mb-2 text-sm leading-tight">{poll.question}</h4>
-          <div className={`grid gap-1.5 ${poll.poll_type === 'emoji' ? 'grid-cols-4' : 'grid-cols-1'}`}>
+          <div className={`grid gap-2 ${poll.poll_type === 'emoji' ? 'grid-cols-4' : 'grid-cols-1'}`}>
         {poll.options.map(option => {
           const optionVotes = votes.filter(v => v.selected_option === option).length;
           const percentage = totalVotes === 0 ? 0 : Math.round((optionVotes / totalVotes) * 100);
@@ -150,48 +150,48 @@ export default function LiveReactionPoll() {
             const isWrongSelection = poll.type === 'trivia' && isSelected && !isCorrect;
 
             let barColor = "bg-[#4a90b8]";
-            let textColor = "text-blue-100";
-            let borderColor = "border-blue-900/40";
+            let textColor = "text-blue-50";
+            let borderColor = "border-[#4a90b8]/40";
             if (isSelected) {
                 barColor = "bg-[#c9a87c]";
                 textColor = "text-[#c9a87c] font-bold";
-                borderColor = "border-[#c9a87c]/40";
+                borderColor = "border-[#c9a87c]/60";
             }
             if (poll.type === 'trivia') {
                 if (isCorrect) {
                     barColor = "bg-green-500";
                     textColor = "text-green-400 font-bold";
-                    borderColor = "border-green-500/40";
+                    borderColor = "border-green-500/60";
                 } else if (isWrongSelection) {
                     barColor = "bg-red-500";
                     textColor = "text-red-400 font-bold";
-                    borderColor = "border-red-500/40";
+                    borderColor = "border-red-500/60";
                 }
             }
 
             if (poll.poll_type === 'emoji') {
                 return (
-                    <div key={option} className={`flex flex-col items-center justify-center p-2 rounded-lg border ${isSelected ? 'border-[#c9a87c] bg-[#c9a87c]/10' : 'border-blue-900/30 bg-[#0b3d91]/20'}`}>
+                    <div key={option} className={`flex flex-col items-center justify-center p-2 rounded-lg border ${isSelected ? 'border-[#c9a87c] bg-[#c9a87c]/20' : 'border-[#4a90b8]/30 bg-[#0b3d91]/40'}`}>
                         <span className="text-2xl mb-1">{option}</span>
-                        <span className="text-xs text-blue-200/70">{percentage}%</span>
+                        <span className="text-xs text-blue-100">{percentage}%</span>
                     </div>
                 );
             }
 
             return (
-              <div key={option} className={`relative h-8 flex items-center px-3 rounded-md border ${borderColor} bg-[#0b3d91]/20 overflow-hidden`}>
+              <div key={option} className={`relative h-9 flex items-center px-3 rounded-md border ${borderColor} bg-[#0b3d91]/40 overflow-hidden`}>
                 <div 
-                  className={`absolute left-0 top-0 bottom-0 transition-all duration-700 opacity-20 ${barColor}`} 
+                  className={`absolute left-0 top-0 bottom-0 transition-all duration-700 opacity-40 ${barColor}`} 
                   style={{ width: `${percentage}%` }}
                 />
-                <div className="relative z-10 w-full flex justify-between items-center text-xs">
-                  <span className={`${textColor} flex items-center gap-1.5`}>
+                <div className="relative z-10 w-full flex justify-between items-center text-[13px] font-medium">
+                  <span className={`${textColor} flex items-center gap-1.5 drop-shadow-md`}>
                     {option} 
                     {isSelected && poll.type !== 'trivia' && "✓"}
-                    {poll.type === 'trivia' && isCorrect && <CheckCircle2 className="w-3 h-3 text-green-500" />}
-                    {poll.type === 'trivia' && isWrongSelection && <XCircle className="w-3 h-3 text-red-500" />}
+                    {poll.type === 'trivia' && isCorrect && <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />}
+                    {poll.type === 'trivia' && isWrongSelection && <XCircle className="w-3.5 h-3.5 text-red-400" />}
                   </span>
-                  <span className="text-blue-200/70 font-medium">{percentage}%</span>
+                  <span className="text-white drop-shadow-md">{percentage}%</span>
                 </div>
               </div>
             );
@@ -202,7 +202,7 @@ export default function LiveReactionPoll() {
               <Button 
                 key={option}
                 variant="outline" 
-                className="h-14 border-blue-900/30 bg-[#0b3d91]/20 hover:bg-[#0b3d91]/40 transition-colors text-2xl"
+                className="h-14 border-[#4a90b8]/30 bg-[#0b3d91]/40 hover:bg-[#0b3d91]/60 transition-colors text-2xl"
                 onClick={() => handleVoteClick(option)}
                 disabled={voteMutation.isPending}
               >
@@ -216,13 +216,12 @@ export default function LiveReactionPoll() {
               key={option}
               variant="outline" 
               size="sm"
-              className="relative w-full h-8 justify-start px-3 text-xs border-blue-900/40 bg-[#0b3d91]/20 hover:bg-[#0b3d91]/40 text-blue-200 hover:text-white transition-colors overflow-hidden group"
+              className="relative w-full h-9 justify-start px-3 text-[13px] font-medium border-[#4a90b8]/30 bg-[#0b3d91]/40 hover:bg-[#0b3d91]/60 text-blue-50 transition-colors overflow-hidden"
               onClick={() => handleVoteClick(option)}
               disabled={voteMutation.isPending}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[marquee_1.5s_ease-in-out_infinite]" />
               <span className="relative z-10 flex items-center">
-                {voteMutation.isPending && voteMutation.variables === option ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : null}
+                {voteMutation.isPending && voteMutation.variables === option ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> : null}
                 {option}
               </span>
             </Button>
@@ -231,8 +230,8 @@ export default function LiveReactionPoll() {
       </div>
 
           {userVote && poll.type === 'trivia' && poll.explanation && (
-              <div className="mt-3 p-2.5 bg-[#0b3d91]/20 border border-blue-900/30 rounded-md text-xs text-blue-200/90 shadow-inner">
-                  <span className="font-bold text-[#4a90b8] block mb-0.5">Explanation:</span>
+              <div className="mt-3 p-3 bg-[#0b3d91]/40 border border-[#4a90b8]/40 rounded-md text-[13px] text-blue-50 shadow-inner">
+                  <span className="font-bold text-[#c9a87c] block mb-1">Explanation:</span>
                   {poll.explanation}
               </div>
           )}
@@ -243,16 +242,16 @@ export default function LiveReactionPoll() {
         <div className="flex gap-2">
             {activePolls.length > 1 && (
                 <>
-                    <button onClick={handlePrev} className="p-1 rounded bg-[#0b3d91]/40 text-blue-300/70 hover:text-white hover:bg-[#0b3d91]/60 transition-colors">
+                    <button onClick={handlePrev} className="p-1.5 rounded-md bg-[#0b3d91]/60 border border-[#4a90b8]/30 text-blue-100 hover:text-white hover:bg-[#0b3d91]/80 transition-colors shadow-sm">
                         <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <button onClick={handleNext} className="p-1 rounded bg-[#0b3d91]/40 text-blue-300/70 hover:text-white hover:bg-[#0b3d91]/60 transition-colors">
+                    <button onClick={handleNext} className="p-1.5 rounded-md bg-[#0b3d91]/60 border border-[#4a90b8]/30 text-blue-100 hover:text-white hover:bg-[#0b3d91]/80 transition-colors shadow-sm">
                         <ChevronRight className="w-4 h-4" />
                     </button>
                 </>
             )}
         </div>
-        <div className="text-[10px] text-blue-300/50 text-right uppercase tracking-wider font-semibold">
+        <div className="text-[10px] text-blue-100 text-right uppercase tracking-wider font-bold bg-[#0b3d91]/40 px-2 py-1 rounded-md border border-[#4a90b8]/20 shadow-sm">
           {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
         </div>
       </div>
