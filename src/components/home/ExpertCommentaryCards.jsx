@@ -76,19 +76,19 @@ export default function ExpertCommentaryCards() {
                  <img 
                    src={currentComment.expert_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentComment.expert_name)}&background=1e3a5a&color=c9a87c`} 
                    alt={currentComment.expert_name} 
-                   className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border-2 border-[#1e3a5a] object-cover shadow-lg"
+                   className="w-20 h-20 lg:w-24 lg:h-24 rounded-full border-2 border-[#1e3a5a] object-cover shadow-lg"
                  />
                </div>
                <div className="min-w-0">
                  {currentComment.comment && (
                    <p className="text-slate-200 text-sm italic mb-1 leading-snug max-w-4xl">"{currentComment.comment}"</p>
                  )}
-                 <div className="flex items-center gap-2 flex-wrap mt-1">
-                   <span className="text-[#c9a87c] text-xs font-bold">{currentComment.expert_name}</span>
+                 <div className="flex flex-col lg:flex-row lg:items-start gap-1 lg:gap-2 mt-1">
+                   <span className="text-[#c9a87c] text-xs font-bold shrink-0 pt-0.5">{currentComment.expert_name}</span>
                    {currentComment.expert_title && (
                      <>
-                       <span className="text-slate-700 text-xs hidden lg:inline">•</span>
-                       <span className="text-slate-400 text-[10px] font-medium uppercase tracking-wider truncate block w-full lg:w-auto">{currentComment.expert_title}</span>
+                       <span className="text-slate-700 text-xs hidden lg:inline pt-0.5 shrink-0">•</span>
+                       <span className="text-slate-400 text-[10px] font-medium uppercase tracking-wider leading-relaxed pt-0.5">{currentComment.expert_title}</span>
                      </>
                    )}
                  </div>
@@ -121,12 +121,12 @@ export default function ExpertCommentaryCards() {
                    <img 
                      src={currentComment.expert_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentComment.expert_name)}&background=1e3a5a&color=c9a87c`} 
                      alt={currentComment.expert_name} 
-                     className="w-12 h-12 rounded-full border-2 border-[#1e3a5a] object-cover shadow-md shrink-0"
+                     className="w-16 h-16 rounded-full border-2 border-[#1e3a5a] object-cover shadow-md shrink-0"
                    />
                    <div className="min-w-0">
-                     <span className="text-[#c9a87c] text-sm font-bold block">{currentComment.expert_name}</span>
-                     <span className="text-slate-400 text-[10px] line-clamp-2">{currentComment.expert_title}</span>
-                     <span className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">Tap to read more <ChevronRight className="w-3 h-3" /></span>
+                     <span className="text-[#c9a87c] text-sm font-bold block mb-1">{currentComment.expert_name}</span>
+                     <span className="text-slate-400 text-[10px] line-clamp-4 leading-snug">{currentComment.expert_title}</span>
+                     <span className="text-[10px] text-slate-500 mt-2 flex items-center gap-1">Tap to read more <ChevronRight className="w-3 h-3" /></span>
                    </div>
                 </div>
                 {/* Back */}
