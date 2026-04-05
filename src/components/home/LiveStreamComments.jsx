@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Trash2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import LiveReactionPoll from './LiveReactionPoll';
 
 // Simple client-side profanity filter
 const BAD_WORDS = ['fuck', 'shit', 'ass', 'bitch', 'damn', 'crap'];
@@ -75,10 +76,10 @@ export default function LiveStreamComments() {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <div className="w-full flex flex-col h-[280px] bg-[#1e3a5a]/40 border border-[#4a90b8]/30 rounded-xl shadow-lg overflow-hidden backdrop-blur-md">
+    <div className="w-full flex flex-col h-full bg-[#1e3a5a]/40 border border-[#4a90b8]/30 rounded-xl shadow-lg overflow-hidden backdrop-blur-md">
       <div className="p-2 px-3 border-b border-[#4a90b8]/30 bg-[#0a1526]/50 flex items-center justify-between">
         <h4 className="text-slate-200 font-semibold text-sm flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-green-500" />
           Live Chat
         </h4>
         <span className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">{comments.length} messages</span>
@@ -92,8 +93,16 @@ export default function LiveStreamComments() {
         ) : comments.length === 0 ? (
           <div className="text-center text-slate-500 text-sm mt-10">No comments yet. Be the first to start the conversation!</div>
         ) : (
-          comments.map(c => (
-            <div key={c.id} className="flex items-start gap-3 group">
+          <>
+          {comments.map((c, idx) => (
+            <React.Fragment key={c.id}>
+            {/* Inject a poll message every 15 comments to simulate automated messages throughout the day */}
+            {idx > 0 && idx % 15 === 0 && (
+               <div className="my-4">
+                 <LiveReactionPoll />
+               </div>
+            )}
+            <div className="flex items-start gap-3 group">
               <img src={c.user_avatar} alt={c.user_name} className="w-8 h-8 rounded-full border border-slate-800 shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
@@ -112,7 +121,15 @@ export default function LiveStreamComments() {
                 </button>
               )}
             </div>
-          ))
+            </React.Fragment>
+          ))}
+          {/* If less than 15 comments, show one at the end to ensure it's visible */}
+          {comments.length < 15 && (
+            <div className="my-4">
+              <LiveReactionPoll />
+            </div>
+          )}
+          </>
         )}
       </div>
 

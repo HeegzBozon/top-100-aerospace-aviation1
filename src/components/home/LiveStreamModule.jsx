@@ -26,10 +26,10 @@ export default function LiveStreamModule() {
     <div className="px-4 pb-2 md:pb-3 max-w-7xl mx-auto relative">
       {/* Subtle Starfield Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl opacity-30">
-        <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
-        <div className="absolute top-40 right-20 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '1.5s' }} />
-        <div className="absolute bottom-20 left-1/3 w-1.5 h-1.5 bg-blue-200 rounded-full animate-pulse" style={{ animationDelay: '0.8s' }} />
-        <div className="absolute top-1/4 left-1/2 w-1 h-1 bg-yellow-100 rounded-full animate-pulse" style={{ animationDelay: '2.1s' }} />
+        <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full" style={{ animationDelay: '0.2s' }} />
+        <div className="absolute top-40 right-20 w-1 h-1 bg-white rounded-full" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute bottom-20 left-1/3 w-1.5 h-1.5 bg-blue-200 rounded-full" style={{ animationDelay: '0.8s' }} />
+        <div className="absolute top-1/4 left-1/2 w-1 h-1 bg-yellow-100 rounded-full" style={{ animationDelay: '2.1s' }} />
       </div>
 
       <Card className="relative overflow-hidden bg-[#0a1526]/80 backdrop-blur-xl border-[#4a90b8]/20 text-white shadow-2xl">
@@ -59,8 +59,7 @@ export default function LiveStreamModule() {
                </div>
              )}
           </div>
-          <div className="flex-1 min-w-0 bg-[#0a1526]/40 p-3 md:p-4 flex flex-col gap-3 h-[360px] xl:h-[400px] lg:h-full overflow-y-auto">
-             <LiveReactionPoll />
+          <div className="flex-1 min-w-0 bg-[#0a1526]/40 p-3 md:p-4 flex flex-col h-[360px] xl:h-[400px] lg:h-full overflow-y-auto">
              <LiveStreamComments />
           </div>
         </div>
