@@ -4,8 +4,8 @@ import { PlayCircle, Pause, Play, ChevronRight, Rocket } from 'lucide-react';
 import ExpertCommentaryCards from './ExpertCommentaryCards';
 import LiveStreamComments from './LiveStreamComments';
 import FloatingReactions from './FloatingReactions';
-import HonoreeSpotlightRail from './HonoreeSpotlightRail';
 import MissionControlHeader from './MissionControlHeader';
+import Top100WomenRail from './Top100WomenRail';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 export default function LiveStreamModule() {
@@ -203,7 +203,7 @@ export default function LiveStreamModule() {
             </div>
           </Carousel>
           <div className="w-full shrink-0 border-t border-[#4a90b8]/20 bg-[#061224] relative z-20">
-            <HonoreeSpotlightRail />
+            <Top100WomenRail />
           </div>
         </Card>
       </div>
