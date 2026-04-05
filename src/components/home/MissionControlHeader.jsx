@@ -86,18 +86,24 @@ export default function MissionControlHeader() {
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <Badge className="text-[10px] md:text-xs font-bold px-2.5 py-0.5" style={{ background: brand.gold, color: 'white' }}>
                 <Rocket className="w-3 h-3 mr-1" />
-                {activeSeason.name || 'Season'}
+                TOP 100 WOMEN
+              </Badge>
+              <Badge className="text-[10px] md:text-xs font-bold px-2.5 py-0.5" style={{ background: '#4a90b8', color: 'white' }}>
+                TOP 100 MEN
+              </Badge>
+              <Badge className="text-[10px] md:text-xs font-bold px-2.5 py-0.5" style={{ background: '#8f2a58', color: 'white' }}>
+                TOP 100 ANGELS
               </Badge>
               <Badge variant="outline" className="text-[10px] md:text-xs border-white/30 text-white/70 py-0.5">
                 NOMINATIONS OPEN
               </Badge>
             </div>
 
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-              Mission Control
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              Top 100 Women, Angels, and Men in Aerospace and Aviation 2026
             </h2>
             <p className="text-white/60 text-xs md:text-sm max-w-xl mb-4">
-              {activeSeason.name || 'TOP 100'} — Driving nominations across 30+ countries to recognize aerospace excellence.
+              Driving nominations across 30+ countries to recognize excellence, leadership, and impactful investment in the aerospace and aviation sectors.
             </p>
 
             {/* Countdown */}
