@@ -17,7 +17,10 @@ const QUICK_CHATS = [
   "⭐ Godspeed!",
   "🌍 Beautiful view.",
   "🎯 What a milestone!",
-  "⚡ Engines looking good."
+  "⚡ Engines looking good.",
+  "🛰️ Signal is strong.",
+  "🔥 Full thrust!",
+  "🌌 Incredible."
 ];
 
 export default function LiveStreamComments() {
@@ -124,8 +127,8 @@ export default function LiveStreamComments() {
               <div key={c.id} className="flex items-start gap-3 group px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all backdrop-blur-sm">
                 <img src={c.user_avatar} alt={c.user_name} className="w-6 h-6 rounded-full border border-[#c9a87c]/50 shrink-0 shadow-lg mt-0.5" />
                 <div className="flex-1 min-w-0 leading-tight">
-                  <span className="text-[#c9a87c] text-sm font-bold mr-2">{c.user_name}:</span>
-                  <span className="text-[#faf8f5] text-sm opacity-90 font-medium break-words">{c.text}</span>
+                  <div className="text-[#c9a87c] text-sm font-bold mb-0.5">{c.user_name}</div>
+                  <div className="text-[#faf8f5] text-[13px] sm:text-sm opacity-90 font-medium break-words">{c.text}</div>
                 </div>
                 {isAdmin && (
                   <button 
@@ -145,7 +148,7 @@ export default function LiveStreamComments() {
       {/* Quick Chat Options */}
       {user && (
         <div className="px-4 pb-3 relative z-10">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide snap-x pb-1">
+          <div className="flex flex-wrap gap-1.5 justify-center pb-1">
             {QUICK_CHATS.map((chat, idx) => (
               <button
                 key={idx}
@@ -159,7 +162,7 @@ export default function LiveStreamComments() {
                     user_email: user.email
                   });
                 }}
-                className="whitespace-nowrap shrink-0 snap-start bg-[#1e3a5a]/60 hover:bg-[#c9a87c]/20 text-[#c9a87c] text-xs font-bold px-3 py-1.5 rounded-full border border-[#c9a87c]/30 hover:border-[#c9a87c] transition-all active:scale-95 disabled:opacity-50 shadow-sm"
+                className="bg-[#1e3a5a]/60 hover:bg-[#c9a87c]/20 text-[#c9a87c] text-[11px] sm:text-xs font-bold px-2.5 py-1.5 rounded-full border border-[#c9a87c]/30 hover:border-[#c9a87c] transition-all active:scale-95 disabled:opacity-50 shadow-sm"
               >
                 {chat}
               </button>
