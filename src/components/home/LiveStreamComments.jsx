@@ -75,8 +75,8 @@ export default function LiveStreamComments() {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <div className="w-full flex flex-col h-[400px] bg-slate-900/80 border border-slate-800/80 rounded-xl shadow-lg overflow-hidden backdrop-blur-md">
-      <div className="p-3 border-b border-slate-800/80 bg-slate-950/50 flex items-center justify-between">
+    <div className="w-full flex flex-col h-[280px] bg-slate-900/60 border border-slate-800/60 rounded-xl shadow-lg overflow-hidden backdrop-blur-md">
+      <div className="p-2 px-3 border-b border-slate-800/60 bg-slate-950/40 flex items-center justify-between">
         <h4 className="text-slate-200 font-semibold text-sm flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
           Live Chat
@@ -84,7 +84,7 @@ export default function LiveStreamComments() {
         <span className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">{comments.length} messages</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
+      <div className="flex-1 overflow-y-auto p-3 space-y-3" ref={scrollRef}>
         {isLoading ? (
           <div className="flex justify-center items-center h-full">
             <Loader2 className="w-6 h-6 animate-spin text-slate-600" />
@@ -116,7 +116,7 @@ export default function LiveStreamComments() {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="p-3 border-t border-slate-800/80 bg-slate-950/50 flex gap-2">
+      <form onSubmit={handleSubmit} className="p-2 border-t border-slate-800/60 bg-slate-950/40 flex gap-2">
         <Input 
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}

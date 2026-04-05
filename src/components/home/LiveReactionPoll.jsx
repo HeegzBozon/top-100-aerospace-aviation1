@@ -104,11 +104,11 @@ export default function LiveReactionPoll() {
 
   return (
     <div 
-      className="w-full bg-slate-900/50 border border-slate-800/50 rounded-xl p-5 shadow-lg backdrop-blur-sm relative overflow-hidden"
+      className="w-full bg-slate-900/40 border border-slate-800/50 rounded-xl p-3 shadow-lg backdrop-blur-md relative overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="text-[10px] uppercase tracking-widest text-red-500 font-bold mb-3 flex items-center justify-between">
+      <div className="text-[10px] uppercase tracking-widest text-red-500 font-bold mb-2 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
           {poll.type === 'trivia' ? 'Live Trivia' : 'Live Reaction Poll'}
@@ -138,8 +138,8 @@ export default function LiveReactionPoll() {
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3 }}
         >
-          <h4 className="text-slate-200 font-semibold mb-4 text-sm leading-snug">{poll.question}</h4>
-          <div className={`grid gap-3 ${poll.poll_type === 'emoji' ? 'grid-cols-4' : 'grid-cols-1'}`}>
+          <h4 className="text-slate-200 font-semibold mb-2 text-sm leading-tight">{poll.question}</h4>
+          <div className={`grid gap-2 ${poll.poll_type === 'emoji' ? 'grid-cols-4' : 'grid-cols-1'}`}>
         {poll.options.map(option => {
           const optionVotes = votes.filter(v => v.selected_option === option).length;
           const percentage = totalVotes === 0 ? 0 : Math.round((optionVotes / totalVotes) * 100);
@@ -214,7 +214,7 @@ export default function LiveReactionPoll() {
               key={option}
               variant="outline" 
               size="sm"
-              className="w-full justify-start text-xs border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors"
+              className="w-full justify-start text-xs border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors h-8"
               onClick={() => handleVoteClick(option)}
               disabled={voteMutation.isPending}
             >
@@ -234,7 +234,7 @@ export default function LiveReactionPoll() {
         </motion.div>
       </AnimatePresence>
 
-      <div className="mt-4 flex items-center justify-between relative z-10">
+      <div className="mt-3 flex items-center justify-between relative z-10">
         <div className="flex gap-2">
             {activePolls.length > 1 && (
                 <>

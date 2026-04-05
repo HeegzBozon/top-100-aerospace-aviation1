@@ -33,8 +33,8 @@ export default function HonoreeSpotlightRail() {
   });
 
   return (
-    <div className="w-full border-t border-slate-800/50 pt-6 pb-6 bg-slate-950/50">
-      <div className="flex items-center justify-between mb-4 px-6 md:px-8">
+    <div className="w-full border-t border-slate-800/50 pt-4 pb-4 bg-slate-950/30">
+      <div className="flex items-center justify-between mb-3 px-4 md:px-6">
         <h4 className="text-lg font-bold text-white flex items-center gap-2">
           <Award className="w-5 h-5 text-[#c9a87c]" />
           Artemis-Adjacent Fellows
@@ -44,8 +44,8 @@ export default function HonoreeSpotlightRail() {
         </Link>
       </div>
 
-      <ScrollArea className="w-full whitespace-nowrap pb-4">
-        <div className="flex w-max space-x-4 px-6 md:px-8">
+      <ScrollArea className="w-full whitespace-nowrap pb-2">
+        <div className="flex w-max space-x-3 px-4 md:px-6">
           {isLoading ? (
             Array(5).fill(0).map((_, i) => (
               <div key={i} className="w-[280px] shrink-0 rounded-xl bg-slate-900 border border-slate-800 p-4">
