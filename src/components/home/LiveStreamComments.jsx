@@ -63,7 +63,7 @@ export default function LiveStreamComments() {
       return;
     }
 
-    const hasProfanity = BAD_WORDS.some(word => newComment.toLowerCase().includes(word));
+    const hasProfanity = BAD_WORDS.some(word => new RegExp(`\\b${word}\\b`, 'i').test(newComment));
     if (hasProfanity) {
       toast({ title: 'Message blocked', description: 'Please keep the chat clean and professional.', variant: 'destructive' });
       return;
