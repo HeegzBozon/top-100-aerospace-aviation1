@@ -231,6 +231,19 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
         <div className="flex-1 overflow-y-auto scrollbar-hide px-3 py-3 flex flex-col gap-3">
           {/* Top-priority channels (Welcome Rules, Nominations) */}
           <div className="space-y-1.5">
+            <Link
+              to="/About"
+              onClick={() => onMobileClose?.()}
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all border-l-2",
+                currentPageName?.toLowerCase() === 'about'
+                  ? "text-white bg-slate-800/50 border-l-blue-400"
+                  : "text-white/75 hover:bg-white/10 hover:text-white border-l-transparent hover:border-l-amber-400/50"
+              )}
+            >
+              <span className="text-lg">🌍</span>
+              <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">about</span>
+            </Link>
             {topChannels.map(ch => {
               const name = ch.name?.toLowerCase();
               const IconComponent = name === 'welcome-and-rules' ? () => <span className="text-lg">📖</span> : name === 'announcements' ? () => <span className="text-lg">📢</span> : () => <span className="text-lg">🗳️</span>;

@@ -1,274 +1,262 @@
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Globe, Users, Award, Sparkles, Target, Eye, Handshake, Quote } from 'lucide-react';
+import { Network, ShieldCheck, Layers, GitMerge, TrendingUp, Anchor, Activity, Zap, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
   goldPrestige: '#c9a87c',
   skyBlue: '#4a90b8',
   cream: '#faf8f5',
+  slate: '#0f1f33'
 };
 
-const stats = [
-  { value: '1,000+', label: 'Nominees' },
-  { value: '30+', label: 'Countries' },
-  { value: '6', label: 'Global Categories' },
-];
-
-const categories = [
-  'Women', 'Men', 'Rising Stars', 'Executives', 'Innovators', 'Global Leaders'
-];
-
-const offerings = [
-  { icon: Award, title: 'Global Recognition', description: 'Annual lists, digital badges, and official certification' },
-  { icon: Users, title: 'Transparent Nomination & Voting', description: 'Community-led, impact-weighted, real-time rankings' },
-  { icon: Eye, title: 'Media & Visibility', description: 'Honoree profiles, press kits, and social spotlighting' },
-  { icon: Handshake, title: 'Partnership Opportunities', description: 'Align with the future of aerospace leadership' },
-];
+const FadeIn = ({ children, delay = 0, className = "" }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-100px" }}
+    transition={{ duration: 0.8, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+);
 
 export default function About() {
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ background: brandColors.cream }}>
+    <div className="min-h-screen overflow-x-hidden bg-[#faf8f5]">
       {/* Hero Section */}
-      <section 
-        className="relative py-8 md:py-20 overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${brandColors.navyDeep} 0%, #0f1f33 100%)` }}
-      >
-        <div className="relative z-10 max-w-4xl mx-auto px-3 md:px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 
-              className="text-2xl sm:text-3xl md:text-5xl text-white mb-4 md:mb-6"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}
-            >
-              Recognizing Visionaries.
-              <span 
-                className="block text-transparent bg-clip-text mt-1 md:mt-2"
-                style={{ backgroundImage: `linear-gradient(90deg, ${brandColors.goldPrestige}, #e8d4b8)` }}
-              >
-                Celebrating Impact. Elevating the Future.
-              </span>
+      <section className="relative py-24 md:py-32 overflow-hidden bg-[#0a1526] text-white">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-screen filter grayscale" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a1526]/80 via-[#0a1526]/90 to-[#0a1526]" />
+          {/* Subtle orbital rings */}
+          <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full border border-[#c9a87c]/10 animate-[spin_60s_linear_infinite]" />
+          <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full border border-[#4a90b8]/10 animate-[spin_40s_linear_infinite_reverse]" />
+        </div>
+
+        <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-12">
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full border border-[#c9a87c]/30 bg-[#c9a87c]/10 text-[#c9a87c] text-xs font-bold uppercase tracking-widest backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] animate-pulse" />
+              TOP 100 Aerospace & Aviation
+            </div>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight drop-shadow-2xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              The Perception Engine
             </h1>
-
-            <p className="text-sm sm:text-base md:text-xl text-white/70 max-w-3xl mx-auto" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-              The <strong className="text-white">TOP 100 in Aerospace & Aviation</strong> is the premier global recognition platform 
-              spotlighting the most influential leaders, innovators, and rising stars shaping the future of flight.
+            <p className="text-xl md:text-3xl text-slate-300 font-light mb-8 max-w-3xl leading-relaxed" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              A Human-Verified Talent Graph. Bridging recognition to sponsorship in aerospace.
             </p>
-          </motion.div>
+            <div className="w-24 h-1 bg-gradient-to-r from-[#c9a87c] to-transparent rounded-full opacity-70" />
+          </FadeIn>
         </div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="py-4 md:py-12 px-3 md:px-4 bg-white border-b" style={{ borderColor: '#e2e8f0' }}>
-        <div className="max-w-4xl mx-auto grid grid-cols-3 gap-1 md:gap-8 text-center">
-          {stats.map((stat) => (
-            <motion.div 
-              key={stat.label}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <div 
-                className="text-xl sm:text-2xl md:text-4xl font-bold mb-1"
-                style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                {stat.value}
-              </div>
-              <div className="text-xs md:text-sm text-gray-500" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Mission Section */}
-      <section className="py-6 md:py-20 px-3 md:px-4">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 md:mb-16"
-          >
-            <div className="flex items-center justify-center gap-2 mb-3 md:mb-4">
-              <Target className="w-5 h-5 md:w-6 md:h-6" style={{ color: brandColors.goldPrestige }} />
-              <span 
-                className="text-xs md:text-sm uppercase tracking-widest"
-                style={{ color: brandColors.goldPrestige, fontFamily: "'Montserrat', sans-serif" }}
-              >
-                Our Mission
-              </span>
-            </div>
-            <p 
-              className="text-lg sm:text-xl md:text-3xl leading-relaxed"
-              style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              To elevate brilliant minds and bold leadership in aerospace and aviation—while building a connected, 
-              visible, and future-forward community of top talent worldwide.
-            </p>
-          </motion.div>
-
-          {/* Categories */}
-          <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-16">
-            {categories.map((category, index) => (
-              <motion.span
-                key={category}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium"
-                style={{ 
-                  background: `${brandColors.navyDeep}10`,
-                  color: brandColors.navyDeep,
-                  fontFamily: "'Montserrat', sans-serif"
-                }}
-              >
-                {category}
-              </motion.span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Why It Matters */}
-      <section className="py-6 md:py-20 px-3 md:px-4" style={{ background: brandColors.navyDeep }}>
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <Sparkles className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-4 md:mb-6" style={{ color: brandColors.goldPrestige }} />
-            <h2 
-              className="text-xl md:text-3xl text-white mb-4 md:mb-6"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}
-            >
-              Why It Matters
-            </h2>
-            <p className="text-sm md:text-xl text-white/70 leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-              Aerospace is entering a new era—from hypersonics and next-gen propulsion to space tourism and autonomous flight. 
-              The TOP 100 exists to ensure the <em className="text-white">people powering these breakthroughs</em> get the visibility, 
-              celebration, and support they deserve.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* What We Offer */}
-      <section className="py-6 md:py-20 px-3 md:px-4">
+      {/* The Infrastructure Gap */}
+      <section className="py-20 md:py-32 px-6 md:px-12 relative bg-white">
         <div className="max-w-5xl mx-auto">
-          <h2 
-            className="text-lg md:text-3xl text-center mb-4 md:mb-12"
-            style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}
-          >
-            What We Offer
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-2 md:gap-6">
-            {offerings.map((item, index) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="bg-white rounded-lg md:rounded-2xl p-3 md:p-8 shadow-sm md:shadow-lg border"
-                style={{ borderColor: '#e2e8f0' }}
-              >
-                <div 
-                  className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center mb-2 md:mb-4"
-                  style={{ background: `${brandColors.goldPrestige}20` }}
-                >
-                  <item.icon className="w-4 h-4 md:w-6 md:h-6" style={{ color: brandColors.goldPrestige }} />
-                </div>
-                <h3 
-                  className="text-sm md:text-xl font-bold mb-0.5 md:mb-2"
-                  style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
-                  {item.title}
-                </h3>
-                <p className="text-[11px] md:text-base text-gray-600 line-clamp-3 md:line-clamp-none" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                  {item.description}
+          <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+            <FadeIn>
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: brandColors.skyBlue }}>The Infrastructure Gap</h2>
+              <h3 className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-[#1e3a5a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                Good Programs.<br/>No Plumbing.
+              </h3>
+              <div className="space-y-6 text-slate-600 leading-relaxed text-sm md:text-base font-medium">
+                <p>
+                  Women make up 47% of the U.S. workforce. In aerospace, it's 13%. Only 6% of commercial pilots. Only 15% of senior leadership. The industry's own data says closing this gap could add up to 9.6% to GDP.
                 </p>
-              </motion.div>
-            ))}
+                <p>
+                  The organizations trying to fix this are doing extraordinary work. Dozens of programs, thousands of committed people, years of investment. And the numbers barely move.
+                </p>
+                <p className="text-xl font-bold text-[#1e3a5a] border-l-4 border-[#c9a87c] pl-6 py-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  The problem isn't awareness. It's infrastructure. Every program operates in its own silo.
+                </p>
+                <p>
+                  Recognition on one platform. Mentorship in another. Sponsorship dollars through a third. Career data in spreadsheets. No shared talent graph connecting them into a coordinated system.
+                </p>
+              </div>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <div className="grid grid-cols-2 gap-4 md:gap-6">
+                <div className="bg-[#faf8f5] p-6 md:p-8 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col items-center text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-[#1e3a5a] mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>47%</div>
+                  <div className="text-xs uppercase tracking-wider text-slate-500 font-bold">U.S. Workforce</div>
+                </div>
+                <div className="bg-[#1e3a5a] p-6 md:p-8 rounded-2xl border border-[#1e3a5a] shadow-lg flex flex-col items-center text-center text-white transform md:translate-y-8">
+                  <div className="text-4xl md:text-5xl font-bold text-[#c9a87c] mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>13%</div>
+                  <div className="text-xs uppercase tracking-wider text-slate-300 font-bold">Aerospace</div>
+                </div>
+                <div className="bg-[#faf8f5] p-6 md:p-8 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col items-center text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-[#1e3a5a] mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>6%</div>
+                  <div className="text-xs uppercase tracking-wider text-slate-500 font-bold">Comml. Pilots</div>
+                </div>
+                <div className="bg-[#faf8f5] p-6 md:p-8 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col items-center text-center transform md:translate-y-8">
+                  <div className="text-4xl md:text-5xl font-bold text-[#1e3a5a] mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>15%</div>
+                  <div className="text-xs uppercase tracking-wider text-slate-500 font-bold">Leadership</div>
+                </div>
+              </div>
+            </FadeIn>
           </div>
         </div>
       </section>
 
-      {/* Our Story */}
-      <section className="py-6 md:py-20 px-3 md:px-4 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 md:mb-12"
-          >
-            <Globe className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-3 md:mb-4" style={{ color: brandColors.skyBlue }} />
-            <h2 
-              className="text-xl md:text-3xl mb-4 md:mb-6"
-              style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}
-            >
-              Our Story
-            </h2>
-            <p className="text-sm md:text-lg text-gray-600 leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-              Founded in 2021, the TOP 100 was built to bridge a critical gap in recognition and representation. 
-              What began as a curated list has evolved into a global platform—uniting excellence across commercial aviation, 
-              defense, space, and advanced air mobility.
-            </p>
-          </motion.div>
+      {/* The Architecture */}
+      <section className="py-20 md:py-32 px-6 md:px-12 bg-[#1e3a5a] text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+        
+        <div className="max-w-5xl mx-auto relative z-10">
+          <FadeIn className="text-center mb-16 md:mb-24">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-[#c9a87c] mb-4">The Architecture</h2>
+            <h3 className="text-3xl md:text-5xl font-bold leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              Humans Verify.<br/>Algorithms Amplify.
+            </h3>
+          </FadeIn>
+
+          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+            <FadeIn delay={0.1} className="bg-[#0f1f33]/50 p-8 md:p-10 rounded-3xl border border-white/10 backdrop-blur-md">
+              <ShieldCheck className="w-10 h-10 text-[#c9a87c] mb-6" />
+              <h4 className="text-xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Human-in-the-Loop</h4>
+              <p className="text-slate-300 text-sm leading-relaxed font-medium">
+                Most platforms verify with algorithms. LinkedIn checks an email domain. X sells checkmarks. We verify with humans. 1,000+ nominators who have personally observed and vouched for candidates.
+              </p>
+            </FadeIn>
+
+            <FadeIn delay={0.2} className="bg-[#0f1f33]/50 p-8 md:p-10 rounded-3xl border border-white/10 backdrop-blur-md">
+              <Layers className="w-10 h-10 text-[#4a90b8] mb-6" />
+              <h4 className="text-xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Tiered Endorsement</h4>
+              <p className="text-slate-300 text-sm leading-relaxed font-medium">
+                300+ alumni and Fellows across 5 seasons endorse, vote, and validate through a tiered system where senior Fellows' endorsements carry up to 5x the weight. The Governing Council stewards the standard.
+              </p>
+            </FadeIn>
+
+            <FadeIn delay={0.3} className="bg-[#0f1f33]/50 p-8 md:p-10 rounded-3xl border border-[#c9a87c]/30 backdrop-blur-md shadow-[0_0_30px_rgba(201,168,124,0.1)] transform md:-translate-y-4">
+              <Anchor className="w-10 h-10 text-[#c9a87c] mb-6" />
+              <h4 className="text-xl font-bold mb-4 text-[#c9a87c]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>The Trust Moat</h4>
+              <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                Technology serves human intelligence, not the other way around. A competitor can copy the code. They cannot copy the trust graph. Built over 5 years, one relationship at a time.
+              </p>
+            </FadeIn>
+          </div>
         </div>
       </section>
 
-      {/* Founder Quote */}
-      <section 
-        className="py-6 md:py-20 px-3 md:px-4"
-        style={{ background: `linear-gradient(135deg, ${brandColors.navyDeep} 0%, #0f1f33 100%)` }}
-      >
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <Quote className="w-8 h-8 md:w-12 md:h-12 mx-auto mb-4 md:mb-8 opacity-30" style={{ color: brandColors.goldPrestige }} />
-            <blockquote 
-              className="text-lg sm:text-xl md:text-3xl text-white leading-relaxed mb-4 md:mb-8"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: 'italic' }}
-            >
-              "When I started the TOP 100, it wasn't about building a list. It was about building a <span style={{ color: brandColors.goldPrestige }}>movement</span>."
-            </blockquote>
-            <p className="text-sm md:text-base text-white/70 mb-2" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-              I built this platform to celebrate brilliance. To shine a spotlight on diverse, global talent. 
-              To create something that feels as elite as a Forbes feature, but with the soul of a community that actually uplifts people.
-            </p>
-            <div className="mt-6 md:mt-8">
-              <p 
-                className="text-sm md:text-lg font-semibold"
-                style={{ color: brandColors.goldPrestige, fontFamily: "'Montserrat', sans-serif" }}
-              >
-                This isn't just a recognition platform.
-              </p>
-              <p className="text-white text-base md:text-xl mt-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                It's an engine for influence.
-              </p>
-            </div>
-            <div className="mt-6 md:mt-10 pt-6 md:pt-8 border-t border-white/10">
-              <p className="text-white/50 text-xs md:text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                Founder, TOP 100 in Aerospace & Aviation
-              </p>
-              <p className="text-white/40 text-xs md:text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                Founder, Pineapple EMPIRE
-              </p>
-            </div>
-          </motion.div>
+      {/* Sensor Fusion / Mycelium */}
+      <section className="py-20 md:py-32 px-6 md:px-12 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+            <FadeIn className="order-2 md:order-1">
+              <div className="relative aspect-square md:aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
+                <img src="https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?q=80&w=1000&auto=format&fit=crop" alt="Network nodes" className="absolute inset-0 w-full h-full object-cover filter contrast-125 saturate-50" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1e3a5a] via-[#1e3a5a]/40 to-transparent mix-blend-multiply" />
+                <div className="absolute bottom-8 left-8 right-8">
+                  <div className="p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
+                    <p className="text-white text-sm font-medium italic drop-shadow-md">
+                      "In autonomous driving, sensor fusion combines incomplete slices of reality into a unified model. The gender parity ecosystem has the exact same architecture problem."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+            
+            <FadeIn className="order-1 md:order-2">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-[#4a90b8] mb-4">The Talent Graph</h2>
+              <h3 className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-[#1e3a5a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                Sensor Fusion & Mycelium
+              </h3>
+              <div className="space-y-6 text-slate-600 leading-relaxed text-sm md:text-base font-medium mb-8">
+                <p>
+                  Each organization is a sensor: WAI sees scholarship recipients, IAWA sees senior executives, WIA sees policy professionals. Each captures a real but incomplete signal. None sees the full graph.
+                </p>
+                <p>
+                  <strong>TOP 100 OS is the fusion layer.</strong> Think of it like mycorrhizal fungi in a forest. Above ground, trees look independent. Below the surface, fungal networks connect root systems, facilitating nutrient exchange and enabling the ecosystem to coordinate.
+                </p>
+                <p>
+                  Corporate programs and alliances are essential trees. TOP 100 OS is the fungal network. But unlike algorithmic networks, ours is built from human trust. The hyphae are relationships. The nutrient exchange is peer verification.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <div className="text-3xl font-bold text-[#c9a87c] mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>300+</div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Alumni & Fellows</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-[#c9a87c] mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>1,000+</div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Verified Nominators</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-[#c9a87c] mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>70+</div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Disciplines</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-[#c9a87c] mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>5 Years</div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Organic Growth</div>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
         </div>
       </section>
+
+      {/* From Recognition to Sponsorship */}
+      <section className="py-20 md:py-32 px-6 md:px-12 bg-[#faf8f5]">
+        <div className="max-w-4xl mx-auto text-center">
+          <FadeIn>
+            <GitMerge className="w-12 h-12 mx-auto text-[#1e3a5a] mb-6" />
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-[#1e3a5a]" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              From Recognition to Sponsorship
+            </h2>
+            <p className="text-lg md:text-xl text-slate-600 mb-12 font-medium">
+              Recognition says: we see you. Mentorship says: we'll advise you. Sponsorship says: I'm putting my reputation behind you in rooms you're not in yet.
+            </p>
+          </FadeIn>
+          
+          <div className="grid md:grid-cols-2 gap-8 text-left mb-16">
+            <FadeIn delay={0.1} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+              <h3 className="text-xl font-bold text-[#c9a87c] mb-3 uppercase tracking-wider text-sm">For the Talent</h3>
+              <p className="text-slate-600 text-sm leading-relaxed font-medium">
+                When a Fellow is recognized, it's the beginning of a persistent record. Her Flightography accumulates human-verified endorsements. Her domain network connects her across 40+ countries. Her influence tier rises as she mentors and endorses others.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.2} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+              <h3 className="text-xl font-bold text-[#1e3a5a] mb-3 uppercase tracking-wider text-sm">For Sponsors</h3>
+              <p className="text-slate-600 text-sm leading-relaxed font-medium">
+                Sponsors see the talent graph: who is verified, who is endorsed by whom, who is rising through which domains. Resource allocation becomes strategic, not charitable. Human verification makes sponsorship possible at scale.
+              </p>
+            </FadeIn>
+          </div>
+
+          <FadeIn delay={0.3} className="bg-[#1e3a5a] rounded-3xl p-10 md:p-16 text-center text-white relative overflow-hidden shadow-2xl">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#c9a87c] rounded-full mix-blend-screen filter blur-[100px] opacity-20 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#4a90b8] rounded-full mix-blend-screen filter blur-[120px] opacity-20 pointer-events-none" />
+            
+            <div className="relative z-10 max-w-2xl mx-auto">
+              <h2 className="text-2xl md:text-4xl font-bold mb-6" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                Antifragile by Design
+              </h2>
+              <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-8 font-medium">
+                The aerospace industry is entering its most consequential decade. A projected million-person talent gap by 2030. The talent exists. The programs exist. What doesn't exist is the infrastructure to connect all of it.
+              </p>
+              <p className="text-[#c9a87c] text-xl md:text-2xl font-bold italic" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                The perception engine is calibrated. The talent graph is live. The missing layer is ready.
+              </p>
+              <div className="mt-10">
+                <a href="https://wefunder.com/top.100.aerospace.aviation" target="_blank" rel="noopener noreferrer">
+                  <Button className="bg-[#c9a87c] hover:bg-[#b09268] text-[#0a1526] font-bold px-8 py-6 rounded-full text-base shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:shadow-[0_0_30px_rgba(201,168,124,0.5)] transition-all hover:scale-105 active:scale-95 uppercase tracking-wider">
+                    Join The Graph on Wefunder
+                  </Button>
+                </a>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* Footer Signature */}
+      <footer className="py-12 bg-[#0a1526] text-center border-t border-white/5">
+        <p className="text-[#c9a87c] font-bold tracking-widest uppercase text-sm mb-2" style={{ fontFamily: "'Montserrat', sans-serif" }}>Ad Astra.</p>
+        <p className="text-slate-500 text-xs font-medium">TOP 100 Aerospace & Aviation • The Perception Engine</p>
+      </footer>
     </div>
   );
 }
