@@ -111,9 +111,9 @@ export default function LiveStreamModule() {
                            <div className="absolute inset-0 rounded-full border border-[#c9a87c]/20 animate-[spin_60s_linear_infinite]" />
                            <div className="absolute inset-4 rounded-full border border-[#4a90b8]/10 animate-[spin_40s_linear_infinite_reverse]" />
                            <img 
-                             src="https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&q=80&w=800" 
-                             alt="Artemis Moon" 
-                             className="w-full h-full object-cover rounded-full filter contrast-125 saturate-50 opacity-80 mix-blend-screen"
+                             src="https://media.base44.com/images/public/68996845be6727838fdb822e/c5e9b3980_659586013-1493256312169740-2042398293693968717-n.jpg" 
+                             alt="Earth from Space" 
+                             className="w-full h-full object-cover rounded-full opacity-90"
                            />
                            <div className="absolute inset-0 bg-gradient-to-tr from-[#0a1526]/80 to-transparent rounded-full" />
                         </div>
