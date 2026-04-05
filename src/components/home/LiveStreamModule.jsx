@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { PlayCircle, Pause, Play } from 'lucide-react';
+import { PlayCircle, Pause, Play, ChevronRight } from 'lucide-react';
 import ExpertCommentaryCards from './ExpertCommentaryCards';
 import LiveStreamComments from './LiveStreamComments';
 import FloatingReactions from './FloatingReactions';
@@ -105,6 +105,63 @@ export default function LiveStreamModule() {
                    <div className="w-full h-full [&>div]:rounded-none [&>div]:h-full">
                       <MissionControlHeader />
                    </div>
+                </div>
+              </CarouselItem>
+
+              <CarouselItem>
+                <div className="h-full min-h-[360px] xl:h-[400px] border-t border-[#4a90b8]/20 flex flex-col items-center justify-center p-6 md:p-12 text-center bg-gradient-to-br from-[#0a1526] to-[#1e3a5a] relative overflow-hidden">
+                  <div className="absolute inset-0 pointer-events-none opacity-20 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center mix-blend-overlay"></div>
+                  <div className="relative z-10">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#c9a87c]/20 border border-[#c9a87c]/50 text-[#c9a87c] text-xs font-bold uppercase tracking-widest mb-4">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c9a87c] opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#c9a87c]"></span>
+                      </span>
+                      Community Round Live
+                    </div>
+                    <h2 className="text-2xl md:text-4xl font-bold text-white mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Own a Piece of the Future</h2>
+                    <p className="text-slate-300 max-w-2xl mx-auto text-sm md:text-base mb-6">
+                      Join our mission to democratize the space economy. Invest in the TOP 100 ecosystem and help shape the next generation of aerospace innovation.
+                    </p>
+                    <a href="/community-round">
+                      <button className="bg-gradient-to-r from-[#c9a87c] to-[#d4a090] hover:from-[#e8d4b8] hover:to-[#c9a87c] text-[#0a1628] font-bold px-8 py-3 rounded-full shadow-[0_0_20px_rgba(201,168,124,0.4)] hover:shadow-[0_0_30px_rgba(201,168,124,0.6)] transition-all hover:scale-105 active:scale-95">
+                        Invest Now
+                      </button>
+                    </a>
+                  </div>
+                </div>
+              </CarouselItem>
+
+              <CarouselItem>
+                <div className="h-full min-h-[360px] xl:h-[400px] border-t border-[#4a90b8]/20 flex flex-col md:flex-row items-center justify-center gap-6 p-6 md:p-10 bg-gradient-to-br from-[#1e3a5a] to-[#0a1526] relative overflow-hidden">
+                  <div className="absolute right-0 top-0 w-64 h-64 bg-[#c95a43]/10 rounded-full blur-3xl"></div>
+                  <div className="shrink-0 relative z-10">
+                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-[#c95a43] p-1 relative shadow-[0_0_20px_rgba(201,90,67,0.3)]">
+                      <div className="absolute -top-2 -right-2 bg-[#c95a43] text-white text-[10px] font-bold px-2 py-1 rounded-full border-2 border-[#0a1526] z-20 shadow-lg">ACTIVE MISSION</div>
+                      <img src="https://ui-avatars.com/api/?name=Morgan+Kainu&background=c9a87c&color=1e3a5a&size=256" alt="Morgan Kainu" className="w-full h-full rounded-full object-cover border-2 border-[#1e3a5a]" />
+                    </div>
+                  </div>
+                  <div className="flex-1 text-center md:text-left relative z-10 max-w-xl">
+                    <div className="text-[#c95a43] text-xs font-bold uppercase tracking-widest mb-1 flex items-center justify-center md:justify-start gap-2">
+                      <div className="w-2 h-2 rounded-full bg-[#c95a43] animate-pulse"></div>
+                      Priority Objective
+                    </div>
+                    <h3 className="text-xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Morgan Kainu</h3>
+                    <p className="text-[#c9a87c] text-sm font-semibold mb-4 uppercase tracking-wider">Mission Specialist & Fellow</p>
+                    <div className="bg-[#0a1526]/50 border border-[#c95a43]/30 rounded-xl p-4 shadow-inner backdrop-blur-sm relative">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#c95a43] to-transparent rounded-l-xl"></div>
+                      <p className="text-slate-200 text-sm md:text-base leading-relaxed italic">
+                        "Currently spearheading the integration of next-generation orbital defense systems. We need to focus on securing the communication arrays before Phase 3 initiation."
+                      </p>
+                    </div>
+                    <div className="mt-4 flex justify-center md:justify-start">
+                      <a href="/star-summit">
+                         <button className="text-xs font-bold text-white uppercase tracking-wider hover:text-[#c95a43] transition-colors flex items-center gap-1">
+                           Track Objective <ChevronRight className="w-4 h-4" />
+                         </button>
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </CarouselItem>
             </CarouselContent>
