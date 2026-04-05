@@ -23,14 +23,14 @@ export default function LiveStreamComments() {
 
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['live-stream-comments'],
-    queryFn: () => base44.entities.LiveStreamComment.list('-created_date', 100),
+    queryFn: () => base44.entities.LiveStreamComment.list('+created_date', 100),
     refetchInterval: 2000,
   });
 
-  // Auto scroll to top when new comments arrive
+  // Auto scroll to bottom when new comments arrive
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = 0;
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [comments]);
 
@@ -85,24 +85,6 @@ export default function LiveStreamComments() {
         <span className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">{comments.length} messages</span>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-2 border-b border-[#4a90b8]/30 bg-[#0a1526]/50 flex gap-2">
-        <Input 
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder={user ? "Say something..." : "Log in to chat..."}
-          disabled={!user || createMutation.isPending}
-          className="flex-1 bg-[#1e3a5a]/60 border-[#4a90b8]/30 text-white placeholder:text-slate-400 h-10 text-sm focus-visible:ring-[#c9a87c]"
-          maxLength={200}
-        />
-        <Button 
-          type="submit" 
-          disabled={!user || !newComment.trim() || createMutation.isPending}
-          className="h-10 px-4 bg-[#c9a87c] text-slate-950 hover:bg-[#c9a87c]/90 font-semibold"
-        >
-          {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send'}
-        </Button>
-      </form>
-
       <div className="flex-1 overflow-y-auto p-3 space-y-3" ref={scrollRef}>
         {isLoading ? (
           <div className="flex justify-center items-center h-full">
@@ -150,6 +132,24 @@ export default function LiveStreamComments() {
           </>
         )}
       </div>
+
+      <form onSubmit={handleSubmit} className="p-2 border-t border-[#4a90b8]/30 bg-[#0a1526]/50 flex gap-2">
+        <Input 
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder={user ? "Say something..." : "Log in to chat..."}
+          disabled={!user || createMutation.isPending}
+          className="flex-1 bg-[#1e3a5a]/60 border-[#4a90b8]/30 text-white placeholder:text-slate-400 h-10 text-sm focus-visible:ring-[#c9a87c]"
+          maxLength={200}
+        />
+        <Button 
+          type="submit" 
+          disabled={!user || !newComment.trim() || createMutation.isPending}
+          className="h-10 px-4 bg-[#c9a87c] text-slate-950 hover:bg-[#c9a87c]/90 font-semibold"
+        >
+          {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send'}
+        </Button>
+      </form>
     </div>
   );
 }
