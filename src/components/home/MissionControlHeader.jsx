@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Rocket, Send, Award, Clock, CalendarDays, CheckCircle2, Circle, Loader } from 'lucide-react';
 import { useConversation } from '@/components/contexts/ConversationContext';
-import Top100WomenRail from './Top100WomenRail';
+import Top100WomenRail from './Top100WomenRail.jsx';
 
 function useCountdown(targetDate) {
   const [now, setNow] = useState(new Date());
