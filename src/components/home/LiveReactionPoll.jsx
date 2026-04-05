@@ -91,9 +91,9 @@ export default function LiveReactionPoll() {
 
   if (isLoading) return <div className="animate-pulse w-full h-32 bg-slate-900 rounded-xl border border-slate-800"></div>;
   if (!poll) return (
-    <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 border border-[#4a90b8]/20 rounded-xl bg-[#1e3a5a]/30">
-       <span className="text-slate-400 text-sm font-semibold tracking-widest uppercase mb-2">Live Polling</span>
-       <span className="text-slate-300 text-xs">Waiting for the next mission prompt...</span>
+    <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 border border-[#4a90b8]/20 rounded-xl bg-[#0b3d91]/20 shadow-[0_0_15px_rgba(11,61,145,0.1)]">
+       <span className="text-[#4a90b8] text-sm font-semibold tracking-widest uppercase mb-2">Live Polling</span>
+       <span className="text-blue-200/70 text-xs">Waiting for the next mission prompt...</span>
     </div>
   );
 
@@ -104,7 +104,7 @@ export default function LiveReactionPoll() {
 
   return (
     <div 
-      className="w-full bg-[#1e3a5a]/40 border border-[#4a90b8]/30 rounded-xl p-3 shadow-lg backdrop-blur-md relative overflow-hidden"
+      className="w-full bg-[#0b3d91]/20 border border-[#4a90b8]/30 rounded-xl p-3 shadow-[0_0_20px_rgba(11,61,145,0.15)] backdrop-blur-md relative overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -122,7 +122,7 @@ export default function LiveReactionPoll() {
               }
             }}
             disabled={resetMutation.isPending}
-            className="text-slate-500 hover:text-red-400 transition-colors flex items-center gap-1"
+            className="text-blue-300/50 hover:text-red-400 transition-colors flex items-center gap-1"
             title="Reset Poll Votes"
           >
             <RefreshCw className={`w-3 h-3 ${resetMutation.isPending ? 'animate-spin' : ''}`} />
@@ -138,8 +138,8 @@ export default function LiveReactionPoll() {
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3 }}
         >
-          <h4 className="text-slate-200 font-semibold mb-2 text-sm leading-tight">{poll.question}</h4>
-          <div className={`grid gap-2 ${poll.poll_type === 'emoji' ? 'grid-cols-4' : 'grid-cols-1'}`}>
+          <h4 className="text-blue-100 font-semibold mb-2 text-sm leading-tight">{poll.question}</h4>
+          <div className={`grid gap-1.5 ${poll.poll_type === 'emoji' ? 'grid-cols-4' : 'grid-cols-1'}`}>
         {poll.options.map(option => {
           const optionVotes = votes.filter(v => v.selected_option === option).length;
           const percentage = totalVotes === 0 ? 0 : Math.round((optionVotes / totalVotes) * 100);
@@ -149,47 +149,49 @@ export default function LiveReactionPoll() {
             const isCorrect = poll.type === 'trivia' && poll.correct_answer === option;
             const isWrongSelection = poll.type === 'trivia' && isSelected && !isCorrect;
 
-            let barColor = "bg-slate-600";
-            let textColor = "text-slate-300";
+            let barColor = "bg-[#4a90b8]";
+            let textColor = "text-blue-100";
+            let borderColor = "border-blue-900/40";
             if (isSelected) {
                 barColor = "bg-[#c9a87c]";
                 textColor = "text-[#c9a87c] font-bold";
+                borderColor = "border-[#c9a87c]/40";
             }
             if (poll.type === 'trivia') {
                 if (isCorrect) {
                     barColor = "bg-green-500";
                     textColor = "text-green-400 font-bold";
+                    borderColor = "border-green-500/40";
                 } else if (isWrongSelection) {
                     barColor = "bg-red-500";
                     textColor = "text-red-400 font-bold";
+                    borderColor = "border-red-500/40";
                 }
             }
 
             if (poll.poll_type === 'emoji') {
                 return (
-                    <div key={option} className={`flex flex-col items-center justify-center p-2 rounded-lg border ${isSelected ? 'border-[#c9a87c] bg-[#c9a87c]/10' : 'border-slate-800 bg-slate-800/40'}`}>
+                    <div key={option} className={`flex flex-col items-center justify-center p-2 rounded-lg border ${isSelected ? 'border-[#c9a87c] bg-[#c9a87c]/10' : 'border-blue-900/30 bg-[#0b3d91]/20'}`}>
                         <span className="text-2xl mb-1">{option}</span>
-                        <span className="text-xs text-slate-400">{percentage}%</span>
+                        <span className="text-xs text-blue-200/70">{percentage}%</span>
                     </div>
                 );
             }
 
             return (
-              <div key={option} className="relative">
-                <div className="flex justify-between text-xs mb-1 text-slate-400">
-                  <span className={`${textColor} flex items-center gap-1`}>
+              <div key={option} className={`relative h-8 flex items-center px-3 rounded-md border ${borderColor} bg-[#0b3d91]/20 overflow-hidden`}>
+                <div 
+                  className={`absolute left-0 top-0 bottom-0 transition-all duration-700 opacity-20 ${barColor}`} 
+                  style={{ width: `${percentage}%` }}
+                />
+                <div className="relative z-10 w-full flex justify-between items-center text-xs">
+                  <span className={`${textColor} flex items-center gap-1.5`}>
                     {option} 
                     {isSelected && poll.type !== 'trivia' && "✓"}
                     {poll.type === 'trivia' && isCorrect && <CheckCircle2 className="w-3 h-3 text-green-500" />}
                     {poll.type === 'trivia' && isWrongSelection && <XCircle className="w-3 h-3 text-red-500" />}
                   </span>
-                  <span>{percentage}%</span>
-                </div>
-                <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full rounded-full transition-all duration-500 ${barColor}`} 
-                    style={{ width: `${percentage}%` }}
-                  />
+                  <span className="text-blue-200/70 font-medium">{percentage}%</span>
                 </div>
               </div>
             );
@@ -200,7 +202,7 @@ export default function LiveReactionPoll() {
               <Button 
                 key={option}
                 variant="outline" 
-                className="h-14 border-slate-700 bg-slate-800/40 hover:bg-slate-800 transition-colors text-2xl"
+                className="h-14 border-blue-900/30 bg-[#0b3d91]/20 hover:bg-[#0b3d91]/40 transition-colors text-2xl"
                 onClick={() => handleVoteClick(option)}
                 disabled={voteMutation.isPending}
               >
@@ -214,20 +216,23 @@ export default function LiveReactionPoll() {
               key={option}
               variant="outline" 
               size="sm"
-              className="w-full justify-start text-xs border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors h-8"
+              className="relative w-full h-8 justify-start px-3 text-xs border-blue-900/40 bg-[#0b3d91]/20 hover:bg-[#0b3d91]/40 text-blue-200 hover:text-white transition-colors overflow-hidden group"
               onClick={() => handleVoteClick(option)}
               disabled={voteMutation.isPending}
             >
-              {voteMutation.isPending && voteMutation.variables === option ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : null}
-              {option}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[marquee_1.5s_ease-in-out_infinite]" />
+              <span className="relative z-10 flex items-center">
+                {voteMutation.isPending && voteMutation.variables === option ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : null}
+                {option}
+              </span>
             </Button>
           );
         })}
       </div>
 
           {userVote && poll.type === 'trivia' && poll.explanation && (
-              <div className="mt-4 p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-300">
-                  <span className="font-bold text-white block mb-1">Explanation:</span>
+              <div className="mt-3 p-2.5 bg-[#0b3d91]/20 border border-blue-900/30 rounded-md text-xs text-blue-200/90 shadow-inner">
+                  <span className="font-bold text-[#4a90b8] block mb-0.5">Explanation:</span>
                   {poll.explanation}
               </div>
           )}
@@ -238,16 +243,16 @@ export default function LiveReactionPoll() {
         <div className="flex gap-2">
             {activePolls.length > 1 && (
                 <>
-                    <button onClick={handlePrev} className="p-1 rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors">
+                    <button onClick={handlePrev} className="p-1 rounded bg-[#0b3d91]/40 text-blue-300/70 hover:text-white hover:bg-[#0b3d91]/60 transition-colors">
                         <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <button onClick={handleNext} className="p-1 rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors">
+                    <button onClick={handleNext} className="p-1 rounded bg-[#0b3d91]/40 text-blue-300/70 hover:text-white hover:bg-[#0b3d91]/60 transition-colors">
                         <ChevronRight className="w-4 h-4" />
                     </button>
                 </>
             )}
         </div>
-        <div className="text-[10px] text-slate-500 text-right uppercase tracking-wider font-semibold">
+        <div className="text-[10px] text-blue-300/50 text-right uppercase tracking-wider font-semibold">
           {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
         </div>
       </div>
