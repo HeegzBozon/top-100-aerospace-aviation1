@@ -9,6 +9,17 @@ import { useToast } from '@/components/ui/use-toast';
 // Simple client-side profanity filter
 const BAD_WORDS = ['fuck', 'shit', 'ass', 'bitch', 'damn', 'crap'];
 
+const QUICK_CHATS = [
+  "🚀 Go for launch!",
+  "✨ Mission nominal.",
+  "📡 Copy that.",
+  "🛑 Holding for clearance.",
+  "⭐ Godspeed!",
+  "🌍 Beautiful view.",
+  "🎯 What a milestone!",
+  "⚡ Engines looking good."
+];
+
 export default function LiveStreamComments() {
   const [newComment, setNewComment] = useState('');
   const scrollRef = useRef(null);
@@ -110,16 +121,16 @@ export default function LiveStreamComments() {
         ) : (
           <div className="flex flex-col gap-2">
             {comments.slice(-3).map((c) => (
-              <div key={c.id} className="flex items-center gap-3 group px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all backdrop-blur-sm">
-                <img src={c.user_avatar} alt={c.user_name} className="w-7 h-7 rounded-full border border-[#c9a87c]/50 shrink-0 shadow-lg" />
-                <div className="flex-1 min-w-0 flex items-center gap-2">
-                  <span className="text-[#c9a87c] text-sm font-bold shrink-0 truncate max-w-[120px]">{c.user_name}</span>
-                  <span className="text-[#faf8f5] text-sm truncate opacity-90 font-medium">{c.text}</span>
+              <div key={c.id} className="flex items-start gap-3 group px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all backdrop-blur-sm">
+                <img src={c.user_avatar} alt={c.user_name} className="w-6 h-6 rounded-full border border-[#c9a87c]/50 shrink-0 shadow-lg mt-0.5" />
+                <div className="flex-1 min-w-0 leading-tight">
+                  <span className="text-[#c9a87c] text-sm font-bold mr-2">{c.user_name}:</span>
+                  <span className="text-[#faf8f5] text-sm opacity-90 font-medium break-words">{c.text}</span>
                 </div>
                 {isAdmin && (
                   <button 
                     onClick={() => deleteMutation.mutate(c.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/20 text-red-400 rounded-full transition-all shrink-0"
+                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/20 text-red-400 rounded-md transition-all shrink-0"
                     title="Delete comment (Admin)"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -130,6 +141,32 @@ export default function LiveStreamComments() {
           </div>
         )}
       </div>
+
+      {/* Quick Chat Options */}
+      {user && (
+        <div className="px-4 pb-3 relative z-10">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide snap-x pb-1">
+            {QUICK_CHATS.map((chat, idx) => (
+              <button
+                key={idx}
+                type="button"
+                disabled={createMutation.isPending}
+                onClick={() => {
+                  createMutation.mutate({
+                    text: chat,
+                    user_name: user.full_name || 'Anonymous',
+                    user_avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name || 'A')}&background=1e3a5a&color=c9a87c`,
+                    user_email: user.email
+                  });
+                }}
+                className="whitespace-nowrap shrink-0 snap-start bg-[#1e3a5a]/60 hover:bg-[#c9a87c]/20 text-[#c9a87c] text-xs font-bold px-3 py-1.5 rounded-full border border-[#c9a87c]/30 hover:border-[#c9a87c] transition-all active:scale-95 disabled:opacity-50 shadow-sm"
+              >
+                {chat}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Input Area */}
       <form onSubmit={handleSubmit} className="p-4 border-t border-[#c9a87c]/10 bg-white/5 backdrop-blur-sm shrink-0 relative z-10">
