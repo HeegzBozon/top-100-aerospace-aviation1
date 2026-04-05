@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Rocket, Send, Award, Clock, CalendarDays, CheckCircle2, Circle, Loader } from 'lucide-react';
 import { useConversation } from '@/components/contexts/ConversationContext';
-import Top100WomenRail from './Top100WomenRail';
 
 function useCountdown(targetDate) {
   const [now, setNow] = useState(new Date());
@@ -75,11 +74,11 @@ export default function MissionControlHeader() {
   if (!activeSeason) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl h-full flex flex-col" style={{ background: `linear-gradient(135deg, ${brand.navy} 0%, #0f1f33 100%)` }}>
+    <div className="relative overflow-hidden rounded-3xl" style={{ background: `linear-gradient(135deg, ${brand.navy} 0%, #0f1f33 100%)` }}>
       <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-10" style={{ background: brand.gold }} />
       <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl opacity-5" style={{ background: '#4a90b8' }} />
 
-      <div className="relative z-10 px-4 md:px-6 py-4 md:py-5 flex-1">
+      <div className="relative z-10 px-4 md:px-6 py-4 md:py-5">
         <div className="flex flex-col md:flex-row gap-5 md:gap-6">
 
           {/* ── Left column ── */}
@@ -89,11 +88,11 @@ export default function MissionControlHeader() {
                 <Rocket className="w-3 h-3 mr-1" />
                 TOP 100 WOMEN
               </Badge>
-              <Badge className="text-[10px] md:text-xs font-bold px-2.5 py-0.5" style={{ background: '#8f2a58', color: 'white' }}>
-                TOP 100 ANGELS
-              </Badge>
               <Badge className="text-[10px] md:text-xs font-bold px-2.5 py-0.5" style={{ background: '#4a90b8', color: 'white' }}>
                 TOP 100 MEN
+              </Badge>
+              <Badge className="text-[10px] md:text-xs font-bold px-2.5 py-0.5" style={{ background: '#8f2a58', color: 'white' }}>
+                TOP 100 ANGELS
               </Badge>
               <Badge variant="outline" className="text-[10px] md:text-xs border-white/30 text-white/70 py-0.5">
                 NOMINATIONS OPEN
@@ -145,8 +144,6 @@ export default function MissionControlHeader() {
         </div>
 
       </div>
-      
-      <Top100WomenRail />
     </div>
   );
 }
