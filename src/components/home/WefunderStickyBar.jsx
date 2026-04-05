@@ -1,5 +1,6 @@
 import React from 'react';
 import { Rocket } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function WefunderStickyBar() {
   return (
@@ -11,20 +12,24 @@ export default function WefunderStickyBar() {
       </div>
       
       <div className="relative z-10 mb-4">
-        <h4 className="text-[#c9a87c] font-bold text-sm mb-1.5 leading-tight">Invest in the Future</h4>
+        <div className="flex items-center justify-center gap-2 mb-1.5">
+          <h4 className="text-[#c9a87c] font-bold text-sm leading-tight">Invest in the Future</h4>
+          <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-green-500/20 border border-green-500/30 text-green-400 text-[9px] font-bold uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            Live
+          </span>
+        </div>
         <p className="text-slate-300 text-xs leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
           Join our Wefunder community round and own a piece of TOP 100.
         </p>
       </div>
       
-      <a 
-        href="https://wefunder.com/top.100.aerospace.aviation" 
-        target="_blank" 
-        rel="noopener noreferrer"
+      <Link 
+        to="/community-round"
         className="w-full bg-[#c9a87c] text-slate-950 hover:bg-[#b09268] py-2 rounded-xl font-bold text-xs tracking-wide uppercase transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(201,168,124,0.2)] hover:shadow-[0_0_20px_rgba(201,168,124,0.4)] hover:scale-[1.02]"
       >
         Invest Now
-      </a>
+      </Link>
     </div>
   );
 }

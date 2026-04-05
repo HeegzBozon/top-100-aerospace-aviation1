@@ -34,6 +34,7 @@ const Top100TV = lazy(() => import('@/pages/Top100TV'));
 const PaymentPlan = lazy(() => import('@/pages/PaymentPlan'));
 const Season4Launch = lazy(() => import('@/pages/Season4Launch'));
 const ArtemisArticle = lazy(() => import('@/pages/ArtemisArticle'));
+const CommunityRound = lazy(() => import('@/pages/CommunityRound'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -136,6 +137,11 @@ const AuthenticatedApp = () => {
       <Route path="/artemis-2" element={
         <LayoutWrapper currentPageName="ArtemisArticle">
           <ArtemisArticle />
+        </LayoutWrapper>
+      } />
+      <Route path="/community-round" element={
+        <LayoutWrapper currentPageName="CommunityRound">
+          <CommunityRound />
         </LayoutWrapper>
       } />
       <Route path="/top100-tv" element={
