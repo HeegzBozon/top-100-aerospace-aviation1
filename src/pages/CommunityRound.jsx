@@ -34,7 +34,7 @@ export default function CommunityRound() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <a href="https://wefunder.com/top.100.aerospace.aviation/join" target="_blank" rel="noopener noreferrer">
+            <a href="https://wefunder.com/top.100.aerospace.aviation" target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="bg-[#c9a87c] hover:bg-[#b09268] text-slate-950 font-bold px-8 rounded-full h-14 text-base shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:shadow-[0_0_30px_rgba(201,168,124,0.5)] transition-all">
                 <Rocket className="w-5 h-5 mr-2" />
                 Reserve your spot now
@@ -139,7 +139,7 @@ export default function CommunityRound() {
 
                 <div className="pt-6 border-t border-slate-800">
                   <p className="text-xl font-medium text-white mb-6">5 years of organic building. Season 4 is when it surfaces. Ad Astra.</p>
-                  <a href="https://wefunder.com/top.100.aerospace.aviation/join" target="_blank" rel="noopener noreferrer" className="block sm:inline-block">
+                  <a href="https://wefunder.com/top.100.aerospace.aviation" target="_blank" rel="noopener noreferrer" className="block sm:inline-block">
                     <Button size="lg" className="w-full sm:w-auto bg-[#c9a87c] hover:bg-[#b09268] text-slate-950 font-bold px-8 rounded-full h-14 text-base">
                       Invest in the record that aerospace never built
                     </Button>
