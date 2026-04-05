@@ -77,50 +77,44 @@ export default function LiveStreamModule() {
           >
             <CarouselContent>
               <CarouselItem className="flex flex-col h-full">
-                <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-[#c9a87c] rounded-full mix-blend-screen filter blur-[100px] opacity-10 animate-pulse pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#4a90b8] rounded-full mix-blend-screen filter blur-[120px] opacity-10 animate-pulse pointer-events-none" style={{ animationDelay: '2s' }} />
+                <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden bg-black">
+                  <img 
+                    src="https://media.base44.com/images/public/68996845be6727838fdb822e/c5e9b3980_659586013-1493256312169740-2042398293693968717-n.jpg" 
+                    alt="Earth from Space" 
+                    className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen hover:scale-105 transition-transform duration-[20s]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#0a1526] via-[#0a1526]/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a1526] via-transparent to-[#0a1526]/40" />
                   
-                  <div className="px-4 py-4 md:px-8 md:py-8 flex-1 flex flex-col justify-center relative z-10">
-                    <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center md:items-start max-w-5xl mx-auto w-full">
-                      <div className="flex-1 min-w-0 flex flex-col items-center md:items-start text-center md:text-left">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 md:mb-6 rounded-full border border-[#4a90b8]/40 bg-[#4a90b8]/10 text-[#4a90b8] text-[10px] font-bold uppercase tracking-widest backdrop-blur-sm shadow-[0_0_15px_rgba(74,144,184,0.2)]">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#4a90b8] animate-pulse" />
-                          Mission Integration
-                        </div>
-                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 leading-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
-                          Artemis Mission Theater
-                        </h3>
-                        <div className="relative pl-6 md:pl-8 border-l-2 border-[#c9a87c]/30 mb-6 md:mb-8">
-                          <p className="text-slate-200 text-sm md:text-base leading-relaxed max-w-2xl font-medium tracking-wide">
-                            "The connection between the TOP 100 Women in Aerospace & Aviation, the Artemis II mission, and the value of space to Earth is a continuous thread of human ingenuity: the diverse experts engineering our return to the Moon are simultaneously driving technological leaps that solve critical challenges back on our home planet."
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <a href="/artemis-2">
-                            <Button className="bg-gradient-to-r from-[#c9a87c] to-[#e8d4b8] hover:from-[#b09268] hover:to-[#c9a87c] text-[#0a1526] font-bold px-6 py-3 rounded-full text-sm shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:shadow-[0_0_30px_rgba(201,168,124,0.5)] transition-all flex items-center gap-2 hover:scale-105 active:scale-95">
-                              <Rocket className="w-4 h-4" />
-                              Discover Artemis
-                            </Button>
-                          </a>
-                        </div>
+                  <div className="px-4 py-6 md:px-12 md:py-8 flex-1 flex flex-col justify-center relative z-10">
+                    <div className="max-w-2xl w-full flex flex-col items-start text-left">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 md:mb-6 rounded-full border border-white/20 bg-white/5 text-white/90 text-[10px] font-bold uppercase tracking-widest backdrop-blur-md">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] animate-pulse" />
+                        Mission Integration
                       </div>
                       
-                      <div className="shrink-0 w-[180px] md:w-1/3 lg:w-2/5 relative hidden md:block">
-                        <div className="aspect-square relative rounded-full border border-[#4a90b8]/30 flex items-center justify-center p-4 bg-[#1e3a5a]/20 backdrop-blur-sm shadow-2xl">
-                           <div className="absolute inset-0 rounded-full border border-[#c9a87c]/20 animate-[spin_60s_linear_infinite]" />
-                           <div className="absolute inset-4 rounded-full border border-[#4a90b8]/10 animate-[spin_40s_linear_infinite_reverse]" />
-                           <img 
-                             src="https://media.base44.com/images/public/68996845be6727838fdb822e/c5e9b3980_659586013-1493256312169740-2042398293693968717-n.jpg" 
-                             alt="Earth from Space" 
-                             className="w-full h-full object-cover rounded-full opacity-90"
-                           />
-                           <div className="absolute inset-0 bg-gradient-to-tr from-[#0a1526]/80 to-transparent rounded-full" />
-                        </div>
+                      <h3 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6 leading-tight text-white drop-shadow-2xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                        Artemis Mission <span className="text-[#c9a87c]">Theater</span>
+                      </h3>
+                      
+                      <div className="relative pl-5 md:pl-6 border-l-2 border-[#c9a87c]/50 mb-6 md:mb-8 backdrop-blur-sm bg-[#0a1526]/20 py-2 md:py-3 pr-4 rounded-r-xl md:rounded-r-2xl">
+                        <p className="text-slate-200 text-xs md:text-base leading-relaxed font-medium tracking-wide drop-shadow-md">
+                          "The connection between the TOP 100 Women in Aerospace & Aviation, the Artemis II mission, and the value of space to Earth is a continuous thread of human ingenuity: the diverse experts engineering our return to the Moon are simultaneously driving technological leaps that solve critical challenges back on our home planet."
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center gap-4 mt-auto">
+                        <a href="/artemis-2">
+                          <Button className="bg-[#c9a87c] hover:bg-[#e8d4b8] text-[#0a1526] font-bold px-6 py-5 md:px-8 md:py-6 rounded-full text-xs md:text-base shadow-[0_0_30px_rgba(201,168,124,0.4)] hover:shadow-[0_0_40px_rgba(201,168,124,0.6)] transition-all flex items-center gap-3 group">
+                            <Rocket className="w-4 h-4 md:w-5 md:h-5 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                            Discover Artemis
+                          </Button>
+                        </a>
                       </div>
                     </div>
                   </div>
-                  <div className="shrink-0 px-4 md:px-6 pb-4 md:pb-5">
+                  
+                  <div className="shrink-0 px-4 md:px-6 pb-4 md:pb-5 relative z-10">
                     <HonoreeSpotlightRail />
                   </div>
                 </div>
