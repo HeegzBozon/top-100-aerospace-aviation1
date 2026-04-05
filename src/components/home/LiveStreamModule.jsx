@@ -171,15 +171,15 @@ export default function LiveStreamModule() {
                      
                      <div className="flex flex-col gap-4 lg:gap-8 items-center w-full max-w-5xl mx-auto pt-2 md:pt-6 mt-2 md:mt-0">
                        {/* Top Banner / Program Launch */}
-                       <div className="w-full text-center mb-6 md:mb-10 bg-[#c9a87c]/10 border border-[#c9a87c]/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm shadow-[0_0_30px_rgba(201,168,124,0.15)]">
-                         <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full border border-[#c9a87c]/40 bg-[#c9a87c]/20 text-[#c9a87c] text-[10px] font-bold uppercase tracking-widest">
+                       <div className="w-full text-center mb-4 md:mb-6 bg-[#c9a87c]/10 border border-[#c9a87c]/30 rounded-xl p-4 md:p-5 backdrop-blur-sm shadow-[0_0_20px_rgba(201,168,124,0.1)]">
+                         <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 mb-2 md:mb-3 rounded-full border border-[#c9a87c]/40 bg-[#c9a87c]/20 text-[#c9a87c] text-[9px] md:text-[10px] font-bold uppercase tracking-widest">
                            <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] animate-pulse" />
                            Program Launch
                          </div>
-                         <h2 className="text-[#c9a87c] text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-wider mb-3 md:mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                         <h2 className="text-[#c9a87c] text-lg md:text-xl lg:text-2xl font-bold uppercase tracking-wider mb-1.5 md:mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                            THE ALUMNI CORRESPONDENT PROGRAM IS LIVE.
                          </h2>
-                         <p className="text-slate-200 text-sm md:text-base max-w-3xl mx-auto leading-relaxed">
+                         <p className="text-slate-200 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
                            The index just got a voice. Alumni publishing directly to the community — always on, year-round.
                          </p>
                        </div>
