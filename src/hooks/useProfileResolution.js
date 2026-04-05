@@ -23,28 +23,41 @@ export function useProfileResolution(targetId, targetEmail) {
 
             // Try finding by targetId across possible entities if email isn't provided directly
             if (!resolvedUserEmail && targetId) {
+                // 1. Check User
                 try {
                     const userCheck = await base44.entities.User.filter({ id: targetId });
                     if (userCheck.length > 0) {
                         resolvedUserEmail = userCheck[0].email;
                         result.user = userCheck[0];
-                    } else {
-                        // Check if it's a Nominee ID
+                    }
+                } catch (e) {
+                    console.warn("Failed resolving User ID:", e);
+                }
+
+                // 2. Check Nominee
+                if (!resolvedUserEmail) {
+                    try {
                         const nomineeCheck = await base44.entities.Nominee.filter({ id: targetId });
                         if (nomineeCheck.length > 0) {
                             resolvedUserEmail = nomineeCheck[0].nominee_email;
                             result.nominee = nomineeCheck[0];
-                        } else {
-                            // Check if it's a Startup ID
-                            const startupCheck = await base44.entities.StartupProfile.filter({ id: targetId });
-                            if (startupCheck.length > 0) {
-                                resolvedUserEmail = startupCheck[0].founder_email;
-                                result.startup = startupCheck[0];
-                            }
                         }
+                    } catch (e) {
+                        console.warn("Failed resolving Nominee ID:", e);
                     }
-                } catch (e) {
-                    console.warn("Failed resolving initial ID:", e);
+                }
+
+                // 3. Check Startup
+                if (!resolvedUserEmail) {
+                    try {
+                        const startupCheck = await base44.entities.StartupProfile.filter({ id: targetId });
+                        if (startupCheck.length > 0) {
+                            resolvedUserEmail = startupCheck[0].founder_email;
+                            result.startup = startupCheck[0];
+                        }
+                    } catch (e) {
+                        console.warn("Failed resolving Startup ID:", e);
+                    }
                 }
             }
 
@@ -57,12 +70,12 @@ export function useProfileResolution(targetId, targetEmail) {
                     startups,
                     investors
                 ] = await Promise.all([
-                    !result.user ? base44.entities.User.filter({ email: resolvedUserEmail }) : Promise.resolve([result.user]),
-                    !result.nominee ? base44.entities.Nominee.filter({ nominee_email: resolvedUserEmail }) : Promise.resolve([result.nominee]),
-                    base44.entities.Profile.filter({ user_email: resolvedUserEmail }),
-                    base44.entities.Employer.filter({ owner_email: resolvedUserEmail }),
-                    !result.startup ? base44.entities.StartupProfile.filter({ founder_email: resolvedUserEmail }) : Promise.resolve([result.startup]),
-                    base44.entities.InvestorProfile.filter({ user_email: resolvedUserEmail }),
+                    !result.user ? base44.entities.User.filter({ email: resolvedUserEmail }).catch(() => []) : Promise.resolve([result.user]),
+                    !result.nominee ? base44.entities.Nominee.filter({ nominee_email: resolvedUserEmail }).catch(() => []) : Promise.resolve([result.nominee]),
+                    base44.entities.Profile.filter({ user_email: resolvedUserEmail }).catch(() => []),
+                    base44.entities.Employer.filter({ owner_email: resolvedUserEmail }).catch(() => []),
+                    !result.startup ? base44.entities.StartupProfile.filter({ founder_email: resolvedUserEmail }).catch(() => []) : Promise.resolve([result.startup]),
+                    base44.entities.InvestorProfile.filter({ user_email: resolvedUserEmail }).catch(() => []),
                 ]);
 
                 result.user = users[0] || result.user;
