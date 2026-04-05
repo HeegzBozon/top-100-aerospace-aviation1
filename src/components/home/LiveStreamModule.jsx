@@ -5,6 +5,8 @@ import LiveReactionPoll from './LiveReactionPoll';
 import ExpertCommentaryCards from './ExpertCommentaryCards';
 import LiveStreamComments from './LiveStreamComments';
 import HonoreeSpotlightRail from './HonoreeSpotlightRail';
+import MissionControlHeader from './MissionControlHeader';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 export default function LiveStreamModule() {
   const [isLive, setIsLive] = useState(true);
@@ -51,28 +53,51 @@ export default function LiveStreamModule() {
              <LiveStreamComments />
           </div>
         </div>
-        <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4 md:items-center justify-between border-t border-[#4a90b8]/20">
-          <div>
-            <h3 className="text-2xl md:text-3xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
-              Artemis Mission Theater
-            </h3>
-            <p className="text-slate-300 max-w-2xl text-sm md:text-base">
-              Join us live for the latest updates, mission progress, and expert commentary from our panel of industry fellows.
-            </p>
+        <Carousel className="w-full relative group">
+          <CarouselContent>
+            {/* Slide 1: Mission Theater Bottom Half */}
+            <CarouselItem>
+              <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4 md:items-center justify-between border-t border-[#4a90b8]/20">
+                <div className="pr-16">
+                  <h3 className="text-2xl md:text-3xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
+                    Artemis Mission Theater
+                  </h3>
+                  <p className="text-slate-300 max-w-2xl text-sm md:text-base">
+                    Join us live for the latest updates, mission progress, and expert commentary from our panel of industry fellows.
+                  </p>
+                </div>
+                <div className="shrink-0 flex items-center gap-4">
+                   <div className="flex -space-x-2">
+                      <img className="w-8 h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=E+C&background=1e3a5a&color=c9a87c" alt="Expert" />
+                      <img className="w-8 h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=A+B&background=4a90b8&color=fff" alt="Expert" />
+                      <div className="w-8 h-8 rounded-full border-2 border-[#1e3a5a] bg-slate-800 flex items-center justify-center text-[10px] font-bold">+3</div>
+                   </div>
+                   <span className="text-xs text-slate-400 font-semibold tracking-wider uppercase">Experts in Studio</span>
+                </div>
+              </div>
+              <div className="px-4 pb-4 md:px-5 md:pb-5">
+                 <ExpertCommentaryCards />
+              </div>
+              <HonoreeSpotlightRail />
+            </CarouselItem>
+
+            {/* Slide 2: Mission Control */}
+            <CarouselItem>
+              <div className="h-full border-t border-[#4a90b8]/20 flex flex-col justify-center">
+                 {/* Adding slight padding to match the carousel visual rhythm */}
+                 <div className="p-4 md:p-6">
+                    <MissionControlHeader />
+                 </div>
+              </div>
+            </CarouselItem>
+          </CarouselContent>
+
+          {/* Carousel Controls positioned at the top right of this section */}
+          <div className="absolute right-4 top-4 md:right-6 md:top-6 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <CarouselPrevious className="static transform-none bg-[#0a1526]/80 border-[#4a90b8]/50 text-white hover:bg-[#1e3a5a] hover:text-white" />
+            <CarouselNext className="static transform-none bg-[#0a1526]/80 border-[#4a90b8]/50 text-white hover:bg-[#1e3a5a] hover:text-white" />
           </div>
-          <div className="shrink-0 flex items-center gap-4">
-             <div className="flex -space-x-2">
-                <img className="w-8 h-8 rounded-full border-2 border-slate-950" src="https://ui-avatars.com/api/?name=E+C&background=1e3a5a&color=c9a87c" alt="Expert" />
-                <img className="w-8 h-8 rounded-full border-2 border-slate-950" src="https://ui-avatars.com/api/?name=A+B&background=4a90b8&color=fff" alt="Expert" />
-                <div className="w-8 h-8 rounded-full border-2 border-slate-950 bg-slate-800 flex items-center justify-center text-[10px] font-bold">+3</div>
-             </div>
-             <span className="text-xs text-slate-400 font-semibold tracking-wider uppercase">Experts in Studio</span>
-          </div>
-        </div>
-        <div className="px-4 pb-4 md:px-5 md:pb-5">
-           <ExpertCommentaryCards />
-        </div>
-        <HonoreeSpotlightRail />
+        </Carousel>
       </Card>
     </div>
   );

@@ -42,7 +42,6 @@ export default function HomePage() {
   // Section config: seeded from user record (global) once user loads
   const DEFAULT_SECTIONS = [
     { id: 'liveStream',  label: 'Live Stream Theater' },
-    { id: 'missionControl', label: 'Mission Control' },
     { id: 'spotlight',   label: 'Industry Spotlight' },
     { id: 'featured',    label: 'Featured Today' },
     { id: 'programs',    label: 'Trending Programs' },
@@ -199,7 +198,6 @@ export default function HomePage() {
 
   const SECTION_COMPONENTS = {
     liveStream: <LiveStreamModule />,
-    missionControl: <MissionControlHeader />,
     spotlight: isMemberOnly ? null : <IndustrySpotlight />,
     featured: isMemberOnly ? null : <FeaturedToday />,
     programs: isMemberOnly ? null : <TrendingPrograms />,
