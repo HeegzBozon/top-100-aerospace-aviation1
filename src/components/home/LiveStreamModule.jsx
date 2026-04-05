@@ -85,9 +85,7 @@ export default function LiveStreamModule() {
                     </p>
                   </div>
                   <div className="shrink-0 flex items-center gap-3">
-                     <button className="text-[10px] md:text-xs text-[#c9a87c] hover:text-white border border-[#c9a87c]/30 hover:border-[#c9a87c] bg-[#c9a87c]/10 px-2 py-1 rounded transition-colors whitespace-nowrap font-medium">
-                       Alumni? Submit Commentary
-                     </button>
+
                      <div className="flex -space-x-2">
                         <img className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=E+C&background=1e3a5a&color=c9a87c" alt="Expert" />
                         <img className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=A+B&background=4a90b8&color=fff" alt="Expert" />
