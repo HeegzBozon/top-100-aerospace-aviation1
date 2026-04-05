@@ -30,7 +30,7 @@ export default function CommunityRound() {
           </h1>
 
           <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-10 font-medium">
-            13,000+ member community. Honorees from NASA, SpaceX, Boeing, Airbus & the USAF.
+            A human-verified talent graph that connects recognition to sponsorship, mentorship to capital, and siloed programs to coordinated action.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 items-center">
@@ -63,83 +63,56 @@ export default function CommunityRound() {
             <div className="flex items-center gap-4 border-b border-slate-800 pb-4">
               <h2 className="text-sm font-bold uppercase tracking-widest text-[#c9a87c]">Investor Memo</h2>
               <div className="h-px bg-slate-800 flex-1" />
-              <span className="text-xs text-slate-500 font-mono">Wefunder Community Round · 2025</span>
+              <span className="text-xs text-slate-500 font-mono">Wefunder Community Round · 2026</span>
             </div>
 
             <div className="space-y-6">
-              <h3 className="text-3xl font-serif font-bold text-white">The question nobody can answer</h3>
+              <h3 className="text-3xl font-serif font-bold text-white">The Missing Layer</h3>
               <div className="space-y-4 text-slate-300 leading-relaxed text-lg">
-                <p>Ask anyone in aerospace: <em>Who actually built Artemis? Who designed the guidance system on Falcon 9? Who trained the engineers running the F-35 program?</em></p>
-                <p>Nobody knows. Not officially. Not verifiably. Not in any structured, permanent way.</p>
-                <p>The aerospace industry is a $440B global sector — one of the most credentialed, relationship-driven industries on earth. And it has no IMDb. No authoritative talent record. No structured platform for verified career credits, governance-weighted recognition, or institutional memory.</p>
-                <p className="text-[#c9a87c] font-bold text-xl">That's the gap we're closing.</p>
+                <p>Aerospace has dozens of programs fighting for gender parity. None of them are connected. We're building the missing layer: a human-verified talent graph.</p>
+                <p>Women are 47% of the U.S. workforce and 13% of aerospace. The organizations working to close that gap are real, well-funded, and committed. But they operate in silos. No shared infrastructure. No connective tissue.</p>
+                <p>TOP 100 OS is the fusion layer. A human-verified talent graph that connects recognition to sponsorship, mentorship to capital, and siloed programs to coordinated action.</p>
+                <p className="text-[#c9a87c] font-bold text-xl">300+ alumni and Fellows. 1,000+ nominators. 40+ countries. 70+ disciplines. 8 domains. 13,000+ followers. 6,000+ subscribers. 5 years of organic building. Zero paid acquisition.</p>
               </div>
             </div>
 
             <div className="space-y-6">
-              <h3 className="text-3xl font-serif font-bold text-white">What we're building</h3>
+              <h3 className="text-3xl font-serif font-bold text-white">Three Frames. One System.</h3>
               <div className="space-y-4 text-slate-300 leading-relaxed text-lg">
-                <p><strong className="text-white">TOP 100 OS is the Aerospace Talent Graph</strong> — a recognition-powered platform that maps <em>who built what</em> across aviation, space, and defense.</p>
-                <p>We started with the most credible entry point we could build: <strong>the TOP 100 Women in Aerospace 2025</strong> — 100 ranked honorees across 8 domains, spanning 20+ countries. Recognition is the front door. The deeper platform — verified career credits, peer-validated program contributions, reputation-weighted influence rankings — is the destination.</p>
-                
-                <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 my-8 space-y-4">
-                  <p className="font-bold text-white mb-4">Think of it as three institutions in one:</p>
-                  <ul className="space-y-4">
-                    <li className="flex gap-3">
-                      <div className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-[#c9a87c]" />
-                      <span><strong>IMDb</strong> for aerospace talent — structured credits for every program contribution</span>
-                    </li>
-                    <li className="flex gap-3">
-                      <div className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-[#c9a87c]" />
-                      <span><strong>Wikipedia</strong> for aerospace programs — canonical pages for Artemis, Falcon 9, the F-35</span>
-                    </li>
-                    <li className="flex gap-3">
-                      <div className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-[#c9a87c]" />
-                      <span><strong>LinkedIn</strong> for aerospace credibility — influence earned through verified authority, not ad spend</span>
-                    </li>
-                  </ul>
+                <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 my-8 space-y-8">
+                  <div className="space-y-3">
+                    <h4 className="text-white font-bold text-xl flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-[#c9a87c]" />
+                      Human-Verified Talent Graph
+                    </h4>
+                    <p>Most platforms verify with algorithms. We verify with humans. 1,000+ nominators who have personally observed and vouched for candidates. Tier 2+ Fellows endorse. Tier 3+ Fellows vote with weighted authority. The Governing Council stewards the institutional standard. The algorithm doesn't replace human judgment. It amplifies it. This is human-centered design: technology serves human intelligence, not the other way around. And it's an unreplicable moat. A competitor can copy code. They cannot copy a trust graph built over 5 years.</p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <h4 className="text-white font-bold text-xl flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-[#c9a87c]" />
+                      Mycelium
+                    </h4>
+                    <p>In a forest, mycorrhizal fungi connect root systems, facilitating nutrient exchange and enabling coordination. WAI, IAWA, WIA, and corporate programs are essential trees. TOP 100 OS is the fungal network: the connective tissue. But unlike algorithmic networks, ours is built from human trust. The hyphae are relationships. The nutrient exchange is peer verification.</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="text-white font-bold text-xl flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-[#c9a87c]" />
+                      Antifragile
+                    </h4>
+                    <p>Most diversity infrastructure is episodic: annual conferences, annual reports, annual awards. TOP 100 OS is always on, and gets denser with every activation. Every launch, policy shift, and industry moment strengthens the network. Fragile systems break under stress. This one benefits from it.</p>
+                  </div>
                 </div>
-                <p>Together, these form the <strong>Flightography</strong> system: a permanent, portable career record owned by the professional — not by a corporate HR database.</p>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <h3 className="text-3xl font-serif font-bold text-white">Why now</h3>
-              <div className="space-y-4 text-slate-300 leading-relaxed text-lg">
-                <p>Aerospace is entering its most consequential decade. Space is being commercialized. Defense is being modernized. Sustainability mandates are reshaping aviation. The workforce powering these shifts is global, diverse, and largely invisible to the institutional record.</p>
-                <p>The engineers who built what's flying today deserve more than a résumé line. They deserve a permanent record. We're building it.</p>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <h3 className="text-3xl font-serif font-bold text-white">What makes this defensible</h3>
-              <div className="space-y-4 text-slate-300 leading-relaxed text-lg">
-                <p>Every credit claimed deepens the graph. Every honoree who joins validates the record. Every program page that goes live makes the platform harder to replicate from scratch.</p>
-                <p>This isn't a media company selling attention. It's a governance-first institution selling structured authority — and the revenue model reflects that:</p>
-                
-                <div className="grid sm:grid-cols-2 gap-4 my-6">
-                  {[
-                    "Sponsorship tiers: $10K–$150K per partner",
-                    "Strategic residencies: $20K–$75K/month",
-                    "Retainer programs: $5K–$35K/month",
-                    "Honoree Visibility Accelerator: $1.5K–$5K per honoree",
-                    "Future: recruiting marketplace, investor discovery, industry research reports"
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-3 p-4 bg-slate-900/40 rounded-xl border border-slate-800">
-                      <div className="text-[#c9a87c] font-bold text-sm bg-[#c9a87c]/10 w-6 h-6 rounded-full flex items-center justify-center shrink-0">{i + 1}</div>
-                      <span className="text-sm font-medium text-slate-200">{item}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-[#c9a87c] font-bold italic text-xl">Revenue attaches to authority. The graph compounds. The moat widens.</p>
               </div>
             </div>
 
             <div className="space-y-6 bg-slate-900/80 border border-slate-800 rounded-3xl p-8 md:p-12 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#c9a87c]/5 blur-[80px] rounded-full pointer-events-none" />
-              <h3 className="text-3xl font-serif font-bold text-white relative z-10">The Ask</h3>
+              <h3 className="text-3xl font-serif font-bold text-white relative z-10">Why Now, Why Community</h3>
               <div className="space-y-6 text-slate-300 leading-relaxed text-lg relative z-10">
-                <p>We're raising on Wefunder because this platform should be co-owned by the people who believe in it — engineers, founders, researchers, investors, and anyone who knows that aerospace deserves better infrastructure than it has.</p>
+                <p>The industry is entering its most consequential decade. $995 billion in U.S. A&D revenue. A projected million-person talent gap by 2030. IAWA's 2026 report says the industry must move from passive support to active sponsorship. The talent exists. The programs exist. What doesn't exist is the infrastructure to connect all of it.</p>
+                <p>We're raising on Wefunder because our community is our diligence. The 1,000+ nominators and 300+ Fellows who built this platform's credibility aren't spectators. They're the investors. $100 minimum. Community-owned. Governance-first.</p>
                 
                 <div className="flex items-center gap-4 py-4">
                   <div className="text-2xl font-light text-white">Minimum investment:</div>
@@ -165,7 +138,7 @@ export default function CommunityRound() {
                 </div>
 
                 <div className="pt-6 border-t border-slate-800">
-                  <p className="text-xl font-medium text-white mb-6">You are not investing in attention arbitrage. You are co-founding an institution.</p>
+                  <p className="text-xl font-medium text-white mb-6">5 years of organic building. Season 4 is when it surfaces. Ad Astra.</p>
                   <a href="https://wefunder.com/top.100.aerospace.aviation/join" target="_blank" rel="noopener noreferrer" className="block sm:inline-block">
                     <Button size="lg" className="w-full sm:w-auto bg-[#c9a87c] hover:bg-[#b09268] text-slate-950 font-bold px-8 rounded-full h-14 text-base">
                       Invest in the record that aerospace never built
@@ -190,12 +163,12 @@ export default function CommunityRound() {
             
             <div className="space-y-5">
               {[
-                { icon: Users, text: "13,000+ member community. Honorees from NASA, SpaceX, Boeing, Airbus & the USAF." },
-                { icon: Globe, text: "300+ ranked honorees across 30+ countries — the most global aerospace index built." },
-                { icon: TrendingUp, text: "Global aerospace workforce exceeds 1M professionals — all underserved by existing platforms." },
-                { icon: ShieldCheck, text: "Featured honorees hold P&L authority at some of the world's largest aerospace firms." },
-                { icon: Target, text: "Honoree network includes astronauts, engineers, executives & policy leaders across 30+ nations." },
-                { icon: Cpu, text: "We're building the institutional nervous system for Aerospace & Aviation talent." },
+                { icon: Users, text: "300+ alumni and Fellows across 5 years." },
+                { icon: ShieldCheck, text: "1,000+ nominators acting as our human verification network." },
+                { icon: Globe, text: "40+ countries represented across the aerospace value chain." },
+                { icon: Target, text: "70+ disciplines spanning Space, Aviation, Academia, Policy & more." },
+                { icon: TrendingUp, text: "13,000+ LinkedIn followers & 6,000+ newsletter subscribers." },
+                { icon: Cpu, text: "5 years of organic building. Zero paid acquisition." },
                 { icon: CheckCircle2, text: "Recognition that converts to authority — not a list, an operating system." }
               ].map((highlight, idx) => (
                 <div key={idx} className="flex gap-4">
