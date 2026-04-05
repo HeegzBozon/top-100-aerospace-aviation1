@@ -32,25 +32,9 @@ export default function HonoreeSpotlightRail() {
     }
   });
 
-  const marqueeItems = fellows ? [...fellows, ...fellows, ...fellows] : [];
-
   return (
-    <div className="w-full border-t border-[#4a90b8]/20 pt-4 pb-4 bg-[#0a1526]/50 overflow-hidden">
-      <style>
-        {`
-          @keyframes seamless-marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-33.333333%); }
-          }
-          .animate-seamless-marquee {
-            animation: seamless-marquee 60s linear infinite;
-          }
-          .group:hover .animate-seamless-marquee {
-            animation-play-state: paused;
-          }
-        `}
-      </style>
-      <div className="flex items-center justify-between mb-4 px-4 md:px-6">
+    <div className="w-full border-t border-[#4a90b8]/20 pt-4 pb-4 bg-[#0a1526]/50">
+      <div className="flex items-center justify-between mb-3 px-4 md:px-6">
         <h4 className="text-lg font-bold text-white flex items-center gap-2">
           <Award className="w-5 h-5 text-[#c9a87c]" />
           Artemis-Adjacent Fellows
@@ -60,44 +44,43 @@ export default function HonoreeSpotlightRail() {
         </Link>
       </div>
 
-      <div className="w-full group overflow-hidden">
-        <div className="flex w-max space-x-4 px-4 animate-seamless-marquee">
+      <ScrollArea className="w-full whitespace-nowrap pb-2">
+        <div className="flex w-max space-x-3 px-4 md:px-6">
           {isLoading ? (
-            Array(8).fill(0).map((_, i) => (
-              <div key={i} className="w-[240px] shrink-0 rounded-2xl bg-[#1e3a5a]/40 border border-[#4a90b8]/30 p-5 flex flex-col items-center">
-                <Skeleton className="w-24 h-24 rounded-full bg-[#1e3a5a]/60 mb-4" />
-                <div className="space-y-2 w-full flex flex-col items-center">
-                  <Skeleton className="h-4 w-3/4 bg-[#1e3a5a]/60" />
-                  <Skeleton className="h-3 w-1/2 bg-[#1e3a5a]/60" />
-                  <Skeleton className="h-3 w-2/3 bg-[#1e3a5a]/60 mt-2" />
+            Array(5).fill(0).map((_, i) => (
+              <div key={i} className="w-[280px] shrink-0 rounded-xl bg-[#1e3a5a]/40 border border-[#4a90b8]/30 p-4">
+                <div className="flex items-center gap-4">
+                  <Skeleton className="w-16 h-16 rounded-full bg-[#1e3a5a]/60" />
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-4 w-3/4 bg-[#1e3a5a]/60" />
+                    <Skeleton className="h-3 w-1/2 bg-[#1e3a5a]/60" />
+                  </div>
                 </div>
               </div>
             ))
-          ) : marqueeItems.map((fellow, i) => (
+          ) : fellows?.map((fellow) => (
             <a 
-              key={`${fellow.id}-${i}`}
+              key={fellow.id}
               href={fellow.actual_profile_id ? `/ProfileView?id=${fellow.actual_profile_id}` : (fellow.profile_url || '#')}
-              className="w-[240px] shrink-0 rounded-2xl bg-[#1e3a5a]/40 hover:bg-[#1e3a5a]/80 border border-[#4a90b8]/30 hover:border-[#c9a87c]/50 p-5 flex flex-col items-center text-center transition-all"
+              className="w-[280px] shrink-0 rounded-xl bg-[#1e3a5a]/40 hover:bg-[#1e3a5a]/80 border border-[#4a90b8]/30 hover:border-[#c9a87c]/50 p-4 flex items-center gap-4 transition-all group"
             >
               <img 
                 src={fellow.actual_avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fellow.name)}&background=1e3a5a&color=c9a87c`} 
                 alt={fellow.name}
-                className="w-24 h-24 rounded-full object-cover border-2 border-[#1e3a5a] mb-3 transition-colors shrink-0 shadow-lg"
+                className="w-14 h-14 rounded-full object-cover border-2 border-[#1e3a5a] group-hover:border-[#c9a87c] transition-colors shrink-0"
               />
-              <div className="flex flex-col flex-1 min-w-0 whitespace-normal items-center w-full">
-                <h5 className="font-bold text-base text-slate-100 line-clamp-2 transition-colors leading-tight">{fellow.name}</h5>
-                <p className="text-xs text-slate-400 line-clamp-2 mt-2 leading-relaxed">{fellow.rail_copy || fellow.title}</p>
-                {fellow.company && <p className="text-xs font-semibold text-[#c9a87c] mt-1.5 line-clamp-1">{fellow.company}</p>}
-                <div className="mt-auto pt-4 w-full">
-                  <div className="inline-flex w-full items-center justify-center px-2 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#c9a87c]/10 text-[#c9a87c] border border-[#c9a87c]/20">
-                    Mission Fellow
-                  </div>
+              <div className="flex-1 min-w-0 whitespace-normal">
+                <h5 className="font-bold text-sm text-slate-100 truncate group-hover:text-white transition-colors">{fellow.name}</h5>
+                <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{fellow.rail_copy || fellow.title}</p>
+                <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-[#c9a87c]/10 text-[#c9a87c] border border-[#c9a87c]/20">
+                  Mission Fellow
                 </div>
               </div>
             </a>
           ))}
         </div>
-      </div>
+        <ScrollBar orientation="horizontal" className="bg-slate-900/50" />
+      </ScrollArea>
     </div>
   );
 }
