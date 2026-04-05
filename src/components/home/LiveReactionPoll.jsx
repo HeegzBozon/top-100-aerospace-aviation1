@@ -89,11 +89,11 @@ export default function LiveReactionPoll() {
     voteMutation.mutate(option);
   };
 
-  if (isLoading) return <div className="animate-pulse w-full h-32 bg-slate-900 rounded-xl border border-slate-800"></div>;
+  if (isLoading) return <div className="w-full h-32 bg-[#061e47] rounded-xl border-2 border-[#4a90b8] shadow-2xl"></div>;
   if (!poll) return (
-    <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 border border-[#4a90b8]/30 rounded-xl bg-[#0b3d91]/40 shadow-[0_0_15px_rgba(11,61,145,0.1)]">
-       <span className="text-[#4a90b8] text-sm font-bold tracking-widest uppercase mb-2">Live Polling</span>
-       <span className="text-blue-50 font-medium text-xs">Waiting for the next mission prompt...</span>
+    <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 border-2 border-[#4a90b8] rounded-xl bg-[#061e47] shadow-2xl">
+       <span className="text-[#4a90b8] text-[15px] font-black tracking-widest uppercase mb-3">Live Polling</span>
+       <span className="text-white font-bold text-[13px]">Waiting for the next mission prompt...</span>
     </div>
   );
 
@@ -104,7 +104,7 @@ export default function LiveReactionPoll() {
 
   return (
     <div 
-      className="w-full bg-[#0b3d91]/40 border border-[#4a90b8]/40 rounded-xl p-4 shadow-[0_0_20px_rgba(11,61,145,0.15)] backdrop-blur-md relative overflow-hidden"
+      className="w-full bg-[#061e47] border border-[#4a90b8] rounded-xl p-5 shadow-2xl relative overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -139,7 +139,7 @@ export default function LiveReactionPoll() {
           transition={{ duration: 0.3 }}
         >
           <h4 className="text-blue-100 font-semibold mb-2 text-sm leading-tight">{poll.question}</h4>
-          <div className={`grid gap-2 ${poll.poll_type === 'emoji' ? 'grid-cols-4' : 'grid-cols-1'}`}>
+          <div className={`grid gap-3 ${poll.poll_type === 'emoji' ? 'grid-cols-4' : 'grid-cols-1'}`}>
         {poll.options.map(option => {
           const optionVotes = votes.filter(v => v.selected_option === option).length;
           const percentage = totalVotes === 0 ? 0 : Math.round((optionVotes / totalVotes) * 100);
@@ -150,48 +150,48 @@ export default function LiveReactionPoll() {
             const isWrongSelection = poll.type === 'trivia' && isSelected && !isCorrect;
 
             let barColor = "bg-[#4a90b8]";
-            let textColor = "text-blue-50";
-            let borderColor = "border-[#4a90b8]/40";
+            let textColor = "text-white";
+            let borderColor = "border-[#4a90b8]";
             if (isSelected) {
                 barColor = "bg-[#c9a87c]";
-                textColor = "text-[#c9a87c] font-bold";
-                borderColor = "border-[#c9a87c]/60";
+                textColor = "text-slate-900 font-bold";
+                borderColor = "border-[#c9a87c]";
             }
             if (poll.type === 'trivia') {
                 if (isCorrect) {
                     barColor = "bg-green-500";
-                    textColor = "text-green-400 font-bold";
-                    borderColor = "border-green-500/60";
+                    textColor = "text-white font-bold";
+                    borderColor = "border-green-500";
                 } else if (isWrongSelection) {
                     barColor = "bg-red-500";
-                    textColor = "text-red-400 font-bold";
-                    borderColor = "border-red-500/60";
+                    textColor = "text-white font-bold";
+                    borderColor = "border-red-500";
                 }
             }
 
             if (poll.poll_type === 'emoji') {
                 return (
-                    <div key={option} className={`flex flex-col items-center justify-center p-2 rounded-lg border ${isSelected ? 'border-[#c9a87c] bg-[#c9a87c]/20' : 'border-[#4a90b8]/30 bg-[#0b3d91]/40'}`}>
+                    <div key={option} className={`flex flex-col items-center justify-center p-2 rounded-xl border-2 ${isSelected ? 'border-[#c9a87c] bg-[#c9a87c]' : 'border-[#4a90b8] bg-[#0b3d91]'}`}>
                         <span className="text-2xl mb-1">{option}</span>
-                        <span className="text-xs text-blue-100">{percentage}%</span>
+                        <span className={`text-[13px] font-bold ${isSelected ? 'text-slate-900' : 'text-white'}`}>{percentage}%</span>
                     </div>
                 );
             }
 
             return (
-              <div key={option} className={`relative h-9 flex items-center px-3 rounded-md border ${borderColor} bg-[#0b3d91]/40 overflow-hidden`}>
+              <div key={option} className={`relative h-10 flex items-center px-4 rounded-xl border-2 ${borderColor} bg-[#0b3d91] overflow-hidden`}>
                 <div 
-                  className={`absolute left-0 top-0 bottom-0 transition-all duration-700 opacity-40 ${barColor}`} 
+                  className={`absolute left-0 top-0 bottom-0 transition-all ${barColor}`} 
                   style={{ width: `${percentage}%` }}
                 />
-                <div className="relative z-10 w-full flex justify-between items-center text-[13px] font-medium">
-                  <span className={`${textColor} flex items-center gap-1.5 drop-shadow-md`}>
+                <div className="relative z-10 w-full flex justify-between items-center text-[14px] font-bold">
+                  <span className={`${textColor} flex items-center gap-2`}>
                     {option} 
                     {isSelected && poll.type !== 'trivia' && "✓"}
-                    {poll.type === 'trivia' && isCorrect && <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />}
-                    {poll.type === 'trivia' && isWrongSelection && <XCircle className="w-3.5 h-3.5 text-red-400" />}
+                    {poll.type === 'trivia' && isCorrect && <CheckCircle2 className="w-4 h-4 text-white" />}
+                    {poll.type === 'trivia' && isWrongSelection && <XCircle className="w-4 h-4 text-white" />}
                   </span>
-                  <span className="text-white drop-shadow-md">{percentage}%</span>
+                  <span className={textColor}>{percentage}%</span>
                 </div>
               </div>
             );
@@ -202,11 +202,11 @@ export default function LiveReactionPoll() {
               <Button 
                 key={option}
                 variant="outline" 
-                className="h-14 border-[#4a90b8]/30 bg-[#0b3d91]/40 hover:bg-[#0b3d91]/60 transition-colors text-2xl"
+                className="h-16 rounded-xl border-2 border-[#4a90b8] bg-[#0b3d91] hover:bg-[#1e3a5a] transition-none text-3xl shadow-lg"
                 onClick={() => handleVoteClick(option)}
                 disabled={voteMutation.isPending}
               >
-                {voteMutation.isPending && voteMutation.variables === option ? <Loader2 className="w-4 h-4 animate-spin absolute" /> : option}
+                {voteMutation.isPending && voteMutation.variables === option ? <Loader2 className="w-5 h-5 animate-spin absolute" /> : option}
               </Button>
             );
           }
@@ -215,13 +215,13 @@ export default function LiveReactionPoll() {
             <Button 
               key={option}
               variant="outline" 
-              size="sm"
-              className="relative w-full h-9 justify-start px-3 text-[13px] font-medium border-[#4a90b8]/30 bg-[#0b3d91]/40 hover:bg-[#0b3d91]/60 text-blue-50 transition-colors overflow-hidden"
+              size="lg"
+              className="relative w-full h-10 justify-start px-4 text-[14px] font-bold border-2 border-[#4a90b8] bg-[#0b3d91] hover:bg-[#1e3a5a] text-white transition-none shadow-lg rounded-xl"
               onClick={() => handleVoteClick(option)}
               disabled={voteMutation.isPending}
             >
-              <span className="relative z-10 flex items-center">
-                {voteMutation.isPending && voteMutation.variables === option ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> : null}
+              <span className="relative z-10 flex items-center text-white">
+                {voteMutation.isPending && voteMutation.variables === option ? <Loader2 className="w-4 h-4 mr-2 animate-spin text-white" /> : null}
                 {option}
               </span>
             </Button>
