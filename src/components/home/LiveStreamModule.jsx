@@ -67,25 +67,25 @@ export default function LiveStreamModule() {
           <CarouselContent>
             {/* Slide 1: Mission Theater Bottom Half */}
             <CarouselItem>
-              <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4 md:items-center justify-between border-t border-[#4a90b8]/20">
-                <div className="pr-16">
-                  <h3 className="text-2xl md:text-3xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
+              <div className="p-3 md:p-4 flex flex-col md:flex-row gap-3 md:items-center justify-between border-t border-[#4a90b8]/20">
+                <div className="pr-12 md:pr-16">
+                  <h3 className="text-xl md:text-2xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
                     Artemis Mission Theater
                   </h3>
-                  <p className="text-slate-300 max-w-2xl text-sm md:text-base">
+                  <p className="text-slate-300 max-w-2xl text-xs md:text-sm leading-relaxed">
                     Join us live for the latest updates, mission progress, and expert commentary from our panel of industry fellows.
                   </p>
                 </div>
-                <div className="shrink-0 flex items-center gap-4">
+                <div className="shrink-0 flex items-center gap-3">
                    <div className="flex -space-x-2">
-                      <img className="w-8 h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=E+C&background=1e3a5a&color=c9a87c" alt="Expert" />
-                      <img className="w-8 h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=A+B&background=4a90b8&color=fff" alt="Expert" />
-                      <div className="w-8 h-8 rounded-full border-2 border-[#1e3a5a] bg-slate-800 flex items-center justify-center text-[10px] font-bold">+3</div>
+                      <img className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=E+C&background=1e3a5a&color=c9a87c" alt="Expert" />
+                      <img className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=A+B&background=4a90b8&color=fff" alt="Expert" />
+                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a] bg-slate-800 flex items-center justify-center text-[9px] md:text-[10px] font-bold">+3</div>
                    </div>
-                   <span className="text-xs text-slate-400 font-semibold tracking-wider uppercase">Experts in Studio</span>
+                   <span className="text-[10px] md:text-xs text-slate-400 font-semibold tracking-wider uppercase">Experts in Studio</span>
                 </div>
               </div>
-              <div className="px-4 pb-4 md:px-5 md:pb-5">
+              <div className="px-3 pb-3 md:px-4 md:pb-4">
                  <ExpertCommentaryCards />
               </div>
               <HonoreeSpotlightRail />
@@ -98,6 +98,30 @@ export default function LiveStreamModule() {
                  <div className="p-4 md:p-6">
                     <MissionControlHeader />
                  </div>
+              </div>
+            </CarouselItem>
+
+            {/* Slide 3: Side-by-Side Experiment */}
+            <CarouselItem>
+              <div className="flex flex-col lg:flex-row h-full border-t border-[#4a90b8]/20">
+                <div className="lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-[#4a90b8]/20 justify-center">
+                  <div className="p-3 md:p-4 flex flex-col gap-2 justify-between">
+                    <div>
+                      <h3 className="text-xl md:text-2xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
+                        Artemis Mission Theater
+                      </h3>
+                      <p className="text-slate-300 text-xs md:text-sm">
+                        Join us live for the latest updates, mission progress, and expert commentary from our panel of industry fellows.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="px-3 pb-3 md:px-4 md:pb-4">
+                     <ExpertCommentaryCards />
+                  </div>
+                </div>
+                <div className="lg:w-1/2 p-3 md:p-4 flex flex-col justify-center bg-[#0a1526]/20">
+                   <MissionControlHeader />
+                </div>
               </div>
             </CarouselItem>
           </CarouselContent>
