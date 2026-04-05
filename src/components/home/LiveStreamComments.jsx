@@ -79,6 +79,20 @@ export default function LiveStreamComments() {
 
   const isAdmin = user?.role === 'admin';
 
+  // Keyboard shortcut to focus input
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Press 'c' to focus chat input if not already in an input
+      if (e.key === 'c' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        const input = document.getElementById('campfire-input');
+        if (input) input.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="w-full flex flex-col h-full bg-gradient-to-br from-[#0a1628] via-[#0f1f35] to-[#1e3a5a] border border-[#c9a87c]/20 rounded-2xl shadow-[0_8px_32px_rgba(10,22,40,0.6)] overflow-hidden relative">
       {/* Subtle Constellation/Space Animations */}
@@ -158,9 +172,10 @@ export default function LiveStreamComments() {
       <form onSubmit={handleSubmit} className="p-4 border-t border-[#c9a87c]/10 bg-white/5 backdrop-blur-sm shrink-0 relative z-10">
         <div className="flex gap-2">
           <Input 
+            id="campfire-input"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder={user ? "Tap in..." : "Log in to tap in..."}
+            placeholder={user ? "Tap in... (Press 'c' to chat)" : "Log in to tap in..."}
             disabled={!user || createMutation.isPending}
             className="flex-1 bg-black/20 border border-[#c9a87c]/20 text-[#faf8f5] placeholder:text-[#faf8f5]/40 h-10 text-sm focus-visible:ring-offset-0 focus-visible:ring-1 focus-visible:ring-[#c9a87c]/50 transition-all rounded-lg px-4"
             maxLength={200}

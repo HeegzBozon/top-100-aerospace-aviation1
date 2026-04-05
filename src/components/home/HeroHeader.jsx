@@ -92,7 +92,7 @@ export default function HeroHeader({ user, onUpdate }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-xl md:rounded-2xl p-3 md:p-8"
+      className="relative overflow-hidden rounded-xl md:rounded-2xl p-3 pb-[17px] md:p-8 md:pb-[37px]"
       style={{ 
         background: `linear-gradient(135deg, ${brandColors.navyDeep} 0%, #0f1f33 100%)`,
       }}

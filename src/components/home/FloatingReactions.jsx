@@ -92,6 +92,22 @@ export default function FloatingReactions() {
     }
   };
 
+  // Keyboard commands for phrases
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ignore if typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= quickChats.length) {
+        handleReaction(quickChats[num - 1]);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [quickChats]);
+
   return (
     <>
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
@@ -117,14 +133,15 @@ export default function FloatingReactions() {
         </AnimatePresence>
       </div>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-3xl flex overflow-x-auto scrollbar-hide snap-x gap-2 bg-[#0a1526]/80 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-[#4a90b8]/30 shadow-[0_0_20px_rgba(74,144,184,0.15)]">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl flex flex-wrap justify-center gap-2 pointer-events-none">
         {quickChats.map((phrase, idx) => (
           <button
             key={idx}
             onClick={() => handleReaction(phrase)}
-            className="shrink-0 snap-start bg-[#1e3a5a]/60 hover:bg-[#c9a87c]/20 text-[#c9a87c] text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full border border-[#c9a87c]/30 hover:border-[#c9a87c] transition-all active:scale-95 shadow-sm whitespace-nowrap"
-            title={`Send ${phrase}`}
+            className="pointer-events-auto bg-[#0a1526]/90 backdrop-blur-md hover:bg-[#c9a87c]/20 text-[#c9a87c] text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full border border-[#4a90b8]/40 hover:border-[#c9a87c] transition-all active:scale-95 shadow-[0_4px_12px_rgba(0,0,0,0.5)] whitespace-nowrap"
+            title={`Send ${phrase} (Press ${idx + 1})`}
           >
+            <span className="opacity-50 mr-1.5 font-normal">{idx + 1}</span>
             {phrase}
           </button>
         ))}
