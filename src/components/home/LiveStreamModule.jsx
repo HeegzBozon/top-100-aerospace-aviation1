@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { PlayCircle, Pause, Play, ChevronRight } from 'lucide-react';
+import { PlayCircle, Pause, Play, ChevronRight, Rocket } from 'lucide-react';
 import ExpertCommentaryCards from './ExpertCommentaryCards';
 import LiveStreamComments from './LiveStreamComments';
 import FloatingReactions from './FloatingReactions';
@@ -109,23 +109,28 @@ export default function LiveStreamModule() {
               </CarouselItem>
 
               <CarouselItem>
-                <div className="h-full min-h-[360px] xl:h-[400px] border-t border-[#4a90b8]/20 flex flex-col items-center justify-center p-6 md:p-12 text-center bg-gradient-to-br from-[#0a1526] to-[#1e3a5a] relative overflow-hidden">
-                  <div className="absolute inset-0 pointer-events-none opacity-20 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center mix-blend-overlay"></div>
-                  <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#c9a87c]/20 border border-[#c9a87c]/50 text-[#c9a87c] text-xs font-bold uppercase tracking-widest mb-4">
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c9a87c] opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#c9a87c]"></span>
-                      </span>
-                      Community Round Live
+                <div className="h-full min-h-[360px] xl:h-[400px] border-t border-[#4a90b8]/20 bg-[#0a1526] p-6 md:p-12 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                  <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#1e3a5a] blur-[100px] opacity-50 pointer-events-none" />
+                  <div className="absolute bottom-[-20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-[#c9a87c] blur-[120px] opacity-20 pointer-events-none" />
+                  
+                  <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full border border-green-500/30 bg-green-500/10 text-green-400 text-[10px] md:text-xs font-bold uppercase tracking-widest backdrop-blur-sm shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      Live on Wefunder
                     </div>
-                    <h2 className="text-2xl md:text-4xl font-bold text-white mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Own a Piece of the Future</h2>
-                    <p className="text-slate-300 max-w-2xl mx-auto text-sm md:text-base mb-6">
-                      Join our mission to democratize the space economy. Invest in the TOP 100 ecosystem and help shape the next generation of aerospace innovation.
+                    
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                      Aerospace recognition infrastructure that turns influence into <span className="text-[#c9a87c]">institutional power.</span>
+                    </h2>
+                    
+                    <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-8 max-w-2xl font-medium">
+                      A human-verified talent graph that connects recognition to sponsorship, mentorship to capital, and siloed programs to coordinated action.
                     </p>
+                    
                     <a href="/community-round">
-                      <button className="bg-gradient-to-r from-[#c9a87c] to-[#d4a090] hover:from-[#e8d4b8] hover:to-[#c9a87c] text-[#0a1628] font-bold px-8 py-3 rounded-full shadow-[0_0_20px_rgba(201,168,124,0.4)] hover:shadow-[0_0_30px_rgba(201,168,124,0.6)] transition-all hover:scale-105 active:scale-95">
-                        Invest Now
+                      <button className="bg-[#c9a87c] hover:bg-[#b09268] text-slate-950 font-bold px-8 py-3.5 rounded-full text-sm md:text-base shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:shadow-[0_0_30px_rgba(201,168,124,0.5)] transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+                        <Rocket className="w-5 h-5" />
+                        Reserve your spot now
                       </button>
                     </a>
                   </div>
@@ -133,35 +138,54 @@ export default function LiveStreamModule() {
               </CarouselItem>
 
               <CarouselItem>
-                <div className="h-full min-h-[360px] xl:h-[400px] border-t border-[#4a90b8]/20 flex flex-col md:flex-row items-center justify-center gap-6 p-6 md:p-10 bg-gradient-to-br from-[#1e3a5a] to-[#0a1526] relative overflow-hidden">
-                  <div className="absolute right-0 top-0 w-64 h-64 bg-[#c95a43]/10 rounded-full blur-3xl"></div>
-                  <div className="shrink-0 relative z-10">
-                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-[#c95a43] p-1 relative shadow-[0_0_20px_rgba(201,90,67,0.3)]">
-                      <div className="absolute -top-2 -right-2 bg-[#c95a43] text-white text-[10px] font-bold px-2 py-1 rounded-full border-2 border-[#0a1526] z-20 shadow-lg">ACTIVE MISSION</div>
-                      <img src="https://ui-avatars.com/api/?name=Morgan+Kainu&background=c9a87c&color=1e3a5a&size=256" alt="Morgan Kainu" className="w-full h-full rounded-full object-cover border-2 border-[#1e3a5a]" />
-                    </div>
-                  </div>
-                  <div className="flex-1 text-center md:text-left relative z-10 max-w-xl">
-                    <div className="text-[#c95a43] text-xs font-bold uppercase tracking-widest mb-1 flex items-center justify-center md:justify-start gap-2">
-                      <div className="w-2 h-2 rounded-full bg-[#c95a43] animate-pulse"></div>
-                      Priority Objective
-                    </div>
-                    <h3 className="text-xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Morgan Kainu</h3>
-                    <p className="text-[#c9a87c] text-sm font-semibold mb-4 uppercase tracking-wider">Mission Specialist & Fellow</p>
-                    <div className="bg-[#0a1526]/50 border border-[#c95a43]/30 rounded-xl p-4 shadow-inner backdrop-blur-sm relative">
-                      <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#c95a43] to-transparent rounded-l-xl"></div>
-                      <p className="text-slate-200 text-sm md:text-base leading-relaxed italic">
-                        "Currently spearheading the integration of next-generation orbital defense systems. We need to focus on securing the communication arrays before Phase 3 initiation."
-                      </p>
-                    </div>
-                    <div className="mt-4 flex justify-center md:justify-start">
-                      <a href="/star-summit">
-                         <button className="text-xs font-bold text-white uppercase tracking-wider hover:text-[#c95a43] transition-colors flex items-center gap-1">
-                           Track Objective <ChevronRight className="w-4 h-4" />
-                         </button>
-                      </a>
-                    </div>
-                  </div>
+                <div className="h-full min-h-[360px] xl:h-[400px] border-t border-[#4a90b8]/20 bg-[#1e3a5a]/40 p-6 md:p-10 flex flex-col justify-center relative overflow-hidden shadow-inner backdrop-blur-md">
+                   <div className="absolute top-8 right-8 w-32 h-32 opacity-10 pointer-events-none text-[#4a90b8]">
+                     <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+                   </div>
+                   <div className="text-[10px] uppercase tracking-widest text-[#c9a87c] font-bold mb-6 absolute top-6 left-6">Alumni & Fellow Correspondents</div>
+                   
+                   <div className="flex flex-col md:flex-row gap-6 lg:gap-10 items-center md:items-start w-full max-w-5xl mx-auto z-10 pt-6 mt-4 md:mt-0">
+                     {/* Left Side: Avatar & Info */}
+                     <div className="flex-1 flex flex-col md:flex-row gap-6 items-center md:items-start text-center md:text-left min-w-0 w-full">
+                       <div className="shrink-0 relative">
+                         <div className="w-28 h-28 lg:w-32 lg:h-32 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.5)] overflow-hidden bg-slate-900 flex items-center justify-center relative p-1" style={{ background: 'linear-gradient(135deg, #c9a87c, #8b6d45)' }}>
+                           <div className="w-full h-full rounded-full border-[3px] border-[#0a1526] overflow-hidden relative z-10">
+                             <img 
+                               src="https://ui-avatars.com/api/?name=Morgan+Kainu&background=0a1526&color=c9a87c&size=256" 
+                               alt="Morgan Kainu" 
+                               className="w-full h-full object-cover"
+                             />
+                           </div>
+                         </div>
+                       </div>
+                       <div className="min-w-0 flex flex-col justify-center">
+                         <h3 className="text-[#c9a87c] text-base md:text-lg font-bold mb-1">
+                           Morgan Kainu 
+                         </h3>
+                         <p className="text-slate-400 text-[10px] md:text-[11px] font-medium uppercase tracking-wider leading-relaxed">
+                           TOP 100 WOMEN 2021 & 2022 • MISSION DEVELOPMENT DIRECTOR @ SPACE NATION | APPLIED SPACE ANTHROPOLOGIST, APPLIED ANTHROPOLOGY CERTIFICATION
+                         </p>
+                       </div>
+                     </div>
+                     
+                     {/* Right Side: Active Mission */}
+                     <div className="flex-1 md:border-l border-[#4a90b8]/30 md:pl-8 lg:pl-10 flex flex-col justify-center text-center md:text-left mt-4 md:mt-0">
+                       <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
+                         <div className="w-1.5 h-1.5 rounded-full bg-[#c95a43]" />
+                         <span className="text-[#c95a43] text-[10px] font-bold uppercase tracking-widest">Active Mission</span>
+                       </div>
+                       <p className="text-slate-200 text-xs md:text-sm leading-relaxed mb-5 font-medium">
+                         Recruiting for the STAR Summit—an immersive 5-day analog mission training program at Biosphere 2. Develop leadership, teamwork, and operational readiness under pressure. Registration closes April 12.
+                       </p>
+                       <div>
+                         <a href="/star-summit">
+                           <button className="bg-gradient-to-r from-[#c95a43] to-[#8f2a58] hover:from-[#b34d38] hover:to-[#7a224a] text-white text-[10px] md:text-[11px] font-bold uppercase tracking-wider px-6 py-2.5 rounded-full shadow-[0_0_15px_rgba(201,90,67,0.3)] hover:shadow-[0_0_20px_rgba(201,90,67,0.5)] transition-all hover:scale-105 active:scale-95">
+                             Explore STAR Summit
+                           </button>
+                         </a>
+                       </div>
+                     </div>
+                   </div>
                 </div>
               </CarouselItem>
             </CarouselContent>
