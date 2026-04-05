@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { ChevronRight, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createPageUrl } from '@/utils';
 
@@ -16,12 +17,11 @@ export default function HonoreeSpotlightRail() {
       ]);
       
       return fellowsData.map((fellow) => {
-        const fellowName = (fellow.name || "").toLowerCase();
-        const match = nomineesData.find(n => {
-          const nName = (n.name || "").toLowerCase();
-          if (!fellowName || !nName) return false;
-          return nName === fellowName || nName.includes(fellowName) || fellowName.includes(nName);
-        });
+        const match = nomineesData.find(n => 
+          n.name.toLowerCase() === fellow.name.toLowerCase() || 
+          n.name.toLowerCase().includes(fellow.name.toLowerCase()) ||
+          fellow.name.toLowerCase().includes(n.name.toLowerCase())
+        );
         
         return {
           ...fellow,
@@ -44,10 +44,10 @@ export default function HonoreeSpotlightRail() {
         </Link>
       </div>
 
-      <div className="w-full overflow-hidden relative pb-2 pause-marquee flex">
-        {isLoading ? (
-          <div className="flex gap-3 px-1.5">
-            {Array(6).fill(0).map((_, i) => (
+      <ScrollArea className="w-full whitespace-nowrap pb-2">
+        <div className="flex w-max space-x-3 px-4 md:px-6">
+          {isLoading ? (
+            Array(5).fill(0).map((_, i) => (
               <div key={i} className="w-[280px] shrink-0 rounded-xl bg-[#1e3a5a]/40 border border-[#4a90b8]/30 p-4">
                 <div className="flex items-center gap-4">
                   <Skeleton className="w-16 h-16 rounded-full bg-[#1e3a5a]/60" />
@@ -57,35 +57,30 @@ export default function HonoreeSpotlightRail() {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          [0, 1].map((setIndex) => (
-            <div key={setIndex} className="flex gap-3 px-1.5 animate-seamless-marquee shrink-0">
-              {fellows?.map((fellow) => (
-                <a 
-                  key={`${setIndex}-${fellow.id}`}
-                  href={fellow.actual_profile_id ? `/ProfileView?id=${fellow.actual_profile_id}` : (fellow.profile_url || '#')}
-                  className="w-[280px] shrink-0 rounded-xl bg-[#1e3a5a]/40 hover:bg-[#1e3a5a]/80 border border-[#4a90b8]/30 hover:border-[#c9a87c]/50 p-4 flex items-center gap-4 transition-all group/card"
-                >
-                  <img 
-                    src={fellow.actual_avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fellow.name)}&background=1e3a5a&color=c9a87c`} 
-                    alt={fellow.name}
-                    className="w-14 h-14 rounded-full object-cover border-2 border-[#1e3a5a] group-hover/card:border-[#c9a87c] transition-colors shrink-0"
-                  />
-                  <div className="flex-1 min-w-0 whitespace-normal">
-                    <h5 className="font-bold text-sm text-slate-100 truncate group-hover/card:text-white transition-colors">{fellow.name}</h5>
-                    <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{fellow.rail_copy || fellow.title}</p>
-                    <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-[#c9a87c]/10 text-[#c9a87c] border border-[#c9a87c]/20">
-                      Mission Fellow
-                    </div>
-                  </div>
-                </a>
-              ))}
-            </div>
-          ))
-        )}
-      </div>
+            ))
+          ) : fellows?.map((fellow) => (
+            <a 
+              key={fellow.id}
+              href={fellow.actual_profile_id ? `/ProfileView?id=${fellow.actual_profile_id}` : (fellow.profile_url || '#')}
+              className="w-[280px] shrink-0 rounded-xl bg-[#1e3a5a]/40 hover:bg-[#1e3a5a]/80 border border-[#4a90b8]/30 hover:border-[#c9a87c]/50 p-4 flex items-center gap-4 transition-all group"
+            >
+              <img 
+                src={fellow.actual_avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fellow.name)}&background=1e3a5a&color=c9a87c`} 
+                alt={fellow.name}
+                className="w-14 h-14 rounded-full object-cover border-2 border-[#1e3a5a] group-hover:border-[#c9a87c] transition-colors shrink-0"
+              />
+              <div className="flex-1 min-w-0 whitespace-normal">
+                <h5 className="font-bold text-sm text-slate-100 truncate group-hover:text-white transition-colors">{fellow.name}</h5>
+                <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{fellow.rail_copy || fellow.title}</p>
+                <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-[#c9a87c]/10 text-[#c9a87c] border border-[#c9a87c]/20">
+                  Mission Fellow
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" className="bg-slate-900/50" />
+      </ScrollArea>
     </div>
   );
 }
