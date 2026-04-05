@@ -11,8 +11,8 @@ import CommunityFavorites from '@/components/home/CommunityFavorites';
 import UpcomingMissions from '@/components/home/UpcomingMissions';
 import TopPrograms from '@/components/home/TopPrograms';
 import TopOriginals from '@/components/home/TopOriginals';
-import MissionControlHeader from '@/components/home/MissionControlHeader';
-import LiveStreamModule from '@/components/home/LiveStreamModule';
+// import MissionControlHeader from '@/components/home/MissionControlHeader';
+// import LiveStreamModule from '@/components/home/LiveStreamModule';
 
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HomeSectionReorderPopover, { loadSectionConfig } from '@/components/admin/HomeSectionReorderPopover';
@@ -21,7 +21,7 @@ import { useQuery } from '@tanstack/react-query';
 import { subDays } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 
-const EditorialTerminal = lazy(() => import('@/components/terminal/EditorialTerminal'));
+import EditorialTerminal from '@/components/terminal/EditorialTerminal';
 
 // Stable module-level shuffle utility
 function shuffleArray(array) {
@@ -196,7 +196,7 @@ export default function HomePage() {
   const isMemberOnly = userRole === 'user';
 
   const SECTION_COMPONENTS = {
-    liveStream: <LiveStreamModule />,
+    liveStream: null /* <LiveStreamModule /> */,
     spotlight: isMemberOnly ? null : <IndustrySpotlight />,
     featured: isMemberOnly ? null : <FeaturedToday />,
     programs: isMemberOnly ? null : <TrendingPrograms />,
