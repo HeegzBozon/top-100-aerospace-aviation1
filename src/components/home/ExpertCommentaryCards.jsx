@@ -12,6 +12,8 @@ export default function ExpertCommentaryCards() {
     queryFn: () => base44.entities.LiveExpertCommentary.list('-created_date', 10),
   });
 
+  const [isFlipped, setIsFlipped] = useState(false);
+
   useEffect(() => {
     if (comments.length <= 1) return;
     const timer = setInterval(() => {
@@ -20,17 +22,15 @@ export default function ExpertCommentaryCards() {
     return () => clearInterval(timer);
   }, [comments.length]);
 
-  if (isLoading) return <div className="h-24 w-full bg-slate-900 animate-pulse rounded-xl border border-slate-800 mt-6"></div>;
-  if (!comments.length) return null;
-
-  const currentComment = comments[currentIndex];
-
-  const [isFlipped, setIsFlipped] = useState(false);
-
   // Reset flip state when comment changes
   useEffect(() => {
     setIsFlipped(false);
   }, [currentIndex]);
+
+  if (isLoading) return <div className="h-24 w-full bg-slate-900 animate-pulse rounded-xl border border-slate-800 mt-6"></div>;
+  if (!comments.length) return null;
+
+  const currentComment = comments[currentIndex];
 
   return (
     <div className="w-full bg-slate-900/40 rounded-xl border border-slate-800/60 p-4 md:p-5 relative overflow-hidden shadow-inner backdrop-blur-md">
