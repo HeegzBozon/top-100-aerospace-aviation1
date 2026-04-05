@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Rocket, Send, Award, Clock, CalendarDays, CheckCircle2, Circle, Loader } from 'lucide-react';
 import { useConversation } from '@/components/contexts/ConversationContext';
-import MissionControlAdminPanel from './MissionControlAdminPanel';
 
 function useCountdown(targetDate) {
   const [now, setNow] = useState(new Date());
@@ -29,8 +28,8 @@ function useCountdown(targetDate) {
 function CountdownUnit({ value, label }) {
   return (
     <div className="text-center">
-      <div className="text-3xl md:text-4xl font-bold text-white tabular-nums">{String(value).padStart(2, '0')}</div>
-      <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider mt-1">{label}</div>
+      <div className="text-xl md:text-2xl font-bold text-white tabular-nums">{String(value).padStart(2, '0')}</div>
+      <div className="text-[8px] md:text-[10px] text-white/50 uppercase tracking-wider mt-0.5">{label}</div>
     </div>
   );
 }
@@ -79,41 +78,41 @@ export default function MissionControlHeader() {
       <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-10" style={{ background: brand.gold }} />
       <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl opacity-5" style={{ background: '#4a90b8' }} />
 
-      <div className="relative z-10 px-4 md:px-6 py-6 md:py-8">
-        <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+      <div className="relative z-10 px-4 md:px-6 py-4 md:py-5">
+        <div className="flex flex-col md:flex-row gap-5 md:gap-6">
 
           {/* ── Left column ── */}
           <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 mb-4">
-              <Badge className="text-xs font-bold px-3 py-1" style={{ background: brand.gold, color: 'white' }}>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <Badge className="text-[10px] md:text-xs font-bold px-2.5 py-0.5" style={{ background: brand.gold, color: 'white' }}>
                 <Rocket className="w-3 h-3 mr-1" />
                 {activeSeason.name || 'Season'}
               </Badge>
-              <Badge variant="outline" className="text-xs border-white/30 text-white/70">
+              <Badge variant="outline" className="text-[10px] md:text-xs border-white/30 text-white/70 py-0.5">
                 NOMINATIONS OPEN
               </Badge>
             </div>
 
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
               Mission Control
             </h2>
-            <p className="text-white/60 text-sm md:text-base max-w-xl mb-6">
+            <p className="text-white/60 text-xs md:text-sm max-w-xl mb-4">
               {activeSeason.name || 'TOP 100'} — Driving nominations across 30+ countries to recognize aerospace excellence.
             </p>
 
             {/* Countdown */}
             {countdown && !countdown.past && (
-              <div className="inline-flex items-center gap-4 md:gap-6 px-5 py-3 rounded-2xl mb-5" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
-                <div className="text-white/50 text-xs uppercase tracking-widest mr-2">
-                  <Clock className="w-4 h-4 mb-1 mx-auto" />
+              <div className="inline-flex items-center gap-3 md:gap-4 px-4 py-2 rounded-xl mb-4" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                <div className="text-white/50 text-[10px] uppercase tracking-widest mr-1">
+                  <Clock className="w-3 h-3 mb-0.5 mx-auto" />
                   Nominations Close
                 </div>
                 <CountdownUnit value={countdown.days} label="Days" />
-                <span className="text-white/30 text-2xl font-light">:</span>
+                <span className="text-white/30 text-xl font-light">:</span>
                 <CountdownUnit value={countdown.hours} label="Hours" />
-                <span className="text-white/30 text-2xl font-light">:</span>
+                <span className="text-white/30 text-xl font-light">:</span>
                 <CountdownUnit value={countdown.mins} label="Min" />
-                <span className="text-white/30 text-2xl font-light">:</span>
+                <span className="text-white/30 text-xl font-light">:</span>
                 <CountdownUnit value={countdown.secs} label="Sec" />
               </div>
             )}
@@ -138,14 +137,6 @@ export default function MissionControlHeader() {
 
         </div>
 
-        {/* ── Admin CRUD panel — visible to admins only ── */}
-        {user?.role === 'admin' && (
-          <MissionControlAdminPanel
-            seasons={seasons}
-            activeSeason={activeSeason}
-            onSeasonChange={setSelectedSeasonId}
-          />
-        )}
       </div>
     </div>
   );
@@ -166,12 +157,8 @@ function SeasonSchedule({ season }) {
   if (!phases.length) return null;
 
   return (
-    <div className="rounded-2xl px-5 py-4" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
-      <div className="flex items-center gap-2 mb-4">
-        <CalendarDays className="w-4 h-4" style={{ color: brand.gold }} />
-        <span className="text-xs font-bold uppercase tracking-widest text-white/60">{season.name || 'Season Schedule'}</span>
-      </div>
-      <div className="flex flex-col gap-3">
+    <div className="rounded-2xl px-4 py-3" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+      <div className="flex flex-col gap-2">
         {phases.map(({ label, date }) => {
           const d = new Date(date);
           const isPast = d < today;
