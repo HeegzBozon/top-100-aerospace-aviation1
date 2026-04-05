@@ -33,9 +33,9 @@ export default function LiveStreamModule() {
         <div className="absolute top-1/4 left-1/2 w-1 h-1 bg-yellow-100 rounded-full" style={{ animationDelay: '2.1s' }} />
       </div>
 
-      <Card className="relative overflow-hidden bg-[#0a1526]/80 backdrop-blur-xl border-[#4a90b8]/20 text-white shadow-2xl">
-        <div className="flex flex-col lg:flex-row lg:h-[360px] xl:h-[400px]">
-          <div className="w-full aspect-video lg:w-auto lg:aspect-video lg:h-full bg-black relative flex items-center justify-center border-b lg:border-b-0 lg:border-r border-[#4a90b8]/20 shrink-0 overflow-hidden">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col lg:flex-row gap-4 lg:h-[360px] xl:h-[400px]">
+          <Card className="w-full aspect-video lg:w-auto lg:aspect-video lg:h-full bg-black relative flex items-center justify-center overflow-hidden border-[#4a90b8]/20 shadow-2xl shrink-0">
              {isLive ? (
                <iframe 
                  className="absolute inset-0 w-full h-full"
@@ -60,12 +60,13 @@ export default function LiveStreamModule() {
                </div>
              )}
              <FloatingReactions />
-          </div>
-          <div className="flex-1 min-w-0 bg-[#0a1526]/40 p-3 md:p-4 flex flex-col h-[360px] xl:h-[400px] lg:h-full overflow-y-auto">
+          </Card>
+          <div className="flex-1 min-w-0 flex flex-col h-[360px] xl:h-[400px] lg:h-full">
              <LiveStreamComments />
           </div>
         </div>
-        <Carousel 
+        <Card className="relative overflow-hidden bg-[#0a1526]/80 backdrop-blur-xl border-[#4a90b8]/20 text-white shadow-2xl">
+          <Carousel 
           setApi={setCarouselApi} 
           opts={{ loop: true }} 
           className="w-full relative group"
@@ -126,7 +127,8 @@ export default function LiveStreamModule() {
             <CarouselNext className="static transform-none w-10 h-10 md:w-12 md:h-12 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c] [&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-6 md:[&>svg]:h-6" />
           </div>
         </Carousel>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }
