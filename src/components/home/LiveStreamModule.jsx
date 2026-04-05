@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { PlayCircle } from 'lucide-react';
+import { PlayCircle, Pause, Play } from 'lucide-react';
 import LiveReactionPoll from './LiveReactionPoll';
 import ExpertCommentaryCards from './ExpertCommentaryCards';
 import LiveStreamComments from './LiveStreamComments';
@@ -10,6 +10,16 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 
 export default function LiveStreamModule() {
   const [isLive, setIsLive] = useState(true);
+  const [carouselApi, setCarouselApi] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!carouselApi || !isPlaying) return;
+    const interval = setInterval(() => {
+      carouselApi.scrollNext();
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [carouselApi, isPlaying]);
 
   return (
     <div className="px-4 py-4 md:py-6 max-w-7xl mx-auto relative">
@@ -53,7 +63,7 @@ export default function LiveStreamModule() {
              <LiveStreamComments />
           </div>
         </div>
-        <Carousel className="w-full relative group">
+        <Carousel setApi={setCarouselApi} opts={{ loop: true }} className="w-full relative group">
           <CarouselContent>
             {/* Slide 1: Mission Theater Bottom Half */}
             <CarouselItem>
@@ -92,10 +102,18 @@ export default function LiveStreamModule() {
             </CarouselItem>
           </CarouselContent>
 
-          {/* Carousel Controls positioned at the top right of this section */}
-          <div className="absolute right-4 top-4 md:right-6 md:top-6 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <CarouselPrevious className="static transform-none bg-[#0a1526]/80 border-[#4a90b8]/50 text-white hover:bg-[#1e3a5a] hover:text-white" />
-            <CarouselNext className="static transform-none bg-[#0a1526]/80 border-[#4a90b8]/50 text-white hover:bg-[#1e3a5a] hover:text-white" />
+          {/* Vibey Carousel Controls */}
+          <div className="absolute right-4 top-4 md:right-6 md:top-6 z-20 flex items-center gap-1 p-1 rounded-full bg-[#0a1526]/80 backdrop-blur-md border border-[#c9a87c]/30 shadow-[0_0_15px_rgba(201,168,124,0.15)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:border-[#c9a87c]/60">
+            <button 
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-transparent hover:bg-[#c9a87c]/20 text-[#c9a87c] transition-colors"
+              title={isPlaying ? "Pause auto-scroll" : "Play auto-scroll"}
+            >
+              {isPlaying ? <Pause className="w-4 h-4" fill="currentColor" /> : <Play className="w-4 h-4" fill="currentColor" />}
+            </button>
+            <div className="w-px h-4 bg-[#c9a87c]/30 mx-0.5"></div>
+            <CarouselPrevious className="static transform-none w-8 h-8 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c]" />
+            <CarouselNext className="static transform-none w-8 h-8 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c]" />
           </div>
         </Carousel>
       </Card>
