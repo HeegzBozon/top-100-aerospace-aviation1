@@ -9,7 +9,7 @@ export default function EditorialTerminal({ children, heroSlot }) {
           {heroSlot}
         </div>
 
-        <div className="max-w-[1400px] mx-auto space-y-4 md:space-y-5">
+        <div className="max-w-[1400px] mx-auto space-y-2 md:space-y-3">
           {/* ── Editorial sections injected as children ── */}
           {children}
         </div>

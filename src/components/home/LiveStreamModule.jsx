@@ -22,7 +22,7 @@ export default function LiveStreamModule() {
   }, [carouselApi, isPlaying]);
 
   return (
-    <div className="px-4 py-4 md:py-6 max-w-7xl mx-auto relative">
+    <div className="px-4 py-2 md:py-3 max-w-7xl mx-auto relative">
       {/* Subtle Starfield Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl opacity-30">
         <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
@@ -103,17 +103,17 @@ export default function LiveStreamModule() {
           </CarouselContent>
 
           {/* Vibey Carousel Controls */}
-          <div className="absolute right-4 top-4 md:right-6 md:top-6 z-20 flex items-center gap-1 p-1 rounded-full bg-[#0a1526]/80 backdrop-blur-md border border-[#c9a87c]/30 shadow-[0_0_15px_rgba(201,168,124,0.15)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:border-[#c9a87c]/60">
+          <div className="absolute right-4 top-4 md:right-6 md:top-6 z-20 flex items-center gap-1.5 p-1.5 rounded-full bg-[#0a1526]/80 backdrop-blur-md border border-[#c9a87c]/30 shadow-[0_0_15px_rgba(201,168,124,0.15)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:border-[#c9a87c]/60">
             <button 
               onClick={() => setIsPlaying(!isPlaying)}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-transparent hover:bg-[#c9a87c]/20 text-[#c9a87c] transition-colors"
+              className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-transparent hover:bg-[#c9a87c]/20 text-[#c9a87c] transition-colors"
               title={isPlaying ? "Pause auto-scroll" : "Play auto-scroll"}
             >
-              {isPlaying ? <Pause className="w-4 h-4" fill="currentColor" /> : <Play className="w-4 h-4" fill="currentColor" />}
+              {isPlaying ? <Pause className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" /> : <Play className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" />}
             </button>
-            <div className="w-px h-4 bg-[#c9a87c]/30 mx-0.5"></div>
-            <CarouselPrevious className="static transform-none w-8 h-8 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c]" />
-            <CarouselNext className="static transform-none w-8 h-8 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c]" />
+            <div className="w-px h-6 bg-[#c9a87c]/30 mx-0.5"></div>
+            <CarouselPrevious className="static transform-none w-10 h-10 md:w-12 md:h-12 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c] [&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-6 md:[&>svg]:h-6" />
+            <CarouselNext className="static transform-none w-10 h-10 md:w-12 md:h-12 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c] [&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-6 md:[&>svg]:h-6" />
           </div>
         </Carousel>
       </Card>
