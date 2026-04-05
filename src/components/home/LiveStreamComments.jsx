@@ -23,14 +23,14 @@ export default function LiveStreamComments() {
 
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['live-stream-comments'],
-    queryFn: () => base44.entities.LiveStreamComment.list('-created_date', 100),
+    queryFn: () => base44.entities.LiveStreamComment.list('+created_date', 100),
     refetchInterval: 2000,
   });
 
-  // Auto scroll to top when new comments arrive
+  // Auto scroll to bottom when new comments arrive
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = 0;
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [comments]);
 
@@ -80,7 +80,7 @@ export default function LiveStreamComments() {
       <div className="p-2 px-3 border-b border-[#4a90b8]/30 bg-[#0a1526]/50 flex items-center justify-between">
         <h4 className="text-slate-200 font-semibold text-sm flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-500" />
-          Live Chat
+          Campfire
         </h4>
         <span className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">{comments.length} messages</span>
       </div>
