@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { PlayCircle, Pause, Play } from 'lucide-react';
-import LiveReactionPoll from './LiveReactionPoll';
 import ExpertCommentaryCards from './ExpertCommentaryCards';
 import LiveStreamComments from './LiveStreamComments';
 import FloatingReactions from './FloatingReactions';

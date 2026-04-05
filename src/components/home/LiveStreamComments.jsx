@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Trash2, MessageSquare, Flame } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import LiveReactionPoll from './LiveReactionPoll';
 
 // Simple client-side profanity filter
 const BAD_WORDS = ['fuck', 'shit', 'ass', 'bitch', 'damn', 'crap'];
@@ -89,11 +88,6 @@ export default function LiveStreamComments() {
         <span className="text-xs text-blue-100 uppercase tracking-widest font-bold bg-[#0b3d91] px-3 py-1.5 rounded-md border-2 border-[#4a90b8]">
           {comments.length} messages
         </span>
-      </div>
-
-      {/* Pinned Poll Section */}
-      <div className="shrink-0 border-b-2 border-[#4a90b8] bg-[#020B1A] p-4">
-         <LiveReactionPoll />
       </div>
 
       {/* Chat Messages */}
