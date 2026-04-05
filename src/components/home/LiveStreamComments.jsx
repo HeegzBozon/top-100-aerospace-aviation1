@@ -141,16 +141,10 @@ export default function LiveStreamComments() {
               <button
                 key={idx}
                 type="button"
-                disabled={createMutation.isPending}
                 onClick={() => {
-                  createMutation.mutate({
-                    text: emoji,
-                    user_name: user.full_name || 'Anonymous',
-                    user_avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name || 'A')}&background=1e3a5a&color=c9a87c`,
-                    user_email: user.email
-                  });
+                  base44.entities.LiveReaction.create({ emoji }).catch(console.error);
                 }}
-                className="w-8 h-8 flex items-center justify-center text-xl hover:bg-white/10 rounded-full transition-all hover:scale-125 active:scale-95 disabled:opacity-50"
+                className="w-8 h-8 flex items-center justify-center text-xl hover:bg-white/10 rounded-full transition-all hover:scale-125 active:scale-95"
                 title={`Send ${emoji}`}
               >
                 {emoji}

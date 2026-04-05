@@ -2,22 +2,57 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const QUICK_CHATS = [
-  "🚀 Go for launch!",
-  "✨ Mission nominal.",
-  "📡 Copy that.",
-  "🛑 Holding for clearance.",
-  "⭐ Godspeed!",
-  "🌍 Beautiful view.",
-  "🎯 What a milestone!",
-  "⚡ Engines looking good.",
-  "🛰️ Signal is strong.",
-  "🔥 Full thrust!",
-  "🌌 Incredible."
-];
-
 export default function FloatingReactions() {
   const [reactions, setReactions] = useState([]);
+  const [quickChats, setQuickChats] = useState([]);
+
+  useEffect(() => {
+    const updateQuickChats = () => {
+      // Get hour in Eastern Time
+      const etDate = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+      const hour = etDate.getHours();
+
+      let phrases = [];
+      if (hour >= 5 && hour < 12) {
+        phrases = [
+          "🌅 Good morning, Houston!",
+          "☕ Fueling up.",
+          "🚀 Ready for launch.",
+          "✨ Pre-flight checks nominal.",
+          "☀️ Bright and early."
+        ];
+      } else if (hour >= 12 && hour < 17) {
+        phrases = [
+          "☀️ Clear skies ahead.",
+          "🎯 Mid-flight update.",
+          "🌍 Beautiful view.",
+          "📡 Signal is strong.",
+          "⚡ Thrust looking good."
+        ];
+      } else if (hour >= 17 && hour < 22) {
+        phrases = [
+          "🌇 Sunset orbit.",
+          "🌌 Stars are coming out.",
+          "🛰️ Evening pass.",
+          "⭐ Godspeed!",
+          "🚀 Evening launch."
+        ];
+      } else {
+        phrases = [
+          "🌙 Night operations.",
+          "🌌 Deep space.",
+          "✨ Stargazing.",
+          "🛑 Holding for clearance.",
+          "🦉 Night watch."
+        ];
+      }
+      setQuickChats(phrases);
+    };
+
+    updateQuickChats();
+    const interval = setInterval(updateQuickChats, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
   
   useEffect(() => {
     const unsubscribe = base44.entities.LiveReaction.subscribe((event) => {
@@ -41,18 +76,19 @@ export default function FloatingReactions() {
   }, []);
 
   const handleReaction = async (phrase) => {
-    const localId = 'local_' + Math.random().toString();
-    const left = 10 + Math.random() * 80;
-    
-    setReactions(prev => [...prev, { id: localId, emoji: phrase, left, time: Date.now() }]);
-    setTimeout(() => {
-      setReactions(prev => prev.filter(r => r.id !== localId));
-    }, 3000);
-    
     try {
-      await base44.entities.LiveReaction.create({ emoji: phrase });
+      // Log phrase to chat only (do not float on video)
+      const me = await base44.auth.me().catch(() => null);
+      if (me) {
+        await base44.entities.LiveStreamComment.create({
+          text: phrase,
+          user_name: me.full_name || 'Anonymous',
+          user_avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(me.full_name || 'A')}&background=1e3a5a&color=c9a87c`,
+          user_email: me.email
+        });
+      }
     } catch (e) {
-      console.error('Failed to send reaction', e);
+      console.error('Failed to log phrase', e);
     }
   };
 
@@ -72,7 +108,7 @@ export default function FloatingReactions() {
               }}
               exit={{ opacity: 0 }}
               transition={{ duration: 2.5, ease: "easeOut" }}
-              className="absolute bottom-24 text-sm sm:text-base font-bold text-white bg-black/60 px-3 py-1.5 rounded-full border border-white/20 whitespace-nowrap backdrop-blur-md shadow-lg"
+              className="absolute bottom-16 text-3xl sm:text-4xl"
               style={{ left: `${r.left}%` }}
             >
               {r.emoji}
@@ -81,12 +117,12 @@ export default function FloatingReactions() {
         </AnimatePresence>
       </div>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-lg flex flex-wrap justify-center gap-1.5 sm:gap-2 bg-[#0a1526]/80 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-[#4a90b8]/30 shadow-[0_0_20px_rgba(74,144,184,0.15)]">
-        {QUICK_CHATS.map((phrase, idx) => (
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-3xl flex overflow-x-auto scrollbar-hide snap-x gap-2 bg-[#0a1526]/80 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl border border-[#4a90b8]/30 shadow-[0_0_20px_rgba(74,144,184,0.15)]">
+        {quickChats.map((phrase, idx) => (
           <button
             key={idx}
             onClick={() => handleReaction(phrase)}
-            className="bg-[#1e3a5a]/60 hover:bg-[#c9a87c]/20 text-[#c9a87c] text-[10px] sm:text-xs font-bold px-2.5 py-1.5 rounded-full border border-[#c9a87c]/30 hover:border-[#c9a87c] transition-all active:scale-95 shadow-sm whitespace-nowrap"
+            className="shrink-0 snap-start bg-[#1e3a5a]/60 hover:bg-[#c9a87c]/20 text-[#c9a87c] text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full border border-[#c9a87c]/30 hover:border-[#c9a87c] transition-all active:scale-95 shadow-sm whitespace-nowrap"
             title={`Send ${phrase}`}
           >
             {phrase}
