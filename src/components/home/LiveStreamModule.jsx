@@ -100,30 +100,6 @@ export default function LiveStreamModule() {
                  </div>
               </div>
             </CarouselItem>
-
-            {/* Slide 3: Side-by-Side Experiment */}
-            <CarouselItem>
-              <div className="flex flex-col lg:flex-row h-full border-t border-[#4a90b8]/20">
-                <div className="lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-[#4a90b8]/20 justify-center">
-                  <div className="p-3 md:p-4 flex flex-col gap-2 justify-between">
-                    <div>
-                      <h3 className="text-xl md:text-2xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
-                        Artemis Mission Theater
-                      </h3>
-                      <p className="text-slate-300 text-xs md:text-sm">
-                        Join us live for the latest updates, mission progress, and expert commentary from our panel of industry fellows.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="px-3 pb-3 md:px-4 md:pb-4">
-                     <ExpertCommentaryCards />
-                  </div>
-                </div>
-                <div className="lg:w-1/2 p-3 md:p-4 flex flex-col justify-center bg-[#0a1526]/20">
-                   <MissionControlHeader />
-                </div>
-              </div>
-            </CarouselItem>
           </CarouselContent>
 
           {/* Vibey Carousel Controls */}
