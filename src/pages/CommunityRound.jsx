@@ -154,7 +154,7 @@ export default function CommunityRound() {
                   <div className="flex flex-col sm:flex-row gap-4 items-center flex-wrap">
                     <a href="https://wefunder.com/top.100.aerospace.aviation" target="_blank" rel="noopener noreferrer" className="block sm:inline-block w-full sm:w-auto">
                       <Button size="lg" className="w-full sm:w-auto bg-[#c9a87c] hover:bg-[#b09268] text-slate-950 font-bold px-8 rounded-full h-14 text-base">
-                        Invest in the record that aerospace never built
+                        Invest in the mycelium network of aerospace
                       </Button>
                     </a>
                     <a href="https://calendar.app.google/TrL8saY6XS6tdVj1A" target="_blank" rel="noopener noreferrer" className="block sm:inline-block w-full sm:w-auto">
