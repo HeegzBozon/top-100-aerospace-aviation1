@@ -8,22 +8,17 @@ export default function FloatingReactions() {
   const [reactions, setReactions] = useState([]);
   
   useEffect(() => {
-    // Subscribe to real-time events on the LiveReaction entity
     const unsubscribe = base44.entities.LiveReaction.subscribe((event) => {
       if (event.type === 'create') {
         const id = event.data.id || Math.random().toString();
         const emoji = event.data.emoji;
-        
-        // Randomize the horizontal position for the floating animation
         const left = 10 + Math.random() * 80;
         
         setReactions(prev => {
-          // Prevent duplicates if we just added it optimistically locally
           if (prev.find(r => r.emoji === emoji && Date.now() - r.time < 500)) return prev;
           return [...prev, { id, emoji, left, time: Date.now() }];
         });
         
-        // Remove from DOM after animation completes (3 seconds)
         setTimeout(() => {
           setReactions(prev => prev.filter(r => r.id !== id));
         }, 3000);
@@ -34,7 +29,6 @@ export default function FloatingReactions() {
   }, []);
 
   const handleReaction = async (emoji) => {
-    // Optimistic UI update so the local user sees their reaction instantly
     const localId = 'local_' + Math.random().toString();
     const left = 10 + Math.random() * 80;
     
@@ -44,7 +38,6 @@ export default function FloatingReactions() {
     }, 3000);
     
     try {
-      // Broadcast the reaction to all other users
       await base44.entities.LiveReaction.create({ emoji });
     } catch (e) {
       console.error('Failed to send reaction', e);
@@ -53,7 +46,6 @@ export default function FloatingReactions() {
 
   return (
     <>
-      {/* Floating Animation Layer - Overlays the video without blocking clicks */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
         <AnimatePresence>
           {reactions.map(r => (
@@ -62,8 +54,8 @@ export default function FloatingReactions() {
               initial={{ opacity: 0, y: 0, x: 0, scale: 0.5 }}
               animate={{ 
                 opacity: [0, 1, 1, 0], 
-                y: -300, // Float upwards
-                x: (Math.random() - 0.5) * 60, // Slight horizontal drift
+                y: -300, 
+                x: (Math.random() - 0.5) * 60, 
                 scale: [0.5, 1.5, 1] 
               }}
               exit={{ opacity: 0 }}
@@ -77,7 +69,6 @@ export default function FloatingReactions() {
         </AnimatePresence>
       </div>
 
-      {/* Reaction Buttons - Floating at the bottom of the video */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 flex gap-2 bg-[#0a1526]/80 backdrop-blur-md p-2 rounded-full border border-[#4a90b8]/30 shadow-[0_0_20px_rgba(74,144,184,0.15)]">
         {EMOJIS.map(emoji => (
           <button

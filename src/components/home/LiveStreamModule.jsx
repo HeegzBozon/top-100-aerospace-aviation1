@@ -25,7 +25,6 @@ export default function LiveStreamModule() {
 
   return (
     <div className="px-4 pb-2 md:pb-3 max-w-7xl mx-auto relative">
-      {/* Subtle Starfield Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl opacity-30">
         <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full" style={{ animationDelay: '0.2s' }} />
         <div className="absolute top-40 right-20 w-1 h-1 bg-white rounded-full" style={{ animationDelay: '1.5s' }} />
@@ -61,72 +60,71 @@ export default function LiveStreamModule() {
              )}
              <FloatingReactions />
           </Card>
+
           <div className="flex-1 min-w-0 flex flex-col h-[360px] xl:h-[400px] lg:h-full">
              <LiveStreamComments />
           </div>
         </div>
+
         <Card className="relative overflow-hidden bg-[#0a1526]/80 backdrop-blur-xl border-[#4a90b8]/20 text-white shadow-2xl">
           <Carousel 
-          setApi={setCarouselApi} 
-          opts={{ loop: true }} 
-          className="w-full relative group"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <CarouselContent>
-            {/* Slide 1: Mission Theater Bottom Half */}
-            <CarouselItem>
-              <div className="p-3 md:p-4 flex flex-col md:flex-row gap-3 md:items-center justify-between border-t border-[#4a90b8]/20">
-                <div className="pr-12 md:pr-16">
-                  <h3 className="text-xl md:text-2xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
-                    Artemis Mission Theater
-                  </h3>
-                  <p className="text-slate-300 max-w-2xl text-xs md:text-sm leading-relaxed">
-                    Join us live for the latest updates, mission progress, and expert commentary from our panel of industry fellows.
-                  </p>
+            setApi={setCarouselApi} 
+            opts={{ loop: true }} 
+            className="w-full relative group"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            <CarouselContent>
+              <CarouselItem>
+                <div className="p-3 md:p-4 flex flex-col md:flex-row gap-3 md:items-center justify-between border-t border-[#4a90b8]/20">
+                  <div className="pr-12 md:pr-16">
+                    <h3 className="text-xl md:text-2xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
+                      Artemis Mission Theater
+                    </h3>
+                    <p className="text-slate-300 max-w-2xl text-xs md:text-sm leading-relaxed">
+                      Join us live for the latest updates, mission progress, and expert commentary from our panel of industry fellows.
+                    </p>
+                  </div>
+                  <div className="shrink-0 flex items-center gap-3">
+                     <button className="text-[10px] md:text-xs text-[#c9a87c] hover:text-white border border-[#c9a87c]/30 hover:border-[#c9a87c] bg-[#c9a87c]/10 px-2 py-1 rounded transition-colors whitespace-nowrap font-medium">
+                       Alumni? Submit Commentary
+                     </button>
+                     <div className="flex -space-x-2">
+                        <img className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=E+C&background=1e3a5a&color=c9a87c" alt="Expert" />
+                        <img className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=A+B&background=4a90b8&color=fff" alt="Expert" />
+                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a] bg-slate-800 flex items-center justify-center text-[9px] md:text-[10px] font-bold">+3</div>
+                     </div>
+                     <span className="text-[10px] md:text-xs text-slate-400 font-semibold tracking-wider uppercase">Correspondents</span>
+                  </div>
                 </div>
-                <div className="shrink-0 flex items-center gap-3">
-                   <button className="text-[10px] md:text-xs text-[#c9a87c] hover:text-white border border-[#c9a87c]/30 hover:border-[#c9a87c] bg-[#c9a87c]/10 px-2 py-1 rounded transition-colors whitespace-nowrap font-medium">
-                     Alumni? Submit Commentary
-                   </button>
-                   <div className="flex -space-x-2">
-                      <img className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=E+C&background=1e3a5a&color=c9a87c" alt="Expert" />
-                      <img className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=A+B&background=4a90b8&color=fff" alt="Expert" />
-                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a] bg-slate-800 flex items-center justify-center text-[9px] md:text-[10px] font-bold">+3</div>
+                <div className="px-3 pb-3 md:px-4 md:pb-4">
+                   <ExpertCommentaryCards />
+                </div>
+                <HonoreeSpotlightRail />
+              </CarouselItem>
+
+              <CarouselItem>
+                <div className="h-full border-t border-[#4a90b8]/20 flex flex-col justify-center">
+                   <div className="w-full h-full [&>div]:rounded-none [&>div]:h-full">
+                      <MissionControlHeader />
                    </div>
-                   <span className="text-[10px] md:text-xs text-slate-400 font-semibold tracking-wider uppercase">Correspondents</span>
                 </div>
-              </div>
-              <div className="px-3 pb-3 md:px-4 md:pb-4">
-                 <ExpertCommentaryCards />
-              </div>
-              <HonoreeSpotlightRail />
-            </CarouselItem>
+              </CarouselItem>
+            </CarouselContent>
 
-            {/* Slide 2: Mission Control */}
-            <CarouselItem>
-              <div className="h-full border-t border-[#4a90b8]/20 flex flex-col justify-center">
-                 <div className="w-full h-full [&>div]:rounded-none [&>div]:h-full">
-                    <MissionControlHeader />
-                 </div>
-              </div>
-            </CarouselItem>
-          </CarouselContent>
-
-          {/* Vibey Carousel Controls */}
-          <div className="absolute right-4 top-4 md:right-6 md:top-6 z-20 flex items-center gap-1.5 p-1.5 rounded-full bg-[#0a1526]/80 backdrop-blur-md border border-[#c9a87c]/30 shadow-[0_0_15px_rgba(201,168,124,0.15)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:border-[#c9a87c]/60">
-            <button 
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-transparent hover:bg-[#c9a87c]/20 text-[#c9a87c] transition-colors"
-              title={isPlaying ? "Pause auto-scroll" : "Play auto-scroll"}
-            >
-              {isPlaying ? <Pause className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" /> : <Play className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" />}
-            </button>
-            <div className="w-px h-6 bg-[#c9a87c]/30 mx-0.5"></div>
-            <CarouselPrevious className="static transform-none w-10 h-10 md:w-12 md:h-12 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c] [&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-6 md:[&>svg]:h-6" />
-            <CarouselNext className="static transform-none w-10 h-10 md:w-12 md:h-12 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c] [&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-6 md:[&>svg]:h-6" />
-          </div>
-        </Carousel>
+            <div className="absolute right-4 top-4 md:right-6 md:top-6 z-20 flex items-center gap-1.5 p-1.5 rounded-full bg-[#0a1526]/80 backdrop-blur-md border border-[#c9a87c]/30 shadow-[0_0_15px_rgba(201,168,124,0.15)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:border-[#c9a87c]/60">
+              <button 
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-transparent hover:bg-[#c9a87c]/20 text-[#c9a87c] transition-colors"
+                title={isPlaying ? "Pause auto-scroll" : "Play auto-scroll"}
+              >
+                {isPlaying ? <Pause className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" /> : <Play className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" />}
+              </button>
+              <div className="w-px h-6 bg-[#c9a87c]/30 mx-0.5"></div>
+              <CarouselPrevious className="static transform-none w-10 h-10 md:w-12 md:h-12 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c] [&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-6 md:[&>svg]:h-6" />
+              <CarouselNext className="static transform-none w-10 h-10 md:w-12 md:h-12 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c] [&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-6 md:[&>svg]:h-6" />
+            </div>
+          </Carousel>
         </Card>
       </div>
     </div>

@@ -25,7 +25,7 @@ export default function LiveStreamComments() {
     queryKey: ['live-stream-comments'],
     queryFn: async () => {
       const res = await base44.entities.LiveStreamComment.list('-created_date', 100);
-      return res.reverse();
+      return [...res].reverse();
     },
     refetchInterval: 2000,
   });
