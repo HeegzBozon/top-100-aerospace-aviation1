@@ -9,19 +9,7 @@ import { useToast } from '@/components/ui/use-toast';
 // Simple client-side profanity filter
 const BAD_WORDS = ['fuck', 'shit', 'ass', 'bitch', 'damn', 'crap'];
 
-const QUICK_CHATS = [
-  "🚀 Go for launch!",
-  "✨ Mission nominal.",
-  "📡 Copy that.",
-  "🛑 Holding for clearance.",
-  "⭐ Godspeed!",
-  "🌍 Beautiful view.",
-  "🎯 What a milestone!",
-  "⚡ Engines looking good.",
-  "🛰️ Signal is strong.",
-  "🔥 Full thrust!",
-  "🌌 Incredible."
-];
+const EMOJIS = ['🔥', '❤️', '✨', '🌟', '🚀', '👽', '🛸'];
 
 export default function LiveStreamComments() {
   const [newComment, setNewComment] = useState('');
@@ -145,26 +133,27 @@ export default function LiveStreamComments() {
         )}
       </div>
 
-      {/* Quick Chat Options */}
+      {/* Emoji Reactions */}
       {user && (
         <div className="px-4 pb-3 relative z-10">
-          <div className="flex flex-wrap gap-1.5 justify-center pb-1">
-            {QUICK_CHATS.map((chat, idx) => (
+          <div className="flex gap-2 justify-center pb-1">
+            {EMOJIS.map((emoji, idx) => (
               <button
                 key={idx}
                 type="button"
                 disabled={createMutation.isPending}
                 onClick={() => {
                   createMutation.mutate({
-                    text: chat,
+                    text: emoji,
                     user_name: user.full_name || 'Anonymous',
                     user_avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name || 'A')}&background=1e3a5a&color=c9a87c`,
                     user_email: user.email
                   });
                 }}
-                className="bg-[#1e3a5a]/60 hover:bg-[#c9a87c]/20 text-[#c9a87c] text-[11px] sm:text-xs font-bold px-2.5 py-1.5 rounded-full border border-[#c9a87c]/30 hover:border-[#c9a87c] transition-all active:scale-95 disabled:opacity-50 shadow-sm"
+                className="w-8 h-8 flex items-center justify-center text-xl hover:bg-white/10 rounded-full transition-all hover:scale-125 active:scale-95 disabled:opacity-50"
+                title={`Send ${emoji}`}
               >
-                {chat}
+                {emoji}
               </button>
             ))}
           </div>
