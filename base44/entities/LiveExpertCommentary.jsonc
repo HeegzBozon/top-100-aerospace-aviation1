@@ -14,13 +14,15 @@
     "comment": {
       "type": "string"
     },
+    "current_objective": {
+      "type": "string"
+    },
     "timestamp": {
       "type": "string",
       "format": "date-time"
     }
   },
   "required": [
-    "expert_name",
-    "comment"
+    "expert_name"
   ]
 }

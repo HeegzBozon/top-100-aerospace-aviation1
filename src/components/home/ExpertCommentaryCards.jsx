@@ -65,26 +65,38 @@ export default function ExpertCommentaryCards() {
            className="relative z-10 h-[120px] md:h-auto"
         >
            {/* Desktop View (Standard) */}
-           <div className="hidden md:flex flex-row gap-4 items-center">
-             <div className="shrink-0">
-               <img 
-                 src={currentComment.expert_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentComment.expert_name)}&background=1e3a5a&color=c9a87c`} 
-                 alt={currentComment.expert_name} 
-                 className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border-2 border-[#1e3a5a] object-cover shadow-lg"
-               />
-             </div>
-             <div>
-               <p className="text-slate-200 text-sm italic mb-1 leading-snug max-w-4xl">"{currentComment.comment}"</p>
-               <div className="flex items-center gap-2">
-                 <span className="text-[#c9a87c] text-xs font-bold">{currentComment.expert_name}</span>
-                 {currentComment.expert_title && (
-                   <>
-                     <span className="text-slate-700 text-xs">•</span>
-                     <span className="text-slate-400 text-[10px] font-medium uppercase tracking-wider">{currentComment.expert_title}</span>
-                   </>
+           <div className="hidden md:flex flex-row gap-4 items-center w-full">
+             <div className="flex-1 flex flex-row gap-4 items-center min-w-0">
+               <div className="shrink-0">
+                 <img 
+                   src={currentComment.expert_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentComment.expert_name)}&background=1e3a5a&color=c9a87c`} 
+                   alt={currentComment.expert_name} 
+                   className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border-2 border-[#1e3a5a] object-cover shadow-lg"
+                 />
+               </div>
+               <div className="min-w-0">
+                 {currentComment.comment && (
+                   <p className="text-slate-200 text-sm italic mb-1 leading-snug max-w-4xl">"{currentComment.comment}"</p>
                  )}
+                 <div className="flex items-center gap-2 flex-wrap mt-1">
+                   <span className="text-[#c9a87c] text-xs font-bold">{currentComment.expert_name}</span>
+                   {currentComment.expert_title && (
+                     <>
+                       <span className="text-slate-700 text-xs hidden lg:inline">•</span>
+                       <span className="text-slate-400 text-[10px] font-medium uppercase tracking-wider truncate block w-full lg:w-auto">{currentComment.expert_title}</span>
+                     </>
+                   )}
+                 </div>
                </div>
              </div>
+             
+             {currentComment.current_objective && (
+               <div className="flex-1 border-l border-[#4a90b8]/30 pl-4 py-1">
+                 <span className="text-[#c9a87c] text-[10px] font-bold uppercase tracking-wider block mb-1">Current Objective</span>
+                 <p className="text-slate-300 text-xs leading-relaxed">{currentComment.current_objective}</p>
+                 <a href="#" className="text-[#4a90b8] text-xs hover:underline mt-1 inline-block">Link</a>
+               </div>
+             )}
            </div>
 
            {/* Mobile View (Flip Card) */}
@@ -97,15 +109,23 @@ export default function ExpertCommentaryCards() {
                      alt={currentComment.expert_name} 
                      className="w-12 h-12 rounded-full border-2 border-[#1e3a5a] object-cover shadow-md shrink-0"
                    />
-                   <div>
+                   <div className="min-w-0">
                      <span className="text-[#c9a87c] text-sm font-bold block">{currentComment.expert_name}</span>
-                     <span className="text-slate-400 text-xs line-clamp-1">{currentComment.expert_title}</span>
-                     <span className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">Tap to read comment <ChevronRight className="w-3 h-3" /></span>
+                     <span className="text-slate-400 text-[10px] line-clamp-2">{currentComment.expert_title}</span>
+                     <span className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">Tap to read more <ChevronRight className="w-3 h-3" /></span>
                    </div>
                 </div>
                 {/* Back */}
-                <div className="card-flip-back bg-[#1e3a5a]/80 border border-[#c9a87c]/30 rounded-lg p-4 flex flex-col justify-center">
-                   <p className="text-slate-100 text-xs italic leading-relaxed line-clamp-4">"{currentComment.comment}"</p>
+                <div className="card-flip-back bg-[#1e3a5a]/80 border border-[#c9a87c]/30 rounded-lg p-4 flex flex-col justify-center overflow-y-auto">
+                   {currentComment.comment && (
+                     <p className="text-slate-100 text-xs italic leading-relaxed line-clamp-4 mb-2">"{currentComment.comment}"</p>
+                   )}
+                   {currentComment.current_objective && (
+                     <div>
+                       <span className="text-[#c9a87c] text-[10px] font-bold uppercase tracking-wider block mb-1">Current Objective</span>
+                       <p className="text-slate-300 text-[11px] leading-relaxed line-clamp-3">{currentComment.current_objective}</p>
+                     </div>
+                   )}
                 </div>
              </div>
            </div>
