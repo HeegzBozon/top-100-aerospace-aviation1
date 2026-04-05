@@ -78,26 +78,25 @@ export default function LiveStreamModule() {
             <CarouselContent>
               <CarouselItem className="flex flex-col h-full">
                 <div className="flex-1 flex flex-col border-t border-[#4a90b8]/20 relative overflow-hidden">
-                  <div className="p-3 md:p-4 flex flex-col md:flex-row gap-3 md:items-center justify-between">
-                    <div className="pr-12 md:pr-16">
-                      <h3 className="text-xl md:text-2xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
-                        Artemis Mission Theater
-                      </h3>
-                      <p className="text-slate-300 max-w-2xl text-xs md:text-sm leading-relaxed">
-                        Join us live for the latest updates, mission progress, and expert commentary from our panel of industry fellows.
-                      </p>
+                  <div className="px-4 py-4 md:px-6 md:py-6 flex-1 flex flex-col justify-center">
+                    <h3 className="text-xl md:text-2xl font-bold mb-2 md:mb-3" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
+                      Artemis Mission Theater
+                    </h3>
+                    <div className="flex items-start gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-slate-200 text-xs md:text-sm leading-relaxed mb-4 md:mb-6 max-w-3xl italic">
+                          "The connection between the TOP 100 Women in Aerospace & Aviation, the Artemis II mission, and the value of space to Earth is a continuous thread of human ingenuity: the diverse experts engineering our return to the Moon are simultaneously driving technological leaps that solve critical challenges back on our home planet."
+                        </p>
+                        <div className="flex items-center gap-3">
+                          <a href="/artemis-2">
+                            <Button className="bg-[#c9a87c] hover:bg-[#b09268] text-slate-950 font-bold px-5 py-2.5 rounded-full text-xs md:text-sm shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:shadow-[0_0_30px_rgba(201,168,124,0.5)] transition-all flex items-center gap-2">
+                              <Rocket className="w-4 h-4" />
+                              Discover Artemis
+                            </Button>
+                          </a>
+                        </div>
+                      </div>
                     </div>
-                    <div className="shrink-0 flex items-center gap-3">
-                       <div className="flex -space-x-2">
-                          <img className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=E+C&background=1e3a5a&color=c9a87c" alt="Expert" />
-                          <img className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a]" src="https://ui-avatars.com/api/?name=A+B&background=4a90b8&color=fff" alt="Expert" />
-                          <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-[#1e3a5a] bg-slate-800 flex items-center justify-center text-[9px] md:text-[10px] font-bold">+3</div>
-                       </div>
-                       <span className="text-[10px] md:text-xs text-slate-400 font-semibold tracking-wider uppercase">Correspondents</span>
-                    </div>
-                  </div>
-                  <div className="px-3 pb-3 md:px-4 md:pb-4 flex-1 flex flex-col justify-center">
-                     <ExpertCommentaryCards />
                   </div>
                   <div className="shrink-0 px-4 md:px-6 pb-4 md:pb-5">
                     <HonoreeSpotlightRail />
