@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { ChevronRight, Award } from 'lucide-react';
@@ -52,7 +52,7 @@ export default function Top100WomenRail() {
 
       <Carousel 
         setApi={setCarouselApi}
-        opts={{ loop: true, align: "start" }}
+        opts={useMemo(() => ({ loop: true, align: "start" }), [])}
         className="w-full"
       >
         <CarouselContent className="-ml-3 px-4 md:px-6">

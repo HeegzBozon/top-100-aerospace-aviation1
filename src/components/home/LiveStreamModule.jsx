@@ -66,7 +66,7 @@ export default function LiveStreamModule() {
         </div>
         <Carousel 
           setApi={setCarouselApi} 
-          opts={{ loop: true }} 
+          opts={React.useMemo(() => ({ loop: true }), [])} 
           className="w-full relative group"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
