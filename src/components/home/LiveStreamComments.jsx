@@ -78,53 +78,53 @@ export default function LiveStreamComments() {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <div className="w-full flex flex-col h-full bg-[#020B1A] border-2 border-[#4a90b8] rounded-xl shadow-[0_0_30px_rgba(11,61,145,0.4)] overflow-hidden relative">
+    <div className="w-full flex flex-col h-full bg-gradient-to-br from-[#0a1628] via-[#0f1f35] to-[#1e3a5a] border border-[#c9a87c]/20 rounded-2xl shadow-[0_8px_32px_rgba(10,22,40,0.6)] overflow-hidden relative">
+      {/* Subtle Constellation/Space Animations */}
+      <div className="absolute inset-0 pointer-events-none opacity-40 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-[#c9a87c] rounded-full mix-blend-screen filter blur-[60px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-[#d4a090] rounded-full mix-blend-screen filter blur-[70px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/2 left-1/2 w-1 h-1 bg-white rounded-full shadow-[0_0_10px_2px_white] animate-[ping_3s_ease-in-out_infinite]" />
+        <div className="absolute top-1/4 right-1/3 w-0.5 h-0.5 bg-white rounded-full shadow-[0_0_5px_1px_white] animate-[ping_4s_ease-in-out_infinite_0.5s]" />
+        <div className="absolute bottom-1/3 left-1/3 w-1.5 h-1.5 bg-[#c9a87c] rounded-full shadow-[0_0_12px_2px_#c9a87c] animate-[ping_5s_ease-in-out_infinite_1s]" />
+      </div>
+
       {/* Header */}
-      <div className="p-4 border-b-2 border-[#4a90b8] bg-[#061e47] flex items-center justify-between shrink-0">
-        <h4 className="text-white font-black text-xl flex items-center gap-2 tracking-widest uppercase">
-          <Flame className="w-6 h-6 text-orange-500 animate-pulse" />
+      <div className="px-5 py-4 border-b border-[#c9a87c]/10 bg-white/5 backdrop-blur-sm flex items-center justify-between shrink-0 relative z-10">
+        <h4 className="text-[#faf8f5] font-bold text-lg flex items-center gap-2 tracking-wide">
+          <Flame className="w-5 h-5 text-[#d4a090] animate-pulse" />
           Campfire
         </h4>
-        <span className="text-xs text-blue-100 uppercase tracking-widest font-bold bg-[#0b3d91] px-3 py-1.5 rounded-md border-2 border-[#4a90b8]">
-          {comments.length} messages
-        </span>
       </div>
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide bg-gradient-to-b from-[#020B1A] to-[#061e47]" ref={scrollRef}>
+      <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-hide relative z-10 flex flex-col justify-end" ref={scrollRef}>
         {isLoading ? (
           <div className="flex justify-center items-center h-full">
-            <Loader2 className="w-8 h-8 animate-spin text-[#4a90b8]" />
+            <Loader2 className="w-6 h-6 animate-spin text-[#c9a87c]" />
           </div>
         ) : comments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-blue-200/60">
-            <MessageSquare className="w-12 h-12 mb-3 opacity-50" />
-            <span className="text-[15px] font-bold">No comments yet. Be the first to spark the fire!</span>
+          <div className="flex flex-col items-center justify-center h-full text-[#c9a87c]/50">
+            <MessageSquare className="w-8 h-8 mb-2 opacity-50" />
+            <span className="text-sm font-medium">Be the first to spark the fire!</span>
           </div>
         ) : (
-          <div className="flex flex-col gap-5">
-            {comments.map((c) => (
-              <div key={c.id} className="flex items-start gap-3 group">
-                <img src={c.user_avatar} alt={c.user_name} className="w-10 h-10 rounded-full border-2 border-[#4a90b8] shrink-0 shadow-lg" />
-                <div className="flex-1 min-w-0 bg-[#0b3d91] border-2 border-[#4a90b8] rounded-2xl rounded-tl-sm p-3.5 relative hover:bg-[#1e3a5a] transition-colors shadow-md">
-                  <div className="flex items-baseline justify-between gap-2 mb-1.5">
-                    <span className="text-[#c9a87c] text-[15px] font-black truncate">{c.user_name}</span>
-                    <span className="text-blue-200 text-[11px] font-bold tracking-widest uppercase shrink-0">
-                      {new Date(c.created_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </span>
-                  </div>
-                  <p className="text-white text-[15px] break-words leading-relaxed font-medium">{c.text}</p>
-                  
-                  {isAdmin && (
-                    <button 
-                      onClick={() => deleteMutation.mutate(c.id)}
-                      className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-xl transition-all transform hover:scale-110"
-                      title="Delete comment (Admin)"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
+          <div className="flex flex-col gap-2">
+            {comments.slice(-3).map((c) => (
+              <div key={c.id} className="flex items-center gap-3 group px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all backdrop-blur-sm">
+                <img src={c.user_avatar} alt={c.user_name} className="w-7 h-7 rounded-full border border-[#c9a87c]/50 shrink-0 shadow-lg" />
+                <div className="flex-1 min-w-0 flex items-center gap-2">
+                  <span className="text-[#c9a87c] text-sm font-bold shrink-0 truncate max-w-[120px]">{c.user_name}</span>
+                  <span className="text-[#faf8f5] text-sm truncate opacity-90 font-medium">{c.text}</span>
                 </div>
+                {isAdmin && (
+                  <button 
+                    onClick={() => deleteMutation.mutate(c.id)}
+                    className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/20 text-red-400 rounded-full transition-all shrink-0"
+                    title="Delete comment (Admin)"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -132,22 +132,22 @@ export default function LiveStreamComments() {
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSubmit} className="p-4 border-t-2 border-[#4a90b8] bg-[#061e47] shrink-0">
-        <div className="flex gap-3">
+      <form onSubmit={handleSubmit} className="p-4 border-t border-[#c9a87c]/10 bg-white/5 backdrop-blur-sm shrink-0 relative z-10">
+        <div className="flex gap-2">
           <Input 
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder={user ? "Join the conversation..." : "Log in to chat..."}
+            placeholder={user ? "Tap in..." : "Log in to tap in..."}
             disabled={!user || createMutation.isPending}
-            className="flex-1 bg-[#020B1A] border-2 border-[#4a90b8] text-white placeholder:text-blue-200/60 h-12 text-[15px] focus-visible:ring-offset-0 focus-visible:ring-0 focus-visible:border-[#c9a87c] transition-colors rounded-xl px-4 font-medium"
+            className="flex-1 bg-black/20 border border-[#c9a87c]/20 text-[#faf8f5] placeholder:text-[#faf8f5]/40 h-10 text-sm focus-visible:ring-offset-0 focus-visible:ring-1 focus-visible:ring-[#c9a87c]/50 transition-all rounded-lg px-4"
             maxLength={200}
           />
           <Button 
             type="submit" 
             disabled={!user || !newComment.trim() || createMutation.isPending}
-            className="h-12 px-6 bg-[#c9a87c] hover:bg-[#b09269] text-[#020B1A] font-black text-[15px] tracking-widest uppercase rounded-xl border-none shadow-lg transition-transform active:scale-95 disabled:opacity-50 disabled:active:scale-100"
+            className="h-10 px-5 bg-gradient-to-r from-[#c9a87c] to-[#d4a090] hover:from-[#e8d4b8] hover:to-[#c9a87c] text-[#0a1628] font-bold text-sm rounded-lg border-none shadow-[0_0_15px_rgba(201,168,124,0.3)] transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100"
           >
-            {createMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Send'}
+            {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send'}
           </Button>
         </div>
       </form>
