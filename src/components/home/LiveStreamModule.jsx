@@ -22,7 +22,7 @@ export default function LiveStreamModule() {
   }, [carouselApi, isPlaying]);
 
   return (
-    <div className="px-4 py-2 md:py-3 max-w-7xl mx-auto relative">
+    <div className="px-4 pb-2 md:pb-3 max-w-7xl mx-auto relative">
       {/* Subtle Starfield Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl opacity-30">
         <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
@@ -32,8 +32,8 @@ export default function LiveStreamModule() {
       </div>
 
       <Card className="relative overflow-hidden bg-[#0a1526]/80 backdrop-blur-xl border-[#4a90b8]/20 text-white shadow-2xl">
-        <div className="flex flex-col lg:flex-row">
-          <div className="lg:w-[70%] aspect-video bg-black relative flex items-center justify-center border-b lg:border-b-0 lg:border-r border-[#4a90b8]/20">
+        <div className="flex flex-col lg:flex-row lg:h-[360px] xl:h-[400px]">
+          <div className="lg:w-[70%] h-[240px] lg:h-full bg-black relative flex items-center justify-center border-b lg:border-b-0 lg:border-r border-[#4a90b8]/20">
              {isLive ? (
                <iframe 
                  className="absolute inset-0 w-full h-full"
@@ -58,7 +58,7 @@ export default function LiveStreamModule() {
                </div>
              )}
           </div>
-          <div className="lg:w-[30%] bg-[#0a1526]/40 p-3 md:p-4 flex flex-col gap-3 lg:max-h-[500px] overflow-y-auto">
+          <div className="lg:w-[30%] bg-[#0a1526]/40 p-3 md:p-4 flex flex-col gap-3 h-[360px] xl:h-[400px] lg:h-full overflow-y-auto">
              <LiveReactionPoll />
              <LiveStreamComments />
           </div>

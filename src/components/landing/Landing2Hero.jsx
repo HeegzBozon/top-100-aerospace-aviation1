@@ -236,10 +236,10 @@ export default function Landing2Hero({ user }) {
               <div className="shrink-0">
                 <Link to={createPageUrl("Profile")}>
                   <Button
-                    className="text-white font-bold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm cursor-pointer"
+                    className="text-white font-bold px-6 md:px-10 h-11 md:h-14 text-sm md:text-lg cursor-pointer"
                     style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
                   >
-                    <Edit className="w-3.5 h-3.5 mr-1.5" />
+                    <Edit className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                     Edit Profile
                   </Button>
                 </Link>
@@ -299,20 +299,20 @@ export default function Landing2Hero({ user }) {
                 {slide.ctaLink === "auth" ? (
                   <Button
                     onClick={handleCTA}
-                    className="text-white font-bold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm cursor-pointer whitespace-nowrap"
+                    className="text-white font-bold px-6 md:px-10 h-11 md:h-14 text-sm md:text-lg cursor-pointer whitespace-nowrap"
                     style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
                   >
                     {slide.cta}
-                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2" />
                   </Button>
                 ) : (
                   <Link to={getSlideLink(slide)}>
                     <Button
-                      className="text-white font-bold px-4 md:px-6 h-9 md:h-11 text-xs md:text-sm cursor-pointer whitespace-nowrap"
+                      className="text-white font-bold px-6 md:px-10 h-11 md:h-14 text-sm md:text-lg cursor-pointer whitespace-nowrap"
                       style={{ background: `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`, fontFamily: "'Montserrat', sans-serif" }}
                     >
                       {slide.cta}
-                      <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                      <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2" />
                     </Button>
                   </Link>
                 )}
