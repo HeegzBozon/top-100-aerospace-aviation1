@@ -1,0 +1,12 @@
+{
+  "name": "LiveReaction",
+  "type": "object",
+  "properties": {
+    "emoji": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "emoji"
+  ]
+}

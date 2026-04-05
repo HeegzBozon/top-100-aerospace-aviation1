@@ -80,7 +80,7 @@ export default function LiveStreamComments() {
       <div className="p-2 px-3 border-b border-[#4a90b8]/30 bg-[#0a1526]/50 flex items-center justify-between">
         <h4 className="text-slate-200 font-semibold text-sm flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-500" />
-          Campfire
+          💬 Campfire
         </h4>
         <span className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">{comments.length} messages</span>
       </div>
