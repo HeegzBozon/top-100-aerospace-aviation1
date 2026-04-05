@@ -166,62 +166,52 @@ export default function LiveStreamModule() {
                      <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
                    </div>
                    
-                   <div className="flex-1 p-4 md:p-6 lg:p-8 flex flex-col justify-center relative z-10">
-                     <div className="text-[10px] uppercase tracking-widest text-[#c9a87c] font-bold mb-4 absolute top-4 left-6 hidden md:block">Alumni & Fellow Correspondents</div>
-                     
-                     <div className="flex flex-col gap-4 lg:gap-8 items-center w-full max-w-5xl mx-auto pt-2 md:pt-6 mt-2 md:mt-0">
-                       {/* Top Banner / Program Launch */}
-                       <div className="w-full text-center mb-4 md:mb-6 bg-[#c9a87c]/10 border border-[#c9a87c]/30 rounded-xl p-4 md:p-5 backdrop-blur-sm shadow-[0_0_20px_rgba(201,168,124,0.1)]">
-                         <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 mb-2 md:mb-3 rounded-full border border-[#c9a87c]/40 bg-[#c9a87c]/20 text-[#c9a87c] text-[9px] md:text-[10px] font-bold uppercase tracking-widest">
-                           <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] animate-pulse" />
-                           Program Launch
-                         </div>
-                         <h2 className="text-[#c9a87c] text-lg md:text-xl lg:text-2xl font-bold uppercase tracking-wider mb-1.5 md:mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                           THE ALUMNI CORRESPONDENT PROGRAM IS LIVE.
-                         </h2>
-                         <p className="text-slate-200 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
-                           The index just got a voice. Alumni publishing directly to the community — always on, year-round.
-                         </p>
+                   <div className="p-3 md:p-4 flex flex-col md:flex-row gap-3 md:items-center justify-between relative z-10">
+                     <div className="pr-12 md:pr-16">
+                       <div className="inline-flex items-center gap-1.5 px-2 py-0.5 mb-1.5 rounded-full border border-[#c9a87c]/40 bg-[#c9a87c]/20 text-[#c9a87c] text-[9px] font-bold uppercase tracking-widest">
+                         <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] animate-pulse" />
+                         Program Launch
                        </div>
+                       <h3 className="text-xl md:text-2xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
+                         Alumni Correspondent Program
+                       </h3>
+                       <p className="text-slate-300 max-w-2xl text-xs md:text-sm leading-relaxed">
+                         The index just got a voice. Alumni publishing directly to the community — always on, year-round.
+                       </p>
+                     </div>
+                   </div>
 
-                       <div className="w-full flex flex-col md:flex-row gap-4 lg:gap-8 items-center md:items-start pt-2 border-t border-[#4a90b8]/30">
-                         {/* Left Side: Avatar & Info */}
-                         <div className="flex-1 flex flex-col md:flex-row gap-4 items-center text-center md:text-left min-w-0 w-full mt-4">
-                           <div className="shrink-0 relative">
+                   <div className="px-3 pb-3 md:px-4 md:pb-4 flex-1 flex flex-col justify-center relative z-10">
+                     <div className="flex flex-col md:flex-row gap-4 items-center bg-[#1e3a5a]/40 rounded-xl border border-[#4a90b8]/30 p-4 relative overflow-hidden shadow-inner backdrop-blur-md">
+                         <div className="shrink-0 relative">
                              <img 
                                src="https://media.base44.com/images/public/68996845be6727838fdb822e/1261c7b10_Untitleddesign-11.png" 
                                alt="Morgan Kainu" 
-                               className="w-24 h-24 lg:w-32 lg:h-32 object-contain drop-shadow-[0_0_15px_rgba(0,0,0,0.4)]"
+                               className="w-20 h-20 lg:w-24 lg:h-24 object-contain drop-shadow-[0_0_15px_rgba(0,0,0,0.4)]"
                              />
-                           </div>
-                           <div className="min-w-0 flex flex-col justify-center">
-                             <h3 className="text-[#c9a87c] text-base md:text-lg font-bold mb-1">
-                               Morgan Kainu 
-                             </h3>
-                             <p className="text-slate-400 text-[10px] font-medium uppercase tracking-wider leading-relaxed">
-                               TOP 100 WOMEN 2021 & 2022 • MISSION DEVELOPMENT DIRECTOR @ SPACE NATION | APPLIED SPACE ANTHROPOLOGIST
-                             </p>
-                           </div>
                          </div>
-                         
-                         {/* Right Side: Active Mission */}
-                         <div className="flex-1 md:border-l border-[#4a90b8]/30 md:pl-6 lg:pl-8 flex flex-col justify-center text-center md:text-left mt-4">
-                           <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                         <div className="flex-1 min-w-0 flex flex-col justify-center text-center md:text-left">
+                           <h3 className="text-[#c9a87c] text-base font-bold mb-0.5">Morgan Kainu</h3>
+                           <p className="text-slate-400 text-[10px] font-medium uppercase tracking-wider leading-snug">
+                             TOP 100 WOMEN 2021 & 2022 • MISSION DEVELOPMENT DIRECTOR @ SPACE NATION | APPLIED SPACE ANTHROPOLOGIST
+                           </p>
+                         </div>
+                         <div className="flex-1 md:border-l border-[#4a90b8]/30 md:pl-4 flex flex-col justify-center text-center md:text-left mt-2 md:mt-0">
+                           <div className="flex items-center justify-center md:justify-start gap-2 mb-1.5">
                              <div className="w-1.5 h-1.5 rounded-full bg-[#c95a43]" />
                              <span className="text-[#c95a43] text-[10px] font-bold uppercase tracking-widest">Active Mission</span>
                            </div>
-                           <p className="text-slate-200 text-xs leading-relaxed mb-4 font-medium">
+                           <p className="text-slate-200 text-xs leading-relaxed mb-3 font-medium line-clamp-3">
                              Recruiting for the STAR Summit—an immersive 5-day analog mission training program at Biosphere 2. Develop leadership, teamwork, and operational readiness under pressure.
                            </p>
                            <div>
                              <a href="/star-summit">
-                               <button className="bg-gradient-to-r from-[#c95a43] to-[#8f2a58] hover:from-[#b34d38] hover:to-[#7a224a] text-white text-[10px] font-bold uppercase tracking-wider px-5 py-2 rounded-full shadow-[0_0_15px_rgba(201,90,67,0.3)] hover:shadow-[0_0_20px_rgba(201,90,67,0.5)] transition-all hover:scale-105 active:scale-95">
+                               <button className="bg-gradient-to-r from-[#c95a43] to-[#8f2a58] hover:from-[#b34d38] hover:to-[#7a224a] text-white text-[10px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-full shadow-[0_0_10px_rgba(201,90,67,0.3)] transition-all hover:scale-105 active:scale-95">
                                  Explore STAR Summit
                                </button>
                              </a>
                            </div>
                          </div>
-                       </div>
                      </div>
                    </div>
                    
