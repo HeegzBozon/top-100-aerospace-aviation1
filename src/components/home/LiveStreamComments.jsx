@@ -75,8 +75,8 @@ export default function LiveStreamComments() {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <div className="w-full flex flex-col h-[280px] bg-slate-900/60 border border-slate-800/60 rounded-xl shadow-lg overflow-hidden backdrop-blur-md">
-      <div className="p-2 px-3 border-b border-slate-800/60 bg-slate-950/40 flex items-center justify-between">
+    <div className="w-full flex flex-col h-[280px] bg-[#1e3a5a]/40 border border-[#4a90b8]/30 rounded-xl shadow-lg overflow-hidden backdrop-blur-md">
+      <div className="p-2 px-3 border-b border-[#4a90b8]/30 bg-[#0a1526]/50 flex items-center justify-between">
         <h4 className="text-slate-200 font-semibold text-sm flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
           Live Chat
@@ -116,13 +116,13 @@ export default function LiveStreamComments() {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="p-2 border-t border-slate-800/60 bg-slate-950/40 flex gap-2">
+      <form onSubmit={handleSubmit} className="p-2 border-t border-[#4a90b8]/30 bg-[#0a1526]/50 flex gap-2">
         <Input 
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder={user ? "Say something..." : "Log in to chat..."}
           disabled={!user || createMutation.isPending}
-          className="flex-1 bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 h-10 text-sm focus-visible:ring-[#c9a87c]"
+          className="flex-1 bg-[#1e3a5a]/60 border-[#4a90b8]/30 text-white placeholder:text-slate-400 h-10 text-sm focus-visible:ring-[#c9a87c]"
           maxLength={200}
         />
         <Button 

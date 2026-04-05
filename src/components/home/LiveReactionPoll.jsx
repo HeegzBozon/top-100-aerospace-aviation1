@@ -91,9 +91,9 @@ export default function LiveReactionPoll() {
 
   if (isLoading) return <div className="animate-pulse w-full h-32 bg-slate-900 rounded-xl border border-slate-800"></div>;
   if (!poll) return (
-    <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 border border-slate-800/50 rounded-xl bg-slate-900/30">
-       <span className="text-slate-500 text-sm font-semibold tracking-widest uppercase mb-2">Live Polling</span>
-       <span className="text-slate-400 text-xs">Waiting for the next mission prompt...</span>
+    <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 border border-[#4a90b8]/20 rounded-xl bg-[#1e3a5a]/30">
+       <span className="text-slate-400 text-sm font-semibold tracking-widest uppercase mb-2">Live Polling</span>
+       <span className="text-slate-300 text-xs">Waiting for the next mission prompt...</span>
     </div>
   );
 
@@ -104,7 +104,7 @@ export default function LiveReactionPoll() {
 
   return (
     <div 
-      className="w-full bg-slate-900/40 border border-slate-800/50 rounded-xl p-3 shadow-lg backdrop-blur-md relative overflow-hidden"
+      className="w-full bg-[#1e3a5a]/40 border border-[#4a90b8]/30 rounded-xl p-3 shadow-lg backdrop-blur-md relative overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

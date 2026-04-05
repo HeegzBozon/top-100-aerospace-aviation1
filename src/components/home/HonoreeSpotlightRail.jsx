@@ -33,7 +33,7 @@ export default function HonoreeSpotlightRail() {
   });
 
   return (
-    <div className="w-full border-t border-slate-800/50 pt-4 pb-4 bg-slate-950/30">
+    <div className="w-full border-t border-[#4a90b8]/20 pt-4 pb-4 bg-[#0a1526]/50">
       <div className="flex items-center justify-between mb-3 px-4 md:px-6">
         <h4 className="text-lg font-bold text-white flex items-center gap-2">
           <Award className="w-5 h-5 text-[#c9a87c]" />
@@ -48,12 +48,12 @@ export default function HonoreeSpotlightRail() {
         <div className="flex w-max space-x-3 px-4 md:px-6">
           {isLoading ? (
             Array(5).fill(0).map((_, i) => (
-              <div key={i} className="w-[280px] shrink-0 rounded-xl bg-slate-900 border border-slate-800 p-4">
+              <div key={i} className="w-[280px] shrink-0 rounded-xl bg-[#1e3a5a]/40 border border-[#4a90b8]/30 p-4">
                 <div className="flex items-center gap-4">
-                  <Skeleton className="w-16 h-16 rounded-full bg-slate-800" />
+                  <Skeleton className="w-16 h-16 rounded-full bg-[#1e3a5a]/60" />
                   <div className="space-y-2 flex-1">
-                    <Skeleton className="h-4 w-3/4 bg-slate-800" />
-                    <Skeleton className="h-3 w-1/2 bg-slate-800" />
+                    <Skeleton className="h-4 w-3/4 bg-[#1e3a5a]/60" />
+                    <Skeleton className="h-3 w-1/2 bg-[#1e3a5a]/60" />
                   </div>
                 </div>
               </div>
@@ -62,12 +62,12 @@ export default function HonoreeSpotlightRail() {
             <a 
               key={fellow.id}
               href={fellow.actual_profile_id ? `/ProfileView?id=${fellow.actual_profile_id}` : (fellow.profile_url || '#')}
-              className="w-[280px] shrink-0 rounded-xl bg-slate-900/50 hover:bg-slate-900 border border-slate-800 hover:border-[#c9a87c]/50 p-4 flex items-center gap-4 transition-all group"
+              className="w-[280px] shrink-0 rounded-xl bg-[#1e3a5a]/40 hover:bg-[#1e3a5a]/80 border border-[#4a90b8]/30 hover:border-[#c9a87c]/50 p-4 flex items-center gap-4 transition-all group"
             >
               <img 
                 src={fellow.actual_avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fellow.name)}&background=1e3a5a&color=c9a87c`} 
                 alt={fellow.name}
-                className="w-14 h-14 rounded-full object-cover border-2 border-slate-800 group-hover:border-[#c9a87c] transition-colors shrink-0"
+                className="w-14 h-14 rounded-full object-cover border-2 border-[#1e3a5a] group-hover:border-[#c9a87c] transition-colors shrink-0"
               />
               <div className="flex-1 min-w-0 whitespace-normal">
                 <h5 className="font-bold text-sm text-slate-100 truncate group-hover:text-white transition-colors">{fellow.name}</h5>

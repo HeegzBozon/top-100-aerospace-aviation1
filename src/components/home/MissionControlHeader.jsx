@@ -79,8 +79,8 @@ export default function MissionControlHeader() {
       <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-10" style={{ background: brand.gold }} />
       <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-3xl opacity-5" style={{ background: '#4a90b8' }} />
 
-      <div className="relative z-10 px-4 md:px-8 py-8 md:py-12">
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+      <div className="relative z-10 px-4 md:px-6 py-6 md:py-8">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8">
 
           {/* ── Left column ── */}
           <div className="flex-1 min-w-0">
@@ -103,7 +103,7 @@ export default function MissionControlHeader() {
 
             {/* Countdown */}
             {countdown && !countdown.past && (
-              <div className="inline-flex items-center gap-4 md:gap-6 px-6 py-4 rounded-2xl mb-6" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
+              <div className="inline-flex items-center gap-4 md:gap-6 px-5 py-3 rounded-2xl mb-5" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
                 <div className="text-white/50 text-xs uppercase tracking-widest mr-2">
                   <Clock className="w-4 h-4 mb-1 mx-auto" />
                   Nominations Close

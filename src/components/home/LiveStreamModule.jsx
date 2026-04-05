@@ -19,9 +19,9 @@ export default function LiveStreamModule() {
         <div className="absolute top-1/4 left-1/2 w-1 h-1 bg-yellow-100 rounded-full animate-pulse" style={{ animationDelay: '2.1s' }} />
       </div>
 
-      <Card className="relative overflow-hidden bg-slate-950/60 backdrop-blur-xl border-slate-800/60 text-white shadow-2xl">
+      <Card className="relative overflow-hidden bg-[#0a1526]/80 backdrop-blur-xl border-[#4a90b8]/20 text-white shadow-2xl">
         <div className="flex flex-col lg:flex-row">
-          <div className="lg:w-[70%] aspect-video bg-black relative flex items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-800">
+          <div className="lg:w-[70%] aspect-video bg-black relative flex items-center justify-center border-b lg:border-b-0 lg:border-r border-[#4a90b8]/20">
              {isLive ? (
                <iframe 
                  className="absolute inset-0 w-full h-full"
@@ -46,12 +46,12 @@ export default function LiveStreamModule() {
                </div>
              )}
           </div>
-          <div className="lg:w-[30%] bg-slate-950/40 p-3 md:p-4 flex flex-col gap-3 lg:max-h-[500px] overflow-y-auto">
+          <div className="lg:w-[30%] bg-[#0a1526]/40 p-3 md:p-4 flex flex-col gap-3 lg:max-h-[500px] overflow-y-auto">
              <LiveReactionPoll />
              <LiveStreamComments />
           </div>
         </div>
-        <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4 md:items-center justify-between border-t border-slate-800/50">
+        <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4 md:items-center justify-between border-t border-[#4a90b8]/20">
           <div>
             <h3 className="text-2xl md:text-3xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#c9a87c" }}>
               Artemis Mission Theater

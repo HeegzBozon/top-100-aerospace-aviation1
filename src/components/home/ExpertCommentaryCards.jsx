@@ -33,8 +33,8 @@ export default function ExpertCommentaryCards() {
   const currentComment = comments[currentIndex];
 
   return (
-    <div className="w-full bg-slate-900/40 rounded-xl border border-slate-800/60 p-4 md:p-5 relative overflow-hidden shadow-inner backdrop-blur-md">
-      <Quote className="absolute top-4 right-4 w-12 h-12 md:w-16 md:h-16 text-slate-800/30" />
+    <div className="w-full bg-[#1e3a5a]/40 rounded-xl border border-[#4a90b8]/30 p-4 md:p-5 relative overflow-hidden shadow-inner backdrop-blur-md">
+      <Quote className="absolute top-4 right-4 w-12 h-12 md:w-16 md:h-16 text-[#4a90b8]/10" />
       <div className="flex items-center justify-between mb-3 relative z-10">
          <div className="text-[10px] uppercase tracking-widest text-[#c9a87c] font-bold">Studio Commentary</div>
          {comments.length > 1 && (
@@ -91,7 +91,7 @@ export default function ExpertCommentaryCards() {
            <div className="md:hidden card-flip-container w-full h-full cursor-pointer" onClick={() => setIsFlipped(!isFlipped)}>
              <div className={`card-flip-inner ${isFlipped ? 'flipped' : ''}`}>
                 {/* Front */}
-                <div className="card-flip-front bg-slate-800/40 border border-slate-700/50 rounded-lg p-4 flex items-center gap-4">
+                <div className="card-flip-front bg-[#1e3a5a]/60 border border-[#4a90b8]/30 rounded-lg p-4 flex items-center gap-4">
                    <img 
                      src={currentComment.expert_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentComment.expert_name)}&background=1e3a5a&color=c9a87c`} 
                      alt={currentComment.expert_name} 
