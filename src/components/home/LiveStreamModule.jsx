@@ -32,7 +32,7 @@ export default function LiveStreamModule() {
       </div>
 
       <Card className="relative overflow-hidden bg-[#0a1526]/80 backdrop-blur-xl border-[#4a90b8]/20 text-white shadow-2xl">
-        <div className="flex flex-col lg:flex-row lg:h-[360px] xl:h-[400px]">
+        <div className="flex flex-col lg:flex-row lg:h-[480px] xl:h-[560px]">
           <div className="w-full aspect-video lg:w-auto lg:aspect-video lg:h-full bg-black relative flex items-center justify-center border-b lg:border-b-0 lg:border-r border-[#4a90b8]/20 shrink-0">
              {isLive ? (
                <iframe 
@@ -58,7 +58,7 @@ export default function LiveStreamModule() {
                </div>
              )}
           </div>
-          <div className="flex-1 min-w-0 bg-[#0a1526]/40 p-3 md:p-4 flex flex-col gap-3 h-[360px] xl:h-[400px] lg:h-full overflow-y-auto">
+          <div className="flex-1 min-w-0 bg-[#0a1526]/40 p-3 md:p-4 flex flex-col gap-3 h-[480px] xl:h-[560px] lg:h-full overflow-y-auto">
              <LiveReactionPoll />
              <LiveStreamComments />
           </div>
