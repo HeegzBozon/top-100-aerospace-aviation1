@@ -23,7 +23,10 @@ export default function LiveStreamComments() {
 
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['live-stream-comments'],
-    queryFn: () => base44.entities.LiveStreamComment.list('+created_date', 100),
+    queryFn: async () => {
+      const res = await base44.entities.LiveStreamComment.list('-created_date', 100);
+      return res.reverse();
+    },
     refetchInterval: 2000,
   });
 

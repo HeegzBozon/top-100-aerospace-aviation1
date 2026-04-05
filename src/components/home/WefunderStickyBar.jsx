@@ -13,7 +13,7 @@ export default function WefunderStickyBar() {
       
       <div className="relative z-10 mb-4">
         <div className="flex items-center justify-center gap-2 mb-1.5">
-          <h4 className="text-[#c9a87c] font-bold text-sm leading-tight">Invest in the Future</h4>
+          <h4 className="text-[#c9a87c] font-bold text-sm leading-tight">Invest in the New Space Economy</h4>
           <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-green-500/20 border border-green-500/30 text-green-400 text-[9px] font-bold uppercase tracking-wider">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
             Live
