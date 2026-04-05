@@ -6,6 +6,7 @@ import NewConversationModal from "./NewConversationModal";
 import ChannelManagerModal from "./ChannelManagerModal";
 import ContactUsModal from "./ContactUsModal";
 import { ChannelsList } from "./ChannelsList";
+import WefunderStickyBar from "@/components/home/WefunderStickyBar";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
@@ -279,6 +280,10 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
               onShowNewModal={() => setShowNewModal(true)}
               onShowChannelManager={() => setShowChannelManager(true)}
             />
+          </div>
+
+          <div className="mt-auto pt-4 pb-2">
+            <WefunderStickyBar />
           </div>
 
           {/* Contact Us */}
