@@ -76,8 +76,20 @@ export default function FloatingReactions() {
   }, []);
 
   const handleReaction = async (phrase) => {
+    // Show visual reaction locally immediately
+    const localId = 'local_' + Math.random().toString();
+    const left = 10 + Math.random() * 80;
+    
+    setReactions(prev => [...prev, { id: localId, emoji: phrase, left, time: Date.now() }]);
+    setTimeout(() => {
+      setReactions(prev => prev.filter(r => r.id !== localId));
+    }, 3000);
+
     try {
-      // Log phrase to chat only (do not float on video)
+      // Send visual reaction to other clients
+      await base44.entities.LiveReaction.create({ emoji: phrase });
+
+      // Log phrase to chat
       const me = await base44.auth.me().catch(() => null);
       if (me) {
         await base44.entities.LiveStreamComment.create({
@@ -133,12 +145,12 @@ export default function FloatingReactions() {
         </AnimatePresence>
       </div>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl flex flex-wrap justify-center gap-2 pointer-events-none">
+      <div className="absolute bottom-4 left-0 right-0 z-50 w-full px-4 flex overflow-x-auto scrollbar-hide gap-2 pointer-events-none">
         {quickChats.map((phrase, idx) => (
           <button
             key={idx}
             onClick={() => handleReaction(phrase)}
-            className="pointer-events-auto bg-[#0a1526]/90 backdrop-blur-md hover:bg-[#c9a87c]/20 text-[#c9a87c] text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full border border-[#4a90b8]/40 hover:border-[#c9a87c] transition-all active:scale-95 shadow-[0_4px_12px_rgba(0,0,0,0.5)] whitespace-nowrap"
+            className="pointer-events-auto shrink-0 bg-[#0a1526]/90 backdrop-blur-md hover:bg-[#c9a87c]/20 text-[#c9a87c] text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full border border-[#4a90b8]/40 hover:border-[#c9a87c] transition-all active:scale-95 shadow-[0_4px_12px_rgba(0,0,0,0.5)] whitespace-nowrap"
             title={`Send ${phrase} (Press ${idx + 1})`}
           >
             <span className="opacity-50 mr-1.5 font-normal">{idx + 1}</span>

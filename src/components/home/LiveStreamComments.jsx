@@ -155,10 +155,26 @@ export default function LiveStreamComments() {
               <button
                 key={idx}
                 type="button"
-                onClick={() => {
-                  base44.entities.LiveReaction.create({ emoji }).catch(console.error);
+                disabled={createMutation.isPending}
+                onClick={async () => {
+                  try {
+                    // Send visual floating reaction
+                    await base44.entities.LiveReaction.create({ emoji });
+                    
+                    // Add to chat feed
+                    if (user) {
+                      createMutation.mutate({
+                        text: emoji,
+                        user_name: user.full_name || 'Anonymous',
+                        user_avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name || 'A')}&background=1e3a5a&color=c9a87c`,
+                        user_email: user.email
+                      });
+                    }
+                  } catch (e) {
+                    console.error('Failed to send emoji', e);
+                  }
                 }}
-                className="w-8 h-8 flex items-center justify-center text-xl hover:bg-white/10 rounded-full transition-all hover:scale-125 active:scale-95"
+                className="w-8 h-8 flex items-center justify-center text-xl hover:bg-white/10 rounded-full transition-all hover:scale-125 active:scale-95 disabled:opacity-50"
                 title={`Send ${emoji}`}
               >
                 {emoji}
