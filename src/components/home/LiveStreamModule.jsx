@@ -97,7 +97,6 @@ export default function LiveStreamModule() {
                 <div className="px-3 pb-3 md:px-4 md:pb-4">
                    <ExpertCommentaryCards />
                 </div>
-                <HonoreeSpotlightRail />
               </CarouselItem>
 
               <CarouselItem>
@@ -151,9 +150,9 @@ export default function LiveStreamModule() {
                          <div className="w-28 h-28 lg:w-32 lg:h-32 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.5)] overflow-hidden bg-slate-900 flex items-center justify-center relative p-1" style={{ background: 'linear-gradient(135deg, #c9a87c, #8b6d45)' }}>
                            <div className="w-full h-full rounded-full border-[3px] border-[#0a1526] overflow-hidden relative z-10">
                              <img 
-                               src="https://ui-avatars.com/api/?name=Morgan+Kainu&background=0a1526&color=c9a87c&size=256" 
+                               src="https://media.base44.com/images/public/68996845be6727838fdb822e/d230ef4e4_Screenshot2026-04-05at35420AM.png" 
                                alt="Morgan Kainu" 
-                               className="w-full h-full object-cover"
+                               className="w-full h-full object-cover scale-[1.3]"
                              />
                            </div>
                          </div>
@@ -203,6 +202,9 @@ export default function LiveStreamModule() {
               <CarouselNext className="static transform-none w-10 h-10 md:w-12 md:h-12 bg-transparent border-none text-[#c9a87c] hover:bg-[#c9a87c]/20 hover:text-[#c9a87c] [&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-6 md:[&>svg]:h-6" />
             </div>
           </Carousel>
+          <div className="w-full shrink-0 border-t border-[#4a90b8]/20 bg-[#061224] relative z-20">
+            <HonoreeSpotlightRail />
+          </div>
         </Card>
       </div>
     </div>
