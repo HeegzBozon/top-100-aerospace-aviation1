@@ -89,7 +89,7 @@ export default function LiveStreamComments() {
           </span>
           <span className="tracking-wide">💬 Campfire</span>
         </h4>
-        <span className="text-[10px] text-blue-200/50 uppercase tracking-widest font-bold">{comments.length} messages</span>
+        <span className="text-[10px] text-blue-200 uppercase tracking-widest font-bold">{comments.length} messages</span>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4 relative z-10 scrollbar-hide" ref={scrollRef}>
@@ -98,7 +98,7 @@ export default function LiveStreamComments() {
             <Loader2 className="w-6 h-6 animate-spin text-[#4a90b8]" />
           </div>
         ) : comments.length === 0 ? (
-          <div className="text-center text-blue-200/50 text-sm mt-10 font-medium">No comments yet. Be the first to start the conversation!</div>
+          <div className="text-center text-blue-200 text-sm mt-10 font-medium">No comments yet. Be the first to start the conversation!</div>
         ) : (
           <>
           {comments.map((c, idx) => (
@@ -114,14 +114,14 @@ export default function LiveStreamComments() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
                   <span className="text-[#c9a87c] text-xs font-bold truncate drop-shadow-[0_0_8px_rgba(201,168,124,0.3)]">{c.user_name}</span>
-                  <span className="text-blue-300/40 text-[9px] font-medium tracking-wide">{new Date(c.created_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                  <span className="text-slate-300 text-[10px] font-medium tracking-wide">{new Date(c.created_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                 </div>
-                <p className="text-blue-50/90 text-[13px] break-words mt-0.5 leading-relaxed">{c.text}</p>
+                <p className="text-white text-[14px] break-words mt-1 leading-relaxed">{c.text}</p>
               </div>
               {isAdmin && (
                 <button 
                   onClick={() => deleteMutation.mutate(c.id)}
-                  className="opacity-0 group-hover:opacity-100 shrink-0 p-1.5 text-blue-300/40 hover:text-red-400 transition-all bg-[#0b3d91]/20 hover:bg-[#0b3d91]/40 rounded-md"
+                  className="opacity-0 group-hover:opacity-100 shrink-0 p-1.5 text-blue-300 hover:text-red-400 transition-all bg-[#0b3d91]/50 hover:bg-[#0b3d91]/80 rounded-md"
                   title="Delete comment (Admin)"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -146,7 +146,7 @@ export default function LiveStreamComments() {
           onChange={(e) => setNewComment(e.target.value)}
           placeholder={user ? "Say something..." : "Log in to chat..."}
           disabled={!user || createMutation.isPending}
-          className="flex-1 bg-[#0b3d91]/20 border-[#4a90b8]/30 text-white placeholder:text-blue-200/40 h-10 text-sm focus-visible:ring-[#4a90b8] focus-visible:border-[#4a90b8] transition-all rounded-lg"
+          className="flex-1 bg-[#0b3d91]/40 border-[#4a90b8]/50 text-white placeholder:text-blue-200/80 h-10 text-sm focus-visible:ring-[#4a90b8] focus-visible:border-[#4a90b8] transition-all rounded-lg"
           maxLength={200}
         />
         <Button 
