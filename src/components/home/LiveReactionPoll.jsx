@@ -110,7 +110,7 @@ export default function LiveReactionPoll() {
     >
       <div className="text-[10px] uppercase tracking-widest text-red-500 font-bold mb-2 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
           {poll.type === 'trivia' ? 'Live Trivia' : 'Live Reaction Poll'}
           <span className="text-slate-500 ml-2">({currentIndex + 1}/{activePolls.length})</span>
         </div>

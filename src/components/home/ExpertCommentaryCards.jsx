@@ -93,7 +93,7 @@ export default function ExpertCommentaryCards() {
              {currentComment.current_objective && (
                <div className="flex-1 border-l border-[#4a90b8]/30 pl-6 py-2 flex flex-col justify-center">
                  <div className="flex items-center gap-2 mb-2">
-                   <div className="w-1.5 h-1.5 rounded-full bg-[#c95a43] animate-pulse" />
+                   <div className="w-1.5 h-1.5 rounded-full bg-[#c95a43]" />
                    <span className="text-[#c95a43] text-[10px] font-bold uppercase tracking-widest">Active Mission</span>
                  </div>
                  <p className="text-slate-200 text-xs leading-relaxed mb-3 line-clamp-3 font-medium">{currentComment.current_objective}</p>
