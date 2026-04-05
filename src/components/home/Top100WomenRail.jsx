@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
@@ -10,6 +11,7 @@ export default function Top100WomenRail() {
   const [selectedNominee, setSelectedNominee] = useState(null);
   const [shareNominee, setShareNominee] = useState(null);
   const [carouselApi, setCarouselApi] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     window.openShareCard = (nominee) => setShareNominee(nominee);
@@ -26,15 +28,19 @@ export default function Top100WomenRail() {
   });
 
   useEffect(() => {
-    if (!carouselApi || !nominees?.length) return;
+    if (!carouselApi || !nominees?.length || isHovered) return;
     const interval = setInterval(() => {
       carouselApi.scrollNext();
     }, 4000);
     return () => clearInterval(interval);
-  }, [carouselApi, nominees]);
+  }, [carouselApi, nominees, isHovered]);
 
   return (
-    <div className="w-full mt-6 pt-4 border-t border-white/10">
+    <div 
+      className="w-full mt-6 pt-4 border-t border-white/10"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="flex items-center justify-between mb-4">
         <h4 className="text-sm font-bold text-white uppercase tracking-wider" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
           Top 100 Women 2025
@@ -89,27 +95,33 @@ export default function Top100WomenRail() {
         </Carousel>
       </div>
 
-      {selectedNominee && (
-        <EnhancedProfilePanel 
-          nominee={selectedNominee}
-          rank={nominees.findIndex(n => n.id === selectedNominee.id) + 1}
-          onClose={() => setSelectedNominee(null)}
-          onShare={(nominee) => setShareNominee(nominee)}
-          autoPlaying={false}
-          onAutoPlayChange={() => {}}
-          onNextNominee={() => {}}
-          hasNextNominee={false}
-          onPrevNominee={() => {}}
-          hasPrevNominee={false}
-        />
+      {selectedNominee && createPortal(
+        <div className="fixed inset-0 z-50">
+          <EnhancedProfilePanel 
+            nominee={selectedNominee}
+            rank={nominees.findIndex(n => n.id === selectedNominee.id) + 1}
+            onClose={() => setSelectedNominee(null)}
+            onShare={(nominee) => setShareNominee(nominee)}
+            autoPlaying={false}
+            onAutoPlayChange={() => {}}
+            onNextNominee={() => {}}
+            hasNextNominee={false}
+            onPrevNominee={() => {}}
+            hasPrevNominee={false}
+          />
+        </div>,
+        document.body
       )}
       
-      {shareNominee && (
-        <ShareableCard 
-          nominee={shareNominee}
-          rank={nominees.findIndex(n => n.id === shareNominee.id) + 1}
-          onClose={() => setShareNominee(null)} 
-        />
+      {shareNominee && createPortal(
+        <div className="fixed inset-0 z-50">
+          <ShareableCard 
+            nominee={shareNominee}
+            rank={nominees.findIndex(n => n.id === shareNominee.id) + 1}
+            onClose={() => setShareNominee(null)} 
+          />
+        </div>,
+        document.body
       )}
     </div>
   );

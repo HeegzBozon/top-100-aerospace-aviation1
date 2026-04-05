@@ -13,27 +13,32 @@ export default function ExpertCommentaryCards() {
   });
 
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    if (comments.length <= 1) return;
+    if (comments.length <= 1 || isHovered) return;
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % comments.length);
     }, 8000);
     return () => clearInterval(timer);
-  }, [comments.length]);
+  }, [comments.length, isHovered]);
 
   // Reset flip state when comment changes
   useEffect(() => {
     setIsFlipped(false);
   }, [currentIndex]);
 
-  if (isLoading) return <div className="h-24 w-full bg-slate-900 animate-pulse rounded-xl border border-slate-800 mt-6"></div>;
+  if (isLoading) return <div className="h-24 w-full bg-slate-900 rounded-xl border border-slate-800 mt-6"></div>;
   if (!comments.length) return null;
 
   const currentComment = comments[currentIndex];
 
   return (
-    <div className="w-full bg-[#1e3a5a]/40 rounded-xl border border-[#4a90b8]/30 p-4 md:p-5 relative overflow-hidden shadow-inner backdrop-blur-md">
+    <div 
+      className="w-full bg-[#1e3a5a]/40 rounded-xl border border-[#4a90b8]/30 p-4 md:p-5 relative overflow-hidden shadow-inner backdrop-blur-md"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <Quote className="absolute top-4 right-4 w-12 h-12 md:w-16 md:h-16 text-[#4a90b8]/10" />
       <div className="flex items-center justify-between mb-3 relative z-10">
          <div className="text-[10px] uppercase tracking-widest text-[#c9a87c] font-bold">Alumni & Fellow Correspondents</div>
