@@ -159,6 +159,7 @@ export default function LiveStreamComments() {
                 onClick={async () => {
                   try {
                     // Send visual floating reaction
+                    window.dispatchEvent(new CustomEvent('trigger-floating-reaction', { detail: { emoji } }));
                     await base44.entities.LiveReaction.create({ emoji });
                     
                     // Add to chat feed

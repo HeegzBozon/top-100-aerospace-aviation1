@@ -71,8 +71,24 @@ export default function FloatingReactions() {
         }, 3000);
       }
     });
+
+    const handleLocal = (e) => {
+      const phrase = e.detail.emoji;
+      const localId = 'local_' + Math.random().toString();
+      const left = 10 + Math.random() * 80;
+      
+      setReactions(prev => [...prev, { id: localId, emoji: phrase, left, time: Date.now() }]);
+      setTimeout(() => {
+        setReactions(prev => prev.filter(r => r.id !== localId));
+      }, 3000);
+    };
     
-    return unsubscribe;
+    window.addEventListener('trigger-floating-reaction', handleLocal);
+    
+    return () => {
+      unsubscribe();
+      window.removeEventListener('trigger-floating-reaction', handleLocal);
+    };
   }, []);
 
   const handleReaction = async (phrase) => {
