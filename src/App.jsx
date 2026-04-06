@@ -80,8 +80,8 @@ const AuthenticatedApp = () => {
     }>
     <Routes>
       <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
+        <LayoutWrapper currentPageName="HomeV2">
+          <HomeV2 />
         </LayoutWrapper>
       } />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
