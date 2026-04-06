@@ -36,6 +36,7 @@ const Season4Launch = lazy(() => import('@/pages/Season4Launch'));
 const ArtemisArticle = lazy(() => import('@/pages/ArtemisArticle'));
 const CommunityRound = lazy(() => import('@/pages/CommunityRound'));
 const STARSummit = lazy(() => import('@/pages/STARSummit'));
+const ArtemisMissionBrief = lazy(() => import('@/pages/ArtemisMissionBrief'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -148,6 +149,11 @@ const AuthenticatedApp = () => {
       <Route path="/star-summit" element={
         <LayoutWrapper currentPageName="STARSummit">
           <STARSummit />
+        </LayoutWrapper>
+      } />
+      <Route path="/artemis-mission-brief" element={
+        <LayoutWrapper currentPageName="ArtemisMissionBrief">
+          <ArtemisMissionBrief />
         </LayoutWrapper>
       } />
       <Route path="/top100-tv" element={
