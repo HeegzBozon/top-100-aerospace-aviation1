@@ -5,6 +5,7 @@ import MobileCommsView from "@/components/comms/MobileCommsView";
 import Season3ReOnboarding from "@/components/onboarding/Season3ReOnboarding";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
 import MobileDock from "@/components/comms/MobileDock";
+import ArtemisRadioPlayer from "@/components/ArtemisRadioPlayer";
 
 function MobileCommsContent({
   children,
@@ -52,6 +53,7 @@ function MobileCommsContent({
           currentPageName={currentPageName}
         />
       )}
+      <ArtemisRadioPlayer />
     </>
   );
 }

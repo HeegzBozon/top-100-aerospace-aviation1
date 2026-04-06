@@ -6,6 +6,7 @@ import CommsHeroCarousel from "@/components/comms/CommsHeroCarousel";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import Season3ReOnboarding from "@/components/onboarding/Season3ReOnboarding";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
+import ArtemisRadioPlayer from "@/components/ArtemisRadioPlayer";
 
 function CommsAwareContent({ children, currentPageName }) {
   const { activeConversation } = useConversation();
@@ -73,6 +74,7 @@ export default function CommsLayoutDesktop({
       </main>
 
       {!isBare && !!user && <NewYearCountdownBar />}
+      <ArtemisRadioPlayer />
     </div>
   );
 }
