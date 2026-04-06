@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Rocket, Calendar, Lock } from 'lucide-react';
+import { Rocket, Calendar, PlayCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import LiveStreamComments from '@/components/home/LiveStreamComments';
 import FloatingReactions from '@/components/home/FloatingReactions';
 
 export default function MissionBriefSection() {
+  const [playing, setPlaying] = useState(false);
+
   return (
     <section className="py-6 md:py-10 px-4">
       <div className="max-w-5xl mx-auto">
@@ -28,16 +31,36 @@ export default function MissionBriefSection() {
         <div className="grid lg:grid-cols-5 gap-4">
           {/* Video Player */}
           <Card className="lg:col-span-3 bg-black relative overflow-hidden border-[#4a90b8]/20 shadow-xl aspect-video">
-            <iframe
-              className="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/8n1GGe0fUBs?autoplay=0&mute=1"
-              title="Artemis Live Stream"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              referrerPolicy="strict-origin-when-cross-origin"
-              loading="lazy"
-            />
+            {playing ? (
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src="https://www.youtube.com/embed/8n1GGe0fUBs?autoplay=1&mute=0&volume=100&enablejsapi=1"
+                title="Artemis Live Stream"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
+            ) : (
+              <button
+                onClick={() => setPlaying(true)}
+                className="absolute inset-0 w-full h-full group cursor-pointer"
+              >
+                <img
+                  src="https://img.youtube.com/vi/8n1GGe0fUBs/maxresdefault.jpg"
+                  alt="Artemis Live Stream"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <PlayCircle className="w-16 h-16 text-white/90 group-hover:text-white group-hover:scale-110 transition-all drop-shadow-lg" />
+                </div>
+                <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-600/90 text-white text-[10px] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  Live
+                </div>
+              </button>
+            )}
             <FloatingReactions />
           </Card>
 
