@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Radio, Volume2, VolumeX, X, ChevronUp, Pause, Play } from 'lucide-react';
+import { Radio, Volume2, VolumeX, X, Pause, Play } from 'lucide-react';
 
 const YOUTUBE_VIDEO_ID = '8n1GGe0fUBs';
 
@@ -9,23 +9,44 @@ export default function ArtemisRadioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(50);
-  const [playerReady, setPlayerReady] = useState(false);
   const playerRef = useRef(null);
-  const containerRef = useRef(null);
+  const ytContainerRef = useRef(null);
+  const playerInitialized = useRef(false);
 
-  // Load YouTube IFrame API
+  // Create a persistent DOM node outside React's tree for the YT player
+  useEffect(() => {
+    const container = document.createElement('div');
+    container.style.cssText = 'position:fixed;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;top:-9999px;left:-9999px;';
+    const target = document.createElement('div');
+    target.id = 'artemis-radio-yt';
+    container.appendChild(target);
+    document.body.appendChild(container);
+    ytContainerRef.current = container;
+
+    return () => {
+      if (playerRef.current) {
+        try { playerRef.current.destroy(); } catch (_) {}
+        playerRef.current = null;
+      }
+      document.body.removeChild(container);
+    };
+  }, []);
+
+  // Load YouTube IFrame API script once
   useEffect(() => {
     if (window.YT && window.YT.Player) return;
+    if (document.querySelector('script[src*="youtube.com/iframe_api"]')) return;
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     document.head.appendChild(tag);
   }, []);
 
-  // Initialize player when opened for first time
+  // Initialize player when user opens the radio for the first time
   useEffect(() => {
-    if (!isOpen || playerRef.current) return;
+    if (!isOpen || playerInitialized.current) return;
 
     const initPlayer = () => {
+      playerInitialized.current = true;
       playerRef.current = new window.YT.Player('artemis-radio-yt', {
         videoId: YOUTUBE_VIDEO_ID,
         playerVars: {
@@ -39,12 +60,10 @@ export default function ArtemisRadioPlayer() {
         },
         events: {
           onReady: (e) => {
-            setPlayerReady(true);
             e.target.setVolume(volume);
             setIsPlaying(true);
           },
           onStateChange: (e) => {
-            // 1 = playing, 2 = paused
             setIsPlaying(e.data === 1);
           },
         },
@@ -54,7 +73,11 @@ export default function ArtemisRadioPlayer() {
     if (window.YT && window.YT.Player) {
       initPlayer();
     } else {
-      window.onYouTubeIframeAPIReady = initPlayer;
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (prev) prev();
+        initPlayer();
+      };
     }
   }, [isOpen]);
 
@@ -100,11 +123,6 @@ export default function ArtemisRadioPlayer() {
 
   return (
     <>
-      {/* Hidden YT player (always in DOM once opened) */}
-      <div className="fixed" style={{ width: 1, height: 1, overflow: 'hidden', opacity: 0, pointerEvents: 'none', top: -9999, left: -9999 }}>
-        {isOpen && <div id="artemis-radio-yt" />}
-      </div>
-
       {/* Floating trigger pill */}
       <AnimatePresence>
         {!isOpen && (
