@@ -1,6 +1,7 @@
 // App Configuration - Constants and Lists
 export const PUBLIC_PAGES = [
   'Home',
+  'HomeV2',
   'ProfileView',
   'NotFound',
   'TalentLanding',
