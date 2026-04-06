@@ -3,6 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Rocket, ArrowRight, Users, Globe, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
+import HeroVideoPlayer from './HeroVideoPlayer';
+import HeroVideoAdmin from './HeroVideoAdmin';
 
 const stats = [
   { value: '300+', label: 'Verified Fellows', icon: Award },
@@ -13,6 +17,14 @@ const stats = [
 export default function HeroSection({ user }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  const { data: heroAssets, refetch: refetchHeroVideo } = useQuery({
+    queryKey: ['hero-video-asset'],
+    queryFn: () => base44.entities.Asset.filter({ tags: 'hero_video', type: 'video' }),
+    initialData: [],
+  });
+  const heroVideo = heroAssets?.[0] || null;
+  const isAdmin = user?.role === 'admin';
 
   return (
     <section className="relative overflow-hidden rounded-2xl mx-3 md:mx-0" style={{ minHeight: '420px' }}>
@@ -48,11 +60,13 @@ export default function HeroSection({ user }) {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col justify-center px-6 md:px-16 py-12 md:py-16 max-w-4xl">
+      <div className="relative z-10 flex flex-col lg:flex-row items-center gap-8 px-6 md:px-16 py-12 md:py-16">
+        {/* Left: Text */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="flex-1 max-w-2xl"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 rounded-full border border-[#c9a87c]/40 bg-[#c9a87c]/10 text-[#c9a87c] text-[10px] font-bold uppercase tracking-widest backdrop-blur-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] animate-pulse" />
@@ -109,6 +123,28 @@ export default function HeroSection({ user }) {
               </div>
             ))}
           </div>
+        </motion.div>
+
+        {/* Right: Video Spot */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="relative w-full lg:w-[420px] xl:w-[480px] shrink-0 aspect-video"
+        >
+          {isAdmin && <HeroVideoAdmin currentAsset={heroVideo} onUpdate={refetchHeroVideo} />}
+          {heroVideo?.url ? (
+            <HeroVideoPlayer videoUrl={heroVideo.url} />
+          ) : (
+            <div className="w-full h-full rounded-2xl border-2 border-dashed border-white/15 flex flex-col items-center justify-center bg-white/5 backdrop-blur-sm">
+              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-3">
+                <Award className="w-6 h-6 text-[#c9a87c]/60" />
+              </div>
+              <p className="text-white/40 text-xs font-medium">
+                {isAdmin ? 'Click ⚙ to add a video' : 'Coming soon'}
+              </p>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>
