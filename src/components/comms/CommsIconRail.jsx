@@ -106,6 +106,7 @@ export default function CommsIconRail({ currentPageName, totalUnread }) {
         {(railItems.length ? railItems : FALLBACK_RAIL.filter(i => !AUTH_ONLY_LABELS.has(i.label?.toLowerCase()) || !!user)).filter(item => item.label === 'Comms' ? user?.role === 'admin' : true).map((item) => {
           const isActive = currentPageName === item.page;
           const url = item.query ? `${item.page}?${item.query}` : item.page;
+          const resolvedUrl = item.page === 'Home' ? '/' : createPageUrl(url);
           return (
             <motion.div
               key={item.label}
@@ -114,7 +115,7 @@ export default function CommsIconRail({ currentPageName, totalUnread }) {
               className="w-full"
             >
               <Link
-                to={createPageUrl(url)}
+                to={resolvedUrl}
                 onClick={() => {
                   if (item.page !== "Comms" && selectConversation) selectConversation(null);
                 }}
