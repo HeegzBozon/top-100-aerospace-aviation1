@@ -6,6 +6,7 @@ import { jsPDF } from 'jspdf';
 import { useToast } from '@/components/ui/use-toast';
 import ArtemisContestHero from '@/components/artemis/ArtemisContestHero';
 import ArtemisContestFooter from '@/components/artemis/ArtemisContestFooter';
+import ArtemisFellowsSection from '@/components/artemis/ArtemisFellowsSection';
 import LunarTelemetry from '@/components/rooms/LunarTelemetry';
 import ArtemisBriefSection from '@/components/rooms/ArtemisBriefSection';
 
@@ -386,6 +387,9 @@ export default function ArtemisMissionBrief() {
           </SlideContainer>
         </div>
       </section>
+
+      {/* Women Behind Artemis II */}
+      <ArtemisFellowsSection />
 
       {/* Contest Footer CTA */}
       <ArtemisContestFooter />

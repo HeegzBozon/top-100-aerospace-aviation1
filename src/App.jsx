@@ -153,11 +153,7 @@ const AuthenticatedApp = () => {
           <STARSummit />
         </LayoutWrapper>
       } />
-      <Route path="/artemis-mission-brief" element={
-        <LayoutWrapper currentPageName="ArtemisMissionBrief">
-          <ArtemisMissionBrief />
-        </LayoutWrapper>
-      } />
+      <Route path="/artemis-mission-brief" element={<ArtemisMissionBrief />} />
       <Route path="/rooms" element={
         <LayoutWrapper currentPageName="MissionRooms">
           <MissionRooms />
