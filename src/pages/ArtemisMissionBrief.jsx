@@ -5,6 +5,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { useToast } from '@/components/ui/use-toast';
 import VenusHero from '@/components/artemis/VenusHero';
+import MissionVisionValues from '@/components/artemis/MissionVisionValues';
 import MissionControlDashboard from '@/components/artemis/MissionControlDashboard';
 import ColonyRecruitment from '@/components/artemis/ColonyRecruitment';
 import RendezvousProtocol from '@/components/artemis/RendezvousProtocol';
@@ -96,6 +97,9 @@ export default function ArtemisMissionBrief() {
     <div className="min-h-screen bg-[#020810]">
       {/* 1. Venus Hero — The Narrative Engine */}
       <VenusHero />
+
+      {/* 1.5 Mission, Vision & Values — Strategic Identity */}
+      <MissionVisionValues />
 
       {/* 2. Mission Control Dashboard — Kinetic Sync Engine UI */}
       <MissionControlDashboard />
