@@ -6,6 +6,7 @@ import { jsPDF } from 'jspdf';
 import { useToast } from '@/components/ui/use-toast';
 import VenusHero from '@/components/artemis/VenusHero';
 import MissionVisionValues from '@/components/artemis/MissionVisionValues';
+import MyceliumModel from '@/components/artemis/MyceliumModel';
 import MissionControlDashboard from '@/components/artemis/MissionControlDashboard';
 import ColonyRecruitment from '@/components/artemis/ColonyRecruitment';
 import RendezvousProtocol from '@/components/artemis/RendezvousProtocol';
@@ -100,6 +101,9 @@ export default function ArtemisMissionBrief() {
 
       {/* 1.5 Mission, Vision & Values — Strategic Identity */}
       <MissionVisionValues />
+
+      {/* 1.6 The Mycelium Model — Revenue Architecture */}
+      <MyceliumModel />
 
       {/* 2. Mission Control Dashboard — Kinetic Sync Engine UI */}
       <MissionControlDashboard />
