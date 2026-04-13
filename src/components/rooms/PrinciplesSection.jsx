@@ -3,28 +3,28 @@ import { Users, Network, TrendingUp, Shield } from 'lucide-react';
 
 const PRINCIPLES = [
   {
+    icon: Shield,
+    title: 'Crew Resource Management',
+    desc: "Aerospace runs on CRM. Shared mental models, structured decisions, clear communication under pressure. Moon Base Alpha inherits the doctrine from mission control itself.",
+    color: '#e88d67',
+  },
+  {
     icon: Users,
-    title: "Dunbar's tribe number",
-    desc: "The human brain holds roughly 150 stable relationships. We built for it, not around it. The core tribe is sized to fit working memory, not a follower count.",
+    title: "Dunbar's Colony Number",
+    desc: "The human brain holds roughly 150 stable relationships. We sized the colony for it. The core crew fits working memory, not a follower count. 50 operators. 150 extended. Unlimited observers.",
     color: '#c9a87c',
   },
   {
     icon: Network,
     title: 'Team Topologies',
-    desc: "Stream-aligned teams build. Enabling teams teach. Platform teams run the infrastructure. Complicated-subsystem teams go deep. Every session maps to a topology.",
+    desc: "Stream-aligned crews build habitat modules. Enabling teams train new arrivals. Platform teams run life support infrastructure. Complicated-subsystem teams handle propulsion and power.",
     color: '#4a90b8',
   },
   {
     icon: TrendingUp,
-    title: 'Tuckman: Form. Storm. Norm. Perform.',
-    desc: "Every sprint runs the full arc. Sprint one, the room forms. Sprint two, it storms and norms. Sprint three, it performs and ships a Time Capsule.",
+    title: 'Tuckman: Form → Storm → Norm → Perform',
+    desc: "Every sprint runs the full arc. Sprint one, the crew forms. Sprint two, it storms and norms under lunar conditions. Sprint three, it performs and ships a Time Capsule back to Earth.",
     color: '#7ecda0',
-  },
-  {
-    icon: Shield,
-    title: 'Crew Resource Management',
-    desc: "Aerospace runs on CRM. Shared mental models, structured decisions, clear communication under pressure. Mission Rooms inherit the doctrine.",
-    color: '#e88d67',
   },
 ];
 
@@ -45,10 +45,10 @@ export default function PrinciplesSection() {
             className="text-3xl md:text-5xl font-bold text-white mb-6"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Built on first principles. <span className="text-[#c9a87c]">Not vibes.</span>
+            Engineered for survival. <span className="text-[#c9a87c]">Not vibes.</span>
           </h2>
           <p className="text-slate-400 text-lg leading-relaxed">
-            Most communities die because they scale past their cognitive budget. Mission Rooms are engineered around the math of how humans actually form trust, teams, and tribes.
+            Most colonies fail because they scale past their cognitive budget. Moon Base Alpha is engineered around the math of how humans actually form trust, teams, and operational units under extreme conditions.
           </p>
         </motion.div>
 

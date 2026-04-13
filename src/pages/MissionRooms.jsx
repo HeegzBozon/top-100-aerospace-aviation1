@@ -1,4 +1,5 @@
 import RoomsHero from '@/components/rooms/RoomsHero';
+import LunarTelemetry from '@/components/rooms/LunarTelemetry';
 import CadenceSection from '@/components/rooms/CadenceSection';
 import PrinciplesSection from '@/components/rooms/PrinciplesSection';
 import BuildStreamsSection from '@/components/rooms/BuildStreamsSection';
@@ -11,6 +12,7 @@ export default function MissionRooms() {
   return (
     <div className="min-h-screen bg-[#050d1a]">
       <RoomsHero />
+      <LunarTelemetry />
       <CadenceSection />
       <PrinciplesSection />
       <BuildStreamsSection />

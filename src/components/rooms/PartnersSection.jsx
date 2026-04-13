@@ -3,17 +3,17 @@ import { motion } from 'framer-motion';
 const PARTNERS = [
   {
     name: 'Base44',
-    desc: 'Build partner. The platform is built on Base44. Every session is a live proof of what the stack can do.',
+    desc: 'Primary habitat construction platform. The colony is built on Base44. Every session is live proof of what the stack can do under lunar conditions.',
     logoText: 'BASE44',
   },
   {
     name: 'Wingbits',
-    desc: 'Live ADS-B flight data. The aviation signal layer inside the Global Intelligence Dashboard.',
+    desc: 'Live ADS-B flight telemetry. The aviation sensor layer inside the Global Intelligence Dashboard. Signal from the sky, rendered on the Moon.',
     logoText: 'WINGBITS',
   },
   {
     name: 'Wefunder',
-    desc: 'Community round partner. Every room is a live update on what the capital is being used for.',
+    desc: 'Colony funding partner. Community round live. Every room is a live progress report on how the capital is being deployed.',
     logoText: 'WEFUNDER',
   },
 ];
@@ -32,10 +32,10 @@ export default function PartnersSection() {
             className="text-3xl md:text-4xl font-bold text-white mb-4"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Built with.
+            Lunar Development Consortium.
           </h2>
           <p className="text-slate-400 text-base">
-            Mission Rooms run on tools, platforms, and partners that earn their place in the room.
+            Moon Base Alpha runs on tools, platforms, and partners that earned their place on the manifest.
           </p>
         </motion.div>
 
@@ -66,7 +66,7 @@ export default function PartnersSection() {
         <div className="mt-6 flex gap-4 justify-center">
           {[1, 2, 3].map(i => (
             <div key={i} className="w-24 h-10 rounded-lg border border-dashed border-white/10 flex items-center justify-center">
-              <span className="text-white/15 text-[10px]">Partner {PARTNERS.length + i}</span>
+              <span className="text-white/15 text-[10px]">Module {PARTNERS.length + i}</span>
             </div>
           ))}
         </div>

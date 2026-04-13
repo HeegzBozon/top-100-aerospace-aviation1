@@ -4,33 +4,33 @@ import { Monitor, Globe, Presentation, Podcast, BookOpen, Blocks } from 'lucide-
 const STREAMS = [
   {
     icon: Monitor,
-    title: 'The TOP 100 platform',
-    desc: 'Dogfooded live. Built on Base44. Shipped to Fellows, reviewed by the tribe, refined in the room.',
+    title: 'Habitat Systems (The TOP 100 Platform)',
+    desc: 'The primary life-support system of the colony. Built on Base44. Dogfooded live. Shipped to Fellows, reviewed by the crew, refined on station.',
   },
   {
     icon: Globe,
     title: 'Global Aerospace Intelligence Dashboard',
-    desc: 'Launches. Live ADS-B flight tracking. OSINT layers. Fellow signal data. Four feeds, one dashboard, wired live.',
+    desc: 'Launches. Live ADS-B flight tracking. OSINT layers. Signal data from the field. Four sensor arrays, one dashboard, wired live from the lunar surface.',
   },
   {
     icon: Presentation,
-    title: 'Pitch decks',
-    desc: 'Reviewed live. Founders bring their decks. The room tears them apart and rebuilds them.',
+    title: 'Pitch Deck Reviews',
+    desc: 'Reviewed in the command module. Founders bring their decks. The crew tears them apart and rebuilds them under mission-critical standards.',
   },
   {
     icon: Podcast,
-    title: 'Podcast episodes',
-    desc: 'Every session ships as audio. Three episodes a week. Zero guest booking overhead.',
+    title: 'Mission Audio Logs',
+    desc: 'Every session ships as an audio log. Three episodes a week. Zero guest booking overhead. Transmitted from the Moon.',
   },
   {
     icon: BookOpen,
-    title: 'Authority Pieces and Time Capsules',
-    desc: 'Every sprint retro produces a published artifact. Long-form editorial. Institutional memory. Proof of work.',
+    title: 'Time Capsules & Authority Pieces',
+    desc: 'Every sprint retro produces a published artifact. Long-form editorial. Institutional memory. Proof of work, sealed and sent back to Earth.',
   },
   {
     icon: Blocks,
-    title: 'Base44 cross-promo builds',
-    desc: 'Showcase apps built live on Base44. Technique, architecture, shipped URL, all in one session.',
+    title: 'Base44 Module Fabrication',
+    desc: 'Showcase apps built live on Base44. Technique, architecture, shipped URL. New modules for the colony, fabricated in one session.',
   },
 ];
 
@@ -48,10 +48,10 @@ export default function BuildStreamsSection() {
             className="text-3xl md:text-5xl font-bold text-white mb-6"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            The platform is built here. <span className="text-[#c9a87c]">In the open.</span>
+            The colony is built here. <span className="text-[#c9a87c]">On the surface.</span>
           </h2>
           <p className="text-slate-400 text-lg leading-relaxed">
-            Mission Rooms aren't a side project. They're where the TOP 100 platform itself gets built, shipped, refined, and documented. Every session produces an artifact. Every sprint produces a Time Capsule.
+            Moon Base Alpha isn't a side project. It's where the TOP 100 platform itself gets constructed, deployed, stress-tested, and documented. Every session produces a deliverable. Every sprint produces a Time Capsule.
           </p>
         </motion.div>
 

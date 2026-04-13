@@ -5,24 +5,24 @@ import { Button } from '@/components/ui/button';
 const PATHS = [
   {
     icon: Tv,
-    title: 'Watch live',
-    desc: 'Every session streams on LinkedIn Live. No signup, no account, no paywall.',
+    title: 'Observe from Earth',
+    desc: 'Every session streams live on LinkedIn. No credentials required. No airlock. No paywall. Just tune in from ground control.',
     cta: 'Follow the TOP 100 LinkedIn page',
     href: 'https://www.linkedin.com/company/top-100-in-aerospace-aviation/',
     color: '#4a90b8',
   },
   {
     icon: Users,
-    title: 'Join the tribe',
-    desc: 'Subscribe to the newsletter to get the sprint schedule, session briefs, and daily scrum videos.',
-    cta: 'Subscribe',
+    title: 'Join the crew rotation',
+    desc: 'Subscribe to mission briefs. Get the sprint schedule, session agendas, and daily comms check videos. Become part of the extended rotation.',
+    cta: 'Subscribe to mission briefs',
     href: '#',
     color: '#c9a87c',
   },
   {
     icon: Rocket,
-    title: 'Back the mission',
-    desc: 'Community round live on Wefunder. Half the raise goes to the Fellows program. Half goes to the platform.',
+    title: 'Fund the colony',
+    desc: 'Community round live on Wefunder. Half the raise builds the Fellows program. Half builds the habitat. Every dollar is accounted for, on the record.',
     cta: 'Back us on Wefunder',
     href: 'https://wefunder.com/top.100.aerospace.aviation',
     color: '#7ecda0',
@@ -43,7 +43,7 @@ export default function JoinSection() {
             className="text-3xl md:text-5xl font-bold text-white mb-4"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Show up. Or watch. <span className="text-[#c9a87c]">Or build with us.</span>
+            Observe. Rotate in. <span className="text-[#c9a87c]">Or help build the colony.</span>
           </h2>
         </motion.div>
 

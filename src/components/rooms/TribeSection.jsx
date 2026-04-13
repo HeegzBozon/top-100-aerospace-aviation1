@@ -2,23 +2,23 @@ import { motion } from 'framer-motion';
 
 const RINGS = [
   {
-    label: 'Core',
+    label: 'Core Crew',
     size: '~50',
-    desc: 'Weekly participants. The people the algorithm learns from. Fellows, founders, builders, operators. The ones in the room when the camera turns on.',
+    desc: 'Weekly operators. The people on station when the airlocks open. Fellows, founders, builders, mission specialists. The ones in the habitat when the camera turns on.',
     color: '#c9a87c',
     ringSize: 'w-48 h-48 md:w-56 md:h-56',
   },
   {
-    label: 'Extended',
+    label: 'Extended Rotation',
     size: '~150',
-    desc: 'Async contributors. Replay watchers. Occasional live attendees. The people who show up when the session hits their zone of genius.',
+    desc: 'Async contributors. Mission log readers. Occasional live crew. The specialists who rotate in when the session hits their area of expertise.',
     color: '#4a90b8',
     ringSize: 'w-64 h-64 md:w-80 md:h-80',
   },
   {
-    label: 'Audience',
+    label: 'Ground Control',
     size: 'Unlimited',
-    desc: 'LinkedIn Live viewers. Newsletter readers. Podcast listeners. Wefunder backers. Anyone who wants to watch the tribe work.',
+    desc: 'LinkedIn Live observers. Newsletter subscribers. Podcast listeners. Wefunder backers. Anyone on Earth who wants to watch the crew work from lunar orbit.',
     color: '#3a5a7a',
     ringSize: 'w-80 h-80 md:w-[420px] md:h-[420px]',
   },
@@ -39,10 +39,10 @@ export default function TribeSection() {
               className="text-3xl md:text-5xl font-bold text-white mb-6"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Three rings. <span className="text-[#c9a87c]">One room.</span>
+              Three rings. <span className="text-[#c9a87c]">One colony.</span>
             </h2>
             <p className="text-slate-400 text-lg leading-relaxed mb-10">
-              Mission Rooms are sized deliberately. Not everyone who watches is a participant. Not every participant is in the core. The rings are how the tribe stays tight without shutting anyone out.
+              Moon Base Alpha is sized deliberately. Not everyone who watches from Earth is a crew member. Not every crew member is in the core rotation. The rings are how the colony stays tight without shutting anyone out.
             </p>
 
             {/* Ring descriptions */}
@@ -79,7 +79,7 @@ export default function TribeSection() {
               className="mt-10 p-5 rounded-xl border border-[#c9a87c]/20 bg-[#c9a87c]/5"
             >
               <p className="text-sm text-[#c9a87c]/80 leading-relaxed italic">
-                "You don't need to be a Fellow to watch. You don't need to be famous to participate. You need to show up, contribute, and respect the room. That's the whole bar."
+                "You don't need a flight rating to observe from ground control. You don't need to be famous to join the crew. You need to show up, contribute, and respect the habitat. That's the whole bar for deployment."
               </p>
             </motion.div>
           </motion.div>
@@ -112,7 +112,7 @@ export default function TribeSection() {
               <div className="w-20 h-20 rounded-full bg-[#c9a87c]/20 flex items-center justify-center mx-auto mb-2 border border-[#c9a87c]/30">
                 <span className="text-[#c9a87c] font-bold text-lg" style={{ fontFamily: "'Playfair Display', serif" }}>50</span>
               </div>
-              <span className="text-white/40 text-[10px] uppercase tracking-widest">Core tribe</span>
+              <span className="text-white/40 text-[10px] uppercase tracking-widest">Core crew</span>
             </div>
           </motion.div>
         </div>
