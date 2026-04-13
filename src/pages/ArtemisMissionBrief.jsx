@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { useToast } from '@/components/ui/use-toast';
-import ArtemisContestHero from '@/components/artemis/ArtemisContestHero';
+import VenusHero from '@/components/artemis/VenusHero';
+import MissionControlDashboard from '@/components/artemis/MissionControlDashboard';
+import ColonyRecruitment from '@/components/artemis/ColonyRecruitment';
+import RendezvousProtocol from '@/components/artemis/RendezvousProtocol';
+import EnterprisePortal from '@/components/artemis/EnterprisePortal';
 import ArtemisContestFooter from '@/components/artemis/ArtemisContestFooter';
 import ArtemisFellowsSection from '@/components/artemis/ArtemisFellowsSection';
-import KineticSyncSection from '@/components/artemis/KineticSyncSection';
 import LunarTelemetry from '@/components/rooms/LunarTelemetry';
 import ArtemisBriefSection from '@/components/rooms/ArtemisBriefSection';
 
@@ -91,13 +94,25 @@ export default function ArtemisMissionBrief() {
 
   return (
     <div className="min-h-screen bg-[#020810]">
-      {/* Hero */}
-      <ArtemisContestHero />
+      {/* 1. Venus Hero — The Narrative Engine */}
+      <VenusHero />
+
+      {/* 2. Mission Control Dashboard — Kinetic Sync Engine UI */}
+      <MissionControlDashboard />
+
+      {/* 3. Colony Recruitment Portal — The Intake Node */}
+      <ColonyRecruitment />
+
+      {/* 4. Rendezvous Protocol — CRM Operations */}
+      <RendezvousProtocol />
+
+      {/* 5. Enterprise Partner Portal — The Residency */}
+      <EnterprisePortal />
 
       {/* Telemetry Bar */}
       <LunarTelemetry />
 
-      {/* Live Mission Intel (from rooms) */}
+      {/* Live Mission Intel */}
       <ArtemisBriefSection />
 
       {/* Slide Deck Section */}
@@ -367,9 +382,6 @@ export default function ArtemisMissionBrief() {
 
       {/* Women Behind Artemis II */}
       <ArtemisFellowsSection />
-
-      {/* Kinetic Sync Engine — Strategic Intel */}
-      <KineticSyncSection />
 
       {/* Contest Footer CTA */}
       <ArtemisContestFooter />
