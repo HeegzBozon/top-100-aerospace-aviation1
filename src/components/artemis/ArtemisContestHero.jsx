@@ -15,8 +15,16 @@ const STARS = Array.from({ length: 50 }, (_, i) => ({
 export default function ArtemisContestHero() {
   return (
     <section className="relative min-h-[70vh] flex items-center overflow-hidden">
-      {/* Deep space background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#020810] via-[#0a1526] to-[#12122a]" />
+      {/* Photo background — astronaut looking at Earth */}
+      <div className="absolute inset-0">
+        <img
+          src="https://media.base44.com/images/public/68996845be6727838fdb822e/6ca50ea76_Screenshot2026-04-12at95403PM.png"
+          alt="Artemis crew looking at Earth"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#020810]/95 via-[#0a1526]/85 to-[#0a1526]/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#12122a]" />
+      </div>
 
       {/* Earth glow */}
       <div className="absolute top-8 right-12 w-16 h-16 md:w-24 md:h-24 rounded-full pointer-events-none"

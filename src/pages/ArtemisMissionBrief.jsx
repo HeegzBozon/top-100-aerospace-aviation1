@@ -141,6 +141,19 @@ export default function ArtemisMissionBrief() {
           </div>
         </div>
 
+        {/* Moon craters photo divider */}
+        <div className="relative w-full h-48 md:h-64 mb-8 rounded-2xl overflow-hidden mx-auto" style={{ maxWidth: `${1280 * scale + 32}px` }}>
+          <img
+            src="https://media.base44.com/images/public/68996845be6727838fdb822e/01ea63a2b_Screenshot2026-04-12at95331PM.png"
+            alt="Lunar surface craters"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#050a14]/60 via-transparent to-[#050a14]/60" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-white/60 text-sm md:text-base font-bold tracking-[0.3em] uppercase">Lunar Surface · Artemis II Flyby Imagery</p>
+          </div>
+        </div>
+
         <div className="w-full flex flex-col items-start md:items-center gap-12 px-4" style={{ width: `${1280 * scale + 32}px`, maxWidth: '100%', margin: '0 auto' }}>
           {/* Slide 1: Title */}
           <SlideContainer index={0}>

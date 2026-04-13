@@ -36,9 +36,14 @@ const SYSTEMS = [
 export default function ArtemisBriefSection() {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden" style={{ background: '#060d1a' }}>
-      {/* Subtle radial glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] pointer-events-none">
-        <div className="w-full h-full bg-[#c9a87c]/[0.03] blur-[100px] rounded-full" />
+      {/* Earthrise photo background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img
+          src="https://media.base44.com/images/public/68996845be6727838fdb822e/4dfbdda33_Screenshot2026-04-12at95337PM.png"
+          alt="Earthrise from lunar surface"
+          className="w-full h-full object-cover opacity-[0.08]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#060d1a] via-[#060d1a]/80 to-[#060d1a]" />
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12">

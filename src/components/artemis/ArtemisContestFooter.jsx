@@ -6,21 +6,15 @@ import LunarSurface from '@/components/rooms/LunarSurface';
 export default function ArtemisContestFooter() {
   return (
     <section className="relative py-24 md:py-36 overflow-hidden" style={{ background: '#020810' }}>
-      {/* Glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] pointer-events-none">
-        <div className="w-full h-full rounded-full bg-[#c9a87c]/[0.03] blur-[120px]" />
+      {/* Full Earth photo background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img
+          src="https://media.base44.com/images/public/68996845be6727838fdb822e/52ed5a0d3_Screenshot2026-04-12at95313PM.png"
+          alt="Full Earth from space"
+          className="w-full h-full object-cover opacity-[0.1]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020810]/90 via-[#020810]/80 to-[#020810]" />
       </div>
-
-      {/* Small moon */}
-      <motion.div
-        className="absolute top-10 right-1/4 w-14 h-14 rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle at 35% 35%, #e8e0d4 0%, #8a7d6d 60%, #4a4035 100%)',
-          boxShadow: '0 0 30px 8px rgba(201,168,124,0.06)',
-        }}
-        animate={{ y: [0, -4, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-      />
 
       <LunarSurface />
 

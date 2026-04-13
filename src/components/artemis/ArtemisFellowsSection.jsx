@@ -95,9 +95,14 @@ export default function ArtemisFellowsSection() {
 
   return (
     <section className="relative py-24 md:py-32 overflow-hidden" style={{ background: '#0a1220' }}>
-      {/* Accent glow */}
-      <div className="absolute top-0 left-1/3 w-[600px] h-[300px] pointer-events-none">
-        <div className="w-full h-full bg-[#c9a87c]/[0.02] blur-[80px] rounded-full" />
+      {/* Moon + Earth crescent photo background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img
+          src="https://media.base44.com/images/public/68996845be6727838fdb822e/f5ca8421b_Screenshot2026-04-12at95354PM.png"
+          alt="Moon with Earth crescent"
+          className="w-full h-full object-cover opacity-[0.06]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a1220] via-[#0a1220]/85 to-[#0a1220]" />
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12">
