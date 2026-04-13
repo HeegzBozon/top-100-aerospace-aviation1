@@ -34,11 +34,10 @@ export function NewsStreamWidget() {
   const fetchTimeoutRef = useRef(null);
 
   const stream = STREAMS_DB.find(s => s.id === selectedStream);
-  if (!stream) return null;
 
   // Try to fetch live stream info on mount and when stream changes
   useEffect(() => {
-    if (!stream.youtube) {
+    if (!stream?.youtube) {
       setLiveYoutubeId(null);
       return;
     }
@@ -61,7 +60,9 @@ export function NewsStreamWidget() {
     return () => {
       if (fetchTimeoutRef.current) clearInterval(fetchTimeoutRef.current);
     };
-  }, [selectedStream, stream.youtube]);
+  }, [selectedStream, stream?.youtube]);
+
+  if (!stream) return null;
 
   // Use live fetch first, fallback to static channel ID
   const youtubeId = liveYoutubeId || stream.youtube;

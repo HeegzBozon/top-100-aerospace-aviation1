@@ -52,7 +52,7 @@ function parseMdToHarness(text) {
 function HarnessModal({ open, onClose, harness, agentSkills }) {
   const qc = useQueryClient();
   const isEdit = !!harness;
-  const fileInputRef = useEffect ? React.useRef(null) : null;
+  const fileInputRef = React.useRef(null);
   const mdFileRef = React.useRef(null);
   const [mdFileName, setMdFileName] = useState(null);
   const [pasteText, setPasteText] = useState('');

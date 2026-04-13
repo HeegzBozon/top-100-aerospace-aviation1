@@ -6,7 +6,7 @@ import { Nominee } from '@/entities/Nominee';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, User as UserIcon, Star, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Loader2, User as UserIcon, Star, CheckCircle2, ArrowLeft, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import UserProfileEditor from './editors/UserProfileEditor';

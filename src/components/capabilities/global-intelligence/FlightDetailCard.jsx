@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Navigation, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
+import { getGlobalIntelData } from '@/functions/getGlobalIntelData';
 
 const STATUS_COLORS = {
   military: { bg: '#f97316', text: '#fff', label: 'MILITARY' },

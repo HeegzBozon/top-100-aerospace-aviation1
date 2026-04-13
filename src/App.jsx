@@ -37,6 +37,7 @@ const ArtemisArticle = lazy(() => import('@/pages/ArtemisArticle'));
 const CommunityRound = lazy(() => import('@/pages/CommunityRound'));
 const STARSummit = lazy(() => import('@/pages/STARSummit'));
 const ArtemisMissionBrief = lazy(() => import('@/pages/ArtemisMissionBrief'));
+const MissionRooms = lazy(() => import('@/pages/MissionRooms'));
 const HomeV2 = lazy(() => import('@/pages/HomeV2'));
 
 
@@ -155,6 +156,11 @@ const AuthenticatedApp = () => {
       <Route path="/artemis-mission-brief" element={
         <LayoutWrapper currentPageName="ArtemisMissionBrief">
           <ArtemisMissionBrief />
+        </LayoutWrapper>
+      } />
+      <Route path="/rooms" element={
+        <LayoutWrapper currentPageName="MissionRooms">
+          <MissionRooms />
         </LayoutWrapper>
       } />
       <Route path="/home-v2" element={
