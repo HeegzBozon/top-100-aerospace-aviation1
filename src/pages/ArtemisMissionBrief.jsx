@@ -7,6 +7,7 @@ import { useToast } from '@/components/ui/use-toast';
 import VenusHero from '@/components/artemis/VenusHero';
 import MissionVisionValues from '@/components/artemis/MissionVisionValues';
 import MyceliumModel from '@/components/artemis/MyceliumModel';
+import RevenueArchitecture from '@/components/artemis/RevenueArchitecture';
 import MissionControlDashboard from '@/components/artemis/MissionControlDashboard';
 import ColonyRecruitment from '@/components/artemis/ColonyRecruitment';
 import RendezvousProtocol from '@/components/artemis/RendezvousProtocol';
@@ -104,6 +105,9 @@ export default function ArtemisMissionBrief() {
 
       {/* 1.6 The Mycelium Model — Revenue Architecture */}
       <MyceliumModel />
+
+      {/* 1.7 Revenue Architecture — Full-Stack Vertical Play */}
+      <RevenueArchitecture />
 
       {/* 2. Mission Control Dashboard — Kinetic Sync Engine UI */}
       <MissionControlDashboard />
