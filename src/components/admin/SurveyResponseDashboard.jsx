@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Search, Download, Users, Mail, Clock, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { ArrowLeft, Search, Download, Users, Mail, Clock, ChevronDown, ChevronUp, Loader2, Trash2 } from 'lucide-react';
 
-function ResponseRow({ response, questions, expanded, onToggle }) {
+function ResponseRow({ response, questions, expanded, onToggle, onDelete }) {
   return (
     <div className="border border-[var(--border)] rounded-xl bg-[var(--card)] overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-4 p-4 text-left hover:bg-[var(--border)]/10 transition-colors cursor-pointer"
+        className="w-full flex items-center gap-4 p-4 text-left hover:bg-[var(--border)]/10 transition-colors cursor-pointer group"
       >
         <div className="w-8 h-8 rounded-full bg-[#1e3a5a]/5 flex items-center justify-center shrink-0">
           <span className="text-xs font-bold text-[#1e3a5a]">
@@ -28,6 +29,13 @@ function ResponseRow({ response, questions, expanded, onToggle }) {
           </Badge>
           {response.completed && <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Complete</Badge>}
         </div>
+        <button
+          onClick={(e) => { e.stopPropagation(); if (confirm('Delete this response?')) onDelete(response.id); }}
+          className="p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+          title="Delete response"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
         {expanded ? <ChevronUp className="w-4 h-4 text-[var(--muted)]" /> : <ChevronDown className="w-4 h-4 text-[var(--muted)]" />}
       </button>
       {expanded && (
@@ -58,6 +66,7 @@ export default function SurveyResponseDashboard({ survey, onBack }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [expandedId, setExpandedId] = useState(null);
+  const { toast } = useToast();
 
   useEffect(() => { loadResponses(); }, [survey.id]);
 
@@ -66,6 +75,15 @@ export default function SurveyResponseDashboard({ survey, onBack }) {
     const data = await base44.entities.SurveyResponse.filter({ survey_id: survey.id }, '-created_date', 500);
     setResponses(data);
     setLoading(false);
+  };
+
+  const handleDelete = async (id) => {
+    await base44.entities.SurveyResponse.delete(id);
+    setResponses(prev => prev.filter(r => r.id !== id));
+    if (survey.response_count > 0) {
+      await base44.entities.Survey.update(survey.id, { response_count: Math.max(0, (survey.response_count || 1) - 1) });
+    }
+    toast({ title: 'Response deleted' });
   };
 
   const filtered = responses.filter(r => {
@@ -138,7 +156,7 @@ export default function SurveyResponseDashboard({ survey, onBack }) {
       ) : (
         <div className="space-y-2">
           {filtered.map(r => (
-            <ResponseRow key={r.id} response={r} questions={survey.questions || []} expanded={expandedId === r.id} onToggle={() => setExpandedId(expandedId === r.id ? null : r.id)} />
+            <ResponseRow key={r.id} response={r} questions={survey.questions || []} expanded={expandedId === r.id} onToggle={() => setExpandedId(expandedId === r.id ? null : r.id)} onDelete={handleDelete} />
           ))}
         </div>
       )}
