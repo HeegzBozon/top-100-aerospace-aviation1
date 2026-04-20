@@ -13,6 +13,8 @@ import {
 import SurveyFormEditor from '@/components/admin/SurveyFormEditor';
 import SurveyPreviewModal from '@/components/admin/SurveyPreviewModal';
 import SurveyAnalytics from '@/components/admin/SurveyAnalytics';
+import SurveyResponseDashboard from '@/components/admin/SurveyResponseDashboard';
+import { Users } from 'lucide-react';
 
 const STATUS_COLORS = {
   draft: 'bg-slate-100 text-slate-700',
@@ -40,6 +42,7 @@ export default function SurveyManager() {
   const [isCreating, setIsCreating] = useState(false);
   const [previewSurvey, setPreviewSurvey] = useState(null);
   const [analyticsSurvey, setAnalyticsSurvey] = useState(null);
+  const [responsesSurvey, setResponsesSurvey] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => { loadSurveys(); }, []);
@@ -144,6 +147,10 @@ export default function SurveyManager() {
     return <SurveyAnalytics survey={analyticsSurvey} onBack={() => setAnalyticsSurvey(null)} />;
   }
 
+  if (responsesSurvey) {
+    return <SurveyResponseDashboard survey={responsesSurvey} onBack={() => setResponsesSurvey(null)} />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -226,6 +233,9 @@ export default function SurveyManager() {
                 </div>
 
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" title="Responses" onClick={() => setResponsesSurvey(survey)}>
+                    <Users className="w-3.5 h-3.5" />
+                  </Button>
                   <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" title="Analytics" onClick={() => setAnalyticsSurvey(survey)}>
                     <BarChart3 className="w-3.5 h-3.5" />
                   </Button>

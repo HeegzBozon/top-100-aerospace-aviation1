@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircle2, Loader2, AlertCircle, Rocket, ArrowRight, ArrowLeft,
-  ChevronDown, Home, Calendar, TrendingUp, ExternalLink
+  Home, Calendar, TrendingUp
 } from 'lucide-react';
 
 /* ── Slide wrapper ── */
@@ -25,25 +25,69 @@ function Slide({ children, direction }) {
   );
 }
 
-/* ── Question renderers ── */
-function ChoiceQuestion({ question, value, onChange, onNext }) {
+/* ── Choice question with arrow key focus ── */
+function ChoiceQuestion({ question, value, onChange, onAutoAdvance }) {
   const isSingle = question.type === 'single_choice';
+  const opts = question.options || [];
+  const [focused, setFocused] = useState(0);
+  const itemRefs = useRef([]);
+
+  useEffect(() => { itemRefs.current[0]?.focus(); }, []);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      const next = (focused + 1) % opts.length;
+      setFocused(next);
+      itemRefs.current[next]?.focus();
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const prev = (focused - 1 + opts.length) % opts.length;
+      setFocused(prev);
+      itemRefs.current[prev]?.focus();
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const opt = opts[focused];
+      if (isSingle) { onChange(opt); onAutoAdvance(opt); }
+      else {
+        const arr = Array.isArray(value) ? [...value] : [];
+        onChange(arr.includes(opt) ? arr.filter(v => v !== opt) : [...arr, opt]);
+      }
+    } else {
+      // A-Z letter shortcuts
+      const idx = e.key.toUpperCase().charCodeAt(0) - 65;
+      if (idx >= 0 && idx < opts.length) {
+        e.preventDefault();
+        setFocused(idx);
+        itemRefs.current[idx]?.focus();
+        const opt = opts[idx];
+        if (isSingle) { onChange(opt); onAutoAdvance(opt); }
+        else {
+          const arr = Array.isArray(value) ? [...value] : [];
+          onChange(arr.includes(opt) ? arr.filter(v => v !== opt) : [...arr, opt]);
+        }
+      }
+    }
+  };
+
   return (
-    <div className="space-y-3">
-      {(question.options || []).map((opt, i) => {
+    <div className="space-y-3" onKeyDown={handleKeyDown}>
+      {opts.map((opt, i) => {
         const letter = String.fromCharCode(65 + i);
         const selected = isSingle ? value === opt : (Array.isArray(value) && value.includes(opt));
         return (
           <button
             key={i}
+            ref={el => itemRefs.current[i] = el}
             onClick={() => {
-              if (isSingle) { onChange(opt); setTimeout(() => onNext?.(), 350); }
+              setFocused(i);
+              if (isSingle) { onChange(opt); onAutoAdvance(opt); }
               else {
                 const arr = Array.isArray(value) ? [...value] : [];
                 onChange(selected ? arr.filter(v => v !== opt) : [...arr, opt]);
               }
             }}
-            className={`w-full flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all cursor-pointer group ${
+            className={`w-full flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all cursor-pointer group outline-none focus:ring-2 focus:ring-[#c9a87c]/40 ${
               selected
                 ? 'border-[#c9a87c] bg-[#c9a87c]/8 shadow-sm'
                 : 'border-[#1e3a5a]/10 hover:border-[#1e3a5a]/25 hover:bg-white/60'
@@ -56,21 +100,55 @@ function ChoiceQuestion({ question, value, onChange, onNext }) {
           </button>
         );
       })}
+      {!isSingle && <p className="text-xs text-[#1e3a5a]/40">Select all that apply · press Enter when done</p>}
     </div>
   );
 }
 
-function RatingQuestion({ question, value, onChange, onNext }) {
+/* ── Rating question with arrow key focus ── */
+function RatingQuestion({ question, value, onChange, onAutoAdvance }) {
   const isNps = question.type === 'nps';
   const range = isNps ? [0,1,2,3,4,5,6,7,8,9,10] : [1,2,3,4,5];
+  const [focused, setFocused] = useState(0);
+  const itemRefs = useRef([]);
+
+  useEffect(() => { itemRefs.current[0]?.focus(); }, []);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = Math.min(focused + 1, range.length - 1);
+      setFocused(next);
+      itemRefs.current[next]?.focus();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = Math.max(focused - 1, 0);
+      setFocused(prev);
+      itemRefs.current[prev]?.focus();
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const n = range[focused];
+      onChange(n);
+      onAutoAdvance(n);
+    } else {
+      const num = parseInt(e.key);
+      if (!isNaN(num) && range.includes(num)) {
+        e.preventDefault();
+        onChange(num);
+        onAutoAdvance(num);
+      }
+    }
+  };
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" onKeyDown={handleKeyDown}>
       <div className={`flex gap-2 ${isNps ? 'flex-wrap' : ''} justify-center`}>
-        {range.map(n => (
+        {range.map((n, i) => (
           <button
             key={n}
-            onClick={() => { onChange(n); setTimeout(() => onNext?.(), 350); }}
-            className={`${isNps ? 'w-11 h-11' : 'w-14 h-14'} rounded-xl font-bold transition-all cursor-pointer ${
+            ref={el => itemRefs.current[i] = el}
+            onClick={() => { setFocused(i); onChange(n); onAutoAdvance(n); }}
+            className={`${isNps ? 'w-11 h-11' : 'w-14 h-14'} rounded-xl font-bold transition-all cursor-pointer outline-none focus:ring-2 focus:ring-[#c9a87c]/40 ${
               value === n
                 ? 'bg-[#c9a87c] text-white shadow-lg scale-110'
                 : 'bg-white border-2 border-[#1e3a5a]/10 text-[#1e3a5a] hover:border-[#c9a87c]/40 hover:scale-105'
@@ -88,10 +166,20 @@ function RatingQuestion({ question, value, onChange, onNext }) {
   );
 }
 
+/* ── Text question with auto-focus ── */
 function TextQuestion({ question, value, onChange }) {
+  const inputRef = useRef(null);
   const isLong = question.type === 'textarea';
+
+  useEffect(() => {
+    // Small delay to let the slide animation settle
+    const t = setTimeout(() => inputRef.current?.focus(), 150);
+    return () => clearTimeout(t);
+  }, []);
+
   return isLong ? (
     <Textarea
+      ref={inputRef}
       value={value || ''}
       onChange={e => onChange(e.target.value)}
       placeholder="Type your answer here..."
@@ -100,11 +188,37 @@ function TextQuestion({ question, value, onChange }) {
     />
   ) : (
     <Input
+      ref={inputRef}
       value={value || ''}
       onChange={e => onChange(e.target.value)}
       placeholder="Type your answer here..."
       className="text-lg border-0 border-b-2 border-[#1e3a5a]/15 rounded-none bg-transparent focus:border-[#c9a87c] focus-visible:ring-0 px-0 h-12"
     />
+  );
+}
+
+/* ── Keyboard hints ── */
+function KeyboardHints({ question }) {
+  if (!question) return null;
+  const t = question.type;
+  if (t === 'single_choice' || t === 'multiple_choice') {
+    return (
+      <p className="text-[10px] text-[#1e3a5a]/25">
+        Use <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">↑↓</kbd> arrows or <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">A</kbd><kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">B</kbd><kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">C</kbd> · press <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> or <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Space</kbd> to select
+      </p>
+    );
+  }
+  if (t === 'rating' || t === 'nps') {
+    return (
+      <p className="text-[10px] text-[#1e3a5a]/25">
+        Use <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">←→</kbd> arrows or number keys · <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> to confirm
+      </p>
+    );
+  }
+  return (
+    <p className="text-[10px] text-[#1e3a5a]/25">
+      Press <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> to continue
+    </p>
   );
 }
 
@@ -117,25 +231,38 @@ export default function SurveyPage() {
   const [survey, setSurvey] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Slides: 0 = welcome/intro, 1 = name/email, 2..N+1 = questions, N+2 = submitting
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [respondentName, setRespondentName] = useState('');
   const [respondentEmail, setRespondentEmail] = useState('');
   const [answers, setAnswers] = useState({});
+  const answersRef = useRef({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [alreadyResponded, setAlreadyResponded] = useState(false);
   const { toast } = useToast();
+  const containerRef = useRef(null);
+  const nameInputRef = useRef(null);
 
   const questions = survey?.questions || [];
-  const totalSteps = questions.length + 2; // intro + contact + questions
+  const totalSteps = questions.length + 2;
+  const currentQuestion = step >= 2 ? questions[step - 2] : null;
 
   useEffect(() => {
     if (!surveyId) { setError('No survey specified.'); setLoading(false); return; }
     loadSurvey();
   }, [surveyId]);
+
+  // Auto-focus name input on step 1, container otherwise
+  useEffect(() => {
+    if (step === 1) {
+      setTimeout(() => nameInputRef.current?.focus(), 150);
+    } else if (!currentQuestion || currentQuestion.type === 'single_choice' || currentQuestion.type === 'multiple_choice' || currentQuestion.type === 'rating' || currentQuestion.type === 'nps') {
+      // Don't steal focus from sub-components that manage their own focus
+      // But refocus container for welcome step (keyboard Enter)
+      if (step === 0) containerRef.current?.focus();
+    }
+  }, [step]);
 
   const loadSurvey = async () => {
     setLoading(true);
@@ -144,8 +271,6 @@ export default function SurveyPage() {
     if (!s) { setError('Survey not found.'); setLoading(false); return; }
     if (!isPreview && s.status !== 'active') { setError('This survey is not currently accepting responses.'); setLoading(false); return; }
     setSurvey(s);
-
-    // Pre-fill from auth if available
     const authed = await base44.auth.isAuthenticated();
     if (authed) {
       const me = await base44.auth.me();
@@ -159,36 +284,50 @@ export default function SurveyPage() {
     setLoading(false);
   };
 
-  const goNext = () => {
-    // Validate current step
-    if (step === 1) {
+  const setAnswer = (qId, val) => {
+    setAnswers(prev => {
+      const next = { ...prev, [qId]: val };
+      answersRef.current = next;
+      return next;
+    });
+  };
+
+  // Validate — accepts optional override value to avoid stale-state issues on auto-advance
+  const validateStep = useCallback((s, overrideValue) => {
+    if (s === 1) {
       if (!respondentName.trim() || !respondentEmail.trim()) {
-        toast({ title: 'Please enter your name and email', variant: 'destructive' }); return;
+        toast({ title: 'Please enter your name and email', variant: 'destructive' }); return false;
       }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(respondentEmail)) {
-        toast({ title: 'Please enter a valid email address', variant: 'destructive' }); return;
+        toast({ title: 'Please enter a valid email', variant: 'destructive' }); return false;
       }
     }
-    if (step >= 2) {
-      const q = questions[step - 2];
-      const val = answers[q?.id];
+    if (s >= 2) {
+      const q = questions[s - 2];
+      const val = overrideValue !== undefined ? overrideValue : answersRef.current[q?.id];
       if (q?.required && (val === undefined || val === '' || (Array.isArray(val) && val.length === 0))) {
-        toast({ title: 'This question is required', variant: 'destructive' }); return;
+        toast({ title: 'This question is required', variant: 'destructive' }); return false;
       }
     }
-    // If last question, submit
+    return true;
+  }, [questions, respondentName, respondentEmail, toast]);
+
+  const goNext = useCallback((overrideValue) => {
+    if (!validateStep(step, overrideValue)) return;
     if (step === totalSteps - 1) { handleSubmit(); return; }
     setDirection(1);
     setStep(s => s + 1);
-  };
+  }, [step, totalSteps, validateStep]);
 
-  const goBack = () => {
+  const goBack = useCallback(() => {
     if (step <= 0) return;
     setDirection(-1);
     setStep(s => s - 1);
-  };
+  }, [step]);
 
-  const setAnswer = (qId, val) => setAnswers(prev => ({ ...prev, [qId]: val }));
+  const handleAutoAdvance = useCallback((selectedValue) => {
+    setTimeout(() => goNext(selectedValue), 350);
+  }, [goNext]);
 
   const handleSubmit = async () => {
     if (isPreview) { setSubmitted(true); return; }
@@ -197,7 +336,7 @@ export default function SurveyPage() {
       survey_id: surveyId,
       respondent_email: respondentEmail,
       respondent_name: respondentName,
-      answers,
+      answers: answersRef.current,
       completed: true,
     });
     await base44.entities.Survey.update(surveyId, { response_count: (survey.response_count || 0) + 1 });
@@ -205,8 +344,21 @@ export default function SurveyPage() {
     setSubmitting(false);
   };
 
+  // Global keyboard: Enter to advance, ArrowLeft to go back
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); goNext(); }
+    // Don't intercept if a sub-component (choice/rating) handles it
+    const tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') {
+      // Only Enter advances from text inputs (not shift+enter for textarea)
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); goNext(); }
+      return;
+    }
+    if (e.key === 'Enter' || e.key === ' ') {
+      // On welcome screen, advance
+      if (step === 0) { e.preventDefault(); goNext(); }
+      // On question steps, let sub-components handle Enter/Space
+    }
+    if (e.key === 'ArrowLeft' && step > 0) { goBack(); }
   };
 
   /* ── Loading / Error / Already ── */
@@ -253,14 +405,12 @@ export default function SurveyPage() {
           <div className="w-20 h-20 rounded-full bg-[#c9a87c]/15 flex items-center justify-center mx-auto mb-8">
             <CheckCircle2 className="w-10 h-10 text-[#c9a87c]" />
           </div>
-
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
             Thank You{respondentName ? `, ${respondentName.split(' ')[0]}` : ''}.
           </h2>
           <p className="text-white/60 text-base mb-10 leading-relaxed">
             Your signal has been received. We're building the future of aerospace recognition — and your input shapes the trajectory.
           </p>
-
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a href="/">
               <Button className="w-full sm:w-auto gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full px-6 py-5 cursor-pointer backdrop-blur-sm">
@@ -278,27 +428,28 @@ export default function SurveyPage() {
               </Button>
             </a>
           </div>
-
           <p className="text-white/20 text-[10px] tracking-widest uppercase mt-12">top100aero.space</p>
         </motion.div>
       </div>
     );
   }
 
-  /* ── Progress ── */
+  /* ── Survey Flow ── */
   const progress = ((step) / totalSteps) * 100;
-  const currentQuestion = step >= 2 ? questions[step - 2] : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#faf8f5] to-[#f0ebe4]" onKeyDown={handleKeyDown} tabIndex={0}>
-      {/* Preview banner */}
+    <div
+      ref={containerRef}
+      className="min-h-screen flex flex-col bg-gradient-to-br from-[#faf8f5] to-[#f0ebe4] outline-none"
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+    >
       {isPreview && (
         <div className="bg-[#1e3a5a] text-white text-center py-2 text-xs font-bold tracking-widest shrink-0">
           PREVIEW MODE
         </div>
       )}
 
-      {/* Progress bar */}
       <div className="h-1 bg-[#1e3a5a]/5 shrink-0">
         <motion.div
           className="h-full bg-gradient-to-r from-[#1e3a5a] to-[#c9a87c]"
@@ -307,12 +458,10 @@ export default function SurveyPage() {
         />
       </div>
 
-      {/* Main content area */}
       <div className="flex-1 flex items-center justify-center p-6 md:p-12">
         <div className="w-full max-w-xl">
           <AnimatePresence mode="wait" initial={false}>
 
-            {/* Step 0: Welcome */}
             {step === 0 && (
               <Slide key="welcome" direction={direction}>
                 <div className="space-y-6">
@@ -323,25 +472,22 @@ export default function SurveyPage() {
                   <h1 className="text-3xl md:text-5xl font-bold text-[#1e3a5a] leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
                     {survey.title}
                   </h1>
-                  {survey.description && (
-                    <p className="text-[#1e3a5a]/60 text-lg leading-relaxed">{survey.description}</p>
-                  )}
+                  {survey.description && <p className="text-[#1e3a5a]/60 text-lg leading-relaxed">{survey.description}</p>}
                   <div className="flex items-center gap-3 text-sm text-[#1e3a5a]/40">
                     <span>{questions.length} questions</span>
                     <span>·</span>
                     <span>~{Math.max(1, Math.ceil(questions.length * 0.3))} min</span>
                   </div>
-                  <Button
-                    onClick={goNext}
-                    className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-6 text-base cursor-pointer"
-                  >
+                  <Button onClick={() => goNext()} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-6 text-base cursor-pointer">
                     Get Started <ArrowRight className="w-4 h-4" />
                   </Button>
+                  <p className="text-[10px] text-[#1e3a5a]/25">
+                    Press <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> to begin
+                  </p>
                 </div>
               </Slide>
             )}
 
-            {/* Step 1: Name & Email */}
             {step === 1 && (
               <Slide key="contact" direction={direction}>
                 <div className="space-y-6">
@@ -353,6 +499,7 @@ export default function SurveyPage() {
                     <div>
                       <label className="text-xs font-semibold text-[#1e3a5a]/60 uppercase tracking-wider mb-1 block">Full Name</label>
                       <Input
+                        ref={nameInputRef}
                         value={respondentName}
                         onChange={e => setRespondentName(e.target.value)}
                         placeholder="Jane Doe"
@@ -375,7 +522,6 @@ export default function SurveyPage() {
               </Slide>
             )}
 
-            {/* Step 2+: Questions */}
             {step >= 2 && currentQuestion && (
               <Slide key={currentQuestion.id} direction={direction}>
                 <div className="space-y-6">
@@ -392,7 +538,7 @@ export default function SurveyPage() {
                       question={currentQuestion}
                       value={answers[currentQuestion.id]}
                       onChange={val => setAnswer(currentQuestion.id, val)}
-                      onNext={goNext}
+                      onAutoAdvance={handleAutoAdvance}
                     />
                   )}
                   {(currentQuestion.type === 'rating' || currentQuestion.type === 'nps') && (
@@ -400,7 +546,7 @@ export default function SurveyPage() {
                       question={currentQuestion}
                       value={answers[currentQuestion.id]}
                       onChange={val => setAnswer(currentQuestion.id, val)}
-                      onNext={goNext}
+                      onAutoAdvance={handleAutoAdvance}
                     />
                   )}
                   {(currentQuestion.type === 'text' || currentQuestion.type === 'textarea') && (
@@ -411,9 +557,7 @@ export default function SurveyPage() {
                     />
                   )}
 
-                  {currentQuestion.type === 'multiple_choice' && (
-                    <p className="text-xs text-[#1e3a5a]/40">Select all that apply</p>
-                  )}
+                  <KeyboardHints question={currentQuestion} />
                 </div>
               </Slide>
             )}
@@ -422,22 +566,16 @@ export default function SurveyPage() {
         </div>
       </div>
 
-      {/* Bottom nav */}
-      {!submitted && step > 0 && (
+      {step > 0 && (
         <div className="shrink-0 border-t border-[#1e3a5a]/8 bg-white/60 backdrop-blur-sm px-6 py-4">
           <div className="max-w-xl mx-auto flex items-center justify-between">
-            <Button
-              variant="ghost"
-              onClick={goBack}
-              className="gap-2 text-[#1e3a5a]/60 hover:text-[#1e3a5a] cursor-pointer"
-            >
+            <Button variant="ghost" onClick={goBack} className="gap-2 text-[#1e3a5a]/60 hover:text-[#1e3a5a] cursor-pointer">
               <ArrowLeft className="w-4 h-4" /> Back
             </Button>
-
             <div className="flex items-center gap-3">
               <span className="text-xs text-[#1e3a5a]/30">{step} / {totalSteps}</span>
               <Button
-                onClick={goNext}
+                onClick={() => goNext()}
                 disabled={submitting}
                 className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-6 cursor-pointer"
               >
