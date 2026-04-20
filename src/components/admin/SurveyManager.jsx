@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import SurveyFormEditor from '@/components/admin/SurveyFormEditor';
 import SurveyPreviewModal from '@/components/admin/SurveyPreviewModal';
+import SurveyAnalytics from '@/components/admin/SurveyAnalytics';
 
 const STATUS_COLORS = {
   draft: 'bg-slate-100 text-slate-700',
@@ -38,6 +39,7 @@ export default function SurveyManager() {
   const [editingSurvey, setEditingSurvey] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [previewSurvey, setPreviewSurvey] = useState(null);
+  const [analyticsSurvey, setAnalyticsSurvey] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => { loadSurveys(); }, []);
@@ -138,6 +140,10 @@ export default function SurveyManager() {
     return <SurveyPreviewModal survey={previewSurvey} onClose={() => setPreviewSurvey(null)} />;
   }
 
+  if (analyticsSurvey) {
+    return <SurveyAnalytics survey={analyticsSurvey} onBack={() => setAnalyticsSurvey(null)} />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -220,6 +226,9 @@ export default function SurveyManager() {
                 </div>
 
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" title="Analytics" onClick={() => setAnalyticsSurvey(survey)}>
+                    <BarChart3 className="w-3.5 h-3.5" />
+                  </Button>
                   <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" title="Preview" onClick={() => setPreviewSurvey(survey)}>
                     <Eye className="w-3.5 h-3.5" />
                   </Button>
