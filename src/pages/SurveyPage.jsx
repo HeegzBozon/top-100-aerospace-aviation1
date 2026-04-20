@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircle2, Loader2, AlertCircle, Rocket, ArrowRight, ArrowLeft,
-  Home, Calendar, TrendingUp
+  Home, Calendar, TrendingUp, Pencil
 } from 'lucide-react';
 
 /* ── Slide wrapper ── */
@@ -25,130 +25,117 @@ function Slide({ children, direction }) {
   );
 }
 
-/* ── Choice question with arrow key focus ── */
+/* ── Choice question ── */
 function ChoiceQuestion({ question, value, onChange, onAutoAdvance }) {
   const isSingle = question.type === 'single_choice';
   const opts = question.options || [];
-  const [focused, setFocused] = useState(0);
-  const itemRefs = useRef([]);
+  const containerRef = useRef(null);
 
-  useEffect(() => { itemRefs.current[0]?.focus(); }, []);
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-      e.preventDefault();
-      const next = (focused + 1) % opts.length;
-      setFocused(next);
-      itemRefs.current[next]?.focus();
-    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-      e.preventDefault();
-      const prev = (focused - 1 + opts.length) % opts.length;
-      setFocused(prev);
-      itemRefs.current[prev]?.focus();
-    } else if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      const opt = opts[focused];
-      if (isSingle) { onChange(opt); onAutoAdvance(opt); }
-      else {
-        const arr = Array.isArray(value) ? [...value] : [];
-        onChange(arr.includes(opt) ? arr.filter(v => v !== opt) : [...arr, opt]);
-      }
+  const select = (opt) => {
+    if (isSingle) {
+      onChange(opt);
+      onAutoAdvance();
     } else {
-      // A-Z letter shortcuts
-      const idx = e.key.toUpperCase().charCodeAt(0) - 65;
-      if (idx >= 0 && idx < opts.length) {
-        e.preventDefault();
-        setFocused(idx);
-        itemRefs.current[idx]?.focus();
-        const opt = opts[idx];
-        if (isSingle) { onChange(opt); onAutoAdvance(opt); }
-        else {
-          const arr = Array.isArray(value) ? [...value] : [];
-          onChange(arr.includes(opt) ? arr.filter(v => v !== opt) : [...arr, opt]);
-        }
-      }
+      const arr = Array.isArray(value) ? [...value] : [];
+      onChange(arr.includes(opt) ? arr.filter(v => v !== opt) : [...arr, opt]);
     }
   };
 
+  const handleKeyDown = (e) => {
+    const buttons = containerRef.current?.querySelectorAll('[data-choice]');
+    if (!buttons?.length) return;
+    const focused = document.activeElement;
+    const idx = Array.from(buttons).indexOf(focused);
+
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      const next = idx < buttons.length - 1 ? idx + 1 : 0;
+      buttons[next].focus();
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const prev = idx > 0 ? idx - 1 : buttons.length - 1;
+      buttons[prev].focus();
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (idx >= 0) select(opts[idx]);
+    }
+  };
+
+  useEffect(() => {
+    const first = containerRef.current?.querySelector('[data-choice]');
+    setTimeout(() => first?.focus(), 100);
+  }, []);
+
   return (
-    <div className="space-y-3" onKeyDown={handleKeyDown}>
+    <div ref={containerRef} className="space-y-3" onKeyDown={handleKeyDown}>
       {opts.map((opt, i) => {
         const letter = String.fromCharCode(65 + i);
         const selected = isSingle ? value === opt : (Array.isArray(value) && value.includes(opt));
         return (
           <button
             key={i}
-            ref={el => itemRefs.current[i] = el}
-            onClick={() => {
-              setFocused(i);
-              if (isSingle) { onChange(opt); onAutoAdvance(opt); }
-              else {
-                const arr = Array.isArray(value) ? [...value] : [];
-                onChange(selected ? arr.filter(v => v !== opt) : [...arr, opt]);
-              }
-            }}
-            className={`w-full flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all cursor-pointer group outline-none focus:ring-2 focus:ring-[#c9a87c]/40 ${
+            data-choice
+            onClick={() => select(opt)}
+            className={`w-full flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all cursor-pointer outline-none focus:ring-2 focus:ring-[#c9a87c]/50 ${
               selected
                 ? 'border-[#c9a87c] bg-[#c9a87c]/8 shadow-sm'
                 : 'border-[#1e3a5a]/10 hover:border-[#1e3a5a]/25 hover:bg-white/60'
             }`}
           >
             <span className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
-              selected ? 'bg-[#c9a87c] text-white' : 'bg-[#1e3a5a]/5 text-[#1e3a5a]/60 group-hover:bg-[#1e3a5a]/10'
+              selected ? 'bg-[#c9a87c] text-white' : 'bg-[#1e3a5a]/5 text-[#1e3a5a]/60'
             }`}>{letter}</span>
             <span className="text-[15px] text-[#1e3a5a] leading-snug pt-0.5">{opt}</span>
           </button>
         );
       })}
-      {!isSingle && <p className="text-xs text-[#1e3a5a]/40">Select all that apply · press Enter when done</p>}
+      {!isSingle && <p className="text-xs text-[#1e3a5a]/40">Select all that apply</p>}
     </div>
   );
 }
 
-/* ── Rating question with arrow key focus ── */
+/* ── Rating question ── */
 function RatingQuestion({ question, value, onChange, onAutoAdvance }) {
   const isNps = question.type === 'nps';
   const range = isNps ? [0,1,2,3,4,5,6,7,8,9,10] : [1,2,3,4,5];
-  const [focused, setFocused] = useState(0);
-  const itemRefs = useRef([]);
-
-  useEffect(() => { itemRefs.current[0]?.focus(); }, []);
+  const containerRef = useRef(null);
 
   const handleKeyDown = (e) => {
+    const buttons = containerRef.current?.querySelectorAll('[data-rating]');
+    if (!buttons?.length) return;
+    const focused = document.activeElement;
+    const idx = Array.from(buttons).indexOf(focused);
+
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
       e.preventDefault();
-      const next = Math.min(focused + 1, range.length - 1);
-      setFocused(next);
-      itemRefs.current[next]?.focus();
+      const next = Math.min(idx + 1, buttons.length - 1);
+      buttons[next].focus();
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
       e.preventDefault();
-      const prev = Math.max(focused - 1, 0);
-      setFocused(prev);
-      itemRefs.current[prev]?.focus();
+      const prev = Math.max(idx - 1, 0);
+      buttons[prev].focus();
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      const n = range[focused];
-      onChange(n);
-      onAutoAdvance(n);
-    } else {
-      const num = parseInt(e.key);
-      if (!isNaN(num) && range.includes(num)) {
-        e.preventDefault();
-        onChange(num);
-        onAutoAdvance(num);
-      }
+      e.stopPropagation();
+      if (idx >= 0) { onChange(range[idx]); onAutoAdvance(); }
     }
   };
 
+  useEffect(() => {
+    const first = containerRef.current?.querySelector('[data-rating]');
+    setTimeout(() => first?.focus(), 100);
+  }, []);
+
   return (
-    <div className="space-y-3" onKeyDown={handleKeyDown}>
+    <div ref={containerRef} className="space-y-3" onKeyDown={handleKeyDown}>
       <div className={`flex gap-2 ${isNps ? 'flex-wrap' : ''} justify-center`}>
-        {range.map((n, i) => (
+        {range.map(n => (
           <button
             key={n}
-            ref={el => itemRefs.current[i] = el}
-            onClick={() => { setFocused(i); onChange(n); onAutoAdvance(n); }}
-            className={`${isNps ? 'w-11 h-11' : 'w-14 h-14'} rounded-xl font-bold transition-all cursor-pointer outline-none focus:ring-2 focus:ring-[#c9a87c]/40 ${
+            data-rating
+            onClick={() => { onChange(n); onAutoAdvance(); }}
+            className={`${isNps ? 'w-11 h-11' : 'w-14 h-14'} rounded-xl font-bold transition-all cursor-pointer outline-none focus:ring-2 focus:ring-[#c9a87c]/50 ${
               value === n
                 ? 'bg-[#c9a87c] text-white shadow-lg scale-110'
                 : 'bg-white border-2 border-[#1e3a5a]/10 text-[#1e3a5a] hover:border-[#c9a87c]/40 hover:scale-105'
@@ -166,16 +153,11 @@ function RatingQuestion({ question, value, onChange, onAutoAdvance }) {
   );
 }
 
-/* ── Text question with auto-focus ── */
+/* ── Text question ── */
 function TextQuestion({ question, value, onChange }) {
   const inputRef = useRef(null);
   const isLong = question.type === 'textarea';
-
-  useEffect(() => {
-    // Small delay to let the slide animation settle
-    const t = setTimeout(() => inputRef.current?.focus(), 150);
-    return () => clearTimeout(t);
-  }, []);
+  useEffect(() => { setTimeout(() => inputRef.current?.focus(), 100); }, []);
 
   return isLong ? (
     <Textarea
@@ -197,31 +179,6 @@ function TextQuestion({ question, value, onChange }) {
   );
 }
 
-/* ── Keyboard hints ── */
-function KeyboardHints({ question }) {
-  if (!question) return null;
-  const t = question.type;
-  if (t === 'single_choice' || t === 'multiple_choice') {
-    return (
-      <p className="text-[10px] text-[#1e3a5a]/25">
-        Use <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">↑↓</kbd> arrows or <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">A</kbd><kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">B</kbd><kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">C</kbd> · press <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> or <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Space</kbd> to select
-      </p>
-    );
-  }
-  if (t === 'rating' || t === 'nps') {
-    return (
-      <p className="text-[10px] text-[#1e3a5a]/25">
-        Use <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">←→</kbd> arrows or number keys · <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> to confirm
-      </p>
-    );
-  }
-  return (
-    <p className="text-[10px] text-[#1e3a5a]/25">
-      Press <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> to continue
-    </p>
-  );
-}
-
 /* ── Main ── */
 export default function SurveyPage() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -239,7 +196,8 @@ export default function SurveyPage() {
   const answersRef = useRef({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [alreadyResponded, setAlreadyResponded] = useState(false);
+  const [existingResponseId, setExistingResponseId] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   const { toast } = useToast();
   const containerRef = useRef(null);
   const nameInputRef = useRef(null);
@@ -253,15 +211,9 @@ export default function SurveyPage() {
     loadSurvey();
   }, [surveyId]);
 
-  // Auto-focus name input on step 1, container otherwise
   useEffect(() => {
-    if (step === 1) {
-      setTimeout(() => nameInputRef.current?.focus(), 150);
-    } else if (!currentQuestion || currentQuestion.type === 'single_choice' || currentQuestion.type === 'multiple_choice' || currentQuestion.type === 'rating' || currentQuestion.type === 'nps') {
-      // Don't steal focus from sub-components that manage their own focus
-      // But refocus container for welcome step (keyboard Enter)
-      if (step === 0) containerRef.current?.focus();
-    }
+    if (step === 1) setTimeout(() => nameInputRef.current?.focus(), 150);
+    else if (step === 0) containerRef.current?.focus();
   }, [step]);
 
   const loadSurvey = async () => {
@@ -278,7 +230,13 @@ export default function SurveyPage() {
       setRespondentEmail(me.email || '');
       if (!isPreview) {
         const existing = await base44.entities.SurveyResponse.filter({ survey_id: surveyId, respondent_email: me.email });
-        if (existing.length > 0) setAlreadyResponded(true);
+        if (existing.length > 0) {
+          setExistingResponseId(existing[0].id);
+          // Pre-fill answers from existing response
+          const existingAnswers = existing[0].answers || {};
+          setAnswers(existingAnswers);
+          answersRef.current = existingAnswers;
+        }
       }
     }
     setLoading(false);
@@ -292,8 +250,7 @@ export default function SurveyPage() {
     });
   };
 
-  // Validate — accepts optional override value to avoid stale-state issues on auto-advance
-  const validateStep = useCallback((s, overrideValue) => {
+  const validateStep = useCallback((s) => {
     if (s === 1) {
       if (!respondentName.trim() || !respondentEmail.trim()) {
         toast({ title: 'Please enter your name and email', variant: 'destructive' }); return false;
@@ -304,7 +261,7 @@ export default function SurveyPage() {
     }
     if (s >= 2) {
       const q = questions[s - 2];
-      const val = overrideValue !== undefined ? overrideValue : answersRef.current[q?.id];
+      const val = answersRef.current[q?.id];
       if (q?.required && (val === undefined || val === '' || (Array.isArray(val) && val.length === 0))) {
         toast({ title: 'This question is required', variant: 'destructive' }); return false;
       }
@@ -312,9 +269,9 @@ export default function SurveyPage() {
     return true;
   }, [questions, respondentName, respondentEmail, toast]);
 
-  const goNext = useCallback((overrideValue) => {
-    if (!validateStep(step, overrideValue)) return;
-    if (step === totalSteps - 1) { handleSubmit(); return; }
+  const goNext = useCallback(() => {
+    if (!validateStep(step)) return;
+    if (step === totalSteps - 1) return; // submit via Ctrl+Enter only
     setDirection(1);
     setStep(s => s + 1);
   }, [step, totalSteps, validateStep]);
@@ -325,43 +282,87 @@ export default function SurveyPage() {
     setStep(s => s - 1);
   }, [step]);
 
-  const handleAutoAdvance = useCallback((selectedValue) => {
-    setTimeout(() => goNext(selectedValue), 350);
-  }, [goNext]);
+  const handleAutoAdvance = useCallback(() => {
+    // For single-choice and rating, auto-advance after selection
+    setTimeout(() => {
+      if (step < totalSteps - 1) {
+        setDirection(1);
+        setStep(s => s + 1);
+      }
+    }, 350);
+  }, [step, totalSteps]);
 
   const handleSubmit = async () => {
+    // Validate all required questions
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      const val = answersRef.current[q.id];
+      if (q.required && (val === undefined || val === '' || (Array.isArray(val) && val.length === 0))) {
+        toast({ title: `Please answer question ${i + 1}`, variant: 'destructive' });
+        setDirection(1);
+        setStep(i + 2);
+        return;
+      }
+    }
+
     if (isPreview) { setSubmitted(true); return; }
     setSubmitting(true);
-    await base44.entities.SurveyResponse.create({
-      survey_id: surveyId,
-      respondent_email: respondentEmail,
-      respondent_name: respondentName,
-      answers: answersRef.current,
-      completed: true,
-    });
-    await base44.entities.Survey.update(surveyId, { response_count: (survey.response_count || 0) + 1 });
+
+    if (existingResponseId && isEditMode) {
+      // Update existing response
+      await base44.entities.SurveyResponse.update(existingResponseId, {
+        answers: answersRef.current,
+        respondent_name: respondentName,
+        completed: true,
+      });
+    } else {
+      await base44.entities.SurveyResponse.create({
+        survey_id: surveyId,
+        respondent_email: respondentEmail,
+        respondent_name: respondentName,
+        answers: answersRef.current,
+        completed: true,
+      });
+      await base44.entities.Survey.update(surveyId, { response_count: (survey.response_count || 0) + 1 });
+    }
+
     setSubmitted(true);
     setSubmitting(false);
   };
 
-  // Global keyboard: Enter to advance, ArrowLeft to go back
+  const startEditMode = () => {
+    setIsEditMode(true);
+    setStep(0);
+  };
+
+  // Global keyboard handler
   const handleKeyDown = (e) => {
-    // Don't intercept if a sub-component (choice/rating) handles it
     const tag = e.target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA') {
-      // Only Enter advances from text inputs (not shift+enter for textarea)
+    const isTextInput = tag === 'INPUT' || tag === 'TEXTAREA';
+    const isCtrlEnter = e.key === 'Enter' && (e.ctrlKey || e.metaKey);
+
+    // Ctrl/Cmd+Enter = submit from any step
+    if (isCtrlEnter) {
+      e.preventDefault();
+      handleSubmit();
+      return;
+    }
+
+    // In text inputs, plain Enter advances
+    if (isTextInput) {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); goNext(); }
       return;
     }
-    if (e.key === 'Enter' || e.key === ' ') {
-      // On welcome screen, advance
-      if (step === 0) { e.preventDefault(); goNext(); }
-      // On question steps, let sub-components handle Enter/Space
-    }
-    if (e.key === 'ArrowLeft' && step > 0) { goBack(); }
+
+    // In choice/rating sub-components, Enter/Space/arrows are handled there — don't double-handle
+    const inSubComponent = e.target.hasAttribute('data-choice') || e.target.hasAttribute('data-rating');
+    if (inSubComponent) return;
+
+    // On welcome screen or generic: Enter advances, left arrow goes back
+    if (e.key === 'Enter') { e.preventDefault(); goNext(); }
   };
 
-  /* ── Loading / Error / Already ── */
+  /* ── Loading / Error ── */
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#faf8f5] to-[#f0ebe4]">
@@ -380,13 +381,18 @@ export default function SurveyPage() {
       </div>
     );
   }
-  if (alreadyResponded) {
+
+  /* ── Already responded — show option to edit ── */
+  if (existingResponseId && !isEditMode && !submitted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#faf8f5] to-[#f0ebe4] p-6">
-        <div className="text-center max-w-md">
-          <CheckCircle2 className="w-12 h-12 text-[#c9a87c] mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-[#1e3a5a] mb-2">Already Responded</h2>
-          <p className="text-sm text-[#1e3a5a]/60">You have already submitted a response to this survey.</p>
+        <div className="text-center max-w-md space-y-6">
+          <CheckCircle2 className="w-12 h-12 text-[#c9a87c] mx-auto" />
+          <h2 className="text-xl font-bold text-[#1e3a5a]">You've already responded</h2>
+          <p className="text-sm text-[#1e3a5a]/60">Would you like to update your answers?</p>
+          <Button onClick={startEditMode} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-5 cursor-pointer">
+            <Pencil className="w-4 h-4" /> Edit My Answers
+          </Button>
         </div>
       </div>
     );
@@ -406,10 +412,13 @@ export default function SurveyPage() {
             <CheckCircle2 className="w-10 h-10 text-[#c9a87c]" />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Thank You{respondentName ? `, ${respondentName.split(' ')[0]}` : ''}.
+            {isEditMode ? 'Updated!' : 'Thank You'}{respondentName ? `, ${respondentName.split(' ')[0]}` : ''}.
           </h2>
           <p className="text-white/60 text-base mb-10 leading-relaxed">
-            Your signal has been received. We're building the future of aerospace recognition — and your input shapes the trajectory.
+            {isEditMode
+              ? 'Your answers have been updated successfully.'
+              : "Your signal has been received. We're building the future of aerospace recognition — and your input shapes the trajectory."
+            }
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a href="/">
@@ -435,7 +444,8 @@ export default function SurveyPage() {
   }
 
   /* ── Survey Flow ── */
-  const progress = ((step) / totalSteps) * 100;
+  const progress = (step / totalSteps) * 100;
+  const isLastStep = step === totalSteps - 1;
 
   return (
     <div
@@ -445,17 +455,14 @@ export default function SurveyPage() {
       tabIndex={0}
     >
       {isPreview && (
-        <div className="bg-[#1e3a5a] text-white text-center py-2 text-xs font-bold tracking-widest shrink-0">
-          PREVIEW MODE
-        </div>
+        <div className="bg-[#1e3a5a] text-white text-center py-2 text-xs font-bold tracking-widest shrink-0">PREVIEW MODE</div>
+      )}
+      {isEditMode && (
+        <div className="bg-[#c9a87c] text-[#0a1526] text-center py-2 text-xs font-bold tracking-widest shrink-0">EDITING YOUR RESPONSE</div>
       )}
 
       <div className="h-1 bg-[#1e3a5a]/5 shrink-0">
-        <motion.div
-          className="h-full bg-gradient-to-r from-[#1e3a5a] to-[#c9a87c]"
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
-        />
+        <motion.div className="h-full bg-gradient-to-r from-[#1e3a5a] to-[#c9a87c]" animate={{ width: `${progress}%` }} transition={{ duration: 0.4, ease: 'easeInOut' }} />
       </div>
 
       <div className="flex-1 flex items-center justify-center p-6 md:p-12">
@@ -478,8 +485,8 @@ export default function SurveyPage() {
                     <span>·</span>
                     <span>~{Math.max(1, Math.ceil(questions.length * 0.3))} min</span>
                   </div>
-                  <Button onClick={() => goNext()} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-6 text-base cursor-pointer">
-                    Get Started <ArrowRight className="w-4 h-4" />
+                  <Button onClick={goNext} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-6 text-base cursor-pointer">
+                    {isEditMode ? 'Edit Answers' : 'Get Started'} <ArrowRight className="w-4 h-4" />
                   </Button>
                   <p className="text-[10px] text-[#1e3a5a]/25">
                     Press <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> to begin
@@ -498,26 +505,16 @@ export default function SurveyPage() {
                   <div className="space-y-4">
                     <div>
                       <label className="text-xs font-semibold text-[#1e3a5a]/60 uppercase tracking-wider mb-1 block">Full Name</label>
-                      <Input
-                        ref={nameInputRef}
-                        value={respondentName}
-                        onChange={e => setRespondentName(e.target.value)}
-                        placeholder="Jane Doe"
-                        className="text-lg border-0 border-b-2 border-[#1e3a5a]/15 rounded-none bg-transparent focus:border-[#c9a87c] focus-visible:ring-0 px-0 h-12"
-                      />
+                      <Input ref={nameInputRef} value={respondentName} onChange={e => setRespondentName(e.target.value)} placeholder="Jane Doe"
+                        className="text-lg border-0 border-b-2 border-[#1e3a5a]/15 rounded-none bg-transparent focus:border-[#c9a87c] focus-visible:ring-0 px-0 h-12" />
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-[#1e3a5a]/60 uppercase tracking-wider mb-1 block">Email</label>
-                      <Input
-                        type="email"
-                        value={respondentEmail}
-                        onChange={e => setRespondentEmail(e.target.value)}
-                        placeholder="jane@aerospace.com"
-                        className="text-lg border-0 border-b-2 border-[#1e3a5a]/15 rounded-none bg-transparent focus:border-[#c9a87c] focus-visible:ring-0 px-0 h-12"
-                      />
+                      <Input type="email" value={respondentEmail} onChange={e => setRespondentEmail(e.target.value)} placeholder="jane@aerospace.com"
+                        className="text-lg border-0 border-b-2 border-[#1e3a5a]/15 rounded-none bg-transparent focus:border-[#c9a87c] focus-visible:ring-0 px-0 h-12" />
                     </div>
                   </div>
-                  <p className="text-xs text-[#1e3a5a]/30">We use this to keep your profile up to date. Never shared.</p>
+                  <p className="text-xs text-[#1e3a5a]/30">Press Enter to continue</p>
                 </div>
               </Slide>
             )}
@@ -534,30 +531,14 @@ export default function SurveyPage() {
                   </h2>
 
                   {(currentQuestion.type === 'single_choice' || currentQuestion.type === 'multiple_choice') && (
-                    <ChoiceQuestion
-                      question={currentQuestion}
-                      value={answers[currentQuestion.id]}
-                      onChange={val => setAnswer(currentQuestion.id, val)}
-                      onAutoAdvance={handleAutoAdvance}
-                    />
+                    <ChoiceQuestion question={currentQuestion} value={answers[currentQuestion.id]} onChange={val => setAnswer(currentQuestion.id, val)} onAutoAdvance={handleAutoAdvance} />
                   )}
                   {(currentQuestion.type === 'rating' || currentQuestion.type === 'nps') && (
-                    <RatingQuestion
-                      question={currentQuestion}
-                      value={answers[currentQuestion.id]}
-                      onChange={val => setAnswer(currentQuestion.id, val)}
-                      onAutoAdvance={handleAutoAdvance}
-                    />
+                    <RatingQuestion question={currentQuestion} value={answers[currentQuestion.id]} onChange={val => setAnswer(currentQuestion.id, val)} onAutoAdvance={handleAutoAdvance} />
                   )}
                   {(currentQuestion.type === 'text' || currentQuestion.type === 'textarea') && (
-                    <TextQuestion
-                      question={currentQuestion}
-                      value={answers[currentQuestion.id]}
-                      onChange={val => setAnswer(currentQuestion.id, val)}
-                    />
+                    <TextQuestion question={currentQuestion} value={answers[currentQuestion.id]} onChange={val => setAnswer(currentQuestion.id, val)} />
                   )}
-
-                  <KeyboardHints question={currentQuestion} />
                 </div>
               </Slide>
             )}
@@ -574,21 +555,22 @@ export default function SurveyPage() {
             </Button>
             <div className="flex items-center gap-3">
               <span className="text-xs text-[#1e3a5a]/30">{step} / {totalSteps}</span>
-              <Button
-                onClick={() => goNext()}
-                disabled={submitting}
-                className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-6 cursor-pointer"
-              >
-                {submitting ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</>
-                ) : step === totalSteps - 1 ? (
-                  <>Submit <CheckCircle2 className="w-4 h-4" /></>
-                ) : (
-                  <>Next <ArrowRight className="w-4 h-4" /></>
-                )}
-              </Button>
+              {isLastStep ? (
+                <Button onClick={handleSubmit} disabled={submitting} className="gap-2 bg-[#c9a87c] hover:bg-[#c9a87c]/90 text-[#0a1526] rounded-full px-6 cursor-pointer font-bold">
+                  {submitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : <>{isEditMode ? 'Update' : 'Submit'} <CheckCircle2 className="w-4 h-4" /></>}
+                </Button>
+              ) : (
+                <Button onClick={goNext} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-6 cursor-pointer">
+                  Next <ArrowRight className="w-4 h-4" />
+                </Button>
+              )}
             </div>
           </div>
+          {isLastStep && (
+            <p className="text-center text-[10px] text-[#1e3a5a]/25 mt-2">
+              <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">⌘</kbd>+<kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> to submit
+            </p>
+          )}
         </div>
       )}
     </div>
