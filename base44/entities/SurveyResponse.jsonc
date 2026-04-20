@@ -10,6 +10,10 @@
       "type": "string",
       "description": "Email of the user who responded"
     },
+    "respondent_name": {
+      "type": "string",
+      "description": "Full name of the respondent"
+    },
     "answers": {
       "type": "object",
       "description": "Map of question_id to answer value"

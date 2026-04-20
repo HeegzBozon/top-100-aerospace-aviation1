@@ -230,9 +230,10 @@ export default function SurveyAnalytics({ survey, onBack }) {
   const handleExportCsv = () => {
     if (responses.length === 0) return;
     const questions = survey.questions || [];
-    const headers = ['Respondent', 'Date', ...questions.map((q, i) => `Q${i + 1}: ${q.label}`)];
+    const headers = ['Name', 'Email', 'Date', ...questions.map((q, i) => `Q${i + 1}: ${q.label}`)];
     const rows = responses.map(r => {
       return [
+        r.respondent_name || '',
         r.respondent_email,
         new Date(r.created_date).toLocaleDateString(),
         ...questions.map(q => {
