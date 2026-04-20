@@ -59,12 +59,28 @@ Deno.serve(async (req) => {
           </div>
         </div>
 
-        <div style="text-align: center; margin-top: 32px;">
+        <div style="text-align: center; margin-top: 32px; padding: 24px 16px; border-top: 1px solid rgba(30,58,90,0.08);">
           <a href="https://www.linkedin.com/in/matthiga/" style="color: #1e3a5a; text-decoration: underline; font-size: 13px; opacity: 0.5;">
             Connect on LinkedIn
           </a>
-          <p style="font-size: 10px; color: #1e3a5a; opacity: 0.25; letter-spacing: 2px; text-transform: uppercase; margin-top: 16px;">
-            top100aero.space
+
+          <div style="margin-top: 20px; font-size: 11px; color: #1e3a5a; opacity: 0.35; line-height: 1.7;">
+            <p style="margin: 0;">TOP 100 Aerospace & Aviation</p>
+            <p style="margin: 4px 0;">8 The Green, Suite A, Dover, DE 19901, USA</p>
+            <p style="margin: 8px 0 0;">
+              You received this email because you submitted a response to a TOP 100 survey.
+            </p>
+            <p style="margin: 8px 0 0;">
+              <a href="mailto:privacy@top100aero.space?subject=Unsubscribe&body=Please%20remove%20me%20from%20future%20survey%20follow-up%20emails.%20My%20email%20is%3A%20${encodeURIComponent(data.respondent_email)}" style="color: #1e3a5a; text-decoration: underline;">Unsubscribe</a>
+              &nbsp;·&nbsp;
+              <a href="https://top100aero.space/PrivacyPolicy" style="color: #1e3a5a; text-decoration: underline;">Privacy Policy</a>
+              &nbsp;·&nbsp;
+              <a href="mailto:privacy@top100aero.space?subject=Data%20Request&body=I%20would%20like%20to%20request%20access%20to%20%2F%20deletion%20of%20my%20personal%20data.%20My%20email%20is%3A%20${encodeURIComponent(data.respondent_email)}" style="color: #1e3a5a; text-decoration: underline;">Data Rights Request</a>
+            </p>
+          </div>
+
+          <p style="font-size: 10px; color: #1e3a5a; opacity: 0.2; letter-spacing: 2px; text-transform: uppercase; margin-top: 16px;">
+            © ${new Date().getFullYear()} top100aero.space — All rights reserved
           </p>
         </div>
       </div>
