@@ -8,9 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Plus, Search, FileText, Trash2, Pencil, Copy, Eye,
-  BarChart3, ChevronDown, ChevronUp, GripVertical, X, Archive
+  BarChart3, ChevronDown, ChevronUp, GripVertical, X, Archive, Link2, Send, ExternalLink
 } from 'lucide-react';
 import SurveyFormEditor from '@/components/admin/SurveyFormEditor';
+import SurveyPreviewModal from '@/components/admin/SurveyPreviewModal';
 
 const STATUS_COLORS = {
   draft: 'bg-slate-100 text-slate-700',
@@ -36,6 +37,7 @@ export default function SurveyManager() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [editingSurvey, setEditingSurvey] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [previewSurvey, setPreviewSurvey] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => { loadSurveys(); }, []);
@@ -99,6 +101,22 @@ export default function SurveyManager() {
     loadSurveys();
   };
 
+  const handlePublish = async (survey) => {
+    await base44.entities.Survey.update(survey.id, { status: 'active' });
+    toast({ title: 'Survey Published', description: 'The survey is now live and accepting responses.' });
+    loadSurveys();
+  };
+
+  const getSurveyUrl = (survey, preview = false) => {
+    const base = window.location.origin;
+    return `${base}/survey?id=${survey.id}${preview ? '&preview=true' : ''}`;
+  };
+
+  const copyLink = (survey) => {
+    navigator.clipboard.writeText(getSurveyUrl(survey));
+    toast({ title: 'Link Copied', description: 'Shareable survey link copied to clipboard.' });
+  };
+
   const filtered = surveys.filter(s => {
     if (statusFilter !== 'all' && s.status !== statusFilter) return false;
     if (search && !s.title?.toLowerCase().includes(search.toLowerCase())) return false;
@@ -114,6 +132,10 @@ export default function SurveyManager() {
         onCancel={() => { setEditingSurvey(null); setIsCreating(false); }}
       />
     );
+  }
+
+  if (previewSurvey) {
+    return <SurveyPreviewModal survey={previewSurvey} onClose={() => setPreviewSurvey(null)} />;
   }
 
   return (
@@ -198,16 +220,28 @@ export default function SurveyManager() {
                 </div>
 
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" onClick={() => { setEditingSurvey(survey); setIsCreating(false); }}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" title="Preview" onClick={() => setPreviewSurvey(survey)}>
+                    <Eye className="w-3.5 h-3.5" />
+                  </Button>
+                  {survey.status === 'active' ? (
+                    <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" title="Copy share link" onClick={() => copyLink(survey)}>
+                      <Link2 className="w-3.5 h-3.5" />
+                    </Button>
+                  ) : (
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-emerald-600 cursor-pointer" title="Publish" onClick={() => handlePublish(survey)}>
+                      <Send className="w-3.5 h-3.5" />
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" title="Edit" onClick={() => { setEditingSurvey(survey); setIsCreating(false); }}>
                     <Pencil className="w-3.5 h-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" onClick={() => handleDuplicate(survey)}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" title="Duplicate" onClick={() => handleDuplicate(survey)}>
                     <Copy className="w-3.5 h-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" onClick={() => handleArchive(survey)}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer" title="Archive" onClick={() => handleArchive(survey)}>
                     <Archive className="w-3.5 h-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700 cursor-pointer" onClick={() => handleDelete(survey)}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700 cursor-pointer" title="Delete" onClick={() => handleDelete(survey)}>
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>

@@ -39,6 +39,7 @@ const STARSummit = lazy(() => import('@/pages/STARSummit'));
 const ArtemisMissionBrief = lazy(() => import('@/pages/ArtemisMissionBrief'));
 const MissionRooms = lazy(() => import('@/pages/MissionRooms'));
 const HomeV2 = lazy(() => import('@/pages/HomeV2'));
+const SurveyPage = lazy(() => import('@/pages/SurveyPage'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -164,6 +165,7 @@ const AuthenticatedApp = () => {
           <HomeV2 />
         </LayoutWrapper>
       } />
+      <Route path="/survey" element={<SurveyPage />} />
       <Route path="/top100-tv" element={
         <LayoutWrapper currentPageName="Top100TV">
           <Top100TV />
