@@ -26,6 +26,7 @@ import {
     Clock,
     Columns,
     ClipboardList,
+    ClipboardCheck,
 } from 'lucide-react';
 
 /**
@@ -53,6 +54,7 @@ export const ADMIN_SECTIONS = [
             { id: 'assign-nominees', label: 'Assign Nominees', icon: UserPlus, component: 'NomineeAssignmentManager' },
             { id: 'claims', label: 'Profile Claims', icon: Shield, component: 'ClaimsReviewManager' },
             { id: 'sme', label: 'SME Management', icon: Award, component: 'SMEAssignmentPanel' },
+            { id: 'surveys', label: 'Surveys', icon: ClipboardCheck, component: 'SurveyManager' },
         ],
     },
     {

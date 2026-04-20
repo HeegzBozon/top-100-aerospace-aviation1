@@ -48,6 +48,7 @@ const TestimonialModeration    = lazy(() => import('@/components/admin/Testimoni
 const UserManagement           = lazy(() => import('@/components/admin/UserManagement'));
 const RailItemManager          = lazy(() => import('@/components/admin/RailItemManager'));
 const DiscoveryResponsesManager = lazy(() => import('@/components/admin/DiscoveryResponsesManager'));
+const SurveyManager            = lazy(() => import('@/components/admin/SurveyManager'));
 import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
@@ -282,6 +283,8 @@ export default function Admin() {
         return <RailItemManager />;
       case 'discovery-responses':
         return <DiscoveryResponsesManager />;
+      case 'surveys':
+        return <SurveyManager />;
       default:
         return (
           <div className="py-16 text-center text-[var(--muted)]">

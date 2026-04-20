@@ -1,0 +1,104 @@
+{
+  "name": "Survey",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the survey"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of the survey's purpose"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "paused",
+        "closed",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Current status of the survey"
+    },
+    "target_audience": {
+      "type": "string",
+      "enum": [
+        "all_users",
+        "fellows",
+        "nominees",
+        "investors",
+        "sponsors",
+        "custom"
+      ],
+      "default": "all_users",
+      "description": "Who the survey is intended for"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "textarea",
+              "single_choice",
+              "multiple_choice",
+              "rating",
+              "nps"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean",
+            "default": false
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "min_label": {
+            "type": "string"
+          },
+          "max_label": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Array of survey questions"
+    },
+    "response_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of responses received"
+    },
+    "opens_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the survey opens for responses"
+    },
+    "closes_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the survey closes"
+    },
+    "created_by_email": {
+      "type": "string",
+      "description": "Email of admin who created this survey"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

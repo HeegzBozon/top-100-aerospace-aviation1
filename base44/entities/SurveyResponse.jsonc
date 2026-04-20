@@ -1,0 +1,28 @@
+{
+  "name": "SurveyResponse",
+  "type": "object",
+  "properties": {
+    "survey_id": {
+      "type": "string",
+      "description": "ID of the survey this response belongs to"
+    },
+    "respondent_email": {
+      "type": "string",
+      "description": "Email of the user who responded"
+    },
+    "answers": {
+      "type": "object",
+      "description": "Map of question_id to answer value"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the response was fully completed"
+    }
+  },
+  "required": [
+    "survey_id",
+    "respondent_email",
+    "answers"
+  ]
+}
