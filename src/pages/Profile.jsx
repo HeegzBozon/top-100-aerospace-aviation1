@@ -5,7 +5,6 @@ import { Loader2, Download, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import UnifiedProfileEditor from '@/components/dashboard/UnifiedProfileEditor';
-import ProfileCompletionCard from '@/components/profile/ProfileCompletionCard';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import NomineeContributionsSection from '@/components/profile/NomineeContributionsSection';
 import NomineeCareerHistorySection from '@/components/profile/NomineeCareerHistorySection';
@@ -93,7 +92,6 @@ export default function Profile() {
 
           {/* RIGHT COLUMN - Gamification + Shareable Card + Nominee sections */}
           <div className="space-y-6">
-            <ProfileCompletionCard user={user} nominee={nominee} />
             <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
             <ResearchStatsCard nominee={nominee} user={user} onNomineeUpdate={setNominee} onUserUpdate={setUser} />
             {nominee && (
