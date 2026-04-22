@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User } from '@/entities/User';
 import { Nominee } from '@/entities/Nominee';
 import { Button } from '@/components/ui/button';
@@ -8,13 +8,14 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import {
   Camera, Loader2, Save, Upload, ExternalLink, CheckCircle2, MapPin,
-  Briefcase, Hash, Sparkles, Linkedin, Instagram, Youtube, Globe, X, Plus, BookOpen
+  Briefcase, Hash, Sparkles, Linkedin, Instagram, Youtube, Globe, X, Plus, BookOpen, PenLine
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import CountrySelect from '@/components/profile/CountrySelect';
 import StoryBuilderModal from '@/components/profile/StoryBuilderModal';
+import StoryProgressNudge from '@/components/profile/StoryProgressNudge';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
@@ -109,7 +110,19 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
   const [pdfUploading, setPdfUploading] = useState(false);
   const [pdfUploaded, setPdfUploaded] = useState(false);
   const [storyBuilderOpen, setStoryBuilderOpen] = useState(false);
+  const [storyDraft, setStoryDraft] = useState(null); // { answers, step }
   const { toast } = useToast();
+
+  // Load story builder draft to show progress nudge
+  useEffect(() => {
+    (async () => {
+      const me = await base44.auth.me();
+      const draft = me?.story_builder_draft;
+      if (draft?.answers && Object.keys(draft.answers).length > 0) {
+        setStoryDraft(draft);
+      }
+    })();
+  }, [storyBuilderOpen]); // re-check when modal closes
 
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -280,6 +293,8 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
               className="min-h-[120px] text-sm bg-white border-slate-200 rounded-xl resize-none focus:border-slate-400 transition-colors leading-relaxed"
             />
           </div>
+        ) : storyDraft ? (
+          <StoryProgressNudge draft={storyDraft} onResume={() => setStoryBuilderOpen(true)} />
         ) : (
           <button
             type="button"
