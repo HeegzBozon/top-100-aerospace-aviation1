@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import {
   CheckCircle2, Loader2, AlertCircle, Rocket, ArrowRight, ArrowLeft,
-  Home, Calendar, TrendingUp, Pencil
+  Home, Calendar, TrendingUp, Pencil, X
 } from 'lucide-react';
 
 /* ── Slide wrapper ── */
@@ -390,9 +391,16 @@ export default function SurveyPage() {
           <CheckCircle2 className="w-12 h-12 text-[#c9a87c] mx-auto" />
           <h2 className="text-xl font-bold text-[#1e3a5a]">You've already responded</h2>
           <p className="text-sm text-[#1e3a5a]/60">Would you like to update your answers?</p>
-          <Button onClick={startEditMode} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-5 cursor-pointer">
-            <Pencil className="w-4 h-4" /> Edit My Answers
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={startEditMode} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-5 cursor-pointer">
+              <Pencil className="w-4 h-4" /> Edit My Answers
+            </Button>
+            <Link to="/">
+              <Button variant="outline" className="gap-2 rounded-full px-6 py-5 cursor-pointer w-full border-[#1e3a5a]/20 text-[#1e3a5a]">
+                <Home className="w-4 h-4" /> Return Home
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -450,10 +458,19 @@ export default function SurveyPage() {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen flex flex-col bg-gradient-to-br from-[#faf8f5] to-[#f0ebe4] outline-none"
+      className="min-h-screen flex flex-col bg-gradient-to-br from-[#faf8f5] to-[#f0ebe4] outline-none relative"
       onKeyDown={handleKeyDown}
       tabIndex={0}
     >
+      {/* Close / exit button */}
+      <div className="absolute top-3 right-3 z-20">
+        <Link to="/">
+          <button className="w-9 h-9 rounded-full bg-[#1e3a5a]/5 hover:bg-[#1e3a5a]/10 flex items-center justify-center transition-colors" aria-label="Exit survey">
+            <X className="w-4 h-4 text-[#1e3a5a]/50" />
+          </button>
+        </Link>
+      </div>
+
       {isPreview && (
         <div className="bg-[#1e3a5a] text-white text-center py-2 text-xs font-bold tracking-widest shrink-0">PREVIEW MODE</div>
       )}
