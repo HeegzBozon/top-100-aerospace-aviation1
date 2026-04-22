@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { Trophy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CARD_THEMES } from './cardThemes';
+import { getCountryCode, getFlagEmoji, getCountryColors } from './countryFlags';
 
 function buildStats(nominee, user) {
   const stats = [];
@@ -66,15 +67,25 @@ export default function TradingCard({ user, nominee, cardRef, themeId }) {
   const displayStats = stats.slice(0, 6);
   const cols = displayStats.length <= 3 ? Math.max(displayStats.length, 1) : displayStats.length <= 4 ? 4 : 3;
 
+  const countryCode = useMemo(() => getCountryCode(location), [location]);
+  const flag = useMemo(() => getFlagEmoji(countryCode), [countryCode]);
+  const countryColors = useMemo(() => getCountryColors(countryCode), [countryCode]);
+
+  // Build the top border stripe: country colors if available, else theme default
+  const topStripe = countryColors && countryColors.length >= 2
+    ? `linear-gradient(90deg, ${countryColors.join(', ')})`
+    : theme.borderTop;
+
   return (
     <div
       ref={cardRef}
       className="relative w-[360px] rounded-2xl overflow-hidden shadow-2xl"
       style={{ background: theme.bg }}
     >
-      <div className="absolute top-0 right-0 w-32 h-32 opacity-10" style={{ background: `radial-gradient(circle at top right, ${theme.cornerGlow1}, transparent 70%)` }} />
-      <div className="absolute bottom-0 left-0 w-40 h-40 opacity-10" style={{ background: `radial-gradient(circle at bottom left, ${theme.cornerGlow2}, transparent 70%)` }} />
-      <div className="h-1" style={{ background: theme.borderTop }} />
+      {/* Corner glows — use country color[0] for top-right if available */}
+      <div className="absolute top-0 right-0 w-32 h-32 opacity-10" style={{ background: `radial-gradient(circle at top right, ${countryColors?.[0] || theme.cornerGlow1}, transparent 70%)` }} />
+      <div className="absolute bottom-0 left-0 w-40 h-40 opacity-10" style={{ background: `radial-gradient(circle at bottom left, ${countryColors?.[1] || theme.cornerGlow2}, transparent 70%)` }} />
+      <div className="h-1.5" style={{ background: topStripe }} />
 
       <div className="relative p-6">
         <div className="flex items-center justify-between mb-5">
@@ -104,7 +115,11 @@ export default function TradingCard({ user, nominee, cardRef, themeId }) {
             </h2>
             {displayRole && <p className="text-sm mb-0.5" style={{ color: theme.textSecondary }}>{displayRole}</p>}
             {displayCompany && <p className="text-xs" style={{ color: theme.textMuted }}>{displayCompany}</p>}
-            {location && <p className="text-[11px] mt-1" style={{ color: theme.textMuted }}>📍 {location}</p>}
+            {location && (
+              <p className="text-[11px] mt-1" style={{ color: theme.textMuted }}>
+                {flag ? <span className="mr-1">{flag}</span> : '📍 '}{location}
+              </p>
+            )}
           </div>
         </div>
 
@@ -152,7 +167,10 @@ export default function TradingCard({ user, nominee, cardRef, themeId }) {
 
         <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: theme.footerBorder }}>
           <span className="text-[9px] tracking-wider" style={{ color: theme.textMuted }}>top100aero.space</span>
-          <span className="text-[9px]" style={{ color: theme.textMuted }}>2026</span>
+          <div className="flex items-center gap-2">
+            {flag && <span className="text-sm">{flag}</span>}
+            <span className="text-[9px]" style={{ color: theme.textMuted }}>2026</span>
+          </div>
         </div>
       </div>
     </div>
