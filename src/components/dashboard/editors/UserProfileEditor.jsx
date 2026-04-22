@@ -16,6 +16,7 @@ import { createPageUrl } from '@/utils';
 import CountrySelect from '@/components/profile/CountrySelect';
 import StoryBuilderModal from '@/components/profile/StoryBuilderModal';
 import StoryProgressNudge from '@/components/profile/StoryProgressNudge';
+import LinkedInConnectCard from '@/components/profile/LinkedInConnectCard.jsx';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
@@ -443,32 +444,19 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
         </div>
       </div>
 
-      {/* ── 6. LinkedIn PDF import ── */}
-      <div className="rounded-2xl border border-slate-100 overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 bg-[#0077b5]/5 border-b border-[#0077b5]/10">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[#0077b5] flex items-center justify-center text-white text-[11px] font-black leading-none">in</div>
-            <span className="text-sm font-semibold text-slate-700">Import from LinkedIn</span>
-          </div>
-          <a href="https://www.linkedin.com/in/me/" target="_blank" rel="noopener noreferrer" className="text-xs text-[#0077b5] hover:underline flex items-center gap-1">
-            Open LinkedIn <ExternalLink className="w-3 h-3" />
-          </a>
-        </div>
-        <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <ol className="flex-1 space-y-1 text-xs text-slate-500">
-            {['Go to your LinkedIn profile', 'Click "More" → "Save to PDF"', 'Upload the PDF here'].map((step, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <span className="shrink-0 w-4 h-4 rounded-full bg-slate-100 text-slate-500 font-bold text-[10px] flex items-center justify-center mt-0.5">{i + 1}</span>
-                {step}
-              </li>
-            ))}
-          </ol>
-          <label className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed cursor-pointer transition-all text-sm font-medium ${pdfUploaded ? 'border-green-400 bg-green-50 text-green-700' : 'border-[#0077b5]/30 bg-[#0077b5]/5 text-[#0077b5] hover:bg-[#0077b5]/10'}`}>
-            {pdfUploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</> : pdfUploaded ? <><CheckCircle2 className="w-4 h-4" /> Uploaded!</> : <><Upload className="w-4 h-4" /> Upload PDF</>}
-            <input type="file" accept=".pdf" className="hidden" onChange={handlePdfUpload} disabled={pdfUploading} />
-          </label>
-        </div>
-      </div>
+      {/* ── 6. LinkedIn Integration ── */}
+      <LinkedInConnectCard
+        onProfileData={(data) => {
+          // Auto-fill avatar if we got a picture and user doesn't have one
+          if (data.picture && !userData.avatar_url) {
+            setUserData(prev => ({ ...prev, avatar_url: data.picture }));
+            if (nominee) setNomineeData(prev => ({ ...prev, avatar_url: data.picture }));
+          }
+        }}
+        onPdfUpload={handlePdfUpload}
+        pdfUploading={pdfUploading}
+        pdfUploaded={pdfUploaded}
+      />
 
       {/* ── Save ── */}
       <div className="flex justify-end pt-2">
