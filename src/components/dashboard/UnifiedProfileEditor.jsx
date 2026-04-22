@@ -6,11 +6,12 @@ import { Nominee } from '@/entities/Nominee';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, User as UserIcon, Star, CheckCircle2, ArrowLeft, Plus } from 'lucide-react';
+import { Loader2, User as UserIcon, Star, CheckCircle2, ArrowLeft, Plus, BellRing } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import UserProfileEditor from './editors/UserProfileEditor';
 import NomineeProfileEditor from './editors/NomineeProfileEditor';
+import NotificationSettingsEditor from './editors/NotificationSettingsEditor';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -76,6 +77,7 @@ export default function UnifiedProfileEditor({ user }) {
   const visibleTabs = [
     { id: 'user', label: 'User Profile', icon: UserIcon, description: 'Basic account info' },
     ...(nominee ? [{ id: 'nominee', label: 'Flightography', icon: Star, description: 'TOP 100 competition' }] : []),
+    { id: 'notifications', label: 'Notifications', icon: BellRing, description: 'Communication preferences' },
   ];
 
   const calculateCompleteness = (type) => {
@@ -183,6 +185,9 @@ export default function UnifiedProfileEditor({ user }) {
               nominee={nominee}
               onUpdate={(n) => setNominee(n)}
             />
+          )}
+          {activeType === 'notifications' && (
+            <NotificationSettingsEditor user={user} />
           )}
         </Card>
       </motion.div>

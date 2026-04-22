@@ -1,0 +1,354 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user",
+      "description": "Base44 built-in role. 'admin' = Super Admin with full system access."
+    },
+    "app_roles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "editor",
+          "collaborator",
+          "member",
+          "nominee",
+          "honoree",
+          "sponsor",
+          "company",
+          "deactivated"
+        ]
+      },
+      "default": [
+        "member"
+      ],
+      "description": "Application-specific roles for granular access control (supports multiple)"
+    },
+    "is_service_provider": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flag to indicate if this user is an approved service provider"
+    },
+    "theme_mode": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "brand",
+        "sunrise",
+        "day",
+        "sunset",
+        "twilight",
+        "night"
+      ],
+      "default": "auto"
+    },
+    "handle": {
+      "type": "string",
+      "description": "Unique @handle for the user"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Profile photo URL"
+    },
+    "headline": {
+      "type": "string",
+      "description": "Professional headline"
+    },
+    "bio": {
+      "type": "string",
+      "description": "User biography"
+    },
+    "location": {
+      "type": "string",
+      "description": "City, Country"
+    },
+    "linkedin_url": {
+      "type": "string"
+    },
+    "twitter_url": {
+      "type": "string"
+    },
+    "instagram_url": {
+      "type": "string"
+    },
+    "tiktok_url": {
+      "type": "string"
+    },
+    "youtube_url": {
+      "type": "string"
+    },
+    "website_url": {
+      "type": "string"
+    },
+    "expertise_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Areas of expertise"
+    },
+    "industry_role": {
+      "type": "string",
+      "description": "Primary industry role"
+    },
+    "onboarding_completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "season3_reonboarding_seen": {
+      "type": "boolean",
+      "default": false
+    },
+    "nrc_pledge_accepted": {
+      "type": "boolean",
+      "default": false
+    },
+    "nrc_pledge_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "aura_score": {
+      "type": "number",
+      "default": 0
+    },
+    "starpower_score": {
+      "type": "number",
+      "default": 0
+    },
+    "stardust_points": {
+      "type": "number",
+      "default": 0
+    },
+    "clout": {
+      "type": "number",
+      "default": 0
+    },
+    "hype_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Overall HypeSquad score (0-100)"
+    },
+    "hype_level": {
+      "type": "string",
+      "enum": [
+        "recruit",
+        "hype_agent",
+        "ambassador",
+        "champion",
+        "elite_vanguard"
+      ],
+      "default": "recruit"
+    },
+    "shares_count": {
+      "type": "number",
+      "default": 0
+    },
+    "referrals_count": {
+      "type": "number",
+      "default": 0
+    },
+    "nominations_made": {
+      "type": "number",
+      "default": 0
+    },
+    "votes_influenced": {
+      "type": "number",
+      "default": 0
+    },
+    "weekly_engagement_streak": {
+      "type": "number",
+      "default": 0
+    },
+    "last_engagement_week": {
+      "type": "string"
+    },
+    "achievements_unlocked": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "hype_missions_completed": {
+      "type": "number",
+      "default": 0
+    },
+    "linkedin_connected": {
+      "type": "boolean",
+      "default": false
+    },
+    "linkedin_sub": {
+      "type": "string"
+    },
+    "linkedin_picture": {
+      "type": "string"
+    },
+    "linkedin_email": {
+      "type": "string"
+    },
+    "linkedin_connections_count": {
+      "type": "number"
+    },
+    "social_stats": {
+      "type": "object",
+      "properties": {
+        "linkedin_followers": {
+          "type": "number",
+          "default": 0
+        },
+        "linkedin_connections": {
+          "type": "number",
+          "default": 0
+        },
+        "tiktok_followers": {
+          "type": "number",
+          "default": 0
+        },
+        "tiktok_likes": {
+          "type": "number",
+          "default": 0
+        },
+        "tiktok_videos": {
+          "type": "number",
+          "default": 0
+        },
+        "instagram_followers": {
+          "type": "number",
+          "default": 0
+        },
+        "youtube_subscribers": {
+          "type": "number",
+          "default": 0
+        },
+        "youtube_views": {
+          "type": "number",
+          "default": 0
+        },
+        "total_followers": {
+          "type": "number",
+          "default": 0
+        },
+        "last_synced": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Centralized social media statistics"
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "Phone number for SMS notifications"
+    },
+    "phone_number_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the phone number has been verified"
+    },
+    "notification_preferences": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "object",
+          "properties": {
+            "general_updates": {
+              "type": "boolean",
+              "default": true
+            },
+            "personal_messages": {
+              "type": "boolean",
+              "default": true
+            },
+            "new_content": {
+              "type": "boolean",
+              "default": true
+            },
+            "mentions": {
+              "type": "boolean",
+              "default": true
+            },
+            "marketing": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "in_app": {
+          "type": "object",
+          "properties": {
+            "general_updates": {
+              "type": "boolean",
+              "default": true
+            },
+            "personal_messages": {
+              "type": "boolean",
+              "default": true
+            },
+            "new_content": {
+              "type": "boolean",
+              "default": true
+            },
+            "mentions": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        "sms": {
+          "type": "object",
+          "properties": {
+            "personal_messages": {
+              "type": "boolean",
+              "default": false
+            },
+            "critical_alerts": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        }
+      },
+      "description": "User notification and communication preferences"
+    },
+    "xc_balance": {
+      "type": "number",
+      "default": 0
+    },
+    "xc_escrowed": {
+      "type": "number",
+      "default": 0
+    },
+    "xc_lifetime_earned": {
+      "type": "number",
+      "default": 0
+    },
+    "xc_lifetime_spent": {
+      "type": "number",
+      "default": 0
+    },
+    "xc_monthly_cap": {
+      "type": "number",
+      "default": 500
+    },
+    "xc_earned_this_month": {
+      "type": "number",
+      "default": 0
+    },
+    "xc_provider_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "xc_reliability_score": {
+      "type": "number",
+      "default": 100
+    }
+  },
+  "required": []
+}
