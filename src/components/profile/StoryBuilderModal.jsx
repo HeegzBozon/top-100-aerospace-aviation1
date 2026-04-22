@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { base44 } from '@/api/base44Client';
 import {
   X, Loader2, ChevronRight, ChevronLeft, Sparkles, BookOpen,
-  Compass, Trophy, Target, Layers, Feather, Rocket, CheckCircle2, Save
+  Compass, Trophy, Target, Layers, Feather, Rocket, CheckCircle2, Save, Send
 } from 'lucide-react';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
@@ -89,7 +89,6 @@ export default function StoryBuilderModal({ open, onClose, onBioGenerated, userN
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [generating, setGenerating] = useState(false);
-  const [generatedBio, setGeneratedBio] = useState('');
   const [done, setDone] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
@@ -133,38 +132,30 @@ export default function StoryBuilderModal({ open, onClose, onBioGenerated, userN
   const totalPrompts = STEPS.filter(s => s.prompt).length;
   const hasSavedProgress = answeredCount > 0;
 
-  const handleGenerate = async () => {
+  const handleSubmit = async () => {
     setGenerating(true);
-    const storyParts = STEPS.filter(s => s.prompt && answers[s.id]).map(s => `${s.title}: ${answers[s.id]}`).join('\n\n');
-
-    const prompt = `You are a world-class biographer writing a compelling professional biography for ${userName || 'this person'}, a nominee for the TOP 100 Women in Aerospace & Aviation list.
-
-Using the following interview answers, write a warm, powerful, and authentic 150-200 word biography in third person. 
-
-Make it read like a feature in a prestigious publication — vivid, human, and inspiring. Avoid clichés and corporate jargon. Lead with what makes this person remarkable.
-
-INTERVIEW RESPONSES:
-${storyParts}
-
-Write the biography now. No preamble, no quotes around it, just the bio text.`;
-
     try {
-      const result = await base44.integrations.Core.InvokeLLM({ prompt });
-      setGeneratedBio(result);
+      const me = await base44.auth.me();
+      // Create bio submission record
+      await base44.entities.BioSubmission.create({
+        user_email: me.email,
+        user_name: userName || me.full_name || me.email,
+        answers,
+        status: 'submitted',
+      });
+      // Clear draft
+      await clearDraft();
       setDone(true);
-    } catch {
-      setGeneratedBio('');
+    } catch (err) {
+      console.error('Submit error:', err);
     } finally {
       setGenerating(false);
     }
   };
 
-  const handleAccept = () => {
-    onBioGenerated(generatedBio);
-    clearDraft();
+  const handleDismiss = () => {
     setStep(0);
     setAnswers({});
-    setGeneratedBio('');
     setDone(false);
     onClose();
   };
@@ -178,7 +169,6 @@ Write the biography now. No preamble, no quotes around it, just the bio text.`;
     clearDraft();
     setStep(0);
     setAnswers({});
-    setGeneratedBio('');
     setDone(false);
     onClose();
   };
@@ -211,21 +201,23 @@ Write the biography now. No preamble, no quotes around it, just the bio text.`;
         <div className="flex-1 overflow-y-auto px-6 py-5">
           <AnimatePresence mode="wait">
             {done ? (
-              <motion.div key="result" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <h3 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
-                    Your story is ready
-                  </h3>
+              <motion.div key="result" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5 text-center py-4">
+                <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center" style={{ background: `${brand.gold}15` }}>
+                  <CheckCircle2 className="w-8 h-8 text-green-500" />
                 </div>
-                <p className="text-xs text-slate-500">Here's your biography. Feel free to edit it after saving, or regenerate with different answers.</p>
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <Textarea
-                    value={generatedBio}
-                    onChange={e => setGeneratedBio(e.target.value)}
-                    className="min-h-[180px] text-sm border-0 bg-transparent resize-none focus-visible:ring-0 p-0 leading-relaxed"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
-                  />
+                <div>
+                  <h3 className="text-lg font-bold mb-2" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
+                    Your story has been submitted!
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed max-w-sm mx-auto">
+                    Our editorial team will review your answers and craft a polished, publication-ready biography just for you.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 border border-amber-100 mx-auto max-w-sm">
+                  <Sparkles className="w-5 h-5 text-amber-500 shrink-0" />
+                  <p className="text-xs text-amber-800 text-left leading-relaxed">
+                    <strong>Expect a notification within 48 hours</strong> when your biography is ready. We'll email you!
+                  </p>
                 </div>
               </motion.div>
             ) : (
@@ -283,11 +275,9 @@ Write the biography now. No preamble, no quotes around it, just the bio text.`;
         <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
           {done ? (
             <>
-              <Button variant="ghost" size="sm" onClick={() => { setDone(false); setStep(0); }} className="text-xs text-slate-500">
-                Start Over
-              </Button>
-              <Button onClick={handleAccept} size="sm" className="gap-2 rounded-full px-5 text-white font-semibold" style={{ background: brand.navy }}>
-                <CheckCircle2 className="w-4 h-4" /> Use This Bio
+              <div />
+              <Button onClick={handleDismiss} size="sm" className="gap-2 rounded-full px-5 text-white font-semibold" style={{ background: brand.navy }}>
+                <CheckCircle2 className="w-4 h-4" /> Done
               </Button>
             </>
           ) : (
@@ -324,14 +314,14 @@ Write the biography now. No preamble, no quotes around it, just the bio text.`;
                 )}
                 {isLast ? (
                   <Button
-                    onClick={handleGenerate}
+                    onClick={handleSubmit}
                     disabled={generating}
                     size="sm"
                     className="gap-2 rounded-full px-5 text-white font-semibold"
                     style={{ background: `linear-gradient(135deg, ${brand.navy}, #2a5080)` }}
                   >
-                    {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                    {generating ? 'Writing your story…' : 'Write My Story'}
+                    {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    {generating ? 'Submitting…' : 'Submit My Story'}
                   </Button>
                 ) : (
                   <Button

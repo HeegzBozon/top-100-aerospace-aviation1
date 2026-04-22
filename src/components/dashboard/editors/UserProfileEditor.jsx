@@ -111,18 +111,36 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
   const [pdfUploaded, setPdfUploaded] = useState(false);
   const [storyBuilderOpen, setStoryBuilderOpen] = useState(false);
   const [storyDraft, setStoryDraft] = useState(null); // { answers, step }
+  const [pendingSubmission, setPendingSubmission] = useState(null);
   const { toast } = useToast();
 
-  // Load story builder draft to show progress nudge
+  // Load story builder draft or check for pending submissions
   useEffect(() => {
     (async () => {
       const me = await base44.auth.me();
+      // Check for in-progress draft
       const draft = me?.story_builder_draft;
       if (draft?.answers && Object.keys(draft.answers).length > 0) {
         setStoryDraft(draft);
+      } else {
+        setStoryDraft(null);
+      }
+      // Check for pending bio submissions
+      const subs = await base44.entities.BioSubmission.filter(
+        { user_email: me.email, status: 'submitted' },
+        '-created_date', 1
+      );
+      if (!subs[0]) {
+        const readySubs = await base44.entities.BioSubmission.filter(
+          { user_email: me.email, status: 'ready' },
+          '-created_date', 1
+        );
+        setPendingSubmission(readySubs[0] || null);
+      } else {
+        setPendingSubmission(subs[0]);
       }
     })();
-  }, [storyBuilderOpen]); // re-check when modal closes
+  }, [storyBuilderOpen]);
 
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -292,6 +310,23 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
               }}
               className="min-h-[120px] text-sm bg-white border-slate-200 rounded-xl resize-none focus:border-slate-400 transition-colors leading-relaxed"
             />
+          </div>
+        ) : pendingSubmission ? (
+          <div className="w-full rounded-2xl border-2 overflow-hidden" style={{ borderColor: `${brand.gold}40`, background: brand.cream }}>
+            <div className="h-1 w-full" style={{ background: `${brand.navy}10` }}>
+              <div className="h-full w-full rounded-r-full animate-pulse" style={{ background: `linear-gradient(90deg, ${brand.navy}, ${brand.gold})` }} />
+            </div>
+            <div className="p-5 text-center">
+              <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: `${brand.gold}15` }}>
+                <Sparkles className="w-6 h-6" style={{ color: brand.gold }} />
+              </div>
+              <h4 className="text-sm font-bold mb-1" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
+                Your story is being crafted
+              </h4>
+              <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
+                Our editorial team is reviewing your answers and writing your biography. You'll receive a notification when it's ready!
+              </p>
+            </div>
           </div>
         ) : storyDraft ? (
           <StoryProgressNudge draft={storyDraft} onResume={() => setStoryBuilderOpen(true)} />

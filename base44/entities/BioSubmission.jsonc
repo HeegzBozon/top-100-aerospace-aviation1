@@ -1,0 +1,56 @@
+{
+  "name": "BioSubmission",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who submitted"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Full name of the submitter"
+    },
+    "answers": {
+      "type": "object",
+      "description": "Map of step_id to answer text from StoryBuilder"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "processing",
+        "ready",
+        "approved",
+        "rejected"
+      ],
+      "default": "submitted",
+      "description": "Workflow status"
+    },
+    "generated_bio": {
+      "type": "string",
+      "description": "AI-generated biography text"
+    },
+    "final_bio": {
+      "type": "string",
+      "description": "Admin-approved final biography"
+    },
+    "admin_notes": {
+      "type": "string",
+      "description": "Internal admin notes"
+    },
+    "nominee_id": {
+      "type": "string",
+      "description": "Associated nominee record ID if any"
+    },
+    "notified_user": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has been notified their bio is ready"
+    }
+  },
+  "required": [
+    "user_email",
+    "user_name",
+    "answers"
+  ]
+}
