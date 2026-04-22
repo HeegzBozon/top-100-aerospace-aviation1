@@ -12,7 +12,7 @@ const brandColors = {
   skyBlue: '#4a90b8',
 };
 
-function TradingCard({ user, nominee, cardRef }) {
+function TradingCard({ user, nominee, chessElo, cardRef }) {
   const displayName = user?.full_name || 'Anonymous';
   const displayRole = user?.headline || user?.industry_role || nominee?.title || nominee?.professional_role || '';
   const displayCompany = nominee?.company || nominee?.organization || '';
@@ -23,7 +23,7 @@ function TradingCard({ user, nominee, cardRef }) {
 
   // Stats for the card
   const stats = [];
-  if (nominee?.aura_score) stats.push({ label: 'Aura', value: Math.round(nominee.aura_score) });
+  if (chessElo) stats.push({ label: 'Chess ELO', value: Math.round(chessElo) });
   if (nominee?.holistic_score) stats.push({ label: 'Holistic', value: Math.round(nominee.holistic_score) });
   if (nominee?.total_votes) stats.push({ label: 'Votes', value: nominee.total_votes });
   if (nominee?.flower_count) stats.push({ label: 'Flowers', value: nominee.flower_count });
@@ -117,7 +117,7 @@ function TradingCard({ user, nominee, cardRef }) {
   );
 }
 
-export default function ShareableProfileCard({ user, nominee }) {
+export default function ShareableProfileCard({ user, nominee, chessElo }) {
   const cardRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -170,7 +170,7 @@ export default function ShareableProfileCard({ user, nominee }) {
       {/* Card preview */}
       <div className="p-5 flex justify-center bg-gradient-to-b from-slate-50 to-white">
         <div className="transform scale-[0.85] origin-top sm:scale-100">
-          <TradingCard user={user} nominee={nominee} cardRef={cardRef} />
+          <TradingCard user={user} nominee={nominee} chessElo={chessElo} cardRef={cardRef} />
         </div>
       </div>
 
