@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { base44 } from '@/api/base44Client';
 import {
   X, Loader2, ChevronRight, ChevronLeft, Sparkles, BookOpen,
-  Compass, Trophy, Target, Layers, Feather, Rocket, CheckCircle2
+  Compass, Trophy, Target, Layers, Feather, Rocket, CheckCircle2, Save
 } from 'lucide-react';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
@@ -91,6 +91,37 @@ export default function StoryBuilderModal({ open, onClose, onBioGenerated, userN
   const [generating, setGenerating] = useState(false);
   const [generatedBio, setGeneratedBio] = useState('');
   const [done, setDone] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
+
+  // Restore saved progress when modal opens
+  useEffect(() => {
+    if (!open || loaded) return;
+    (async () => {
+      const me = await base44.auth.me();
+      const draft = me?.story_builder_draft;
+      if (draft?.answers && Object.keys(draft.answers).length > 0) {
+        setAnswers(draft.answers);
+        setStep(draft.step || 0);
+      }
+      setLoaded(true);
+    })();
+  }, [open, loaded]);
+
+  // Reset loaded flag when modal closes so it reloads next time
+  useEffect(() => {
+    if (!open) setLoaded(false);
+  }, [open]);
+
+  const saveDraft = async () => {
+    setSavingDraft(true);
+    await base44.auth.updateMe({ story_builder_draft: { answers, step } });
+    setSavingDraft(false);
+  };
+
+  const clearDraft = async () => {
+    await base44.auth.updateMe({ story_builder_draft: null });
+  };
 
   if (!open) return null;
 
@@ -98,6 +129,9 @@ export default function StoryBuilderModal({ open, onClose, onBioGenerated, userN
   const isWelcome = step === 0;
   const isLast = step === STEPS.length - 1;
   const canAdvance = isWelcome || (answers[currentStep.id] && answers[currentStep.id].trim().length > 10);
+  const answeredCount = STEPS.filter(s => s.prompt && answers[s.id]?.trim().length > 0).length;
+  const totalPrompts = STEPS.filter(s => s.prompt).length;
+  const hasSavedProgress = answeredCount > 0;
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -127,10 +161,21 @@ Write the biography now. No preamble, no quotes around it, just the bio text.`;
 
   const handleAccept = () => {
     onBioGenerated(generatedBio);
-    handleReset();
+    clearDraft();
+    setStep(0);
+    setAnswers({});
+    setGeneratedBio('');
+    setDone(false);
+    onClose();
   };
 
-  const handleReset = () => {
+  const handleSaveAndExit = async () => {
+    await saveDraft();
+    onClose();
+  };
+
+  const handleDiscard = () => {
+    clearDraft();
     setStep(0);
     setAnswers({});
     setGeneratedBio('');
@@ -139,7 +184,7 @@ Write the biography now. No preamble, no quotes around it, just the bio text.`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={handleSaveAndExit}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -155,7 +200,7 @@ Write the biography now. No preamble, no quotes around it, just the bio text.`;
               <BookOpen className="w-4 h-4" style={{ color: brand.gold }} />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: brand.gold }}>Your Personal Biographer</span>
             </div>
-            <button onClick={handleReset} className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors">
+            <button onClick={handleSaveAndExit} className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors" title="Save & close">
               <X className="w-4 h-4 text-white/60" />
             </button>
           </div>
@@ -201,6 +246,14 @@ Write the biography now. No preamble, no quotes around it, just the bio text.`;
                       {currentStep.title}
                     </h3>
                     <p className="text-sm text-slate-600 leading-relaxed mt-1">{currentStep.subtitle}</p>
+                    {isWelcome && hasSavedProgress && (
+                      <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg border border-green-200 bg-green-50">
+                        <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                        <span className="text-xs text-green-700">
+                          You have saved progress ({answeredCount}/{totalPrompts} questions answered). Pick up where you left off!
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -239,15 +292,30 @@ Write the biography now. No preamble, no quotes around it, just the bio text.`;
             </>
           ) : (
             <>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setStep(Math.max(0, step - 1))}
-                disabled={step === 0}
-                className="text-xs text-slate-500 gap-1"
-              >
-                <ChevronLeft className="w-4 h-4" /> Back
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setStep(Math.max(0, step - 1))}
+                  disabled={step === 0}
+                  className="text-xs text-slate-500 gap-1"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Back
+                </Button>
+                {!isWelcome && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSaveAndExit}
+                    disabled={savingDraft}
+                    className="text-xs gap-1"
+                    style={{ color: brand.gold }}
+                  >
+                    {savingDraft ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                    Save & Exit
+                  </Button>
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 {!isWelcome && !isLast && (
                   <button onClick={() => setStep(step + 1)} className="text-[11px] text-slate-400 hover:text-slate-600 transition-colors">
