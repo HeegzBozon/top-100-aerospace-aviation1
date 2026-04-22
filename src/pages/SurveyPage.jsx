@@ -462,22 +462,26 @@ export default function SurveyPage() {
       onKeyDown={handleKeyDown}
       tabIndex={0}
     >
-      {/* Close / exit button */}
-      <div className="absolute top-3 right-3 z-20">
+      {/* Top navigation bar */}
+      <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-white/40 backdrop-blur-sm border-b border-[#1e3a5a]/5 z-20">
+        <div className="flex items-center gap-2">
+          <Rocket className="w-4 h-4 text-[#c9a87c]" />
+          <span className="text-[10px] font-bold tracking-[0.15em] text-[#1e3a5a]/50 uppercase hidden sm:inline">TOP 100</span>
+        </div>
+        {isPreview && (
+          <span className="text-[10px] font-bold tracking-widest text-white bg-[#1e3a5a] px-3 py-1 rounded-full">PREVIEW</span>
+        )}
+        {isEditMode && !isPreview && (
+          <span className="text-[10px] font-bold tracking-widest text-[#0a1526] bg-[#c9a87c] px-3 py-1 rounded-full">EDITING</span>
+        )}
         <Link to="/">
-          <button className="w-9 h-9 rounded-full bg-[#1e3a5a]/5 hover:bg-[#1e3a5a]/10 flex items-center justify-center transition-colors" aria-label="Exit survey">
-            <X className="w-4 h-4 text-[#1e3a5a]/50" />
-          </button>
+          <Button variant="ghost" size="sm" className="gap-1.5 text-[#1e3a5a]/50 hover:text-[#1e3a5a] hover:bg-[#1e3a5a]/5 text-xs font-medium rounded-full px-3">
+            <X className="w-3.5 h-3.5" /> Exit
+          </Button>
         </Link>
       </div>
 
-      {isPreview && (
-        <div className="bg-[#1e3a5a] text-white text-center py-2 text-xs font-bold tracking-widest shrink-0">PREVIEW MODE</div>
-      )}
-      {isEditMode && (
-        <div className="bg-[#c9a87c] text-[#0a1526] text-center py-2 text-xs font-bold tracking-widest shrink-0">EDITING YOUR RESPONSE</div>
-      )}
-
+      {/* Progress bar */}
       <div className="h-1 bg-[#1e3a5a]/5 shrink-0">
         <motion.div className="h-full bg-gradient-to-r from-[#1e3a5a] to-[#c9a87c]" animate={{ width: `${progress}%` }} transition={{ duration: 0.4, ease: 'easeInOut' }} />
       </div>
@@ -502,9 +506,16 @@ export default function SurveyPage() {
                     <span>·</span>
                     <span>~{Math.max(1, Math.ceil(questions.length * 0.3))} min</span>
                   </div>
-                  <Button onClick={goNext} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-6 text-base cursor-pointer">
-                    {isEditMode ? 'Edit Answers' : 'Get Started'} <ArrowRight className="w-4 h-4" />
-                  </Button>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button onClick={goNext} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-6 text-base cursor-pointer">
+                      {isEditMode ? 'Edit Answers' : 'Get Started'} <ArrowRight className="w-4 h-4" />
+                    </Button>
+                    <Link to="/">
+                      <Button variant="ghost" className="gap-2 text-[#1e3a5a]/40 hover:text-[#1e3a5a] rounded-full px-6 py-6 cursor-pointer text-base">
+                        Not now
+                      </Button>
+                    </Link>
+                  </div>
                   <p className="text-[10px] text-[#1e3a5a]/25">
                     Press <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> to begin
                   </p>
