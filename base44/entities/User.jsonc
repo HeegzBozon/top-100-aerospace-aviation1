@@ -132,8 +132,7 @@
     },
     "hype_score": {
       "type": "number",
-      "default": 0,
-      "description": "Overall HypeSquad score (0-100)"
+      "default": 0
     },
     "hype_level": {
       "type": "string",
@@ -258,9 +257,18 @@
       "default": [],
       "description": "User-defined custom stats displayed on trading card"
     },
-    "phone_number": {
+    "card_theme": {
       "type": "string",
-      "description": "Phone number for SMS notifications"
+      "enum": [
+        "navy",
+        "rose_gold",
+        "cosmic"
+      ],
+      "default": "navy",
+      "description": "Trading card color theme"
+    },
+    "phone_number": {
+      "type": "string"
     },
     "phone_number_verified": {
       "type": "boolean",
@@ -328,8 +336,7 @@
             }
           }
         }
-      },
-      "description": "User notification and communication preferences"
+      }
     },
     "xc_balance": {
       "type": "number",

@@ -94,7 +94,7 @@ export default function Profile() {
           {/* RIGHT COLUMN - Gamification + Shareable Card + Nominee sections */}
           <div className="space-y-6">
             <ProfileCompletionCard user={user} nominee={nominee} />
-            <ShareableProfileCard user={user} nominee={nominee} />
+            <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
             <ResearchStatsCard nominee={nominee} user={user} onNomineeUpdate={setNominee} onUserUpdate={setUser} />
             {nominee && (
               <>

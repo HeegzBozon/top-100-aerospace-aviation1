@@ -12,6 +12,7 @@ import NomineeContributionsSection from '@/components/profile/NomineeContributio
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
 import StartupPitch from '@/components/profile/StartupPitch';
 import ProviderServicesList from '@/components/profile/ProviderServicesList';
+import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 
 const brandColors = {
     navyDeep: '#1e3a5a',
@@ -226,6 +227,13 @@ export default function ProfileView({ userId: propUserId = null }) {
                         {provider && provider.is_active && (
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                                 <ProviderServicesList providerEmail={provider.user_email} userName={displayName} />
+                            </motion.div>
+                        )}
+
+                        {/* Trading Card */}
+                        {(nominee || (user?.custom_card_stats?.length > 0)) && (
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+                                <ShareableProfileCard user={user} nominee={nominee} readOnly />
                             </motion.div>
                         )}
 
