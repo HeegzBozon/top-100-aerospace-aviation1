@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   CheckCircle2, Loader2, AlertCircle, Rocket, ArrowRight, ArrowLeft,
-  Home, Calendar, TrendingUp, Pencil, X
+  Home, Calendar, TrendingUp, Pencil, X, User
 } from 'lucide-react';
 
 /* ── Slide wrapper ── */
@@ -199,7 +199,9 @@ export default function SurveyPage() {
   const [submitted, setSubmitted] = useState(false);
   const [existingResponseId, setExistingResponseId] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isAuthed, setIsAuthed] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   const containerRef = useRef(null);
   const nameInputRef = useRef(null);
 
@@ -225,6 +227,7 @@ export default function SurveyPage() {
     if (!isPreview && s.status !== 'active') { setError('This survey is not currently accepting responses.'); setLoading(false); return; }
     setSurvey(s);
     const authed = await base44.auth.isAuthenticated();
+    setIsAuthed(authed);
     if (authed) {
       const me = await base44.auth.me();
       setRespondentName(me.full_name || '');
@@ -336,6 +339,14 @@ export default function SurveyPage() {
     setStep(0);
   };
 
+  const handleExit = () => {
+    if (isAuthed) {
+      navigate('/Profile');
+    } else {
+      base44.auth.redirectToLogin('/Profile');
+    }
+  };
+
   // Global keyboard handler
   const handleKeyDown = (e) => {
     const tag = e.target.tagName;
@@ -395,11 +406,9 @@ export default function SurveyPage() {
             <Button onClick={startEditMode} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-5 cursor-pointer">
               <Pencil className="w-4 h-4" /> Edit My Answers
             </Button>
-            <Link to="/">
-              <Button variant="outline" className="gap-2 rounded-full px-6 py-5 cursor-pointer w-full border-[#1e3a5a]/20 text-[#1e3a5a]">
-                <Home className="w-4 h-4" /> Return Home
-              </Button>
-            </Link>
+            <Button variant="outline" onClick={handleExit} className="gap-2 rounded-full px-6 py-5 cursor-pointer w-full border-[#1e3a5a]/20 text-[#1e3a5a]">
+              <User className="w-4 h-4" /> Go to Profile
+            </Button>
           </div>
         </div>
       </div>
@@ -474,11 +483,9 @@ export default function SurveyPage() {
         {isEditMode && !isPreview && (
           <span className="text-[10px] font-bold tracking-widest text-[#0a1526] bg-[#c9a87c] px-3 py-1 rounded-full">EDITING</span>
         )}
-        <Link to="/">
-          <Button variant="ghost" size="sm" className="gap-1.5 text-[#1e3a5a]/50 hover:text-[#1e3a5a] hover:bg-[#1e3a5a]/5 text-xs font-medium rounded-full px-3">
-            <X className="w-3.5 h-3.5" /> Exit
-          </Button>
-        </Link>
+        <Button variant="ghost" size="sm" onClick={handleExit} className="gap-1.5 text-[#1e3a5a]/50 hover:text-[#1e3a5a] hover:bg-[#1e3a5a]/5 text-xs font-medium rounded-full px-3 cursor-pointer">
+          <X className="w-3.5 h-3.5" /> Exit
+        </Button>
       </div>
 
       {/* Progress bar */}
@@ -510,11 +517,9 @@ export default function SurveyPage() {
                     <Button onClick={goNext} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-full px-8 py-6 text-base cursor-pointer">
                       {isEditMode ? 'Edit Answers' : 'Get Started'} <ArrowRight className="w-4 h-4" />
                     </Button>
-                    <Link to="/">
-                      <Button variant="ghost" className="gap-2 text-[#1e3a5a]/40 hover:text-[#1e3a5a] rounded-full px-6 py-6 cursor-pointer text-base">
-                        Not now
-                      </Button>
-                    </Link>
+                    <Button variant="ghost" onClick={handleExit} className="gap-2 text-[#1e3a5a]/40 hover:text-[#1e3a5a] rounded-full px-6 py-6 cursor-pointer text-base">
+                      Not now
+                    </Button>
                   </div>
                   <p className="text-[10px] text-[#1e3a5a]/25">
                     Press <kbd className="px-1 py-0.5 rounded bg-[#1e3a5a]/5 font-mono text-[9px]">Enter</kbd> to begin
