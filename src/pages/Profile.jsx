@@ -5,6 +5,8 @@ import { Loader2, Download, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import UnifiedProfileEditor from '@/components/dashboard/UnifiedProfileEditor';
+import ProfileCompletionCard from '@/components/profile/ProfileCompletionCard';
+import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import NomineeContributionsSection from '@/components/profile/NomineeContributionsSection';
 import NomineeCareerHistorySection from '@/components/profile/NomineeCareerHistorySection';
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
@@ -95,14 +97,18 @@ export default function Profile() {
             <UnifiedProfileEditor user={user} />
           </div>
 
-          {/* RIGHT COLUMN - Nominee sections */}
-          {nominee && (
-            <div className="space-y-6">
-              <NomineeCareerHistorySection nominee={nominee} />
-              <NomineeContributionsSection nomineeId={nominee.id} />
-              <NomineeNewsSection nomineeId={nominee.id} />
-            </div>
-          )}
+          {/* RIGHT COLUMN - Gamification + Shareable Card + Nominee sections */}
+          <div className="space-y-6">
+            <ProfileCompletionCard user={user} nominee={nominee} />
+            <ShareableProfileCard user={user} nominee={nominee} />
+            {nominee && (
+              <>
+                <NomineeCareerHistorySection nominee={nominee} />
+                <NomineeContributionsSection nomineeId={nominee.id} />
+                <NomineeNewsSection nomineeId={nominee.id} />
+              </>
+            )}
+          </div>
         </div>
 
         {/* Data Export - Subtle Link */}
