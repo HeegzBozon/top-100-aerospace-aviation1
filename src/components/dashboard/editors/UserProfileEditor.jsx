@@ -446,13 +446,6 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
 
       {/* ── 6. LinkedIn Integration ── */}
       <LinkedInConnectCard
-        onProfileData={(data) => {
-          // Auto-fill avatar if we got a picture and user doesn't have one
-          if (data.picture && !userData.avatar_url) {
-            setUserData(prev => ({ ...prev, avatar_url: data.picture }));
-            if (nominee) setNomineeData(prev => ({ ...prev, avatar_url: data.picture }));
-          }
-        }}
         onPdfUpload={handlePdfUpload}
         pdfUploading={pdfUploading}
         pdfUploaded={pdfUploaded}
