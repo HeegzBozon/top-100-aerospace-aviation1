@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Save, Loader2, Mail, Bell, Smartphone } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Save, Loader2, Mail, Bell, Smartphone, Radio, CheckCircle2, ExternalLink } from 'lucide-react';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -68,6 +69,77 @@ function ToggleRow({ label, desc, checked, onChange }) {
   );
 }
 
+const COMM_SURVEY_ID = '69e65fc6dc017363a733c2e5';
+
+function CommFrequencySurveyCard({ user }) {
+  const [status, setStatus] = useState('loading'); // loading | completed | pending
+  const [response, setResponse] = useState(null);
+
+  useEffect(() => {
+    if (!user?.email) { setStatus('pending'); return; }
+    base44.entities.SurveyResponse.filter({ survey_id: COMM_SURVEY_ID, respondent_email: user.email })
+      .then(res => {
+        if (res.length > 0) {
+          setResponse(res[0]);
+          setStatus('completed');
+        } else {
+          setStatus('pending');
+        }
+      })
+      .catch(() => setStatus('pending'));
+  }, [user?.email]);
+
+  if (status === 'loading') return null;
+
+  const surveyUrl = `/survey?id=${COMM_SURVEY_ID}`;
+
+  if (status === 'completed') {
+    const freq = response?.answers?.q_freq_01;
+    const role = response?.answers?.q_role;
+    return (
+      <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-sm font-semibold text-emerald-800">Intelligence Preferences Calibrated</h3>
+              <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Complete</Badge>
+            </div>
+            {freq && <p className="text-xs text-emerald-600 mb-0.5">Frequency: {freq.split('—')[0].trim()}</p>}
+            {role && <p className="text-xs text-emerald-600">Role: {role.split('(')[0].trim()}</p>}
+            <a href={surveyUrl} className="inline-flex items-center gap-1 text-[11px] text-emerald-700 hover:underline mt-2 font-medium">
+              Update my answers <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border-2 border-dashed overflow-hidden" style={{ borderColor: `${brandColors.goldPrestige}60` }}>
+      <div className="p-4" style={{ background: `linear-gradient(135deg, ${brandColors.navyDeep}08, ${brandColors.goldPrestige}10)` }}>
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${brandColors.goldPrestige}20` }}>
+            <Radio className="w-4 h-4" style={{ color: brandColors.goldPrestige }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold mb-1" style={{ color: brandColors.navyDeep }}>Calibrate Your Signal</h3>
+            <p className="text-xs text-slate-500 mb-3">Tell us how often you want to hear from us, which intelligence streams matter most, and how you contribute to the ecosystem.</p>
+            <a href={surveyUrl}>
+              <Button size="sm" className="gap-2 rounded-full text-xs font-bold cursor-pointer" style={{ background: brandColors.goldPrestige, color: '#0a1526' }}>
+                <Radio className="w-3.5 h-3.5" /> Take the Survey
+              </Button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function NotificationSettingsEditor({ user }) {
   const prefs = user?.notification_preferences || {};
   const [formData, setFormData] = useState({
@@ -98,6 +170,9 @@ export default function NotificationSettingsEditor({ user }) {
 
   return (
     <div className="space-y-6">
+      {/* Communication frequency survey */}
+      <CommFrequencySurveyCard user={user} />
+
       {/* Phone number section */}
       <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-white border border-slate-100">
         <div className="flex items-center gap-2 mb-3">
