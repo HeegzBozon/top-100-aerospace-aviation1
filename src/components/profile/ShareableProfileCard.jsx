@@ -12,7 +12,7 @@ const brandColors = {
   skyBlue: '#4a90b8',
 };
 
-function TradingCard({ user, nominee, chessElo, cardRef }) {
+function TradingCard({ user, nominee, cardRef }) {
   const displayName = user?.full_name || 'Anonymous';
   const displayRole = user?.headline || user?.industry_role || nominee?.title || nominee?.professional_role || '';
   const displayCompany = nominee?.company || nominee?.organization || '';
@@ -21,12 +21,15 @@ function TradingCard({ user, nominee, chessElo, cardRef }) {
   const tags = user?.expertise_tags?.slice(0, 3) || [];
   const sixWord = nominee?.six_word_story;
 
-  // Stats for the card
+  // Stats for the card — aerospace research metrics
+  const metrics = nominee?.impact_metrics || {};
   const stats = [];
-  if (chessElo) stats.push({ label: 'Chess ELO', value: Math.round(chessElo) });
-  if (nominee?.holistic_score) stats.push({ label: 'Holistic', value: Math.round(nominee.holistic_score) });
-  if (nominee?.total_votes) stats.push({ label: 'Votes', value: nominee.total_votes });
-  if (nominee?.flower_count) stats.push({ label: 'Flowers', value: nominee.flower_count });
+  if (metrics.research_publications) stats.push({ label: 'Publications', value: metrics.research_publications });
+  if (metrics.citations_count) stats.push({ label: 'Citations', value: metrics.citations_count });
+  if (metrics.patents_count) stats.push({ label: 'Patents', value: metrics.patents_count });
+  if (metrics.missions_flown) stats.push({ label: 'Missions', value: metrics.missions_flown });
+  if (metrics.flight_hours) stats.push({ label: 'Flight Hrs', value: metrics.flight_hours });
+  if (nominee?.holistic_score) stats.push({ label: 'Score', value: Math.round(nominee.holistic_score) });
 
   return (
     <div
@@ -117,7 +120,7 @@ function TradingCard({ user, nominee, chessElo, cardRef }) {
   );
 }
 
-export default function ShareableProfileCard({ user, nominee, chessElo }) {
+export default function ShareableProfileCard({ user, nominee }) {
   const cardRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -170,7 +173,7 @@ export default function ShareableProfileCard({ user, nominee, chessElo }) {
       {/* Card preview */}
       <div className="p-5 flex justify-center bg-gradient-to-b from-slate-50 to-white">
         <div className="transform scale-[0.85] origin-top sm:scale-100">
-          <TradingCard user={user} nominee={nominee} chessElo={chessElo} cardRef={cardRef} />
+          <TradingCard user={user} nominee={nominee} cardRef={cardRef} />
         </div>
       </div>
 

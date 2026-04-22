@@ -10,6 +10,7 @@ import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import NomineeContributionsSection from '@/components/profile/NomineeContributionsSection';
 import NomineeCareerHistorySection from '@/components/profile/NomineeCareerHistorySection';
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
+import ResearchStatsCard from '@/components/profile/ResearchStatsCard';
 
 const brandColors = {
   cream: '#faf8f5',
@@ -20,7 +21,6 @@ const brandColors = {
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [nominee, setNominee] = useState(null);
-  const [chessElo, setChessElo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
 
@@ -34,13 +34,8 @@ export default function Profile() {
       setUser(currentUser);
 
       if (currentUser?.email) {
-        // Fetch nominee + chess profile in parallel
-        const [nominees, chessProfiles] = await Promise.all([
-          base44.entities.Nominee.filter({ nominee_email: currentUser.email }).catch(() => []),
-          base44.entities.ChessClubProfile.filter({ user_email: currentUser.email }).catch(() => []),
-        ]);
+        const nominees = await base44.entities.Nominee.filter({ nominee_email: currentUser.email }).catch(() => []);
         if (nominees?.length > 0) setNominee(nominees[0]);
-        if (chessProfiles?.length > 0) setChessElo(chessProfiles[0].elo_rating);
       }
     } catch (error) {
       console.error('Error loading user:', error);
@@ -99,7 +94,8 @@ export default function Profile() {
           {/* RIGHT COLUMN - Gamification + Shareable Card + Nominee sections */}
           <div className="space-y-6">
             <ProfileCompletionCard user={user} nominee={nominee} />
-            <ShareableProfileCard user={user} nominee={nominee} chessElo={chessElo} />
+            {nominee && <ResearchStatsCard nominee={nominee} onUpdate={setNominee} />}
+            <ShareableProfileCard user={user} nominee={nominee} />
             {nominee && (
               <>
                 <NomineeCareerHistorySection nominee={nominee} />
