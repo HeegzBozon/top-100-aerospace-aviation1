@@ -8,12 +8,13 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import {
   Camera, Loader2, Save, Upload, ExternalLink, CheckCircle2, MapPin,
-  Briefcase, Hash, Sparkles, Linkedin, Instagram, Youtube, Globe, X, Plus
+  Briefcase, Hash, Sparkles, Linkedin, Instagram, Youtube, Globe, X, Plus, BookOpen
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import CountrySelect from '@/components/profile/CountrySelect';
+import StoryBuilderModal from '@/components/profile/StoryBuilderModal';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
@@ -107,6 +108,7 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
   const [uploading, setUploading] = useState(false);
   const [pdfUploading, setPdfUploading] = useState(false);
   const [pdfUploaded, setPdfUploaded] = useState(false);
+  const [storyBuilderOpen, setStoryBuilderOpen] = useState(false);
   const { toast } = useToast();
 
   const handlePhotoUpload = async (e) => {
@@ -252,18 +254,67 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
       </div>
 
       {/* ── 2. About / Bio ── */}
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Bio / About</label>
-        <Textarea
-          value={userData.bio}
-          onChange={(e) => {
-            setUserData(prev => ({ ...prev, bio: e.target.value }));
-            if (nominee) setNomineeData(prev => ({ ...prev, bio: e.target.value }));
-          }}
-          placeholder="Tell your story — your mission, your impact, what drives you…"
-          className="min-h-[120px] text-sm bg-white border-slate-200 rounded-xl resize-none focus:border-slate-400 transition-colors leading-relaxed"
-        />
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Bio / About</label>
+          {userData.bio && (
+            <button
+              type="button"
+              onClick={() => setStoryBuilderOpen(true)}
+              className="flex items-center gap-1 text-[10px] font-semibold transition-colors hover:opacity-80"
+              style={{ color: brand.gold }}
+            >
+              <Sparkles className="w-3 h-3" /> Rewrite with AI
+            </button>
+          )}
+        </div>
+
+        {userData.bio ? (
+          <div className="relative group">
+            <Textarea
+              value={userData.bio}
+              onChange={(e) => {
+                setUserData(prev => ({ ...prev, bio: e.target.value }));
+                if (nominee) setNomineeData(prev => ({ ...prev, bio: e.target.value }));
+              }}
+              className="min-h-[120px] text-sm bg-white border-slate-200 rounded-xl resize-none focus:border-slate-400 transition-colors leading-relaxed"
+            />
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setStoryBuilderOpen(true)}
+            className="w-full rounded-2xl border-2 border-dashed p-6 text-center transition-all hover:shadow-md cursor-pointer group"
+            style={{ borderColor: `${brand.gold}40`, background: `${brand.cream}` }}
+          >
+            <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center transition-transform group-hover:scale-110" style={{ background: `${brand.gold}15` }}>
+              <BookOpen className="w-6 h-6" style={{ color: brand.gold }} />
+            </div>
+            <h4 className="text-sm font-bold mb-1" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
+              Build Your Story
+            </h4>
+            <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
+              Let our personal biographer help you craft a compelling bio through a fun, guided conversation.
+            </p>
+            <span
+              className="inline-flex items-center gap-1.5 mt-3 px-4 py-1.5 rounded-full text-[11px] font-bold"
+              style={{ background: `${brand.navy}`, color: 'white' }}
+            >
+              <Sparkles className="w-3 h-3" /> Start My Story
+            </span>
+          </button>
+        )}
       </div>
+
+      <StoryBuilderModal
+        open={storyBuilderOpen}
+        onClose={() => setStoryBuilderOpen(false)}
+        userName={userData.full_name}
+        onBioGenerated={(bio) => {
+          setUserData(prev => ({ ...prev, bio }));
+          if (nominee) setNomineeData(prev => ({ ...prev, bio }));
+        }}
+      />
 
       {/* ── 3. Professional Details Row ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
