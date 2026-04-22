@@ -4,14 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { Camera, Loader2, Save, Upload, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { Camera, Loader2, Save, Upload, ExternalLink, CheckCircle2, MapPin } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import CountrySelect from '@/components/profile/CountrySelect';
 
 export default function UserProfileEditor({ user }) {
   const [formData, setFormData] = useState({
     full_name: user?.full_name || '',
     email: user?.email || '',
     avatar_url: user?.avatar_url || '',
+    location: user?.location || '',
   });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -113,6 +115,19 @@ export default function UserProfileEditor({ user }) {
             />
           </div>
         </div>
+      </div>
+
+      {/* ── Country ── */}
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-white border border-slate-100">
+        <div className="flex items-center gap-2 mb-2">
+          <MapPin className="w-4 h-4 text-slate-400" />
+          <Label className="text-xs text-slate-400 font-medium uppercase tracking-wide">Country</Label>
+        </div>
+        <CountrySelect
+          value={formData.location}
+          onChange={(val) => setFormData(prev => ({ ...prev, location: val }))}
+        />
+        <p className="text-[10px] text-slate-400 mt-1.5">This appears on your trading card with your country flag</p>
       </div>
 
       {/* ── LinkedIn PDF import ── */}
