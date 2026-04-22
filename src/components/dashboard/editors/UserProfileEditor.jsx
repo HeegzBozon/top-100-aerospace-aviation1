@@ -17,6 +17,7 @@ import CountrySelect from '@/components/profile/CountrySelect';
 import StoryBuilderModal from '@/components/profile/StoryBuilderModal';
 import StoryProgressNudge from '@/components/profile/StoryProgressNudge';
 import LinkedInConnectCard from '@/components/profile/LinkedInConnectCard';
+import ProfileCompletionCard from '@/components/profile/ProfileCompletionCard';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
@@ -199,6 +200,9 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
 
   return (
     <div className="space-y-6">
+
+      {/* ── 0. Profile Completion Nudge ── */}
+      <ProfileCompletionCard user={userData} nominee={nominee} />
 
       {/* ── 1. Identity Hero ── */}
       <div

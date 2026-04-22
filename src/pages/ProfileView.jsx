@@ -13,6 +13,8 @@ import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
 import StartupPitch from '@/components/profile/StartupPitch';
 import ProviderServicesList from '@/components/profile/ProviderServicesList';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
+import ProfileSocialLinks from '@/components/profile/ProfileSocialLinks';
+import ProfileExpertiseTags from '@/components/profile/ProfileExpertiseTags';
 
 const brandColors = {
     navyDeep: '#1e3a5a',
@@ -89,9 +91,12 @@ export default function ProfileView({ userId: propUserId = null }) {
     // Priority: User > Nominee > Provider > Startup
     const displayName = user?.full_name || nominee?.name || provider?.full_name || startup?.company_name || 'Anonymous';
     const displayAvatar = user?.avatar_url || nominee?.avatar_url || nominee?.photo_url || provider?.avatar_url || startup?.logo_url;
-    const displayBio = user?.professional_bio || nominee?.bio || nominee?.description || provider?.biography;
-    const displayRole = user?.job_title || nominee?.title || nominee?.professional_role || provider?.headline;
+    const displayBio = user?.bio || user?.professional_bio || nominee?.bio || nominee?.description || provider?.biography;
+    const displayBioExtended = nominee?.bio_extended;
+    const displayRole = user?.headline || user?.job_title || nominee?.title || nominee?.professional_role || provider?.headline;
     const displayCompany = user?.company || nominee?.company || nominee?.organization || employer?.company_name;
+    const sixWordStory = nominee?.six_word_story;
+    const displayCountry = user?.location || nominee?.country;
 
     return (
         <div className="min-h-screen sf-pro pb-20" style={{ background: brandColors.cream }}>
@@ -153,6 +158,12 @@ export default function ProfileView({ userId: propUserId = null }) {
                                 <p className="text-sm font-medium mb-3 text-slate-500">@{user?.handle || nominee?.handle || 'user'}</p>
                             )}
 
+                            {sixWordStory && (
+                                <p className="text-sm italic mb-3" style={{ color: brandColors.goldPrestige, fontFamily: "'Playfair Display', serif" }}>
+                                    "{sixWordStory}"
+                                </p>
+                            )}
+
                             <div className="flex flex-col gap-2 mb-4">
                                 {displayRole && (
                                     <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100" style={{ color: brandColors.navyDeep }}>
@@ -162,6 +173,11 @@ export default function ProfileView({ userId: propUserId = null }) {
                                 {displayCompany && (
                                     <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: `${brandColors.skyBlue}15`, color: brandColors.skyBlue }}>
                                         <Building className="w-3 h-3" /> {displayCompany}
+                                    </span>
+                                )}
+                                {displayCountry && (
+                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: `${brandColors.goldPrestige}12`, color: brandColors.goldPrestige }}>
+                                        📍 {displayCountry}
                                     </span>
                                 )}
                             </div>
@@ -176,30 +192,29 @@ export default function ProfileView({ userId: propUserId = null }) {
 
 
 
-                        {/* General Info / Links */}
-                         {(user?.linkedin_url || nominee?.linkedin_profile_url || user?.personal_website_url || nominee?.website_url) && (
-                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card rounded-2xl p-4 material-shadow bg-white/70 space-y-2">
-                                 <h3 className="text-[10px] uppercase tracking-widest font-bold mb-3" style={{ color: brandColors.goldPrestige }}>Connect</h3>
-                                 {(user?.linkedin_url || nominee?.linkedin_profile_url) && (
-                                     <LinkButton href={user?.linkedin_url || nominee?.linkedin_profile_url} icon={Linkedin}>LinkedIn Profile</LinkButton>
-                                 )}
-                                 {(user?.personal_website_url || nominee?.website_url) && (
-                                     <LinkButton href={user?.personal_website_url || nominee?.website_url} icon={ExternalLink}>Website</LinkButton>
-                                 )}
-                                 {viewer?.email === (user?.email || nominee?.nominee_email) && (user?.email || nominee?.nominee_email) && (
-                                     <LinkButton href={`mailto:${user?.email || nominee?.nominee_email}`} icon={Mail}>Email</LinkButton>
-                                 )}
-                             </motion.div>
-                         )}
+                        {/* Social Links */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                            <ProfileSocialLinks user={user} nominee={nominee} viewer={viewer} />
+                        </motion.div>
+
+                        {/* Expertise Tags */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+                            <ProfileExpertiseTags skills={nominee?.skills} expertise_tags={user?.expertise_tags} />
+                        </motion.div>
                     </div>
 
                     {/* Right Column: Composite Detailed Content */}
                     <div className="lg:col-span-2 space-y-6 mt-8 lg:mt-0 pt-16 lg:pt-0">
 
-                        {displayBio && (
+                        {(displayBio || displayBioExtended) && (
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl p-6 material-shadow bg-white">
-                                <h3 className="text-lg font-bold mb-3" style={{ color: brandColors.navyDeep }}>Overview</h3>
-                                <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{displayBio}</p>
+                                <h3 className="text-lg font-bold mb-3" style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', serif" }}>Overview</h3>
+                                <p className="text-slate-700 leading-relaxed whitespace-pre-wrap text-[15px]">{displayBio}</p>
+                                {displayBioExtended && displayBioExtended !== displayBio && (
+                                    <div className="mt-4 pt-4 border-t border-slate-100">
+                                        <p className="text-slate-600 leading-relaxed whitespace-pre-wrap text-sm">{displayBioExtended}</p>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
 

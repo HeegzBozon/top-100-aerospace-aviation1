@@ -32,40 +32,34 @@ function SubmissionCard({ submission, onUpdate, onRefresh }) {
 
   const handleApprove = async () => {
     setSaving(true);
+    const bio = editBio.trim();
+
+    // 1. Mark submission as approved
     await base44.entities.BioSubmission.update(submission.id, {
       status: 'approved',
-      final_bio: editBio,
+      final_bio: bio,
       admin_notes: notes,
+      notified_user: true,
     });
-    toast({ title: 'Bio approved!' });
-    setSaving(false);
-    onRefresh();
-  };
 
-  const handleReject = async () => {
-    setSaving(true);
-    await base44.entities.BioSubmission.update(submission.id, {
-      status: 'rejected',
-      admin_notes: notes,
-    });
-    toast({ title: 'Bio rejected' });
-    setSaving(false);
-    onRefresh();
-  };
-
-  const handleNotifyUser = async () => {
-    setNotifying(true);
-    const bio = submission.final_bio || submission.generated_bio;
-    // Update user's bio
+    // 2. Auto-publish to user profile
     const users = await base44.entities.User.filter({ email: submission.user_email });
     if (users[0]) {
       await base44.entities.User.update(users[0].id, { bio });
     }
-    // Also update nominee if linked
+
+    // 3. Auto-publish to nominee if linked
     if (submission.nominee_id) {
       await base44.entities.Nominee.update(submission.nominee_id, { bio });
+    } else {
+      // Try to find nominee by email
+      const nominees = await base44.entities.Nominee.filter({ nominee_email: submission.user_email }, '-created_date', 1);
+      if (nominees[0]) {
+        await base44.entities.Nominee.update(nominees[0].id, { bio });
+      }
     }
-    // Send notification email
+
+    // 4. Send notification email
     await base44.integrations.Core.SendEmail({
       to: submission.user_email,
       from_name: 'TOP 100 Aerospace & Aviation',
@@ -85,9 +79,20 @@ function SubmissionCard({ submission, onUpdate, onRefresh }) {
         </div>
       </div>`,
     });
-    await base44.entities.BioSubmission.update(submission.id, { notified_user: true });
-    toast({ title: 'User notified and bio published!' });
-    setNotifying(false);
+
+    toast({ title: 'Bio approved, published & user notified!' });
+    setSaving(false);
+    onRefresh();
+  };
+
+  const handleReject = async () => {
+    setSaving(true);
+    await base44.entities.BioSubmission.update(submission.id, {
+      status: 'rejected',
+      admin_notes: notes,
+    });
+    toast({ title: 'Bio rejected' });
+    setSaving(false);
     onRefresh();
   };
 
@@ -167,7 +172,7 @@ function SubmissionCard({ submission, onUpdate, onRefresh }) {
             {submission.status !== 'approved' && (
               <Button onClick={handleApprove} disabled={saving || !editBio.trim()} size="sm" className="gap-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg">
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                Approve
+                Approve, Publish & Notify
               </Button>
             )}
             {submission.status !== 'rejected' && submission.status !== 'approved' && (
@@ -175,11 +180,10 @@ function SubmissionCard({ submission, onUpdate, onRefresh }) {
                 <XCircle className="w-3.5 h-3.5" /> Reject
               </Button>
             )}
-            {submission.status === 'approved' && !submission.notified_user && (
-              <Button onClick={handleNotifyUser} disabled={notifying} size="sm" className="gap-1.5 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white rounded-lg">
-                {notifying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                Publish & Notify User
-              </Button>
+            {submission.status === 'approved' && (
+              <Badge className="bg-green-50 text-green-700 text-xs gap-1.5 py-1.5 px-3">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Published & Notified
+              </Badge>
             )}
           </div>
         </div>
