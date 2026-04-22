@@ -34,8 +34,7 @@
     },
     "is_service_provider": {
       "type": "boolean",
-      "default": false,
-      "description": "Flag to indicate if this user is an approved service provider"
+      "default": false
     },
     "theme_mode": {
       "type": "string",
@@ -243,14 +242,29 @@
       },
       "description": "Centralized social media statistics"
     },
+    "custom_card_stats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          }
+        }
+      },
+      "default": [],
+      "description": "User-defined custom stats displayed on trading card"
+    },
     "phone_number": {
       "type": "string",
       "description": "Phone number for SMS notifications"
     },
     "phone_number_verified": {
       "type": "boolean",
-      "default": false,
-      "description": "Whether the phone number has been verified"
+      "default": false
     },
     "notification_preferences": {
       "type": "object",
