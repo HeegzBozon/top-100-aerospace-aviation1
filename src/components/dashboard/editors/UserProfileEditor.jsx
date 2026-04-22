@@ -16,7 +16,7 @@ import { createPageUrl } from '@/utils';
 import CountrySelect from '@/components/profile/CountrySelect';
 import StoryBuilderModal from '@/components/profile/StoryBuilderModal';
 import StoryProgressNudge from '@/components/profile/StoryProgressNudge';
-import LinkedInConnectCard from '@/components/profile/LinkedInConnectCard.jsx';
+import LinkedInConnectCard from '@/components/profile/LinkedInConnectCard';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
