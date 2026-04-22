@@ -127,7 +127,7 @@ function CommFrequencySurveyCard({ user }) {
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-semibold mb-1" style={{ color: brandColors.navyDeep }}>Calibrate Your Signal</h3>
-            <p className="text-xs text-slate-500 mb-3">Tell us how often you want to hear from us, which intelligence streams matter most, and how you contribute to the ecosystem.</p>
+            <p className="text-xs text-slate-500 mb-3">Tell us how often you want to hear from us, which intelligence streams matter most, and how you would like to contribute to the ecosystem.</p>
             <a href={surveyUrl}>
               <Button size="sm" className="gap-2 rounded-full text-xs font-bold cursor-pointer" style={{ background: brandColors.goldPrestige, color: '#0a1526' }}>
                 <Radio className="w-3.5 h-3.5" /> Take the Survey
