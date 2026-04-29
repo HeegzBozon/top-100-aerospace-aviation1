@@ -1,64 +1,40 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { ArrowDown, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
+const brand = { navy: '#1e3a5a', gold: '#c9a87c' };
 
 const VIDEOS = [
-  'https://videos.pexels.com/video-files/3135924/3135924-hd_1920_1080_30fps.mp4',   // coffee shop full of customers
-  'https://videos.pexels.com/video-files/3135925/3135925-hd_1920_1080_30fps.mp4',   // people inside coffee shop
-  'https://videos.pexels.com/video-files/3135907/3135907-hd_1920_1080_30fps.mp4',   // mall food court shoppers
-  'https://videos.pexels.com/video-files/1853441/1853441-hd_1920_1080_25fps.mp4',   // cozy coffee shop winter
+  'https://videos.pexels.com/video-files/3135924/3135924-hd_1920_1080_30fps.mp4',
+  'https://videos.pexels.com/video-files/3135925/3135925-hd_1920_1080_30fps.mp4',
+  'https://videos.pexels.com/video-files/3135907/3135907-hd_1920_1080_30fps.mp4',
+  'https://videos.pexels.com/video-files/1853441/1853441-hd_1920_1080_25fps.mp4',
 ];
 
-const SLIDE_DURATION = 6000;
-
 export default function LLHero() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const timerRef = useRef(null);
+  const [active, setActive] = useState(0);
 
   useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setActiveIndex(prev => (prev + 1) % VIDEOS.length);
-    }, SLIDE_DURATION);
-    return () => clearInterval(timerRef.current);
+    const id = setInterval(() => setActive(p => (p + 1) % VIDEOS.length), 6000);
+    return () => clearInterval(id);
   }, []);
 
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Background video slides */}
-      <AnimatePresence mode="sync">
-        <motion.video
-          key={activeIndex}
+      {/* All videos rendered simultaneously — opacity swap for crossfade */}
+      {VIDEOS.map((src, i) => (
+        <video
+          key={src}
           autoPlay
           muted
           loop
           playsInline
-          src={VIDEOS[activeIndex]}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: 'easeInOut' }}
-          className="absolute inset-0 w-full h-full object-cover"
+          src={src}
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out"
+          style={{ opacity: i === active ? 1 : 0 }}
         />
-      </AnimatePresence>
-
-      {/* Slide indicator dots */}
-      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5">
-        {VIDEOS.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => { setActiveIndex(i); clearInterval(timerRef.current); timerRef.current = setInterval(() => setActiveIndex(prev => (prev + 1) % VIDEOS.length), SLIDE_DURATION); }}
-            className="rounded-full transition-all duration-500 cursor-pointer"
-            style={{
-              background: i === activeIndex ? brand.gold : 'rgba(255,255,255,0.25)',
-              width: i === activeIndex ? 18 : 6,
-              height: 6,
-            }}
-          />
-        ))}
-      </div>
+      ))}
 
       {/* Overlays */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/40" />
