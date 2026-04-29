@@ -6,16 +6,16 @@ import { Button } from '@/components/ui/button';
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
 const CITIES = [
-  'Mountain View',
-  'Los Angeles',
-  'Houston',
-  'Seattle',
-  'Washington, D.C.',
-  'Cape Canaveral',
-  'Huntsville',
-  'Denver',
-  'Tucson',
-  'San Diego',
+  { name: 'Mountain View', img: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=1920&q=80' },
+  { name: 'Los Angeles', img: 'https://images.unsplash.com/photo-1534190760961-74e8c1c5c3da?w=1920&q=80' },
+  { name: 'Houston', img: 'https://images.unsplash.com/photo-1530089711124-9ca31fb9e863?w=1920&q=80' },
+  { name: 'Seattle', img: 'https://images.unsplash.com/photo-1502175353174-a7a70e73b4c3?w=1920&q=80' },
+  { name: 'Washington, D.C.', img: 'https://images.unsplash.com/photo-1501466044931-62695aada8e9?w=1920&q=80' },
+  { name: 'Cape Canaveral', img: 'https://images.unsplash.com/photo-1457364559154-aa2644600ebb?w=1920&q=80' },
+  { name: 'Huntsville', img: 'https://images.unsplash.com/photo-1517483000871-1dbf64a6e1c6?w=1920&q=80' },
+  { name: 'Denver', img: 'https://images.unsplash.com/photo-1546156929-a4c0ac411f47?w=1920&q=80' },
+  { name: 'Tucson', img: 'https://images.unsplash.com/photo-1569683795645-b62e50fbf103?w=1920&q=80' },
+  { name: 'San Diego', img: 'https://images.unsplash.com/photo-1538964173425-93e165de48d5?w=1920&q=80' },
 ];
 
 export default function LLProHero() {
@@ -24,19 +24,40 @@ export default function LLProHero() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCityIndex(prev => (prev + 1) % CITIES.length);
-    }, 2200);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
+  const city = CITIES[cityIndex];
+
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(160deg, ${brand.navy} 0%, #0d2137 60%, #162d4a 100%)` }}>
-      <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full opacity-10 blur-3xl pointer-events-none" style={{ background: brand.gold }} />
-      <div className="absolute bottom-[-15%] right-[-10%] w-[600px] h-[600px] rounded-full opacity-[0.06] blur-3xl pointer-events-none" style={{ background: brand.gold }} />
+    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Background images */}
+      <AnimatePresence mode="sync">
+        <motion.div
+          key={cityIndex}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.2, ease: 'easeInOut' }}
+          className="absolute inset-0"
+        >
+          <img
+            src={city.img}
+            alt={city.name}
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/40" />
       <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+      {/* Content */}
+      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-[11px] font-bold uppercase tracking-[0.2em]" style={{ background: `${brand.gold}20`, color: brand.gold, border: `1px solid ${brand.gold}30` }}>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-[11px] font-bold uppercase tracking-[0.2em]" style={{ background: `${brand.gold}25`, color: brand.gold, border: `1px solid ${brand.gold}35`, backdropFilter: 'blur(8px)' }}>
             <MapPin className="w-3.5 h-3.5" />
             Local Legends: For Aerospace Professionals
           </div>
@@ -46,26 +67,26 @@ export default function LLProHero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15 }}
-          className="text-3xl sm:text-4xl md:text-6xl font-bold text-white leading-[1.1] mb-6"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.15] mb-3"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           You just landed in{' '}
-          <span className="inline-block relative" style={{ color: brand.gold, minWidth: '4ch' }}>
+          <span className="relative inline-block overflow-hidden align-bottom" style={{ minWidth: '5ch' }}>
             <AnimatePresence mode="wait">
               <motion.span
                 key={cityIndex}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.35 }}
-                className="inline-block"
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.4 }}
+                className="inline-block whitespace-nowrap"
+                style={{ color: brand.gold }}
               >
-                {CITIES[cityIndex]}.
+                {city.name}.
               </motion.span>
             </AnimatePresence>
-          </span>
-          <br />
-          <span className="text-white/40">Now what?</span>
+          </span>{' '}
+          <span className="text-white/50">Now what?</span>
         </motion.h1>
 
         <motion.p
@@ -91,16 +112,31 @@ export default function LLProHero() {
             Find your city <ArrowRight className="w-4 h-4" />
           </Button>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <ArrowDown className="w-5 h-5 text-white/30 animate-bounce" />
-        </motion.div>
       </div>
+
+      {/* City indicator dots */}
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5">
+        {CITIES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCityIndex(i)}
+            className="w-1.5 h-1.5 rounded-full transition-all duration-500 cursor-pointer"
+            style={{
+              background: i === cityIndex ? brand.gold : 'rgba(255,255,255,0.25)',
+              width: i === cityIndex ? 16 : 6,
+            }}
+          />
+        ))}
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 1 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+      >
+        <ArrowDown className="w-5 h-5 text-white/30 animate-bounce" />
+      </motion.div>
     </section>
   );
 }
