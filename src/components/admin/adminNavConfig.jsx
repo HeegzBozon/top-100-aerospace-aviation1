@@ -54,7 +54,7 @@ export const ADMIN_SECTIONS = [
             { id: 'assign-nominees', label: 'Assign Nominees', icon: UserPlus, component: 'NomineeAssignmentManager' },
             { id: 'claims', label: 'Profile Claims', icon: Shield, component: 'ClaimsReviewManager' },
             { id: 'sme', label: 'SME Management', icon: Award, component: 'SMEAssignmentPanel' },
-            { id: 'surveys', label: 'Surveys', icon: ClipboardCheck, component: 'SurveyManager' },
+            { id: 'surveys', label: 'Applications & Surveys', icon: ClipboardCheck, component: 'SurveyManager' },
             { id: 'bio-submissions', label: 'Bio Submissions', icon: FileText, component: 'BioSubmissionManager' },
         ],
     },

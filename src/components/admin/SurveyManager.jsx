@@ -156,8 +156,8 @@ export default function SurveyManager() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[var(--text)]">Surveys</h2>
-          <p className="text-sm text-[var(--muted)]">Create and manage surveys sent to your community.</p>
+          <h2 className="text-xl font-bold text-[var(--text)]">Applications & Surveys</h2>
+          <p className="text-sm text-[var(--muted)]">Create and manage applications and surveys for your community.</p>
         </div>
         <Button onClick={handleCreate} className="gap-2 bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white cursor-pointer">
           <Plus className="w-4 h-4" /> New Survey

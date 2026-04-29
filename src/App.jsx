@@ -43,6 +43,7 @@ const SurveyPage = lazy(() => import('@/pages/SurveyPage'));
 const EmailTemplatePreview = lazy(() => import('@/pages/EmailTemplatePreview'));
 const LocalLegends = lazy(() => import('@/pages/LocalLegends'));
 const LocalLegendsPro = lazy(() => import('@/pages/LocalLegendsPro'));
+const LocalLegendsApply = lazy(() => import('@/pages/LocalLegendsApply'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -172,6 +173,7 @@ const AuthenticatedApp = () => {
       <Route path="/email-preview" element={<EmailTemplatePreview />} />
       <Route path="/local-legends" element={<LocalLegends />} />
       <Route path="/local-legends-pro" element={<LocalLegendsPro />} />
+      <Route path="/local-legends/apply" element={<LocalLegendsApply />} />
       <Route path="/top100-tv" element={
         <LayoutWrapper currentPageName="Top100TV">
           <Top100TV />

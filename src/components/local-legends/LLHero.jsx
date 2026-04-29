@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c' };
@@ -81,14 +82,15 @@ export default function LLHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.45 }}
         >
-          <Button
-            size="lg"
-            className="rounded-full px-8 text-white font-semibold text-sm shadow-xl gap-2"
-            style={{ background: `linear-gradient(135deg, ${brand.gold}, #b08d5b)` }}
-            onClick={() => document.getElementById('ll-how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
-          >
-            Apply for your spotlight <ArrowRight className="w-4 h-4" />
-          </Button>
+          <Link to="/local-legends/apply">
+            <Button
+              size="lg"
+              className="rounded-full px-8 text-white font-semibold text-sm shadow-xl gap-2"
+              style={{ background: `linear-gradient(135deg, ${brand.gold}, #b08d5b)` }}
+            >
+              Apply for your spotlight <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
         </motion.div>
       </div>
 

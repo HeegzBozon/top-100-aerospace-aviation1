@@ -15,14 +15,15 @@ export default function LLFooter() {
         </h2>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-          <Button
-            size="lg"
-            className="rounded-full px-8 text-white font-semibold shadow-xl gap-2"
-            style={{ background: `linear-gradient(135deg, ${brand.gold}, #b08d5b)` }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            Apply for your free spotlight <ArrowRight className="w-4 h-4" />
-          </Button>
+          <Link to="/local-legends/apply">
+            <Button
+              size="lg"
+              className="rounded-full px-8 text-white font-semibold shadow-xl gap-2"
+              style={{ background: `linear-gradient(135deg, ${brand.gold}, #b08d5b)` }}
+            >
+              Apply for your free spotlight <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
           <Link
             to="/"
             className="text-sm font-semibold text-white/50 hover:text-white/80 transition-colors flex items-center gap-1.5"
