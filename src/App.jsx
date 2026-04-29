@@ -41,6 +41,7 @@ const MissionRooms = lazy(() => import('@/pages/MissionRooms'));
 const HomeV2 = lazy(() => import('@/pages/HomeV2'));
 const SurveyPage = lazy(() => import('@/pages/SurveyPage'));
 const EmailTemplatePreview = lazy(() => import('@/pages/EmailTemplatePreview'));
+const LocalLegends = lazy(() => import('@/pages/LocalLegends'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -168,6 +169,7 @@ const AuthenticatedApp = () => {
       } />
       <Route path="/survey" element={<SurveyPage />} />
       <Route path="/email-preview" element={<EmailTemplatePreview />} />
+      <Route path="/local-legends" element={<LocalLegends />} />
       <Route path="/top100-tv" element={
         <LayoutWrapper currentPageName="Top100TV">
           <Top100TV />
