@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
 const VIDEOS = [
-  'https://videos.pexels.com/video-files/3135924/3135924-hd_1920_1080_30fps.mp4',   // coffee shop
-  'https://videos.pexels.com/video-files/3769790/3769790-hd_1920_1080_24fps.mp4',   // barber shop
-  'https://videos.pexels.com/video-files/4109893/4109893-hd_1920_1080_25fps.mp4',   // bakery
-  'https://videos.pexels.com/video-files/2887463/2887463-hd_1920_1080_30fps.mp4',   // restaurant kitchen
+  'https://videos.pexels.com/video-files/3135924/3135924-hd_1920_1080_30fps.mp4',   // coffee shop full of customers
+  'https://videos.pexels.com/video-files/3135925/3135925-hd_1920_1080_30fps.mp4',   // people inside coffee shop
+  'https://videos.pexels.com/video-files/3135907/3135907-hd_1920_1080_30fps.mp4',   // mall food court shoppers
+  'https://videos.pexels.com/video-files/1853441/1853441-hd_1920_1080_25fps.mp4',   // cozy coffee shop winter
 ];
 
 const SLIDE_DURATION = 6000;
