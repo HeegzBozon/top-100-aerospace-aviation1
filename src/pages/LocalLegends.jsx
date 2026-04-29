@@ -1,22 +1,18 @@
 import LLHero from '@/components/local-legends/LLHero';
-import LLMetrics from '@/components/local-legends/LLMetrics';
-import LLShift from '@/components/local-legends/LLShift';
-import LLSpotlight from '@/components/local-legends/LLSpotlight';
-import LLPricing from '@/components/local-legends/LLPricing';
-import LLPillars from '@/components/local-legends/LLPillars';
-import LLScaling from '@/components/local-legends/LLScaling';
+import LLWhatThisIs from '@/components/local-legends/LLWhatThisIs';
+import LLCategories from '@/components/local-legends/LLCategories';
+import LLHowItWorks from '@/components/local-legends/LLHowItWorks';
+import LLAffiliation from '@/components/local-legends/LLAffiliation';
 import LLFooter from '@/components/local-legends/LLFooter';
 
 export default function LocalLegends() {
   return (
     <div className="min-h-screen sf-pro">
       <LLHero />
-      <LLMetrics />
-      <LLShift />
-      <LLSpotlight />
-      <LLPricing />
-      <LLPillars />
-      <LLScaling />
+      <LLWhatThisIs />
+      <LLCategories />
+      <LLHowItWorks />
+      <LLAffiliation />
       <LLFooter />
     </div>
   );

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Star, ArrowDown } from 'lucide-react';
+import { ArrowDown, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
@@ -14,8 +14,7 @@ export default function LLHero() {
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-[11px] font-bold uppercase tracking-[0.2em]" style={{ background: `${brand.gold}20`, color: brand.gold, border: `1px solid ${brand.gold}30` }}>
-            <Star className="w-3.5 h-3.5" />
-            Free Community Spotlight Program
+            Local Legends: Mountain View
           </div>
         </motion.div>
 
@@ -23,12 +22,12 @@ export default function LLHero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15 }}
-          className="text-4xl sm:text-5xl md:text-7xl font-bold text-white leading-[1.05] mb-6"
+          className="text-3xl sm:text-4xl md:text-6xl font-bold text-white leading-[1.1] mb-6"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Your Business Deserves{' '}
+          The businesses that fuel the people building{' '}
           <span className="relative inline-block">
-            <span style={{ color: brand.gold }}>the Spotlight</span>
+            <span style={{ color: brand.gold }}>the future of flight.</span>
             <span className="absolute -bottom-1 left-0 w-full h-[3px] rounded-full opacity-40" style={{ background: `linear-gradient(90deg, ${brand.gold}, transparent)` }} />
           </span>
         </motion.h1>
@@ -37,32 +36,23 @@ export default function LLHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-base sm:text-lg text-white/60 max-w-2xl mx-auto leading-relaxed mb-10"
+          className="text-base sm:text-lg text-white/55 max-w-2xl mx-auto leading-relaxed mb-10"
         >
-          We feature the best local businesses in our community — <strong className="text-white/90">completely free</strong>. Get discovered by your neighbors, build your reputation, and let us handle the marketing so you can focus on what you do best.
+          Local Legends spotlights the studios, salons, kitchens, and clinics that make life work for the aerospace community in Mountain View and San Francisco.
         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.45 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Button
             size="lg"
-            className="rounded-full px-8 text-white font-semibold text-sm shadow-xl"
+            className="rounded-full px-8 text-white font-semibold text-sm shadow-xl gap-2"
             style={{ background: `linear-gradient(135deg, ${brand.gold}, #b08d5b)` }}
             onClick={() => document.getElementById('ll-how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Get Featured for Free
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="rounded-full px-8 text-sm font-semibold border-white/20 text-white/70 hover:text-white hover:bg-white/10"
-            onClick={() => document.getElementById('ll-why-it-matters')?.scrollIntoView({ behavior: 'smooth' })}
-          >
-            See Why It Works
+            Apply for your spotlight <ArrowRight className="w-4 h-4" />
           </Button>
         </motion.div>
 
