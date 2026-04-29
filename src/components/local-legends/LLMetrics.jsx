@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion';
-import { Mail, Phone, TrendingUp, DollarSign } from 'lucide-react';
+import { Eye, Users, TrendingUp, Award } from 'lucide-react';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
 const METRICS = [
-  { icon: Mail, value: '5', unit: 'emails/day', desc: 'Less than 1 hour of daily effort' },
-  { icon: TrendingUp, value: '20%', unit: 'response rate', desc: 'vs. 1% for traditional audits' },
-  { icon: Phone, value: '3–5', unit: 'calls/week', desc: 'Qualified discovery conversations' },
-  { icon: DollarSign, value: '$100K', unit: 'ARR in 10 months', desc: 'Closing 1 client every 2 weeks' },
+  { icon: Eye, value: '1000s', unit: 'of local eyes', desc: 'Your business featured to your entire community' },
+  { icon: Users, value: '20%', unit: 'engagement rate', desc: 'People who see your spotlight take action' },
+  { icon: Award, value: 'Free', unit: 'to get started', desc: 'No cost, no commitment — just visibility' },
+  { icon: TrendingUp, value: '3×', unit: 'more customers', desc: 'Businesses we feature see measurable growth' },
 ];
 
 export default function LLMetrics() {
@@ -20,9 +20,9 @@ export default function LLMetrics() {
           viewport={{ once: true }}
           className="text-center mb-14"
         >
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: brand.gold }}>Outreach Metrics</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: brand.gold }}>Why Businesses Love Us</p>
           <h2 className="text-3xl md:text-4xl font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
-            The Numbers That Matter
+            Real Results for Real Businesses
           </h2>
         </motion.div>
 

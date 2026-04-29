@@ -1,15 +1,15 @@
 import { motion } from 'framer-motion';
-import { Bot, MapPin, Database, Star, Zap, ShieldCheck, Target, BarChart3 } from 'lucide-react';
+import { MapPin, UserCheck, Star, Zap, BarChart3, ShieldCheck } from 'lucide-react';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
-const BUCKET_ITEMS = [
-  { icon: Database, label: 'Dead Database Money', desc: 'Re-engage inactive leads via AI' },
-  { icon: Star, label: 'Reputation Management', desc: 'Automate 5-star review generation' },
-  { icon: Zap, label: 'Lead Nurturing', desc: 'Follow up within 5 minutes (+400% conversion)' },
-  { icon: Target, label: 'Sales Processes', desc: 'AI-grade and coach the client\'s sales team' },
-  { icon: BarChart3, label: 'Marketing Efficiency', desc: 'Ensure ad spend isn\'t wasted on cold leads' },
-  { icon: ShieldCheck, label: 'Owner Overload', desc: 'Automate admin so owners focus on fulfillment' },
+const PROBLEMS = [
+  { icon: UserCheck, label: 'Old Leads Sitting in Your Phone', desc: 'We re-engage past customers and leads who forgot about you — automatically.' },
+  { icon: Star, label: 'Not Enough Reviews', desc: 'We help you get 5-star reviews flowing in without awkwardly asking customers.' },
+  { icon: Zap, label: 'Slow Response Times', desc: 'We make sure every new lead gets a response within 5 minutes — even at 2 AM.' },
+  { icon: BarChart3, label: 'Wasted Ad Spend', desc: 'We make sure every dollar you spend on ads actually turns into a real customer.' },
+  { icon: ShieldCheck, label: 'Too Much on Your Plate', desc: 'We automate the admin stuff so you can get back to what you\'re actually good at.' },
+  { icon: MapPin, label: 'Invisible on Google', desc: 'We make sure people in your area can actually find you when they search online.' },
 ];
 
 export default function LLPillars() {
@@ -17,17 +17,17 @@ export default function LLPillars() {
     <section className="py-20 md:py-28 px-6" style={{ background: brand.cream }}>
       <div className="max-w-5xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: brand.gold }}>IV. Supporting Pillars</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: brand.gold }}>What We Fix</p>
           <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
-            Fix the Leaky Bucket
+            Are Customers Slipping Through the Cracks?
           </h2>
           <p className="text-slate-500 max-w-xl mx-auto text-sm">
-            Isolated automations aren't enough. Address six core operational failures to retain clients long-term.
+            Most businesses lose customers not because of bad products — but because of small gaps in their marketing. We fix all six.
           </p>
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {BUCKET_ITEMS.map((item, i) => {
+          {PROBLEMS.map((item, i) => {
             const Icon = item.icon;
             return (
               <motion.div
@@ -50,7 +50,7 @@ export default function LLPillars() {
           })}
         </div>
 
-        {/* SEO Blueprint mini */}
+        {/* Google visibility card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -62,12 +62,12 @@ export default function LLPillars() {
               <MapPin className="w-5 h-5" style={{ color: brand.gold }} />
             </div>
             <div>
-              <h3 className="text-base font-bold mb-2" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>Multi-Location SEO Blueprint</h3>
+              <h3 className="text-base font-bold mb-2" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>Want to Own Your Entire City on Google?</h3>
               <p className="text-sm text-slate-500 leading-relaxed mb-3">
-                A single Google Business Profile only ranks within a 15-mile radius. The "Coverage Map" strategy uses legal multi-location DBAs with unique phone numbers and hyper-local content pages to dominate an entire city.
+                Most Google listings only reach people within 15 miles. If you serve a bigger area, we can help you show up in <strong className="text-slate-700">every neighborhood</strong> — legally and effectively. It's like having a storefront on every corner of town.
               </p>
               <div className="flex flex-wrap gap-2">
-                {['15-Mile Rule', 'Legal DBAs', 'Hyper-Local Content', 'Coverage Mapping'].map(tag => (
+                {['Show Up Everywhere', 'More Phone Calls', 'More Walk-Ins', 'Beat Your Competition'].map(tag => (
                   <span key={tag} className="px-2.5 py-1 rounded-full text-[10px] font-semibold" style={{ background: `${brand.gold}10`, color: brand.gold }}>{tag}</span>
                 ))}
               </div>

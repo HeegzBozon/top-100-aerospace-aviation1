@@ -1,40 +1,40 @@
 import { motion } from 'framer-motion';
-import { Zap, Star, Crown } from 'lucide-react';
+import { Zap, Star, Crown, Check } from 'lucide-react';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
 const TIERS = [
   {
     icon: Zap,
-    name: 'Good',
-    tagline: 'Highest priority essentials',
-    speed: 'Slow rollout',
-    price: '$5,000',
-    period: '/year',
-    monthly: '$500 setup + $375/mo',
-    daily: '~$12.50/day',
+    name: 'Get Started',
+    tagline: 'Perfect for businesses just getting online',
+    speed: 'Essentials first, more over time',
+    price: '$12.50',
+    period: '/day',
+    subprice: 'That\'s less than a lunch combo.',
+    features: ['Professional business spotlight', 'Google-ready website', 'Mobile-friendly design', 'Basic SEO setup'],
     highlight: false,
   },
   {
     icon: Star,
-    name: 'Better',
-    tagline: 'The sweet spot',
-    speed: 'Medium rollout',
-    price: '$10–15K',
-    period: '/year',
-    monthly: 'Variable',
-    daily: null,
+    name: 'Grow Faster',
+    tagline: 'For businesses ready to level up',
+    speed: 'Everything you need, sooner',
+    price: '$25–40',
+    period: '/day',
+    subprice: 'The investment most of our clients choose.',
+    features: ['Everything in Get Started', 'Automated review requests', 'Lead follow-up system', 'Monthly strategy calls'],
     highlight: true,
   },
   {
     icon: Crown,
-    name: 'Best',
-    tagline: 'Full solution immediately',
-    speed: 'Fast rollout',
-    price: '$20,000',
-    period: '/year',
-    monthly: 'Variable',
-    daily: null,
+    name: 'Dominate',
+    tagline: 'For ambitious businesses that want it all, now',
+    speed: 'Full solution, deployed fast',
+    price: '$55',
+    period: '/day',
+    subprice: 'The cost of one missed customer.',
+    features: ['Everything in Grow Faster', 'AI-powered lead nurturing', 'Multi-location SEO', 'Dedicated marketing partner'],
     highlight: false,
   },
 ];
@@ -44,12 +44,12 @@ export default function LLPricing() {
     <section className="py-20 md:py-28 px-6" style={{ background: 'white' }}>
       <div className="max-w-5xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-6">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: brand.gold }}>III. Monetization</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: brand.gold }}>When You're Ready for More</p>
           <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
-            Good, Better, Best
+            Simple Plans That Grow With You
           </h2>
           <p className="text-slate-500 max-w-xl mx-auto text-sm leading-relaxed">
-            One comprehensive solution with three implementation timelines. All clients eventually receive the same full-service outcome — price determines <strong className="text-slate-700">speed</strong>, not features.
+            The spotlight is free. But when you see results and want to accelerate, we have plans that fit <strong className="text-slate-700">any budget</strong>. Every plan includes the same full solution — you just choose your speed.
           </p>
         </motion.div>
 
@@ -64,9 +64,7 @@ export default function LLPricing() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 className={`relative rounded-2xl p-6 md:p-8 border overflow-hidden transition-shadow hover:shadow-lg ${
-                  t.highlight
-                    ? 'border-2 shadow-md'
-                    : 'border-slate-100'
+                  t.highlight ? 'border-2 shadow-md' : 'border-slate-100'
                 }`}
                 style={t.highlight ? { borderColor: brand.gold, background: `linear-gradient(180deg, ${brand.cream}, white)` } : {}}
               >
@@ -83,13 +81,15 @@ export default function LLPricing() {
                   <p className="text-xs text-slate-500 mb-4">{t.tagline}</p>
 
                   <p className="text-3xl font-bold mb-0.5" style={{ color: brand.navy }}>{t.price}<span className="text-sm font-normal text-slate-400">{t.period}</span></p>
-                  <p className="text-[11px] text-slate-400 mb-4">{t.monthly}</p>
+                  <p className="text-[11px] text-slate-400 mb-5">{t.subprice}</p>
 
-                  <div className="pt-4 border-t border-slate-100">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold" style={{ background: `${brand.navy}08`, color: brand.navy }}>
-                      ⚡ {t.speed}
-                    </span>
-                    {t.daily && <p className="text-[11px] mt-3 text-slate-400">That's just <strong className="text-slate-600">{t.daily}</strong> — less than lunch.</p>}
+                  <div className="pt-4 border-t border-slate-100 space-y-2.5">
+                    {t.features.map((f, fi) => (
+                      <div key={fi} className="flex items-start gap-2">
+                        <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: brand.gold }} />
+                        <span className="text-xs text-slate-600">{f}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </motion.div>

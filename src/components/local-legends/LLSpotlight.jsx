@@ -1,26 +1,26 @@
 import { motion } from 'framer-motion';
-import { Megaphone, Clock, BarChart3, CheckCircle2 } from 'lucide-react';
+import { Sparkles, MessageSquare, Newspaper, TrendingUp } from 'lucide-react';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
 const STEPS = [
-  { num: '01', icon: Megaphone, title: 'The Spotlight Pitch', desc: 'Reach out and offer to promote local businesses to the community for free on your dedicated spotlight website.' },
-  { num: '02', icon: Clock, title: 'The 20-Min Discovery Call', desc: 'Invite owners to a short Zoom call to gather info for their feature — building rapport and uncovering needs.' },
-  { num: '03', icon: BarChart3, title: 'Immediate Value', desc: 'Unlike audits where value is locked behind a sale, the spotlight delivers standalone visibility and credibility for free.' },
-  { num: '04', icon: CheckCircle2, title: 'Natural Conversion', desc: 'Approximately 1 in 3 calls converts into a paying client — no hard sell required.' },
+  { num: '01', icon: Sparkles, title: 'We Reach Out to You', desc: 'If we think your business is doing great things for the community, we\'ll invite you to be featured — no strings attached.' },
+  { num: '02', icon: MessageSquare, title: 'Quick Chat About Your Story', desc: 'We hop on a friendly 20-minute call to learn about your business, what makes you special, and your goals.' },
+  { num: '03', icon: Newspaper, title: 'We Publish Your Feature', desc: 'Your business gets a professionally written spotlight on our community site — shared with your neighbors and potential customers.' },
+  { num: '04', icon: TrendingUp, title: 'Watch New Customers Walk In', desc: 'People discover your business through the feature. If you want even more growth, we\'re here to help with that too.' },
 ];
 
 export default function LLSpotlight() {
   return (
-    <section className="py-20 md:py-28 px-6" style={{ background: brand.cream }}>
+    <section id="ll-how-it-works" className="py-20 md:py-28 px-6" style={{ background: brand.cream }}>
       <div className="max-w-5xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: brand.gold }}>II. Lead Generation</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: brand.gold }}>How It Works</p>
           <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
-            The Spotlight System
+            Four Simple Steps to Getting Featured
           </h2>
           <p className="text-slate-500 max-w-xl mx-auto text-sm">
-            A high-efficiency lead magnet that provides immediate, standalone value — not locked behind a sale.
+            No paperwork, no contracts, no cost. Just a conversation and a great feature for your business.
           </p>
         </motion.div>
 

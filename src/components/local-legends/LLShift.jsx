@@ -1,51 +1,45 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Lightbulb, Wrench, Users } from 'lucide-react';
+import { Megaphone, Globe, HeartHandshake } from 'lucide-react';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
-const ROLES = [
-  { icon: Lightbulb, title: 'Marketing Strategist', desc: 'Understand high-level levers like copywriting, button placement, and funnel optimization.' },
-  { icon: Wrench, title: 'Technical Implementation', desc: 'Possess the technical chops (WordPress, GoHighLevel, Duda) to execute the strategy.' },
-  { icon: Users, title: 'Community Authority', desc: 'Act as a local news channel and community hub that celebrates local excellence.' },
+const BENEFITS = [
+  { icon: Megaphone, title: 'We Promote You', desc: 'We write about your business and share your story with the entire community — you just show up and be you.' },
+  { icon: Globe, title: 'We Handle the Tech', desc: 'From your online presence to making sure customers can find you on Google — we take care of the digital side.' },
+  { icon: HeartHandshake, title: 'We\'re Your Partner', desc: 'We don\'t just build a website and disappear. We stick around to make sure your business keeps growing.' },
 ];
 
 export default function LLShift() {
   return (
-    <section id="ll-framework" className="py-20 md:py-28 px-6" style={{ background: 'white' }}>
+    <section id="ll-why-it-matters" className="py-20 md:py-28 px-6" style={{ background: 'white' }}>
       <div className="max-w-5xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-6">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: brand.gold }}>I. The Fundamental Shift</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: brand.gold }}>Why It Matters</p>
           <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
-            From Web Designer to Marketing Partner
+            You Run Your Business. We Bring You Customers.
           </h2>
           <p className="text-slate-500 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
-            Business owners don't seek "professional web designers" — they fail to recognize their website as a primary roadblock. You must reposition as a <strong className="text-slate-700">Marketing Partner</strong>.
+            Most business owners are too busy doing great work to worry about marketing. That's where we come in — think of us as your <strong className="text-slate-700">local marketing team</strong>, not a vendor trying to sell you something.
           </p>
         </motion.div>
 
-        {/* Before → After */}
+        {/* The problem */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex flex-col md:flex-row items-center gap-4 justify-center my-12"
+          className="rounded-2xl p-6 md:p-8 my-12 text-center max-w-2xl mx-auto border border-slate-100"
+          style={{ background: brand.cream }}
         >
-          <div className="px-6 py-4 rounded-xl border border-red-200 bg-red-50 text-center w-full md:w-56">
-            <p className="text-xs font-bold uppercase text-red-400 tracking-wider mb-1">Old Identity</p>
-            <p className="text-lg font-bold text-red-600" style={{ fontFamily: "'Playfair Display', serif" }}>"Web Designer"</p>
-            <p className="text-[11px] text-red-400 mt-1">1% response rate</p>
-          </div>
-          <ArrowRight className="w-6 h-6 text-slate-300 shrink-0 rotate-90 md:rotate-0" />
-          <div className="px-6 py-4 rounded-xl border text-center w-full md:w-56" style={{ borderColor: `${brand.gold}40`, background: `${brand.gold}08` }}>
-            <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: brand.gold }}>New Identity</p>
-            <p className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>"Marketing Partner"</p>
-            <p className="text-[11px] mt-1" style={{ color: brand.gold }}>20% response rate</p>
-          </div>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            <strong className="block text-base mb-2" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>Sound familiar?</strong>
+            "I know I need a better online presence, but I don't have time to figure it all out. I just need someone who <em>gets</em> my business and can help me get more customers."
+          </p>
         </motion.div>
 
-        {/* Three roles */}
+        {/* Three benefits */}
         <div className="grid md:grid-cols-3 gap-5">
-          {ROLES.map((r, i) => {
+          {BENEFITS.map((r, i) => {
             const Icon = r.icon;
             return (
               <motion.div
