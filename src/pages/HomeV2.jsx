@@ -31,9 +31,9 @@ export default function HomeV2() {
     <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #faf8f5 0%, #f5efe8 40%, #faf8f5 100%)' }}>
       <div className="max-w-[1400px] mx-auto px-0 md:px-5 pt-2 pb-4">
         <HeroSection user={user} />
+        <LocalLegendsModule />
         <MissionBriefSection />
         <InfrastructureGapSection />
-        <LocalLegendsModule />
         <TalentShowcaseSection />
         <ClosingCTA />
 
