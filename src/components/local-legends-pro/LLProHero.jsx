@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
 const CITIES = [
-  { name: 'Houston', img: 'https://images.unsplash.com/photo-1609945307404-0a637c545eef?w=1920&q=80' },
+  { name: 'Houston', img: 'https://images.unsplash.com/photo-1530089711124-9ca31fb9e863?w=1920&q=80' },
   { name: 'Los Angeles', img: 'https://images.unsplash.com/photo-1534190760961-74e8c1c5c3da?w=1920&q=80' },
   { name: 'London', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1920&q=80' },
   { name: 'Toulouse', img: 'https://images.unsplash.com/photo-1600028068383-ea11a7a101f3?w=1920&q=80' },
@@ -15,7 +15,7 @@ const CITIES = [
   { name: 'Denver', img: 'https://images.unsplash.com/photo-1546156929-a4c0ac411f47?w=1920&q=80' },
   { name: 'Bangalore', img: 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=1920&q=80' },
   { name: 'Dubai', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1920&q=80' },
-  { name: 'São Paulo', img: 'https://images.unsplash.com/photo-1543059080-cdb1e4a67b2b?w=1920&q=80' },
+  { name: 'São Paulo', img: 'https://images.unsplash.com/photo-1554168848-228452c09d78?w=1920&q=80' },
 ];
 
 export default function LLProHero() {
