@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
 // Pexels free stock videos of local business activity
-const VIDEO_SRC = 'https://videos.pexels.com/video-files/3209211/3209211-uhd_2560_1440_25fps.mp4';
+const VIDEO_SRC = 'https://videos.pexels.com/video-files/3135924/3135924-hd_1920_1080_30fps.mp4';
 
 export default function LLHero() {
   return (
