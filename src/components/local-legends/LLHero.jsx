@@ -1,40 +1,22 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c' };
 
-const VIDEOS = [
-  'https://videos.pexels.com/video-files/3135924/3135924-hd_1920_1080_30fps.mp4',  // coffee shop customers
-  'https://videos.pexels.com/video-files/3135925/3135925-hd_1920_1080_30fps.mp4',  // people inside coffee shop
-  'https://videos.pexels.com/video-files/3135907/3135907-hd_1920_1080_30fps.mp4',  // mall food court
-  'https://videos.pexels.com/video-files/1853441/1853441-hd_1920_1080_25fps.mp4',  // cozy shop winter
-];
+const VIDEO_SRC = 'https://videos.pexels.com/video-files/3135924/3135924-hd_1920_1080_30fps.mp4';
 
 export default function LLHero() {
-  const [active, setActive] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => setActive(p => (p + 1) % VIDEOS.length), 6000);
-    return () => clearInterval(id);
-  }, []);
-
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* All videos rendered simultaneously — opacity swap for crossfade */}
-      {VIDEOS.map((src, i) => (
-        <video
-          key={src}
-          autoPlay
-          muted
-          loop
-          playsInline
-          src={src}
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out"
-          style={{ opacity: i === active ? 1 : 0 }}
-        />
-      ))}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        src={VIDEO_SRC}
+        className="absolute inset-0 w-full h-full object-cover"
+      />
 
       {/* Overlays */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/40" />
