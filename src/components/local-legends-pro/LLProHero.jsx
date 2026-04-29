@@ -1,10 +1,33 @@
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ArrowDown, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
+const CITIES = [
+  'Mountain View',
+  'Los Angeles',
+  'Houston',
+  'Seattle',
+  'Washington, D.C.',
+  'Cape Canaveral',
+  'Huntsville',
+  'Denver',
+  'Tucson',
+  'San Diego',
+];
+
 export default function LLProHero() {
+  const [cityIndex, setCityIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCityIndex(prev => (prev + 1) % CITIES.length);
+    }, 2200);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(160deg, ${brand.navy} 0%, #0d2137 60%, #162d4a 100%)` }}>
       <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full opacity-10 blur-3xl pointer-events-none" style={{ background: brand.gold }} />
@@ -27,7 +50,20 @@ export default function LLProHero() {
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           You just landed in{' '}
-          <span style={{ color: brand.gold }}>[City].</span>
+          <span className="inline-block relative" style={{ color: brand.gold, minWidth: '4ch' }}>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={cityIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.35 }}
+                className="inline-block"
+              >
+                {CITIES[cityIndex]}.
+              </motion.span>
+            </AnimatePresence>
+          </span>
           <br />
           <span className="text-white/40">Now what?</span>
         </motion.h1>
