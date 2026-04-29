@@ -7,16 +7,21 @@ import { Link } from 'react-router-dom';
 const brand = { navy: '#1e3a5a', gold: '#c9a87c' };
 
 const CITIES = [
+  { name: 'Toulouse', img: 'https://images.unsplash.com/photo-1600028068383-ea11a7a101f3?w=1920&q=80' },
+  { name: 'Seattle', img: 'https://images.unsplash.com/photo-1502175353174-a7a70e73b4c3?w=1920&q=80' },
+  { name: 'Montreal', img: 'https://images.unsplash.com/photo-1519178614-68673b201f36?w=1920&q=80' },
   { name: 'Houston', img: 'https://images.unsplash.com/photo-1530089711124-9ca31fb9e863?w=1920&q=80' },
   { name: 'Los Angeles', img: 'https://images.unsplash.com/photo-1534190760961-74e8c1c5c3da?w=1920&q=80' },
-  { name: 'London', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1920&q=80' },
-  { name: 'Toulouse', img: 'https://images.unsplash.com/photo-1600028068383-ea11a7a101f3?w=1920&q=80' },
-  { name: 'Washington, D.C.', img: 'https://images.unsplash.com/photo-1501466044931-62695aada8e9?w=1920&q=80' },
-  { name: 'Tokyo', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1920&q=80' },
-  { name: 'Denver', img: 'https://images.unsplash.com/photo-1546156929-a4c0ac411f47?w=1920&q=80' },
-  { name: 'Bangalore', img: 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?w=1920&q=80' },
-  { name: 'Dubai', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1920&q=80' },
+  { name: 'Singapore', img: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=1920&q=80' },
+  { name: 'Huntsville', img: 'https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=1920&q=80' },
+  { name: 'Hamburg', img: 'https://images.unsplash.com/photo-1560930950-5f5f0e81fb0f?w=1920&q=80' },
   { name: 'São Paulo', img: 'https://images.unsplash.com/photo-1554168848-228452c09d78?w=1920&q=80' },
+  { name: 'Cape Canaveral', img: 'https://images.unsplash.com/photo-1457364559154-aa2644600ebb?w=1920&q=80' },
+  { name: 'Washington, D.C.', img: 'https://images.unsplash.com/photo-1501466044931-62695aada8e9?w=1920&q=80' },
+  { name: 'Denver', img: 'https://images.unsplash.com/photo-1546156929-a4c0ac411f47?w=1920&q=80' },
+  { name: 'Wichita', img: 'https://images.unsplash.com/photo-1584475784921-d9dbfd9d17ca?w=1920&q=80' },
+  { name: 'Tucson', img: 'https://images.unsplash.com/photo-1558645836-e44122a743ee?w=1920&q=80' },
+  { name: 'Savannah', img: 'https://images.unsplash.com/photo-1587162146766-e06b1189b907?w=1920&q=80' },
 ];
 
 export default function LocalLegendsModule() {
