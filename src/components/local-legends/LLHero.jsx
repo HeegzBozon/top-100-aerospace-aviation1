@@ -4,17 +4,31 @@ import { Button } from '@/components/ui/button';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
+// Pexels free stock videos of local business activity
+const VIDEO_SRC = 'https://videos.pexels.com/video-files/3209211/3209211-uhd_2560_1440_25fps.mp4';
+
 export default function LLHero() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(160deg, ${brand.navy} 0%, #0d2137 60%, #162d4a 100%)` }}>
-      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full opacity-10 blur-3xl pointer-events-none" style={{ background: brand.gold }} />
-      <div className="absolute bottom-[-15%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-[0.06] blur-3xl pointer-events-none" style={{ background: brand.gold }} />
+    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Background video */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+        src={VIDEO_SRC}
+      />
+
+      {/* Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/40" />
       <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
 
+      {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-[11px] font-bold uppercase tracking-[0.2em]" style={{ background: `${brand.gold}20`, color: brand.gold, border: `1px solid ${brand.gold}30` }}>
-            Local Legends: Mountain View
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-[11px] font-bold uppercase tracking-[0.2em]" style={{ background: `${brand.gold}20`, color: brand.gold, border: `1px solid ${brand.gold}30`, backdropFilter: 'blur(8px)' }}>
+            A TOP 100 Aerospace & Aviation Initiative
           </div>
         </motion.div>
 
@@ -38,7 +52,7 @@ export default function LLHero() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-base sm:text-lg text-white/55 max-w-2xl mx-auto leading-relaxed mb-10"
         >
-          Local Legends spotlights the studios, salons, kitchens, and clinics that make life work for the aerospace community in Mountain View and San Francisco.
+          Local Legends spotlights the studios, salons, kitchens, and clinics that make life work for the aerospace community — wherever the industry lives.
         </motion.p>
 
         <motion.div
@@ -55,16 +69,16 @@ export default function LLHero() {
             Apply for your spotlight <ArrowRight className="w-4 h-4" />
           </Button>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <ArrowDown className="w-5 h-5 text-white/30 animate-bounce" />
-        </motion.div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 1 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+      >
+        <ArrowDown className="w-5 h-5 text-white/30 animate-bounce" />
+      </motion.div>
     </section>
   );
 }
