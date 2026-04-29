@@ -6,6 +6,7 @@ import InfrastructureGapSection from '@/components/home-v2/InfrastructureGapSect
 import MissionBriefSection from '@/components/home-v2/MissionBriefSection';
 import TalentShowcaseSection from '@/components/home-v2/TalentShowcaseSection';
 import ClosingCTA from '@/components/home-v2/ClosingCTA';
+import LocalLegendsModule from '@/components/home-v2/LocalLegendsModule';
 
 export default function HomeV2() {
   const [user, setUser] = useState(null);
@@ -32,6 +33,7 @@ export default function HomeV2() {
         <HeroSection user={user} />
         <MissionBriefSection />
         <InfrastructureGapSection />
+        <LocalLegendsModule />
         <TalentShowcaseSection />
         <ClosingCTA />
 
