@@ -7,16 +7,16 @@ import { Link } from 'react-router-dom';
 const brand = { navy: '#1e3a5a', gold: '#c9a87c' };
 
 const CITIES = [
-  { name: 'Mountain View', img: 'https://images.unsplash.com/photo-1617957796155-75a9edf1dc42?w=1920&q=80' },
-  { name: 'Los Angeles', img: 'https://images.unsplash.com/photo-1515896769750-31548aa180ed?w=1920&q=80' },
-  { name: 'Houston', img: 'https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=1920&q=80' },
+  { name: 'Mountain View', img: 'https://images.unsplash.com/photo-1580655653885-65763b2597d0?w=1920&q=80' },
+  { name: 'Los Angeles', img: 'https://images.unsplash.com/photo-1534190760961-74e8c1c5c3da?w=1920&q=80' },
+  { name: 'Houston', img: 'https://images.unsplash.com/photo-1609945307404-0a637c545eef?w=1920&q=80' },
   { name: 'Seattle', img: 'https://images.unsplash.com/photo-1502175353174-a7a70e73b4c3?w=1920&q=80' },
-  { name: 'Washington, D.C.', img: 'https://images.unsplash.com/photo-1617581629397-a72507c3de9e?w=1920&q=80' },
-  { name: 'Cape Canaveral', img: 'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=1920&q=80' },
-  { name: 'Huntsville', img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80' },
-  { name: 'Denver', img: 'https://images.unsplash.com/photo-1619856699906-09e1f4ef578c?w=1920&q=80' },
-  { name: 'Tucson', img: 'https://images.unsplash.com/photo-1494548162494-384bba4ab999?w=1920&q=80' },
-  { name: 'San Diego', img: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=1920&q=80' },
+  { name: 'Washington, D.C.', img: 'https://images.unsplash.com/photo-1501466044931-62695aada8e9?w=1920&q=80' },
+  { name: 'Cape Canaveral', img: 'https://images.unsplash.com/photo-1457364559154-aa2644600ebb?w=1920&q=80' },
+  { name: 'Huntsville', img: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1920&q=80' },
+  { name: 'Denver', img: 'https://images.unsplash.com/photo-1546156929-a4c0ac411f47?w=1920&q=80' },
+  { name: 'Tucson', img: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=1920&q=80' },
+  { name: 'San Diego', img: 'https://images.unsplash.com/photo-1538964173425-93e165de48d5?w=1920&q=80' },
 ];
 
 export default function LocalLegendsModule() {
