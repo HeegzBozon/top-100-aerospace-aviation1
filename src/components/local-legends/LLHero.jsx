@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 const brand = { navy: '#1e3a5a', gold: '#c9a87c' };
 
 const VIDEOS = [
-  'https://videos.pexels.com/video-files/3135924/3135924-hd_1920_1080_30fps.mp4',
-  'https://videos.pexels.com/video-files/3135925/3135925-hd_1920_1080_30fps.mp4',
-  'https://videos.pexels.com/video-files/3135907/3135907-hd_1920_1080_30fps.mp4',
-  'https://videos.pexels.com/video-files/1853441/1853441-hd_1920_1080_25fps.mp4',
+  'https://videos.pexels.com/video-files/3209037/3209037-uhd_2560_1440_25fps.mp4',  // yoga class
+  'https://videos.pexels.com/video-files/3209050/3209050-uhd_2560_1440_25fps.mp4',  // gym workout
+  'https://videos.pexels.com/video-files/3209118/3209118-uhd_2560_1440_25fps.mp4',  // pilates/stretching
+  'https://videos.pexels.com/video-files/4057411/4057411-uhd_2560_1440_25fps.mp4',  // spa/wellness
 ];
 
 export default function LLHero() {
