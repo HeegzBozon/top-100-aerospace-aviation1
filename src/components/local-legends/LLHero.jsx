@@ -1,22 +1,45 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { base44 } from '@/api/base44Client';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c' };
 
-const VIDEO_SRC = 'https://videos.pexels.com/video-files/3135924/3135924-hd_1920_1080_30fps.mp4';
+const FALLBACK_VIDEO = 'https://videos.pexels.com/video-files/3135924/3135924-hd_1920_1080_30fps.mp4';
 
 export default function LLHero() {
+  const [videos, setVideos] = useState([]);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    base44.entities.HeroVideo.filter({ is_active: true }, 'sort_order')
+      .then(v => setVideos(v))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (videos.length <= 1) return;
+    const id = setInterval(() => setActive(p => (p + 1) % videos.length), 6000);
+    return () => clearInterval(id);
+  }, [videos.length]);
+
+  const srcs = videos.length > 0 ? videos.map(v => v.video_url) : [FALLBACK_VIDEO];
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        src={VIDEO_SRC}
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+      {srcs.map((src, i) => (
+        <video
+          key={src}
+          autoPlay
+          muted
+          loop
+          playsInline
+          src={src}
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out"
+          style={{ opacity: i === active ? 1 : 0 }}
+        />
+      ))}
 
       {/* Overlays */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/40" />
