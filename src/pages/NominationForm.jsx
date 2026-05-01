@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -44,6 +44,24 @@ export default function NominationForm() {
   const [submitted, setSubmitted] = useState(false);
   const { toast } = useToast();
   const formRef = useRef(null);
+  const firstInputRef = useRef(null);
+
+  useEffect(() => {
+    setTimeout(() => firstInputRef.current?.focus(), 200);
+  }, []);
+
+  // Submit on Cmd/Ctrl+Enter from anywhere on the page
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [yourName, yourEmail, yourConnection, nominations]);
 
   const updateNomination = (index, field, value) => {
     setNominations(prev => prev.map((n, i) => i === index ? { ...n, [field]: value } : n));
@@ -186,7 +204,7 @@ export default function NominationForm() {
         <SectionHeader title="About You" />
         <div className="space-y-4 mb-10">
           <FormField label="Your Name" required>
-            <Input value={yourName} onChange={e => setYourName(e.target.value)} placeholder="Jane Doe" className="bg-white" />
+            <Input ref={firstInputRef} value={yourName} onChange={e => setYourName(e.target.value)} placeholder="Jane Doe" className="bg-white" />
           </FormField>
           <FormField label="Your Email" required>
             <Input type="email" value={yourEmail} onChange={e => setYourEmail(e.target.value)} placeholder="jane@aerospace.com" className="bg-white" />
