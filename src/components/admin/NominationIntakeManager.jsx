@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { Search, Trophy, ExternalLink, RefreshCw } from 'lucide-react';
+import { Search, Trophy, ExternalLink, RefreshCw, UserPlus, CheckCircle2, Loader2 } from 'lucide-react';
 
 const statusStyles = {
   new: 'bg-blue-100 text-blue-800',
@@ -28,6 +28,7 @@ export default function NominationIntakeManager() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [type, setType] = useState('all');
+  const [approvingId, setApprovingId] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => { loadItems(); }, []);
@@ -43,6 +44,33 @@ export default function NominationIntakeManager() {
     await base44.entities.NominationIntake.update(item.id, patch);
     setItems(prev => prev.map(entry => entry.id === item.id ? { ...entry, ...patch } : entry));
     toast({ title: 'Nomination updated' });
+  };
+
+  const approveToNominee = async (item) => {
+    if (item.nominee_id) return;
+    setApprovingId(item.id);
+
+    const nominee = await base44.entities.Nominee.create({
+      name: item.nominee_name,
+      nominee_email: item.nominee_email || '',
+      linkedin_profile_url: item.link?.includes('linkedin.com') ? item.link : '',
+      website_url: item.link && !item.link.includes('linkedin.com') ? item.link : '',
+      title: item.role_org || item.firm || '',
+      company: item.firm || '',
+      country: item.location || '',
+      description: item.reason || `${item.nominee_name} was submitted through the unified nomination hub.`,
+      nomination_reason: item.reason,
+      nominated_by: item.nominator_email,
+      category: typeLabels[item.nomination_type] || item.nomination_type,
+      status: 'pending',
+      raw_nomination_data: item,
+    });
+
+    const patch = { status: 'approved', nominee_id: nominee.id };
+    await base44.entities.NominationIntake.update(item.id, patch);
+    setItems(prev => prev.map(entry => entry.id === item.id ? { ...entry, ...patch } : entry));
+    setApprovingId(null);
+    toast({ title: 'Nominee record created' });
   };
 
   const filtered = useMemo(() => items.filter(item => {
@@ -120,7 +148,15 @@ export default function NominationIntakeManager() {
         <div className="rounded-xl border border-dashed border-[var(--border)] py-16 text-center text-[var(--muted)]">No nomination intake records found.</div>
       ) : (
         <div className="grid gap-4">
-          {filtered.map(item => <IntakeCard key={item.id} item={item} onUpdate={updateItem} />)}
+          {filtered.map(item => (
+            <IntakeCard
+              key={item.id}
+              item={item}
+              onUpdate={updateItem}
+              onApprove={approveToNominee}
+              approving={approvingId === item.id}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -136,7 +172,7 @@ function Stat({ label, value }) {
   );
 }
 
-function IntakeCard({ item, onUpdate }) {
+function IntakeCard({ item, onUpdate, onApprove, approving }) {
   const [notes, setNotes] = useState(item.admin_notes || '');
 
   return (
@@ -174,6 +210,15 @@ function IntakeCard({ item, onUpdate }) {
           </Select>
           <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Admin notes..." rows={3} />
           <Button size="sm" className="w-full bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white" onClick={() => onUpdate(item, { admin_notes: notes })}>Save notes</Button>
+          {item.nominee_id ? (
+            <Button size="sm" variant="outline" disabled className="w-full gap-2">
+              <CheckCircle2 className="w-4 h-4" /> Nominee created
+            </Button>
+          ) : (
+            <Button size="sm" onClick={() => onApprove(item)} disabled={approving} className="w-full gap-2 bg-[#c9a87c] hover:bg-[#c9a87c]/90 text-[#0a1526] font-bold">
+              {approving ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />} Approve to Nominee
+            </Button>
+          )}
         </div>
       </div>
     </div>

@@ -39,7 +39,14 @@ export default function NominationForm({ isPreview = false } = {}) {
   const stageIndex = STAGE_ORDER.indexOf(stage);
   const progress = (stageIndex / (STAGE_ORDER.length - 1)) * 100;
 
-  const goTo = (s) => setStage(s);
+  const trackHubEvent = (eventName, properties = {}) => {
+    base44.analytics.track({ eventName, properties });
+  };
+
+  const goTo = (s) => {
+    trackHubEvent('nomination_hub_stage_viewed', { stage: s });
+    setStage(s);
+  };
   const next = () => {
     const i = STAGE_ORDER.indexOf(stage);
     if (i < STAGE_ORDER.length - 1) setStage(STAGE_ORDER[i + 1]);
@@ -49,6 +56,7 @@ export default function NominationForm({ isPreview = false } = {}) {
   const updateAboutYou = (field, value) => setAboutYou(p => ({ ...p, [field]: value }));
 
   const addNomination = (category, factory) => {
+    trackHubEvent('nomination_hub_nomination_added', { category });
     setNominations(p => ({ ...p, [category]: [...p[category], factory()] }));
   };
   const updateNomination = (category, idx, field, value) => {
@@ -96,6 +104,12 @@ export default function NominationForm({ isPreview = false } = {}) {
   };
 
   const handleSubmit = async () => {
+    trackHubEvent('nomination_hub_submit_started', {
+      women_count: nominations.women.length,
+      men_count: nominations.men.length,
+      angels_count: nominations.angels.length,
+      local_legends_count: nominations.local_legends.length,
+    });
     setSubmitting(true);
     const answers = {
       your_name: aboutYou.name,
@@ -186,6 +200,12 @@ export default function NominationForm({ isPreview = false } = {}) {
       });
     }
 
+    trackHubEvent('nomination_hub_submit_completed', {
+      women_count: nominations.women.length,
+      men_count: nominations.men.length,
+      angels_count: nominations.angels.length,
+      local_legends_count: nominations.local_legends.length,
+    });
     setSubmitting(false);
     setStage(STAGES.CONFIRMATION);
   };
