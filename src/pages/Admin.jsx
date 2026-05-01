@@ -51,6 +51,7 @@ const DiscoveryResponsesManager = lazy(() => import('@/components/admin/Discover
 const SurveyManager            = lazy(() => import('@/components/admin/SurveyManager'));
 const BioSubmissionManager     = lazy(() => import('@/components/admin/BioSubmissionManager'));
 const LocalLegendsManager      = lazy(() => import('@/components/admin/LocalLegendsManager'));
+const NominationIntakeManager  = lazy(() => import('@/components/admin/NominationIntakeManager'));
 import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
@@ -287,6 +288,8 @@ export default function Admin() {
         return <DiscoveryResponsesManager />;
       case 'surveys':
         return <SurveyManager />;
+      case 'nomination-intake':
+        return <NominationIntakeManager />;
       case 'local-legends':
         return <LocalLegendsManager />;
       case 'bio-submissions':

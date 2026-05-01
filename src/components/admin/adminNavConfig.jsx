@@ -56,6 +56,7 @@ export const ADMIN_SECTIONS = [
             { id: 'claims', label: 'Profile Claims', icon: Shield, component: 'ClaimsReviewManager' },
             { id: 'sme', label: 'SME Management', icon: Award, component: 'SMEAssignmentPanel' },
             { id: 'surveys', label: 'Nominations, Applications & Surveys', icon: ClipboardCheck, component: 'SurveyManager' },
+            { id: 'nomination-intake', label: 'Nomination Intake', icon: Trophy, component: 'NominationIntakeManager' },
             { id: 'local-legends', label: 'Local Legends', icon: MapPin, component: 'LocalLegendsManager' },
             { id: 'bio-submissions', label: 'Bio Submissions', icon: FileText, component: 'BioSubmissionManager' },
         ],
