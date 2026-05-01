@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Plus, Check, Trash2, SkipForward } from 'lucide-react';
 import { brand } from './NominateConfig';
 import CategoryHeader from './CategoryHeader';
+import HubMeter from './HubMeter';
 
 /**
  * Generic stage for TOP 100 Women / Men.
@@ -55,6 +56,8 @@ export default function StagePersonNominations({
         intro={intro}
       />
 
+      <HubMeter count={nominations.length} label="nominations" />
+
       {nominations.length === 0 && (
         <div className="rounded-2xl border-2 border-dashed p-8 text-center" style={{ borderColor: `${brand.navy}20` }}>
           <p className="text-sm mb-4" style={{ color: `${brand.navy}60` }}>No nominations yet for this category.</p>
@@ -75,7 +78,7 @@ export default function StagePersonNominations({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0 }}
-            className="rounded-2xl border bg-white p-5 sm:p-6 space-y-4"
+            className="rounded-[1.75rem] border bg-white/85 backdrop-blur-xl p-5 sm:p-6 space-y-4 shadow-[0_18px_70px_rgba(30,58,90,0.08)]"
             style={{ borderColor: `${brand.navy}10` }}
           >
             <div className="flex items-center justify-between">

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Plus, Check, Trash2, SkipForward, MapPin } from 'lucide-react';
 import { brand, LOCAL_LEGEND_TYPES } from './NominateConfig';
 import CategoryHeader from './CategoryHeader';
+import HubMeter from './HubMeter';
 
 export default function StageLocalLegends({ nominations, onAdd, onUpdate, onRemove, onNext, onSkip }) {
   const firstRef = useRef(null);
@@ -21,6 +22,8 @@ export default function StageLocalLegends({ nominations, onAdd, onUpdate, onRemo
         title="Do you know a local business that makes life work for the aerospace community?"
         intro="Local Legends spotlights the gyms, salons, barbers, med spas, meal prep services, childcare providers, and wellness practices that fuel the people building the future of flight. It's simple — you nominate them, we reach out. If they say yes, they're in."
       />
+
+      <HubMeter count={nominations.length} label="local legends" />
 
       {nominations.length === 0 && (
         <div className="rounded-2xl border-2 border-dashed p-8 text-center" style={{ borderColor: `${brand.navy}20` }}>
@@ -38,7 +41,7 @@ export default function StageLocalLegends({ nominations, onAdd, onUpdate, onRemo
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0 }}
-            className="rounded-2xl border bg-white p-5 sm:p-6 space-y-4"
+            className="rounded-[1.75rem] border bg-white/85 backdrop-blur-xl p-5 sm:p-6 space-y-4 shadow-[0_18px_70px_rgba(30,58,90,0.08)]"
             style={{ borderColor: `${brand.navy}10` }}
           >
             <div className="flex items-center justify-between">
