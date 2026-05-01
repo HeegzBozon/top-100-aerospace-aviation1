@@ -1,0 +1,89 @@
+{
+  "name": "LocalLegendNomination",
+  "type": "object",
+  "properties": {
+    "submission_id": {
+      "type": "string",
+      "description": "Source SurveyResponse ID for the bundled nomination submission"
+    },
+    "survey_id": {
+      "type": "string",
+      "description": "Source survey ID"
+    },
+    "business_name": {
+      "type": "string",
+      "description": "Name of the nominated local business"
+    },
+    "business_type": {
+      "type": "string",
+      "description": "Type/category of local business"
+    },
+    "city": {
+      "type": "string",
+      "description": "City or aerospace hub where the business operates"
+    },
+    "owner_name": {
+      "type": "string",
+      "description": "Owner name if known"
+    },
+    "link": {
+      "type": "string",
+      "description": "Website, Instagram, Google listing, or other link"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why this business deserves a spotlight"
+    },
+    "share_name": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        ""
+      ],
+      "default": "",
+      "description": "Whether the nominator allows their name to be shared"
+    },
+    "nominator_name": {
+      "type": "string",
+      "description": "Name of the person submitting the nomination"
+    },
+    "nominator_email": {
+      "type": "string",
+      "description": "Email of the person submitting the nomination"
+    },
+    "nominator_connection": {
+      "type": "string",
+      "description": "Submitter relationship to aerospace/community"
+    },
+    "source": {
+      "type": "string",
+      "default": "unified_nomination_hub",
+      "description": "Where this nomination came from"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "approved",
+        "rejected",
+        "featured",
+        "archived"
+      ],
+      "default": "new",
+      "description": "Admin review status"
+    },
+    "admin_notes": {
+      "type": "string",
+      "description": "Internal admin notes"
+    }
+  },
+  "required": [
+    "business_name",
+    "business_type",
+    "city",
+    "reason",
+    "nominator_email"
+  ]
+}

@@ -113,13 +113,71 @@ export default function NominationForm({ isPreview = false } = {}) {
       return;
     }
 
-    await base44.entities.SurveyResponse.create({
+    const submission = await base44.entities.SurveyResponse.create({
       survey_id: SURVEY_ID,
       respondent_email: aboutYou.email,
       respondent_name: aboutYou.name,
       answers,
       completed: true,
     });
+
+    const intakeBase = {
+      submission_id: submission.id,
+      survey_id: SURVEY_ID,
+      nominator_name: aboutYou.name,
+      nominator_email: aboutYou.email,
+      nominator_connection: aboutYou.connection,
+      source: 'unified_nomination_hub',
+      status: 'new',
+    };
+
+    const peopleIntakes = [
+      ...nominations.women.filter(n => n.name?.trim()).map(n => ({
+        ...intakeBase,
+        nomination_type: 'women',
+        nominee_name: n.name,
+        role_org: n.role_org,
+        link: n.link,
+        location: n.location,
+        reason: n.reason,
+        share_name: n.share_name,
+      })),
+      ...nominations.men.filter(n => n.name?.trim()).map(n => ({
+        ...intakeBase,
+        nomination_type: 'men',
+        nominee_name: n.name,
+        role_org: n.role_org,
+        link: n.link,
+        location: n.location,
+        reason: n.reason,
+        share_name: n.share_name,
+      })),
+      ...nominations.angels.filter(n => n.name?.trim()).map(n => ({
+        ...intakeBase,
+        nomination_type: 'angels',
+        nominee_name: n.name,
+        firm: n.firm,
+        link: n.link,
+        location: n.location,
+        investing_in: n.investing_in,
+        reason: n.reason,
+        share_name: n.share_name,
+      })),
+    ];
+
+    const localLegendIntakes = nominations.local_legends.filter(n => n.business_name?.trim()).map(n => ({
+      ...intakeBase,
+      business_name: n.business_name,
+      business_type: n.business_type,
+      city: n.city,
+      owner_name: n.owner_name,
+      link: n.link,
+      reason: n.reason,
+      share_name: n.share_name,
+    }));
+
+    if (peopleIntakes.length) await base44.entities.NominationIntake.bulkCreate(peopleIntakes);
+    if (localLegendIntakes.length) await base44.entities.LocalLegendNomination.bulkCreate(localLegendIntakes);
 
     const surveys = await base44.entities.Survey.filter({ id: SURVEY_ID });
     if (surveys[0]) {
