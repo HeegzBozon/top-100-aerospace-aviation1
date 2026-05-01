@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Plus, Check, Trash2, SkipForward } from 'lucide-react';
+import { ArrowRight, Plus, Check, Trash2, SkipForward, MapPin } from 'lucide-react';
 import { brand, LOCAL_LEGEND_TYPES } from './NominateConfig';
+import CategoryHeader from './CategoryHeader';
 
 export default function StageLocalLegends({ nominations, onAdd, onUpdate, onRemove, onNext, onSkip }) {
   const firstRef = useRef(null);
@@ -12,16 +13,14 @@ export default function StageLocalLegends({ nominations, onAdd, onUpdate, onRemo
 
   return (
     <div className="space-y-6 py-4">
-      <div>
-        <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-4" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
-          Do you know a local business that makes life work for the aerospace community?
-        </h1>
-        <div className="space-y-3 text-sm sm:text-base leading-relaxed" style={{ color: `${brand.navy}80` }}>
-          <p>Local Legends spotlights the gyms, salons, barbers, med spas, meal prep services, childcare providers, and wellness practices that fuel the people building the future of flight.</p>
-          <p>It's simple. You nominate them. We reach out. If they say yes, they're in. No voting. No competition. Just recognition.</p>
-          <p>And if you're comfortable, we'll tell them you nominated them. That opener lands differently than anything we could say on our own.</p>
-        </div>
-      </div>
+      <CategoryHeader
+        stageNumber={4}
+        categoryLabel="Local Legends"
+        accentColor="#c9a87c"
+        icon={MapPin}
+        title="Do you know a local business that makes life work for the aerospace community?"
+        intro="Local Legends spotlights the gyms, salons, barbers, med spas, meal prep services, childcare providers, and wellness practices that fuel the people building the future of flight. It's simple — you nominate them, we reach out. If they say yes, they're in."
+      />
 
       {nominations.length === 0 && (
         <div className="rounded-2xl border-2 border-dashed p-8 text-center" style={{ borderColor: `${brand.navy}20` }}>

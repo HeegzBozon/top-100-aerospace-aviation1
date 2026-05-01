@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Sparkles, Users } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -147,6 +148,10 @@ export default function NominationForm() {
 
       {stage === STAGES.WOMEN && (
         <StagePersonNominations
+          stageNumber={1}
+          categoryLabel="TOP 100 Women"
+          accentColor="#b87a8e"
+          icon={Sparkles}
           title="Do you know a woman in aerospace, aviation, or space who deserves to be recognized?"
           intro="TOP 100 Women in Aerospace & Aviation spotlights accomplished women across every discipline. Engineering. Operations. Policy. Research. Entrepreneurship. Flight. Space. If she's building the future of this industry, she belongs in the conversation."
           pronoun="her"
@@ -164,6 +169,10 @@ export default function NominationForm() {
 
       {stage === STAGES.MEN && (
         <StagePersonNominations
+          stageNumber={2}
+          categoryLabel="TOP 100 Men"
+          accentColor="#1e3a5a"
+          icon={Users}
           title="Do you know a man in aerospace, aviation, or space who deserves to be recognized?"
           intro="TOP 100 Men in Aerospace & Aviation recognizes the men who are doing the work, mentoring the next generation, championing inclusion, and building the industry forward. If he belongs in the conversation, nominate him."
           pronoun="him"

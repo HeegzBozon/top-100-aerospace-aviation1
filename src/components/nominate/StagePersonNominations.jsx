@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Plus, Check, Trash2, SkipForward } from 'lucide-react';
-import { brand, emptyPersonNomination } from './NominateConfig';
+import { brand } from './NominateConfig';
+import CategoryHeader from './CategoryHeader';
 
 /**
  * Generic stage for TOP 100 Women / Men.
@@ -23,6 +24,10 @@ export default function StagePersonNominations({
   onRemove,
   onNext,
   onSkip,
+  stageNumber,
+  categoryLabel,
+  accentColor,
+  icon,
 }) {
   const firstRef = useRef(null);
   const [activeIdx, setActiveIdx] = useState(nominations.length > 0 ? nominations.length - 1 : -1);
@@ -41,12 +46,14 @@ export default function StagePersonNominations({
 
   return (
     <div className="space-y-6 py-4">
-      <div>
-        <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-4" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
-          {title}
-        </h1>
-        <p className="text-sm sm:text-base leading-relaxed" style={{ color: `${brand.navy}80` }}>{intro}</p>
-      </div>
+      <CategoryHeader
+        stageNumber={stageNumber}
+        categoryLabel={categoryLabel}
+        accentColor={accentColor}
+        icon={icon}
+        title={title}
+        intro={intro}
+      />
 
       {nominations.length === 0 && (
         <div className="rounded-2xl border-2 border-dashed p-8 text-center" style={{ borderColor: `${brand.navy}20` }}>

@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Plus, Check, Trash2, SkipForward } from 'lucide-react';
+import { ArrowRight, Plus, Check, Trash2, SkipForward, TrendingUp } from 'lucide-react';
 import { brand } from './NominateConfig';
+import CategoryHeader from './CategoryHeader';
 
 export default function StageAngels({ nominations, onAdd, onUpdate, onRemove, onNext, onSkip }) {
   const firstRef = useRef(null);
@@ -12,14 +13,14 @@ export default function StageAngels({ nominations, onAdd, onUpdate, onRemove, on
 
   return (
     <div className="space-y-6 py-4">
-      <div>
-        <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-4" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
-          Do you know an investor who is backing the future of aerospace, aviation, or space?
-        </h1>
-        <p className="text-sm sm:text-base leading-relaxed" style={{ color: `${brand.navy}80` }}>
-          TOP 100 Angels in Aerospace & Aviation recognizes the investors, angels, and capital allocators who are funding the next era of flight. Pre-seed to growth stage. Institutional to individual. If they're putting money behind this industry, they deserve to be known.
-        </p>
-      </div>
+      <CategoryHeader
+        stageNumber={3}
+        categoryLabel="TOP 100 Angels"
+        accentColor="#8b6f47"
+        icon={TrendingUp}
+        title="Do you know an investor who is backing the future of aerospace, aviation, or space?"
+        intro="TOP 100 Angels in Aerospace & Aviation recognizes the investors, angels, and capital allocators who are funding the next era of flight. Pre-seed to growth stage. Institutional to individual. If they're putting money behind this industry, they deserve to be known."
+      />
 
       {nominations.length === 0 && (
         <div className="rounded-2xl border-2 border-dashed p-8 text-center" style={{ borderColor: `${brand.navy}20` }}>
