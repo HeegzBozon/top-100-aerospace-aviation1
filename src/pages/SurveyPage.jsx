@@ -10,6 +10,9 @@ import {
   CheckCircle2, Loader2, AlertCircle, Rocket, ArrowRight, ArrowLeft,
   Home, Calendar, TrendingUp, Pencil, X, User
 } from 'lucide-react';
+import NominationForm from '@/pages/NominationForm';
+
+const NOMINATION_SURVEY_ID = '69f45633daacf496cacd8666';
 
 /* ── Slide wrapper ── */
 function Slide({ children, direction }) {
@@ -208,6 +211,7 @@ export default function SurveyPage() {
   const questions = survey?.questions || [];
   const totalSteps = questions.length + 2;
   const currentQuestion = step >= 2 ? questions[step - 2] : null;
+  const isNominationSurvey = surveyId === NOMINATION_SURVEY_ID;
 
   useEffect(() => {
     if (!surveyId) { setError('No survey specified.'); setLoading(false); return; }
@@ -373,6 +377,10 @@ export default function SurveyPage() {
     // On welcome screen or generic: Enter advances, left arrow goes back
     if (e.key === 'Enter') { e.preventDefault(); goNext(); }
   };
+
+  if (isNominationSurvey) {
+    return <NominationForm isPreview={isPreview} />;
+  }
 
   /* ── Loading / Error ── */
   if (loading) {

@@ -21,7 +21,7 @@ import StageConfirmation from '@/components/nominate/StageConfirmation';
 
 const SURVEY_ID = '69f45633daacf496cacd8666';
 
-export default function NominationForm() {
+export default function NominationForm({ isPreview = false } = {}) {
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -106,6 +106,12 @@ export default function NominationForm() {
       angels_nominations: nominations.angels,
       local_legends_nominations: nominations.local_legends,
     };
+
+    if (isPreview) {
+      setSubmitting(false);
+      setStage(STAGES.CONFIRMATION);
+      return;
+    }
 
     await base44.entities.SurveyResponse.create({
       survey_id: SURVEY_ID,
