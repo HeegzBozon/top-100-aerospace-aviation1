@@ -19,7 +19,7 @@ const CITIES = [
   { name: 'Cape Canaveral', img: 'https://images.unsplash.com/photo-1457364559154-aa2644600ebb?w=1920&q=80' },
   { name: 'Washington, D.C.', img: 'https://images.unsplash.com/photo-1501466044931-62695aada8e9?w=1920&q=80' },
   { name: 'Denver', img: 'https://images.unsplash.com/photo-1546156929-a4c0ac411f47?w=1920&q=80' },
-  { name: 'Wichita', img: 'https://images.unsplash.com/photo-1584475784921-d9dbfd9d17ca?w=1920&q=80' },
+  { name: 'Wichita', img: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1920&q=80' },
   { name: 'Tucson', img: 'https://images.unsplash.com/photo-1558645836-e44122a743ee?w=1920&q=80' },
   { name: 'Savannah', img: 'https://images.unsplash.com/photo-1587162146766-e06b1189b907?w=1920&q=80' },
 ];
