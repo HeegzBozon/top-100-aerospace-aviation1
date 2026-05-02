@@ -249,6 +249,21 @@ export default function Drawer({ currentPageName, onMobileClose, user }) {
               const IconComponent = name === 'welcome-and-rules' ? () => <span className="text-lg">📖</span> : name === 'announcements' ? () => <span className="text-lg">📢</span> : () => <span className="text-lg">🗳️</span>;
               const isActive = activeConversation?.id === ch.id;
               const unread = unreadCounts[ch.id] || 0;
+
+              if (name === 'nominations') {
+                return (
+                  <Link
+                    key={ch.id}
+                    to="/nominate"
+                    onClick={() => onMobileClose?.()}
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all border-l-2 text-white/75 hover:bg-white/10 hover:text-white border-l-transparent hover:border-l-amber-400/50"
+                  >
+                    <IconComponent />
+                    <span className="text-sm truncate flex-1 text-left tracking-wide font-medium">{ch.name}</span>
+                  </Link>
+                );
+              }
+
               return (
                 <button
                   key={ch.id}
