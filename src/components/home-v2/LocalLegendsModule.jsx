@@ -78,27 +78,30 @@ export default function LocalLegendsModule() {
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               Act<br />
-              <span style={{ color: brand.gold }}>Local</span>{' '}
-              <span className="text-white/40">in</span>{' '}
-              <span className="relative inline-block overflow-hidden align-bottom" style={{ minWidth: '4ch' }}>
+              <span style={{ color: brand.gold }}>Local</span>
+            </h3>
+
+            <p className="text-white/70 text-base md:text-lg max-w-xl leading-relaxed mb-2 font-semibold">
+              You just landed in{' '}
+              <span className="relative inline-block overflow-hidden align-bottom" style={{ minWidth: '4ch', color: brand.gold }}>
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={cityIndex}
-                    initial={{ opacity: 0, y: 24 }}
+                    initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -24 }}
+                    exit={{ opacity: 0, y: -18 }}
                     transition={{ duration: 0.35 }}
                     className="inline-block whitespace-nowrap"
-                    style={{ color: brand.gold }}
                   >
                     {city.name}.
                   </motion.span>
                 </AnimatePresence>
-              </span>
-            </h3>
+              </span>{' '}
+              <span className="text-white/45">Now what?</span>
+            </p>
 
             <p className="text-white/50 text-sm max-w-lg leading-relaxed mb-6">
-              Think global, act local. Discover the vetted businesses, trusted services, and neighborhood staples that support aerospace communities city by city.
+              Discover the vetted businesses, trusted services, and neighborhood staples that support aerospace communities city by city.
             </p>
 
             {/* CTAs + dots row */}
