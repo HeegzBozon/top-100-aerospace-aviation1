@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getUpcomingLaunches } from '@/functions/getUpcomingLaunches';
 import LaunchTheatre from '@/components/epics/02-signal-feed/launches/LaunchTheatre';
 import LaunchListItem from '@/components/epics/02-signal-feed/launches/LaunchListItem';
-import { Loader2, Rocket } from 'lucide-react';
+import LaunchPartySplash from '@/components/launches/LaunchPartySplash';
+import { Rocket } from 'lucide-react';
 
 export default function LaunchParty() {
   const [launches, setLaunches] = useState([]);
@@ -20,11 +21,7 @@ export default function LaunchParty() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0f1d2d' }}>
-        <Loader2 className="w-8 h-8 text-[#c9a87c] animate-spin" />
-      </div>
-    );
+    return <LaunchPartySplash />;
   }
 
   if (!launches.length) {
