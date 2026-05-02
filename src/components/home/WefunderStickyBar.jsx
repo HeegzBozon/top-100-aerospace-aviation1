@@ -1,6 +1,6 @@
 import React from 'react';
 import { Rocket } from 'lucide-react';
-import { Link } from 'react-router-dom';
+
 
 export default function WefunderStickyBar() {
   return (
@@ -24,12 +24,14 @@ export default function WefunderStickyBar() {
         </p>
       </div>
       
-      <Link 
-        to="/community-round"
+      <a
+        href="https://wefunder.com/top.100.aerospace.aviation"
+        target="_blank"
+        rel="noopener noreferrer"
         className="w-full bg-[#c9a87c] text-slate-950 hover:bg-[#b09268] py-2 rounded-xl font-bold text-xs tracking-wide uppercase transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(201,168,124,0.2)] hover:shadow-[0_0_20px_rgba(201,168,124,0.4)] hover:scale-[1.02]"
       >
-        Invest Now
-      </Link>
+        Follow
+      </a>
     </div>
   );
 }
