@@ -206,7 +206,7 @@ export default function LaunchPartyModal({ launch, youtubeId, onClose }) {
             {embedSrc ? (
               <iframe
                 src={embedSrc}
-                title={`${launch?.name} webcast`}
+                title="TOP 100 Launch Party Live Stream"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
                 className="w-full h-full border-0"

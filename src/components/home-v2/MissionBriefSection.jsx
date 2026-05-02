@@ -1,13 +1,10 @@
-import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Rocket, Calendar, PlayCircle } from 'lucide-react';
+import { Rocket, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
-import FloatingReactions from '@/components/home/FloatingReactions';
+import LaunchPartyLiveModule from './LaunchPartyLiveModule';
 
 export default function MissionBriefSection() {
-  const [playing, setPlaying] = useState(false);
-
   return (
     <section className="py-6 md:py-10 px-4">
       <div className="max-w-5xl mx-auto">
@@ -30,43 +27,7 @@ export default function MissionBriefSection() {
           </p>
         </motion.div>
 
-        <div className="grid gap-4">
-          {/* Video Player */}
-          <Card className="bg-black relative overflow-hidden border-[#4a90b8]/20 shadow-xl aspect-video">
-            {playing ? (
-              <iframe
-                className="absolute inset-0 w-full h-full"
-                src="https://www.youtube.com/embed/8n1GGe0fUBs?autoplay=1&mute=0&volume=100&enablejsapi=1"
-                title="Launch Party Live Stream"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                referrerPolicy="strict-origin-when-cross-origin"
-              />
-            ) : (
-              <button
-                onClick={() => setPlaying(true)}
-                className="absolute inset-0 w-full h-full group cursor-pointer"
-              >
-                <img
-                  src="https://img.youtube.com/vi/8n1GGe0fUBs/maxresdefault.jpg"
-                  alt="Launch Party Live Stream"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <PlayCircle className="w-16 h-16 text-white/90 group-hover:text-white group-hover:scale-110 transition-all drop-shadow-lg" />
-                </div>
-                <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-600/90 text-white text-[10px] font-bold uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  Live
-                </div>
-              </button>
-            )}
-            <FloatingReactions />
-          </Card>
-
-        </div>
+        <LaunchPartyLiveModule />
 
         {/* Launch Party + Wefunder CTAs */}
         <div className="grid md:grid-cols-2 gap-4 mt-4">
