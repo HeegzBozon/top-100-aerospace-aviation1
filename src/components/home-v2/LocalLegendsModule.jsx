@@ -69,7 +69,7 @@ export default function LocalLegendsModule() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 text-[10px] font-bold uppercase tracking-[0.2em] w-fit" style={{ background: `${brand.gold}20`, color: brand.gold, border: `1px solid ${brand.gold}30`, backdropFilter: 'blur(8px)' }}>
               <MapPin className="w-3 h-3" />
-              Local Legends
+              Act Local — Local Legends
             </div>
 
             {/* Headline */}
@@ -77,7 +77,9 @@ export default function LocalLegendsModule() {
               className="text-2xl md:text-4xl font-bold text-white leading-tight mb-2"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              You just landed in{' '}
+              Act<br />
+              <span style={{ color: brand.gold }}>Local</span>{' '}
+              <span className="text-white/40">in</span>{' '}
               <span className="relative inline-block overflow-hidden align-bottom" style={{ minWidth: '4ch' }}>
                 <AnimatePresence mode="wait">
                   <motion.span
@@ -92,12 +94,11 @@ export default function LocalLegendsModule() {
                     {city.name}.
                   </motion.span>
                 </AnimatePresence>
-              </span>{' '}
-              <span className="text-white/40">Now what?</span>
+              </span>
             </h3>
 
             <p className="text-white/50 text-sm max-w-lg leading-relaxed mb-6">
-              The aerospace community's guide to the cities where the industry lives. Vetted businesses. Fellow-curated picks.
+              Think global, act local. Discover the vetted businesses, trusted services, and neighborhood staples that support aerospace communities city by city.
             </p>
 
             {/* CTAs + dots row */}
