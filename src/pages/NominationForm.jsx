@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Users } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -18,6 +18,7 @@ import StageAngels from '@/components/nominate/StageAngels';
 import StageLocalLegends from '@/components/nominate/StageLocalLegends';
 import StageReview from '@/components/nominate/StageReview';
 import StageConfirmation from '@/components/nominate/StageConfirmation';
+import NominationSplash from '@/components/nominate/NominationSplash';
 
 const SURVEY_ID = '69f45633daacf496cacd8666';
 
@@ -27,6 +28,12 @@ export default function NominationForm({ isPreview = false } = {}) {
 
   const [stage, setStage] = useState(STAGES.WELCOME);
   const [submitting, setSubmitting] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
 
   const [aboutYou, setAboutYou] = useState({ name: '', email: '', connection: '' });
   const [nominations, setNominations] = useState({
@@ -211,6 +218,10 @@ export default function NominationForm({ isPreview = false } = {}) {
   };
 
   const handleExit = () => navigate('/');
+
+  if (showSplash && !isPreview) {
+    return <NominationSplash />;
+  }
 
   return (
     <NominateShell
