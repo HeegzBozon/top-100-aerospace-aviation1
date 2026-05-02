@@ -176,6 +176,8 @@ const AuthenticatedApp = () => {
       <Route path="/local-legends-pro" element={<LocalLegendsPro />} />
       <Route path="/local-legends/apply" element={<LocalLegendsApply />} />
       <Route path="/nominate" element={<NominationForm />} />
+      <Route path="/Nominations" element={<Navigate to="/nominate" replace />} />
+      <Route path="/nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/top100-tv" element={
         <LayoutWrapper currentPageName="Top100TV">
           <Top100TV />
