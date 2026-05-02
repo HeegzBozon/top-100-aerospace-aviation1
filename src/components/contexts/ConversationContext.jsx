@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 
@@ -8,6 +9,7 @@ export function ConversationProvider({ children }) {
   const [activeConversation, setActiveConversation] = useState(null);
   const didRestoreFromUrl = useRef(false);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: user } = useQuery({
     queryKey: ["current-user"],
@@ -58,6 +60,12 @@ export function ConversationProvider({ children }) {
   );
 
   const selectConversation = useCallback((conv) => {
+    if (conv?.name?.toLowerCase() === "nominations") {
+      setActiveConversation(null);
+      navigate("/nominate");
+      return;
+    }
+
     setActiveConversation(conv);
     const url = new URL(window.location);
     if (conv?.id) {
@@ -66,7 +74,7 @@ export function ConversationProvider({ children }) {
       url.searchParams.delete("conv");
     }
     window.history.pushState({}, "", url);
-  }, []);
+  }, [navigate]);
 
   // Restore conversation from URL — only once after conversations load
   useEffect(() => {
