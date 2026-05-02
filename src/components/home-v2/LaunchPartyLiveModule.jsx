@@ -96,7 +96,7 @@ export default function LaunchPartyLiveModule() {
           {youtubeId ? (
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1`}
-              title="TOP 100 Launch Party Live Stream"
+              title="TOP 100 Mission Theatre Live Stream"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               allowFullScreen
               referrerPolicy="strict-origin-when-cross-origin"
@@ -110,7 +110,7 @@ export default function LaunchPartyLiveModule() {
               <div className="absolute inset-0 bg-gradient-to-br from-[#0a1526]/95 via-[#1e3a5a]/80 to-black/80" />
               <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 text-center">
                 <Radio className="mb-3 h-10 w-10 text-[#c9a87c]" />
-                <p className="text-sm font-bold uppercase tracking-[0.24em] text-[#c9a87c]">Launch Party Live</p>
+                <p className="text-sm font-bold uppercase tracking-[0.24em] text-[#c9a87c]">Mission Theatre Live</p>
                 <h3 className="mt-2 text-xl font-bold text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
                   Stream coming soon
                 </h3>
@@ -120,7 +120,7 @@ export default function LaunchPartyLiveModule() {
         </div>
         <div className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-red-600/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-          Launch Party
+          Mission Theatre
         </div>
       </Card>
 
@@ -136,7 +136,7 @@ export default function LaunchPartyLiveModule() {
         </div>
         <Link to="/LaunchParty">
           <Button className="mt-5 w-full rounded-full bg-[#c9a87c] font-bold text-[#0a1526] hover:bg-[#b09268]">
-            Open Launch Party <ExternalLink className="ml-2 h-3.5 w-3.5" />
+            Open Mission Theatre <ExternalLink className="ml-2 h-3.5 w-3.5" />
           </Button>
         </Link>
       </Card>

@@ -161,7 +161,7 @@ export default function LaunchPartyModal({ launch, youtubeId, onClose }) {
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Launch Party"
+      aria-label="Mission Theatre"
       className={`${isFullscreen ? 'fixed inset-0' : 'fixed inset-4 rounded-2xl'} z-[9999] flex flex-col bg-[#0a0a0a] overflow-hidden`}
     >
       {/* ── Top bar ── */}
@@ -206,7 +206,7 @@ export default function LaunchPartyModal({ launch, youtubeId, onClose }) {
             {embedSrc ? (
               <iframe
                 src={embedSrc}
-                title="TOP 100 Launch Party Live Stream"
+                title="TOP 100 Mission Theatre Live Stream"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
                 className="w-full h-full border-0"

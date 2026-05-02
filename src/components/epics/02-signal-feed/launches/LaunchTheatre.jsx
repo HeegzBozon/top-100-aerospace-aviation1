@@ -196,7 +196,7 @@ export default function LaunchTheatre({ launch, onScrollDown }) {
     <section
       className="relative w-full min-h-[520px] sm:min-h-[600px] flex flex-col overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #0f1d2d 0%, #152a42 60%, #1e3a5a 100%)' }}
-      aria-label="Launch Party Live Stream"
+      aria-label="Mission Theatre Live Stream"
     >
       {/* ── Starfield texture overlay ── */}
       <div className="absolute inset-0 opacity-20 pointer-events-none"
@@ -211,7 +211,7 @@ export default function LaunchTheatre({ launch, onScrollDown }) {
 
         {/* Left: Info panel */}
         <div className="flex-1 flex flex-col justify-center px-6 sm:px-10 py-10 lg:py-14 lg:max-w-[45%]">
-          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.26em] text-[#c9a87c]">TOP 100 Launch Party Live</p>
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.26em] text-[#c9a87c]">TOP 100 Mission Theatre Live</p>
           {/* Status + provider row */}
           <div className="flex items-center gap-2 mb-4 flex-wrap">
             <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${isGo ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-white/10 text-white/60 border border-white/10'}`}>
@@ -290,7 +290,7 @@ export default function LaunchTheatre({ launch, onScrollDown }) {
                 /* Fallback: embed blocked — show direct link */
                 <div className="w-full h-full flex flex-col items-center justify-center gap-4 bg-black/40">
                   <Rocket className="w-10 h-10 text-[#c9a87c] opacity-70" />
-                  <p className="text-white/50 text-sm text-center px-4">Launch Party stream can't be embedded here.</p>
+                  <p className="text-white/50 text-sm text-center px-4">Mission Theatre stream can't be embedded here.</p>
                   <a
                     href={`https://www.youtube.com/watch?v=${youtubeId}`}
                     target="_blank"
@@ -304,7 +304,7 @@ export default function LaunchTheatre({ launch, onScrollDown }) {
               ) : (
                 <EmbeddablePlayer
                   youtubeId={youtubeId}
-                  title="TOP 100 Launch Party Live Stream"
+                  title="TOP 100 Mission Theatre Live Stream"
                   onEmbedError={() => setEmbedError(true)}
                 />
               )}
@@ -340,7 +340,7 @@ export default function LaunchTheatre({ launch, onScrollDown }) {
             <div className="w-full max-w-2xl aspect-video rounded-2xl border border-white/10 flex items-center justify-center bg-white/5">
               <div className="text-center space-y-3">
                 <Loader2 className="w-10 h-10 text-[#c9a87c] mx-auto animate-spin" />
-                <p className="text-white/40 text-sm">Finding Launch Party stream…</p>
+                <p className="text-white/40 text-sm">Finding Mission Theatre stream…</p>
               </div>
             </div>
           ) : imageUrl ? (
@@ -349,7 +349,7 @@ export default function LaunchTheatre({ launch, onScrollDown }) {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center space-y-2">
                   <Rocket className="w-12 h-12 text-[#c9a87c] mx-auto opacity-80" />
-                  <p className="text-white/50 text-sm">Launch Party stream coming soon</p>
+                  <p className="text-white/50 text-sm">Mission Theatre stream coming soon</p>
                 </div>
               </div>
             </div>
@@ -357,7 +357,7 @@ export default function LaunchTheatre({ launch, onScrollDown }) {
             <div className="w-full max-w-2xl aspect-video rounded-2xl border border-white/10 flex items-center justify-center bg-white/5">
               <div className="text-center space-y-3">
                 <Rocket className="w-16 h-16 text-[#c9a87c] mx-auto opacity-60" />
-                <p className="text-white/40 text-sm">Launch Party stream coming soon</p>
+                <p className="text-white/40 text-sm">Mission Theatre stream coming soon</p>
               </div>
             </div>
           )}
@@ -372,7 +372,7 @@ export default function LaunchTheatre({ launch, onScrollDown }) {
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#c9a87c] to-[#e8d4b8] text-[#0f1d2d] text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
         >
           <PartyPopper className="w-4 h-4" />
-          Launch Party
+          Mission Theatre
         </button>
       </div>
 

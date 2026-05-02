@@ -40,7 +40,7 @@ export default function LaunchPartySplash() {
           className="text-4xl font-bold leading-tight md:text-6xl"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
-          Launch <span className="text-[#c9a87c]">Party</span>
+          Mission <span className="text-[#c9a87c]">Theatre</span>
         </motion.h1>
 
         <motion.p

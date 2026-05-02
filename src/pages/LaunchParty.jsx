@@ -8,6 +8,7 @@ import { Rocket } from 'lucide-react';
 export default function LaunchParty() {
   const [launches, setLaunches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     getUpcomingLaunches({ limit: 10 })
@@ -20,7 +21,12 @@ export default function LaunchParty() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading || showSplash) {
     return <LaunchPartySplash />;
   }
 

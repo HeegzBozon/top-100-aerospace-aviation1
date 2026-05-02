@@ -29,12 +29,12 @@ export default function MissionBriefSection() {
 
         <LaunchPartyLiveModule />
 
-        {/* Launch Party + Wefunder CTAs */}
+        {/* Mission Theatre + Wefunder CTAs */}
         <div className="grid md:grid-cols-2 gap-4 mt-4">
           <Card className="bg-[#0a1526] border-[#4a90b8]/20 p-6 text-white relative overflow-hidden">
             <div className="absolute top-[-30%] right-[-20%] w-[60%] h-[60%] rounded-full bg-[#c9a87c] blur-[100px] opacity-10 pointer-events-none" />
             <div className="relative z-10">
-              <p className="text-[#c9a87c] text-[10px] font-bold uppercase tracking-widest mb-2">Launch Party • Live Moments</p>
+              <p className="text-[#c9a87c] text-[10px] font-bold uppercase tracking-widest mb-2">Mission Theatre • Live Moments</p>
               <h3 className="text-lg font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Gather for the moments that move us upward.
               </h3>
@@ -43,7 +43,7 @@ export default function MissionBriefSection() {
               </p>
               <a href="/LaunchParty">
                 <Button className="bg-[#c9a87c] hover:bg-[#b09268] text-[#0a1526] font-bold px-5 py-4 rounded-full text-xs cursor-pointer">
-                  <Rocket className="w-3.5 h-3.5 mr-1.5" /> Join Launch Party
+                  <Rocket className="w-3.5 h-3.5 mr-1.5" /> Join Mission Theatre
                 </Button>
               </a>
             </div>
