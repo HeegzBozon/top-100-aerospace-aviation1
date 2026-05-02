@@ -9,9 +9,9 @@ import HeroVideoPlayer from './HeroVideoPlayer';
 import HeroVideoAdmin from './HeroVideoAdmin';
 
 const stats = [
-  { value: '300+', label: 'Verified Fellows', icon: Award },
-  { value: '49', label: 'Countries', icon: Globe },
-  { value: '1,000+', label: 'Nominators', icon: Users },
+  { value: '13,000+', label: 'Global Community', icon: Users },
+  { value: '300+', label: 'Alumni', icon: Award },
+  { value: '40+', label: 'Countries', icon: Globe },
 ];
 
 export default function HeroSection({ user }) {
@@ -77,21 +77,19 @@ export default function HeroSection({ user }) {
             className="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            The Perception<br />
-            <span className="text-[#c9a87c]">Engine</span>
+            Think<br />
+            <span className="text-[#c9a87c]">Global</span>
           </h1>
 
           <p
             className="text-slate-300 text-sm md:text-lg max-w-xl leading-relaxed mb-8 font-medium"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
-            A human-verified talent graph bridging recognition to sponsorship. 
-            100 verified Fellows. 49 countries. 8 domains. 
-            The trust infrastructure behind aerospace's next chapter.
+            TOP 100 is a global aerospace and aviation community connecting talent, alumni, investors, and industry leaders across borders. Built to spotlight the people shaping the next chapter of flight.
           </p>
 
           <div className="flex flex-wrap gap-3 mb-10">
-            <Link to="/Nominations">
+            <Link to="/nominate">
               <Button
                 className="text-[#0a1526] font-bold px-6 py-6 rounded-full text-sm shadow-[0_0_20px_rgba(201,168,124,0.3)] hover:shadow-[0_0_30px_rgba(201,168,124,0.5)] transition-all cursor-pointer"
                 style={{ background: 'linear-gradient(135deg, #c9a87c, #d4a574)' }}

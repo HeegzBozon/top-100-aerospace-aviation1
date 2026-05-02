@@ -40,7 +40,7 @@ export default function HomeV2() {
         {/* Footer signature */}
         <footer className="text-center py-8 border-t border-slate-200/60 mt-4">
           <p className="text-[#c9a87c] font-bold tracking-widest uppercase text-[10px]" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-            Top 100 Aerospace & Aviation • The Perception Engine
+            Top 100 Aerospace & Aviation • Think Global
           </p>
         </footer>
       </div>
