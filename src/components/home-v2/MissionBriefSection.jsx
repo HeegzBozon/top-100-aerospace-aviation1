@@ -3,7 +3,6 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Rocket, Calendar, PlayCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import LiveStreamComments from '@/components/home/LiveStreamComments';
 import FloatingReactions from '@/components/home/FloatingReactions';
 
 export default function MissionBriefSection() {
@@ -24,18 +23,21 @@ export default function MissionBriefSection() {
             className="text-2xl md:text-4xl font-bold text-[#1e3a5a]"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            Live from the Frontier
+            Ad Astra
           </h2>
+          <p className="text-slate-600 text-sm md:text-base max-w-2xl mt-3 leading-relaxed">
+            Live from the frontier — launches, watch parties, and community moments that connect aerospace from Earth to orbit.
+          </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-5 gap-4">
+        <div className="grid gap-4">
           {/* Video Player */}
-          <Card className="lg:col-span-3 bg-black relative overflow-hidden border-[#4a90b8]/20 shadow-xl aspect-video">
+          <Card className="bg-black relative overflow-hidden border-[#4a90b8]/20 shadow-xl aspect-video">
             {playing ? (
               <iframe
                 className="absolute inset-0 w-full h-full"
                 src="https://www.youtube.com/embed/8n1GGe0fUBs?autoplay=1&mute=0&volume=100&enablejsapi=1"
-                title="Artemis Live Stream"
+                title="Launch Party Live Stream"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -48,7 +50,7 @@ export default function MissionBriefSection() {
               >
                 <img
                   src="https://img.youtube.com/vi/8n1GGe0fUBs/maxresdefault.jpg"
-                  alt="Artemis Live Stream"
+                  alt="Launch Party Live Stream"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
@@ -64,27 +66,23 @@ export default function MissionBriefSection() {
             <FloatingReactions />
           </Card>
 
-          {/* Campfire Chat */}
-          <div className="lg:col-span-2 h-[360px] lg:h-auto">
-            <LiveStreamComments />
-          </div>
         </div>
 
-        {/* Artemis + Wefunder CTAs */}
+        {/* Launch Party + Wefunder CTAs */}
         <div className="grid md:grid-cols-2 gap-4 mt-4">
           <Card className="bg-[#0a1526] border-[#4a90b8]/20 p-6 text-white relative overflow-hidden">
             <div className="absolute top-[-30%] right-[-20%] w-[60%] h-[60%] rounded-full bg-[#c9a87c] blur-[100px] opacity-10 pointer-events-none" />
             <div className="relative z-10">
-              <p className="text-[#c9a87c] text-[10px] font-bold uppercase tracking-widest mb-2">Artemis II • Day 4</p>
+              <p className="text-[#c9a87c] text-[10px] font-bold uppercase tracking-widest mb-2">Launch Party • Live Moments</p>
               <h3 className="text-lg font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
-                First humans to fly by the Moon in 50 years.
+                Gather for the moments that move us upward.
               </h3>
               <p className="text-slate-400 text-xs leading-relaxed mb-4">
-                Every honoree in our community contributed to the ecosystem that made this possible.
+                Watch, celebrate, and rally around the aerospace missions shaping the next chapter.
               </p>
-              <a href="/artemis-2">
+              <a href="/LaunchParty">
                 <Button className="bg-[#c9a87c] hover:bg-[#b09268] text-[#0a1526] font-bold px-5 py-4 rounded-full text-xs cursor-pointer">
-                  <Rocket className="w-3.5 h-3.5 mr-1.5" /> Discover Artemis
+                  <Rocket className="w-3.5 h-3.5 mr-1.5" /> Join Launch Party
                 </Button>
               </a>
             </div>
