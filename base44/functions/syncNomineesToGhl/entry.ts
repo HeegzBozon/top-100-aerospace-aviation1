@@ -31,6 +31,10 @@ function cleanEmail(email) {
   return typeof email === 'string' ? email.trim().toLowerCase() : '';
 }
 
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 function cleanText(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
@@ -40,15 +44,17 @@ function addTag(tags, label, value) {
   if (cleanValue) tags.push(`${label}: ${cleanValue}`);
 }
 
-function buildContactPayload(nominee, locationId) {
+function buildContactPayload(nominee, locationId, seasonById = {}) {
   const email = cleanEmail(nominee.nominee_email);
   const tags = [NOMINEE_TAG];
   const companyName = cleanText(nominee.company) || cleanText(nominee.organization);
   const website = cleanText(nominee.website_url) || cleanText(nominee.linkedin_profile_url);
+  const seasonName = cleanText(seasonById[nominee.season_id]?.name);
 
   addTag(tags, 'Nominee Status', nominee.status);
   addTag(tags, 'Claim Status', nominee.claim_status);
-  addTag(tags, 'Season', nominee.season_id);
+  addTag(tags, 'Season', seasonName);
+  addTag(tags, 'Season ID', nominee.season_id);
   addTag(tags, 'Country', nominee.country);
   addTag(tags, 'Continent', nominee.continent);
   addTag(tags, 'Industry', nominee.industry);
@@ -91,11 +97,13 @@ Deno.serve(async (req) => {
     const limit = Math.min(Number(body.limit || 100), 500);
     const skip = Math.max(Number(body.skip || 0), 0);
     const nominees = await base44.asServiceRole.entities.Nominee.list('-updated_date', limit, skip);
+    const seasons = await base44.asServiceRole.entities.Season.list('-created_date', 200);
+    const seasonById = Object.fromEntries(seasons.map(season => [season.id, season]));
 
     const seenEmails = new Set();
     const payloads = nominees
-      .filter(nominee => cleanEmail(nominee.nominee_email))
-      .map(nominee => buildContactPayload(nominee, locationId))
+      .filter(nominee => isValidEmail(cleanEmail(nominee.nominee_email)))
+      .map(nominee => buildContactPayload(nominee, locationId, seasonById))
       .filter(payload => {
         if (seenEmails.has(payload.email)) return false;
         seenEmails.add(payload.email);
