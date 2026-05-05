@@ -58,7 +58,8 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const dryRun = body.dryRun === true;
     const limit = Math.min(Number(body.limit || 100), 500);
-    const users = await base44.asServiceRole.entities.User.list('-created_date', limit);
+    const skip = Math.max(Number(body.skip || 0), 0);
+    const users = await base44.asServiceRole.entities.User.list('-created_date', limit, skip);
 
     const payloads = users
       .filter(user => user.email)
