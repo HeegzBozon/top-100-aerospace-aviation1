@@ -213,11 +213,18 @@ export default function LocalLegendsApply() {
           <p className="text-white/60 text-base leading-relaxed mb-8">
             We review every application personally. If you're a fit, you'll hear from us within <strong className="text-white/80">3 business days</strong>. The spotlight is free. No strings.
           </p>
-          <Link to="/local-legends">
-            <Button className="rounded-full px-8 text-white gap-2" style={{ background: `linear-gradient(135deg, ${brand.gold}, #b08d5b)` }}>
-              Back to Local Legends <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="https://calendar.app.google/JVH1VgC5abQPy5NK7" target="_blank" rel="noopener noreferrer">
+              <Button className="rounded-full px-8 text-white gap-2" style={{ background: `linear-gradient(135deg, ${brand.gold}, #b08d5b)` }}>
+                Schedule a Call <ArrowRight className="w-4 h-4" />
+              </Button>
+            </a>
+            <Link to="/local-legends">
+              <Button variant="outline" className="rounded-full px-8 text-white/80 border-white/20 hover:bg-white/10 hover:text-white gap-2">
+                Back to Local Legends
+              </Button>
+            </Link>
+          </div>
           <p className="text-white/15 text-[10px] tracking-widest uppercase mt-12">
             Local Legends • A TOP 100 Aerospace & Aviation Initiative
           </p>
