@@ -31,20 +31,43 @@ function cleanEmail(email) {
   return typeof email === 'string' ? email.trim().toLowerCase() : '';
 }
 
+function cleanText(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function addTag(tags, label, value) {
+  const cleanValue = cleanText(value);
+  if (cleanValue) tags.push(`${label}: ${cleanValue}`);
+}
+
 function buildContactPayload(nominee, locationId) {
   const email = cleanEmail(nominee.nominee_email);
   const tags = [NOMINEE_TAG];
+  const companyName = cleanText(nominee.company) || cleanText(nominee.organization);
+  const website = cleanText(nominee.website_url) || cleanText(nominee.linkedin_profile_url);
 
-  if (nominee.status) tags.push(`Nominee Status: ${nominee.status}`);
-  if (nominee.season_id) tags.push(`Season: ${nominee.season_id}`);
+  addTag(tags, 'Nominee Status', nominee.status);
+  addTag(tags, 'Claim Status', nominee.claim_status);
+  addTag(tags, 'Season', nominee.season_id);
+  addTag(tags, 'Country', nominee.country);
+  addTag(tags, 'Continent', nominee.continent);
+  addTag(tags, 'Industry', nominee.industry);
+  addTag(tags, 'Category', nominee.category);
+  addTag(tags, 'Verified Status', nominee.verified_status || nominee.verified_status);
+  addTag(tags, 'Aura Rank', nominee.aura_rank_name);
+
+  if (nominee.claimed_by_user_email || nominee.claim_requested_by) tags.push('Profile Claim Activity');
+  if (nominee.linkedin_profile_url) tags.push('Has LinkedIn');
+  if (nominee.bio || nominee.bio_extended) tags.push('Has Bio');
 
   return {
     locationId,
     name: nominee.name || email,
     email,
-    companyName: nominee.company || nominee.organization || undefined,
+    companyName: companyName || undefined,
+    website: website || undefined,
     source: 'TOP 100 Nominee Sync',
-    tags,
+    tags: [...new Set(tags)],
     createNewIfDuplicateAllowed: false,
   };
 }
