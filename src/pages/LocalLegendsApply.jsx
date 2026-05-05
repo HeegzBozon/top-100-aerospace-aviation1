@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Loader2, ArrowRight, ArrowLeft, MapPin, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { syncLocalLegendToGhl } from '@/functions/syncLocalLegendToGhl';
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 const SURVEY_ID = '69f268344d7b4a8cc0888abf';
@@ -168,13 +169,19 @@ export default function LocalLegendsApply() {
     const email = answersRef.current['email'] || 'anonymous@locallegends.app';
     const name = answersRef.current['your_name'] || '';
 
-    await base44.entities.SurveyResponse.create({
+    const submission = await base44.entities.SurveyResponse.create({
       survey_id: SURVEY_ID,
       respondent_email: email,
       respondent_name: name,
       answers: answersRef.current,
       completed: true,
     });
+
+    await syncLocalLegendToGhl({
+      surveyResponseId: submission.id,
+      answers: answersRef.current,
+    });
+
     await base44.entities.Survey.update(SURVEY_ID, {
       response_count: (survey.response_count || 0) + 1,
     });
