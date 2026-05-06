@@ -34,6 +34,7 @@ const Top100TV = lazy(() => import('@/pages/Top100TV'));
 const PaymentPlan = lazy(() => import('@/pages/PaymentPlan'));
 const Season4Launch = lazy(() => import('@/pages/Season4Launch'));
 const ArtemisArticle = lazy(() => import('@/pages/ArtemisArticle'));
+const MonthlyNewsletterMay2026 = lazy(() => import('@/pages/MonthlyNewsletterMay2026'));
 const CommunityRound = lazy(() => import('@/pages/CommunityRound'));
 const STARSummit = lazy(() => import('@/pages/STARSummit'));
 const ArtemisMissionBrief = lazy(() => import('@/pages/ArtemisMissionBrief'));
@@ -147,6 +148,11 @@ const AuthenticatedApp = () => {
       <Route path="/artemis-2" element={
         <LayoutWrapper currentPageName="ArtemisArticle">
           <ArtemisArticle />
+        </LayoutWrapper>
+      } />
+      <Route path="/newsletter/may-2026" element={
+        <LayoutWrapper currentPageName="MonthlyNewsletterMay2026">
+          <MonthlyNewsletterMay2026 />
         </LayoutWrapper>
       } />
       <Route path="/community-round" element={
