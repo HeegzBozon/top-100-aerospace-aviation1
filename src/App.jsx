@@ -87,11 +87,7 @@ const AuthenticatedApp = () => {
       </div>
     }>
     <Routes>
-      <Route path="/" element={
-        <LayoutWrapper currentPageName="HomeV2">
-          <HomeV2 />
-        </LayoutWrapper>
-      } />
+      <Route path="/" element={<HomeV2 />} />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />
       <Route path="/onboarding-admin" element={<OnboardingAdmin />} />
@@ -171,11 +167,7 @@ const AuthenticatedApp = () => {
           <MissionRooms />
         </LayoutWrapper>
       } />
-      <Route path="/home-v2" element={
-        <LayoutWrapper currentPageName="HomeV2">
-          <HomeV2 />
-        </LayoutWrapper>
-      } />
+      <Route path="/home-v2" element={<HomeV2 />} />
       <Route path="/survey" element={<SurveyPage />} />
       <Route path="/email-preview" element={<EmailTemplatePreview />} />
       <Route path="/local-legends" element={<LocalLegends />} />
