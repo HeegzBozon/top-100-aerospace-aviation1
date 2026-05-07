@@ -96,21 +96,11 @@ const IndexRow = ({ nominee, index, onClick }) => {
       <td className="py-4 pr-6">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
-            {nominee.avatar_url || nominee.photo_url ? (
-              <img
-                src={nominee.avatar_url || nominee.photo_url}
-                alt=""
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              <div 
-                className="w-full h-full flex items-center justify-center text-sm"
-                style={{ background: brandColors.goldLight, color: brandColors.navyDeep }}
-              >
-                {nominee.name?.charAt(0)}
-              </div>
-            )}
+            <NomineeImage
+              nominee={nominee}
+              className="w-full h-full object-cover"
+              fallbackClassName="w-full h-full text-sm"
+            />
           </div>
           <span 
             className="text-base group-hover:underline underline-offset-4"
@@ -173,7 +163,6 @@ export default function EditorialLedger({ nominees, onSelectNominee }) {
 
   return (
     <section 
-      id="honorees" 
       className="py-12 md:py-40 px-4 md:px-12 lg:px-24"
       style={{ background: 'white' }}
     >

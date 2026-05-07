@@ -278,7 +278,6 @@ export default function EditorialPortraits({ nominees, onSelectNominee }) {
   
   return (
     <section 
-      id="portraits" 
       className="py-12 md:py-40 px-4 md:px-12 lg:px-24"
       style={{ background: brandColors.cream }}
     >
