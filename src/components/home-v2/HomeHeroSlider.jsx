@@ -29,14 +29,14 @@ const slides = [
   },
   {
     id: 'ad-astra',
-    eyebrow: 'Mission Forward',
+    eyebrow: 'Mission Theatre • Fundraising Journey',
     title: 'Ad Astra',
-    kicker: 'Recognition is only the beginning. Infrastructure is the mission.',
-    body: 'We are building the connective layer for visibility, sponsorship, opportunity, and momentum across aerospace and aviation.',
+    kicker: 'Part live mission theatre. Part transparent fundraising journey.',
+    body: 'Follow the launches, signal reports, community milestones, and capital campaign behind the next layer of aerospace and aviation infrastructure.',
     image: 'https://images.unsplash.com/photo-1517976547714-720226b864c1?w=2400&auto=format&fit=crop&q=90',
     icon: Rocket,
-    primary: { label: 'Join Season 4', to: '/nominate' },
-    secondary: { label: 'Invest on Wefunder', href: 'https://wefunder.com/top.100.aerospace.aviation' },
+    primary: { label: 'Enter Mission Theatre', to: '/LaunchParty' },
+    secondary: { label: 'Follow Our Fundraising Journey', href: 'https://wefunder.com/top.100.aerospace.aviation' },
   },
 ];
 
