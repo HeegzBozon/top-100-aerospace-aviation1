@@ -13,7 +13,7 @@ const brandColors = {
   ink: '#1a1a1a',
 };
 
-export default function AuthenticatedIntelligenceHeader() {
+export default function AuthenticatedIntelligenceHeader({ nominees = [], onSelectNominee }) {
   const [activeTab, setActiveTab] = useState('publication');
 
   return (
@@ -108,7 +108,7 @@ export default function AuthenticatedIntelligenceHeader() {
           {/* Content */}
           <div className="mt-6 md:mt-8">
             <TabsContent value="publication" className="focus-visible:outline-none">
-              <PublicationTabSearch />
+              <PublicationTabSearch nominees={nominees} onSelectNominee={onSelectNominee} />
             </TabsContent>
 
             <TabsContent value="coming-soon" className="focus-visible:outline-none">

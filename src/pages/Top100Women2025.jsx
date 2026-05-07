@@ -105,7 +105,7 @@ export default function Top100Women2025() {
       {showCountdown && <CountdownLanding onReveal={() => setShowCountdown(false)} />}
 
       {/* Authenticated Intelligence Header - visible after countdown */}
-      {!showCountdown && user && <AuthenticatedIntelligenceHeader />}
+      {!showCountdown && user && <AuthenticatedIntelligenceHeader nominees={nominees} onSelectNominee={setSelectedNominee} />}
 
       {/* Progress Bar - hidden during countdown */}
       {!showCountdown && (

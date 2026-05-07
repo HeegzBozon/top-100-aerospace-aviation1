@@ -10,25 +10,47 @@ const brandColors = {
   ink: '#1a1a1a',
 };
 
-export default function PublicationTabSearch() {
+export default function PublicationTabSearch({ nominees = [], onSelectNominee }) {
   const [query, setQuery] = useState('');
 
   const results = useMemo(() => {
     const cleanQuery = query.trim().toLowerCase();
-    if (!cleanQuery) return top100Women2025Config.sections.slice(0, 4);
-    return top100Women2025Config.sections.filter(section =>
-      `${section.name} ${section.label}`.toLowerCase().includes(cleanQuery)
-    ).slice(0, 4);
-  }, [query]);
+    const sectionResults = top100Women2025Config.sections
+      .filter(section => !cleanQuery || `${section.name} ${section.label}`.toLowerCase().includes(cleanQuery))
+      .map(section => ({ type: 'section', ...section }));
+
+    const nomineeResults = nominees
+      .filter(nominee => cleanQuery && [
+        nominee.name,
+        nominee.title,
+        nominee.professional_role,
+        nominee.company,
+        nominee.country,
+        nominee.industry,
+      ].filter(Boolean).join(' ').toLowerCase().includes(cleanQuery))
+      .slice(0, 8)
+      .map(nominee => ({ type: 'nominee', ...nominee }));
+
+    return cleanQuery ? [...nomineeResults, ...sectionResults].slice(0, 10) : sectionResults.slice(0, 4);
+  }, [query, nominees]);
 
   const goToSection = (id) => {
     const target = document.getElementById(id);
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const openResult = (result) => {
+    if (result.type === 'nominee') {
+      goToSection('honorees');
+      onSelectNominee?.(result);
+      return;
+    }
+    goToSection(result.id);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (results[0]) goToSection(results[0].id);
+    if (results[0]) openResult(results[0]);
   };
 
   return (
@@ -40,23 +62,30 @@ export default function PublicationTabSearch() {
           id="publication-tab-search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search the publication — Honorees, Signal Report, Archive..."
+          placeholder="Search honorees, companies, countries, or sections..."
           className="w-full rounded-full border bg-white/80 py-3 pl-11 pr-4 text-sm outline-none transition-all focus:ring-2 focus:ring-[#c9a87c] focus:ring-offset-2"
           style={{ borderColor: `${brandColors.goldPrestige}35`, color: brandColors.navyDeep }}
         />
       </form>
 
       <div className="flex flex-wrap gap-2">
-        {results.length > 0 ? results.map((section) => (
+        {results.length > 0 ? results.map((result) => (
           <button
-            key={section.id}
+            key={`${result.type}-${result.id}`}
             type="button"
-            onClick={() => goToSection(section.id)}
+            onClick={() => openResult(result)}
             className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition-all hover:-translate-y-0.5"
             style={{ background: brandColors.cream, borderColor: `${brandColors.goldPrestige}35`, color: brandColors.navyDeep }}
           >
-            <span style={{ color: brandColors.goldPrestige }}>{section.label}</span>
-            {section.name}
+            <span style={{ color: brandColors.goldPrestige }}>
+              {result.type === 'nominee' ? `#${result.finalRank || '—'}` : result.label}
+            </span>
+            {result.type === 'nominee' ? result.name : result.name}
+            {result.type === 'nominee' && (result.company || result.country) && (
+              <span className="hidden text-[11px] opacity-60 sm:inline">
+                {result.company || result.country}
+              </span>
+            )}
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
         )) : (
