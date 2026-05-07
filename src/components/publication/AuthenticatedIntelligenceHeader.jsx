@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, Clock } from 'lucide-react';
 import ComingSoonIntelligenceTab from '@/components/publication/ComingSoonIntelligenceTab';
+import PublicationTabSearch from '@/components/publication/PublicationTabSearch';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -107,13 +108,7 @@ export default function AuthenticatedIntelligenceHeader() {
           {/* Content */}
           <div className="mt-6 md:mt-8">
             <TabsContent value="publication" className="focus-visible:outline-none">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <p className="text-sm text-slate-600">Return to the main publication to view the full Top 100 Women 2025 index.</p>
-              </motion.div>
+              <PublicationTabSearch />
             </TabsContent>
 
             <TabsContent value="coming-soon" className="focus-visible:outline-none">
