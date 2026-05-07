@@ -1,10 +1,8 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Radar, TrendingUp, Newspaper } from 'lucide-react';
-const RadarDashboard = lazy(() => import('@/pages/RadarDashboard'));
-const IntelligenceDashboard = lazy(() => import('@/pages/IntelligenceDashboard'));
-const SpaceNews = lazy(() => import('@/pages/SpaceNews'));
+import { BookOpen, Clock } from 'lucide-react';
+import ComingSoonIntelligenceTab from '@/components/publication/ComingSoonIntelligenceTab';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -54,7 +52,7 @@ export default function AuthenticatedIntelligenceHeader() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" defaultValue="publication">
           <TabsList 
-            className="grid w-full max-w-2xl grid-cols-4 h-auto p-0.5 bg-transparent border-0"
+            className="grid w-full max-w-md grid-cols-2 h-auto p-0.5 bg-transparent border-0"
             style={{ 
               background: 'transparent',
               borderBottom: `1px solid ${brandColors.ink}10`
@@ -85,77 +83,17 @@ export default function AuthenticatedIntelligenceHeader() {
             </TabsTrigger>
 
             <TabsTrigger
-              value="radar"
+              value="coming-soon"
               className="relative rounded-none border-0 px-3 py-3 text-xs md:text-sm font-medium transition-none data-[state=active]:bg-transparent data-[state=active]:text-inherit"
               style={{
-                color: activeTab === 'radar' ? brandColors.navyDeep : `${brandColors.ink}60`,
+                color: activeTab === 'coming-soon' ? brandColors.navyDeep : `${brandColors.ink}60`,
               }}
             >
-              <motion.div
-                className="flex flex-col items-start gap-0.5"
-                layout
-              >
-                <div className="flex items-center gap-1.5 md:gap-2">
-                  <Radar className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="hidden sm:inline">Radar Dashboard</span>
-                </div>
-                <span className="text-[9px] font-semibold uppercase tracking-wider leading-none" style={{ color: brandColors.goldPrestige }}>Prototype</span>
+              <motion.div className="flex items-center gap-1.5 md:gap-2" layout>
+                <Clock className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="hidden sm:inline">Coming Soon</span>
               </motion.div>
-              {activeTab === 'radar' && (
-                <motion.div
-                  layoutId="activeIndicator"
-                  className="absolute bottom-0 left-0 right-0 h-0.5"
-                  style={{ background: brandColors.goldPrestige }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                />
-              )}
-            </TabsTrigger>
-
-            <TabsTrigger
-              value="intelligence"
-              className="relative rounded-none border-0 px-3 py-3 text-xs md:text-sm font-medium transition-none data-[state=active]:bg-transparent data-[state=active]:text-inherit"
-              style={{
-                color: activeTab === 'intelligence' ? brandColors.navyDeep : `${brandColors.ink}60`,
-              }}
-            >
-              <motion.div
-                className="flex flex-col items-start gap-0.5"
-                layout
-              >
-                <div className="flex items-center gap-1.5 md:gap-2">
-                  <TrendingUp className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="hidden sm:inline">Intelligence</span>
-                </div>
-                <span className="text-[9px] font-semibold uppercase tracking-wider leading-none" style={{ color: brandColors.goldPrestige }}>Prototype</span>
-              </motion.div>
-              {activeTab === 'intelligence' && (
-                <motion.div
-                  layoutId="activeIndicator"
-                  className="absolute bottom-0 left-0 right-0 h-0.5"
-                  style={{ background: brandColors.goldPrestige }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                />
-              )}
-            </TabsTrigger>
-
-            <TabsTrigger
-              value="alumni"
-              className="relative rounded-none border-0 px-3 py-3 text-xs md:text-sm font-medium transition-none data-[state=active]:bg-transparent data-[state=active]:text-inherit"
-              style={{
-                color: activeTab === 'alumni' ? brandColors.navyDeep : `${brandColors.ink}60`,
-              }}
-            >
-              <motion.div
-                className="flex flex-col items-start gap-0.5"
-                layout
-              >
-                <div className="flex items-center gap-1.5 md:gap-2">
-                  <Newspaper className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="hidden sm:inline">Alumni in News</span>
-                </div>
-                <span className="text-[9px] font-semibold uppercase tracking-wider leading-none" style={{ color: brandColors.goldPrestige }}>Prototype</span>
-              </motion.div>
-              {activeTab === 'alumni' && (
+              {activeTab === 'coming-soon' && (
                 <motion.div
                   layoutId="activeIndicator"
                   className="absolute bottom-0 left-0 right-0 h-0.5"
@@ -178,34 +116,8 @@ export default function AuthenticatedIntelligenceHeader() {
               </motion.div>
             </TabsContent>
 
-            <TabsContent value="radar" className="focus-visible:outline-none">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="w-6 h-6 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" /></div>}><RadarDashboard /></Suspense>
-              </motion.div>
-            </TabsContent>
-
-            <TabsContent value="intelligence" className="focus-visible:outline-none">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="w-6 h-6 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" /></div>}><IntelligenceDashboard /></Suspense>
-              </motion.div>
-            </TabsContent>
-
-            <TabsContent value="alumni" className="focus-visible:outline-none">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="w-6 h-6 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin" /></div>}><SpaceNews /></Suspense>
-              </motion.div>
+            <TabsContent value="coming-soon" className="focus-visible:outline-none">
+              <ComingSoonIntelligenceTab />
             </TabsContent>
           </div>
         </Tabs>
