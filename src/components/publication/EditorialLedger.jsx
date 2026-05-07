@@ -1,15 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, Globe } from 'lucide-react';
-
-const brandColors = {
-  navyDeep: '#1e3a5a',
-  skyBlue: '#4a90b8',
-  goldPrestige: '#c9a87c',
-  goldLight: '#e8d4b8',
-  cream: '#faf8f5',
-  ink: '#1a1a1a',
-};
+import NomineeImage from '@/components/publication/NomineeImage';
+import { publicationBrand as brandColors } from '@/components/publication/publicationConfig';
 
 // Mobile Card for Index
 const MobileIndexCard = ({ nominee, index, onClick }) => {
@@ -22,7 +15,11 @@ const MobileIndexCard = ({ nominee, index, onClick }) => {
       viewport={{ once: true, margin: '-20px' }}
       transition={{ delay: Math.min(index * 0.02, 0.2) }}
       onClick={() => onClick(nominee)}
-      className="flex items-center gap-3 p-3 rounded-xl bg-white active:scale-[0.98] transition-transform"
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(nominee); } }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Open profile for ${nominee.name}`}
+      className="flex items-center gap-3 p-3 rounded-xl bg-white active:scale-[0.98] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a87c]"
       style={{ border: `1px solid ${brandColors.ink}08`, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
     >
       {/* Rank Badge */}
@@ -35,21 +32,11 @@ const MobileIndexCard = ({ nominee, index, onClick }) => {
       
       {/* Photo */}
       <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0">
-        {nominee.avatar_url || nominee.photo_url ? (
-          <img
-            src={nominee.avatar_url || nominee.photo_url}
-            alt=""
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div 
-            className="w-full h-full flex items-center justify-center text-sm font-medium"
-            style={{ background: brandColors.goldLight, color: brandColors.navyDeep }}
-          >
-            {nominee.name?.charAt(0)}
-          </div>
-        )}
+        <NomineeImage
+          nominee={nominee}
+          className="w-full h-full object-cover"
+          fallbackClassName="w-full h-full text-sm"
+        />
       </div>
       
       {/* Info */}
@@ -88,7 +75,11 @@ const IndexRow = ({ nominee, index, onClick }) => {
       viewport={{ once: true, margin: '-20px' }}
       transition={{ delay: Math.min(index * 0.02, 0.3) }}
       onClick={() => onClick(nominee)}
-      className="group cursor-pointer border-b transition-colors duration-200 hover:bg-black/[0.02]"
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(nominee); } }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Open profile for ${nominee.name}`}
+      className="group cursor-pointer border-b transition-colors duration-200 hover:bg-black/[0.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a87c]"
       style={{ borderColor: `${brandColors.ink}10` }}
     >
       {/* Rank */}

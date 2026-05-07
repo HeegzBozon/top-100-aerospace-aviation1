@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { getStandingsData } from '@/functions/getStandingsData';
 import { motion, useScroll } from 'framer-motion';
-import { Star, Send, CheckCircle, Loader2 } from 'lucide-react';
+import { Star, Send, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // Editorial Components
@@ -12,8 +12,8 @@ import EditorialManifesto from '@/components/publication/EditorialManifesto';
 import EditorialPortraits from '@/components/publication/EditorialPortraits';
 import EditorialLedger from '@/components/publication/EditorialLedger';
 import SignalReport from '@/components/publication/SignalReport';
-import OrbitalIndex from '@/components/publication/OrbitalIndex';
 import ArchiveExport from '@/components/publication/ArchiveExport';
+import OrbitalIndexPreview from '@/components/publication/OrbitalIndexPreview';
 import EditorialClosing from '@/components/publication/EditorialClosing';
 import EnhancedProfilePanel from '@/components/publication/EnhancedProfilePanel';
 import ShareableCard from '@/components/publication/ShareableCard';
@@ -21,39 +21,34 @@ import CountdownLanding from '@/components/publication/CountdownLanding';
 import UnauthenticatedCTA from '@/components/public/UnauthenticatedCTA';
 import LtPerryButton from '@/components/public/LtPerryButton';
 import AuthenticatedIntelligenceHeader from '@/components/publication/AuthenticatedIntelligenceHeader';
-
-const brandColors = {
-  navyDeep: '#1e3a5a',
-  skyBlue: '#4a90b8',
-  goldPrestige: '#c9a87c',
-  goldLight: '#e8d4b8',
-  cream: '#faf8f5',
-  ink: '#1a1a1a',
-};
+import { publicationBrand as brandColors, top100Women2025Config } from '@/components/publication/publicationConfig';
 
 // Waitlist Signup Component
 const WaitlistSignup = () => {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState('idle'); // idle, loading, success, error
+  const [status, setStatus] = useState('idle');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !email.includes('@')) return;
+    const trimmedEmail = email.trim();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setStatus('error');
+      setMessage('Please enter a valid email address.');
+      return;
+    }
     
     setStatus('loading');
-    try {
-      // Save to user data or a simple notification
-      await base44.integrations.Core.SendEmail({
-        to: 'hello@top100women.com',
-        subject: 'Orbital Index Waitlist Signup',
-        body: `New waitlist signup for Orbital Index feature: ${email}`
-      });
-      setStatus('success');
-      setEmail('');
-    } catch (err) {
-      console.error('Waitlist signup error:', err);
-      setStatus('success'); // Show success anyway for UX
-    }
+    setMessage('');
+    await base44.integrations.Core.SendEmail({
+      to: top100Women2025Config.waitlistEmail,
+      subject: top100Women2025Config.waitlistSubject,
+      body: `New waitlist signup for Orbital Index feature: ${trimmedEmail}`
+    });
+    setStatus('success');
+    setMessage("You're on the list!");
+    setEmail('');
   };
 
   if (status === 'success') {
@@ -61,46 +56,63 @@ const WaitlistSignup = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="flex items-center gap-2 px-5 py-3 rounded-full"
+        className="flex items-center gap-2 rounded-full px-5 py-3"
+        role="status"
         style={{ background: `${brandColors.navyDeep}10`, border: `1px solid ${brandColors.navyDeep}20` }}
       >
-        <CheckCircle className="w-4 h-4" style={{ color: brandColors.goldPrestige }} />
-        <span className="text-sm" style={{ color: brandColors.navyDeep }}>You're on the list!</span>
+        <CheckCircle className="h-4 w-4" style={{ color: brandColors.goldPrestige }} />
+        <span className="text-sm" style={{ color: brandColors.navyDeep }}>{message}</span>
       </motion.div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md">
-      <div className="relative flex-1 w-full">
+    <form onSubmit={handleSubmit} className="flex w-full max-w-md flex-col items-start gap-3 sm:flex-row sm:items-center" noValidate>
+      <div className="relative w-full flex-1">
+        <label htmlFor="orbital-waitlist-email" className="sr-only">Email for Orbital Index waitlist</label>
         <input
+          id="orbital-waitlist-email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (status === 'error') {
+              setStatus('idle');
+              setMessage('');
+            }
+          }}
           placeholder="Enter your email"
-          className="w-full px-4 py-3 rounded-full text-sm outline-none transition-all"
+          aria-invalid={status === 'error'}
+          aria-describedby={status === 'error' ? 'orbital-waitlist-error' : undefined}
+          className="w-full rounded-full px-4 py-3 text-sm outline-none transition-all focus:ring-2 focus:ring-[#c9a87c] focus:ring-offset-2"
           style={{ 
             background: 'white',
-            border: `1px solid ${brandColors.goldPrestige}50`,
+            border: `1px solid ${status === 'error' ? '#b91c1c' : `${brandColors.goldPrestige}50`}`,
             color: brandColors.navyDeep
           }}
           disabled={status === 'loading'}
         />
+        {status === 'error' && (
+          <div id="orbital-waitlist-error" className="mt-2 flex items-center gap-2 text-xs text-red-700" role="alert">
+            <AlertCircle className="h-3.5 w-3.5" />
+            {message}
+          </div>
+        )}
       </div>
       <Button
         type="submit"
-        disabled={status === 'loading' || !email}
-        className="rounded-full px-6 py-3 text-sm font-medium transition-all whitespace-nowrap"
+        disabled={status === 'loading' || !email.trim()}
+        className="whitespace-nowrap rounded-full px-6 py-3 text-sm font-medium transition-all focus-visible:ring-[#c9a87c]"
         style={{ 
           background: brandColors.navyDeep,
           color: 'white'
         }}
       >
         {status === 'loading' ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
+          <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending</>
         ) : (
           <>
-            <Send className="w-4 h-4 mr-2" />
+            <Send className="mr-2 h-4 w-4" />
             Notify Me
           </>
         )}
@@ -111,17 +123,7 @@ const WaitlistSignup = () => {
 
 // Minimal Navigation - Desktop only
 const EditorialNav = ({ activeSection }) => {
-  const sections = [
-    { id: 'hero', label: '01' },
-    { id: 'contents', label: '02' },
-    { id: 'manifesto', label: '03' },
-    { id: 'portraits', label: '04' },
-    { id: 'honorees', label: '05' },
-    { id: 'orbital-index', label: '06' },
-    { id: 'signal-report', label: '07' },
-    { id: 'archive', label: '08' },
-    { id: 'closing', label: '09' },
-  ];
+  const sections = top100Women2025Config.sections;
 
   return (
     <motion.nav 
@@ -129,12 +131,14 @@ const EditorialNav = ({ activeSection }) => {
       animate={{ opacity: 1 }}
       transition={{ delay: 1.5 }}
       className="fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-3"
+      aria-label="Publication sections"
     >
       {sections.map((section) => (
         <a
           key={section.id}
           href={`#${section.id}`}
-          className="group flex items-center gap-3 justify-end"
+          aria-label={`Jump to ${section.name}`}
+          className="group flex items-center gap-3 justify-end rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a87c] focus-visible:ring-offset-4"
         >
           <span 
             className="text-[10px] tabular-nums opacity-0 group-hover:opacity-100 transition-opacity"
@@ -161,7 +165,8 @@ const EditorialSection = ({ id, children, spine, className = '' }) => (
     {/* Spine Tag - desktop only */}
     {spine && (
       <div 
-        className="absolute top-8 left-4 md:left-12 text-[10px] tracking-[0.5em] uppercase writing-vertical hidden lg:block"
+        className="absolute left-4 top-8 hidden text-[10px] uppercase tracking-[0.5em] md:left-12 lg:block"
+        aria-hidden="true"
         style={{ 
           color: `${brandColors.ink}20`,
           writingMode: 'vertical-lr',
@@ -203,7 +208,7 @@ export default function Top100Women2025() {
 
   // Track active section
   useEffect(() => {
-    const sectionIds = ['hero', 'contents', 'manifesto', 'portraits', 'honorees', 'orbital-index', 'signal-report', 'archive', 'closing'];
+    const sectionIds = top100Women2025Config.sections.map(section => section.id);
     
     const observer = new IntersectionObserver(
       (entries) => {
@@ -251,28 +256,18 @@ export default function Top100Women2025() {
           return;
         }
 
-        let standingsData = { standings: { rows: [] } };
-        try {
-          const response = await getStandingsData({
+        const [standingsResponse, rankedVotes] = await Promise.all([
+          getStandingsData({
             season: selectedSeasonId,
             sort: 'aura',
             dir: 'desc',
             page: 1,
             limit: 1000
-          });
-          standingsData = response?.data || standingsData;
-        } catch (err) {
-          console.warn('Failed to load standings data:', err);
-        }
+          }),
+          base44.entities.RankedVote.filter({ season_id: selectedSeasonId }, '-created_date', 10000)
+        ]);
 
-        const standingsRows = standingsData?.standings?.rows || [];
-        let rankedVotes = [];
-        try {
-          rankedVotes = await base44.entities.RankedVote.list('-created_date', 10000);
-          rankedVotes = rankedVotes.filter(v => v.season_id === selectedSeasonId);
-        } catch (err) {
-          console.warn('Failed to load ranked votes:', err);
-        }
+        const standingsRows = standingsResponse?.data?.standings?.rows || [];
         
         const scoreMap = {};
         standingsRows.forEach(n => {
@@ -414,7 +409,7 @@ export default function Top100Women2025() {
   }
 
   return (
-    <div ref={containerRef} className="overflow-x-hidden max-w-[100vw]" style={{ background: brandColors.cream }}>
+    <div ref={containerRef} className="max-w-[100vw] overflow-x-hidden" style={{ background: brandColors.cream }}>
       {/* Unauthenticated User CTAs */}
       <UnauthenticatedCTA user={user} />
 
@@ -442,7 +437,9 @@ export default function Top100Women2025() {
       {!showCountdown && <EditorialNav activeSection={activeSection} />}
 
       {/* SECTION 1: Masthead */}
-      <EditorialMasthead />
+      <main id="hero">
+        <EditorialMasthead />
+      </main>
 
       {/* SECTION 2: Signal Report */}
       <EditorialSection id="signal-report">
@@ -579,9 +576,9 @@ export default function Top100Women2025() {
             
             {/* Preview Container with Overlay */}
             <div className="relative rounded-2xl overflow-hidden" style={{ minHeight: 'min(400px, 70vh)' }}>
-              {/* Blurred/Faded Graph Preview - Hidden on mobile */}
-              <div className="hidden md:block opacity-30 blur-[2px] pointer-events-none">
-                <OrbitalIndex nominees={nominees} onSelectNominee={() => {}} />
+              {/* Lightweight graph preview - Hidden on mobile */}
+              <div className="pointer-events-none opacity-40 blur-[1px]">
+                <OrbitalIndexPreview />
               </div>
               
               {/* Under Construction Overlay */}
@@ -741,7 +738,9 @@ export default function Top100Women2025() {
       </EditorialSection>
 
       {/* SECTION 9: Closing */}
-      <EditorialClosing />
+      <section id="closing">
+        <EditorialClosing />
+      </section>
 
       {/* Profile Panel */}
       {selectedNominee && (

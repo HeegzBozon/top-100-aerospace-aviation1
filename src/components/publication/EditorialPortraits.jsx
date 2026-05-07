@@ -1,14 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-
-const brandColors = {
-  navyDeep: '#1e3a5a',
-  skyBlue: '#4a90b8',
-  goldPrestige: '#c9a87c',
-  goldLight: '#e8d4b8',
-  cream: '#faf8f5',
-  ink: '#1a1a1a',
-};
+import NomineeImage from '@/components/publication/NomineeImage';
+import { publicationBrand as brandColors } from '@/components/publication/publicationConfig';
 
 // Literary quotes — the kind that stopped readers mid-page
 const pioneerQuotes = [
@@ -115,25 +108,12 @@ const CoverStoryCard = ({ nominee, onSelect }) => {
     >
       <div className="relative aspect-[3/4] md:aspect-[4/5] overflow-hidden">
         {/* Image */}
-        {nominee.avatar_url || nominee.photo_url ? (
-          <img
-            src={nominee.avatar_url || nominee.photo_url}
-            alt={nominee.name}
-            className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-          />
-        ) : (
-          <div 
-            className="w-full h-full flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${brandColors.navyDeep}, ${brandColors.skyBlue})` }}
-          >
-            <span 
-              className="text-8xl font-light"
-              style={{ fontFamily: 'Georgia, serif', color: brandColors.goldLight }}
-            >
-              {nominee.name?.charAt(0)}
-            </span>
-          </div>
-        )}
+        <NomineeImage
+          nominee={nominee}
+          priority
+          className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+          fallbackClassName="w-full h-full text-8xl"
+        />
         
         {/* Permanent gradient overlay */}
         <div 
@@ -224,26 +204,11 @@ const PortraitCard = ({ nominee, index, layout = 'default', onSelect }) => {
     >
       <div className={`relative overflow-hidden ${aspectClasses[layout] || aspectClasses.default}`}>
         {/* Image */}
-        {nominee.avatar_url || nominee.photo_url ? (
-          <img
-            src={nominee.avatar_url || nominee.photo_url}
-            alt={nominee.name}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            loading="lazy"
-          />
-        ) : (
-          <div 
-            className="w-full h-full flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${brandColors.cream}, ${brandColors.goldLight}30)` }}
-          >
-            <span 
-              className="text-5xl md:text-6xl font-light"
-              style={{ fontFamily: 'Georgia, serif', color: brandColors.navyDeep }}
-            >
-              {nominee.name?.charAt(0)}
-            </span>
-          </div>
-        )}
+        <NomineeImage
+          nominee={nominee}
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          fallbackClassName="w-full h-full text-5xl md:text-6xl"
+        />
         
         {/* Subtle vignette */}
         <div 
