@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight, Globe2, MapPin, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import NominationCountdown from '@/components/home-v2/NominationCountdown';
 
 const slides = [
   {
@@ -136,6 +137,8 @@ export default function HomeHeroSlider() {
               <p className="mt-4 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
                 {slide.body}
               </p>
+
+              {slide.id === 'think-global' && <NominationCountdown />}
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <SlideButton action={slide.primary} />
