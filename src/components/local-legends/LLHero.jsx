@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown, ArrowRight } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -29,6 +29,13 @@ export default function LLHero() {
 
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <Link to="/" className="absolute left-5 top-5 z-20 md:left-8 md:top-8">
+        <Button variant="outline" className="rounded-full border-white/20 bg-black/25 text-white backdrop-blur-md hover:bg-white/10">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Home
+        </Button>
+      </Link>
+
       {srcs.map((src, i) => (
         <video
           key={src}
