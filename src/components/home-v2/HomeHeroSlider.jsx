@@ -140,6 +140,19 @@ export default function HomeHeroSlider() {
 
               {slide.id === 'think-global' && <NominationCountdown />}
 
+              {slide.id === 'think-global' && (
+                <div className="mt-5">
+                  <Link
+                    to="/hangouts"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all"
+                    style={{ background: 'rgba(201,168,124,0.12)', border: '1px solid rgba(201,168,124,0.35)', color: '#c9a87c' }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] animate-pulse" />
+                    Hangouts · M–F 1:30 PM Pacific · Free
+                  </Link>
+                </div>
+              )}
+
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <SlideButton action={slide.primary} />
                 <SlideButton action={slide.secondary} variant="secondary" />

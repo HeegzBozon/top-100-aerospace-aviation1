@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { CheckCircle, Download, ArrowLeft, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { syncDiscoveryToGhl } from '@/functions/syncDiscoveryToGhl';
 
 export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
   const savedRef = useRef(false);
@@ -21,6 +22,14 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
           submitter_name: user?.full_name ?? '',
           status: 'new',
         });
+        // Sync to GoHighLevel
+        const email = user?.email || formData?.q_email || formData?.email;
+        const name = user?.full_name || formData?.q_name || formData?.name;
+        if (email) {
+          await syncDiscoveryToGhl({ name, email, formData }).catch(err =>
+            console.error('GHL sync failed:', err)
+          );
+        }
       } catch (err) {
         console.error('Failed to save discovery response:', err);
       }

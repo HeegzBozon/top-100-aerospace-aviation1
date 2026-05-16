@@ -5,6 +5,7 @@ import {
   ChevronRight, Star, Award, Globe, TrendingUp, HelpCircle, ChevronDown, X
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CALENDAR_EMBED_ID = 'URctiv0FD5Mi8vQUADec';
 
@@ -162,10 +163,12 @@ const CTASecondary = ({ children, href = '#schedule' }) => (
 export default function Hangouts() {
   const [rsvpOpen, setRsvpOpen] = useState(false);
   const isLive = useIsLiveNow();
+  const navigate = useNavigate();
 
-  const CTAPrimary = ({ children, isRSVP = false }) => (
+  // Primary CTA — RSVP opens modal; 1:1 routes to discovery questionnaire
+  const CTAPrimary = ({ children, variant = 'rsvp' }) => (
     <button
-      onClick={() => setRsvpOpen(true)}
+      onClick={() => variant === 'package' ? navigate('/discoveryquestionnaire') : setRsvpOpen(true)}
       className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm bg-[#c9a87c] text-[#07111f] hover:bg-[#d4b88c] transition-all shadow-[0_0_35px_rgba(201,168,124,0.4)] hover:shadow-[0_0_55px_rgba(201,168,124,0.55)] whitespace-nowrap"
     >
       {children} <ChevronRight className="w-4 h-4" />
@@ -224,7 +227,7 @@ export default function Hangouts() {
         <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4}
           className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
           <CTAPrimary>RSVP to the Mastermind — Free</CTAPrimary>
-          <CTAPrimary>Claim Your 1:1 Package — Limited</CTAPrimary>
+          <CTAPrimary variant="package">Claim Your 1:1 Package — Limited</CTAPrimary>
           {isLive ? (
             <span className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm whitespace-nowrap"
               style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.4)', color: '#fca5a5' }}>
@@ -458,7 +461,7 @@ export default function Hangouts() {
             <p className="text-white/40 text-xs mt-1">$1,500+ in individual advisory. Included. For joining.</p>
           </div>
           <p className="text-white/50 text-sm mb-8">No pitch. No upsell. Just work. Bandwidth-limited — when capacity is reached, you go on the waitlist. First come, first served. One package per person.</p>
-          <CTAPrimary>Claim Your 1:1 Package — Limited Availability</CTAPrimary>
+          <CTAPrimary variant="package">Claim Your 1:1 Package — Limited Availability</CTAPrimary>
         </motion.div>
       </section>
 
@@ -635,7 +638,7 @@ export default function Hangouts() {
           <p className="uppercase tracking-[0.3em] text-[#c9a87c] text-xs font-semibold mb-6">Free · Open · M–F · 1:30 PM Pacific</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
             <CTAPrimary>RSVP to the Mastermind — Free</CTAPrimary>
-            <CTAPrimary>Claim Your 1:1 Package — Limited</CTAPrimary>
+            <CTAPrimary variant="package">Claim Your 1:1 Package — Limited</CTAPrimary>
           </div>
         </motion.div>
       </section>
