@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageCircle, Hammer, BookOpen, Mic, Zap, Flame, Users, Network,
-  ChevronRight, Star, Award, Globe, TrendingUp, HelpCircle, ChevronDown, X
+  ChevronRight, ChevronLeft, Star, Award, Globe, TrendingUp, HelpCircle,
+  ChevronDown, X, Sparkles, Check
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import DiscoveryQuestionnaireForm from '@/components/discovery/DiscoveryQuestionnaireForm';
+import DiscoveryQuestionnaireReview from '@/components/discovery/DiscoveryQuestionnaireReview';
 
 const CALENDAR_EMBED_ID = 'URctiv0FD5Mi8vQUADec';
 
@@ -30,10 +32,216 @@ function useIsLiveNow() {
   return live;
 }
 
+const DQ_SECTIONS = [
+  { id: 1, title: 'Brand & Identity', required: true },
+  { id: 2, title: 'Target Audience & Clients', required: true },
+  { id: 3, title: 'Services & Offerings', required: true },
+  { id: 4, title: 'Competitors & Inspiration', required: false },
+  { id: 5, title: 'Website Goals & Must-Haves', required: false },
+  { id: 6, title: 'SEO & Keywords', required: false },
+  { id: 7, title: 'Social Media', required: false },
+  { id: 8, title: 'Assets Inventory', required: false },
+];
+
+function DiscoveryOverlay({ open, onClose }) {
+  const LS_KEY = 'discovery_questionnaire_v1';
+  const [currentStep, setCurrentStep] = useState(() => {
+    try { return parseInt(localStorage.getItem(`${LS_KEY}_step`) || '0', 10); } catch { return 0; }
+  });
+  const [formData, setFormData] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
+  });
+  const [direction, setDirection] = useState(0);
+  const [showReview, setShowReview] = useState(false);
+
+  useEffect(() => {
+    if (open) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+
+  useEffect(() => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(formData)); } catch {}
+  }, [formData]);
+  useEffect(() => {
+    try { localStorage.setItem(`${LS_KEY}_step`, String(currentStep)); } catch {}
+  }, [currentStep]);
+
+  const progress = useMemo(() => ((currentStep + 1) / DQ_SECTIONS.length) * 100, [currentStep]);
+
+  const handleNext = () => {
+    if (currentStep < DQ_SECTIONS.length - 1) { setDirection(1); setCurrentStep(s => s + 1); }
+    else setShowReview(true);
+  };
+  const handlePrev = () => {
+    if (showReview) { setShowReview(false); return; }
+    if (currentStep > 0) { setDirection(-1); setCurrentStep(s => s - 1); }
+  };
+
+  const section = DQ_SECTIONS[currentStep];
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          key="dq-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.35 }}
+          className="fixed inset-0 z-[300] flex items-center justify-center"
+          style={{ background: 'rgba(5,12,24,0.97)', backdropFilter: 'blur(20px)' }}
+        >
+          {/* Ambient glows */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <motion.div
+              animate={{ scale: [1, 1.15, 1], opacity: [0.12, 0.2, 0.12] }}
+              transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] rounded-full"
+              style={{ background: 'radial-gradient(ellipse, #c9a87c 0%, transparent 70%)' }}
+            />
+            <motion.div
+              animate={{ scale: [1, 1.1, 1], opacity: [0.08, 0.15, 0.08] }}
+              transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+              className="absolute bottom-[-15%] right-[15%] w-[400px] h-[400px] rounded-full"
+              style={{ background: 'radial-gradient(ellipse, #1e3a5a 0%, transparent 70%)' }}
+            />
+          </div>
+
+          {/* Close button */}
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            onClick={onClose}
+            className="absolute top-5 right-5 z-10 w-10 h-10 rounded-full flex items-center justify-center border border-white/15 text-white/50 hover:text-white hover:border-white/40 transition-all"
+            style={{ background: 'rgba(255,255,255,0.05)' }}
+          >
+            <X className="w-5 h-5" />
+          </motion.button>
+
+          {/* Panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 60, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 40, scale: 0.97 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-10 w-full max-w-2xl mx-4 rounded-3xl border border-[#c9a87c]/20 flex flex-col"
+            style={{ background: 'linear-gradient(160deg, #0d1f36 0%, #07111f 100%)', maxHeight: '92vh' }}
+          >
+            {/* Header */}
+            <div className="px-8 pt-8 pb-6 border-b border-white/6 flex-shrink-0">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-[#c9a87c]" />
+                <span className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest">
+                  {showReview ? 'Review & Submit' : `Step ${currentStep + 1} of ${DQ_SECTIONS.length}`}
+                </span>
+              </div>
+              <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                className="text-2xl font-bold text-white mb-4">
+                {showReview ? 'Your Discovery Brief' : section.title}
+              </h2>
+              {!showReview && (
+                <>
+                  <div className="w-full h-1 bg-white/8 rounded-full overflow-hidden">
+                    <motion.div
+                      animate={{ width: `${progress}%` }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                      className="h-full rounded-full"
+                      style={{ background: 'linear-gradient(90deg, #c9a87c, #d4a090)' }}
+                    />
+                  </div>
+                  {/* Section dots */}
+                  <div className="flex gap-1.5 mt-3 flex-wrap">
+                    {DQ_SECTIONS.map((s, idx) => (
+                      <button
+                        key={s.id}
+                        onClick={() => { setDirection(idx > currentStep ? 1 : -1); setCurrentStep(idx); }}
+                        className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold transition-all"
+                        style={{
+                          background: idx === currentStep
+                            ? 'linear-gradient(135deg, #c9a87c, #d4a090)'
+                            : idx < currentStep
+                              ? 'rgba(201,168,124,0.2)'
+                              : 'rgba(255,255,255,0.05)',
+                          color: idx === currentStep ? '#07111f' : idx < currentStep ? '#c9a87c' : 'rgba(255,255,255,0.3)',
+                          border: idx < currentStep ? '1px solid rgba(201,168,124,0.3)' : '1px solid rgba(255,255,255,0.08)',
+                          transform: idx === currentStep ? 'scale(1.15)' : 'scale(1)',
+                        }}
+                      >
+                        {idx < currentStep ? <Check className="w-3 h-3" /> : s.id}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Scrollable body */}
+            <div className="flex-1 overflow-y-auto px-8 py-6 min-h-0">
+              {showReview ? (
+                <DiscoveryQuestionnaireReview
+                  formData={formData}
+                  onBack={() => setShowReview(false)}
+                  onSubmitComplete={() => {
+                    try { localStorage.removeItem(LS_KEY); localStorage.removeItem(`${LS_KEY}_step`); } catch {}
+                    onClose();
+                  }}
+                  inline
+                />
+              ) : (
+                <AnimatePresence mode="wait" custom={direction}>
+                  <motion.div
+                    key={currentStep}
+                    custom={direction}
+                    initial={{ opacity: 0, x: direction > 0 ? 32 : -32 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: direction > 0 ? -32 : 32 }}
+                    transition={{ duration: 0.28, ease: 'easeOut' }}
+                  >
+                    <DiscoveryQuestionnaireForm
+                      sectionId={section.id}
+                      formData={formData}
+                      setFormData={setFormData}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+
+            {/* Footer nav */}
+            {!showReview && (
+              <div className="px-8 py-6 border-t border-white/6 flex items-center justify-between gap-3 flex-shrink-0">
+                <button
+                  onClick={handlePrev}
+                  disabled={currentStep === 0}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white disabled:opacity-25 disabled:cursor-not-allowed transition-colors border border-white/10 hover:border-white/20"
+                  style={{ background: 'rgba(255,255,255,0.03)' }}
+                >
+                  <ChevronLeft className="w-4 h-4" /> Back
+                </button>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleNext}
+                  className="flex items-center gap-2 px-7 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #c9a87c, #d4a090)', color: '#07111f' }}
+                >
+                  {currentStep === DQ_SECTIONS.length - 1 ? 'Review & Submit' : 'Next'}
+                  {currentStep < DQ_SECTIONS.length - 1 && <ChevronRight className="w-4 h-4" />}
+                </motion.button>
+              </div>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 function RSVPModal({ open, onClose }) {
   useEffect(() => {
     if (!open) return;
-    // Inject LeadConnector embed script if not already present
     if (!document.querySelector('script[src="https://link.msgsndr.com/js/form_embed.js"]')) {
       const s = document.createElement('script');
       s.src = 'https://link.msgsndr.com/js/form_embed.js';
@@ -162,13 +370,12 @@ const CTASecondary = ({ children, href = '#schedule' }) => (
 
 export default function Hangouts() {
   const [rsvpOpen, setRsvpOpen] = useState(false);
+  const [discoveryOpen, setDiscoveryOpen] = useState(false);
   const isLive = useIsLiveNow();
-  const navigate = useNavigate();
 
-  // Primary CTA — RSVP opens modal; 1:1 routes to discovery questionnaire
   const CTAPrimary = ({ children, variant = 'rsvp' }) => (
     <button
-      onClick={() => variant === 'package' ? navigate('/discoveryquestionnaire') : setRsvpOpen(true)}
+      onClick={() => variant === 'package' ? setDiscoveryOpen(true) : setRsvpOpen(true)}
       className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm bg-[#c9a87c] text-[#07111f] hover:bg-[#d4b88c] transition-all shadow-[0_0_35px_rgba(201,168,124,0.4)] hover:shadow-[0_0_55px_rgba(201,168,124,0.55)] whitespace-nowrap"
     >
       {children} <ChevronRight className="w-4 h-4" />
@@ -181,6 +388,7 @@ export default function Hangouts() {
       style={{ background: 'linear-gradient(160deg, #07111f 0%, #0d1f36 55%, #111827 100%)', fontFamily: "'Montserrat', system-ui, sans-serif" }}
     >
       <RSVPModal open={rsvpOpen} onClose={() => setRsvpOpen(false)} />
+      <DiscoveryOverlay open={discoveryOpen} onClose={() => setDiscoveryOpen(false)} />
 
       {/* ── NAV ── */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/5 sticky top-0 z-50" style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(16px)' }}>

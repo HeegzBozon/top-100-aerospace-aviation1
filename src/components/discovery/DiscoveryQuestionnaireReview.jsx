@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { syncDiscoveryToGhl } from '@/functions/syncDiscoveryToGhl';
 
-export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
+export default function DiscoveryQuestionnaireReview({ formData, onBack, onSubmitComplete, inline = false }) {
   const savedRef = useRef(false);
 
   // Save to DB once on mount — idempotent via ref guard
@@ -50,15 +50,8 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
     document.body.removeChild(element);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f1f35] via-[#1e3a5a] to-[#0a1628] relative overflow-hidden p-4 sm:p-8">
-      {/* Ambient */}
-      <div className="absolute inset-0 pointer-events-none opacity-20">
-        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[#c9a87c] rounded-full mix-blend-multiply filter blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-[#4a90b8] rounded-full mix-blend-multiply filter blur-3xl" />
-      </div>
-
-      <div className="relative z-10 max-w-3xl mx-auto">
+  const content = (
+    <div className={inline ? '' : 'relative z-10 max-w-3xl mx-auto'}>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -127,16 +120,43 @@ export default function DiscoveryQuestionnaireReview({ formData, onBack }) {
           Questions? Reply to your onboarding email and we'll walk you through anything you need.
         </p>
 
-        <div className="flex justify-center mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-[#c9a87c] to-[#d4a090] text-[#1e3a5a] hover:from-[#e8d4b8] hover:to-[#d4a090] transition-all font-bold shadow-lg hover:shadow-xl text-sm"
-          >
-            <Home className="w-4 h-4" />
-            Continue Exploring
-          </Link>
-        </div>
+        {!inline && (
+          <div className="flex justify-center mt-6">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-[#c9a87c] to-[#d4a090] text-[#1e3a5a] hover:from-[#e8d4b8] hover:to-[#d4a090] transition-all font-bold shadow-lg hover:shadow-xl text-sm"
+            >
+              <Home className="w-4 h-4" />
+              Continue Exploring
+            </Link>
+          </div>
+        )}
+        {inline && (
+          <div className="flex justify-center mt-6">
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={onSubmitComplete}
+              className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm shadow-lg"
+              style={{ background: 'linear-gradient(135deg, #c9a87c, #d4a090)', color: '#07111f' }}
+            >
+              Done — Close
+            </motion.button>
+          </div>
+        )}
+    </div>
+  );
+
+  if (inline) return content;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#0f1f35] via-[#1e3a5a] to-[#0a1628] relative overflow-hidden p-4 sm:p-8">
+      {/* Ambient */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[#c9a87c] rounded-full mix-blend-multiply filter blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-[#4a90b8] rounded-full mix-blend-multiply filter blur-3xl" />
       </div>
+      {content}
     </div>
   );
 }
