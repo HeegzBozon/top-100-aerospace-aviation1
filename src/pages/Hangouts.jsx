@@ -39,12 +39,15 @@ const TRACK_OPTIONS = [
   { id: 'general',   label: 'General',     emoji: '💬', desc: 'Something else on your mind — just say hi',        color: '#c9a87c' },
 ];
 
+const BOOKING_WIDGET_ID = 'ecQ2KuPT6vntXMcNyrnu';
+
 function DiscoveryOverlay({ open, onClose }) {
   const LS_KEY = 'discovery_questionnaire_v2';
   const [track, setTrack] = useState(null);         // null = picker screen
   const [sectionIndex, setSectionIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [showReview, setShowReview] = useState(false);
+  const [showScheduling, setShowScheduling] = useState(false);
   const [formData, setFormData] = useState(() => {
     try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
   });
@@ -81,9 +84,22 @@ function DiscoveryOverlay({ open, onClose }) {
   };
 
   const handleClose = () => {
-    setTrack(null); setSectionIndex(0); setShowReview(false);
+    setTrack(null); setSectionIndex(0); setShowReview(false); setShowScheduling(false);
     onClose();
   };
+
+  // Load the booking widget script once scheduling is shown
+  useEffect(() => {
+    if (!showScheduling) return;
+    const scriptId = 'lc-form-embed-script';
+    if (!document.getElementById(scriptId)) {
+      const s = document.createElement('script');
+      s.src = 'https://link.msgsndr.com/js/form_embed.js';
+      s.type = 'text/javascript';
+      s.id = scriptId;
+      document.body.appendChild(s);
+    }
+  }, [showScheduling]);
 
   const currentSection = trackData?.sections[sectionIndex];
 
@@ -135,7 +151,7 @@ function DiscoveryOverlay({ open, onClose }) {
             transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             className="relative z-10 w-full mx-4 rounded-3xl border flex flex-col"
             style={{
-              maxWidth: track ? '640px' : '760px',
+              maxWidth: showScheduling ? '780px' : track ? '640px' : '760px',
               background: 'linear-gradient(160deg, #0d1f36 0%, #07111f 100%)',
               borderColor: `${accentColor}28`,
               maxHeight: '92vh',
@@ -144,7 +160,62 @@ function DiscoveryOverlay({ open, onClose }) {
           >
             {/* ── TRACK PICKER ── */}
             <AnimatePresence mode="wait">
-              {!track ? (
+              {showScheduling ? (
+                /* ── SCHEDULING ── */
+                <motion.div
+                  key="scheduling"
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 24 }}
+                  transition={{ duration: 0.35 }}
+                  className="flex flex-col"
+                  style={{ maxHeight: '92vh' }}
+                >
+                  {/* Header */}
+                  <div className="px-8 pt-8 pb-5 border-b border-white/6 flex-shrink-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Check className="w-4 h-4 text-emerald-400" />
+                      <span className="text-emerald-400 text-xs font-bold uppercase tracking-widest">Brief submitted — you're on!</span>
+                    </div>
+                    <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-2xl font-bold text-white mb-1">
+                      Book your first 1:1
+                    </h2>
+                    <p className="text-white/45 text-sm">Pick a time that works. We already have your brief — no need to repeat yourself.</p>
+
+                    {/* Coupon callout */}
+                    <div className="mt-4 flex items-center gap-3 px-4 py-3 rounded-xl border border-[#c9a87c]/40"
+                      style={{ background: 'rgba(201,168,124,0.08)' }}>
+                      <Sparkles className="w-4 h-4 text-[#c9a87c] flex-shrink-0" />
+                      <div>
+                        <p className="text-white/60 text-xs mb-0.5">Apply your complimentary coupon at checkout:</p>
+                        <p className="text-[#c9a87c] font-bold text-sm tracking-wider font-mono">PROJECTPHOENIXSUMER2026</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Booking iframe */}
+                  <div className="flex-1 overflow-y-auto min-h-0">
+                    <iframe
+                      src={`https://api.leadconnectorhq.com/widget/booking/${BOOKING_WIDGET_ID}`}
+                      style={{ width: '100%', border: 'none', display: 'block', minHeight: '680px' }}
+                      scrolling="no"
+                      id={`${BOOKING_WIDGET_ID}_1778971710952`}
+                    />
+                  </div>
+
+                  {/* Footer */}
+                  <div className="px-8 py-4 border-t border-white/6 flex items-center justify-between flex-shrink-0">
+                    <p className="text-white/30 text-xs">Can't find a time? Reply to your confirmation email and we'll sort it.</p>
+                    <button
+                      onClick={handleClose}
+                      className="text-white/40 hover:text-white text-xs transition-colors"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </motion.div>
+
+              ) : !track ? (
                 <motion.div
                   key="picker"
                   initial={{ opacity: 0, x: -24 }}
@@ -214,7 +285,7 @@ function DiscoveryOverlay({ open, onClose }) {
                       onBack={() => setShowReview(false)}
                       onSubmitComplete={() => {
                         try { localStorage.removeItem(LS_KEY); } catch {}
-                        handleClose();
+                        setShowScheduling(true);
                       }}
                       inline
                     />
