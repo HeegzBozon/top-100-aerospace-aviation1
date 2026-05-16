@@ -8,6 +8,27 @@ import { useState, useEffect } from 'react';
 
 const CALENDAR_EMBED_ID = 'URctiv0FD5Mi8vQUADec';
 
+function useIsLiveNow() {
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    const check = () => {
+      const now = new Date();
+      // Convert to Pacific time
+      const pt = new Date(now.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+      const day = pt.getDay(); // 0=Sun, 6=Sat
+      const h = pt.getHours();
+      const m = pt.getMinutes();
+      const totalMin = h * 60 + m;
+      // M–F (1–5), 1:30 PM (810 min) – 3:00 PM (900 min)
+      setLive(day >= 1 && day <= 5 && totalMin >= 90 + 720 && totalMin < 180 + 720);
+    };
+    check();
+    const id = setInterval(check, 30000);
+    return () => clearInterval(id);
+  }, []);
+  return live;
+}
+
 function RSVPModal({ open, onClose }) {
   useEffect(() => {
     if (!open) return;
@@ -140,6 +161,7 @@ const CTASecondary = ({ children, href = '#schedule' }) => (
 
 export default function Hangouts() {
   const [rsvpOpen, setRsvpOpen] = useState(false);
+  const isLive = useIsLiveNow();
 
   const CTAPrimary = ({ children, isRSVP = false }) => (
     <button
@@ -159,7 +181,16 @@ export default function Hangouts() {
 
       {/* ── NAV ── */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/5 sticky top-0 z-50" style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(16px)' }}>
-        <Link to="/" className="text-sm font-semibold tracking-widest text-[#c9a87c] uppercase">TOP 100</Link>
+        <div className="flex items-center gap-4">
+          <Link to="/" className="text-sm font-semibold tracking-widest text-[#c9a87c] uppercase">TOP 100</Link>
+          {isLive && (
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white"
+              style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)' }}>
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              LIVE NOW
+            </span>
+          )}
+        </div>
         <CTAPrimary>RSVP to the Mastermind</CTAPrimary>
       </nav>
 
@@ -194,7 +225,15 @@ export default function Hangouts() {
           className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
           <CTAPrimary>RSVP to the Mastermind — Free</CTAPrimary>
           <CTAPrimary>Claim Your 1:1 Package — Limited</CTAPrimary>
-          <span className="inline-flex items-center px-8 py-4 rounded-full font-bold text-sm border border-white/20 text-white/70 whitespace-nowrap">M–F · 1:30 PM Pacific</span>
+          {isLive ? (
+            <span className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm whitespace-nowrap"
+              style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.4)', color: '#fca5a5' }}>
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              Happening Now · Join In
+            </span>
+          ) : (
+            <span className="inline-flex items-center px-8 py-4 rounded-full font-bold text-sm border border-white/20 text-white/70 whitespace-nowrap">M–F · 1:30 PM Pacific</span>
+          )}
         </motion.div>
       </section>
 
