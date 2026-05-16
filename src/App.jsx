@@ -46,6 +46,7 @@ const LocalLegends = lazy(() => import('@/pages/LocalLegends'));
 const LocalLegendsPro = lazy(() => import('@/pages/LocalLegendsPro'));
 const LocalLegendsApply = lazy(() => import('@/pages/LocalLegendsApply'));
 const NominationForm = lazy(() => import('@/pages/NominationForm'));
+const Hangouts = lazy(() => import('@/pages/Hangouts'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -174,6 +175,7 @@ const AuthenticatedApp = () => {
       <Route path="/local-legends-pro" element={<LocalLegendsPro />} />
       <Route path="/local-legends/apply" element={<LocalLegendsApply />} />
       <Route path="/nominate" element={<NominationForm />} />
+      <Route path="/hangouts" element={<Hangouts />} />
       <Route path="/Nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/top100-tv" element={
