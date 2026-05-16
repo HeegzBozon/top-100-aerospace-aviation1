@@ -194,11 +194,11 @@ function DiscoveryOverlay({ open, onClose }) {
                   </div>
 
                   {/* Booking iframe */}
-                  <div className="flex-1 overflow-y-auto min-h-0">
+                  <div className="flex-1 overflow-y-auto min-h-0" style={{ WebkitOverflowScrolling: 'touch' }}>
                     <iframe
                       src={`https://api.leadconnectorhq.com/widget/booking/${BOOKING_WIDGET_ID}`}
-                      style={{ width: '100%', border: 'none', display: 'block', minHeight: '680px' }}
-                      scrolling="no"
+                      style={{ width: '100%', border: 'none', display: 'block', height: '800px' }}
+                      scrolling="yes"
                       id={`${BOOKING_WIDGET_ID}_1778971710952`}
                     />
                   </div>
