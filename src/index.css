@@ -169,3 +169,47 @@ button:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+
+/* ── Sexy global transitions ── */
+@layer utilities {
+  /* All interactive elements get smooth opacity/color transitions */
+  a, button, [role="button"] {
+    transition: opacity 220ms ease, color 220ms ease, background-color 220ms ease,
+                border-color 220ms ease, box-shadow 220ms ease, transform 200ms ease;
+  }
+
+  /* Page-level fade — used by PageTransition */
+  .page-enter {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(4px);
+  }
+  .page-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+    transition: opacity 380ms cubic-bezier(0.22,1,0.36,1),
+                transform 380ms cubic-bezier(0.22,1,0.36,1),
+                filter 380ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .page-exit {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  .page-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    filter: blur(3px);
+    transition: opacity 260ms cubic-bezier(0.22,1,0.36,1),
+                transform 260ms cubic-bezier(0.22,1,0.36,1),
+                filter 260ms cubic-bezier(0.22,1,0.36,1);
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  a, button, [role="button"] {
+    transition: none !important;
+  }
+}
