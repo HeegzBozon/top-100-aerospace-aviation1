@@ -24,16 +24,16 @@ function RSVPModal({ open, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
-      style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(12px)' }}
+      className="fixed inset-0 z-[200] flex items-start justify-center"
+      style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(12px)', overflowY: 'auto', padding: '16px' }}
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl rounded-3xl border border-[#c9a87c]/30 overflow-hidden"
-        style={{ background: '#0d1f36' }}
+        className="relative w-full max-w-2xl rounded-3xl border border-[#c9a87c]/30 my-auto"
+        style={{ background: '#0d1f36', minWidth: 0 }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/8">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/8 sticky top-0 rounded-t-3xl z-10" style={{ background: '#0d1f36' }}>
           <div>
             <p className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest">TOP 100 Mastermind</p>
             <p className="text-white font-semibold text-sm">RSVP · M–F, 1:30 PM Pacific</p>
@@ -42,11 +42,11 @@ function RSVPModal({ open, onClose }) {
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-2" style={{ minHeight: 520 }}>
+        <div style={{ width: '100%' }}>
           <iframe
             src={`https://api.leadconnectorhq.com/widget/booking/${CALENDAR_EMBED_ID}`}
-            style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: 500 }}
-            scrolling="no"
+            style={{ width: '100%', border: 'none', display: 'block', height: '700px' }}
+            scrolling="yes"
             id={`${CALENDAR_EMBED_ID}_modal`}
           />
         </div>
