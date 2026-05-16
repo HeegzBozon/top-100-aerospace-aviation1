@@ -2,11 +2,58 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   MessageCircle, Hammer, BookOpen, Mic, Zap, Flame, Users, Network,
-  ChevronRight, Star, Award, Globe, TrendingUp, Heart, HelpCircle, ChevronDown
+  ChevronRight, Star, Award, Globe, TrendingUp, HelpCircle, ChevronDown, X
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const CALENDAR_LINK = 'https://calendar.app.google/qvsz291f2bTB3Pkr9';
+const CALENDAR_EMBED_ID = 'URctiv0FD5Mi8vQUADec';
+
+function RSVPModal({ open, onClose }) {
+  useEffect(() => {
+    if (!open) return;
+    // Inject LeadConnector embed script if not already present
+    if (!document.querySelector('script[src="https://link.msgsndr.com/js/form_embed.js"]')) {
+      const s = document.createElement('script');
+      s.src = 'https://link.msgsndr.com/js/form_embed.js';
+      s.type = 'text/javascript';
+      document.body.appendChild(s);
+    }
+  }, [open]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(12px)' }}
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-2xl rounded-3xl border border-[#c9a87c]/30 overflow-hidden"
+        style={{ background: '#0d1f36' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/8">
+          <div>
+            <p className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest">TOP 100 Mastermind</p>
+            <p className="text-white font-semibold text-sm">RSVP · M–F, 1:30 PM Pacific</p>
+          </div>
+          <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="p-2" style={{ minHeight: 520 }}>
+          <iframe
+            src={`https://api.leadconnectorhq.com/widget/booking/${CALENDAR_EMBED_ID}`}
+            style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: 500 }}
+            scrolling="no"
+            id={`${CALENDAR_EMBED_ID}_modal`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -82,17 +129,6 @@ function FAQ({ q, a }) {
   );
 }
 
-const CTAPrimary = ({ children, href = CALENDAR_LINK }) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm bg-[#c9a87c] text-[#07111f] hover:bg-[#d4b88c] transition-all shadow-[0_0_35px_rgba(201,168,124,0.4)] hover:shadow-[0_0_55px_rgba(201,168,124,0.55)] whitespace-nowrap"
-  >
-    {children} <ChevronRight className="w-4 h-4" />
-  </a>
-);
-
 const CTASecondary = ({ children, href = '#schedule' }) => (
   <a
     href={href}
@@ -103,15 +139,28 @@ const CTASecondary = ({ children, href = '#schedule' }) => (
 );
 
 export default function Hangouts() {
+  const [rsvpOpen, setRsvpOpen] = useState(false);
+
+  const CTAPrimary = ({ children, isRSVP = false }) => (
+    <button
+      onClick={() => setRsvpOpen(true)}
+      className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm bg-[#c9a87c] text-[#07111f] hover:bg-[#d4b88c] transition-all shadow-[0_0_35px_rgba(201,168,124,0.4)] hover:shadow-[0_0_55px_rgba(201,168,124,0.55)] whitespace-nowrap"
+    >
+      {children} <ChevronRight className="w-4 h-4" />
+    </button>
+  );
+
   return (
     <div
       className="min-h-screen w-full overflow-x-hidden"
       style={{ background: 'linear-gradient(160deg, #07111f 0%, #0d1f36 55%, #111827 100%)', fontFamily: "'Montserrat', system-ui, sans-serif" }}
     >
+      <RSVPModal open={rsvpOpen} onClose={() => setRsvpOpen(false)} />
+
       {/* ── NAV ── */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/5 sticky top-0 z-50" style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(16px)' }}>
         <Link to="/" className="text-sm font-semibold tracking-widest text-[#c9a87c] uppercase">TOP 100</Link>
-        <CTAPrimary>Join Free</CTAPrimary>
+        <CTAPrimary>RSVP to the Mastermind</CTAPrimary>
       </nav>
 
       {/* ── HERO ── */}
@@ -143,9 +192,9 @@ export default function Hangouts() {
 
         <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4}
           className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
-          <CTAPrimary>Join the Mastermind — Free</CTAPrimary>
+          <CTAPrimary>RSVP to the Mastermind — Free</CTAPrimary>
           <CTAPrimary>Claim Your 1:1 Package — Limited</CTAPrimary>
-          <CTASecondary href="#schedule">See the Full Schedule</CTASecondary>
+          <span className="inline-flex items-center px-8 py-4 rounded-full font-bold text-sm border border-white/20 text-white/70 whitespace-nowrap">M–F · 1:30 PM Pacific</span>
         </motion.div>
       </section>
 
@@ -544,11 +593,10 @@ export default function Hangouts() {
           </h2>
           <p className="text-white/50 text-base mb-4 max-w-xl mx-auto">The connections get made. The introductions happen. The problems get solved. In rooms you weren't in.</p>
           <p className="text-white/70 text-base mb-12">But now there's one you don't have to earn your way into.</p>
-          <p className="uppercase tracking-[0.3em] text-[#c9a87c] text-xs font-semibold mb-6">Free · Open · Rolling · Weekly to start, daily as we grow.</p>
+          <p className="uppercase tracking-[0.3em] text-[#c9a87c] text-xs font-semibold mb-6">Free · Open · M–F · 1:30 PM Pacific</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
-            <CTAPrimary>Join the Mastermind — Free</CTAPrimary>
+            <CTAPrimary>RSVP to the Mastermind — Free</CTAPrimary>
             <CTAPrimary>Claim Your 1:1 Package — Limited</CTAPrimary>
-            <CTASecondary href="#schedule">See the Full Schedule</CTASecondary>
           </div>
         </motion.div>
       </section>
