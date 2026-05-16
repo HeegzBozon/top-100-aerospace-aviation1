@@ -203,15 +203,26 @@ function DiscoveryOverlay({ open, onClose }) {
                     />
                   </div>
 
-                  {/* Footer */}
-                  <div className="px-8 py-4 border-t border-white/6 flex items-center justify-between flex-shrink-0">
-                    <p className="text-white/30 text-xs">Can't find a time? Reply to your confirmation email and we'll sort it.</p>
-                    <button
-                      onClick={handleClose}
-                      className="text-white/40 hover:text-white text-xs transition-colors"
-                    >
-                      Close
-                    </button>
+                  {/* Footer — next steps */}
+                  <div className="px-8 py-5 border-t border-white/6 flex-shrink-0">
+                    <p className="text-white/40 text-xs mb-3">While you're here — what's next?</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Link to="/" onClick={handleClose}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-white/10 text-white/70 hover:text-white hover:border-white/25 transition-all"
+                        style={{ background: 'rgba(255,255,255,0.03)' }}>
+                        ← Back to TOP 100
+                      </Link>
+                      <Link to="/nominate" onClick={handleClose}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-[#c9a87c]/30 text-[#c9a87c] hover:border-[#c9a87c]/60 transition-all"
+                        style={{ background: 'rgba(201,168,124,0.06)' }}>
+                        Nominate someone
+                      </Link>
+                      <a href="https://wefunder.com/top.100.aerospace.aviation" target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-[#c9a87c]/30 text-[#c9a87c] hover:border-[#c9a87c]/60 transition-all"
+                        style={{ background: 'rgba(201,168,124,0.06)' }}>
+                        Follow our fundraising journey ↗
+                      </a>
+                    </div>
                   </div>
                 </motion.div>
 
@@ -434,6 +445,27 @@ function RSVPModal({ open, onClose }) {
             scrolling="yes"
             id={`${CALENDAR_EMBED_ID}_modal`}
           />
+        </div>
+        {/* Next steps */}
+        <div className="px-6 py-5 border-t border-white/8">
+          <p className="text-white/40 text-xs mb-3">While you're here — what's next?</p>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/" onClick={onClose}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-white/10 text-white/70 hover:text-white hover:border-white/25 transition-all"
+              style={{ background: 'rgba(255,255,255,0.03)' }}>
+              ← Back to TOP 100
+            </Link>
+            <Link to="/nominate" onClick={onClose}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-[#c9a87c]/30 text-[#c9a87c] hover:border-[#c9a87c]/60 transition-all"
+              style={{ background: 'rgba(201,168,124,0.06)' }}>
+              Nominate someone
+            </Link>
+            <a href="https://wefunder.com/top.100.aerospace.aviation" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-[#c9a87c]/30 text-[#c9a87c] hover:border-[#c9a87c]/60 transition-all"
+              style={{ background: 'rgba(201,168,124,0.06)' }}>
+              Follow our fundraising journey ↗
+            </a>
+          </div>
         </div>
       </div>
     </div>
