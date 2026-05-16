@@ -8,52 +8,185 @@ import { useState, useEffect } from 'react';
 
 const CALENDAR_EMBED_ID = 'URctiv0FD5Mi8vQUADec';
 
-function RSVPModal({ open, onClose }) {
+const NAVY = '#0d1f36';
+const GOLD = '#c9a87c';
+
+function FunnelModal({ open, onClose, config }) {
+  const [step, setStep] = useState(1); // 1 = registration, 2 = confirmation/embed
+  const [form, setForm] = useState({ name: '', email: '' });
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
-    if (!open) return;
-    // Inject LeadConnector embed script if not already present
-    if (!document.querySelector('script[src="https://link.msgsndr.com/js/form_embed.js"]')) {
-      const s = document.createElement('script');
-      s.src = 'https://link.msgsndr.com/js/form_embed.js';
-      s.type = 'text/javascript';
-      document.body.appendChild(s);
-    }
+    if (!open) { setStep(1); setForm({ name: '', email: '' }); }
   }, [open]);
 
   if (!open) return null;
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.email.trim()) return;
+    setSubmitting(true);
+    // Small artificial delay for UX polish
+    await new Promise(r => setTimeout(r, 600));
+    setSubmitting(false);
+    setStep(2);
+  };
+
   return (
     <div
       className="fixed inset-0 z-[200] flex items-start justify-center"
-      style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(12px)', overflowY: 'auto', padding: '16px' }}
+      style={{ background: 'rgba(7,17,31,0.95)', backdropFilter: 'blur(16px)', overflowY: 'auto', padding: '24px 16px' }}
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl rounded-3xl border border-[#c9a87c]/30 my-auto"
-        style={{ background: '#0d1f36', minWidth: 0 }}
+        className="relative w-full rounded-3xl border overflow-hidden my-auto"
+        style={{ background: NAVY, borderColor: `${GOLD}40`, maxWidth: step === 2 ? 680 : 520 }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/8 sticky top-0 rounded-t-3xl z-10" style={{ background: '#0d1f36' }}>
-          <div>
-            <p className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest">TOP 100 Mastermind</p>
-            <p className="text-white font-semibold text-sm">RSVP · M–F, 1:30 PM Pacific</p>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)', background: NAVY }}>
+          <div className="flex items-center gap-3">
+            {/* Step indicators */}
+            <div className="flex items-center gap-1.5">
+              {config.steps.map((s, i) => (
+                <div key={i} className="flex items-center gap-1.5">
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+                    style={{
+                      background: step > i + 1 ? GOLD : step === i + 1 ? GOLD : 'rgba(255,255,255,0.1)',
+                      color: step >= i + 1 ? '#07111f' : 'rgba(255,255,255,0.3)',
+                    }}
+                  >
+                    {step > i + 1 ? '✓' : i + 1}
+                  </div>
+                  {i < config.steps.length - 1 && (
+                    <div className="w-8 h-px" style={{ background: step > i + 1 ? GOLD : 'rgba(255,255,255,0.1)' }} />
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="ml-2">
+              <p className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest">{config.label}</p>
+              <p className="text-white/60 text-xs">{config.steps[step - 1]}</p>
+            </div>
           </div>
-          <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-white/30 hover:text-white transition-colors p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div style={{ width: '100%' }}>
-          <iframe
-            src={`https://api.leadconnectorhq.com/widget/booking/${CALENDAR_EMBED_ID}`}
-            style={{ width: '100%', border: 'none', display: 'block', height: '700px' }}
-            scrolling="yes"
-            id={`${CALENDAR_EMBED_ID}_modal`}
-          />
-        </div>
+
+        {/* Step 1 — Registration */}
+        {step === 1 && (
+          <div className="px-8 py-10">
+            <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              className="text-2xl md:text-3xl font-bold text-white mb-2 leading-snug">{config.title}</h2>
+            <p className="text-white/55 text-sm mb-8 leading-relaxed">{config.subtitle}</p>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="text-white/60 text-xs font-semibold uppercase tracking-wider block mb-2">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Your name"
+                  className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none border transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', caretColor: GOLD }}
+                  onFocus={e => e.target.style.borderColor = GOLD}
+                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
+              </div>
+              <div>
+                <label className="text-white/60 text-xs font-semibold uppercase tracking-wider block mb-2">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  placeholder="you@example.com"
+                  className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none border transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', caretColor: GOLD }}
+                  onFocus={e => e.target.style.borderColor = GOLD}
+                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
+              </div>
+              {config.fields && config.fields.map(field => (
+                <div key={field.name}>
+                  <label className="text-white/60 text-xs font-semibold uppercase tracking-wider block mb-2">{field.label}</label>
+                  <input
+                    type="text"
+                    value={form[field.name] || ''}
+                    onChange={e => setForm(f => ({ ...f, [field.name]: e.target.value }))}
+                    placeholder={field.placeholder}
+                    className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none border transition-colors"
+                    style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', caretColor: GOLD }}
+                    onFocus={e => e.target.style.borderColor = GOLD}
+                    onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  />
+                </div>
+              ))}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full py-4 rounded-xl font-bold text-sm transition-all mt-2"
+                style={{ background: submitting ? 'rgba(201,168,124,0.5)' : GOLD, color: '#07111f', boxShadow: `0 0 30px rgba(201,168,124,0.35)` }}
+              >
+                {submitting ? 'Securing your spot…' : config.ctaLabel}
+              </button>
+            </form>
+            <p className="text-white/25 text-xs text-center mt-5">No spam. No pitch. Just the room.</p>
+          </div>
+        )}
+
+        {/* Step 2 — Confirmation + Booking embed */}
+        {step === 2 && (
+          <div>
+            <div className="px-8 pt-8 pb-4 text-center">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(201,168,124,0.15)', border: `1px solid ${GOLD}40` }}>
+                <span className="text-[#c9a87c] text-xl">✓</span>
+              </div>
+              <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-xl font-bold text-white mb-1">
+                {config.confirmTitle}
+              </h3>
+              <p className="text-white/50 text-sm">{config.confirmSubtitle.replace('{name}', form.name.split(' ')[0])}</p>
+            </div>
+            <div>
+              <iframe
+                src={`https://api.leadconnectorhq.com/widget/booking/${CALENDAR_EMBED_ID}`}
+                style={{ width: '100%', border: 'none', display: 'block', height: '680px' }}
+                scrolling="yes"
+                title="Schedule your session"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+const RSVP_CONFIG = {
+  label: 'TOP 100 Mastermind',
+  steps: ['Registration', 'Pick Your Session'],
+  title: 'Reserve your seat.',
+  subtitle: 'M–F · 1:30 PM Pacific · Free · Open to the full TOP 100 community.',
+  ctaLabel: 'Reserve My Seat →',
+  confirmTitle: 'You\'re in.',
+  confirmSubtitle: 'Welcome, {name}. Pick your first session below.',
+};
+
+const PACKAGE_CONFIG = {
+  label: '1:1 Coaching Package',
+  steps: ['Registration', 'Schedule Session 1'],
+  title: 'Claim your 1:1 package.',
+  subtitle: 'Three sessions. One hour each. Direct access. Bandwidth-limited — first come, first served.',
+  ctaLabel: 'Claim My Package →',
+  confirmTitle: 'Package claimed.',
+  confirmSubtitle: 'Let\'s get your first session scheduled, {name}.',
+  fields: [
+    { name: 'focus', label: 'Primary Focus Area (optional)', placeholder: 'e.g. Career strategy, startup, content…' },
+  ],
+};
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -140,11 +273,21 @@ const CTASecondary = ({ children, href = '#schedule' }) => (
 
 export default function Hangouts() {
   const [rsvpOpen, setRsvpOpen] = useState(false);
+  const [packageOpen, setPackageOpen] = useState(false);
 
-  const CTAPrimary = ({ children, isRSVP = false }) => (
+  const CTARsvp = ({ children }) => (
     <button
       onClick={() => setRsvpOpen(true)}
       className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm bg-[#c9a87c] text-[#07111f] hover:bg-[#d4b88c] transition-all shadow-[0_0_35px_rgba(201,168,124,0.4)] hover:shadow-[0_0_55px_rgba(201,168,124,0.55)] whitespace-nowrap"
+    >
+      {children} <ChevronRight className="w-4 h-4" />
+    </button>
+  );
+
+  const CTAPackage = ({ children }) => (
+    <button
+      onClick={() => setPackageOpen(true)}
+      className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm border border-[#c9a87c] text-[#c9a87c] hover:bg-[#c9a87c] hover:text-[#07111f] transition-all whitespace-nowrap"
     >
       {children} <ChevronRight className="w-4 h-4" />
     </button>
@@ -155,12 +298,13 @@ export default function Hangouts() {
       className="min-h-screen w-full overflow-x-hidden"
       style={{ background: 'linear-gradient(160deg, #07111f 0%, #0d1f36 55%, #111827 100%)', fontFamily: "'Montserrat', system-ui, sans-serif" }}
     >
-      <RSVPModal open={rsvpOpen} onClose={() => setRsvpOpen(false)} />
+      <FunnelModal open={rsvpOpen} onClose={() => setRsvpOpen(false)} config={RSVP_CONFIG} />
+      <FunnelModal open={packageOpen} onClose={() => setPackageOpen(false)} config={PACKAGE_CONFIG} />
 
       {/* ── NAV ── */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/5 sticky top-0 z-50" style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(16px)' }}>
         <Link to="/" className="text-sm font-semibold tracking-widest text-[#c9a87c] uppercase">TOP 100</Link>
-        <CTAPrimary>RSVP to the Mastermind</CTAPrimary>
+        <CTARsvp>RSVP to the Mastermind</CTARsvp>
       </nav>
 
       {/* ── HERO ── */}
@@ -192,8 +336,8 @@ export default function Hangouts() {
 
         <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4}
           className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
-          <CTAPrimary>RSVP to the Mastermind — Free</CTAPrimary>
-          <CTAPrimary>Claim Your 1:1 Package — Limited</CTAPrimary>
+          <CTARsvp>RSVP to the Mastermind — Free</CTARsvp>
+          <CTAPackage>Claim Your 1:1 Package — Limited</CTAPackage>
           <span className="inline-flex items-center px-8 py-4 rounded-full font-bold text-sm border border-white/20 text-white/70 whitespace-nowrap">M–F · 1:30 PM Pacific</span>
         </motion.div>
       </section>
@@ -245,13 +389,13 @@ export default function Hangouts() {
           What this community has already done
         </motion.p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {socialProof.map(({ icon: Icon, label, desc }, i) => (
+          {socialProof.map(({ icon: ProofIcon, label, desc }, i) => (
             <motion.div key={label} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i * 0.4}
               className="rounded-2xl p-6 border border-white/8 hover:border-[#c9a87c]/30 transition-all"
               style={{ background: 'rgba(255,255,255,0.03)' }}>
               <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
                 style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.2), rgba(201,168,124,0.05))' }}>
-                <Icon className="w-5 h-5 text-[#c9a87c]" />
+                <ProofIcon className="w-5 h-5 text-[#c9a87c]" />
               </div>
               <h3 className="text-white font-bold text-sm mb-2">{label}</h3>
               <p className="text-white/50 text-xs leading-relaxed">{desc}</p>
@@ -333,13 +477,13 @@ export default function Hangouts() {
           </h2>
         </motion.div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sessions.map(({ icon: Icon, label, desc }, i) => (
+          {sessions.map(({ icon: SessionIcon, label, desc }, i) => (
             <motion.div key={label} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i * 0.3}
               className="rounded-2xl p-6 border border-white/8 hover:border-[#c9a87c]/30 transition-all group"
               style={{ background: 'rgba(255,255,255,0.025)', backdropFilter: 'blur(8px)' }}>
               <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
                 style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.2), rgba(201,168,124,0.05))' }}>
-                <Icon className="w-5 h-5 text-[#c9a87c]" />
+                <SessionIcon className="w-5 h-5 text-[#c9a87c]" />
               </div>
               <h3 className="text-white font-bold text-sm mb-2 group-hover:text-[#c9a87c] transition-colors">{label}</h3>
               <p className="text-white/50 text-xs leading-relaxed">{desc}</p>
@@ -419,7 +563,7 @@ export default function Hangouts() {
             <p className="text-white/40 text-xs mt-1">$1,500+ in individual advisory. Included. For joining.</p>
           </div>
           <p className="text-white/50 text-sm mb-8">No pitch. No upsell. Just work. Bandwidth-limited — when capacity is reached, you go on the waitlist. First come, first served. One package per person.</p>
-          <CTAPrimary>Claim Your 1:1 Package — Limited Availability</CTAPrimary>
+          <CTAPackage>Claim Your 1:1 Package — Limited Availability</CTAPackage>
         </motion.div>
       </section>
 
@@ -595,8 +739,8 @@ export default function Hangouts() {
           <p className="text-white/70 text-base mb-12">But now there's one you don't have to earn your way into.</p>
           <p className="uppercase tracking-[0.3em] text-[#c9a87c] text-xs font-semibold mb-6">Free · Open · M–F · 1:30 PM Pacific</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
-            <CTAPrimary>RSVP to the Mastermind — Free</CTAPrimary>
-            <CTAPrimary>Claim Your 1:1 Package — Limited</CTAPrimary>
+            <CTARsvp>RSVP to the Mastermind — Free</CTARsvp>
+            <CTAPackage>Claim Your 1:1 Package — Limited</CTAPackage>
           </div>
         </motion.div>
       </section>
