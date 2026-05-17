@@ -5,6 +5,7 @@ import { Share2, RotateCcw, ChevronRight } from 'lucide-react';
 import RadarChart from './RadarChart';
 import GameEngine from './GameEngine';
 import FlightDebrief from './FlightDebrief';
+import OutcomeNextThread from './OutcomeNextThread';
 
 const OUTCOME_LABELS = {
   critical_success: 'Critical Success',
@@ -22,7 +23,7 @@ const ROLE_LABELS = {
 
 const STAT_LABELS = { altitude: 'ALTITUDE', velocity: 'VELOCITY', payload: 'PAYLOAD', range: 'RANGE', resilience: 'RESILIENCE', maneuver: 'MANEUVER' };
 
-export default function FlightProfile({ profile, session, playerInfo, onPlayAgain, diceResult }) {
+export default function FlightProfile({ profile, session, playerInfo, onPlayAgain, onPlayOther, diceResult }) {
   const { classification, quote, ecosystemRole, cta, ctaLink } = profile;
   const isExternal = ctaLink?.startsWith('http');
 
@@ -53,7 +54,9 @@ export default function FlightProfile({ profile, session, playerInfo, onPlayAgai
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
           className="text-center mb-10">
-          <p className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest mb-2">Mission Complete</p>
+          <p className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest mb-2">
+            {diceResult?.outcome === 'critical_fail' || diceResult?.outcome === 'fail' ? 'Mission Debrief' : 'Mission Complete'}
+          </p>
           <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             className="text-4xl md:text-5xl font-bold text-white mb-3">Flight Profile</h2>
           <p className="text-white/40 text-sm">Class of 2026 · Campaign C-01: The Right Stuff</p>
@@ -106,6 +109,9 @@ export default function FlightProfile({ profile, session, playerInfo, onPlayAgai
             </div>
           )}
         </motion.div>
+
+        {/* Outcome-driven next thread */}
+        <OutcomeNextThread diceResult={diceResult} session={session} onPlayAgain={onPlayAgain} onPlayOther={onPlayOther} />
 
         {/* CTA */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}

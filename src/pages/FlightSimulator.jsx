@@ -201,7 +201,14 @@ export default function FlightSimulator() {
 
         {phase === GAME_PHASES.PROFILE && flightProfile && (
           <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <FlightProfile profile={flightProfile} session={session} playerInfo={playerInfo} onPlayAgain={reset} diceResult={diceResult} />
+            <FlightProfile
+              profile={flightProfile}
+              session={session}
+              playerInfo={playerInfo}
+              onPlayAgain={reset}
+              onPlayOther={startCampaign}
+              diceResult={diceResult}
+            />
           </motion.div>
         )}
       </AnimatePresence>
