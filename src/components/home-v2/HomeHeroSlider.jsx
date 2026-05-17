@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ChevronLeft, ChevronRight, Globe2, MapPin, Rocket } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Globe2, MapPin, Rocket, Joystick } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NominationCountdown from '@/components/home-v2/NominationCountdown';
 
@@ -54,6 +54,7 @@ const slides = [
     icon: Rocket,
     primary: { label: 'Join Operation: Moon Joy', to: '/moon-joy' },
     secondary: { label: 'Follow Our Fundraising Journey', href: 'https://wefunder.com/top.100.aerospace.aviation' },
+    tertiary: { label: 'Play Flight Simulator', to: '/play' },
   },
 ];
 
@@ -89,11 +90,6 @@ export default function HomeHeroSlider() {
     delay: `${(index % 7) * 0.35}s`,
     size: index % 4 === 0 ? 'h-1.5 w-1.5' : 'h-1 w-1',
   })), []);
-
-  useEffect(() => {
-    const timer = setInterval(() => setActive((current) => (current + 1) % slides.length), 6500);
-    return () => clearInterval(timer);
-  }, []);
 
   const goTo = (index) => setActive((index + slides.length) % slides.length);
 
@@ -183,9 +179,16 @@ export default function HomeHeroSlider() {
                 </div>
               )}
 
-              <div className="mt-5 flex flex-col gap-2 sm:gap-3 sm:flex-row md:mt-7">
+              <div className="mt-5 flex flex-col gap-2 sm:gap-3 sm:flex-row md:mt-7 flex-wrap">
                 <SlideButton action={slide.primary} />
                 <SlideButton action={slide.secondary} variant="secondary" />
+                {slide.tertiary && (
+                  <Link to={slide.tertiary.to}
+                    className="inline-flex items-center gap-2 rounded-full px-5 py-3.5 sm:px-7 sm:py-5 text-xs sm:text-sm font-bold border border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10 transition-all backdrop-blur-md">
+                    <Joystick className="h-4 w-4" />
+                    {slide.tertiary.label}
+                  </Link>
+                )}
               </div>
             </motion.div>
           </AnimatePresence>
