@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Share2, RotateCcw, ChevronRight } from 'lucide-react';
 import RadarChart from './RadarChart';
 import GameEngine from './GameEngine';
+import FlightDebrief from './FlightDebrief';
 
 const OUTCOME_LABELS = {
   critical_success: 'Critical Success',
@@ -21,7 +22,7 @@ const ROLE_LABELS = {
 
 const STAT_LABELS = { altitude: 'ALTITUDE', velocity: 'VELOCITY', payload: 'PAYLOAD', range: 'RANGE', resilience: 'RESILIENCE', maneuver: 'MANEUVER' };
 
-export default function FlightProfile({ profile, session, playerInfo, onPlayAgain }) {
+export default function FlightProfile({ profile, session, playerInfo, onPlayAgain, diceResult }) {
   const { classification, quote, ecosystemRole, cta, ctaLink } = profile;
   const isExternal = ctaLink?.startsWith('http');
 
@@ -122,6 +123,13 @@ export default function FlightProfile({ profile, session, playerInfo, onPlayAgai
               {cta} <ChevronRight className="w-4 h-4" />
             </Link>
           )}
+        </motion.div>
+
+        {/* Flight Debrief upgrade */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}
+          className="rounded-3xl p-6 md:p-8 border border-white/8 mb-6"
+          style={{ background: 'rgba(255,255,255,0.02)' }}>
+          <FlightDebrief profile={profile} session={session} playerInfo={playerInfo} />
         </motion.div>
 
         {/* Actions */}

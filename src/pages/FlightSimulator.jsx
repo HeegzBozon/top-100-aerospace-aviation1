@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import GameEngine from '@/components/flight-sim/GameEngine';
 import CampaignSelect from '@/components/flight-sim/CampaignSelect';
 import SceneView from '@/components/flight-sim/SceneView';
@@ -20,7 +20,22 @@ export const GAME_PHASES = {
 };
 
 export default function FlightSimulator() {
+  const [searchParams] = useSearchParams();
   const [phase, setPhase] = useState(GAME_PHASES.SELECT);
+  const [debriefStatus, setDebriefStatus] = useState(null);
+
+  useEffect(() => {
+    if (searchParams.get('debrief') === 'success') {
+      setDebriefStatus('success');
+      const sessionId = searchParams.get('session_id');
+      if (sessionId) {
+        // Trigger report generation after Stripe redirect
+        import('@/functions/generateFlightDebriefReport').then(({ generateFlightDebriefReport }) => {
+          generateFlightDebriefReport({ stripe_session_id: sessionId }).catch(() => {});
+        });
+      }
+    }
+  }, []);
   const [session, setSession] = useState(null);
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
   const [aiContent, setAiContent] = useState({});
@@ -186,7 +201,7 @@ export default function FlightSimulator() {
 
         {phase === GAME_PHASES.PROFILE && flightProfile && (
           <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <FlightProfile profile={flightProfile} session={session} playerInfo={playerInfo} onPlayAgain={reset} />
+            <FlightProfile profile={flightProfile} session={session} playerInfo={playerInfo} onPlayAgain={reset} diceResult={diceResult} />
           </motion.div>
         )}
       </AnimatePresence>
