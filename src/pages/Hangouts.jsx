@@ -794,7 +794,7 @@ export default function Hangouts() {
         {/* Funnel */}
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
           className="flex flex-wrap items-center justify-center gap-3 mb-14 text-sm font-bold">
-          {['Moon Joy Hangout', 'Squad', 'Chapter', 'Incubator'].map((step, i, arr) => (
+          {['Moon Joy Hangout', 'Squad', 'Collective', 'Chapter', 'Incubator'].map((step, i, arr) => (
             <div key={step} className="flex items-center gap-3">
               <div className="px-5 py-3 rounded-xl border border-[#c9a87c]/40 text-[#c9a87c]"
                 style={{ background: 'rgba(201,168,124,0.08)' }}>{step}</div>
@@ -803,7 +803,27 @@ export default function Hangouts() {
           ))}
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Squads intro */}
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="max-w-3xl mx-auto mb-10 space-y-4 text-white/65 text-base leading-relaxed">
+          <p>Squads are what forms from consistent Hangout participation. Domain-specific groups. Smaller rooms. More specific conversations. More powerful outcomes.</p>
+          <p className="text-white font-semibold">But Squads are more than community groups.</p>
+          <p>They are the foundation of consulting collectives.</p>
+        </motion.div>
+
+        {/* Collective callout */}
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="max-w-3xl mx-auto rounded-2xl p-8 border border-[#c9a87c]/25 mb-10"
+          style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.08), rgba(13,31,54,0.8))' }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">The Consulting Collective.</p>
+          <p className="text-white/70 text-sm leading-relaxed mb-3">When a project comes in that is too large or complex for one person — or needs diverse expertise across disciplines — Squad members can bid on it together. Each person maintains their own independent practice. Each person keeps their own clients and their own rates. For this project, they show up as a collective. They split the revenue. They deliver together.</p>
+          <p style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-xl font-bold text-[#c9a87c] my-5">Think of it as the Avengers for client work. Assembled for the mission. Independent after it.</p>
+          <p className="text-white/65 text-sm leading-relaxed mb-3">What makes it work is what happened before it: the weeks of Hangouts where you watched how someone thinks, how they handle pressure, how they teach, how they ask for help. The trust is built before the project exists.</p>
+          <p className="text-white font-semibold text-sm">That is the unfair advantage.</p>
+        </motion.div>
+
+        {/* Squad grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
           {squads.map(({ icon: Icon, label, desc }, i) => (
             <motion.div key={label} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i * 0.3}
               className="rounded-2xl p-6 border border-white/8 hover:border-[#c9a87c]/30 transition-all"
@@ -817,6 +837,15 @@ export default function Hangouts() {
             </motion.div>
           ))}
         </div>
+
+        {/* How to start */}
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="max-w-3xl mx-auto rounded-2xl p-7 border border-white/8 space-y-3"
+          style={{ background: 'rgba(255,255,255,0.02)' }}>
+          <p className="text-white font-semibold text-sm mb-1">Each Squad runs its own Hangout cadence. Smaller. More specific. More powerful.</p>
+          <p className="text-white/60 text-sm leading-relaxed">Start small. Three people maximum on a first Collective project. Run one pilot. Test it before making anything official. The platform provides the governance template. The community provides the trust. You provide the work.</p>
+        </motion.div>
+
         <motion.p variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
           className="text-center text-white/40 text-sm mt-8 italic"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
