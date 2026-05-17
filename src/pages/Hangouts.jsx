@@ -354,12 +354,20 @@ const socialProof = [
   { icon: Star, label: 'Green Cards & Visas', desc: 'TOP 100 recognition used on immigration applications as evidence of extraordinary ability. Immigration authorities said yes.' },
 ];
 
+const whoForPrinciple = [
+  { label: 'Curious', desc: 'Curious people ask the questions nobody else will ask in public. They sit in a room and actually listen. They change their mind when they hear something that earns it. They do not perform expertise. They pursue it.' },
+  { label: 'Community', desc: 'Community people show up for others, not just themselves. They share what they know before they are asked. They introduce people who should know each other. They make the room better by being in it.' },
+  { label: 'Memory-makers', desc: 'Memory-makers bring energy that leaves a mark. A story that lands. A moment of honesty that shifts the air in the room. An insight someone is still thinking about three weeks later. A connection that becomes a collaboration that becomes something neither of them could have built alone.' },
+];
+
 const whoFor = [
-  { label: 'Fellows and Alumni', desc: 'This room is yours first. Your consulting package is already sponsored. Book directly.' },
-  { label: 'Followers and Boosters', desc: 'You\'ve been orbiting TOP 100 for years. This is the door to the inside.' },
-  { label: 'Nominees and candidates', desc: 'You\'re on the path to recognition. Come meet the community you\'re becoming part of.' },
-  { label: 'Founders and operators', desc: 'Building in aerospace, aviation, space, or any adjacent field? The network in this room is the one you need.' },
-  { label: 'Early-career professionals', desc: 'Trying to navigate a field that doesn\'t always make it easy to get in the room? We built this room so you don\'t have to figure it out alone.' },
+  { label: '300+ Fellows and Alumni', desc: 'The verified core of the community. Your consulting package is already sponsored. Book directly.' },
+  { label: '1,000+ Boosters', desc: 'The people who have been vouching for excellence in this industry for years. Come be recognized for that.' },
+  { label: '13,000+ followers and counting', desc: 'If you have been watching from the outside and wondering when to come in — this is when.' },
+  { label: 'Founders and operators', desc: 'If you are building something and need a room that will actually help you build it, this is that room.' },
+  { label: 'Early-career professionals', desc: 'If you are trying to get in the door of an industry that does not always make it easy, we built this room so you do not have to figure it out alone.' },
+  { label: 'Local business owners, creatives, and adjacent builders', desc: 'If you bring curiosity, community, and the capacity to create memories, aerospace is not a prerequisite. The energy is.' },
+  { label: 'People who have never heard of TOP 100 before today', desc: 'Welcome. You are exactly on time.' },
 ];
 
 const faqs = [
@@ -896,35 +904,57 @@ export default function Hangouts() {
       {divider}
 
       {/* ── WHO IT'S FOR ── */}
-      <section className="px-6 md:px-12 py-20 max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-            <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-5">Who this is for.</p>
-            <div className="space-y-4">
-              {whoFor.map(({ label, desc }) => (
-                <div key={label} className="rounded-xl p-5 border border-white/8" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <p className="text-white font-bold text-sm mb-1">{label}</p>
-                  <p className="text-white/55 text-xs leading-relaxed">{desc}</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={2}>
-            <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-5">Who this is not for.</p>
-            <div className="rounded-xl p-6 border border-white/8 mb-6" style={{ background: 'rgba(255,255,255,0.02)' }}>
-              <p className="text-white/65 text-sm leading-relaxed">
-                If you're looking to consume without contributing, this isn't the room. The Hangouts compound when everyone brings something. That doesn't mean you need to be an expert. It means showing up with honesty, curiosity, and the intention to give as well as receive.
-              </p>
-              <p className="text-white/40 text-xs mt-4 italic">If that's not you yet — no judgment. Come to the first session. That usually changes things.</p>
-            </div>
-            <div className="rounded-xl p-6 border border-[#c9a87c]/20" style={{ background: 'rgba(201,168,124,0.05)' }}>
-              <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-3">A word about what this costs.</p>
-              <p style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-4xl font-bold text-white mb-3">Nothing.</p>
-              <p className="text-white/55 text-sm leading-relaxed">The sessions are free. The 1:1 package is free for Fellows and Alumni. The access is free. The only thing we ask: show up. Contribute. And when you get something here, pass it forward.</p>
-              <p className="text-[#c9a87c] font-bold text-sm mt-4">Pay it forward. Double it. Pass it on.</p>
-            </div>
-          </motion.div>
+      <section className="px-6 md:px-12 py-20 max-w-3xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">Who this is for.</p>
+          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-3xl md:text-4xl font-bold text-white mb-4 leading-snug">
+            Simple.
+          </h2>
+          <p className="text-white/65 text-base leading-relaxed mb-8">
+            Clean principle. Three gates, all attitude-based. No credential required.
+          </p>
+          <p className="text-white/70 text-base leading-relaxed mb-10 font-medium">
+            If you can provide curiosity, if you can provide community, and if you can provide something that gives people memories — you belong here. That is the whole filter.
+          </p>
+        </motion.div>
+
+        <div className="space-y-4 mb-12">
+          {whoForPrinciple.map(({ label, desc }, i) => (
+            <motion.div key={label} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i * 0.3}
+              className="rounded-2xl p-7 border border-[#c9a87c]/20"
+              style={{ background: 'rgba(201,168,124,0.04)' }}>
+              <p className="text-[#c9a87c] font-bold text-base mb-2 uppercase tracking-wide">{label}</p>
+              <p className="text-white/65 text-sm leading-relaxed">{desc}</p>
+            </motion.div>
+          ))}
         </div>
+
+        <motion.p variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="text-white/65 text-base leading-relaxed mb-10">
+          If that is you — in any combination, at any career stage, from any corner of aerospace, aviation, space, or anywhere adjacent — this room is yours.
+        </motion.p>
+
+        <div className="space-y-3 mb-10">
+          {whoFor.map(({ label, desc }, i) => (
+            <motion.div key={label} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i * 0.2}
+              className="rounded-xl p-5 border border-white/8 flex gap-4 items-start"
+              style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <div className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] mt-2 flex-shrink-0" />
+              <div>
+                <p className="text-white font-bold text-sm mb-1">{label}</p>
+                <p className="text-white/55 text-xs leading-relaxed">{desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="rounded-2xl p-7 border border-[#c9a87c]/30 text-center"
+          style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.08), rgba(201,168,124,0.02))' }}>
+          <p className="text-white/70 text-sm leading-relaxed mb-2">The only thing we ask is the same thing the principle asks.</p>
+          <p style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-xl font-bold text-white mb-1">Bring curiosity. Bring community. Bring something that gives people memories.</p>
+          <p className="text-[#c9a87c] font-semibold text-sm mt-3">The room will do the rest.</p>
+        </motion.div>
       </section>
 
       {divider}
