@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { label: 'Nominate', to: '/nominate' },
   { label: 'Local Legends', to: '/local-legends' },
   { label: 'Publication', to: '/Top100Women2025' },
+  { label: '2030 Vision', to: '/2030-vision' },
   { label: 'Community Round', href: 'https://wefunder.com/top.100.aerospace.aviation' },
   { label: 'Mission Theatre', to: '/LaunchParty' },
 ];
