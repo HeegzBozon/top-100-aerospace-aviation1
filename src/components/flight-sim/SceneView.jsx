@@ -111,6 +111,17 @@ export default function SceneView({ scene, session, aiContent, loadingAI, onChoi
           </motion.div>
         )}
 
+        {/* Boss aftermath — no choices, not epilogue: show continue to advance to epilogue */}
+        {!loadingAI && !isEpilogue && scene.type === 'boss' && !scene.choices?.length && displayText && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+            className="text-center">
+            <button onClick={() => onChoice(scene, 'continue', null)}
+              className="inline-flex items-center gap-2 px-10 py-4 rounded-full font-bold text-sm bg-[#c9a87c] text-[#07111f] hover:bg-[#d4b88c] transition-all shadow-[0_0_35px_rgba(201,168,124,0.4)]">
+              Read the Debrief
+            </button>
+          </motion.div>
+        )}
+
         {!loadingAI && isEpilogue && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
             className="text-center">

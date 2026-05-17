@@ -76,7 +76,9 @@ export default function FlightSimulator() {
         newStats[stat] = Math.max(1, Math.min(20, (newStats[stat] || 10) + delta));
       });
     }
-    const newChoices = [...session.choices, { sceneId: scene.id, choiceKey, timestamp: Date.now() }];
+    const newChoices = choiceKey === 'continue'
+      ? session.choices
+      : [...session.choices, { sceneId: scene.id, choiceKey, timestamp: Date.now() }];
     const updatedSession = { ...session, stats: newStats, choices: newChoices };
     setSession(updatedSession);
 
