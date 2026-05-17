@@ -103,12 +103,9 @@ export default function CampaignSelect({ onSelect }) {
       </div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-        className="mt-12 flex items-center gap-6 text-white/25 text-xs">
-        <span className="flex items-center gap-1.5"><Star className="w-3 h-3" /> No account required</span>
-        <span>·</span>
-        <span>Email captured mid-game, not at gate</span>
-        <span>·</span>
-        <span>8–12 minutes</span>
+        className="mt-12 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#c9a87c]/25 text-[#c9a87c]/60 text-xs font-semibold uppercase tracking-widest"
+        style={{ background: 'rgba(201,168,124,0.05)' }}>
+        <Star className="w-3 h-3" /> 8–12 minutes per campaign
       </motion.div>
     </div>
   );
