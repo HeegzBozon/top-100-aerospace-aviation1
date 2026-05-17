@@ -6,12 +6,98 @@ import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 
+// Injects/updates <meta> and <title> tags dynamically for SEO + AEO
+function useProfileMeta(nominee) {
+  useEffect(() => {
+    if (!nominee) return;
+
+    const name = nominee.name || 'Aerospace Leader';
+    const title = nominee.title || nominee.professional_role || '';
+    const company = nominee.company || nominee.organization || '';
+    const description = nominee.description || nominee.bio || `${name} is recognized among the TOP 100 Aerospace & Aviation leaders worldwide.`;
+    const image = nominee.avatar_url || nominee.photo_url || 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/5d2b9cc54_generated_image.png';
+    const url = `https://top100aero.space/profiles/${nominee.id}`;
+    const pageTitle = `${name}${title ? ` — ${title}` : ''}${company ? ` at ${company}` : ''} | TOP 100 Aerospace & Aviation`;
+
+    // Title
+    document.title = pageTitle;
+
+    const setMeta = (sel, attr, val) => {
+      let el = document.querySelector(sel);
+      if (!el) { el = document.createElement('meta'); document.head.appendChild(el); }
+      el.setAttribute(attr, val);
+    };
+
+    setMeta('meta[name="description"]', 'content', description.slice(0, 160));
+    setMeta('meta[name="robots"]', 'content', 'index, follow');
+    setMeta('link[rel="canonical"]', 'href', url);
+
+    setMeta('meta[property="og:title"]', 'content', pageTitle);
+    setMeta('meta[property="og:description"]', 'content', description.slice(0, 200));
+    setMeta('meta[property="og:url"]', 'content', url);
+    setMeta('meta[property="og:image"]', 'content', image);
+    setMeta('meta[property="og:type"]', 'content', 'profile');
+
+    setMeta('meta[name="twitter:title"]', 'content', pageTitle);
+    setMeta('meta[name="twitter:description"]', 'content', description.slice(0, 200));
+    setMeta('meta[name="twitter:image"]', 'content', image);
+    setMeta('meta[name="twitter:card"]', 'content', 'summary_large_image');
+
+    // JSON-LD Person schema — this is what gets cited by AI (ChatGPT, Perplexity, Gemini)
+    const existingScript = document.getElementById('profile-jsonld');
+    if (existingScript) existingScript.remove();
+
+    const personSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name,
+      description,
+      url,
+      image,
+      ...(title && { jobTitle: title }),
+      ...(company && { worksFor: { '@type': 'Organization', name: company } }),
+      ...(nominee.country && { addressCountry: nominee.country }),
+      ...(nominee.linkedin_profile_url && { sameAs: [nominee.linkedin_profile_url] }),
+      ...(nominee.website_url && { url: nominee.website_url }),
+      ...(nominee.skills?.length && { knowsAbout: nominee.skills }),
+      ...(nominee.industry && { hasOccupation: { '@type': 'Occupation', occupationLocation: { '@type': 'Country', name: nominee.country || 'Worldwide' }, name: nominee.industry } }),
+      ...(nominee.career_history?.length && {
+        hasCredential: nominee.career_history.slice(0, 5).map(r => ({
+          '@type': 'EducationalOccupationalCredential',
+          credentialCategory: r.role_title,
+          recognizedBy: { '@type': 'Organization', name: r.company_name }
+        }))
+      }),
+      memberOf: {
+        '@type': 'Organization',
+        name: 'TOP 100 Aerospace & Aviation',
+        url: 'https://top100aero.space'
+      }
+    };
+
+    const script = document.createElement('script');
+    script.id = 'profile-jsonld';
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(personSchema);
+    document.head.appendChild(script);
+
+    // Cleanup on unmount — restore homepage defaults
+    return () => {
+      document.title = 'TOP 100 Aerospace & Aviation | Recognizing the World\'s Most Impactful Women in Aerospace';
+      const s = document.getElementById('profile-jsonld');
+      if (s) s.remove();
+    };
+  }, [nominee]);
+}
+
 export default function DynamicProfilePage() {
   const { nomineeId } = useParams();
   const navigate = useNavigate();
   const [nominee, setNominee] = useState(null);
   const [adjacentIds, setAdjacentIds] = useState({ prev: null, next: null });
   const [loading, setLoading] = useState(true);
+
+  useProfileMeta(nominee);
 
   useEffect(() => {
     const loadNominee = async () => {
