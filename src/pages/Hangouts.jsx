@@ -760,6 +760,79 @@ export default function Hangouts() {
 
       {divider}
 
+      {/* ── THE MASTERMIND PRINCIPLE ── */}
+      <section className="px-6 md:px-12 py-20 max-w-3xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">The Mastermind Principle. Why This Works.</p>
+          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            className="text-3xl md:text-4xl font-bold text-white mb-8 leading-snug">
+            There is nothing new about what we are doing here.
+          </h2>
+        </motion.div>
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="space-y-5 text-white/65 text-base leading-relaxed mb-10">
+          <p>The most successful builders in history did not build alone. They understood something that most people never act on.</p>
+          <p className="text-white font-semibold text-lg">Your mind alone has a ceiling.</p>
+          <p>Two minds in genuine collaboration do not simply add. They multiply. The shared energy, the cross-pollination of experience, the moment when someone says something that unlocks something in someone else that neither of them could have reached independently. That is not a happy accident. That is the principle at work.</p>
+          <p>When a group of people comes together with a common purpose, in a spirit of honest collaboration, something emerges that is greater than the sum of what any individual brought in. A collective intelligence. A compounded resourcefulness. An acceleration that no amount of solo effort can replicate.</p>
+        </motion.div>
+
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="my-10 rounded-2xl p-8 border border-[#c9a87c]/25"
+          style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.08), rgba(201,168,124,0.03))' }}>
+          <p style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            className="text-xl md:text-2xl text-white font-bold leading-snug mb-4">
+            That principle has been documented, studied, and validated across every domain of human achievement for over a century.
+          </p>
+          <p className="text-white/60 text-sm leading-relaxed">
+            It is not motivational mythology. It is how things actually get built.
+          </p>
+          <p className="text-[#c9a87c] font-semibold text-sm mt-4">The question has never been whether masterminds work. The question has always been <em>who is in the room.</em></p>
+        </motion.div>
+
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">This is where TOP 100 changes the equation.</p>
+          <p className="text-white/65 text-base leading-relaxed mb-6">A mastermind is only as powerful as the minds in it. The signal is only as strong as the people generating it.</p>
+          <p className="text-white/65 text-base leading-relaxed mb-8">This community was built on verification. Not self-reporting. Not dues paid. Not follower counts. Every Fellow in this network was nominated, endorsed, and recognized by peers who staked their own credibility on the claim that this person is exceptional in their field.</p>
+        </motion.div>
+
+        {/* Community proof strip */}
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="grid grid-cols-2 gap-3 mb-10">
+          {[
+            { value: '300+', label: 'Verified minds' },
+            { value: '70+', label: 'Disciplines' },
+            { value: '40+', label: 'Countries' },
+            { value: '5', label: 'Seasons of trust' },
+          ].map(({ value, label }) => (
+            <div key={label} className="text-center rounded-xl py-5 px-4 border border-white/8"
+              style={{ background: 'rgba(201,168,124,0.05)' }}>
+              <div style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                className="text-2xl font-bold text-[#c9a87c] mb-1">{value}</div>
+              <div className="text-white/50 text-xs uppercase tracking-widest">{label}</div>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="space-y-5 text-white/65 text-base leading-relaxed mb-10">
+          <p>Engineers and executives. Researchers and founders. Policy architects and mission specialists. Commercial operators and next-generation leaders. Across 40+ countries. Eight domains. Five seasons of compounding institutional trust.</p>
+          <p>When that room comes together around a real problem, a real challenge, a real question — the collective intelligence in that session is unlike anything available through any other channel. Not a conference. Not a LinkedIn group. Not an alumni network. Not a coaching program with a rotating cast of strangers.</p>
+        </motion.div>
+
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="rounded-2xl p-8 border border-[#c9a87c]/30"
+          style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.1), rgba(13,31,54,0.8))' }}>
+          <p className="text-white/65 text-base leading-relaxed mb-4">A verified, credentialed, cross-domain community that has been building trust with each other since 2021.</p>
+          <p style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            className="text-2xl font-bold text-white mb-3">That is the mastermind you are joining.</p>
+          <p className="text-white/50 text-sm leading-relaxed mb-4">And it has been meeting informally, in hallways and DMs and side conversations, for years.</p>
+          <p className="text-[#c9a87c] font-bold text-base">We just built the room.</p>
+        </motion.div>
+      </section>
+
+      {divider}
+
       {/* ── SESSION TYPES ── */}
       <section className="px-6 md:px-12 py-20 max-w-6xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center mb-14">
