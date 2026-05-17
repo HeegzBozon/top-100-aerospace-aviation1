@@ -43,6 +43,7 @@ const slides = [
     icon: MapPin,
     primary: { label: 'Nominate a Local Legend', to: '/nominate' },
     secondary: { label: 'Explore Local Legends', to: '/local-legends' },
+    tertiary: { label: 'Play CommonGround Sim', to: '/common-ground-sim' },
   },
   {
     id: 'ad-astra',
