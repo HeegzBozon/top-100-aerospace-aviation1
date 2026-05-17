@@ -1,0 +1,73 @@
+{
+  "name": "GameSession",
+  "type": "object",
+  "properties": {
+    "campaign_id": {
+      "type": "string",
+      "description": "Campaign ID e.g. C-01"
+    },
+    "player_name": {
+      "type": "string",
+      "description": "Player name from Signal Log"
+    },
+    "player_email": {
+      "type": "string",
+      "description": "Player email from Signal Log"
+    },
+    "player_consent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Explicit opt-in consent"
+    },
+    "choices": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Ordered array of scene choices"
+    },
+    "stats": {
+      "type": "object",
+      "description": "Final stat array at session close"
+    },
+    "boss_roll_dice": {
+      "type": "number",
+      "description": "Raw d20 result"
+    },
+    "boss_roll_modifier": {
+      "type": "number",
+      "description": "Stat modifier applied"
+    },
+    "boss_roll_total": {
+      "type": "number",
+      "description": "Total roll result"
+    },
+    "boss_roll_outcome": {
+      "type": "string",
+      "enum": [
+        "critical_success",
+        "success",
+        "fail",
+        "critical_fail",
+        ""
+      ],
+      "description": "Outcome tier"
+    },
+    "flight_profile_classification": {
+      "type": "string",
+      "description": "e.g. Pathfinder, Iron Stick"
+    },
+    "flight_profile_ecosystem_role": {
+      "type": "string",
+      "description": "Internal role routing: fellow, booster, investor, partner"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Session completion timestamp"
+    }
+  },
+  "required": [
+    "campaign_id"
+  ]
+}

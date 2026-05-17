@@ -48,6 +48,7 @@ const LocalLegendsApply = lazy(() => import('@/pages/LocalLegendsApply'));
 const NominationForm = lazy(() => import('@/pages/NominationForm'));
 const Hangouts = lazy(() => import('@/pages/Hangouts'));
 const Vision2030 = lazy(() => import('@/pages/Vision2030'));
+const FlightSimulator = lazy(() => import('@/pages/FlightSimulator'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -179,6 +180,7 @@ const AuthenticatedApp = () => {
       <Route path="/hangouts" element={<Hangouts />} />
       <Route path="/moon-joy" element={<Hangouts />} />
       <Route path="/2030-vision" element={<Vision2030 />} />
+      <Route path="/play" element={<FlightSimulator />} />
       <Route path="/Nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/top100-tv" element={
