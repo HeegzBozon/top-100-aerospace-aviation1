@@ -50,7 +50,6 @@ Continue the scene. First-person, present tense. 2–3 paragraphs. Maintain aero
 
   const response = await base44.integrations.Core.InvokeLLM({
     prompt,
-    model: 'claude_sonnet_4_6',
     response_json_schema: null,
   });
   return typeof response === 'string' ? response : String(response);
