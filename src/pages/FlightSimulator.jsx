@@ -6,7 +6,7 @@ import CampaignSelect from '@/components/flight-sim/CampaignSelect';
 import SceneView from '@/components/flight-sim/SceneView';
 import DiceRoll from '@/components/flight-sim/DiceRoll';
 import SignalLog from '@/components/flight-sim/SignalLog';
-import FlightProfile from '@/components/flight-sim/FlightProfile';
+import PostMissionJourney from '@/components/flight-sim/PostMissionJourney';
 import TransitionInterlude from '@/components/flight-sim/TransitionInterlude';
 import { CAMPAIGNS } from '@/components/flight-sim/campaigns';
 import { classifyProfile } from '@/components/flight-sim/classifyProfile';
@@ -211,7 +211,7 @@ export default function FlightSimulator() {
 
         {phase === GAME_PHASES.PROFILE && flightProfile && (
           <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <FlightProfile
+            <PostMissionJourney
               profile={flightProfile}
               session={session}
               playerInfo={playerInfo}
