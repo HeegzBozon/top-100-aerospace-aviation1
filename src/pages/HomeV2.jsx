@@ -19,6 +19,21 @@ export default function HomeV2() {
 
   return (
     <>
+      {/* Minimal floating nav — top center */}
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-6">
+        <Link to="/2030-vision"
+          className="text-xs font-semibold tracking-widest uppercase text-white/50 hover:text-[#c9a87c] transition-colors whitespace-nowrap"
+          style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}>
+          2030 Vision
+        </Link>
+        <div className="w-px h-3 bg-white/20" />
+        <Link to="/about"
+          className="text-xs font-semibold tracking-widest uppercase text-white/50 hover:text-[#c9a87c] transition-colors"
+          style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}>
+          About
+        </Link>
+      </div>
+
       {/* Menu toggle — fixed top-right */}
       <div className="fixed top-4 right-4 z-[100]">
         <button
