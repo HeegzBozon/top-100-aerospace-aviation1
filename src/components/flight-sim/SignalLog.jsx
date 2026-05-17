@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Lock } from 'lucide-react';
+import { Save, Lock, ChevronRight } from 'lucide-react';
 
 export default function SignalLog({ onComplete }) {
   const [name, setName] = useState('');
@@ -87,6 +87,13 @@ export default function SignalLog({ onComplete }) {
               {submitting ? 'Logging signal...' : 'Log Signal — Continue Mission'}
             </motion.button>
           </form>
+
+          <div className="text-center mt-5">
+            <button onClick={() => onComplete(null)}
+              className="inline-flex items-center gap-1.5 text-white/30 hover:text-white/55 text-xs transition-colors">
+              Skip — continue without saving <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
         </motion.div>
       </div>
     </div>
