@@ -5,7 +5,7 @@ import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const NAV_LINKS = [
-  { label: 'Operation: Moon Joy', to: '/hangouts' },
+  { label: 'Operation: Moon Joy', to: '/moon-joy' },
   { label: 'Nominate', to: '/nominate' },
   { label: 'Local Legends', to: '/local-legends' },
   { label: 'Publication', to: '/Top100Women2025' },

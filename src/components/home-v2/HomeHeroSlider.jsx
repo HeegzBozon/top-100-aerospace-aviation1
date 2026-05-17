@@ -52,7 +52,7 @@ const slides = [
     body: 'Follow the launches, signal reports, community milestones, and capital campaign behind the next layer of aerospace and aviation infrastructure.',
     image: 'https://images.unsplash.com/photo-1517976547714-720226b864c1?w=2400&auto=format&fit=crop&q=90',
     icon: Rocket,
-    primary: { label: 'Join Operation: Moon Joy', to: '/hangouts' },
+    primary: { label: 'Join Operation: Moon Joy', to: '/moon-joy' },
     secondary: { label: 'Follow Our Fundraising Journey', href: 'https://wefunder.com/top.100.aerospace.aviation' },
   },
 ];
