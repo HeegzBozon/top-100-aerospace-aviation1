@@ -306,13 +306,13 @@ const pullQuote = (text) => (
 
 const sessions = [
   { icon: MessageCircle, label: 'Shoot the Shit', desc: 'Open conversation. What\'s happening in the industry right now. What\'s frustrating you. What\'s working. What nobody else is saying publicly. No agenda. High signal.' },
-  { icon: Hammer, label: 'Live Build', desc: 'Someone builds something in public — a pitch, a business model, a content strategy. The room watches, reacts, and improves it in real time.' },
+  { icon: Hammer, label: 'Live Build', desc: 'Someone builds something in public — a pitch, a business model, a product, a content strategy. The room watches, reacts, and improves it in real time. You leave having watched something go from rough to sharp in 30 minutes.' },
   { icon: BookOpen, label: 'Workshop', desc: 'One host. One skill. 30 minutes. Negotiation. LinkedIn strategy. How to pitch research to non-technical investors. How to price your consulting. Leave knowing something you didn\'t.' },
   { icon: Flame, label: 'Hot Seat', desc: 'One person brings one challenge. The whole room helps solve it. No politeness. No performance. Real input from people who know what they are talking about.' },
   { icon: Mic, label: 'Q&A', desc: 'A Fellow or guest takes your questions. No script. No PR filter. No prepared talking points. Just the conversation you actually want to have.' },
   { icon: Zap, label: 'Hackathon', desc: 'Time-boxed. Collaborative. Build something together. The energy in a room of people solving a problem on a deadline is unlike anything else.' },
-  { icon: Users, label: 'Breakout Rooms', desc: 'By domain, career stage, or completely random. Four people in a breakout can do things forty people in a main session can\'t. Smaller. Faster. More honest.' },
-  { icon: Network, label: 'Networking 101', desc: 'Once a month. How to open a cold conversation. How to follow up without being annoying. How to ask and give. Live practice with real feedback.' },
+  { icon: Users, label: 'Breakout Rooms', desc: 'Any session can split into smaller rooms. By domain, by career stage, or completely random. The best conversations at conferences happen in hallways. We built the hallway. Four people in a breakout can do things forty people in a main session can\'t. Smaller. Faster. More honest.' },
+  { icon: Network, label: 'Networking 101', desc: 'Once a month. The mechanics nobody teaches you. How to open a cold conversation with someone who has no idea who you are. How to follow up without being annoying. How to ask for what you want without feeling transactional. Live practice in breakout rooms. Real feedback.' },
   { icon: Globe, label: 'Townhall', desc: 'Your voice shapes what we build. Your challenges become our roadmap. You\'re not consuming this institution. You\'re building it with us.' },
 ];
 
@@ -367,7 +367,9 @@ const faqs = [
   { q: 'I\'m a Fellow or Alumni. How do I book my sponsored consulting package?', a: 'Your package is a benefit of your standing in this community. Book directly using the Alumni link. No application required.' },
   { q: 'I\'m a community member. How do I apply for a sponsored package?', a: 'Use the Community Application link. Three short questions. Values-based, not income-based. Approved participants receive their booking link within 48 hours.' },
   { q: 'What is the Joy Fund?', a: 'Every dollar contributed above $0 goes directly into the Joy Fund, which sponsors seats for community members who apply for access. Mission Sponsors ($5K) fund an entire session. The community funds itself.' },
-  { q: 'What are Squads?', a: 'Domain-specific groups that form from consistent Hangout participants. Show up to Hangouts, find your people, go deeper. Squads run their own sessions on their own cadence.' },
+  { q: 'What are Squads?', a: 'Domain-specific groups that form from consistent Hangout participants. Space, Aviation, Engineering, Policy, Research, Founder, Early Career. Show up to Hangouts, find your people, go deeper. Squads run their own sessions on their own cadence.' },
+  { q: 'What are Chapters?', a: 'The in-person version. Geographic anchors for the community. Starting in LA, Seattle, and Houston. Every Chapter begins as a Squad. Every Squad begins in a Hangout.' },
+  { q: 'What is Wefunder?', a: 'We are running a community ownership round through Wefunder. Minimum investment $100. If you want to be more than a participant — if you want to be a shareholder in what we are building — that is the door. wefunder.com/top.100.aerospace.aviation' },
   { q: 'What if I miss a session?', a: 'Sessions are recorded. Replays available. But showing up live is where the compounding happens. Replays don\'t have breakout rooms.' },
   { q: 'What\'s the commitment?', a: 'None. Come when you can. Come consistently if you want the full return.' },
 ];
@@ -483,8 +485,12 @@ export default function Hangouts() {
           </h2>
           <div className="space-y-5 text-white/65 text-base leading-relaxed">
             <p>For years, I focused on building the platform, the program, the systems. The recognition engine. The governance. The publication. And while I was building all of that, something was happening in the community that I wasn't fully seeing.</p>
-            <p>People were getting promoted. People were getting raises. People were landing jobs they couldn't have gotten without this credential behind them.</p>
-            <p>And then the one that stopped me cold:</p>
+            <p>People were getting promoted.</p>
+            <p>People were getting raises.</p>
+            <p>People were landing jobs they couldn't have gotten without this credential behind them.</p>
+            <p>And then the one that stopped me cold: people were using their TOP 100 recognition on green card and visa applications. As proof of excellence. As evidence that a government immigration body could point to and say: this person is extraordinary in their field.</p>
+            <p className="text-white/80 font-medium">Let that land for a second.</p>
+            <p>A community we built from nothing, in 2021, with no institutional backing and no paid acquisition, became a credential that immigration authorities recognize as proof of elite standing in aerospace, aviation, and space.</p>
           </div>
         </motion.div>
 
@@ -492,12 +498,12 @@ export default function Hangouts() {
           className="my-10 rounded-2xl p-8 border border-[#c9a87c]/25"
           style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.08), rgba(201,168,124,0.03))' }}>
           <p style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-xl md:text-2xl text-white font-bold leading-snug mb-4">
-            People were using their TOP 100 recognition on green card and visa applications. As proof of excellence.
+            A recognition platform built by a small team, from nothing, with no government backing, no university affiliation, no legacy institutional weight behind it — recognized by immigration authorities as a credible signal of elite standing.
           </p>
           <p className="text-white/60 text-sm leading-relaxed">
-            As evidence that a government immigration body could point to and say: <span className="text-[#c9a87c] font-semibold">this person is extraordinary in their field.</span>
+            Something that a government body looks at and says: <span className="text-[#c9a87c] font-semibold">yes, this is evidence that this person is among the best in the world at what they do.</span>
           </p>
-          <p className="text-white/40 text-xs mt-4 italic">A community we built from nothing, in 2021, with no institutional backing and no paid acquisition.</p>
+          <p className="text-white/40 text-xs mt-4 italic">We did not design that. The community earned it.</p>
         </motion.div>
 
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
@@ -579,7 +585,8 @@ export default function Hangouts() {
         </motion.div>
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
           className="space-y-5 text-white/65 text-base leading-relaxed">
-          <p>The agenda belongs to the room. If you come in with something pressing, we work on it. If you come in with a question, we answer it. If you come in with a win, we celebrate it and figure out how to build on it.</p>
+          <p>The agenda belongs to the room. If you come in with something pressing, we work on it. If you come in with a question you've been sitting on, we answer it. If you come in with a win, we celebrate it and figure out how to build on it.</p>
+          <p>If nobody has an agenda, we bring ours. Where TOP 100 is going. How we think we can help you, the community, and the world. Roadmaps, problem solving, strategic introductions, development plans, monetization, marketing, content strategy.</p>
           <p className="text-white font-semibold">What we never do: waste your time.</p>
         </motion.div>
       </section>
@@ -655,6 +662,41 @@ export default function Hangouts() {
             </motion.div>
           ))}
         </div>
+      </section>
+
+      {divider}
+
+      {/* ── THE VALUE ── */}
+      <section className="px-6 md:px-12 py-20 max-w-3xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">The value. Honestly accounted for.</p>
+          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-3xl md:text-4xl font-bold text-white mb-8 leading-snug">
+            Every Moon Joy Hangout: $5,000+ in value.
+          </h2>
+        </motion.div>
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="space-y-4 text-white/65 text-sm leading-relaxed mb-10">
+          {[
+            'People pay $300 to $500 an hour for the kind of consulting expertise that comes into this room.',
+            'Group coaching sessions with senior operators, founders, and practitioners at this level run $5,000 minimum per session.',
+            'Strategic introductions from a network spanning 40+ countries and 70+ disciplines in aerospace, aviation, and space? Those take years to build. Some of them you never get access to without knowing the right person.',
+            'Startup resources. Business development frameworks. Sales and marketing strategy. Content planning. Growth architecture. These are things founders pay advisors tens of thousands of dollars a year to access.',
+            'And then there is the community itself.',
+          ].map((item, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] mt-2 flex-shrink-0" />
+              <p>{item}</p>
+            </div>
+          ))}
+        </motion.div>
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="rounded-2xl p-8 border border-[#c9a87c]/30 text-center mb-10"
+          style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.1), rgba(201,168,124,0.03))' }}>
+          <p className="text-white/50 text-xs uppercase tracking-widest mb-2">Invested into this community. Every session.</p>
+          <p style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-2xl md:text-3xl font-bold text-[#c9a87c]">
+            Because the return isn't captured. It's compounded.
+          </p>
+        </motion.div>
       </section>
 
       {divider}
@@ -823,7 +865,15 @@ export default function Hangouts() {
         </motion.div>
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
           className="space-y-5 text-white/65 text-base leading-relaxed mb-10">
-          <p>Every season adds to the permanence of the record. Every endorsement adds to the verification layer. Every published Volume becomes part of the institutional archive. The longer it runs, the more weight it carries.</p>
+          <p>I need to tell you something I don't say enough.</p>
+          <p>What we built here is more important than I knew when we were building it.</p>
+          <p>I have spent five years focused on the platform: the governance, the selection process, the publication, the verification engine, the editorial standards. Building the institution. And while I was doing that, the community was doing something I was not fully tracking.</p>
+          <p className="text-white font-semibold text-lg">It was changing lives.</p>
+          <p>Not in the abstract, inspirational way that platforms like to claim. In specific, documented, real-world ways.</p>
+          <p>Fellows have been promoted. Directly citing their TOP 100 recognition in the conversation that led to the offer. Professionals have negotiated raises using their Fellow status as proof of external validation — not internal performance reviews, but an independent community-verified credential that said: this person is exceptional, and the field has recognized it.</p>
+          <p>People have landed jobs at organizations they could not have gotten into before because they could point to something beyond their resume. A verified, permanent record of contribution and recognition in aerospace, aviation, and space.</p>
+          <p>The truth is that TOP 100 is not just a recognition platform. It is a credential that compounds. Every season adds to the permanence of the record. Every endorsement adds to the verification layer. Every published Volume becomes part of the institutional archive. The longer it runs, the more weight it carries.</p>
+          <p>This community has been doing extraordinary work in aerospace, aviation, and space for decades. TOP 100 gave that work a permanent, verified, institutional address.</p>
           <p className="text-white font-semibold text-lg">We are just getting started with what that means.</p>
         </motion.div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -879,6 +929,105 @@ export default function Hangouts() {
 
       {divider}
 
+      {/* ── THE INSTITUTION ── */}
+      <section className="px-6 md:px-12 py-20 max-w-3xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">The institution behind it.</p>
+          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-3xl md:text-4xl font-bold text-white mb-4 leading-snug">
+            TOP 100 Aerospace & Aviation. Est. 2021.
+          </h2>
+          <p className="text-white/50 text-sm mb-8">Here is what we are, how we work, where we are going, and what we do with every dollar invested in this community. No pitch deck language. No corporate gloss. Just the truth.</p>
+        </motion.div>
+
+        {/* Philosophy */}
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="rounded-2xl p-8 border border-[#c9a87c]/20 mb-6"
+          style={{ background: 'rgba(201,168,124,0.04)' }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">The philosophy.</p>
+          {pullQuote("We don't rank. We measure.")}
+          <p className="text-white/65 text-sm leading-relaxed mb-3">That distinction matters more than it might seem. Rankings create winners and losers. Measurement creates records. A ranking is a moment in time. A record is permanent.</p>
+          <p className="text-white/65 text-sm leading-relaxed mb-3">What we built is the institutional infrastructure that aerospace and aviation has never had: a credentialed community, a verified talent graph, and a live activation layer — all in one platform. The index, the archive, the governance system, and now the community engagement layer through Operation: Moon Joy.</p>
+          <p className="text-white/65 text-sm leading-relaxed">Think of it as the Chamber of Commerce for the new space economy. Operation: Moon Joy is the activation surface. The talent graph is the moat.</p>
+        </motion.div>
+
+        {/* Business model */}
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="rounded-2xl p-8 border border-white/8 mb-6"
+          style={{ background: 'rgba(255,255,255,0.02)' }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-5">The business model.</p>
+          <div className="space-y-4">
+            {[
+              { label: 'Self-funding layer — operational now', desc: 'A white-label agency serving aerospace companies with websites, apps, AI voice receptionists, and marketing automation. $297/month base. This funds operations while the platform scales.' },
+              { label: 'Community investment layer — launching now', desc: 'The Joy Fund through Operation: Moon Joy. Contributions from $25 to $5K+ per session. The community invests in itself.' },
+              { label: 'Sponsorship & corporate partnership layer — active', desc: 'Aerospace primes, defense contractors, VC firms, and strategic corporates pay for access to a verified, credentialed audience across 40+ countries. Packages from $5,000 per episode.' },
+              { label: 'Multimedia layer — in development', desc: 'A professional YouTube and podcast platform built on the TOP 100 Fellow network. 80+ full-length interviews and 400+ short-form clips annually.' },
+              { label: 'Structured programs layer — coming', desc: 'The TOP 100 Incubator. Cohort-based. Application or invitation. Built from consistent Operation: Moon Joy participants.' },
+              { label: 'Institutional capital layer — on the horizon', desc: 'Series A targeted Q4 2026–Q1 2027. Target investors include Seraphim Space, Space Capital, Pivotal Ventures, and Backstage Capital.' },
+            ].map(({ label, desc }) => (
+              <div key={label} className="border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                <p className="text-[#c9a87c] font-bold text-xs uppercase tracking-wide mb-1">{label}</p>
+                <p className="text-white/55 text-xs leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Use of funds */}
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="rounded-2xl p-8 border border-white/8 mb-6"
+          style={{ background: 'rgba(255,255,255,0.02)' }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-5">Use of funds. The Joy Fund is transparent by design.</p>
+          <div className="space-y-3">
+            {[
+              { label: 'Sponsored seat access', desc: 'The primary use. Every sponsored application approved draws from the Joy Fund. You fund someone\'s seat. They show up. The community grows stronger.' },
+              { label: 'Session infrastructure', desc: 'Google Meet, recording, replay hosting, content clipping. Operation: Moon Joy generates content that feeds the platform and the multimedia strategy simultaneously.' },
+              { label: 'Consulting scholarship packages', desc: 'Sponsored 1:1 packages for community members who qualify. Your contribution funds three hours of direct advisory access for someone who could not otherwise access it.' },
+              { label: 'Platform development', desc: 'The technical layer — Base44, GHL, Stripe — that makes every session possible at scale.' },
+              { label: 'Community programs', desc: 'Squad formation, Chapter launch support, Networking 101 curriculum, Incubator program design.' },
+            ].map(({ label, desc }) => (
+              <div key={label} className="flex gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] mt-1.5 flex-shrink-0" />
+                <div>
+                  <p className="text-white font-semibold text-xs mb-0.5">{label}</p>
+                  <p className="text-white/50 text-xs leading-relaxed">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-white/30 text-xs mt-5 italic">For Wefunder investors: full use of funds disclosure is on the campaign page at wefunder.com/top.100.aerospace.aviation</p>
+        </motion.div>
+
+        {/* 2030 vision teaser */}
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="rounded-2xl p-8 border border-[#c9a87c]/25"
+          style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.08), rgba(13,31,54,0.8))' }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">The 2030 vision.</p>
+          <p className="text-white/65 text-sm leading-relaxed mb-4">The U.S. aerospace and defense industry represents nearly $1 trillion in annual revenue. A projected talent gap of one million workers by 2030. A generation of extraordinary women already doing the work, still not visible enough in the rooms where decisions get made.</p>
+          <div className="space-y-2 mb-5">
+            {[
+              'Ten Volumes published. A decade of institutional record.',
+              '1,000+ verified Fellows across 50+ countries.',
+              'Flightography: the definitive career record system for aerospace professionals.',
+              'The TOP 100 Angels Index: the investor side of the recognition system.',
+              'Chapter cities on every continent.',
+              'Operation: Moon Joy running daily across Squad and Chapter networks globally.',
+            ].map((item, i) => (
+              <div key={i} className="flex gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] mt-1.5 flex-shrink-0" />
+                <p className="text-white/65 text-xs leading-relaxed">{item}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-white/50 text-xs mb-2">We are in Year 5. We know what the next five years build toward.</p>
+          <p style={{ fontFamily: "'Playfair Display', Georgia, serif" }} className="text-base font-bold text-[#c9a87c]">This is the institution you are investing in when you show up. We are building something that will outlast all of us.</p>
+          <Link to="/2030-vision" className="inline-flex items-center gap-1.5 mt-4 text-xs font-semibold text-[#c9a87c] hover:text-white transition-colors">
+            Read the full 2030 Vision <ChevronRight className="w-3 h-3" />
+          </Link>
+        </motion.div>
+      </section>
+
+      {divider}
+
       {/* ── FINAL CTA ── */}
       <section className="px-6 md:px-12 py-28 text-center" id="schedule"
         style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(201,168,124,0.07) 50%, transparent 100%)' }}>
@@ -888,8 +1037,9 @@ export default function Hangouts() {
             className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight max-w-2xl mx-auto">
             The conversations happen without you.
           </h2>
-          <p className="text-white/50 text-base mb-4 max-w-xl mx-auto">The connections get made. The introductions happen. The problems get solved. In rooms you weren't in.</p>
-          <p className="text-white/70 text-base mb-6">But now there's one you don't have to earn your way into.</p>
+          <p className="text-white/50 text-base mb-4 max-w-xl mx-auto">The connections get made. The introductions happen. The problems get solved. The career moments occur. In rooms you were not in.</p>
+          <p className="text-white/60 text-base mb-2">That has always been true.</p>
+          <p className="text-white/70 text-base mb-6">But now there is a room you do not have to earn your way into. One designed specifically to invest in you.</p>
           <p className="text-[#c9a87c] font-bold text-lg mb-4 italic" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Joy is the mission.</p>
           <p className="uppercase tracking-[0.3em] text-[#c9a87c] text-xs font-semibold mb-8">Free · Open · M–F · 1:30 PM Pacific</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
