@@ -59,8 +59,8 @@ const slides = [
 
 function SlideButton({ action, variant = 'primary' }) {
   const className = variant === 'primary'
-    ? 'rounded-full px-7 py-6 text-sm font-bold text-[#0a1526] shadow-[0_0_32px_rgba(201,168,124,0.35)] hover:shadow-[0_0_42px_rgba(201,168,124,0.55)]'
-    : 'rounded-full border-white/25 bg-white/10 px-7 py-6 text-sm font-bold text-white backdrop-blur-md hover:bg-white/15';
+    ? 'rounded-full px-5 py-3.5 sm:px-7 sm:py-5 text-xs sm:text-sm font-bold text-[#0a1526] shadow-[0_0_32px_rgba(201,168,124,0.35)] hover:shadow-[0_0_42px_rgba(201,168,124,0.55)]'
+    : 'rounded-full border-white/25 bg-white/10 px-5 py-3.5 sm:px-7 sm:py-5 text-xs sm:text-sm font-bold text-white backdrop-blur-md hover:bg-white/10';
 
   const button = (
     <Button variant={variant === 'primary' ? 'default' : 'outline'} className={className} style={variant === 'primary' ? { background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' } : undefined}>
@@ -126,8 +126,8 @@ export default function HomeHeroSlider() {
         ))}
       </div>
 
-      <section className="relative z-10 flex min-h-screen items-center px-5 py-10 md:px-12 lg:px-20">
-        <div className="mx-auto grid w-full max-w-7xl items-end gap-10 lg:grid-cols-[1fr_360px]">
+      <section className="relative z-10 flex h-screen items-center px-4 py-8 md:px-12 lg:px-20 md:py-10">
+        <div className="mx-auto grid w-full max-w-7xl items-end gap-6 lg:grid-cols-[1fr_360px] md:gap-10">
           <AnimatePresence mode="wait">
             <motion.div
               key={slide.id}
@@ -142,16 +142,16 @@ export default function HomeHeroSlider() {
                 {slide.eyebrow}
               </div>
 
-              <h1 className="text-6xl font-bold leading-[0.92] tracking-tight md:text-8xl lg:text-9xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              <h1 className="text-4xl font-bold leading-[0.92] tracking-tight sm:text-5xl md:text-7xl lg:text-9xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                 {slide.title.split(' ').map((word, index) => (
                   <span key={word} className={index === 1 ? 'block text-[#c9a87c]' : 'block'}>{word}</span>
                 ))}
               </h1>
 
-              <p className="mt-7 max-w-2xl text-xl font-semibold leading-relaxed text-white md:text-2xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              <p className="mt-4 max-w-2xl text-sm font-semibold leading-relaxed text-white sm:text-base md:mt-6 md:text-xl lg:text-2xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                 {slide.kicker}
               </p>
-              <p className="mt-4 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
+              <p className="mt-2 max-w-2xl text-xs leading-6 text-slate-300 sm:text-sm md:mt-3 md:text-base md:leading-8 lg:text-lg">
                 {slide.body}
               </p>
 
@@ -183,14 +183,14 @@ export default function HomeHeroSlider() {
                 </div>
               )}
 
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-5 flex flex-col gap-2 sm:gap-3 sm:flex-row md:mt-7">
                 <SlideButton action={slide.primary} />
                 <SlideButton action={slide.secondary} variant="secondary" />
               </div>
             </motion.div>
           </AnimatePresence>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/10 p-5 backdrop-blur-xl shadow-2xl">
+          <div className="hidden lg:block rounded-[2rem] border border-white/10 bg-white/10 p-5 backdrop-blur-xl shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c9a87c]">Mission Slider</p>
               <p className="text-sm text-white/60">0{active + 1} / 03</p>
