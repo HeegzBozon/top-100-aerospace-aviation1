@@ -9,7 +9,7 @@ const NAV_LINKS = [
   { label: 'Nominate', to: '/nominate' },
   { label: 'Local Legends', to: '/local-legends' },
   { label: 'Publication', to: '/Top100Women2025' },
-  { label: 'Community Round', to: '/community-round' },
+  { label: 'Community Round', href: 'https://wefunder.com/top.100.aerospace.aviation' },
   { label: 'Mission Theatre', to: '/LaunchParty' },
 ];
 
@@ -37,15 +37,28 @@ export default function HomeV2() {
             className="absolute top-14 right-0 w-56 rounded-2xl overflow-hidden shadow-2xl"
             style={{ background: 'rgba(7,17,31,0.97)', border: '1px solid rgba(201,168,124,0.2)', backdropFilter: 'blur(20px)' }}
           >
-            {NAV_LINKS.map(({ label, to }) => (
-              <Link
-                key={to}
-                to={to}
-                onClick={() => setMenuOpen(false)}
-                className="block px-5 py-3.5 text-sm font-semibold text-white/80 hover:text-[#c9a87c] hover:bg-white/5 transition-all border-b border-white/5 last:border-0"
-              >
-                {label}
-              </Link>
+            {NAV_LINKS.map(({ label, to, href }) => (
+              href ? (
+                <a
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-5 py-3.5 text-sm font-semibold text-white/80 hover:text-[#c9a87c] hover:bg-white/5 transition-all border-b border-white/5 last:border-0"
+                >
+                  {label} ↗
+                </a>
+              ) : (
+                <Link
+                  key={to}
+                  to={to}
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-5 py-3.5 text-sm font-semibold text-white/80 hover:text-[#c9a87c] hover:bg-white/5 transition-all border-b border-white/5 last:border-0"
+                >
+                  {label}
+                </Link>
+              )
             ))}
           </div>
         )}
