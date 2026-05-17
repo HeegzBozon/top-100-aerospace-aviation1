@@ -7,6 +7,7 @@ import SceneView from '@/components/flight-sim/SceneView';
 import DiceRoll from '@/components/flight-sim/DiceRoll';
 import SignalLog from '@/components/flight-sim/SignalLog';
 import FlightProfile from '@/components/flight-sim/FlightProfile';
+import TransitionInterlude from '@/components/flight-sim/TransitionInterlude';
 import { CAMPAIGNS } from '@/components/flight-sim/campaigns';
 import { classifyProfile } from '@/components/flight-sim/classifyProfile';
 import { ChevronLeft } from 'lucide-react';
@@ -17,6 +18,7 @@ export const GAME_PHASES = {
   SIGNAL_LOG: 'signal_log',
   DICE: 'dice',
   PROFILE: 'profile',
+  INTERLUDE: 'interlude',
 };
 
 export default function FlightSimulator() {
@@ -41,6 +43,7 @@ export default function FlightSimulator() {
   const [aiContent, setAiContent] = useState({});
   const [loadingAI, setLoadingAI] = useState(false);
   const [diceResult, setDiceResult] = useState(null);
+  const [isBossInterlude, setIsBossInterlude] = useState(false);
   const [playerInfo, setPlayerInfo] = useState(null);
   const [flightProfile, setFlightProfile] = useState(null);
   const topRef = useRef(null);
@@ -93,15 +96,16 @@ export default function FlightSimulator() {
     }
 
     if (nextScene?.aiGenerated) {
-      setLoadingAI(true);
       setCurrentSceneIndex(nextIndex);
+      setIsBossInterlude(false);
+      setPhase(GAME_PHASES.INTERLUDE);
       try {
         const content = await GameEngine.generateSceneContent(updatedSession, nextScene, choiceKey, null);
         setAiContent(prev => ({ ...prev, [nextScene.id]: content }));
       } catch (e) {
         setAiContent(prev => ({ ...prev, [nextScene.id]: nextScene.fallbackText }));
       }
-      setLoadingAI(false);
+      setPhase(GAME_PHASES.PLAYING);
     } else {
       setCurrentSceneIndex(nextIndex);
     }
@@ -116,15 +120,15 @@ export default function FlightSimulator() {
 
   const handleDiceComplete = async (result) => {
     setDiceResult(result);
-    setLoadingAI(true);
     const bossScene = session.campaign.scenes[currentSceneIndex];
+    setIsBossInterlude(true);
+    setPhase(GAME_PHASES.INTERLUDE);
     try {
       const content = await GameEngine.generateBossOutcome(session, bossScene, result);
       setAiContent(prev => ({ ...prev, [bossScene.id]: content }));
     } catch (e) {
       setAiContent(prev => ({ ...prev, [bossScene.id]: bossScene.fallbackOutcomes[result.outcome] }));
     }
-    setLoadingAI(false);
     setPhase(GAME_PHASES.PLAYING);
   };
 
@@ -184,6 +188,12 @@ export default function FlightSimulator() {
               isEpilogue={currentScene.type === 'epilogue'}
               diceResult={diceResult}
             />
+          </motion.div>
+        )}
+
+        {phase === GAME_PHASES.INTERLUDE && (
+          <motion.div key="interlude" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <TransitionInterlude isBoss={isBossInterlude} />
           </motion.div>
         )}
 
