@@ -1,0 +1,251 @@
+export const CG_CAMPAIGNS = {
+  'CG-01': {
+    id: 'CG-01',
+    title: 'The Pilot Site',
+    archetype: 'City Director',
+    primaryStats: ['COALITION', 'TRUST', 'RESOURCE'],
+    setting: 'Oakland, California — A vacant Caltrans lot near Fruitvale BART',
+    tagline: 'The city has the land. The residents need the site. The question is whether you have the will.',
+    badge: '🌱',
+    available: true,
+    baseStats: {
+      coalition: 10, trust: 10, resource: 10, resilience: 10, narrative: 10, systems: 10,
+    },
+    scenes: [
+      {
+        id: 'prologue',
+        type: 'choice',
+        title: 'Day One Briefing',
+        beat: 'Prologue',
+        aiGenerated: false,
+        text: `You've been appointed Director of the Bay Area CommonGround Pilot. A vacant Caltrans parcel near Fruitvale BART has been identified. Forty unhoused residents currently camp on an adjacent sidewalk. Three city council members are cautiously supportive. Two are not.\n\nYour deputy asks the first question before you've had coffee:\n\n"How do you want to lead this? What's the frame?"`,
+        choices: [
+          {
+            key: 'infrastructure',
+            label: 'Infrastructure first. Build the dignity stack before anyone moves in. Show the site before you make the ask.',
+            statDeltas: { resource: 2, systems: 2, trust: -1 },
+          },
+          {
+            key: 'community',
+            label: 'Community first. Meet the residents before we break ground. The site is theirs — we\'re just the logistics.',
+            statDeltas: { trust: 2, coalition: 2, resource: -1 },
+          },
+        ],
+      },
+      {
+        id: 'scene1',
+        type: 'choice',
+        title: 'The Council Meeting',
+        beat: 'Scene 1',
+        aiGenerated: false,
+        text: `The council meeting runs three hours. The supportive members are quiet. The opposition is not. Councilmember Halverson — a three-term incumbent who's built a career on "public safety" — has packed the room with constituents holding signs. His argument: this site will attract crime, reduce property values, and set a precedent the city can't walk back.\n\nYou have two minutes at the microphone. The room is watching.`,
+        choices: [
+          {
+            key: 'data',
+            label: 'Lead with data. Cost per encampment sweep vs. cost per site resident. Make it a fiscal argument.',
+            statDeltas: { systems: 2, resource: 1, trust: -1 },
+          },
+          {
+            key: 'human',
+            label: 'Lead with story. One resident. One name. One winter. Make it a human argument.',
+            statDeltas: { trust: 2, narrative: 2, coalition: -1 },
+          },
+        ],
+      },
+      {
+        id: 'scene2',
+        type: 'choice',
+        title: 'The Neighbor Coalition',
+        beat: 'Scene 2',
+        aiGenerated: true,
+        fallbackText: `Three weeks before groundbreaking, a neighborhood coalition forms. They're not hostile — they're scared. They want guarantees: about security, about site management, about what happens if things go wrong. Their spokesperson, Rosa Villanueva, runs the neighborhood association that's been fighting for a community garden on that same Caltrans lot for four years.\n\nShe didn't know about CommonGround until last week. She found out through a flyer.\n\n"We've been asking for that land for years," she tells you over the phone. "You could have called us first."`,
+        choices: [
+          {
+            key: 'apologize',
+            label: 'Apologize directly. Then invite Rosa into the governance council. Give the coalition a formal seat.',
+            statDeltas: { coalition: 3, trust: 2, resource: -1 },
+          },
+          {
+            key: 'integrate',
+            label: 'Offer to co-design the community garden as part of the site. The CommonGround model already includes it — make it theirs.',
+            statDeltas: { systems: 2, coalition: 2, narrative: 1 },
+          },
+        ],
+      },
+      {
+        id: 'signal_log',
+        type: 'signal_log',
+        title: 'Log Your Progress',
+        beat: 'Checkpoint',
+      },
+      {
+        id: 'scene4',
+        type: 'choice',
+        title: 'The Funding Gap',
+        beat: 'Scene 4',
+        aiGenerated: true,
+        fallbackText: `Two weeks before scheduled groundbreaking, the state grant that was supposed to cover the sanitation infrastructure falls through. Budget reallocation. The money went to a wildfire response fund. Justified — but it leaves a $340,000 gap.\n\nYou have three options on the table. Your deputy reminds you the groundbreaking is in the press calendar. Canceling now will be read as failure by everyone who opposed the project.`,
+        choices: [
+          {
+            key: 'tech',
+            label: 'Approach Salesforce and Google directly. Both have Bay Area ESG commitments and urban infrastructure portfolios. Make the ask.',
+            statDeltas: { resource: 3, coalition: 1, trust: -1 },
+          },
+          {
+            key: 'phase',
+            label: 'Phase the build. Open with what you have — showers, charging, rest areas. Add sanitation infrastructure in Phase 2 once funding is secured.',
+            statDeltas: { systems: 2, trust: 2, resource: -1 },
+          },
+        ],
+      },
+      {
+        id: 'boss',
+        type: 'boss',
+        title: 'The Vote',
+        beat: 'Boss Moment',
+        rollStats: ['coalition', 'trust'],
+        setup: `The City Council vote is in four hours.\n\nHalverson has introduced a last-minute amendment: a 90-day "community impact review" before any residents can move in. It's procedurally valid. It's also designed to kill the momentum and give opponents time to organize.\n\nYou've built your coalition carefully. Rosa's neighborhood group is with you. Two tech partners are publicly committed. The housing nonprofits have testified. But Halverson's amendment has peeled off one of your supportive councilmembers — she's worried about the election.\n\nYou have one move left. What do you do with it?`,
+        rollLabel: 'Roll COALITION + TRUST',
+        fallbackOutcomes: {
+          critical_success: "You call Rosa. She rallies forty residents — housed and unhoused together — to the council chambers in three hours. The gallery is full. Halverson's amendment fails 5-2. The vote passes. Groundbreaking is in two weeks.",
+          success: "You negotiate directly with the wavering councilmember. She proposes a 30-day review instead of 90. You accept. It passes 4-3. The timeline slips by a month, but the project moves forward.",
+          fail: "Halverson's amendment passes. Ninety days of review begins. You use the time to build — but the site sits staged and empty while politics work themselves out. Six residents leave the adjacent encampment for other cities. You don't know where they went.",
+          critical_fail: "The vote fails entirely. A procedural challenge on the site's zoning designation, filed the morning of the vote, gives council cover to table the project. The site reverts to Caltrans. You have to start over.",
+        },
+        aiGenerated: true,
+      },
+      {
+        id: 'epilogue',
+        type: 'epilogue',
+        title: 'What Was Built',
+        beat: 'Epilogue',
+        text: `The debrief takes the form of a site walk.\n\nYou walk the perimeter with Rosa, who is now chair of the Community Council. The garden is in. The showers are running. Three residents have transitioned to permanent housing. Seven are in active case navigation.\n\nA van lifer named Marcus — he's been traveling for two years — tells you it's the cleanest, safest place he's stayed in California.\n\nYou don't write a press release. You write a site model documentation so the next city can replicate it faster.`,
+      },
+    ],
+  },
+
+  'CG-02': {
+    id: 'CG-02',
+    title: 'The Night the Policy Changed',
+    archetype: 'Policy Architect',
+    primaryStats: ['NARRATIVE', 'SYSTEMS', 'COALITION'],
+    setting: 'San Francisco City Hall → Tenderloin → State Legislature',
+    tagline: 'The law can make suffering legal or illegal. You\'re here to change which one it chooses.',
+    badge: '⚖️',
+    available: true,
+    baseStats: {
+      coalition: 9, trust: 11, resource: 9, resilience: 11, narrative: 12, systems: 11,
+    },
+    scenes: [
+      {
+        id: 'prologue',
+        type: 'choice',
+        title: 'The Brief',
+        beat: 'Prologue',
+        aiGenerated: false,
+        text: `You're the lead policy architect for a statewide Right to Rest coalition. Your coalition has been working for three years to pass legislation that would prohibit cities from criminalizing sitting, lying, and sleeping in public spaces where no shelter alternative exists.\n\nA federal ruling last week created a narrow window. Cities across California are scrambling to update their anti-camping ordinances before the ruling takes effect. You have a bill drafted. You have a hearing in six weeks.\n\nYour coalition co-chair — a veteran housing advocate named Darius Chen — asks you the fundamental question on the first call:\n\n"Do we play this as a moral argument or a pragmatic one? Because we don't have enough time for both."`,
+        choices: [
+          {
+            key: 'moral',
+            label: 'Moral argument. Human beings have a right to exist in public space. That is the bill. Frame everything else as implementation.',
+            statDeltas: { narrative: 3, trust: 1, systems: -1 },
+          },
+          {
+            key: 'pragmatic',
+            label: 'Pragmatic argument. Criminalization costs more than stabilization. Lead with the fiscal note. Moral case is the subtext.',
+            statDeltas: { systems: 2, coalition: 2, narrative: -1 },
+          },
+        ],
+      },
+      {
+        id: 'scene1',
+        type: 'choice',
+        title: 'The Opposition Brief',
+        beat: 'Scene 1',
+        aiGenerated: false,
+        text: `The California League of Cities comes out against the bill within 48 hours. Their argument: local control. Cities should determine their own public safety policies. Preempting municipal ordinances sets a dangerous precedent.\n\nTheir brief is well-written. It will be cited in committee. The League has eleven lobbyists. You have three staff members and a Google Slides deck.\n\nDarius says: "They're not wrong about local control. They're wrong about what it's being used for."`,
+        choices: [
+          {
+            key: 'amendment',
+            label: 'Amend the bill to preserve local flexibility — but define a minimum floor. No city can criminalize an act it has not provided an alternative for.',
+            statDeltas: { systems: 3, coalition: 1, narrative: -1 },
+          },
+          {
+            key: 'hold',
+            label: 'Hold the bill as written. Conceding to local control framing now weakens every future version of this legislation.',
+            statDeltas: { narrative: 2, resilience: 2, coalition: -1 },
+          },
+        ],
+      },
+      {
+        id: 'scene2',
+        type: 'choice',
+        title: 'The Testimony',
+        beat: 'Scene 2',
+        aiGenerated: true,
+        fallbackText: `Committee hearing, Room 4202, State Capitol. The chair gives you ten minutes. In the gallery: eleven city attorneys, four police chiefs, two tech executives who haven't decided which way to lean, and forty advocates who drove from the Bay Area at 5 AM.\n\nYour lead witness is a sixty-three-year-old woman named Pauline who was cited fourteen times in eighteen months for sitting on a bench near a Sacramento transit hub. She has severe arthritis. The bench was the only flat surface near the bus stop.\n\nDarius says he's only going to speak if you want him to. He has forty years of housing policy behind him and no political ambitions. "I'll say what nobody else will say," he tells you. "Just tell me if you want that today."`,
+        choices: [
+          {
+            key: 'pauline',
+            label: 'Let Pauline lead. Her testimony speaks for itself. Darius stays ready but doesn\'t speak unless the committee asks.',
+            statDeltas: { trust: 3, narrative: 2, systems: -1 },
+          },
+          {
+            key: 'darius',
+            label: 'Darius speaks first with forty years of data and systemic context. Then Pauline. Frame and evidence, then humanity.',
+            statDeltas: { systems: 2, narrative: 2, coalition: 1 },
+          },
+        ],
+      },
+      {
+        id: 'signal_log',
+        type: 'signal_log',
+        title: 'Log Your Progress',
+        beat: 'Checkpoint',
+      },
+      {
+        id: 'scene4',
+        type: 'choice',
+        title: 'The Media Moment',
+        beat: 'Scene 4',
+        aiGenerated: true,
+        fallbackText: `Three days before the floor vote, a video goes viral. A city sweep in Fresno — conducted the night before a scheduled policy forum on the Right to Rest bill — is caught on phone cameras. Tents are thrown into trucks while residents scramble for their medications and IDs.\n\nThe video has 2.3 million views by morning. Your coalition's phones are exploding. Reporters are asking for your response.\n\nThis is a moment. But it's also a trap. Halverson — who's now advising the League of Cities — has been waiting for exactly this kind of emotional peak to reframe the bill as "anti-police" and "pro-encampment."`,
+        choices: [
+          {
+            key: 'amplify',
+            label: 'Amplify the video directly. Name the sweep. Name the city. This is exactly what the bill is about — don\'t soften it.',
+            statDeltas: { narrative: 3, trust: 1, coalition: -1 },
+          },
+          {
+            key: 'reframe',
+            label: 'Use the moment but don\'t name the city. "This is what happens when a city has policy but no alternative." Keep the frame on the bill, not the sweep.',
+            statDeltas: { systems: 2, coalition: 2, narrative: 1 },
+          },
+        ],
+      },
+      {
+        id: 'boss',
+        type: 'boss',
+        title: 'The Floor Vote',
+        beat: 'Boss Moment',
+        rollStats: ['narrative', 'coalition'],
+        setup: `Assembly floor. Thirty minutes to vote.\n\nYou're seven votes short. You need twenty-one. You have fourteen committed. Four members are listed as undecided but leaning no. Three have told your team they'll vote yes if one specific amendment clears — an amendment that would significantly narrow the bill's scope but keep its core principle.\n\nDarius says take the amendment. "A narrow win moves the Overton window. A loss sets it back five years."\n\nYour original co-sponsors say hold the line. "A watered-down bill becomes the ceiling, not the floor."\n\nThe Speaker is waiting for your call.`,
+        rollLabel: 'Roll NARRATIVE + COALITION',
+        fallbackOutcomes: {
+          critical_success: "You make three calls in twenty minutes. One undecided member, a first-term legislator from Stockton, breaks your way after a two-minute conversation about what happened in her district last winter. The bill passes 24-16, unamended. You don't celebrate until you're outside.",
+          success: "You accept the amendment. Three votes flip. The bill passes 22-19 with a narrowed scope. It's not the bill you drafted. It's a bill that can be expanded. Darius was right.",
+          fail: "The vote falls 20-21. One member who committed to you votes no without explanation. The bill dies in this session. You file for next year before the night is over. So does Halverson.",
+          critical_fail: "A procedural motion — a motion you didn't see coming — sends the bill back to committee. It's a parliamentary maneuver that costs you this session entirely. You learn later that three lobbyists worked the floor for six hours. You had three staff. This time. Next time you'll have more.",
+        },
+        aiGenerated: true,
+      },
+      {
+        id: 'epilogue',
+        type: 'epilogue',
+        title: 'What Was Written',
+        beat: 'Epilogue',
+        text: `Win or lose, the hearing record is now public.\n\nPauline's testimony is entered into the state archive. Darius's forty years of data are cited in a federal brief eighteen months later. The bill language — your bill language — is adopted word for word by two other states.\n\nLaws are slow. But the words you write today become the scaffolding for the words someone else writes in ten years.\n\nDarius sends you a single message when the next session begins: "We file again Monday."`,
+      },
+    ],
+  },
+};

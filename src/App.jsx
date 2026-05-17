@@ -50,6 +50,7 @@ const Hangouts = lazy(() => import('@/pages/Hangouts'));
 const Vision2030 = lazy(() => import('@/pages/Vision2030'));
 const FlightSimulator = lazy(() => import('@/pages/FlightSimulator'));
 const CommonGround = lazy(() => import('@/pages/CommonGround'));
+const CommonGroundSimulator = lazy(() => import('@/pages/CommonGroundSimulator'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -183,6 +184,7 @@ const AuthenticatedApp = () => {
       <Route path="/2030-vision" element={<Vision2030 />} />
       <Route path="/play" element={<FlightSimulator />} />
       <Route path="/common-ground" element={<CommonGround />} />
+      <Route path="/common-ground-sim" element={<CommonGroundSimulator />} />
       <Route path="/Nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/top100-tv" element={

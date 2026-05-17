@@ -465,11 +465,18 @@ export default function CommonGround() {
           <p className="text-white/30 text-sm italic mb-10" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
             CommonGround 4.0 — For the people who just need a place to be.
           </p>
-          <Link to="/"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm text-[#07111f] hover:scale-105 transition-all shadow-[0_0_30px_rgba(74,222,128,0.3)]"
-            style={{ background: 'linear-gradient(135deg, #4ade80, #22c55e)' }}>
-            Return Home <ArrowRight className="w-4 h-4" />
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/common-ground-sim"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm text-[#07111f] hover:scale-105 transition-all shadow-[0_0_30px_rgba(74,222,128,0.3)]"
+              style={{ background: 'linear-gradient(135deg, #4ade80, #22c55e)' }}>
+              Play the Simulator <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link to="/"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm border border-[#4ade80]/30 text-[#4ade80]/80 hover:text-[#4ade80] hover:border-[#4ade80]/60 transition-all"
+              style={{ background: 'rgba(74,222,128,0.04)' }}>
+              Return Home
+            </Link>
+          </div>
         </motion.div>
       </section>
 
