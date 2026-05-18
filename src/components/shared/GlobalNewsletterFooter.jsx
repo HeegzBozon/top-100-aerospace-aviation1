@@ -53,7 +53,7 @@ export default function GlobalNewsletterFooter({ currentPageName, dark = false }
 
   return (
     <div
-      className="w-full border-t px-4 py-5 flex flex-col sm:flex-row items-center gap-3"
+      className="fixed bottom-0 left-0 right-0 z-50 w-full border-t px-4 py-3 flex flex-col sm:flex-row items-center gap-3"
       style={bgStyle}
     >
       {/* Label */}
