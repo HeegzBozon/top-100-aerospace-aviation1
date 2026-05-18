@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Globe, Users, Zap, Home } from 'lucide-react';
+import { ChevronRight, Globe, Users, Zap, Home, Moon, Leaf, ArrowRight } from 'lucide-react';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -37,9 +37,10 @@ const crises = [
 
 const horizonItems = [
   '1,000+ Fellows in the record. Nine Volumes in the archive.',
-  'Ten hubs with active Local Legends CommonGround sites.',
+  'Ten hubs with active Local Legends CommonGround sites — each a working demonstration of Solarpunk and Permaculture dignity infrastructure.',
   'A Flightography credential that travels across borders and survives displacement.',
   'A verified talent graph that no other organization on earth has built, because no other organization started from community.',
+  'Operation: Moon Joy running daily across Squad and Chapter networks on every continent.',
 ];
 
 export default function Vision2030() {
@@ -239,6 +240,94 @@ export default function Vision2030() {
 
       {divider}
 
+      {/* ── MOON JOY + COMMONGROUND — The Two Activation Layers ── */}
+      <section className="px-6 md:px-12 py-20 max-w-4xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">The Two Activation Layers</p>
+          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            className="text-3xl md:text-4xl font-bold text-white mb-4 leading-snug">
+            A vision without activation is a wish.
+          </h2>
+          <p className="text-white/55 text-base leading-relaxed mb-10">
+            Two programs translate the 2030 Vision from document to reality — one in the air, one in the soil.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-5">
+          {/* Moon Joy */}
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+            className="rounded-3xl p-8 border border-[#c9a87c]/25 flex flex-col"
+            style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.09), rgba(13,31,54,0.85))' }}>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.25), rgba(201,168,124,0.08))' }}>
+                <Moon className="w-5 h-5 text-[#c9a87c]" />
+              </div>
+              <div>
+                <p className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest">Activation Layer 1</p>
+                <p className="text-white font-bold text-sm">Operation: Moon Joy</p>
+              </div>
+            </div>
+            <p className="text-white/55 text-sm leading-relaxed mb-4 flex-1">
+              The community coaching and mastermind layer. M–F, 1:30 PM Pacific. Free to access, funded by those who can give more so those who cannot can still show up. Every session is $6,500+ in expertise, access, and strategic connection. The Joy Fund sponsors seats. Nobody gets turned away.
+            </p>
+            <p className="text-white/40 text-xs italic mb-5" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              "The conversations you weren't in are happening. Now there's a room you don't have to earn your way into."
+            </p>
+            <Link to="/moon-joy"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold border border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10 transition-all self-start">
+              Join Operation: Moon Joy <ArrowRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
+
+          {/* CommonGround */}
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={0.15}
+            className="rounded-3xl p-8 border border-white/10 flex flex-col"
+            style={{ background: 'linear-gradient(135deg, rgba(74,222,128,0.07), rgba(7,26,16,0.85))' }}>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'rgba(74,222,128,0.12)' }}>
+                <Leaf className="w-5 h-5 text-[#4ade80]" />
+              </div>
+              <div>
+                <p className="text-[#4ade80] text-xs font-bold uppercase tracking-widest">Activation Layer 2</p>
+                <p className="text-white font-bold text-sm">CommonGround 5.0</p>
+              </div>
+            </div>
+            <p className="text-white/55 text-sm leading-relaxed mb-4 flex-1">
+              Dignity infrastructure. Solarpunk philosophy. Permaculture design. Near every major aerospace hub, a CommonGround site: solar-powered, resident-governed, ecologically active. Food forests replace community gardens. Upcycle workshops replace waste. Every human who can contribute, contributing.
+            </p>
+            <p className="text-white/40 text-xs italic mb-5" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              "The engineers designing life support for lunar habitats are solving a harder version of the same equation. CommonGround is what happens when that knowledge travels back to the surface."
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Link to="/common-ground"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold border border-[#4ade80]/40 text-[#4ade80] hover:bg-[#4ade80]/10 transition-all">
+                Read the White Paper <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link to="/common-ground-sim"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold border border-white/15 text-white/55 hover:text-white hover:border-white/30 transition-all">
+                Play the Sim
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="mt-6 rounded-2xl p-7 border border-[#c9a87c]/20 text-center"
+          style={{ background: 'rgba(201,168,124,0.04)' }}>
+          <p style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            className="text-xl font-bold text-white mb-2">
+            Think Global. Act Local. Ad Astra.
+          </p>
+          <p className="text-white/40 text-sm">
+            Moon Joy is the air layer. CommonGround is the ground layer. The Index is the record. All three are the same institution.
+          </p>
+        </motion.div>
+      </section>
+
+      {divider}
+
       {/* ── THE 2030 HORIZON ── */}
       <section className="px-6 md:px-12 py-20 max-w-3xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
@@ -291,18 +380,29 @@ export default function Vision2030() {
             Join the record.
           </h2>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap mb-8">
             <Link to="/nominate"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm bg-[#c9a87c] text-[#07111f] hover:bg-[#d4b88c] transition-all shadow-[0_0_35px_rgba(201,168,124,0.4)] whitespace-nowrap">
               Nominate a Fellow <ChevronRight className="w-4 h-4" />
             </Link>
-            <Link to="/hangouts"
+            <Link to="/moon-joy"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm border border-[#c9a87c]/40 text-[#c9a87c] hover:border-[#c9a87c]/70 hover:bg-[#c9a87c]/10 transition-all whitespace-nowrap">
-              Become a Booster
+              <Moon className="w-4 h-4" /> Join Operation: Moon Joy
             </Link>
             <Link to="/hangouts"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm border border-white/20 text-white/80 hover:border-white/40 hover:text-white transition-all whitespace-nowrap">
               Partner with the institution
+            </Link>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap mb-16">
+            <Link to="/common-ground"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm border border-[#4ade80]/30 text-[#4ade80]/80 hover:border-[#4ade80]/60 hover:text-[#4ade80] transition-all whitespace-nowrap"
+              style={{ background: 'rgba(74,222,128,0.05)' }}>
+              <Leaf className="w-4 h-4" /> Read CommonGround 5.0
+            </Link>
+            <Link to="/common-ground-sim"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm border border-white/15 text-white/50 hover:border-white/30 hover:text-white/80 transition-all whitespace-nowrap">
+              Play the CommonGround Sim
             </Link>
           </div>
 
@@ -319,7 +419,7 @@ export default function Vision2030() {
       {/* Footer */}
       <footer className="px-6 md:px-12 py-10 border-t border-white/5 text-center">
         <p style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          className="text-white/20 text-xs italic mb-2">Think global. Act locally. Ad Astra.</p>
+          className="text-white/20 text-xs italic mb-2">Think Global. Act Local. Ad Astra. Joy is the mission.</p>
         <p className="text-white/20 text-xs tracking-widest uppercase">
           TOP 100 Aerospace &amp; Aviation · Est. 2021 · Governed by contribution. Built in community. Built with community.
         </p>
