@@ -26,7 +26,7 @@ const slides = [
     id: 'think-global',
     eyebrow: 'Season 4 — 2026 · Welcome',
     title: 'Think Global',
-    kicker: 'Oh hey — you made it. We\'ve been expecting you.',
+    kicker: 'Oh hey — you made it. Right on time.',
     body: 'One aerospace community across borders, disciplines, and generations. TOP 100 connects the talent, alumni, investors, operators, and industry leaders shaping the next chapter of flight. Wherever you\'re coming from — you belong here.',
     image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=2400&auto=format&fit=crop&q=90',
     icon: Globe2,
