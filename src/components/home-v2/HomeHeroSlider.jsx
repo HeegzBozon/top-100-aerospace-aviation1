@@ -30,8 +30,8 @@ const slides = [
     body: 'TOP 100 connects talent, alumni, investors, operators, scientists, and industry leaders shaping the next chapter of flight.',
     image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=2400&auto=format&fit=crop&q=90',
     icon: Globe2,
-    primary: { label: 'Nominate Now', to: '/nominate' },
-    secondary: { label: 'View Publication', to: '/Top100Women2025' },
+    primary: { label: 'TOP 100 Women 2025', to: '/Top100Women2025' },
+    secondary: { label: 'Join the Community', to: '/moon-joy' },
   },
   {
     id: 'act-local',
@@ -57,6 +57,7 @@ const slides = [
     primary: { label: 'Follow Our Fundraising Journey', href: 'https://wefunder.com/top.100.aerospace.aviation' },
     secondary: { label: 'Watch Live Launches', to: '/top100-tv' },
     tertiary: { label: 'Play Flight Simulator', to: '/play' },
+    quaternary: { label: 'Read CommonGround 5.0', to: '/common-ground' },
   },
 ];
 
