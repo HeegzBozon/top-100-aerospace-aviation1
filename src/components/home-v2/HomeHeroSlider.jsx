@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ChevronLeft, ChevronRight, Globe2, MapPin, Rocket, Joystick } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Globe2, MapPin, Rocket, Joystick, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NominationCountdown from '@/components/home-v2/NominationCountdown';
 
@@ -44,6 +44,7 @@ const slides = [
     primary: { label: 'Nominate a Local Legend', to: '/nominate' },
     secondary: { label: 'Explore Local Legends', to: '/local-legends' },
     tertiary: { label: 'Play CommonGround Sim', to: '/common-ground-sim' },
+    quaternary: { label: 'Read CommonGround 5.0', to: '/common-ground' },
   },
   {
     id: 'ad-astra',
@@ -188,6 +189,13 @@ export default function HomeHeroSlider() {
                     className="inline-flex items-center gap-2 rounded-full px-5 py-3.5 sm:px-7 sm:py-5 text-xs sm:text-sm font-bold border border-[#c9a87c]/40 text-[#c9a87c] hover:bg-[#c9a87c]/10 transition-all backdrop-blur-md">
                     <Joystick className="h-4 w-4" />
                     {slide.tertiary.label}
+                  </Link>
+                )}
+                {slide.quaternary && (
+                  <Link to={slide.quaternary.to}
+                    className="inline-flex items-center gap-2 rounded-full px-5 py-3.5 sm:px-7 sm:py-5 text-xs sm:text-sm font-bold border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-all backdrop-blur-md">
+                    <BookOpen className="h-4 w-4" />
+                    {slide.quaternary.label}
                   </Link>
                 )}
               </div>
