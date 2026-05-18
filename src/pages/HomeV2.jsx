@@ -28,6 +28,8 @@ export default function HomeV2() {
           2030 Vision
         </Link>
         <div className="w-px h-3 bg-white/20" />
+        <GlobalNewsletterFooter currentPageName="HomeV2" variant="header" />
+        <div className="w-px h-3 bg-white/20" />
         <Link to="/about"
           className="text-xs font-semibold tracking-widest uppercase text-white/50 hover:text-[#c9a87c] transition-colors"
           style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}>
@@ -82,7 +84,6 @@ export default function HomeV2() {
       </div>
 
       <HomeHeroSlider />
-      <GlobalNewsletterFooter currentPageName="HomeV2" dark />
       <LeadConnectorChatWidget />
     </>
   );

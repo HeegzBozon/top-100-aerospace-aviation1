@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Globe, Users, Zap, Home, Moon, Leaf, ArrowRight } from 'lucide-react';
-import NewsletterCapture from '@/components/shared/NewsletterCapture';
+import GlobalNewsletterFooter from '@/components/shared/GlobalNewsletterFooter';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -54,12 +54,13 @@ export default function Vision2030() {
       }}
     >
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/5 sticky top-0 z-50"
+      <nav className="flex items-center justify-between gap-4 px-6 md:px-12 py-4 border-b border-white/5 sticky top-0 z-50"
         style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(16px)' }}>
-        <Link to="/" className="text-sm font-semibold tracking-widest text-[#c9a87c] uppercase">TOP 100</Link>
+        <Link to="/" className="text-sm font-semibold tracking-widest text-[#c9a87c] uppercase flex-shrink-0">TOP 100</Link>
+        <GlobalNewsletterFooter currentPageName="Vision2030" variant="header" />
         <Link to="/nominate"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold bg-[#c9a87c] text-[#07111f] hover:bg-[#d4b88c] transition-all shadow-[0_0_25px_rgba(201,168,124,0.35)]">
-          Nominate a Fellow <ChevronRight className="w-4 h-4" />
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold bg-[#c9a87c] text-[#07111f] hover:bg-[#d4b88c] transition-all shadow-[0_0_25px_rgba(201,168,124,0.35)] flex-shrink-0">
+          Nominate <ChevronRight className="w-4 h-4" />
         </Link>
       </nav>
 
@@ -415,11 +416,6 @@ export default function Vision2030() {
             <p className="text-white/20 text-xs tracking-widest uppercase">top100aero.space</p>
           </div>
         </motion.div>
-      </section>
-
-      {/* ── NEWSLETTER CAPTURE ── */}
-      <section className="px-6 md:px-12 pb-16 max-w-2xl mx-auto">
-        <NewsletterCapture source="vision_2030" />
       </section>
 
       {/* Footer */}

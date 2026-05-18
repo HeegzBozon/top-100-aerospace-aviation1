@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Home, Vote, ChevronRight, MapPin, Leaf, Zap, Sprout } from 'lucide-react';
-import NewsletterCapture from '@/components/shared/NewsletterCapture';
+import GlobalNewsletterFooter from '@/components/shared/GlobalNewsletterFooter';
 
 const fadeUp = { initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.6 } };
 
@@ -21,10 +21,11 @@ export default function CommonGround() {
       style={{ background: 'linear-gradient(160deg, #03080f 0%, #071a10 50%, #07111f 100%)', fontFamily: "'Montserrat', system-ui, sans-serif" }}>
 
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-4 border-b border-white/5 sticky top-0 z-50"
+      <nav className="flex items-center justify-between gap-4 px-6 py-4 border-b border-white/5 sticky top-0 z-50"
         style={{ background: 'rgba(3,8,15,0.92)', backdropFilter: 'blur(16px)' }}>
-        <Link to="/" className="text-sm font-semibold tracking-widest text-[#c9a87c] uppercase">TOP 100</Link>
-        <span className="text-white/30 text-xs font-semibold uppercase tracking-widest">CommonGround 5.0</span>
+        <Link to="/" className="text-sm font-semibold tracking-widest text-[#c9a87c] uppercase flex-shrink-0">TOP 100</Link>
+        <GlobalNewsletterFooter currentPageName="CommonGround" variant="header" />
+        <span className="text-white/30 text-xs font-semibold uppercase tracking-widest flex-shrink-0 hidden md:block">CommonGround 5.0</span>
       </nav>
 
       {/* Hero */}
@@ -422,11 +423,6 @@ export default function CommonGround() {
             </motion.div>
           ))}
         </div>
-      </section>
-
-      {/* ── NEWSLETTER CAPTURE ── */}
-      <section className="px-6 pb-8 max-w-2xl mx-auto">
-        <NewsletterCapture source="common_ground" />
       </section>
 
       {/* Closing */}

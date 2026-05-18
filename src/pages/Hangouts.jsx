@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import NewsletterCapture from '@/components/shared/NewsletterCapture';
+import GlobalNewsletterFooter from '@/components/shared/GlobalNewsletterFooter';
 import {
   MessageCircle, Hammer, BookOpen, Mic, Zap, Flame, Users, Network,
   ChevronRight, ChevronLeft, Star, Award, Globe, TrendingUp, HelpCircle,
@@ -416,8 +416,8 @@ export default function Hangouts() {
       <DiscoveryOverlay open={discoveryOpen} onClose={() => setDiscoveryOpen(false)} />
 
       {/* ── NAV ── */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/5 sticky top-0 z-50" style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(16px)' }}>
-        <div className="flex items-center gap-4">
+      <nav className="flex items-center justify-between gap-4 px-6 md:px-12 py-4 border-b border-white/5 sticky top-0 z-50" style={{ background: 'rgba(7,17,31,0.92)', backdropFilter: 'blur(16px)' }}>
+        <div className="flex items-center gap-4 flex-shrink-0">
           <Link to="/" className="text-sm font-semibold tracking-widest text-[#c9a87c] uppercase">TOP 100</Link>
           {isLive && (
             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)' }}>
@@ -425,7 +425,8 @@ export default function Hangouts() {
             </span>
           )}
         </div>
-        <CTAPrimary>Join Operation: Moon Joy</CTAPrimary>
+        <GlobalNewsletterFooter currentPageName="Hangouts" variant="header" />
+        <CTAPrimary>Join</CTAPrimary>
       </nav>
 
       {/* ── HERO ── */}
@@ -1114,11 +1115,6 @@ export default function Hangouts() {
       </section>
 
       {divider}
-
-      {/* ── NEWSLETTER CAPTURE ── */}
-      <section className="px-6 md:px-12 py-10 max-w-2xl mx-auto">
-        <NewsletterCapture source="moon_joy" />
-      </section>
 
       {divider}
 
