@@ -6,6 +6,7 @@ import CommsHeroCarousel from "@/components/comms/CommsHeroCarousel";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import Season3ReOnboarding from "@/components/onboarding/Season3ReOnboarding";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
+import GlobalNewsletterFooter from "@/components/shared/GlobalNewsletterFooter";
 
 function CommsAwareContent({ children, currentPageName }) {
   const { activeConversation } = useConversation();
@@ -18,7 +19,12 @@ function CommsAwareContent({ children, currentPageName }) {
     return <CommsHeroCarousel />;
   }
 
-  return <div className="flex-1 overflow-y-auto scrollbar-hide">{children}</div>;
+  return (
+    <div className="flex-1 overflow-y-auto scrollbar-hide flex flex-col">
+      <div className="flex-1">{children}</div>
+      <GlobalNewsletterFooter currentPageName={currentPageName} />
+    </div>
+  );
 }
 
 export default function CommsLayoutDesktop({

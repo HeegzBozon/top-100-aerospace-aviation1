@@ -5,6 +5,7 @@ import MobileCommsView from "@/components/comms/MobileCommsView";
 import Season3ReOnboarding from "@/components/onboarding/Season3ReOnboarding";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
 import MobileDock from "@/components/comms/MobileDock";
+import GlobalNewsletterFooter from "@/components/shared/GlobalNewsletterFooter";
 
 function MobileCommsContent({
   children,
@@ -39,8 +40,9 @@ function MobileCommsContent({
           setIsDarkMode={setIsDarkMode}
         />
       ) : (
-        <div className="flex-1 overflow-y-auto scrollbar-hide" style={{ background: 'var(--bg, #faf8f5)' }}>
-          {children}
+        <div className="flex-1 overflow-y-auto scrollbar-hide flex flex-col" style={{ background: 'var(--bg, #faf8f5)' }}>
+          <div className="flex-1">{children}</div>
+          <GlobalNewsletterFooter currentPageName={currentPageName} />
         </div>
       )}
 
