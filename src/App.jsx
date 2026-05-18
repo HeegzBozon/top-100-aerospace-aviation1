@@ -83,6 +83,7 @@ const AuthenticatedApp = () => {
       navigateToLogin();
       return null;
     }
+    // For unknown/network errors, fall through and render the app anyway
   }
 
   // Render the main app

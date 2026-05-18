@@ -42,7 +42,7 @@ const RECOMMENDATIONS = {
   },
   discuss: {
     template: 'Facilitated Open Forum',
-    explanation: 'Think-Pair-Share gets everyone's voice before the full room opens. Fishbowl creates structured depth if the conversation needs to go further.',
+    explanation: "Think-Pair-Share gets everyone's voice before the full room opens. Fishbowl creates structured depth if the conversation needs to go further.",
     tactics: ['Check-In Round', 'Think-Pair-Share', 'Open Discussion'],
   },
   reflect: {
