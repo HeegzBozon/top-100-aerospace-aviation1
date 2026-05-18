@@ -24,10 +24,10 @@ function useIsLiveNow() {
 const slides = [
   {
     id: 'think-global',
-    eyebrow: 'Season 4 — 2026',
+    eyebrow: 'Season 4 — 2026 · Welcome',
     title: 'Think Global',
-    kicker: 'One aerospace community across borders, disciplines, and generations.',
-    body: 'TOP 100 connects talent, alumni, investors, operators, scientists, and industry leaders shaping the next chapter of flight.',
+    kicker: 'Oh hey — you made it. We\'ve been expecting you.',
+    body: 'One aerospace community across borders, disciplines, and generations. TOP 100 connects the talent, alumni, investors, operators, and industry leaders shaping the next chapter of flight. Wherever you\'re coming from — you belong here.',
     image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=2400&auto=format&fit=crop&q=90',
     icon: Globe2,
     primary: { label: 'TOP 100 Women 2025', to: '/Top100Women2025' },
