@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import NewsletterCapture from '@/components/shared/NewsletterCapture';
 import {
   MessageCircle, Hammer, BookOpen, Mic, Zap, Flame, Users, Network,
   ChevronRight, ChevronLeft, Star, Award, Globe, TrendingUp, HelpCircle,
@@ -1110,6 +1111,13 @@ export default function Hangouts() {
             </a>
           </div>
         </motion.div>
+      </section>
+
+      {divider}
+
+      {/* ── NEWSLETTER CAPTURE ── */}
+      <section className="px-6 md:px-12 py-10 max-w-2xl mx-auto">
+        <NewsletterCapture source="moon_joy" />
       </section>
 
       {divider}

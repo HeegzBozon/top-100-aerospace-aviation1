@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Home, Vote, ChevronRight, MapPin, Leaf, Zap, Sprout } from 'lucide-react';
+import NewsletterCapture from '@/components/shared/NewsletterCapture';
 
 const fadeUp = { initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.6 } };
 
@@ -421,6 +422,11 @@ export default function CommonGround() {
             </motion.div>
           ))}
         </div>
+      </section>
+
+      {/* ── NEWSLETTER CAPTURE ── */}
+      <section className="px-6 pb-8 max-w-2xl mx-auto">
+        <NewsletterCapture source="common_ground" />
       </section>
 
       {/* Closing */}

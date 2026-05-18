@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Globe, Users, Zap, Home, Moon, Leaf, ArrowRight } from 'lucide-react';
+import NewsletterCapture from '@/components/shared/NewsletterCapture';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -414,6 +415,11 @@ export default function Vision2030() {
             <p className="text-white/20 text-xs tracking-widest uppercase">top100aero.space</p>
           </div>
         </motion.div>
+      </section>
+
+      {/* ── NEWSLETTER CAPTURE ── */}
+      <section className="px-6 md:px-12 pb-16 max-w-2xl mx-auto">
+        <NewsletterCapture source="vision_2030" />
       </section>
 
       {/* Footer */}
