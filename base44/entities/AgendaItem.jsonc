@@ -1,0 +1,53 @@
+{
+  "name": "AgendaItem",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "HangoutSession ID"
+    },
+    "tactic_id": {
+      "type": "string",
+      "description": "WorkshopTactic ID"
+    },
+    "tactic_name": {
+      "type": "string"
+    },
+    "tactic_category": {
+      "type": "string"
+    },
+    "tactic_description": {
+      "type": "string"
+    },
+    "how_to_facilitate": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "duration": {
+      "type": "number",
+      "description": "Duration in minutes"
+    },
+    "order": {
+      "type": "number",
+      "description": "Position in agenda"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "completed",
+        "skipped"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "session_id",
+    "tactic_name",
+    "duration",
+    "order"
+  ]
+}

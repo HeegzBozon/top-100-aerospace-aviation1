@@ -1,0 +1,93 @@
+{
+  "name": "HangoutSession",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Session title"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time of session"
+    },
+    "host_email": {
+      "type": "string",
+      "description": "Host email"
+    },
+    "host_name": {
+      "type": "string",
+      "description": "Host display name"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "Hot Seat",
+        "Live Build",
+        "Workshop",
+        "Q&A",
+        "Hackathon",
+        "Shoot the Shit",
+        "Breakout Rooms",
+        "Townhall",
+        "Networking 101"
+      ],
+      "description": "Session format type"
+    },
+    "attendance_count": {
+      "type": "number",
+      "default": 0
+    },
+    "template_id": {
+      "type": "string",
+      "description": "SessionTemplate used"
+    },
+    "agenda_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tactic_id": {
+            "type": "string"
+          },
+          "tactic_name": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "order": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "live",
+        "completed"
+      ],
+      "default": "planned"
+    },
+    "outcome_notes": {
+      "type": "string",
+      "description": "Post-session summary"
+    },
+    "replay_url": {
+      "type": "string",
+      "description": "Recording link"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Specific topic if provided"
+    }
+  },
+  "required": [
+    "title",
+    "session_date",
+    "host_email",
+    "format"
+  ]
+}

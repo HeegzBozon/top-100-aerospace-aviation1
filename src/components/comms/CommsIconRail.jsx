@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Trophy, Calendar, MessageCircle, Users, MoreHorizontal, Plus,
   Smile, ChevronRight, Hash, Briefcase, ShieldCheck,
-  Search, Clock, Send
+  Search, Clock, Send, Rocket
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
@@ -148,6 +148,30 @@ export default function CommsIconRail({ currentPageName, totalUnread }) {
             </motion.div>
           );
         })}
+
+        {/* Session Portal */}
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full">
+          <Link
+            to="/session-portal"
+            className="flex flex-col items-center gap-1 py-3 px-1 rounded-xl transition-all relative group"
+            title="Mission Control"
+          >
+            <div className={cn(
+              "w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300",
+              currentPageName === 'SessionPortal'
+                ? "bg-[var(--accent)] text-white shadow-[0_0_20px_rgba(201,168,124,0.3)]"
+                : "text-white/60 group-hover:bg-white/10 group-hover:text-white"
+            )}>
+              <Rocket className="w-5 h-5" />
+            </div>
+            <span className={cn(
+              "text-[9px] font-bold uppercase tracking-wider transition-opacity duration-300",
+              currentPageName === 'SessionPortal' ? "text-white opacity-100" : "text-white/40 group-hover:opacity-80"
+            )}>
+              Sessions
+            </span>
+          </Link>
+        </motion.div>
 
         {/* Admin-only: Publisher */}
         {user?.role === 'admin' && (

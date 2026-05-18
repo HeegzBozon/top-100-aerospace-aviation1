@@ -1,0 +1,22 @@
+{
+  "name": "ParkingLotItem",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "HangoutSession ID"
+    },
+    "text": {
+      "type": "string",
+      "description": "Parked idea or topic"
+    },
+    "added_by": {
+      "type": "string",
+      "description": "Who added it"
+    }
+  },
+  "required": [
+    "session_id",
+    "text"
+  ]
+}

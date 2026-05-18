@@ -1,0 +1,66 @@
+{
+  "name": "WorkshopTactic",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Tactic name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Goals",
+        "Understand",
+        "Frame",
+        "Ideas",
+        "Evaluate",
+        "Decide",
+        "Discuss",
+        "Technique"
+      ],
+      "description": "Facilitation category"
+    },
+    "duration_min": {
+      "type": "number",
+      "description": "Minimum duration in minutes"
+    },
+    "duration_max": {
+      "type": "number",
+      "description": "Maximum duration in minutes"
+    },
+    "description": {
+      "type": "string",
+      "description": "Bold one-liner summary"
+    },
+    "how_to_facilitate": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered facilitation steps"
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable keywords"
+    },
+    "is_custom": {
+      "type": "boolean",
+      "default": false,
+      "description": "Created by TOP 100 community"
+    },
+    "created_by_email": {
+      "type": "string",
+      "description": "Creator email if custom"
+    }
+  },
+  "required": [
+    "name",
+    "category",
+    "duration_min",
+    "duration_max",
+    "description"
+  ]
+}

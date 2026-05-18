@@ -1,0 +1,31 @@
+{
+  "name": "SessionAction",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "HangoutSession ID"
+    },
+    "who": {
+      "type": "string",
+      "description": "Person responsible"
+    },
+    "what": {
+      "type": "string",
+      "description": "Action to be taken"
+    },
+    "when": {
+      "type": "string",
+      "description": "Target date or timeframe"
+    },
+    "is_complete": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "session_id",
+    "who",
+    "what"
+  ]
+}

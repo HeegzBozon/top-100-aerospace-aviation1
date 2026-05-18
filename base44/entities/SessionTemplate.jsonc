@@ -1,0 +1,39 @@
+{
+  "name": "SessionTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "room_need": {
+      "type": "string",
+      "description": "What the room needs (matches Q1 option)"
+    },
+    "time_available": {
+      "type": "number",
+      "description": "Recommended duration in minutes"
+    },
+    "description": {
+      "type": "string",
+      "description": "Why this template fits"
+    },
+    "tactic_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered list of WorkshopTactic IDs"
+    },
+    "is_custom": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "name",
+    "room_need",
+    "time_available",
+    "description"
+  ]
+}
