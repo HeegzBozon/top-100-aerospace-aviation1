@@ -1,6 +1,17 @@
 const isNode = typeof window === 'undefined';
-const windowObj = isNode ? { localStorage: new Map() } : window;
-const storage = windowObj.localStorage;
+
+// Safe localStorage wrapper — falls back to in-memory if storage is blocked
+const createSafeStorage = () => {
+  if (isNode) return new Map();
+  try {
+    window.localStorage.setItem('__test__', '1');
+    window.localStorage.removeItem('__test__');
+    return window.localStorage;
+  } catch {
+    return new Map();
+  }
+};
+const storage = createSafeStorage();
 
 const toSnakeCase = (str) => {
 	return str.replace(/([A-Z])/g, '_$1').toLowerCase();
