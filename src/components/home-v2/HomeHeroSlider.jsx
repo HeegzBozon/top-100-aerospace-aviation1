@@ -54,8 +54,8 @@ const slides = [
     body: 'Follow the launches, signal reports, community milestones, and capital campaign behind the next layer of aerospace and aviation infrastructure.',
     image: 'https://images.unsplash.com/photo-1517976547714-720226b864c1?w=2400&auto=format&fit=crop&q=90',
     icon: Rocket,
-    primary: { label: 'Join Operation: Moon Joy', to: '/moon-joy' },
-    secondary: { label: 'Follow Our Fundraising Journey', href: 'https://wefunder.com/top.100.aerospace.aviation' },
+    primary: { label: 'Follow Our Fundraising Journey', href: 'https://wefunder.com/top.100.aerospace.aviation' },
+    secondary: { label: 'Watch Live Launches', to: '/top100-tv' },
     tertiary: { label: 'Play Flight Simulator', to: '/play' },
   },
 ];
@@ -158,7 +158,7 @@ export default function HomeHeroSlider() {
               {slide.id === 'think-global' && (
                 <div className="mt-5 flex flex-wrap items-center gap-3">
                   <Link
-                    to="/hangouts"
+                    to="/moon-joy"
                     className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95 hover:shadow-[0_0_20px_rgba(201,168,124,0.4)]"
                     style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.25), rgba(201,168,124,0.12))', border: '1px solid rgba(201,168,124,0.55)', color: '#c9a87c' }}
                   >
@@ -167,16 +167,25 @@ export default function HomeHeroSlider() {
                         <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse flex-shrink-0" />
                         <span className="text-red-300">LIVE NOW</span>
                         <span className="text-white/40">·</span>
-                        Join Hangouts
+                        RSVP — Operation: Moon Joy
                         <ArrowRight className="w-3 h-3" />
                       </>
                     ) : (
                       <>
                         <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c]" />
-                        Join Hangouts · M–F 1:30 PM Pacific · Free
+                        RSVP — Operation: Moon Joy
                         <ArrowRight className="w-3 h-3" />
                       </>
                     )}
+                  </Link>
+                  <Link
+                    to="/survey"
+                    className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.65)' }}
+                  >
+                    <Globe2 className="w-3 h-3" />
+                    Intelligence Preferences
+                    <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
               )}
