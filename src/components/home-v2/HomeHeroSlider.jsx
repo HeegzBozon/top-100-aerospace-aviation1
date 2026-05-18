@@ -179,7 +179,7 @@ export default function HomeHeroSlider() {
                     )}
                   </Link>
                   <Link
-                    to="/survey"
+                    to="/survey?id=69e65fc6dc017363a733c2e5"
                     className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                     style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.65)' }}
                   >
