@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlobalNewsletterFooter from '@/components/shared/GlobalNewsletterFooter';
+import MoonJoyTestimonials from '@/components/moon-joy/MoonJoyTestimonials';
 import {
   MessageCircle, Hammer, BookOpen, Mic, Zap, Flame, Users, Network,
   ChevronRight, ChevronLeft, Star, Award, Globe, TrendingUp, HelpCircle,
@@ -891,6 +892,11 @@ export default function Hangouts() {
           </p>
         </motion.div>
       </section>
+
+      {divider}
+
+      {/* ── TESTIMONIALS ── */}
+      <MoonJoyTestimonials />
 
       {divider}
 
