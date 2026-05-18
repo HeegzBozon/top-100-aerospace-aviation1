@@ -248,4 +248,128 @@ export const CG_CAMPAIGNS = {
       },
     ],
   },
+  'CG-03': {
+    id: 'CG-03',
+    title: 'The Food Forest',
+    archetype: 'Maker-Hero Site Director',
+    primaryStats: ['SYSTEMS', 'RESILIENCE', 'COALITION'],
+    setting: 'Portland, Oregon — A decommissioned urban lot adjacent to a public school',
+    tagline: "The soil is degraded. The neighbors are skeptical. You have seeds, a design commission, and five years.",
+    badge: '🌿',
+    available: true,
+    baseStats: {
+      coalition: 9, trust: 10, resource: 9, resilience: 12, narrative: 10, systems: 11,
+    },
+    scenes: [
+      {
+        id: 'prologue',
+        type: 'choice',
+        title: 'The Design Commission',
+        beat: 'Prologue',
+        aiGenerated: false,
+        text: `The lot is 1.8 acres of compacted fill and gravel. The city has given you a 5-year pilot license. You have a permaculture design commission assembled: four future residents, a soil scientist, a neighborhood organizer, and a retired forest ecologist named Dr. Yumiko Ito who has been waiting twenty years for someone to do this right.\n\nYumiko opens the first session with a question before anyone touches a shovel:\n\n"What are we designing for? A garden that produces food — or a system that produces everything?"`,
+        choices: [
+          {
+            key: 'food',
+            label: "Food first. Measurable yields, market surplus, resident income. Show the city numbers it can fund in Year 3.",
+            statDeltas: { resource: 2, systems: 2, resilience: -1 },
+          },
+          {
+            key: 'system',
+            label: "System first. Design the full succession: soil, water, canopy, community. The food follows the ecology.",
+            statDeltas: { systems: 3, resilience: 2, resource: -1 },
+          },
+        ],
+      },
+      {
+        id: 'scene1',
+        type: 'choice',
+        title: 'The Soil Assessment',
+        beat: 'Scene 1',
+        aiGenerated: false,
+        text: `Lab results are back. The soil is worse than expected: compaction at 12 inches, pH 4.9, bulk density 1.8 g/cm³, biological activity near zero. The fill contains remnants of a commercial laundry — trace surfactants, not dangerous but limiting.\n\nYumiko is not surprised. "This is where food forests always start," she says. "This is the whole argument. If we can build a living system here, we can build it anywhere."\n\nThe question is how to spend the first season's budget. Remediation is slow. Planting is visible.`,
+        choices: [
+          {
+            key: 'remediate',
+            label: "Invest the season in remediation: biochar, compost teas, cover crops. Invisible work. Real foundation.",
+            statDeltas: { systems: 3, resilience: 2, trust: -1 },
+          },
+          {
+            key: 'pioneer',
+            label: "Plant pioneer species immediately — nitrogen-fixing shrubs and dynamic accumulators — and let them do the remediation while looking like a garden.",
+            statDeltas: { coalition: 2, narrative: 2, resource: -1 },
+          },
+        ],
+      },
+      {
+        id: 'scene2',
+        type: 'choice',
+        title: 'The School Partnership',
+        beat: 'Scene 2',
+        aiGenerated: true,
+        fallbackText: `The principal of the adjacent school, Ms. Reyes, comes to the site on a Tuesday afternoon with six students. They stand at the fence and watch residents transplanting elder seedlings in the rain. One student, maybe twelve years old, asks through the chain link: "What's going to grow here?"\n\nReyes sends you an email that evening. The school has a derelict greenhouse, unused for four years. She's wondering if there's a connection to be made. Her ask is cautious — she's been burned by partnerships that faded after the grant cycle ended.\n\n"What would this actually look like?" she writes. "Not the brochure version."`,
+        choices: [
+          {
+            key: 'greenhouse',
+            label: "Propose a shared seedling propagation program. Students start seeds in the greenhouse; transplants go to the food forest. Both sites benefit.",
+            statDeltas: { coalition: 3, narrative: 2, resource: -1 },
+          },
+          {
+            key: 'curriculum',
+            label: "Offer to build a permaculture curriculum with Reyes — field sessions in the food forest, tied to science standards. Slower to start, deeper roots.",
+            statDeltas: { trust: 3, systems: 2, coalition: 1 },
+          },
+        ],
+      },
+      {
+        id: 'signal_log',
+        type: 'signal_log',
+        title: 'Log Your Progress',
+        beat: 'Checkpoint',
+      },
+      {
+        id: 'scene4',
+        type: 'choice',
+        title: 'Year Two: The Drought',
+        beat: 'Scene 4',
+        aiGenerated: true,
+        fallbackText: `The second summer is the driest in forty years. The canopy trees are stressed. Three of the sub-canopy fig trees die despite the swales. A neighbor files a complaint with the city: the site looks "abandoned and overgrown" compared to the maintained lawn next door.\n\nYumiko reminds you that succession is not linear. "A dead tree is a nurse log," she says. "The complaint is a political problem, not an ecological one."\n\nYour city liaison calls. She's sympathetic but nervous. "Can we show something that looks like progress? The council member who approved the pilot is up for re-election."`,
+        choices: [
+          {
+            key: 'harvest',
+            label: "Organize a public harvest day. The elderberries and currants survived. The farmers market stall launches early. Show the yield.",
+            statDeltas: { coalition: 3, narrative: 2, resilience: -1 },
+          },
+          {
+            key: 'document',
+            label: "Publish the soil data publicly. Carbon up 18% in 18 months. Earthworm counts tripled. Reframe 'overgrown' as 'ecologically active.'",
+            statDeltas: { systems: 3, trust: 2, coalition: -1 },
+          },
+        ],
+      },
+      {
+        id: 'boss',
+        type: 'boss',
+        title: 'The Renewal Vote',
+        beat: 'Boss Moment',
+        rollStats: ['systems', 'coalition'],
+        setup: `Year 5. The pilot license expires in 60 days.\n\nThe food forest is producing. The farmers market runs every Saturday. Three residents have completed permaculture design certificates. The school greenhouse partnership is in its fourth year. Yumiko's soil data shows carbon sequestration ahead of target.\n\nBut the city has received a competing proposal for the land: a mixed-use development with 12 affordable housing units and a retail ground floor. The developer has financing lined up. The housing argument is real — Portland needs units. The food forest argument is also real — and harder to express in square footage.\n\nThe parks commission meets in two weeks. You have one presentation slot.`,
+        rollLabel: 'Roll SYSTEMS + COALITION',
+        fallbackOutcomes: {
+          critical_success: "Yumiko presents the five-year data package. The school principal testifies. Twelve food forest residents speak in two-minute slots. The commission votes 6-1 to grant a permanent site license with a 30-unit transitional housing expansion incorporated into the master plan. The developer pivots to an adjacent parcel.",
+          success: "The commission approves a 10-year extension with conditions: 8 transitional housing units added in Phase 3, city co-governance seat added to the council. You accept. The food forest and housing are no longer competing proposals — they're the same site.",
+          fail: "The vote is 4-3 for the developer. You have 18 months to relocate or negotiate a smaller footprint. You spend those 18 months proving the model so thoroughly that two other cities offer sites before the clock runs out.",
+          critical_fail: "The development proposal includes an 'ecological buffer zone' with a community garden that is not a food forest, not resident-governed, and not a CommonGround site. The commission passes it unanimously. You document everything and publish the playbook so the next site doesn't start from zero.",
+        },
+        aiGenerated: true,
+      },
+      {
+        id: 'epilogue',
+        type: 'epilogue',
+        title: 'What Was Grown',
+        beat: 'Epilogue',
+        text: `Yumiko retires from the design commission at the Year 5 celebration. She hands the soil monitoring program to a resident named Deshawn who arrived at the site three years ago with no gardening experience and just completed his permaculture design certificate.\n\nThe canopy trees are twelve feet tall. The food forest produces 800 pounds of fruit in the summer peak. The Saturday market has a waitlist for vendor slots.\n\nA visiting city planner from Denver walks the site and asks you to write down everything you did wrong. "That's the document I actually need," she says.\n\nYou write it down. Then you give her the playbook too.`,
+      },
+    ],
+  },
 };

@@ -254,6 +254,11 @@ const LORE = {
     { q: "Should I have taken the amendment?", a: "Darius says take the amendment — and he's right in the pragmatic sense. A narrowed win creates precedent. A loss delays it by a session. But holding the line preserves the full principle. The campaign doesn't have a correct answer. That's intentional. Real policy architects face this exact question." },
     { q: "What was Pauline's testimony based on?", a: "Pauline's story is a composite of documented cases in which anti-camping enforcement was applied to people with disabilities in circumstances where no shelter alternative was available. The Right to Rest legislative framework she testifies in support of is a real policy framework — search Martin v. City of Boise for the federal precedent it builds on." },
   ],
+  'CG-03': [
+    { q: "Why does the food-first vs. system-first choice matter?", a: "Food-first raises RESOURCE and SYSTEMS — useful for the Year 2 drought scene and the renewal vote. System-first raises SYSTEMS and RESILIENCE, which directly powers your Boss Moment modifier in CG-03. Neither is wrong. The real permaculture debate plays out exactly this way: measurable short-term yields vs. long-term ecological investment." },
+    { q: "Is the soil data in the campaign real?", a: "Yes. The permaculture research cited in CommonGround 5.0 — 27% higher soil carbon, 457% higher plant species richness, Land Equivalent Ratio of 1.44 — comes from a peer-reviewed study of commercial permaculture sites in Central Europe. Deshawn's soil recovery timeline in the campaign is conservative relative to what the research documents." },
+    { q: "What is a Maker-Hero resident?", a: "It's a concept from Solarpunk philosophy — the grower, fixer, and builder who makes the extractive system obsolete through ecological competence rather than technical domination. CommonGround 5.0 is explicitly designed to produce Maker-Heroes. The curriculum is the site. Read the full framework at /common-ground." },
+  ],
 };
 
 function PhaseSessionOmega({ session, profile, playerInfo, diceResult, onNext }) {
@@ -316,7 +321,8 @@ const OUTCOME_NEXT = {
 function PhaseNextMission({ session, diceResult, profile, onPlayAgain, onPlayOther }) {
   const outcome = diceResult?.outcome || 'success';
   const meta = OUTCOME_NEXT[outcome];
-  const isCG01 = session.campaignId === 'CG-01';
+  const campaignMap = { 'CG-01': { next: 'CG-02', label: 'Campaign CG-02', archetype: 'Policy Architect' }, 'CG-02': { next: 'CG-03', label: 'Campaign CG-03', archetype: 'Maker-Hero Site Director' }, 'CG-03': { next: 'CG-01', label: 'Campaign CG-01', archetype: 'City Director' } };
+  const nextCampaign = campaignMap[session.campaignId] || campaignMap['CG-01'];
 
   const handleShare = () => {
     const text = `I just played the CommonGround Simulator.\n\nCivic Profile: ${profile.classification}\n\n"${profile.quote}"\n\ntop100aero.space/common-ground-sim`;
@@ -360,10 +366,10 @@ function PhaseNextMission({ session, diceResult, profile, onPlayAgain, onPlayOth
       <div className="rounded-2xl p-5 border border-white/8 mb-6 flex items-center justify-between"
         style={{ background: 'rgba(255,255,255,0.02)' }}>
         <div>
-          <p className="text-white font-semibold text-sm">Try {isCG01 ? 'Campaign CG-02' : 'Campaign CG-01'}</p>
-          <p className="text-white/35 text-xs mt-0.5">{isCG01 ? 'The Policy Architect' : 'The City Director'} · Different stat focus</p>
+          <p className="text-white font-semibold text-sm">Try {nextCampaign.label}</p>
+          <p className="text-white/35 text-xs mt-0.5">{nextCampaign.archetype} · Different stat focus</p>
         </div>
-        <button onClick={() => onPlayOther(isCG01 ? 'CG-02' : 'CG-01')}
+        <button onClick={() => onPlayOther(nextCampaign.next)}
           className="px-4 py-2 rounded-xl border border-[#4ade80]/30 text-[#4ade80] text-xs font-bold hover:bg-[#4ade80]/10 transition-all">
           Play →
         </button>
@@ -373,7 +379,7 @@ function PhaseNextMission({ session, diceResult, profile, onPlayAgain, onPlayOth
       <div className="rounded-2xl p-5 border border-white/8 mb-6 flex items-center justify-between"
         style={{ background: 'rgba(255,255,255,0.02)' }}>
         <div>
-          <p className="text-white font-semibold text-sm">Read CommonGround 4.0</p>
+          <p className="text-white font-semibold text-sm">Read CommonGround 5.0</p>
           <p className="text-white/35 text-xs mt-0.5">The full strategic white paper this simulator is based on</p>
         </div>
         <Link to="/common-ground"
@@ -394,7 +400,7 @@ function PhaseNextMission({ session, diceResult, profile, onPlayAgain, onPlayOth
       </div>
 
       <p className="text-center text-white/20 text-xs italic" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-        CommonGround Initiative · Version 4.0 · 2026 · For the people who just need a place to be.
+        CommonGround Initiative · Version 5.0 · 2026 · For the people who just need a place to be. And for the soil that needs them back.
       </p>
     </motion.div>
   );

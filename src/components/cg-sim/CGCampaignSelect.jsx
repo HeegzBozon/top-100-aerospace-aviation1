@@ -20,7 +20,7 @@ export default function CGCampaignSelect({ onSelect }) {
             Choose Your<br /><span className="text-[#4ade80]">Mission</span>
           </h1>
           <p className="text-white/40 text-sm leading-relaxed max-w-md mx-auto">
-            Two campaigns. Two ways to change the city. Each decision shapes your Civic Profile.
+            Three campaigns. Three ways to change the city. Each decision shapes your Civic Profile.
           </p>
         </motion.div>
 
@@ -56,7 +56,7 @@ export default function CGCampaignSelect({ onSelect }) {
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
           className="text-center space-y-1">
-          <p className="text-white/20 text-xs">~12 minutes per campaign · AI-generated narrative · Based on CommonGround 4.0</p>
+          <p className="text-white/20 text-xs">~12 minutes per campaign · AI-generated narrative · Based on CommonGround 5.0</p>
         </motion.div>
       </div>
     </div>
