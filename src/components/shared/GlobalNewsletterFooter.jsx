@@ -52,8 +52,8 @@ export default function GlobalNewsletterFooter({ currentPageName, dark = false, 
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder={config.placeholder}
-          className="w-48 lg:w-56 px-3 py-1.5 rounded-full text-xs border bg-white/8 text-white placeholder-white/30 focus:outline-none focus:ring-1 transition-all"
-          style={{ borderColor: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}
+          className="w-48 lg:w-56 px-3 py-1.5 rounded-full text-xs border text-white placeholder-white/50 focus:outline-none focus:ring-1 transition-all"
+          style={{ borderColor: 'rgba(201,168,124,0.4)', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}
         />
         <button
           type="submit"
