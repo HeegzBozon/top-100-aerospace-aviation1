@@ -419,21 +419,35 @@ export default function SessionAgenda({ currentSession, setCurrentSession }) {
   const [items, setItems] = useState([]);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
 
-  // Pre-load from currentSession if tactics were provided
+  // Pre-load from currentSession if tactics were provided — enrich from DB by name
   useEffect(() => {
-    if (currentSession?.tactics?.length && items.length === 0) {
-      const timePerTactic = Math.round((currentSession.time || 60) / currentSession.tactics.length);
-      const preloaded = currentSession.tactics.map((name, i) => ({
-        id: `pre-${i}`,
-        tactic_name: name,
-        tactic_category: null,
-        tactic_description: '',
-        how_to_facilitate: [],
-        duration: timePerTactic,
-        order: i,
-      }));
+    if (!currentSession?.tactics?.length || items.length > 0) return;
+    const timePerTactic = Math.round((currentSession.time || 60) / currentSession.tactics.length);
+
+    const enrich = async () => {
+      // Fetch all tactics once and build a name→tactic map
+      let dbTactics = [];
+      try { dbTactics = await base44.entities.WorkshopTactic.list('-created_date', 200); } catch {}
+      const byName = {};
+      dbTactics.forEach(t => { byName[t.name.toLowerCase()] = t; });
+
+      const preloaded = currentSession.tactics.map((name, i) => {
+        const match = byName[name.toLowerCase()];
+        return {
+          id: `pre-${i}`,
+          tactic_id: match?.id || null,
+          tactic_name: name,
+          tactic_category: match?.category || null,
+          tactic_description: match?.description || '',
+          how_to_facilitate: match?.how_to_facilitate || [],
+          duration: match?.duration_min || timePerTactic,
+          order: i,
+        };
+      });
       setItems(preloaded);
-    }
+    };
+
+    enrich();
   }, [currentSession]);
 
   const handleDragEnd = (result) => {
