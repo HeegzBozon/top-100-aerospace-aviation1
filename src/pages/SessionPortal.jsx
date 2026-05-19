@@ -20,6 +20,7 @@ const NAV_ITEMS = [
 export default function SessionPortal() {
   const location = useLocation();
   const [currentSession, setCurrentSession] = useState(null);
+  const [liveSession, setLiveSession] = useState(null);
 
   return (
     <div className="min-h-screen flex flex-col" style={{
@@ -63,9 +64,9 @@ export default function SessionPortal() {
       {/* Content */}
       <div className="flex-1">
         <Routes>
-          <Route index element={<SessionWelcome />} />
-          <Route path="selector" element={<SessionSelector currentSession={currentSession} setCurrentSession={setCurrentSession} />} />
-          <Route path="warmup" element={<WarmUpLibrary />} />
+          <Route index element={<SessionWelcome liveSession={liveSession} setLiveSession={setLiveSession} />} />
+          <Route path="selector" element={<SessionSelector currentSession={currentSession} setCurrentSession={setCurrentSession} liveSession={liveSession} />} />
+          <Route path="warmup" element={<WarmUpLibrary liveSession={liveSession} />} />
           <Route path="agenda" element={<SessionAgenda currentSession={currentSession} setCurrentSession={setCurrentSession} />} />
           <Route path="tactics" element={<TacticsLibrary currentSession={currentSession} />} />
           <Route path="history" element={<SessionHistory />} />

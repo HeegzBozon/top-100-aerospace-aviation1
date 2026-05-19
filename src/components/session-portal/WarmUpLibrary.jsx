@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Clock, ChevronDown, ChevronUp, Play, X } from 'lucide-react';
+import { Flame, Clock, ChevronDown, ChevronUp, Play, X, Vote } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import LivePoll from '@/components/session-portal/LivePoll';
 
 const ENERGY_COLORS = {
   low: { bg: '#10b98118', text: '#10b981', label: 'Low Energy' },
@@ -223,13 +224,12 @@ function LiveWarmUp({ warmup, onClose }) {
   );
 }
 
-export default function WarmUpLibrary() {
+export default function WarmUpLibrary({ liveSession }) {
   const [filter, setFilter] = useState('all');
   const [liveWarmup, setLiveWarmup] = useState(null);
+  const [showPoll, setShowPoll] = useState(false);
 
-  // Merge built-ins with any DB tactics tagged as warmup
   const warmups = BUILTIN_WARMUPS;
-
   const filtered = filter === 'all' ? warmups : warmups.filter(w => w.energy === filter);
 
   return (
@@ -239,15 +239,41 @@ export default function WarmUpLibrary() {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-2">
-          <Flame className="w-5 h-5 text-[#f97316]" />
-          <h2 className="text-white text-2xl font-bold" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-            Warm-Up Activities
-          </h2>
+      <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Flame className="w-5 h-5 text-[#f97316]" />
+            <h2 className="text-white text-2xl font-bold" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              Warm-Up Activities
+            </h2>
+          </div>
+          <p className="text-white/50 text-sm">Quick energizers to open the room. Run live with a timer and step tracker.</p>
         </div>
-        <p className="text-white/50 text-sm">Quick energizers to open the room. Run any of these live with a built-in timer and step tracker.</p>
+        <button onClick={() => setShowPoll(v => !v)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-[#c9a87c]/30 text-[#c9a87c] hover:bg-[#c9a87c]/10 transition-colors shrink-0">
+          <Vote className="w-3.5 h-3.5" /> {showPoll ? 'Hide Poll' : 'Let Room Vote'}
+        </button>
       </div>
+
+      {/* Live Poll */}
+      <AnimatePresence>
+        {showPoll && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mb-6 overflow-hidden">
+            <LivePoll
+              liveSession={liveSession}
+              question="Which warm-up should we do?"
+              pollType="warmup_pick"
+              options={BUILTIN_WARMUPS.map(w => ({ id: w.id, label: w.name, desc: w.description }))}
+              onClose={() => setShowPoll(false)}
+              onResult={(winner) => {
+                const found = BUILTIN_WARMUPS.find(w => w.id === winner.id);
+                if (found) setLiveWarmup(found);
+                setShowPoll(false);
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Filter */}
       <div className="flex gap-2 mb-6">

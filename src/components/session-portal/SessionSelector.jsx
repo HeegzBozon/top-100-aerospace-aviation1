@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Users, Zap, Lightbulb, Target, MessageCircle, BarChart3, Wand2, Vote } from 'lucide-react';
+import LivePoll from '@/components/session-portal/LivePoll';
 
 const ROOM_NEEDS = [
   { id: 'energy', label: 'Energy & Connection', desc: 'The room needs to warm up, bond, or reconnect', icon: Zap },
@@ -54,7 +55,7 @@ const RECOMMENDATIONS = {
 
 const STEP_LABELS = ['What does the room need?', 'How much time?', 'Any specific topic?'];
 
-export default function SessionSelector({ setCurrentSession }) {
+export default function SessionSelector({ setCurrentSession, liveSession }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [roomNeed, setRoomNeed] = useState(null);
@@ -63,6 +64,7 @@ export default function SessionSelector({ setCurrentSession }) {
   const [topic, setTopic] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [votingMode, setVotingMode] = useState(false);
+  const [showLivePoll, setShowLivePoll] = useState(false);
 
   const recommendation = roomNeed ? RECOMMENDATIONS[roomNeed] : null;
 
@@ -119,20 +121,21 @@ export default function SessionSelector({ setCurrentSession }) {
                 ))}
               </div>
 
-              {votingMode ? (
-                <div className="rounded-2xl border border-[#c9a87c]/20 p-6 mb-6"
-                  style={{ background: 'rgba(201,168,124,0.04)' }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Vote className="w-4 h-4 text-[#c9a87c]" />
-                    <span className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest">Community Vote</span>
-                  </div>
-                  <p className="text-white/60 text-sm mb-4">Share this link with your participants. They'll vote on the session format before you begin.</p>
-                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/20 bg-white/5">
-                    <code className="text-[#c9a87c] text-xs flex-1 break-all">{window.location.origin}/session-portal/selector?vote={encodeURIComponent(recommendation.template)}</code>
-                  </div>
-                  <p className="text-white/30 text-xs mt-3 italic">Voting link generated — share in your Moon Joy session chat or GHL broadcast.</p>
+              {showLivePoll && (
+                <div className="mb-6">
+                  <LivePoll
+                    liveSession={liveSession}
+                    question="Which session format should we run today?"
+                    pollType="session_pick"
+                    options={Object.entries(RECOMMENDATIONS).map(([id, r]) => ({ id, label: r.template, desc: r.explanation.slice(0, 60) + '…' }))}
+                    onClose={() => setShowLivePoll(false)}
+                    onResult={(winner) => {
+                      const match = Object.entries(RECOMMENDATIONS).find(([, r]) => r.template === winner.label);
+                      if (match) { setRoomNeed(match[0]); setShowLivePoll(false); }
+                    }}
+                  />
                 </div>
-              ) : null}
+              )}
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <button onClick={handleBuildAgenda}
@@ -140,11 +143,11 @@ export default function SessionSelector({ setCurrentSession }) {
                   style={{ background: 'linear-gradient(135deg, #c9a87c, #d4b88c)' }}>
                   Build This Agenda <ChevronRight className="w-4 h-4" />
                 </button>
-                <button onClick={() => setVotingMode(v => !v)}
+                <button onClick={() => setShowLivePoll(v => !v)}
                   className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm border border-[#c9a87c]/30 text-[#c9a87c] hover:border-[#c9a87c]/60 transition-all"
                   style={{ background: 'rgba(201,168,124,0.06)' }}>
                   <Vote className="w-4 h-4" />
-                  {votingMode ? 'Hide Vote Link' : 'Open to Community Vote'}
+                  {showLivePoll ? 'Hide Poll' : 'Open to Room Vote'}
                 </button>
               </div>
             </div>

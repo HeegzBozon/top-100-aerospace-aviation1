@@ -1,0 +1,100 @@
+{
+  "name": "LiveSession",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "Short join code e.g. MOON-42"
+    },
+    "host_email": {
+      "type": "string",
+      "description": "Email of the host"
+    },
+    "host_name": {
+      "type": "string",
+      "description": "Display name of the host"
+    },
+    "title": {
+      "type": "string",
+      "description": "Session title"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "lobby",
+        "warmup",
+        "selecting",
+        "live",
+        "ended"
+      ],
+      "default": "lobby",
+      "description": "Current session state"
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of participant names who have joined"
+    },
+    "participant_count": {
+      "type": "number",
+      "default": 0
+    },
+    "active_poll": {
+      "type": "object",
+      "description": "Current live poll/vote being run",
+      "properties": {
+        "question": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "warmup_pick",
+            "session_pick",
+            "custom"
+          ]
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "votes": {
+          "type": "object",
+          "description": "Map of optionId -> vote count"
+        },
+        "voter_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Anonymous voter IDs who already voted"
+        },
+        "is_open": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "current_warmup": {
+      "type": "string",
+      "description": "Name of active warmup"
+    },
+    "current_template": {
+      "type": "string",
+      "description": "Selected session template"
+    },
+    "broadcast_message": {
+      "type": "string",
+      "description": "Message shown to all participants"
+    }
+  },
+  "required": [
+    "code",
+    "host_email"
+  ]
+}
