@@ -178,22 +178,46 @@ function LiveWarmUp({ warmup, onClose }) {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      className="fixed inset-0 z-50 overflow-y-auto px-4 py-8"
       style={{ background: 'rgba(7,17,31,0.97)' }}>
-      <div className="w-full max-w-xl">
+      <div className="w-full max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <span className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest">Live Warm-Up</span>
           <button onClick={onClose} className="text-white/40 hover:text-white transition-colors"><X className="w-5 h-5" /></button>
         </div>
 
-        <h2 className="text-white text-3xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+        <h2 className="text-white text-3xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
           {warmup.name}
         </h2>
-        <p className="text-white/50 text-sm mb-8">{warmup.description}</p>
+        <p className="text-white/50 text-sm mb-6">{warmup.description}</p>
+
+        {/* Active Step — shown prominently above timer */}
+        {steps.length > 0 && (
+          <motion.div key={stepIdx} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl border border-[#c9a87c]/30 p-5 mb-6"
+            style={{ background: 'rgba(201,168,124,0.07)' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-6 h-6 rounded-full bg-[#c9a87c] text-[#07111f] flex items-center justify-center text-xs font-bold shrink-0">{stepIdx + 1}</span>
+              <span className="text-[#c9a87c] text-[10px] font-bold uppercase tracking-widest">Step {stepIdx + 1} of {steps.length} — Now Facilitating</span>
+            </div>
+            <p className="text-white text-base leading-relaxed font-medium">{steps[stepIdx]}</p>
+            <div className="flex items-center gap-2 mt-4">
+              <button onClick={() => setStepIdx(i => Math.max(0, i - 1))} disabled={stepIdx === 0}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold border border-white/15 text-white/50 disabled:opacity-30 hover:border-white/30 hover:text-white transition-all">
+                ← Prev
+              </button>
+              <button onClick={() => setStepIdx(i => Math.min(steps.length - 1, i + 1))} disabled={stepIdx === steps.length - 1}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold border border-[#c9a87c]/40 text-[#c9a87c] disabled:opacity-30 hover:bg-[#c9a87c]/10 transition-all">
+                Next Step →
+              </button>
+              <span className="ml-auto text-white/20 text-xs">{stepIdx + 1}/{steps.length}</span>
+            </div>
+          </motion.div>
+        )}
 
         {/* Timer */}
-        <div className="text-center mb-8">
-          <div className="text-7xl font-bold text-[#c9a87c] font-mono mb-3" style={{ fontFamily: 'monospace' }}>
+        <div className="text-center mb-6">
+          <div className="text-6xl font-bold text-[#c9a87c] font-mono mb-3" style={{ fontFamily: 'monospace' }}>
             {mm}:{ss}
           </div>
           <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-4">
@@ -207,14 +231,15 @@ function LiveWarmUp({ warmup, onClose }) {
           </button>
         </div>
 
-        {/* Steps */}
+        {/* All Steps — reference list */}
         {steps.length > 0 && (
           <div className="rounded-2xl border border-white/10 overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)' }}>
+            <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest px-5 pt-3 pb-1">All Steps</p>
             {steps.map((step, i) => (
               <button key={i} onClick={() => setStepIdx(i)}
-                className={`w-full flex items-start gap-3 px-5 py-3.5 text-left border-b border-white/5 last:border-0 transition-colors ${stepIdx === i ? 'bg-[#c9a87c]/10' : 'hover:bg-white/5'}`}>
+                className={`w-full flex items-start gap-3 px-5 py-3 text-left border-b border-white/5 last:border-0 transition-colors ${stepIdx === i ? 'bg-[#c9a87c]/10' : 'hover:bg-white/5'}`}>
                 <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 ${stepIdx === i ? 'bg-[#c9a87c] text-[#07111f]' : 'bg-white/10 text-white/40'}`}>{i + 1}</span>
-                <span className={`text-xs leading-relaxed ${stepIdx === i ? 'text-white' : 'text-white/50'}`}>{step}</span>
+                <span className={`text-xs leading-relaxed ${stepIdx === i ? 'text-white font-medium' : 'text-white/50'}`}>{step}</span>
               </button>
             ))}
           </div>

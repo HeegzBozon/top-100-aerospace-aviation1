@@ -154,6 +154,7 @@ function useTimer(duration, onExpire) {
 
 function LiveMode({ items, onEnd }) {
   const [currentIdx, setCurrentIdx] = useState(0);
+  const [stepIdx, setStepIdx] = useState(0);
   const [parkingLot, setParkingLot] = useState([]);
   const [actions, setActions] = useState([]);
   const [parkingInput, setParkingInput] = useState('');
@@ -172,7 +173,7 @@ function LiveMode({ items, onEnd }) {
   const timer = useTimer(current?.duration || 5, () => {});
 
   const handleSkip = () => {
-    if (currentIdx < items.length - 1) setCurrentIdx(i => i + 1);
+    if (currentIdx < items.length - 1) { setCurrentIdx(i => i + 1); setStepIdx(0); }
     else setShowSummary(true);
   };
 
@@ -285,17 +286,39 @@ function LiveMode({ items, onEnd }) {
                 </div>
               </div>
 
-              {/* Facilitation Steps */}
+              {/* Facilitation Steps — active step + nav */}
               {current.how_to_facilitate?.length > 0 && (
-                <div className="text-left bg-white/3 border border-white/10 rounded-2xl p-6 mt-2">
-                  <p className="text-[#c9a87c] text-xs font-bold uppercase tracking-widest mb-3">Facilitation Steps</p>
-                  <ol className="space-y-2">
+                <div className="text-left mt-4 w-full max-w-2xl mx-auto">
+                  <motion.div key={`${currentIdx}-${stepIdx}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                    className="rounded-2xl border border-[#c9a87c]/30 p-5 mb-3"
+                    style={{ background: 'rgba(201,168,124,0.07)' }}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-6 h-6 rounded-full bg-[#c9a87c] text-[#07111f] flex items-center justify-center text-xs font-bold shrink-0">{stepIdx + 1}</span>
+                      <span className="text-[#c9a87c] text-[10px] font-bold uppercase tracking-widest">Step {stepIdx + 1} of {current.how_to_facilitate.length} — Now Facilitating</span>
+                    </div>
+                    <p className="text-white text-sm leading-relaxed font-medium">{current.how_to_facilitate[stepIdx]}</p>
+                    <div className="flex items-center gap-2 mt-4">
+                      <button onClick={() => setStepIdx(i => Math.max(0, i - 1))} disabled={stepIdx === 0}
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold border border-white/15 text-white/50 disabled:opacity-30 hover:border-white/30 hover:text-white transition-all">
+                        ← Prev
+                      </button>
+                      <button onClick={() => setStepIdx(i => Math.min(current.how_to_facilitate.length - 1, i + 1))} disabled={stepIdx === current.how_to_facilitate.length - 1}
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold border border-[#c9a87c]/40 text-[#c9a87c] disabled:opacity-30 hover:bg-[#c9a87c]/10 transition-all">
+                        Next Step →
+                      </button>
+                      <span className="ml-auto text-white/20 text-xs">{stepIdx + 1}/{current.how_to_facilitate.length}</span>
+                    </div>
+                  </motion.div>
+                  {/* All steps mini-list */}
+                  <div className="rounded-xl border border-white/8 overflow-hidden">
                     {current.how_to_facilitate.map((step, i) => (
-                      <li key={i} className="flex gap-3 text-sm text-white/70 leading-relaxed">
-                        <span className="font-bold text-[#c9a87c] shrink-0">{i + 1}.</span> {step}
-                      </li>
+                      <button key={i} onClick={() => setStepIdx(i)}
+                        className={`w-full flex items-start gap-2 px-4 py-2.5 text-left border-b border-white/5 last:border-0 transition-colors ${stepIdx === i ? 'bg-[#c9a87c]/10' : 'hover:bg-white/5'}`}>
+                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5 ${stepIdx === i ? 'bg-[#c9a87c] text-[#07111f]' : 'bg-white/10 text-white/30'}`}>{i + 1}</span>
+                        <span className={`text-xs leading-relaxed ${stepIdx === i ? 'text-white' : 'text-white/40'}`}>{step}</span>
+                      </button>
                     ))}
-                  </ol>
+                  </div>
                 </div>
               )}
             </motion.div>
