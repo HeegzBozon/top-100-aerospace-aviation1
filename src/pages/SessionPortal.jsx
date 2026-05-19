@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
-import { Rocket, Wand2, LayoutList, BookOpen, History } from 'lucide-react';
+import { Rocket, Wand2, LayoutList, BookOpen, History, Flame, Home } from 'lucide-react';
 import SessionSelector from '@/components/session-portal/SessionSelector';
 import SessionAgenda from '@/components/session-portal/SessionAgenda';
 import TacticsLibrary from '@/components/session-portal/TacticsLibrary';
 import SessionHistory from '@/components/session-portal/SessionHistory';
+import WarmUpLibrary from '@/components/session-portal/WarmUpLibrary';
+import SessionWelcome from '@/components/session-portal/SessionWelcome';
 
 const NAV_ITEMS = [
+  { path: '/session-portal', label: 'Welcome', icon: Home, exact: true },
   { path: '/session-portal/selector', label: 'Session Selector', icon: Wand2 },
+  { path: '/session-portal/warmup', label: 'Warm-Up', icon: Flame },
   { path: '/session-portal/agenda', label: 'Agenda Builder', icon: LayoutList },
   { path: '/session-portal/tactics', label: 'Tactics Library', icon: BookOpen },
   { path: '/session-portal/history', label: 'Session History', icon: History },
@@ -37,8 +41,8 @@ export default function SessionPortal() {
         </div>
 
         <nav className="flex-1 flex items-center justify-center gap-1 flex-wrap">
-          {NAV_ITEMS.map(({ path, label, icon: NavIcon }) => {
-            const isActive = location.pathname === path;
+          {NAV_ITEMS.map(({ path, label, icon: NavIcon, exact }) => {
+            const isActive = exact ? location.pathname === path || location.pathname === '/session-portal/' : location.pathname === path;
             return (
               <Link key={path} to={path}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
@@ -59,8 +63,9 @@ export default function SessionPortal() {
       {/* Content */}
       <div className="flex-1">
         <Routes>
-          <Route index element={<Navigate to="selector" replace />} />
+          <Route index element={<SessionWelcome />} />
           <Route path="selector" element={<SessionSelector currentSession={currentSession} setCurrentSession={setCurrentSession} />} />
+          <Route path="warmup" element={<WarmUpLibrary />} />
           <Route path="agenda" element={<SessionAgenda currentSession={currentSession} setCurrentSession={setCurrentSession} />} />
           <Route path="tactics" element={<TacticsLibrary currentSession={currentSession} />} />
           <Route path="history" element={<SessionHistory />} />
