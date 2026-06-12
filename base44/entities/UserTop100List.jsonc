@@ -1,0 +1,84 @@
+{
+  "name": "UserTop100List",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who owns this list"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name of the user"
+    },
+    "list_name": {
+      "type": "string",
+      "default": "My Top 100",
+      "description": "Custom name for the list"
+    },
+    "rankings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rank": {
+            "type": "number"
+          },
+          "nominee_id": {
+            "type": "string"
+          },
+          "nominee_name": {
+            "type": "string"
+          },
+          "nominee_title": {
+            "type": "string"
+          },
+          "nominee_company": {
+            "type": "string"
+          },
+          "nominee_avatar": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Ordered array of nominees, index 0 = rank 1"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Public visibility flag"
+    },
+    "share_code": {
+      "type": "string",
+      "description": "Unique short code for shareable URL e.g. abc123"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "Season this list applies to"
+    },
+    "ballot_submitted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this list has been submitted as a ranked choice ballot"
+    },
+    "ballot_submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the ballot was last submitted"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times the public list has been viewed"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

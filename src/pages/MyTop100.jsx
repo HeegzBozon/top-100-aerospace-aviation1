@@ -1,0 +1,248 @@
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { base44 } from '@/api/base44Client';
+import { brand } from '@/components/nominate/NominateConfig';
+import ListBuilderHeader from '@/components/my-top100/ListBuilderHeader';
+import ListCanvas from '@/components/my-top100/ListCanvas';
+import NomineeSearchDrawer from '@/components/my-top100/NomineeSearchDrawer';
+import ShareCard from '@/components/my-top100/ShareCard';
+import PublishBanner from '@/components/my-top100/PublishBanner';
+import { Loader2, Pencil, Check } from 'lucide-react';
+
+function generateShareCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+export default function MyTop100() {
+  const [user, setUser] = useState(null);
+  const [myList, setMyList] = useState(null);
+  const [rankings, setRankings] = useState([]);
+  const [listName, setListName] = useState('My Top 100');
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
+  const [shareCode, setShareCode] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [saveTimer, setSaveTimer] = useState(null);
+
+  useEffect(() => {
+    const init = async () => {
+      const currentUser = await base44.auth.me();
+      setUser(currentUser);
+
+      // Load existing list for this user
+      const lists = await base44.entities.UserTop100List.filter({ user_email: currentUser.email });
+      if (lists.length > 0) {
+        const existing = lists[0];
+        setMyList(existing);
+        setRankings(existing.rankings || []);
+        setListName(existing.list_name || 'My Top 100');
+        setIsPublished(existing.is_published || false);
+        setShareCode(existing.share_code || generateShareCode());
+      } else {
+        const code = generateShareCode();
+        setShareCode(code);
+      }
+      setLoading(false);
+    };
+    init();
+  }, []);
+
+  // Debounced auto-save
+  const scheduleSave = useCallback((updatedRankings, updatedName, updatedPublished) => {
+    if (saveTimer) clearTimeout(saveTimer);
+    const timer = setTimeout(() => {
+      persistList(updatedRankings, updatedName, updatedPublished, false);
+    }, 1500);
+    setSaveTimer(timer);
+  }, [saveTimer, myList, shareCode, user]);
+
+  const persistList = async (updatedRankings, updatedName, updatedPublished, showSaving = true) => {
+    if (!user) return;
+    if (showSaving) setSaving(true);
+
+    const payload = {
+      user_email: user.email,
+      user_name: user.full_name,
+      list_name: updatedName,
+      rankings: updatedRankings.map((r, i) => ({ ...r, rank: i + 1 })),
+      is_published: updatedPublished,
+      share_code: shareCode,
+      ballot_submitted: updatedPublished,
+      ...(updatedPublished ? { ballot_submitted_at: new Date().toISOString() } : {}),
+    };
+
+    if (myList?.id) {
+      await base44.entities.UserTop100List.update(myList.id, payload);
+    } else {
+      const created = await base44.entities.UserTop100List.create(payload);
+      setMyList(created);
+    }
+
+    if (showSaving) setSaving(false);
+  };
+
+  const handleReorder = (newOrder) => {
+    setRankings(newOrder);
+    scheduleSave(newOrder, listName, isPublished);
+  };
+
+  const handleAdd = (nominee) => {
+    if (rankings.length >= 100) return;
+    if (rankings.find(r => r.nominee_id === nominee.id)) return;
+
+    const newItem = {
+      rank: rankings.length + 1,
+      nominee_id: nominee.id,
+      nominee_name: nominee.name,
+      nominee_title: nominee.title || nominee.professional_role || '',
+      nominee_company: nominee.company || nominee.organization || '',
+      nominee_avatar: nominee.avatar_url || nominee.photo_url || '',
+      category: nominee.discipline || 'general',
+    };
+    const newRankings = [...rankings, newItem];
+    setRankings(newRankings);
+    scheduleSave(newRankings, listName, isPublished);
+  };
+
+  const handleRemove = (nomineeId) => {
+    const newRankings = rankings.filter(r => r.nominee_id !== nomineeId);
+    setRankings(newRankings);
+    scheduleSave(newRankings, listName, isPublished);
+  };
+
+  const handlePublish = async () => {
+    setSaving(true);
+    setIsPublished(true);
+    await persistList(rankings, listName, true, false);
+    setSaving(false);
+    setShowShare(true);
+  };
+
+  const handleSaveDraft = async () => {
+    await persistList(rankings, listName, false, true);
+  };
+
+  const addedIds = new Set(rankings.map(r => r.nominee_id));
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: brand.cream }}>
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3" style={{ color: brand.gold }} />
+          <p className="text-sm font-medium" style={{ color: `${brand.navy}60` }}>Loading your list...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col" style={{ background: brand.cream }}>
+      <ListBuilderHeader
+        listName={listName}
+        count={rankings.length}
+        isPublished={isPublished}
+        onShare={() => setShowShare(true)}
+      />
+
+      {/* List name editor */}
+      <div className="px-4 pt-4 pb-2 flex items-center gap-2">
+        {isEditingName ? (
+          <div className="flex items-center gap-2 flex-1">
+            <input
+              autoFocus
+              value={listName}
+              onChange={e => setListName(e.target.value)}
+              onBlur={() => {
+                setIsEditingName(false);
+                scheduleSave(rankings, listName, isPublished);
+              }}
+              onKeyDown={e => e.key === 'Enter' && setIsEditingName(false)}
+              className="flex-1 text-xl font-bold bg-transparent outline-none border-b-2 pb-0.5"
+              style={{
+                color: brand.navy,
+                fontFamily: "'Playfair Display', Georgia, serif",
+                borderColor: brand.gold,
+              }}
+              maxLength={60}
+            />
+            <button onClick={() => setIsEditingName(false)}>
+              <Check className="w-4 h-4" style={{ color: brand.gold }} />
+            </button>
+          </div>
+        ) : (
+          <button
+            className="flex items-center gap-2 flex-1 text-left"
+            onClick={() => setIsEditingName(true)}
+          >
+            <h1
+              className="text-xl font-bold"
+              style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              {listName}
+            </h1>
+            <Pencil className="w-3.5 h-3.5" style={{ color: `${brand.navy}40` }} />
+          </button>
+        )}
+        {saving && (
+          <span className="text-[10px] flex items-center gap-1" style={{ color: `${brand.navy}40` }}>
+            <Loader2 className="w-3 h-3 animate-spin" />
+            Saving...
+          </span>
+        )}
+      </div>
+
+      {/* Publish/Draft banner */}
+      <PublishBanner
+        rankings={rankings}
+        isPublished={isPublished}
+        saving={saving}
+        onPublish={handlePublish}
+        onSaveDraft={handleSaveDraft}
+      />
+
+      {/* Main list canvas */}
+      <div className="flex-1">
+        <ListCanvas
+          rankings={rankings}
+          onReorder={handleReorder}
+          onRemove={handleRemove}
+          onAddMore={() => setShowSearch(true)}
+        />
+      </div>
+
+      {/* Floating add button */}
+      {rankings.length > 0 && rankings.length < 100 && (
+        <div className="fixed bottom-6 right-4 z-20">
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            onClick={() => setShowSearch(true)}
+            className="h-14 w-14 rounded-full flex items-center justify-center text-white text-2xl shadow-2xl"
+            style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
+          >
+            +
+          </motion.button>
+        </div>
+      )}
+
+      {/* Drawers & overlays */}
+      <NomineeSearchDrawer
+        isOpen={showSearch}
+        onClose={() => setShowSearch(false)}
+        onAdd={nominee => handleAdd(nominee)}
+        addedIds={addedIds}
+      />
+
+      <ShareCard
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        rankings={rankings}
+        userName={user?.full_name}
+        listName={listName}
+        shareCode={shareCode}
+      />
+    </div>
+  );
+}

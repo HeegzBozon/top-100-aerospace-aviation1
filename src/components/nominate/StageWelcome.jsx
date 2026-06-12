@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, ListOrdered } from 'lucide-react';
 import { brand } from './NominateConfig';
+import { Link } from 'react-router-dom';
 
 export default function StageWelcome({ onBegin }) {
   return (
@@ -20,14 +21,32 @@ export default function StageWelcome({ onBegin }) {
         <p className="text-sm" style={{ color: `${brand.navy}70` }}>This form takes about 3 minutes per nomination. There's no limit on how many people you nominate. Every single one gets reviewed personally.</p>
       </div>
 
-      <Button
-        onClick={onBegin}
-        size="lg"
-        className="rounded-full px-8 py-6 text-base text-white gap-2 cursor-pointer shadow-lg"
-        style={{ background: brand.navy }}
-      >
-        Begin Nominations <ArrowRight className="w-4 h-4" />
-      </Button>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Button
+          onClick={onBegin}
+          size="lg"
+          className="rounded-full px-8 py-6 text-base text-white gap-2 cursor-pointer shadow-lg"
+          style={{ background: brand.navy }}
+        >
+          Begin Nominations <ArrowRight className="w-4 h-4" />
+        </Button>
+
+        <Link to="/my-top100">
+          <Button
+            size="lg"
+            variant="outline"
+            className="rounded-full px-8 py-6 text-base gap-2 cursor-pointer w-full sm:w-auto"
+            style={{ borderColor: brand.gold, color: brand.gold }}
+          >
+            <ListOrdered className="w-4 h-4" />
+            Build My Top 100 List
+          </Button>
+        </Link>
+      </div>
+
+      <p className="text-[11px]" style={{ color: `${brand.navy}45` }}>
+        New: Curate and rank your personal Top 100 — it doubles as your ranked choice ballot.
+      </p>
     </div>
   );
 }
