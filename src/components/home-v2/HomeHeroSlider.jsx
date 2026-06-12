@@ -24,14 +24,14 @@ function useIsLiveNow() {
 const slides = [
   {
     id: 'think-global',
-    eyebrow: 'Season 4 — 2026 · Verified Reputation Graph',
-    title: 'We Measure',
-    kicker: 'The aerospace industry\'s only independently verified reputation graph.',
-    body: '300+ verified Fellows across 40+ countries. Five-layer holistic scoring. No panels, no popularity votes — just defensible, auditable impact measurement for the people shaping the next chapter of flight.',
+    eyebrow: 'Season 4 — 2026 · Welcome',
+    title: 'Think Global',
+    kicker: 'Oh hey — you made it. Right on time.',
+    body: 'One aerospace community across borders, disciplines, and generations. TOP 100 connects the talent, alumni, investors, operators, and industry leaders shaping the next chapter of flight. Wherever you\'re coming from — you belong here.',
     image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=2400&auto=format&fit=crop&q=90',
     icon: Globe2,
-    primary: { label: 'Explore the Directory', to: '/Top100Women2025' },
-    secondary: { label: 'Enterprise & Partners', to: '/solutions' },
+    primary: { label: 'TOP 100 Women 2025', to: '/Top100Women2025' },
+    secondary: { label: 'Join the Community', to: '/moon-joy' },
   },
   {
     id: 'act-local',
