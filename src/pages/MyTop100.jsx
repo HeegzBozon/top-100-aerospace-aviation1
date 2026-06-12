@@ -7,7 +7,9 @@ import ListCanvas from '@/components/my-top100/ListCanvas';
 import NomineeSearchDrawer from '@/components/my-top100/NomineeSearchDrawer';
 import ShareCard from '@/components/my-top100/ShareCard';
 import PublishBanner from '@/components/my-top100/PublishBanner';
-import { Loader2, Pencil, Check } from 'lucide-react';
+import DesktopSearchPanel from '@/components/my-top100/DesktopSearchPanel';
+import { saveRankedVote } from '@/functions/saveRankedVote';
+import { Loader2, Pencil, Check, Rocket, LogIn } from 'lucide-react';
 
 function generateShareCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -29,21 +31,24 @@ export default function MyTop100() {
 
   useEffect(() => {
     const init = async () => {
-      const currentUser = await base44.auth.me();
-      setUser(currentUser);
+      try {
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
 
-      // Load existing list for this user
-      const lists = await base44.entities.UserTop100List.filter({ user_email: currentUser.email });
-      if (lists.length > 0) {
-        const existing = lists[0];
-        setMyList(existing);
-        setRankings(existing.rankings || []);
-        setListName(existing.list_name || 'My Top 100');
-        setIsPublished(existing.is_published || false);
-        setShareCode(existing.share_code || generateShareCode());
-      } else {
-        const code = generateShareCode();
-        setShareCode(code);
+        const lists = await base44.entities.UserTop100List.filter({ user_email: currentUser.email });
+        if (lists.length > 0) {
+          const existing = lists[0];
+          setMyList(existing);
+          setRankings(existing.rankings || []);
+          setListName(existing.list_name || 'My Top 100');
+          setIsPublished(existing.is_published || false);
+          setShareCode(existing.share_code || generateShareCode());
+        } else {
+          setShareCode(generateShareCode());
+        }
+      } catch {
+        // Not logged in
+        setUser(null);
       }
       setLoading(false);
     };
@@ -117,6 +122,19 @@ export default function MyTop100() {
     setSaving(true);
     setIsPublished(true);
     await persistList(rankings, listName, true, false);
+
+    // Submit as ranked choice ballot via the voting engine
+    try {
+      const activeSeason = await base44.entities.Season.filter({ status: 'voting_open' });
+      const seasonId = activeSeason?.[0]?.id;
+      if (seasonId) {
+        const ballot = rankings.map(r => r.nominee_id);
+        await saveRankedVote({ season_id: seasonId, ballot });
+      }
+    } catch (e) {
+      console.warn('Ballot submission skipped:', e.message);
+    }
+
     setSaving(false);
     setShowShare(true);
   };
@@ -130,13 +148,76 @@ export default function MyTop100() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: brand.cream }}>
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3" style={{ color: brand.gold }} />
-          <p className="text-sm font-medium" style={{ color: `${brand.navy}60` }}>Loading your list...</p>
-        </div>
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: brand.gold }} />
       </div>
     );
   }
+
+  // Auth gate
+  if (!user) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ background: brand.cream }}>
+        <div
+          className="h-16 w-16 rounded-full flex items-center justify-center mb-6"
+          style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
+        >
+          <Rocket className="w-7 h-7 text-white" />
+        </div>
+        <h1
+          className="text-2xl font-bold mb-2"
+          style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
+        >
+          My Top 100
+        </h1>
+        <p className="text-sm mb-8 max-w-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
+          Sign in to build your personal ranked list of the most impactful aerospace & aviation leaders.
+        </p>
+        <button
+          onClick={() => base44.auth.redirectToLogin(window.location.pathname)}
+          className="flex items-center gap-2 px-8 py-3 rounded-full text-white font-bold shadow-lg"
+          style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
+        >
+          <LogIn className="w-4 h-4" />
+          Sign In to Continue
+        </button>
+      </div>
+    );
+  }
+
+  // Shared editable name block (reused in both layouts)
+  const ListNameEditor = (
+    <div className="px-4 pt-4 pb-2 flex items-center gap-2">
+      {isEditingName ? (
+        <div className="flex items-center gap-2 flex-1">
+          <input
+            autoFocus
+            value={listName}
+            onChange={e => setListName(e.target.value)}
+            onBlur={() => { setIsEditingName(false); scheduleSave(rankings, listName, isPublished); }}
+            onKeyDown={e => e.key === 'Enter' && setIsEditingName(false)}
+            className="flex-1 text-xl font-bold bg-transparent outline-none border-b-2 pb-0.5"
+            style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif", borderColor: brand.gold }}
+            maxLength={60}
+          />
+          <button onClick={() => setIsEditingName(false)}>
+            <Check className="w-4 h-4" style={{ color: brand.gold }} />
+          </button>
+        </div>
+      ) : (
+        <button className="flex items-center gap-2 flex-1 text-left" onClick={() => setIsEditingName(true)}>
+          <h1 className="text-xl font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
+            {listName}
+          </h1>
+          <Pencil className="w-3.5 h-3.5" style={{ color: `${brand.navy}40` }} />
+        </button>
+      )}
+      {saving && (
+        <span className="text-[10px] flex items-center gap-1" style={{ color: `${brand.navy}40` }}>
+          <Loader2 className="w-3 h-3 animate-spin" /> Saving...
+        </span>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: brand.cream }}>
@@ -147,93 +228,71 @@ export default function MyTop100() {
         onShare={() => setShowShare(true)}
       />
 
-      {/* List name editor */}
-      <div className="px-4 pt-4 pb-2 flex items-center gap-2">
-        {isEditingName ? (
-          <div className="flex items-center gap-2 flex-1">
-            <input
-              autoFocus
-              value={listName}
-              onChange={e => setListName(e.target.value)}
-              onBlur={() => {
-                setIsEditingName(false);
-                scheduleSave(rankings, listName, isPublished);
-              }}
-              onKeyDown={e => e.key === 'Enter' && setIsEditingName(false)}
-              className="flex-1 text-xl font-bold bg-transparent outline-none border-b-2 pb-0.5"
-              style={{
-                color: brand.navy,
-                fontFamily: "'Playfair Display', Georgia, serif",
-                borderColor: brand.gold,
-              }}
-              maxLength={60}
-            />
-            <button onClick={() => setIsEditingName(false)}>
-              <Check className="w-4 h-4" style={{ color: brand.gold }} />
-            </button>
-          </div>
-        ) : (
-          <button
-            className="flex items-center gap-2 flex-1 text-left"
-            onClick={() => setIsEditingName(true)}
-          >
-            <h1
-              className="text-xl font-bold"
-              style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              {listName}
-            </h1>
-            <Pencil className="w-3.5 h-3.5" style={{ color: `${brand.navy}40` }} />
-          </button>
-        )}
-        {saving && (
-          <span className="text-[10px] flex items-center gap-1" style={{ color: `${brand.navy}40` }}>
-            <Loader2 className="w-3 h-3 animate-spin" />
-            Saving...
-          </span>
-        )}
+      {/* ── DESKTOP: two-column ── */}
+      <div className="hidden lg:flex flex-1 gap-6 px-6 py-6 max-w-7xl mx-auto w-full">
+        {/* Left: search panel */}
+        <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start" style={{ maxHeight: 'calc(100vh - 80px)' }}>
+          <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} />
+        </div>
+
+        {/* Right: list */}
+        <div className="flex-1 flex flex-col">
+          {ListNameEditor}
+          <PublishBanner
+            rankings={rankings}
+            isPublished={isPublished}
+            saving={saving}
+            onPublish={handlePublish}
+            onSaveDraft={handleSaveDraft}
+          />
+          <ListCanvas
+            rankings={rankings}
+            onReorder={handleReorder}
+            onRemove={handleRemove}
+            onAddMore={() => {}}
+          />
+        </div>
       </div>
 
-      {/* Publish/Draft banner */}
-      <PublishBanner
-        rankings={rankings}
-        isPublished={isPublished}
-        saving={saving}
-        onPublish={handlePublish}
-        onSaveDraft={handleSaveDraft}
-      />
-
-      {/* Main list canvas */}
-      <div className="flex-1">
-        <ListCanvas
+      {/* ── MOBILE: stacked ── */}
+      <div className="lg:hidden flex flex-col flex-1">
+        {ListNameEditor}
+        <PublishBanner
           rankings={rankings}
-          onReorder={handleReorder}
-          onRemove={handleRemove}
-          onAddMore={() => setShowSearch(true)}
+          isPublished={isPublished}
+          saving={saving}
+          onPublish={handlePublish}
+          onSaveDraft={handleSaveDraft}
+        />
+        <div className="flex-1">
+          <ListCanvas
+            rankings={rankings}
+            onReorder={handleReorder}
+            onRemove={handleRemove}
+            onAddMore={() => setShowSearch(true)}
+          />
+        </div>
+
+        {rankings.length > 0 && rankings.length < 100 && (
+          <div className="fixed bottom-6 right-4 z-20">
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={() => setShowSearch(true)}
+              className="h-14 w-14 rounded-full flex items-center justify-center text-white text-2xl shadow-2xl"
+              style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
+            >
+              +
+            </motion.button>
+          </div>
+        )}
+
+        <NomineeSearchDrawer
+          isOpen={showSearch}
+          onClose={() => setShowSearch(false)}
+          onAdd={handleAdd}
+          addedIds={addedIds}
         />
       </div>
-
-      {/* Floating add button */}
-      {rankings.length > 0 && rankings.length < 100 && (
-        <div className="fixed bottom-6 right-4 z-20">
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={() => setShowSearch(true)}
-            className="h-14 w-14 rounded-full flex items-center justify-center text-white text-2xl shadow-2xl"
-            style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
-          >
-            +
-          </motion.button>
-        </div>
-      )}
-
-      {/* Drawers & overlays */}
-      <NomineeSearchDrawer
-        isOpen={showSearch}
-        onClose={() => setShowSearch(false)}
-        onAdd={nominee => handleAdd(nominee)}
-        addedIds={addedIds}
-      />
 
       <ShareCard
         isOpen={showShare}
