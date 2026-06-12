@@ -175,7 +175,10 @@ const AuthenticatedApp = () => {
           <MissionRooms />
         </LayoutWrapper>
       } />
-      <Route path="/home-v2" element={<HomeV2 />} />
+      {/* Legacy home routes → canonical / */}
+      <Route path="/home-v2" element={<Navigate to="/" replace />} />
+      <Route path="/Home" element={<Navigate to="/" replace />} />
+      <Route path="/Landing" element={<Navigate to="/" replace />} />
       <Route path="/survey" element={<SurveyPage />} />
       <Route path="/email-preview" element={<EmailTemplatePreview />} />
       <Route path="/local-legends" element={<LocalLegends />} />
