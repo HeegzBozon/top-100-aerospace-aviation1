@@ -6,13 +6,15 @@ import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const NAV_LINKS = [
-  { label: 'Operation: Moon Joy', to: '/moon-joy' },
+  { label: 'Directory', to: '/Top100Women2025' },
+  { label: 'About', to: '/about' },
+  { label: 'Enterprise & Partners', to: '/solutions' },
+  { label: 'How We Pick', to: '/HowWePick' },
   { label: 'Nominate', to: '/nominate' },
   { label: 'Local Legends', to: '/local-legends' },
-  { label: 'Publication', to: '/Top100Women2025' },
+  { label: 'Operation: Moon Joy', to: '/moon-joy' },
   { label: '2030 Vision', to: '/2030-vision' },
   { label: 'Community Round', href: 'https://wefunder.com/top.100.aerospace.aviation' },
-  { label: 'Mission Theatre', to: '/LaunchParty' },
 ];
 
 export default function HomeV2() {
