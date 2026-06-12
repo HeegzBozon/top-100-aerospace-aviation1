@@ -1,0 +1,59 @@
+{
+  "name": "NomineeCard",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the nominee this card represents"
+    },
+    "card_number": {
+      "type": "number",
+      "description": "Limited edition card number (e.g., 01/100)"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "rare",
+        "chase",
+        "golden"
+      ],
+      "default": "common",
+      "description": "Card rarity level"
+    },
+    "holographic_variant": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "foil",
+        "rainbow",
+        "special"
+      ],
+      "default": "standard",
+      "description": "Visual variant of the card"
+    },
+    "qr_code_data": {
+      "type": "string",
+      "description": "Data encoded in the QR code (spotlight page URL)"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "Season this card belongs to"
+    },
+    "is_unlocked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this card has been unlocked by any user"
+    },
+    "tagline": {
+      "type": "string",
+      "default": "TOP 100 Women in Aerospace & Aviation 2025",
+      "description": "Card tagline/subtitle"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "card_number",
+    "season_id"
+  ]
+}

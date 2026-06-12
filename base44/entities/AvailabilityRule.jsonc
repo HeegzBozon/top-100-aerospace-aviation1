@@ -1,0 +1,55 @@
+{
+  "name": "AvailabilityRule",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Rule name (e.g., 'Default Partnership Hours')"
+    },
+    "days_of_week": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ]
+      },
+      "description": "Days this rule applies to"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Start time in HH:MM format (24-hour)"
+    },
+    "end_time": {
+      "type": "string",
+      "description": "End time in HH:MM format (24-hour)"
+    },
+    "interval_minutes": {
+      "type": "number",
+      "default": 90,
+      "description": "Minutes between meeting slots"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 60,
+      "description": "Duration of each meeting"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this rule is currently active"
+    }
+  },
+  "required": [
+    "name",
+    "days_of_week",
+    "start_time",
+    "end_time"
+  ]
+}

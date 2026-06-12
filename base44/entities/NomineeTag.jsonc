@@ -1,0 +1,72 @@
+{
+  "name": "NomineeTag",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the nominee being tagged"
+    },
+    "tag_name": {
+      "type": "string",
+      "description": "The tag label (e.g., 'AI/ML Expert', 'Propulsion Systems')"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "skill",
+        "industry",
+        "achievement",
+        "attribute",
+        "technology",
+        "geography"
+      ],
+      "description": "Category of the tag"
+    },
+    "suggested_by": {
+      "type": "string",
+      "description": "Email of user who suggested the tag"
+    },
+    "upvotes": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of upvotes"
+    },
+    "downvotes": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of downvotes"
+    },
+    "upvoted_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of user emails who upvoted"
+    },
+    "downvoted_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of user emails who downvoted"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "approved",
+      "description": "Moderation status (auto-approved by default, can be removed by admin)"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "tag_name",
+    "category",
+    "suggested_by"
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "conversation_id": {
+      "type": "string",
+      "description": "ID of the conversation this message belongs to"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Email of the sender"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Display name of sender"
+    },
+    "sender_avatar": {
+      "type": "string",
+      "description": "Avatar URL of sender"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message content (HTML)"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "image",
+        "file",
+        "system"
+      ],
+      "default": "text"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL for image/file attachments"
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Original filename for attachments"
+    },
+    "read_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Emails of users who have read this message"
+    },
+    "reactions": {
+      "type": "object",
+      "description": "Emoji reactions { emoji: [user_emails] }"
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "ID of parent message for threaded replies"
+    },
+    "reply_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of replies to this message"
+    },
+    "is_edited": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether message has been edited"
+    },
+    "edited_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was last edited"
+    },
+    "post_title": {
+      "type": "string",
+      "description": "Title of forum post (forum channels only)"
+    },
+    "post_flair": {
+      "type": "string",
+      "description": "Flair/tag for forum post"
+    },
+    "upvoted_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Emails of users who upvoted"
+    },
+    "downvoted_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Emails of users who downvoted"
+    },
+    "depth": {
+      "type": "number",
+      "default": 0,
+      "description": "Nesting depth for comments (0 = top-level post)"
+    },
+    "is_post": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for top-level forum posts, false for comments/chat messages"
+    },
+    "rrf_stage": {
+      "type": "string",
+      "enum": [
+        "FORM",
+        "STORM",
+        "NORM",
+        "PERFORM"
+      ],
+      "description": "RRF relationship stage when this message was sent"
+    },
+    "rrf_message_type": {
+      "type": "string",
+      "enum": [
+        "message",
+        "note",
+        "insight",
+        "analysis",
+        "task"
+      ],
+      "default": "message",
+      "description": "RRF message classification"
+    },
+    "crp_step": {
+      "type": "number",
+      "description": "CRP step (1-16) this message is linked to"
+    }
+  },
+  "required": [
+    "conversation_id",
+    "sender_email",
+    "content"
+  ]
+}

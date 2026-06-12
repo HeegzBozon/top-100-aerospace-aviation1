@@ -1,0 +1,78 @@
+{
+  "name": "CraftingRecipe",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the craftable item"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this recipe creates"
+    },
+    "output_type": {
+      "type": "string",
+      "enum": [
+        "artifact",
+        "upgrade",
+        "consumable",
+        "tool",
+        "decoration"
+      ],
+      "description": "Type of item being crafted"
+    },
+    "output_item_id": {
+      "type": "string",
+      "description": "ID reference to the item being created (e.g., artifact_id, upgrade_id)"
+    },
+    "required_resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resource_id": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Array of resources needed with quantities"
+    },
+    "crafting_time_seconds": {
+      "type": "number",
+      "default": 5,
+      "description": "Time required to craft this item"
+    },
+    "required_level": {
+      "type": "number",
+      "default": 1,
+      "description": "Minimum player prestige rank level required"
+    },
+    "unlock_condition": {
+      "type": "string",
+      "description": "Special condition to unlock this recipe (e.g., 'complete_mission_1', 'discover_area_lab')"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "basic",
+        "advanced",
+        "expert",
+        "legendary"
+      ],
+      "default": "basic",
+      "description": "Recipe difficulty tier"
+    },
+    "icon_emoji": {
+      "type": "string",
+      "description": "Emoji icon for the recipe output"
+    }
+  },
+  "required": [
+    "name",
+    "output_type",
+    "required_resources"
+  ]
+}

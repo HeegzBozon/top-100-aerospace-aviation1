@@ -1,0 +1,55 @@
+{
+  "name": "Capability",
+  "description": "Represents a Capability in the Solution Train backlog, breaking down a Portfolio Epic.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the Capability"
+    },
+    "description": {
+      "type": "string",
+      "description": "A detailed description of the Capability"
+    },
+    "initiative_id": {
+      "type": "string",
+      "description": "ID of the parent Epic (Initiative) this Capability belongs to"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "funnel",
+        "analyzing",
+        "backlog",
+        "implementing",
+        "done"
+      ],
+      "default": "funnel",
+      "description": "The current state of the Capability in the Solution Train Kanban"
+    },
+    "business_value": {
+      "type": "number",
+      "description": "Business Value (1-10) for WSJF calculation"
+    },
+    "time_criticality": {
+      "type": "number",
+      "description": "Time Criticality (1-10) for WSJF calculation"
+    },
+    "risk_reduction": {
+      "type": "number",
+      "description": "Risk Reduction / Opportunity Enablement (1-10) for WSJF calculation"
+    },
+    "job_size": {
+      "type": "number",
+      "description": "Job Size / Effort (1-10) for WSJF calculation"
+    },
+    "wsjf_score": {
+      "type": "number",
+      "description": "Calculated WSJF score"
+    }
+  },
+  "required": [
+    "name",
+    "initiative_id"
+  ]
+}

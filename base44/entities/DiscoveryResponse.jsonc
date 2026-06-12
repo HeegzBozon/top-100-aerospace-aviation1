@@ -1,0 +1,40 @@
+{
+  "name": "DiscoveryResponse",
+  "type": "object",
+  "properties": {
+    "submitter_email": {
+      "type": "string",
+      "description": "Email of the person who submitted the questionnaire"
+    },
+    "submitter_name": {
+      "type": "string",
+      "description": "Name of the submitter if available"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "reviewed",
+        "in_progress",
+        "completed"
+      ],
+      "default": "new",
+      "description": "Admin review status"
+    },
+    "responses": {
+      "type": "object",
+      "description": "Key-value map of all question IDs to answers"
+    },
+    "section_completion": {
+      "type": "object",
+      "description": "Map of section IDs to completion booleans"
+    },
+    "admin_notes": {
+      "type": "string",
+      "description": "Internal admin notes on this submission"
+    }
+  },
+  "required": [
+    "responses"
+  ]
+}

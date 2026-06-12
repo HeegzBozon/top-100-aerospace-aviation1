@@ -1,0 +1,51 @@
+{
+  "name": "League",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the league (e.g., 'Women in Aviation & Aerospace')"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the league's purpose and scope"
+    },
+    "category": {
+      "type": "string",
+      "description": "Industry or thematic category"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "proposed"
+      ],
+      "default": "active",
+      "description": "Current status of the league"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Email of the user who created/proposed this league"
+    },
+    "managed_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of user emails who can manage this league"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "URL to the league's logo or banner image"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Official website URL for the league"
+    }
+  },
+  "required": [
+    "name",
+    "description"
+  ]
+}

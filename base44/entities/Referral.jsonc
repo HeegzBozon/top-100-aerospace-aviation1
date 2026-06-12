@@ -1,0 +1,54 @@
+{
+  "name": "Referral",
+  "type": "object",
+  "properties": {
+    "referrer_email": {
+      "type": "string",
+      "description": "User who made the referral"
+    },
+    "referred_email": {
+      "type": "string",
+      "description": "New user who was referred"
+    },
+    "referral_code": {
+      "type": "string",
+      "description": "Unique referral code used"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "signup_complete",
+        "first_booking",
+        "rewarded"
+      ],
+      "default": "pending"
+    },
+    "reward_type": {
+      "type": "string",
+      "enum": [
+        "credit",
+        "discount",
+        "free_session"
+      ],
+      "default": "credit"
+    },
+    "reward_amount": {
+      "type": "number",
+      "default": 10,
+      "description": "Reward in USD"
+    },
+    "context": {
+      "type": "string",
+      "enum": [
+        "provider",
+        "client"
+      ],
+      "description": "Was referrer a provider or client"
+    }
+  },
+  "required": [
+    "referrer_email",
+    "referral_code"
+  ]
+}

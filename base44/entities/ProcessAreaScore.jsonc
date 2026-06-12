@@ -1,0 +1,37 @@
+{
+  "name": "ProcessAreaScore",
+  "type": "object",
+  "properties": {
+    "assessment_id": {
+      "type": "string",
+      "description": "ID of the ASPICEAssessment this score belongs to"
+    },
+    "process_area_id": {
+      "type": "string",
+      "description": "The official process area identifier, e.g., 'SYS.2'"
+    },
+    "process_area_name": {
+      "type": "string",
+      "description": "The full name of the process area, e.g., 'System Requirements Analysis'"
+    },
+    "capability_level": {
+      "type": "number",
+      "default": 0,
+      "description": "The scored capability level for this process area"
+    },
+    "is_critical": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this process is a critical gate for release"
+    },
+    "remediation_notes": {
+      "type": "string",
+      "description": "Notes on what needs to be fixed if non-compliant"
+    }
+  },
+  "required": [
+    "assessment_id",
+    "process_area_id",
+    "process_area_name"
+  ]
+}

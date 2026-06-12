@@ -1,0 +1,103 @@
+{
+  "name": "Work",
+  "type": "object",
+  "description": "Represents aerospace contributions: papers, patents, projects, missions, media, datasets",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Work title or name"
+    },
+    "work_type": {
+      "type": "string",
+      "enum": [
+        "paper",
+        "patent",
+        "project",
+        "mission",
+        "media",
+        "dataset"
+      ],
+      "description": "Type of work"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the work"
+    },
+    "publication_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When the work was published or completed"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "URL to the work (paper link, patent page, etc.)"
+    },
+    "publisher": {
+      "type": "string",
+      "description": "Publishing organization or venue"
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Key topics or keywords"
+    },
+    "domain_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Associated domain IDs"
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "Primary organization associated with the work"
+    },
+    "citation_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of academic citations"
+    },
+    "media_mention_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of media mentions"
+    },
+    "community_votes": {
+      "type": "number",
+      "default": 0,
+      "description": "Community upvotes/endorsements"
+    },
+    "influence_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Calculated influence based on citations, mentions, votes"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "unverified",
+        "self_reported",
+        "organization_verified",
+        "council_verified",
+        "ai_inferred"
+      ],
+      "default": "unverified",
+      "description": "Verification level"
+    },
+    "data_source": {
+      "type": "string",
+      "description": "Source of ingestion (OpenAlex, USPTO, SNAPI, etc.)"
+    },
+    "external_id": {
+      "type": "string",
+      "description": "ID from external source (DOI, patent number, etc.)"
+    }
+  },
+  "required": [
+    "title",
+    "work_type",
+    "description"
+  ]
+}

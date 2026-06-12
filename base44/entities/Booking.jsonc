@@ -1,0 +1,86 @@
+{
+  "name": "Booking",
+  "type": "object",
+  "properties": {
+    "service_id": {
+      "type": "string",
+      "description": "ID of the booked service"
+    },
+    "provider_user_email": {
+      "type": "string",
+      "description": "Email of the provider"
+    },
+    "client_user_email": {
+      "type": "string",
+      "description": "Email of the client"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled start time"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled end time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "completed",
+        "cancelled",
+        "no_show",
+        "rescheduled"
+      ],
+      "default": "pending"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "unpaid",
+        "paid",
+        "refunded"
+      ],
+      "default": "unpaid"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Client notes for the booking"
+    },
+    "meeting_link": {
+      "type": "string",
+      "description": "Video meeting link"
+    },
+    "reminder_sent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether reminder email was sent"
+    },
+    "review_request_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "google_calendar_event_id": {
+      "type": "string"
+    },
+    "reschedule_requested_by": {
+      "type": "string",
+      "description": "Email of who requested reschedule"
+    },
+    "reschedule_reason": {
+      "type": "string"
+    },
+    "original_booking_id": {
+      "type": "string",
+      "description": "If rescheduled, link to original"
+    }
+  },
+  "required": [
+    "service_id",
+    "provider_user_email",
+    "client_user_email",
+    "start_time"
+  ]
+}

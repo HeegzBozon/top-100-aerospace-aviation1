@@ -1,0 +1,80 @@
+{
+  "name": "UserQuest",
+  "type": "object",
+  "properties": {
+    "quest_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ACCEPTED",
+        "COMPLETED",
+        "EXPIRED",
+        "offered",
+        "in_progress",
+        "claimed"
+      ],
+      "default": "offered"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "progress": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "requirement_index": {
+            "type": "number",
+            "description": "Index of the requirement in the quest's requirements array"
+          },
+          "current_count": {
+            "type": "number",
+            "default": 0,
+            "description": "Current progress toward the requirement target"
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this specific requirement has been met"
+          }
+        }
+      },
+      "description": "Array tracking progress on each quest requirement"
+    },
+    "accepted_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the user accepted the quest"
+    },
+    "claimed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the user claimed their rewards"
+    },
+    "last_progress_update": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the last progress update for debouncing"
+    }
+  },
+  "required": [
+    "quest_id",
+    "user_email",
+    "status",
+    "started_at"
+  ]
+}

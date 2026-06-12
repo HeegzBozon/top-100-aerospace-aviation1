@@ -1,0 +1,55 @@
+{
+  "name": "ArticleRevision",
+  "type": "object",
+  "properties": {
+    "article_id": {
+      "type": "string",
+      "description": "ID of the KBArticle this revision belongs to"
+    },
+    "revision_number": {
+      "type": "number",
+      "description": "Sequential revision number"
+    },
+    "content": {
+      "type": "string",
+      "description": "Article content at this revision"
+    },
+    "title": {
+      "type": "string",
+      "description": "Article title at this revision"
+    },
+    "editor_email": {
+      "type": "string",
+      "description": "Email of the user who made this edit"
+    },
+    "editor_name": {
+      "type": "string",
+      "description": "Display name of editor"
+    },
+    "edit_summary": {
+      "type": "string",
+      "description": "Summary of changes made in this revision"
+    },
+    "change_type": {
+      "type": "string",
+      "enum": [
+        "minor_edit",
+        "major_edit",
+        "revert",
+        "new_section"
+      ],
+      "default": "minor_edit",
+      "description": "Type of edit"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is the current published version"
+    }
+  },
+  "required": [
+    "article_id",
+    "content",
+    "editor_email"
+  ]
+}

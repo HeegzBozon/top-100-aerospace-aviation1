@@ -1,0 +1,34 @@
+{
+  "name": "Honoree",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the honoree"
+    },
+    "category_id": {
+      "type": "string",
+      "description": "The category they won in"
+    },
+    "cycle_year": {
+      "type": "number"
+    },
+    "badge_url": {
+      "type": "string",
+      "description": "URL to the digital badge asset"
+    },
+    "press_kit_url": {
+      "type": "string",
+      "description": "URL to the downloadable press kit"
+    },
+    "rank": {
+      "type": "number",
+      "description": "Final rank position (1-100)"
+    }
+  },
+  "required": [
+    "user_email",
+    "category_id",
+    "cycle_year"
+  ]
+}

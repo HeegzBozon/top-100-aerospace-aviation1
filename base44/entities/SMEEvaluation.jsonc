@@ -1,0 +1,97 @@
+{
+  "name": "SMEEvaluation",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the nominee being evaluated"
+    },
+    "evaluator_email": {
+      "type": "string",
+      "description": "Email of the SME evaluator"
+    },
+    "evaluator_credentials": {
+      "type": "string",
+      "description": "SME's credentials and expertise area"
+    },
+    "impact_score": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Impact assessment (1-10)"
+    },
+    "leadership_score": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Leadership assessment (1-10)"
+    },
+    "innovation_score": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Innovation assessment (1-10)"
+    },
+    "community_score": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Community contribution assessment (1-10)"
+    },
+    "trajectory_score": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Future potential assessment (1-10)"
+    },
+    "risk_effort_analysis": {
+      "type": "string",
+      "description": "Analysis of difficulty and risk of achievements"
+    },
+    "significance_notes": {
+      "type": "string",
+      "description": "Notes on significance of contributions"
+    },
+    "verification_notes": {
+      "type": "string",
+      "description": "Notes on verification of claims"
+    },
+    "overall_recommendation": {
+      "type": "string",
+      "enum": [
+        "strongly_recommend",
+        "recommend",
+        "neutral",
+        "not_recommend",
+        "flag_for_review"
+      ],
+      "description": "Overall SME recommendation"
+    },
+    "confidence_level": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "SME's confidence in evaluation (0-1)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "submitted",
+        "reviewed",
+        "approved"
+      ],
+      "default": "draft",
+      "description": "Evaluation status"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "evaluator_email",
+    "impact_score",
+    "leadership_score",
+    "innovation_score",
+    "community_score",
+    "trajectory_score"
+  ]
+}

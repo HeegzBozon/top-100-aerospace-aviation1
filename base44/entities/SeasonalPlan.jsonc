@@ -1,0 +1,42 @@
+{
+  "name": "SeasonalPlan",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the Seasonal Plan, e.g., 'Q3 2024 Plan'"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date of the plan"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "End date of the plan"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "active",
+        "completed"
+      ],
+      "default": "planning",
+      "description": "Current status of the Seasonal Plan"
+    },
+    "sprint_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of Sprint IDs automatically generated for this plan"
+    }
+  },
+  "required": [
+    "name",
+    "start_date",
+    "end_date"
+  ]
+}

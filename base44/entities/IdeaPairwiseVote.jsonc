@@ -1,0 +1,24 @@
+{
+  "name": "IdeaPairwiseVote",
+  "description": "Records a user's choice between two ideas in a head-to-head comparison.",
+  "type": "object",
+  "properties": {
+    "voter_email": {
+      "type": "string",
+      "description": "Email of the user who cast the vote."
+    },
+    "winner_idea_id": {
+      "type": "string",
+      "description": "The ID of the idea chosen as the winner."
+    },
+    "loser_idea_id": {
+      "type": "string",
+      "description": "The ID of the idea not chosen."
+    }
+  },
+  "required": [
+    "voter_email",
+    "winner_idea_id",
+    "loser_idea_id"
+  ]
+}

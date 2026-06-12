@@ -1,0 +1,40 @@
+{
+  "name": "Waitlist",
+  "type": "object",
+  "properties": {
+    "service_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "preferred_dates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "ISO date strings of preferred dates"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "waiting",
+        "notified",
+        "booked",
+        "expired"
+      ],
+      "default": "waiting"
+    },
+    "notified_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "service_id",
+    "user_email"
+  ]
+}

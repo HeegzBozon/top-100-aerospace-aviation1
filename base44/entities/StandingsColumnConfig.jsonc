@@ -1,0 +1,55 @@
+{
+  "name": "StandingsColumnConfig",
+  "type": "object",
+  "properties": {
+    "column_key": {
+      "type": "string",
+      "description": "The internal key for the column (e.g., 'rank', 'nomineeName', 'aura')"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "The display name shown in the table header"
+    },
+    "order_index": {
+      "type": "number",
+      "description": "The display order of the column (lower numbers first)"
+    },
+    "is_visible": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this column is visible in the table"
+    },
+    "is_sortable": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this column can be sorted"
+    },
+    "is_frozen": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this column is frozen (sticky) on horizontal scroll"
+    },
+    "min_width": {
+      "type": "string",
+      "description": "CSS width class for the column (e.g., 'w-16', 'w-52')"
+    },
+    "responsive_breakpoint": {
+      "type": "string",
+      "enum": [
+        "always",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "2xl"
+      ],
+      "default": "always",
+      "description": "Minimum screen size to show this column"
+    }
+  },
+  "required": [
+    "column_key",
+    "display_name",
+    "order_index"
+  ]
+}

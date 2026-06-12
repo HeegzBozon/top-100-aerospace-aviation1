@@ -1,0 +1,30 @@
+{
+  "name": "Decision",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "ID of the parent huddle session"
+    },
+    "text": {
+      "type": "string",
+      "description": "The decision made"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the user responsible for the decision"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorizing the decision"
+    }
+  },
+  "required": [
+    "session_id",
+    "text",
+    "owner_email"
+  ]
+}

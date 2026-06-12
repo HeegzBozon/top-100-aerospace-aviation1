@@ -1,0 +1,100 @@
+{
+  "name": "ImportJob",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Human-readable name for this import job"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "completed",
+        "failed",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Current status of the import job"
+    },
+    "total_records": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of records to be processed"
+    },
+    "processed_records": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of records successfully processed"
+    },
+    "failed_records": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of records that failed to process"
+    },
+    "progress_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Overall progress percentage (0-100)"
+    },
+    "entity_progress": {
+      "type": "object",
+      "description": "JSON object tracking progress per entity type",
+      "properties": {
+        "nominees": {
+          "type": "object"
+        },
+        "users": {
+          "type": "object"
+        },
+        "pairwise_votes": {
+          "type": "object"
+        },
+        "ranked_votes": {
+          "type": "object"
+        },
+        "direct_votes": {
+          "type": "object"
+        }
+      }
+    },
+    "field_mapping": {
+      "type": "object",
+      "description": "The AI-generated and user-confirmed field mapping used for this import."
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the import job started processing"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the import job finished (success or failure)"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message if the job failed"
+    },
+    "source_file_url": {
+      "type": "string",
+      "description": "URL of the source data file"
+    },
+    "import_summary": {
+      "type": "object",
+      "description": "Final summary of what was imported"
+    },
+    "lt_perry_insights": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "AI insights and recommendations from Lt. Perry"
+    }
+  },
+  "required": [
+    "name",
+    "total_records"
+  ]
+}

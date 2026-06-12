@@ -1,0 +1,63 @@
+{
+  "name": "Feature",
+  "description": "Represents a Feature in the ART backlog, breaking down a Capability or Epic.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the Feature"
+    },
+    "description": {
+      "type": "string",
+      "description": "A detailed description of the Feature"
+    },
+    "capability_id": {
+      "type": "string",
+      "description": "ID of the parent Capability (optional)"
+    },
+    "initiative_id": {
+      "type": "string",
+      "description": "ID of the parent Epic (Initiative), used if no parent Capability"
+    },
+    "plan_id": {
+      "type": "string",
+      "description": "ID of the Seasonal Plan this Feature is planned for"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "funnel",
+        "analyzing",
+        "backlog",
+        "implementing",
+        "validating",
+        "done"
+      ],
+      "default": "funnel",
+      "description": "The current state of the Feature in the ART Kanban"
+    },
+    "business_value": {
+      "type": "number",
+      "description": "Business Value (1-10) for WSJF calculation"
+    },
+    "time_criticality": {
+      "type": "number",
+      "description": "Time Criticality (1-10) for WSJF calculation"
+    },
+    "risk_reduction": {
+      "type": "number",
+      "description": "Risk Reduction / Opportunity Enablement (1-10) for WSJF calculation"
+    },
+    "job_size": {
+      "type": "number",
+      "description": "Job Size / Effort (1-10) for WSJF calculation"
+    },
+    "wsjf_score": {
+      "type": "number",
+      "description": "Calculated WSJF score"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "PartnershipInquiry",
+  "type": "object",
+  "properties": {
+    "company": {
+      "type": "string",
+      "description": "Company or organization name"
+    },
+    "name": {
+      "type": "string",
+      "description": "Contact person's full name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Contact email address"
+    },
+    "role": {
+      "type": "string",
+      "description": "Contact's role/title"
+    },
+    "tier": {
+      "type": "string",
+      "description": "Partnership tier of interest"
+    },
+    "goals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Primary partnership goals"
+    },
+    "timeline": {
+      "type": "string",
+      "description": "Desired start timeline"
+    },
+    "message": {
+      "type": "string",
+      "description": "Additional details or questions"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "in_discussion",
+        "closed_won",
+        "closed_lost"
+      ],
+      "default": "new",
+      "description": "Inquiry status"
+    }
+  },
+  "required": [
+    "company",
+    "name",
+    "email",
+    "tier"
+  ]
+}

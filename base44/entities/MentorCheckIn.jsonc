@@ -1,0 +1,50 @@
+{
+  "name": "MentorCheckIn",
+  "type": "object",
+  "properties": {
+    "enrollment_id": {
+      "type": "string",
+      "description": "Enrollment being mentored"
+    },
+    "mentor_email": {
+      "type": "string",
+      "description": "Mentor conducting check-in"
+    },
+    "check_in_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of check-in"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Duration in minutes"
+    },
+    "topics_discussed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Topics covered"
+    },
+    "progress_notes": {
+      "type": "string",
+      "description": "Notes on startup progress"
+    },
+    "blockers": {
+      "type": "string",
+      "description": "Current blockers or challenges"
+    },
+    "action_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Follow-up actions"
+    }
+  },
+  "required": [
+    "enrollment_id",
+    "mentor_email",
+    "check_in_date"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "HuddleUpdate",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "ID of the parent huddle session"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user providing the update"
+    },
+    "yesterday": {
+      "type": "string",
+      "description": "What was accomplished yesterday"
+    },
+    "today": {
+      "type": "string",
+      "description": "What will be accomplished today"
+    },
+    "blocked": {
+      "type": "string",
+      "description": "Any impediments or blockers"
+    },
+    "mood": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "Mood score (-1: bad, 0: neutral, 1: good)"
+    },
+    "focus": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Focus level (0-1)"
+    },
+    "context": {
+      "type": "string",
+      "enum": [
+        "office",
+        "remote",
+        "event"
+      ],
+      "description": "Work context for the day"
+    }
+  },
+  "required": [
+    "session_id",
+    "user_email",
+    "yesterday",
+    "today",
+    "blocked"
+  ]
+}

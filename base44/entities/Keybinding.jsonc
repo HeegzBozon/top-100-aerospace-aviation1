@@ -1,0 +1,28 @@
+{
+  "name": "Keybinding",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "The unique identifier for the action (e.g., 'nominee.approve')."
+    },
+    "key": {
+      "type": "string",
+      "description": "The keyboard key assigned to this action (e.g., 'j', 'k', 'ArrowLeft')."
+    },
+    "description": {
+      "type": "string",
+      "description": "A user-friendly description of what the action does."
+    },
+    "category": {
+      "type": "string",
+      "description": "A category to group related keybindings (e.g., 'Nominee Review', 'Navigation')."
+    }
+  },
+  "required": [
+    "action",
+    "key",
+    "description",
+    "category"
+  ]
+}

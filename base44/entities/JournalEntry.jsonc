@@ -1,0 +1,67 @@
+{
+  "name": "JournalEntry",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Article/content title"
+    },
+    "excerpt": {
+      "type": "string",
+      "description": "Short summary or preview text"
+    },
+    "featured_image_url": {
+      "type": "string",
+      "description": "Hero image for the article"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "page",
+        "article",
+        "external",
+        "kb_article"
+      ],
+      "description": "Type of content this entry represents"
+    },
+    "content_reference": {
+      "type": "string",
+      "description": "Page name, article ID, or URL depending on content_type"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category for filtering (e.g., Features, Community, News, etc.)"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author name"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to show as featured/hero article"
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Publication date"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorization"
+    },
+    "read_time_minutes": {
+      "type": "number",
+      "description": "Estimated read time in minutes"
+    }
+  },
+  "required": [
+    "title",
+    "excerpt",
+    "content_type",
+    "content_reference"
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "name": "Season",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the voting season, e.g., 'Season 4 - 2026'"
+    },
+    "description": {
+      "type": "string",
+      "description": "An optional description of the season's goals or theme"
+    },
+    "theme": {
+      "type": "string",
+      "description": "The visual or conceptual theme for the season"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date the overall season begins"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date the overall season concludes"
+    },
+    "nomination_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when nominations open"
+    },
+    "nomination_end": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when nominations close"
+    },
+    "voting_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when voting opens"
+    },
+    "voting_end": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when voting closes"
+    },
+    "review_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when finalist review phase begins"
+    },
+    "review_end": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when finalist review phase ends"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "rollover",
+        "nominations_open",
+        "voting_open",
+        "review",
+        "completed",
+        "archived"
+      ],
+      "default": "planning",
+      "description": "The current status of the season, reflecting its lifecycle phase"
+    },
+    "voting_modes": {
+      "type": "object",
+      "properties": {
+        "pairwise": {
+          "type": "boolean",
+          "default": true
+        },
+        "ranked_choice": {
+          "type": "boolean",
+          "default": false
+        },
+        "direct": {
+          "type": "boolean",
+          "default": false
+        },
+        "spotlight": {
+          "type": "boolean",
+          "default": true
+        },
+        "endorsements": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "description": "Object indicating which voting modes are enabled"
+    },
+    "rollover_config": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "source_season_id": {
+          "type": "string",
+          "description": "ID of the season to roll nominees from"
+        },
+        "eligibility_window_years": {
+          "type": "number",
+          "default": 3,
+          "description": "How many years back nominees are eligible"
+        },
+        "require_revalidation": {
+          "type": "boolean",
+          "default": true
+        },
+        "revalidation_method": {
+          "type": "string",
+          "enum": [
+            "self_confirm",
+            "community_confirm",
+            "system_check",
+            "admin_review"
+          ],
+          "default": "self_confirm"
+        },
+        "min_endorsers_required": {
+          "type": "number",
+          "default": 1
+        },
+        "fresh_nominee_boost": {
+          "type": "number",
+          "default": 1.1,
+          "description": "Multiplier for new nominees"
+        },
+        "impact_window_months": {
+          "type": "number",
+          "default": 24,
+          "description": "Months to consider for recent impact"
+        },
+        "rollover_completed": {
+          "type": "boolean",
+          "default": false
+        },
+        "rollover_stats": {
+          "type": "object",
+          "properties": {
+            "eligible_count": {
+              "type": "number"
+            },
+            "revalidated_count": {
+              "type": "number"
+            },
+            "declined_count": {
+              "type": "number"
+            },
+            "pending_count": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "description": "Configuration for nominee rollover between seasons"
+    },
+    "scoring_config": {
+      "type": "object",
+      "properties": {
+        "perception_weight": {
+          "type": "number",
+          "default": 30
+        },
+        "objective_weight": {
+          "type": "number",
+          "default": 30
+        },
+        "sme_weight": {
+          "type": "number",
+          "default": 20
+        },
+        "narrative_weight": {
+          "type": "number",
+          "default": 10
+        },
+        "normalization_weight": {
+          "type": "number",
+          "default": 10
+        },
+        "use_holistic_v3": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "description": "Scoring layer weights for this season"
+    },
+    "cloned_from_season_id": {
+      "type": "string",
+      "description": "ID of the season this was cloned from"
+    }
+  },
+  "required": [
+    "name",
+    "start_date",
+    "end_date",
+    "nomination_start",
+    "nomination_end",
+    "voting_start",
+    "voting_end"
+  ]
+}

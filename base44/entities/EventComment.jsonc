@@ -1,0 +1,31 @@
+{
+  "name": "EventComment",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "ID of the event this comment belongs to"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email of the commenter"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of the commenter"
+    },
+    "content": {
+      "type": "string",
+      "description": "Comment text"
+    },
+    "photo_id": {
+      "type": "string",
+      "description": "Optional - if commenting on a specific photo"
+    }
+  },
+  "required": [
+    "event_id",
+    "author_email",
+    "content"
+  ]
+}

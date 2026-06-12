@@ -1,0 +1,138 @@
+{
+  "name": "Program",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Program/mission/vehicle name (Artemis, Starship, F-35, etc.)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the program"
+    },
+    "program_type": {
+      "type": "string",
+      "enum": [
+        "spacecraft",
+        "aircraft",
+        "missile",
+        "rocket",
+        "engine",
+        "system",
+        "mission",
+        "constellation"
+      ],
+      "description": "Type of program"
+    },
+    "mission_type": {
+      "type": "string",
+      "enum": [
+        "civil",
+        "commercial",
+        "defense",
+        "scientific"
+      ],
+      "description": "Mission purpose"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "concept",
+        "development",
+        "testing",
+        "operational",
+        "retired"
+      ],
+      "default": "development",
+      "description": "Current status"
+    },
+    "primary_organization_id": {
+      "type": "string",
+      "description": "Primary responsible organization"
+    },
+    "partner_organization_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Partner organizations"
+    },
+    "announcement_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When program was announced"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Program start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Program end date or expected completion"
+    },
+    "subsystem_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Key subsystems involved"
+    },
+    "key_milestones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "achieved",
+              "delayed",
+              "cancelled"
+            ]
+          }
+        }
+      },
+      "description": "Major milestones"
+    },
+    "budget_usd": {
+      "type": "number",
+      "description": "Total program budget in USD"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Program logo or insignia"
+    },
+    "verified_status": {
+      "type": "string",
+      "enum": [
+        "unverified",
+        "verified",
+        "disputed"
+      ],
+      "default": "unverified",
+      "description": "Verification status"
+    },
+    "related_program_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Related programs (predecessors, follow-ons, etc.)"
+    }
+  },
+  "required": [
+    "name",
+    "program_type",
+    "status"
+  ]
+}

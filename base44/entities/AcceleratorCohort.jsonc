@@ -1,0 +1,77 @@
+{
+  "name": "AcceleratorCohort",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Cohort name, e.g., 'Winter 2025'"
+    },
+    "description": {
+      "type": "string",
+      "description": "Cohort description and focus areas"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Cohort start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Cohort end date"
+    },
+    "demo_day_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Demo day / presentation date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "recruiting",
+        "active",
+        "completed",
+        "archived"
+      ],
+      "default": "planning",
+      "description": "Current cohort status"
+    },
+    "max_startups": {
+      "type": "number",
+      "default": 10,
+      "description": "Maximum number of startups in cohort"
+    },
+    "enrolled_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of enrolled startups"
+    },
+    "program_structure": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "week": {
+            "type": "number"
+          },
+          "focus": {
+            "type": "string"
+          },
+          "deliverables": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "Week-by-week program structure"
+    }
+  },
+  "required": [
+    "name",
+    "start_date",
+    "end_date"
+  ]
+}

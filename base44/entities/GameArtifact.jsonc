@@ -1,0 +1,80 @@
+{
+  "name": "GameArtifact",
+  "type": "object",
+  "properties": {
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the player who owns this artifact"
+    },
+    "artifact_id": {
+      "type": "string",
+      "description": "Unique identifier for artifact type"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the artifact"
+    },
+    "description": {
+      "type": "string",
+      "description": "Lore/description of the artifact"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "trophy",
+        "cosmetic",
+        "lore",
+        "sponsor",
+        "ceremony",
+        "badge"
+      ],
+      "description": "Type of artifact"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "uncommon",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "default": "common",
+      "description": "Rarity tier"
+    },
+    "source_game": {
+      "type": "string",
+      "enum": [
+        "hangar",
+        "recruitment_run",
+        "ceremony",
+        "special"
+      ],
+      "description": "Where the artifact was earned"
+    },
+    "model_url": {
+      "type": "string",
+      "description": "URL to 3D model for Hangar display"
+    },
+    "icon_url": {
+      "type": "string",
+      "description": "2D icon for inventory display"
+    },
+    "earned_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the artifact was earned"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional artifact-specific data"
+    }
+  },
+  "required": [
+    "owner_email",
+    "artifact_id",
+    "name",
+    "category",
+    "source_game"
+  ]
+}

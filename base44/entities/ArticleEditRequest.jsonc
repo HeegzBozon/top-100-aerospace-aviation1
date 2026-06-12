@@ -1,0 +1,61 @@
+{
+  "name": "ArticleEditRequest",
+  "type": "object",
+  "properties": {
+    "article_id": {
+      "type": "string",
+      "description": "ID of article to edit"
+    },
+    "editor_email": {
+      "type": "string",
+      "description": "User submitting the edit"
+    },
+    "editor_name": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "proposed_content": {
+      "type": "string",
+      "description": "Proposed new content"
+    },
+    "proposed_title": {
+      "type": "string",
+      "description": "Proposed new title (optional)"
+    },
+    "edit_summary": {
+      "type": "string",
+      "description": "Summary of changes"
+    },
+    "change_type": {
+      "type": "string",
+      "enum": [
+        "minor_edit",
+        "major_edit",
+        "new_section"
+      ],
+      "default": "minor_edit"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "reviewed_by": {
+      "type": "string",
+      "description": "Admin who reviewed"
+    },
+    "review_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "article_id",
+    "proposed_content",
+    "editor_email",
+    "edit_summary"
+  ]
+}

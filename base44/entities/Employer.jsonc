@@ -1,0 +1,278 @@
+{
+  "name": "Employer",
+  "type": "object",
+  "properties": {
+    "company_name": {
+      "type": "string",
+      "description": "Legal or public-facing company name"
+    },
+    "industry_segments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Industry segments: Commercial Aviation, Aerospace Manufacturing, Space, Defense, MRO, UAS/Drones, eVTOL/AAM, Avionics, Airports/Infrastructure, R&D, Education/Academia, Venture Capital, Government/Policy, Other"
+    },
+    "headquarters_location": {
+      "type": "string",
+      "description": "City, State/Region, Country"
+    },
+    "additional_locations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Global offices, plants, engineering centers"
+    },
+    "company_size": {
+      "type": "string",
+      "enum": [
+        "1-10",
+        "11-50",
+        "51-200",
+        "201-500",
+        "501-1000",
+        "1001-5000",
+        "5000+"
+      ],
+      "description": "Number of employees"
+    },
+    "company_type": {
+      "type": "string",
+      "enum": [
+        "Private",
+        "Public",
+        "Government",
+        "NGO",
+        "Research",
+        "Startup",
+        "Enterprise"
+      ],
+      "description": "Type of organization"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Company logo URL"
+    },
+    "overview_short": {
+      "type": "string",
+      "description": "250 character summary for cards"
+    },
+    "overview_long": {
+      "type": "string",
+      "description": "Full company description"
+    },
+    "mission_statement": {
+      "type": "string",
+      "description": "Company mission"
+    },
+    "known_for": {
+      "type": "string",
+      "description": "Core technologies, achievements, recognitions"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Company website"
+    },
+    "linkedin_url": {
+      "type": "string"
+    },
+    "twitter_url": {
+      "type": "string"
+    },
+    "youtube_url": {
+      "type": "string"
+    },
+    "instagram_url": {
+      "type": "string"
+    },
+    "careers_page_url": {
+      "type": "string"
+    },
+    "talent_focus_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Engineering, Flight Ops, MRO, Manufacturing, Space Systems, Avionics, Materials, Cybersecurity, AI/Automation, R&D, Program Management, Leadership, Sales/BD, Supply Chain, HR/DEI"
+    },
+    "hiring_status": {
+      "type": "string",
+      "enum": [
+        "actively_hiring",
+        "hiring_freeze",
+        "selective",
+        "internship_only",
+        "contract_only"
+      ],
+      "default": "actively_hiring",
+      "description": "Current hiring status"
+    },
+    "preferred_candidate_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Skill clusters, seniority levels, certifications"
+    },
+    "dei_statement": {
+      "type": "string",
+      "description": "Diversity & Inclusion statement"
+    },
+    "security_requirements": {
+      "type": "string",
+      "enum": [
+        "none",
+        "us_citizen_only",
+        "clearance_required",
+        "itar_ear",
+        "defense_only"
+      ],
+      "default": "none",
+      "description": "Security/compliance requirements"
+    },
+    "job_posting_permission": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "company_wide",
+        "authorized_only",
+        "api_import"
+      ],
+      "default": "company_wide"
+    },
+    "job_posting_tier": {
+      "type": "string",
+      "enum": [
+        "basic_5",
+        "standard_20",
+        "professional_100",
+        "enterprise_unlimited"
+      ],
+      "default": "basic_5"
+    },
+    "ats_integration": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "xml_feed",
+        "api_feed",
+        "greenhouse",
+        "workday",
+        "lever",
+        "other"
+      ],
+      "default": "manual"
+    },
+    "primary_contact_name": {
+      "type": "string"
+    },
+    "primary_contact_email": {
+      "type": "string"
+    },
+    "primary_contact_role": {
+      "type": "string"
+    },
+    "secondary_contact_name": {
+      "type": "string"
+    },
+    "secondary_contact_email": {
+      "type": "string"
+    },
+    "sponsor_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "none"
+    },
+    "sponsor_deliverables": {
+      "type": "string",
+      "description": "What sponsor is entitled to"
+    },
+    "collaboration_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Events, Panels, Speaking, Workshops, Research, DEI initiatives"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "verified",
+        "flagged"
+      ],
+      "default": "pending"
+    },
+    "profile_visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "public_hide_contacts",
+        "private"
+      ],
+      "default": "public"
+    },
+    "notification_preferences": {
+      "type": "object",
+      "description": "Notification settings for matches, applications, messages"
+    },
+    "talent_metrics_focus": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Flight hours, Certifications, Mission experience, Systems expertise, Leadership, Publications, Patents"
+    },
+    "ai_match_mode": {
+      "type": "string",
+      "enum": [
+        "conservative",
+        "balanced",
+        "aggressive",
+        "top_tier_only"
+      ],
+      "default": "balanced"
+    },
+    "pipeline_interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Entry-level, Mid-level, Senior, Executive, Internship, DEI priority, Veteran, STEM students"
+    },
+    "posting_credits_remaining": {
+      "type": "number",
+      "default": 5
+    },
+    "candidate_matches_count": {
+      "type": "number",
+      "default": 0
+    },
+    "platform_activity_score": {
+      "type": "number",
+      "default": 0
+    },
+    "terms_accepted": {
+      "type": "boolean",
+      "default": false
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the user who created this employer profile"
+    }
+  },
+  "required": [
+    "company_name",
+    "industry_segments",
+    "headquarters_location",
+    "primary_contact_email",
+    "owner_email"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "name": "CashOutRequest",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user requesting cash-out"
+    },
+    "stardust_amount": {
+      "type": "number",
+      "description": "Amount of Stardust being converted"
+    },
+    "payout_method": {
+      "type": "string",
+      "enum": [
+        "paypal",
+        "bank_transfer",
+        "store_credit",
+        "marketplace_credit"
+      ],
+      "description": "Preferred payout method"
+    },
+    "payout_details": {
+      "type": "object",
+      "description": "JSON object containing payout method details (email, account info, etc.)"
+    },
+    "conversion_rate": {
+      "type": "number",
+      "description": "Stardust to USD conversion rate at time of request"
+    },
+    "usd_amount": {
+      "type": "number",
+      "description": "Calculated USD amount based on conversion rate"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "processing",
+        "completed",
+        "rejected",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Current status of the cash-out request"
+    },
+    "admin_notes": {
+      "type": "string",
+      "description": "Internal notes from admin review"
+    },
+    "processed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the cash-out was processed"
+    }
+  },
+  "required": [
+    "user_email",
+    "stardust_amount",
+    "payout_method",
+    "conversion_rate",
+    "usd_amount"
+  ]
+}

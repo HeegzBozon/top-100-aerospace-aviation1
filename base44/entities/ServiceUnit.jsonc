@@ -1,0 +1,77 @@
+{
+  "name": "ServiceUnit",
+  "type": "object",
+  "properties": {
+    "provider_email": {
+      "type": "string",
+      "description": "Email of the provider offering this unit"
+    },
+    "title": {
+      "type": "string",
+      "description": "Name of the service unit"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of what's included"
+    },
+    "unit_type": {
+      "type": "string",
+      "enum": [
+        "advisory_hour",
+        "design_sprint",
+        "audit",
+        "workshop",
+        "mentorship_session",
+        "technical_review",
+        "custom"
+      ],
+      "description": "Standardized unit type"
+    },
+    "reference_value_usd": {
+      "type": "number",
+      "description": "Reference cash value for anchoring (not payment)"
+    },
+    "xc_cost": {
+      "type": "number",
+      "description": "Exchange Credits required to redeem this unit"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 60
+    },
+    "category": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Categories: Consulting, Technical, Leadership, etc."
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "max_monthly_redemptions": {
+      "type": "number",
+      "default": 10,
+      "description": "Cap on how many times this can be redeemed per month"
+    },
+    "current_month_redemptions": {
+      "type": "number",
+      "default": 0
+    },
+    "total_redemptions": {
+      "type": "number",
+      "default": 0
+    },
+    "avg_rating": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "provider_email",
+    "title",
+    "unit_type",
+    "xc_cost"
+  ]
+}

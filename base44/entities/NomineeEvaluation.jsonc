@@ -1,0 +1,78 @@
+{
+  "name": "NomineeEvaluation",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the nominee being evaluated"
+    },
+    "evaluator_email": {
+      "type": "string",
+      "description": "Email of the player/evaluator"
+    },
+    "mini_game_type": {
+      "type": "string",
+      "enum": [
+        "mission_debrief",
+        "systems_test",
+        "calibration_lab",
+        "match_missions",
+        "interview_sim",
+        "evaluation_flight",
+        "synergy_builder",
+        "data_analyst",
+        "hall_records",
+        "shadow_room"
+      ],
+      "description": "Which mini-game generated this evaluation"
+    },
+    "technical_excellence": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 7,
+      "description": "Score for Technical Excellence (1-7)"
+    },
+    "innovation_impact": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 7,
+      "description": "Score for Innovation & Impact (1-7)"
+    },
+    "leadership_influence": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 7,
+      "description": "Score for Leadership & Influence (1-7)"
+    },
+    "community_contribution": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 7,
+      "description": "Score for Community/Industry Contribution (1-7)"
+    },
+    "future_potential": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 7,
+      "description": "Score for Future Potential (1-7)"
+    },
+    "weighted_score": {
+      "type": "number",
+      "description": "Calculated weighted average (Technical 25%, Innovation 25%, Leadership 20%, Community 15%, Future 15%)"
+    },
+    "evaluation_context": {
+      "type": "object",
+      "description": "Additional context from the mini-game (choices made, time taken, etc.)"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "evaluator_email",
+    "mini_game_type",
+    "technical_excellence",
+    "innovation_impact",
+    "leadership_influence",
+    "community_contribution",
+    "future_potential"
+  ]
+}

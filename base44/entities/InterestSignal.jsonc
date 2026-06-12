@@ -1,0 +1,54 @@
+{
+  "name": "InterestSignal",
+  "type": "object",
+  "properties": {
+    "startup_id": {
+      "type": "string",
+      "description": "ID of the startup receiving interest"
+    },
+    "investor_email": {
+      "type": "string",
+      "description": "Email of the interested investor"
+    },
+    "signal_type": {
+      "type": "string",
+      "enum": [
+        "interested",
+        "very_interested",
+        "intro_requested",
+        "passed"
+      ],
+      "description": "Level/type of interest"
+    },
+    "message": {
+      "type": "string",
+      "description": "Optional message to the founder"
+    },
+    "intro_requested": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether investor requested an introduction"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "intro_made",
+        "meeting_scheduled",
+        "passed",
+        "closed"
+      ],
+      "default": "pending",
+      "description": "Current status of the signal"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes for tracking"
+    }
+  },
+  "required": [
+    "startup_id",
+    "investor_email",
+    "signal_type"
+  ]
+}

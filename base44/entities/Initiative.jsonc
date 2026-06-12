@@ -1,0 +1,51 @@
+{
+  "name": "Initiative",
+  "description": "Represents a Portfolio Epic, a large-scale strategic task that may span multiple Program Increments.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the Epic"
+    },
+    "description": {
+      "type": "string",
+      "description": "A detailed description of the Epic"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "funnel",
+        "reviewing",
+        "analyzing",
+        "portfolio_backlog",
+        "implementing",
+        "done"
+      ],
+      "default": "funnel",
+      "description": "The current state of the Epic in the Portfolio Kanban"
+    },
+    "business_value": {
+      "type": "number",
+      "description": "Business Value (1-10) for WSJF calculation"
+    },
+    "time_criticality": {
+      "type": "number",
+      "description": "Time Criticality (1-10) for WSJF calculation"
+    },
+    "risk_reduction": {
+      "type": "number",
+      "description": "Risk Reduction / Opportunity Enablement (1-10) for WSJF calculation"
+    },
+    "job_size": {
+      "type": "number",
+      "description": "Job Size / Effort (1-10) for WSJF calculation"
+    },
+    "wsjf_score": {
+      "type": "number",
+      "description": "Calculated WSJF score"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

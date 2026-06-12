@@ -1,0 +1,108 @@
+{
+  "name": "Post",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Post title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Rich text content of the post"
+    },
+    "excerpt": {
+      "type": "string",
+      "description": "Short summary or preview of the post"
+    },
+    "post_type": {
+      "type": "string",
+      "enum": [
+        "article",
+        "discussion",
+        "question",
+        "announcement"
+      ],
+      "default": "discussion",
+      "description": "Type of post content"
+    },
+    "channel_id": {
+      "type": "string",
+      "description": "ID of the channel this post belongs to"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email of the post author"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of the post author"
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the post was published"
+    },
+    "featured_image_url": {
+      "type": "string",
+      "description": "URL of the featured/cover image"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category or topic tag for the post"
+    },
+    "upvotes": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of upvotes"
+    },
+    "upvoted_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of user emails who upvoted this post"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of views this post has received"
+    },
+    "reply_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of replies/comments on this post"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this post is pinned to the top of the channel"
+    },
+    "is_locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether replies are disabled on this post"
+    },
+    "legacy_source": {
+      "type": "string",
+      "enum": [
+        "journal_entry",
+        "kb_article",
+        "native"
+      ],
+      "default": "native",
+      "description": "Source of migrated posts (for tracking origin)"
+    },
+    "legacy_id": {
+      "type": "string",
+      "description": "Original entity ID from JournalEntry or KBArticle"
+    }
+  },
+  "required": [
+    "title",
+    "content",
+    "channel_id",
+    "author_email",
+    "post_type"
+  ]
+}

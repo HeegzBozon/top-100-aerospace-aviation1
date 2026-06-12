@@ -1,0 +1,95 @@
+{
+  "name": "InvestorProfile",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the investor/user"
+    },
+    "investor_type": {
+      "type": "string",
+      "enum": [
+        "angel",
+        "vc",
+        "corporate",
+        "family_office",
+        "accelerator",
+        "strategic"
+      ],
+      "description": "Type of investor"
+    },
+    "organization_name": {
+      "type": "string",
+      "description": "Name of investment firm or organization"
+    },
+    "focus_sectors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Sectors of interest (matching startup sectors)"
+    },
+    "focus_stages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Funding stages of interest"
+    },
+    "check_size_min": {
+      "type": "number",
+      "description": "Minimum check size in USD"
+    },
+    "check_size_max": {
+      "type": "number",
+      "description": "Maximum check size in USD"
+    },
+    "geographic_focus": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Preferred countries/regions"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Investor background and investment thesis"
+    },
+    "linkedin_url": {
+      "type": "string",
+      "description": "LinkedIn profile"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Firm website"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Logo URL"
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Admin-verified investor status"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Actively reviewing startups"
+    },
+    "portfolio_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of portfolio companies"
+    },
+    "signals_sent": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of interest signals sent"
+    }
+  },
+  "required": [
+    "user_email",
+    "investor_type"
+  ]
+}

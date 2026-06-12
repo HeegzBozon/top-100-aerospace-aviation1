@@ -1,0 +1,93 @@
+{
+  "name": "SocialChannel",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who owns this channel"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "linkedin",
+        "instagram",
+        "threads"
+      ],
+      "description": "Social media platform"
+    },
+    "channel_type": {
+      "type": "string",
+      "enum": [
+        "personal",
+        "business"
+      ],
+      "default": "personal",
+      "description": "Whether this is a personal or business/org channel"
+    },
+    "channel_name": {
+      "type": "string",
+      "description": "Human-readable label for this channel (e.g. 'TOP 100 LinkedIn Page')"
+    },
+    "platform_user_id": {
+      "type": "string",
+      "description": "The platform-specific user/org/page ID"
+    },
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token \u2014 stored server-side only"
+    },
+    "refresh_token": {
+      "type": "string",
+      "description": "OAuth refresh token if applicable"
+    },
+    "token_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the access token expires"
+    },
+    "profile_name": {
+      "type": "string",
+      "description": "Display name of the connected account"
+    },
+    "profile_image_url": {
+      "type": "string",
+      "description": "Avatar/profile photo URL"
+    },
+    "profile_handle": {
+      "type": "string",
+      "description": "Username or handle (e.g. @top100aerospace)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this channel is active and connected"
+    },
+    "connection_status": {
+      "type": "string",
+      "enum": [
+        "connected",
+        "expired",
+        "error",
+        "pending"
+      ],
+      "default": "pending",
+      "description": "Current OAuth connection health"
+    },
+    "last_used_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time a post was published via this channel"
+    },
+    "post_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total posts published through this channel"
+    }
+  },
+  "required": [
+    "user_email",
+    "platform",
+    "channel_name",
+    "channel_type"
+  ]
+}

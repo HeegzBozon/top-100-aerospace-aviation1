@@ -1,0 +1,72 @@
+{
+  "name": "PlayerInventory",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Player's email"
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resource_id": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          }
+        }
+      },
+      "default": [],
+      "description": "Array of resources with quantities"
+    },
+    "crafted_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_type": {
+            "type": "string"
+          },
+          "item_id": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          }
+        }
+      },
+      "default": [],
+      "description": "Array of crafted items"
+    },
+    "installed_upgrades": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Array of HangarUpgrade IDs that are currently installed"
+    },
+    "unlocked_recipes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Array of CraftingRecipe IDs that are unlocked"
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "read": {
+      "user_email": "{{user.email}}"
+    },
+    "write": {
+      "user_email": "{{user.email}}"
+    }
+  }
+}

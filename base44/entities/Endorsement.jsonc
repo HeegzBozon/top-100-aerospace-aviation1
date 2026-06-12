@@ -1,0 +1,28 @@
+{
+  "name": "Endorsement",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the nominee being endorsed"
+    },
+    "endorser_email": {
+      "type": "string",
+      "description": "Email of the user giving the endorsement"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "The season in which the endorsement was made"
+    },
+    "weight": {
+      "type": "number",
+      "default": 1,
+      "description": "The weight of the endorsement, potentially influenced by endorser's power"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "endorser_email",
+    "season_id"
+  ]
+}

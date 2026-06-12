@@ -1,0 +1,32 @@
+{
+  "name": "ASPICEAssessment",
+  "type": "object",
+  "properties": {
+    "release_id": {
+      "type": "string",
+      "description": "ID of the Release this assessment is for"
+    },
+    "overall_capability_level": {
+      "type": "number",
+      "default": 0,
+      "description": "The calculated overall capability level (e.g., 0, 0.5, 1, 2, 3)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "compliant",
+        "non_compliant_caution",
+        "non_compliant_blocked"
+      ],
+      "default": "non_compliant_blocked",
+      "description": "The final status based on all process area scores"
+    },
+    "assessment_report_url": {
+      "type": "string",
+      "description": "URL to the full ASPICE capability assessment report"
+    }
+  },
+  "required": [
+    "release_id"
+  ]
+}

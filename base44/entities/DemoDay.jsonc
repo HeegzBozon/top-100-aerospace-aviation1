@@ -1,0 +1,51 @@
+{
+  "name": "DemoDay",
+  "type": "object",
+  "properties": {
+    "cohort_id": {
+      "type": "string",
+      "description": "Associated cohort ID"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Demo day date and time"
+    },
+    "location": {
+      "type": "string",
+      "description": "Physical or virtual location"
+    },
+    "description": {
+      "type": "string",
+      "description": "Event description"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "live",
+        "completed"
+      ],
+      "default": "upcoming",
+      "description": "Demo day status"
+    },
+    "stream_url": {
+      "type": "string",
+      "description": "Live stream URL"
+    },
+    "rsvp_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of RSVPs"
+    },
+    "max_capacity": {
+      "type": "number",
+      "default": 100,
+      "description": "Maximum attendee capacity"
+    }
+  },
+  "required": [
+    "cohort_id",
+    "event_date"
+  ]
+}

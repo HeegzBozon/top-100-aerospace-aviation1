@@ -1,0 +1,98 @@
+{
+  "name": "Application",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "Reference to the Job entity"
+    },
+    "employer_id": {
+      "type": "string",
+      "description": "Reference to the Employer entity"
+    },
+    "applicant_email": {
+      "type": "string",
+      "description": "Email of the applicant"
+    },
+    "nominee_id": {
+      "type": "string",
+      "description": "Reference to Nominee profile if exists"
+    },
+    "cover_letter": {
+      "type": "string",
+      "description": "Cover letter or introduction"
+    },
+    "resume_url": {
+      "type": "string",
+      "description": "Uploaded resume URL"
+    },
+    "portfolio_url": {
+      "type": "string",
+      "description": "Portfolio or work samples URL"
+    },
+    "linkedin_url": {
+      "type": "string"
+    },
+    "video_intro_url": {
+      "type": "string",
+      "description": "Optional video introduction"
+    },
+    "answers": {
+      "type": "object",
+      "description": "Answers to screening questions"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "under_review",
+        "shortlisted",
+        "interviewing",
+        "offer_extended",
+        "hired",
+        "rejected",
+        "withdrawn"
+      ],
+      "default": "submitted"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Recruiter rating 1-5"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal recruiter notes"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "referral",
+        "top100_match",
+        "external"
+      ],
+      "default": "direct"
+    },
+    "referred_by": {
+      "type": "string",
+      "description": "Referrer email if applicable"
+    },
+    "match_score": {
+      "type": "number",
+      "description": "AI-generated match score 0-100"
+    },
+    "is_top100_nominee": {
+      "type": "boolean",
+      "default": false
+    },
+    "nominee_rank": {
+      "type": "number",
+      "description": "Nominee's current rank if applicable"
+    }
+  },
+  "required": [
+    "job_id",
+    "employer_id",
+    "applicant_email"
+  ]
+}

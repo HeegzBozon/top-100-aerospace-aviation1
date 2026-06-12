@@ -1,0 +1,39 @@
+{
+  "name": "ServiceAnalytics",
+  "type": "object",
+  "properties": {
+    "service_id": {
+      "type": "string",
+      "description": "ID of the service"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the analytics record"
+    },
+    "views": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of page views"
+    },
+    "clicks": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of clicks (book button, etc.)"
+    },
+    "bookings": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of completed bookings"
+    },
+    "favorites": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times favorited"
+    }
+  },
+  "required": [
+    "service_id",
+    "date"
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "name": "Council",
+  "type": "object",
+  "description": "Governance layer: councils validate credits, curate programs, resolve disputes",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Council name (e.g., 'Propulsion Experts Council', 'TOP 100 Editorial Board')"
+    },
+    "description": {
+      "type": "string",
+      "description": "Council purpose and scope"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "all",
+        "subsystem",
+        "organization",
+        "program",
+        "editorial"
+      ],
+      "description": "What this council governs"
+    },
+    "scope_value": {
+      "type": "string",
+      "description": "If scoped (e.g., subsystem_id, org_id, program_id)"
+    },
+    "member_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Council member email addresses"
+    },
+    "member_roles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "chair",
+          "member",
+          "advisor"
+        ]
+      },
+      "description": "Role of each member (email \u2192 role mapping)"
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "can_verify_credits": {
+          "type": "boolean",
+          "default": false
+        },
+        "can_curate_programs": {
+          "type": "boolean",
+          "default": false
+        },
+        "can_resolve_disputes": {
+          "type": "boolean",
+          "default": false
+        },
+        "can_approve_nominations": {
+          "type": "boolean",
+          "default": false
+        },
+        "can_publish_content": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "description": "Permissions granted to this council"
+    },
+    "audit_trail": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "actor_email": {
+            "type": "string"
+          },
+          "target_id": {
+            "type": "string"
+          },
+          "target_type": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Decision audit trail for accountability"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "archived"
+      ],
+      "default": "active",
+      "description": "Council status"
+    }
+  },
+  "required": [
+    "name",
+    "scope"
+  ],
+  "rls": {
+    "read": true,
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

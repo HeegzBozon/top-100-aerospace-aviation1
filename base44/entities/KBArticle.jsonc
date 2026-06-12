@@ -1,0 +1,95 @@
+{
+  "name": "KBArticle",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the article."
+    },
+    "slug": {
+      "type": "string",
+      "description": "A unique, URL-friendly identifier for the article."
+    },
+    "content": {
+      "type": "string",
+      "description": "The full content of the article, likely in HTML or Markdown."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Getting Started",
+        "Voting & Ranking",
+        "Features",
+        "Quests & Rewards",
+        "Troubleshooting",
+        "General",
+        "Release Notes"
+      ],
+      "description": "The primary category of the article."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "article",
+        "faq",
+        "release_note"
+      ],
+      "default": "article",
+      "description": "The type of content."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Publication status."
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this article is pinned to the top by admins."
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Name of the person who wrote the article."
+    },
+    "publish_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date the article was published."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Relevant tags for searchability."
+    },
+    "views": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times the article has been viewed."
+    },
+    "helpful_yes": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of 'Yes' votes for helpfulness."
+    },
+    "helpful_no": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of 'No' votes for helpfulness."
+    }
+  },
+  "required": [
+    "title",
+    "slug",
+    "content",
+    "category",
+    "type",
+    "status"
+  ]
+}

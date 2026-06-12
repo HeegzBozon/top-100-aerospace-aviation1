@@ -1,0 +1,66 @@
+{
+  "name": "PlayerMission",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user undertaking the mission"
+    },
+    "mission_id": {
+      "type": "string",
+      "description": "Reference to the GameMission mission_id"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "reward_claimed"
+      ],
+      "default": "active",
+      "description": "Current status of the player mission"
+    },
+    "objectives_progress": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "current": {
+            "type": "number",
+            "default": 0
+          },
+          "target": {
+            "type": "number"
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "description": "Progress on each objective"
+    },
+    "started_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When mission was started"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When mission was completed"
+    },
+    "rewards_claimed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether rewards have been claimed"
+    }
+  },
+  "required": [
+    "user_email",
+    "mission_id"
+  ]
+}

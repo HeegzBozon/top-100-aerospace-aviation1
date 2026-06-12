@@ -1,0 +1,68 @@
+{
+  "name": "HonoreeMention",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the Nominee/Honoree entity"
+    },
+    "nominee_name": {
+      "type": "string",
+      "description": "Full name of the honoree for display"
+    },
+    "article_id": {
+      "type": "number",
+      "description": "SNAPI article ID \u2014 used for deduplication"
+    },
+    "article_url": {
+      "type": "string",
+      "description": "URL to the original article"
+    },
+    "article_title": {
+      "type": "string",
+      "description": "Title of the news article"
+    },
+    "article_summary": {
+      "type": "string",
+      "description": "Summary or excerpt of the article"
+    },
+    "news_site": {
+      "type": "string",
+      "description": "Name of the news publication"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Thumbnail image URL for the article"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Publication date of the article"
+    },
+    "scanned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when this mention was detected by the scanner"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "A",
+        "B",
+        "C"
+      ],
+      "description": "Confidence level of the match (A: Hard, B: Strong, C: Soft)"
+    },
+    "source_name": {
+      "type": "string",
+      "description": "Name of the data source (e.g., SNAPI, Google News RSS)"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "nominee_name",
+    "article_id",
+    "article_url",
+    "article_title"
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "name": "ChessGame",
+  "type": "object",
+  "properties": {
+    "player_white_email": {
+      "type": "string"
+    },
+    "player_white_name": {
+      "type": "string"
+    },
+    "player_white_avatar": {
+      "type": "string"
+    },
+    "player_black_email": {
+      "type": "string"
+    },
+    "player_black_name": {
+      "type": "string"
+    },
+    "player_black_avatar": {
+      "type": "string"
+    },
+    "current_fen": {
+      "type": "string",
+      "default": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "description": "Current board state in FEN notation"
+    },
+    "pgn": {
+      "type": "string",
+      "default": "",
+      "description": "Full PGN move history"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "checkmate",
+        "stalemate",
+        "draw",
+        "resigned",
+        "timeout",
+        "aborted"
+      ],
+      "default": "active"
+    },
+    "winner_email": {
+      "type": "string"
+    },
+    "game_type": {
+      "type": "string",
+      "enum": [
+        "real_time",
+        "turn_based"
+      ],
+      "default": "turn_based"
+    },
+    "time_control": {
+      "type": "string",
+      "default": "10+0"
+    },
+    "white_time_remaining": {
+      "type": "number",
+      "description": "Seconds remaining for white"
+    },
+    "black_time_remaining": {
+      "type": "number",
+      "description": "Seconds remaining for black"
+    },
+    "last_move_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "chat_messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sender_email": {
+            "type": "string"
+          },
+          "sender_name": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "default": []
+    },
+    "challenge_id": {
+      "type": "string"
+    },
+    "move_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_bot_game": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this game is against an AI bot"
+    },
+    "bot_difficulty": {
+      "type": "string",
+      "enum": [
+        "simple",
+        "intermediate",
+        "advanced"
+      ],
+      "description": "Bot difficulty level for bot games"
+    }
+  },
+  "required": [
+    "player_white_email",
+    "player_black_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "player_white_email": "{{user.email}}"
+        },
+        {
+          "player_black_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "player_white_email": "{{user.email}}"
+        },
+        {
+          "player_black_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

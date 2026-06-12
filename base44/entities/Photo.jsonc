@@ -1,0 +1,40 @@
+{
+  "name": "Photo",
+  "type": "object",
+  "properties": {
+    "image_url": {
+      "type": "string",
+      "description": "URL of the uploaded photo"
+    },
+    "caption": {
+      "type": "string",
+      "description": "A short description or caption for the photo"
+    },
+    "uploader_name": {
+      "type": "string",
+      "description": "Name of the person who uploaded the photo"
+    },
+    "uploader_email": {
+      "type": "string",
+      "description": "Email of the person who uploaded the photo"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Moderation status of the photo"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "ID of the event this photo belongs to"
+    }
+  },
+  "required": [
+    "image_url",
+    "uploader_email"
+  ]
+}

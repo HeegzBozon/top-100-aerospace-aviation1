@@ -1,0 +1,63 @@
+{
+  "name": "RewardGrant",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "stardust": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "clout": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "starpower_delta": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "reason_code": {
+      "type": "string",
+      "enum": [
+        "WATER",
+        "RBT",
+        "VOTE",
+        "SIDEQUEST",
+        "SYSTEM_ADJUST"
+      ]
+    },
+    "source_event_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "idempotency_key": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 64
+    },
+    "granted_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "reason_code",
+    "granted_at"
+  ]
+}

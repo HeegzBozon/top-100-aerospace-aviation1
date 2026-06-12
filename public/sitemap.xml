@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- Primary public surface -->
+  <url>
+    <loc>https://top100aero.space/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Verified Fellows Directory -->
+  <url>
+    <loc>https://top100aero.space/Top100Women2025</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- Nominate -->
+  <url>
+    <loc>https://top100aero.space/nominate</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Claim your profile -->
+  <url>
+    <loc>https://top100aero.space/ClaimProfile</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- How We Pick -->
+  <url>
+    <loc>https://top100aero.space/HowWePick</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Solutions / Enterprise -->
+  <url>
+    <loc>https://top100aero.space/solutions</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Sponsors -->
+  <url>
+    <loc>https://top100aero.space/sponsors</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Season 4 -->
+  <url>
+    <loc>https://top100aero.space/season4</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Hangouts / Live Events -->
+  <url>
+    <loc>https://top100aero.space/hangouts</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Local Legends -->
+  <url>
+    <loc>https://top100aero.space/local-legends</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- Community Round / Investment -->
+  <url>
+    <loc>https://top100aero.space/community-round</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- STAR Summit -->
+  <url>
+    <loc>https://top100aero.space/star-summit</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Artemis Mission Brief -->
+  <url>
+    <loc>https://top100aero.space/artemis-mission-brief</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Terms & Privacy -->
+  <url>
+    <loc>https://top100aero.space/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://top100aero.space/PrivacyPolicy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+</urlset>

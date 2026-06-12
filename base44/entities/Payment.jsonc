@@ -1,0 +1,54 @@
+{
+  "name": "Payment",
+  "type": "object",
+  "properties": {
+    "booking_id": {
+      "type": "string",
+      "description": "Reference to the Booking entity"
+    },
+    "payer_email": {
+      "type": "string",
+      "description": "Email of the user making the payment"
+    },
+    "amount_cents": {
+      "type": "number",
+      "description": "Total transaction amount in cents"
+    },
+    "currency": {
+      "type": "string",
+      "default": "usd"
+    },
+    "stripe_payment_intent_id": {
+      "type": "string",
+      "description": "Stripe PaymentIntent ID"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "succeeded",
+        "failed",
+        "refunded"
+      ],
+      "default": "pending"
+    },
+    "platform_fee_cents": {
+      "type": "number",
+      "description": "Portion of the amount kept by the platform"
+    },
+    "provider_amount_cents": {
+      "type": "number",
+      "description": "Portion of the amount payout to the provider"
+    },
+    "commission_rate": {
+      "type": "number",
+      "description": "The commission percentage applied (e.g. 0.15 for 15%)"
+    }
+  },
+  "required": [
+    "booking_id",
+    "amount_cents",
+    "stripe_payment_intent_id",
+    "status"
+  ]
+}

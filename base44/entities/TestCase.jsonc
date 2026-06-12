@@ -1,0 +1,81 @@
+{
+  "name": "TestCase",
+  "type": "object",
+  "properties": {
+    "feedback_id": {
+      "type": "string",
+      "description": "ID of the feedback item this test case is for"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the test case"
+    },
+    "test_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_number": {
+            "type": "number",
+            "description": "Sequential step number"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "What the tester should do"
+          },
+          "expected_outcome": {
+            "type": "string",
+            "description": "What should happen"
+          }
+        },
+        "required": [
+          "step_number",
+          "instruction",
+          "expected_outcome"
+        ]
+      },
+      "description": "Array of test steps"
+    },
+    "estimated_time_minutes": {
+      "type": "number",
+      "default": 15,
+      "description": "Estimated time to complete the test"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "description": "Priority level of the test case"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "staging",
+        "production",
+        "development"
+      ],
+      "default": "staging",
+      "description": "Environment where the test should be run"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "archived"
+      ],
+      "default": "active",
+      "description": "Current status of the test case"
+    }
+  },
+  "required": [
+    "feedback_id",
+    "title",
+    "test_steps"
+  ]
+}

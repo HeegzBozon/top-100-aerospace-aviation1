@@ -1,0 +1,66 @@
+{
+  "name": "Organization",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Organization name (NASA, SpaceX, Boeing, etc.)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of the organization"
+    },
+    "org_type": {
+      "type": "string",
+      "enum": [
+        "government_agency",
+        "contractor",
+        "supplier",
+        "university",
+        "lab",
+        "nonprofit",
+        "commercial"
+      ],
+      "description": "Type of organization"
+    },
+    "headquarters_location": {
+      "type": "string",
+      "description": "Primary headquarters location (city/country)"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Official website"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Organization logo"
+    },
+    "parent_organization_id": {
+      "type": "string",
+      "description": "Parent org if this is a division/subsidiary"
+    },
+    "founded_year": {
+      "type": "number",
+      "description": "Year organization was founded"
+    },
+    "verified_status": {
+      "type": "string",
+      "enum": [
+        "unverified",
+        "verified",
+        "disputed"
+      ],
+      "default": "unverified",
+      "description": "Verification status"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Is organization still active"
+    }
+  },
+  "required": [
+    "name",
+    "org_type"
+  ]
+}

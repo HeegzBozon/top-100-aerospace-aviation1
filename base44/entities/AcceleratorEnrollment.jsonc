@@ -1,0 +1,62 @@
+{
+  "name": "AcceleratorEnrollment",
+  "type": "object",
+  "properties": {
+    "startup_id": {
+      "type": "string",
+      "description": "ID of the enrolled startup"
+    },
+    "cohort_id": {
+      "type": "string",
+      "description": "ID of the cohort"
+    },
+    "enrolled_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of enrollment"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "enrolled",
+        "active",
+        "completed",
+        "dropped"
+      ],
+      "default": "invited",
+      "description": "Enrollment status"
+    },
+    "mentor_email": {
+      "type": "string",
+      "description": "Email of assigned mentor"
+    },
+    "progress_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Overall program progress (0-100)"
+    },
+    "milestones_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of milestones completed"
+    },
+    "total_milestones": {
+      "type": "number",
+      "default": 8,
+      "description": "Total number of milestones"
+    },
+    "graduation_score": {
+      "type": "number",
+      "description": "Final graduation score (0-100)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Admin notes on progress"
+    }
+  },
+  "required": [
+    "startup_id",
+    "cohort_id"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Vote",
+  "type": "object",
+  "properties": {
+    "nomination_id": {
+      "type": "string",
+      "description": "Reference to the Nomination being voted on"
+    },
+    "voter_email": {
+      "type": "string",
+      "description": "Email of the voter"
+    },
+    "weight": {
+      "type": "number",
+      "default": 1.0,
+      "description": "Calculated weight of this vote based on voter role/reputation"
+    },
+    "cycle_year": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "nomination_id",
+    "voter_email"
+  ]
+}

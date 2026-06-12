@@ -1,0 +1,52 @@
+{
+  "name": "KeyResult",
+  "type": "object",
+  "properties": {
+    "objective_id": {
+      "type": "string",
+      "description": "ID of the Objective this KeyResult measures"
+    },
+    "name": {
+      "type": "string",
+      "description": "The measurable outcome for the objective"
+    },
+    "metric_type": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "number",
+        "currency",
+        "boolean"
+      ],
+      "description": "The type of metric used to measure progress"
+    },
+    "start_value": {
+      "type": "number",
+      "description": "The starting value of the metric"
+    },
+    "target_value": {
+      "type": "number",
+      "description": "The target value to be achieved"
+    },
+    "current_value": {
+      "type": "number",
+      "description": "The current value of the metric, updated manually or automatically"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0,
+      "description": "Progress of the Key Result (0-100), calculated from values"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes or context for the Key Result"
+    }
+  },
+  "required": [
+    "objective_id",
+    "name",
+    "metric_type",
+    "start_value",
+    "target_value"
+  ]
+}

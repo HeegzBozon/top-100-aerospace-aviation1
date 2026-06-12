@@ -1,0 +1,45 @@
+{
+  "name": "ServicePackage",
+  "type": "object",
+  "properties": {
+    "service_id": {
+      "type": "string",
+      "description": "Base service this package is for"
+    },
+    "provider_email": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Package name e.g. '5-Session Bundle'"
+    },
+    "session_count": {
+      "type": "number",
+      "description": "Number of sessions in package"
+    },
+    "total_price": {
+      "type": "number",
+      "description": "Discounted total price"
+    },
+    "discount_percent": {
+      "type": "number",
+      "description": "Discount percentage vs individual sessions"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "valid_days": {
+      "type": "number",
+      "default": 90,
+      "description": "Days to use all sessions"
+    }
+  },
+  "required": [
+    "service_id",
+    "provider_email",
+    "name",
+    "session_count",
+    "total_price"
+  ]
+}

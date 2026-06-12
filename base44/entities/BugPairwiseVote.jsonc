@@ -1,0 +1,24 @@
+{
+  "name": "BugPairwiseVote",
+  "description": "Records a user's choice between two bugs in a head-to-head urgency comparison.",
+  "type": "object",
+  "properties": {
+    "voter_email": {
+      "type": "string",
+      "description": "Email of the user who cast the vote."
+    },
+    "winner_bug_id": {
+      "type": "string",
+      "description": "The ID of the bug chosen as more urgent/critical."
+    },
+    "loser_bug_id": {
+      "type": "string",
+      "description": "The ID of the bug chosen as less urgent/critical."
+    }
+  },
+  "required": [
+    "voter_email",
+    "winner_bug_id",
+    "loser_bug_id"
+  ]
+}

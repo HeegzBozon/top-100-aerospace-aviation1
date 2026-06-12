@@ -1,0 +1,61 @@
+{
+  "name": "GameBadge",
+  "type": "object",
+  "properties": {
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the player who earned this badge"
+    },
+    "badge_id": {
+      "type": "string",
+      "description": "Unique badge type identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Badge display name"
+    },
+    "description": {
+      "type": "string",
+      "description": "How the badge was earned"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "curator",
+        "innovator",
+        "trailblazer",
+        "explorer",
+        "collector",
+        "social",
+        "ceremony"
+      ],
+      "description": "Badge category"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "bronze",
+      "description": "Badge tier level"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon identifier or URL"
+    },
+    "earned_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the badge was earned"
+    }
+  },
+  "required": [
+    "owner_email",
+    "badge_id",
+    "name",
+    "category"
+  ]
+}

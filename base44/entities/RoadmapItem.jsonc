@@ -1,0 +1,89 @@
+{
+  "name": "RoadmapItem",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the roadmap item"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description"
+    },
+    "value_stream": {
+      "type": "string",
+      "enum": [
+        "operational",
+        "developmental"
+      ],
+      "default": "operational",
+      "description": "Which value stream this belongs to"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "backlog",
+        "next_up",
+        "in_progress",
+        "done"
+      ],
+      "default": "backlog",
+      "description": "Current status"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category tag (e.g. Feature, Enhancement, Integration)"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "feature",
+        "enhancement",
+        "bug",
+        "feedback"
+      ],
+      "default": "feature",
+      "description": "Type of roadmap item"
+    },
+    "feedback_id": {
+      "type": "string",
+      "description": "Linked Feedback entity ID if sourced from feedback/bug"
+    },
+    "upvotes": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of upvotes"
+    },
+    "upvoted_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of user emails who upvoted"
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0
+    },
+    "priority": {
+      "type": "number",
+      "default": 0,
+      "description": "Sort priority within status column"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Target completion date"
+    },
+    "submitter_email": {
+      "type": "string",
+      "description": "Email of user who submitted this item"
+    }
+  },
+  "required": [
+    "title",
+    "value_stream",
+    "status"
+  ]
+}

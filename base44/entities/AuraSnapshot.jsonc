@@ -1,0 +1,38 @@
+{
+  "name": "AuraSnapshot",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "aura": {
+      "type": "number"
+    },
+    "starpower": {
+      "type": "number"
+    },
+    "stardust_eff": {
+      "type": "number"
+    },
+    "clout_eff": {
+      "type": "number"
+    },
+    "momentum": {
+      "type": "number"
+    },
+    "snapshot_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "aura",
+    "starpower",
+    "stardust_eff",
+    "clout_eff",
+    "momentum",
+    "snapshot_at"
+  ]
+}

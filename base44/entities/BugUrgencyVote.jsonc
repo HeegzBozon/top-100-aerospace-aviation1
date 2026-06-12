@@ -1,0 +1,33 @@
+{
+  "name": "BugUrgencyVote",
+  "description": "Records a user's urgency and impact assessment for a specific bug.",
+  "type": "object",
+  "properties": {
+    "voter_email": {
+      "type": "string",
+      "description": "Email of the user who cast the vote."
+    },
+    "bug_id": {
+      "type": "string",
+      "description": "The ID of the bug being assessed."
+    },
+    "urgency_score": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "User's assessment of urgency (1=Low, 5=Critical)."
+    },
+    "impact_score": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "User's assessment of impact (1=Minimal, 5=Severe)."
+    }
+  },
+  "required": [
+    "voter_email",
+    "bug_id",
+    "urgency_score",
+    "impact_score"
+  ]
+}

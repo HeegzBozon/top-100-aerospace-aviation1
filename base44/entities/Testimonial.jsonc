@@ -1,0 +1,45 @@
+{
+  "name": "Testimonial",
+  "type": "object",
+  "properties": {
+    "service_id": {
+      "type": "string",
+      "description": "ID of the service"
+    },
+    "client_email": {
+      "type": "string",
+      "description": "Email of the client"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Display name of the client"
+    },
+    "content": {
+      "type": "string",
+      "description": "Testimonial text"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Featured testimonial for display"
+    },
+    "is_approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Admin approved for public display"
+    },
+    "avatar_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "service_id",
+    "client_email",
+    "content"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "name": "IntroRequest",
+  "type": "object",
+  "properties": {
+    "requester_email": {
+      "type": "string",
+      "description": "Email of user requesting the intro"
+    },
+    "requester_name": {
+      "type": "string",
+      "description": "Name of the requester"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "job",
+        "service",
+        "nominee"
+      ],
+      "description": "Type of entity being requested"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "ID of the job, service, or nominee"
+    },
+    "target_title": {
+      "type": "string",
+      "description": "Title of the job/service for display"
+    },
+    "recipient_email": {
+      "type": "string",
+      "description": "Email of employer/provider to notify"
+    },
+    "message": {
+      "type": "string",
+      "description": "Optional message from requester"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "viewed",
+        "responded",
+        "declined",
+        "expired"
+      ],
+      "default": "pending"
+    },
+    "responded_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "requester_email",
+    "target_type",
+    "target_id",
+    "recipient_email"
+  ]
+}

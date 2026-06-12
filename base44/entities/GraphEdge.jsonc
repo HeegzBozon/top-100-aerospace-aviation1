@@ -1,0 +1,49 @@
+{
+  "name": "GraphEdge",
+  "type": "object",
+  "properties": {
+    "source_node_id": {
+      "type": "string",
+      "description": "ID of the source GraphNode"
+    },
+    "target_node_id": {
+      "type": "string",
+      "description": "ID of the target GraphNode"
+    },
+    "link_type": {
+      "type": "string",
+      "enum": [
+        "wiki",
+        "markdown",
+        "mention",
+        "tag",
+        "company",
+        "country",
+        "industry"
+      ],
+      "description": "Type of connection"
+    },
+    "weight": {
+      "type": "number",
+      "default": 1,
+      "description": "Edge weight/strength (count of links or relevance)"
+    },
+    "context_snippets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Text excerpts around the link for context"
+    },
+    "bidirectional": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether edge goes both ways"
+    }
+  },
+  "required": [
+    "source_node_id",
+    "target_node_id",
+    "link_type"
+  ]
+}

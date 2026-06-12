@@ -1,0 +1,57 @@
+{
+  "name": "ChessClubProfile",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID of the associated user"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the associated user"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Display name for the club"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Profile photo URL"
+    },
+    "elo_rating": {
+      "type": "number",
+      "default": 1200,
+      "description": "Elo chess rating"
+    },
+    "games_played": {
+      "type": "number",
+      "default": 0
+    },
+    "wins": {
+      "type": "number",
+      "default": 0
+    },
+    "losses": {
+      "type": "number",
+      "default": 0
+    },
+    "draws": {
+      "type": "number",
+      "default": 0
+    },
+    "favorite_opening": {
+      "type": "string",
+      "description": "Favorite opening name"
+    }
+  },
+  "required": [
+    "user_id",
+    "user_email"
+  ],
+  "rls": {
+    "read": true,
+    "write": {
+      "user_email": "{{user.email}}"
+    }
+  }
+}

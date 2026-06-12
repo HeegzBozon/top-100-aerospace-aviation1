@@ -1,0 +1,40 @@
+{
+  "name": "Subsystem",
+  "type": "object",
+  "description": "Aerospace subsystem/domain taxonomy (Propulsion, Avionics, etc.)",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Subsystem name (e.g., 'Propulsion', 'Avionics', 'Guidance, Navigation & Control')"
+    },
+    "code": {
+      "type": "string",
+      "description": "Short code for filtering (e.g., 'PROP', 'AVION', 'GNC')"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this subsystem covers"
+    },
+    "parent_subsystem_id": {
+      "type": "string",
+      "description": "Parent if hierarchical (e.g., 'Avionics' parent of 'Flight Management System')"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name for UI display"
+    },
+    "color": {
+      "type": "string",
+      "description": "Hex color for visual differentiation"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this subsystem is used for filtering/discovery"
+    }
+  },
+  "required": [
+    "name",
+    "code"
+  ]
+}

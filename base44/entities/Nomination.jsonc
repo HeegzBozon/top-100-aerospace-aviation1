@@ -1,0 +1,45 @@
+{
+  "name": "Nomination",
+  "type": "object",
+  "properties": {
+    "nominee_email": {
+      "type": "string",
+      "description": "Email of the user being nominated"
+    },
+    "nominator_email": {
+      "type": "string",
+      "description": "Email of the user submitting the nomination"
+    },
+    "category_id": {
+      "type": "string",
+      "description": "ID of the Category"
+    },
+    "justification": {
+      "type": "string",
+      "description": "Reason for nomination"
+    },
+    "impact_score": {
+      "type": "number",
+      "description": "Admin/Judge assigned impact score (0-100)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "cycle_year": {
+      "type": "number",
+      "description": "The year this nomination belongs to"
+    }
+  },
+  "required": [
+    "nominee_email",
+    "nominator_email",
+    "category_id",
+    "justification"
+  ]
+}

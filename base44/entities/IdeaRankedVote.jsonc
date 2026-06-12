@@ -1,0 +1,22 @@
+{
+  "name": "IdeaRankedVote",
+  "description": "Records a user's ordered ballot of preferred ideas.",
+  "type": "object",
+  "properties": {
+    "voter_email": {
+      "type": "string",
+      "description": "Email of the user who cast the ranked vote."
+    },
+    "ballot": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered array of idea IDs representing the user's ranked choices."
+    }
+  },
+  "required": [
+    "voter_email",
+    "ballot"
+  ]
+}

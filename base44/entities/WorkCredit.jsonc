@@ -1,0 +1,109 @@
+{
+  "name": "WorkCredit",
+  "type": "object",
+  "description": "Links a Person to a Work with their specific role and contribution",
+  "properties": {
+    "work_id": {
+      "type": "string",
+      "description": "ID of the Work"
+    },
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the Person (Nominee)"
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "Organization where the contribution was made"
+    },
+    "role": {
+      "type": "string",
+      "description": "Job title or role (e.g., 'Lead Author', 'Principal Investigator', 'Inventor')"
+    },
+    "contribution_type": {
+      "type": "string",
+      "enum": [
+        "author",
+        "inventor",
+        "contributor",
+        "editor",
+        "investigator",
+        "project_lead",
+        "engineer",
+        "researcher",
+        "designer"
+      ],
+      "description": "Type of contribution"
+    },
+    "domain_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Domains this person worked in for this work"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When person started on this work"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When person completed this work (null if ongoing)"
+    },
+    "contribution_summary": {
+      "type": "string",
+      "description": "Brief description of their specific contribution"
+    },
+    "evidence_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Links to proof (paper, patent listing, press release, etc.)"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "unverified",
+        "self_reported",
+        "organization_verified",
+        "council_verified",
+        "ai_inferred"
+      ],
+      "default": "unverified",
+      "description": "Verification level of this credit"
+    },
+    "confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "AI confidence score (0-1) if ai_inferred"
+    },
+    "verified_by_council_id": {
+      "type": "string",
+      "description": "Council ID that verified this credit"
+    }
+  },
+  "required": [
+    "work_id",
+    "nominee_id",
+    "role",
+    "contribution_type"
+  ],
+  "rls": {
+    "read": true,
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_email": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

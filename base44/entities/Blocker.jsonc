@@ -1,0 +1,89 @@
+{
+  "name": "Blocker",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "ID of the parent huddle session"
+    },
+    "title": {
+      "type": "string",
+      "description": "Brief title of the blocker"
+    },
+    "desc": {
+      "type": "string",
+      "description": "Detailed description of the blocker"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "description": "Severity level of the blocker"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the user responsible for resolving the blocker"
+    },
+    "wsjf_fields": {
+      "type": "object",
+      "properties": {
+        "bv": {
+          "type": "number"
+        },
+        "tc": {
+          "type": "number"
+        },
+        "rr": {
+          "type": "number"
+        },
+        "size": {
+          "type": "number"
+        }
+      },
+      "description": "WSJF scoring for prioritizing the blocker resolution"
+    },
+    "eisenhower": {
+      "type": "object",
+      "properties": {
+        "urgent": {
+          "type": "boolean"
+        },
+        "important": {
+          "type": "boolean"
+        }
+      },
+      "description": "Eisenhower Matrix classification"
+    },
+    "due_ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the blocker needs to be resolved"
+    },
+    "ticket_ref": {
+      "type": "string",
+      "description": "Reference to a created ticket or task"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "resolved",
+        "cancelled"
+      ],
+      "default": "open",
+      "description": "Current status of the blocker"
+    }
+  },
+  "required": [
+    "session_id",
+    "title",
+    "desc",
+    "severity",
+    "owner_email"
+  ]
+}

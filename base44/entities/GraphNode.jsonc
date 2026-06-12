@@ -1,0 +1,77 @@
+{
+  "name": "GraphNode",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Display title of the node"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier for wiki-link resolution"
+    },
+    "node_type": {
+      "type": "string",
+      "enum": [
+        "nominee",
+        "article",
+        "event",
+        "company",
+        "tag",
+        "concept"
+      ],
+      "description": "Type of entity this node represents"
+    },
+    "source_entity_id": {
+      "type": "string",
+      "description": "ID of the source entity (Nominee, KBArticle, Event, etc.)"
+    },
+    "content_md": {
+      "type": "string",
+      "description": "Markdown content for parsing links"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags parsed from content or frontmatter"
+    },
+    "collection": {
+      "type": "string",
+      "description": "Grouping/folder analog for clustering"
+    },
+    "out_degree": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of outgoing edges"
+    },
+    "in_degree": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of incoming edges"
+    },
+    "is_orphan": {
+      "type": "boolean",
+      "default": true,
+      "description": "True if no edges exist"
+    },
+    "is_ghost": {
+      "type": "boolean",
+      "default": false,
+      "description": "Placeholder for unresolved links"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional data from source entity (avatar, country, etc.)"
+    },
+    "community_id": {
+      "type": "string",
+      "description": "Cluster/community assignment for grouping"
+    }
+  },
+  "required": [
+    "title",
+    "node_type"
+  ]
+}

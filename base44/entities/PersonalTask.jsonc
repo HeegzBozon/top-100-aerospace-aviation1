@@ -1,0 +1,52 @@
+{
+  "name": "PersonalTask",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The main goal of the task."
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional details about the task."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "todo",
+        "done"
+      ],
+      "default": "todo",
+      "description": "The current status of the task."
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "description": "The priority level of the task."
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional due date for the task."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Optional tags for organizing tasks."
+    },
+    "quest_id": {
+      "type": "string",
+      "description": "Optional ID of a Quest this task is linked to."
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

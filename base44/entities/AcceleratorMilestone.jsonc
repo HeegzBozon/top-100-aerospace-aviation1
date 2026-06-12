@@ -1,0 +1,67 @@
+{
+  "name": "AcceleratorMilestone",
+  "type": "object",
+  "properties": {
+    "enrollment_id": {
+      "type": "string",
+      "description": "ID of the enrollment this milestone belongs to"
+    },
+    "week": {
+      "type": "number",
+      "description": "Program week (1-8)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Milestone title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Milestone description and requirements"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Milestone due date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "submitted",
+        "reviewed",
+        "completed",
+        "needs_revision"
+      ],
+      "default": "not_started",
+      "description": "Milestone status"
+    },
+    "submission_url": {
+      "type": "string",
+      "description": "Link to submission (deck, doc, etc.)"
+    },
+    "submission_text": {
+      "type": "string",
+      "description": "Text submission or notes"
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When milestone was submitted"
+    },
+    "mentor_feedback": {
+      "type": "string",
+      "description": "Mentor feedback on submission"
+    },
+    "score": {
+      "type": "number",
+      "description": "Score for this milestone (0-100)"
+    }
+  },
+  "required": [
+    "enrollment_id",
+    "week",
+    "title",
+    "due_date"
+  ]
+}

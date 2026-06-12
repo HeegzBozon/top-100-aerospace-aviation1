@@ -1,0 +1,71 @@
+{
+  "name": "AdminReview",
+  "type": "object",
+  "properties": {
+    "startup_id": {
+      "type": "string",
+      "description": "ID of the startup being reviewed"
+    },
+    "reviewer_email": {
+      "type": "string",
+      "description": "Email of the admin reviewer"
+    },
+    "review_type": {
+      "type": "string",
+      "enum": [
+        "initial_screening",
+        "deep_dive",
+        "re_evaluation",
+        "accelerator_consideration"
+      ],
+      "description": "Type of review"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "reject",
+        "request_more_info",
+        "accelerator_invite",
+        "pending"
+      ],
+      "default": "pending",
+      "description": "Review decision"
+    },
+    "visibility_recommendation": {
+      "type": "string",
+      "enum": [
+        "hidden",
+        "listed",
+        "featured",
+        "spotlight"
+      ],
+      "description": "Recommended visibility tier"
+    },
+    "feedback": {
+      "type": "string",
+      "description": "Detailed feedback for the founder"
+    },
+    "internal_notes": {
+      "type": "string",
+      "description": "Private admin notes"
+    },
+    "action_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Follow-up actions needed"
+    },
+    "reviewed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether review is complete"
+    }
+  },
+  "required": [
+    "startup_id",
+    "reviewer_email",
+    "review_type"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Objective",
+  "type": "object",
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "description": "ID of the Seasonal Plan this objective belongs to"
+    },
+    "name": {
+      "type": "string",
+      "description": "The high-level goal to be achieved"
+    },
+    "description": {
+      "type": "string",
+      "description": "A detailed description of the objective"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the person or team owning this objective"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0,
+      "description": "Overall progress of the objective, calculated from Key Results (0-100)"
+    }
+  },
+  "required": [
+    "plan_id",
+    "name"
+  ]
+}

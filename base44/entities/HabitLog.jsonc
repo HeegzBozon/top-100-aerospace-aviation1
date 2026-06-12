@@ -1,0 +1,57 @@
+{
+  "name": "HabitLog",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "habit_type": {
+      "type": "string",
+      "enum": [
+        "WATER",
+        "RBT",
+        "BALLOT",
+        "SIDEQUEST"
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "quantity": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "idempotency_key": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 64
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "ios",
+        "android",
+        "web"
+      ]
+    }
+  },
+  "required": [
+    "user_id",
+    "habit_type",
+    "occurred_at"
+  ]
+}

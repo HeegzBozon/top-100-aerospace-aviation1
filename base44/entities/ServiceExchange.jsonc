@@ -1,0 +1,81 @@
+{
+  "name": "ServiceExchange",
+  "type": "object",
+  "properties": {
+    "service_unit_id": {
+      "type": "string",
+      "description": "ID of the ServiceUnit being exchanged"
+    },
+    "provider_email": {
+      "type": "string",
+      "description": "Provider delivering the service"
+    },
+    "requester_email": {
+      "type": "string",
+      "description": "User requesting/redeeming the service"
+    },
+    "xc_amount": {
+      "type": "number",
+      "description": "XC amount for this exchange"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "escrow",
+        "in_progress",
+        "completed",
+        "disputed",
+        "cancelled",
+        "refunded"
+      ],
+      "default": "pending"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "requester_notes": {
+      "type": "string"
+    },
+    "provider_notes": {
+      "type": "string"
+    },
+    "meeting_link": {
+      "type": "string"
+    },
+    "requester_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "requester_review": {
+      "type": "string"
+    },
+    "provider_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "dispute_reason": {
+      "type": "string"
+    },
+    "dispute_resolution": {
+      "type": "string"
+    },
+    "escrow_transaction_id": {
+      "type": "string",
+      "description": "ID of the escrow lock transaction"
+    }
+  },
+  "required": [
+    "service_unit_id",
+    "provider_email",
+    "requester_email",
+    "xc_amount"
+  ]
+}

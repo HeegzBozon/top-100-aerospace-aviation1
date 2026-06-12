@@ -1,0 +1,42 @@
+{
+  "name": "ArticleDiscussion",
+  "type": "object",
+  "properties": {
+    "article_id": {
+      "type": "string",
+      "description": "Related article ID"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User who posted"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "message": {
+      "type": "string",
+      "description": "Discussion message"
+    },
+    "reply_to_id": {
+      "type": "string",
+      "description": "ID of message this replies to (for threading)"
+    },
+    "upvotes": {
+      "type": "number",
+      "default": 0
+    },
+    "upvoted_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "article_id",
+    "user_email",
+    "message"
+  ]
+}

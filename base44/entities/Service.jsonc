@@ -1,0 +1,92 @@
+{
+  "name": "Service",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the service"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description for cards"
+    },
+    "long_description": {
+      "type": "string",
+      "description": "Full details, rich text"
+    },
+    "provider_user_email": {
+      "type": "string",
+      "description": "Email of the provider (User entity)"
+    },
+    "provider_type": {
+      "type": "string",
+      "enum": [
+        "platform",
+        "community"
+      ],
+      "default": "community",
+      "description": "Whether this is a platform (Pineapple Empire) service or community-offered"
+    },
+    "price_model": {
+      "type": "string",
+      "enum": [
+        "hourly",
+        "fixed",
+        "custom"
+      ],
+      "default": "fixed"
+    },
+    "base_price": {
+      "type": "number",
+      "description": "Cost in USD"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 60
+    },
+    "category": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Consulting, Coaching, Technical, Design, etc."
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_draft": {
+      "type": "boolean",
+      "default": false,
+      "description": "Draft mode - not visible to clients"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Featured service appears at top of listings"
+    },
+    "featured_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When featured status expires"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Provider has been verified by TOP 100"
+    },
+    "requires_google_calendar": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "provider_user_email",
+    "provider_type",
+    "base_price"
+  ]
+}

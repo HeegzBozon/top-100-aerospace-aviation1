@@ -1,0 +1,51 @@
+{
+  "name": "Release",
+  "description": "Represents a deployable increment of the solution, potentially one of many within a Seasonal Plan.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the release, e.g., 'Q3 2024 Major Release'"
+    },
+    "plan_id": {
+      "type": "string",
+      "description": "ID of the parent Seasonal Plan this Release belongs to (optional)"
+    },
+    "target_release_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The planned release date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "tracking",
+        "locked",
+        "ready_for_release",
+        "released"
+      ],
+      "default": "planning",
+      "description": "Current status of the release pipeline"
+    },
+    "safe_readiness_score": {
+      "type": "number",
+      "default": 0,
+      "description": "SAFe readiness score component (0-100)"
+    },
+    "aspice_readiness_score": {
+      "type": "number",
+      "default": 0,
+      "description": "ASPICE readiness score component (0-100)"
+    },
+    "overall_readiness_score": {
+      "type": "number",
+      "default": 0,
+      "description": "The final, combined readiness score (0-100)"
+    }
+  },
+  "required": [
+    "name",
+    "target_release_date"
+  ]
+}

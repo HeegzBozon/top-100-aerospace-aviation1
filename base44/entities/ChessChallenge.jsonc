@@ -1,0 +1,83 @@
+{
+  "name": "ChessChallenge",
+  "type": "object",
+  "properties": {
+    "challenger_email": {
+      "type": "string",
+      "description": "Email of challenger"
+    },
+    "challenger_name": {
+      "type": "string"
+    },
+    "challenged_email": {
+      "type": "string",
+      "description": "Email of challenged user"
+    },
+    "challenged_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "declined",
+        "withdrawn"
+      ],
+      "default": "pending"
+    },
+    "game_type": {
+      "type": "string",
+      "enum": [
+        "real_time",
+        "turn_based"
+      ],
+      "default": "turn_based"
+    },
+    "time_control": {
+      "type": "string",
+      "default": "10+0",
+      "description": "e.g. 10+0 or 3 days"
+    },
+    "game_id": {
+      "type": "string",
+      "description": "ID of game created on accept"
+    }
+  },
+  "required": [
+    "challenger_email",
+    "challenged_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "challenger_email": "{{user.email}}"
+        },
+        {
+          "challenged_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "challenger_email": "{{user.email}}"
+        },
+        {
+          "challenged_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

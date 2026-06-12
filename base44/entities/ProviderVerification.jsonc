@@ -1,0 +1,58 @@
+{
+  "name": "ProviderVerification",
+  "type": "object",
+  "properties": {
+    "provider_email": {
+      "type": "string"
+    },
+    "verification_type": {
+      "type": "string",
+      "enum": [
+        "identity",
+        "credentials",
+        "background",
+        "portfolio"
+      ],
+      "description": "Type of verification"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_review",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewed_by": {
+      "type": "string",
+      "description": "Admin email who reviewed"
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs of submitted documents"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "rejection_reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "provider_email",
+    "verification_type"
+  ]
+}

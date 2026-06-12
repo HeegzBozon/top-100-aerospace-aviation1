@@ -1,0 +1,168 @@
+{
+  "name": "Feedback",
+  "description": "Represents a user-submitted feedback item, bug report, or a structured work item like a user story.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "feedback",
+        "bug_report",
+        "idea",
+        "user_story",
+        "enabler_story"
+      ],
+      "description": "The type of the work item."
+    },
+    "subject": {
+      "type": "string",
+      "description": "Short summary of the item."
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed explanation."
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who submitted it."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "under_consideration",
+        "planned",
+        "in_progress",
+        "resolved",
+        "rejected",
+        "funnel",
+        "analyzing",
+        "backlog",
+        "implementing",
+        "validating",
+        "done"
+      ],
+      "default": "new",
+      "description": "Current status of the submission/work item."
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "description": "Priority level."
+    },
+    "assignee_email": {
+      "type": "string",
+      "description": "Email of the person assigned to this item."
+    },
+    "screenshot_url": {
+      "type": "string",
+      "description": "URL of an uploaded screenshot."
+    },
+    "loom_link": {
+      "type": "string",
+      "description": "URL of a Loom video recording."
+    },
+    "business_value": {
+      "type": "number",
+      "description": "Business Value (1-10) for WSJF."
+    },
+    "time_criticality": {
+      "type": "number",
+      "description": "Time Criticality (1-10) for WSJF."
+    },
+    "risk_reduction": {
+      "type": "number",
+      "description": "Risk Reduction/Opportunity Enablement (1-10) for WSJF."
+    },
+    "job_size": {
+      "type": "number",
+      "description": "Job Size/Effort (1-10) for WSJF."
+    },
+    "wsjf_score": {
+      "type": "number",
+      "description": "Calculated WSJF score."
+    },
+    "wsjf_notes": {
+      "type": "string",
+      "description": "Rationale for WSJF scoring."
+    },
+    "story_points": {
+      "type": "number",
+      "description": "Estimated effort in story points."
+    },
+    "urgency_norm": {
+      "type": "number",
+      "description": "Normalized urgency (0-1) for Eisenhower Matrix."
+    },
+    "importance_norm": {
+      "type": "number",
+      "description": "Normalized importance (0-1) for Eisenhower Matrix."
+    },
+    "quadrant": {
+      "type": "string",
+      "enum": [
+        "Q1_Urgent_Important",
+        "Q2_Important_Not_Urgent",
+        "Q3_Urgent_Not_Important",
+        "Q4_Neither"
+      ],
+      "description": "Eisenhower Matrix quadrant."
+    },
+    "feature_id": {
+      "type": "string",
+      "description": "ID of the parent Feature."
+    },
+    "sprint_id": {
+      "type": "string",
+      "description": "ID of the Sprint this item is planned for."
+    },
+    "source_test_session_id": {
+      "type": "string",
+      "description": "ID of the failed test session that generated this bug report."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Descriptive tags for categorization."
+    },
+    "ai_sentiment": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "neutral",
+        "negative"
+      ],
+      "description": "AI-detected sentiment of the feedback submission."
+    },
+    "ai_urgency_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "description": "AI-detected urgency level based on language analysis."
+    },
+    "ai_confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "AI's confidence in its sentiment/urgency analysis (0-1)."
+    }
+  },
+  "required": [
+    "type",
+    "subject",
+    "description",
+    "user_email"
+  ]
+}

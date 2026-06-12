@@ -1,0 +1,59 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user receiving the notification"
+    },
+    "title": {
+      "type": "string",
+      "description": "Notification title"
+    },
+    "message": {
+      "type": "string",
+      "description": "Notification message content"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "info",
+        "success",
+        "warning",
+        "alert",
+        "mission",
+        "achievement"
+      ],
+      "default": "info",
+      "description": "Type of notification"
+    },
+    "urgent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Time-sensitive notification requiring immediate attention"
+    },
+    "important": {
+      "type": "boolean",
+      "default": false,
+      "description": "High-priority notification with significant impact"
+    },
+    "read": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the notification has been read"
+    },
+    "action_url": {
+      "type": "string",
+      "description": "Optional URL to navigate to when clicking the notification"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata for the notification"
+    }
+  },
+  "required": [
+    "user_email",
+    "title",
+    "message"
+  ]
+}

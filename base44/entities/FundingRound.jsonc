@@ -1,0 +1,62 @@
+{
+  "name": "FundingRound",
+  "type": "object",
+  "properties": {
+    "startup_id": {
+      "type": "string",
+      "description": "Startup receiving funding"
+    },
+    "round_type": {
+      "type": "string",
+      "enum": [
+        "pre_seed",
+        "seed",
+        "series_a",
+        "series_b",
+        "series_c",
+        "bridge",
+        "other"
+      ],
+      "description": "Type of funding round"
+    },
+    "amount_raised": {
+      "type": "number",
+      "description": "Amount raised in USD"
+    },
+    "lead_investor": {
+      "type": "string",
+      "description": "Lead investor name"
+    },
+    "participating_investors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "All participating investors"
+    },
+    "close_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Round close date"
+    },
+    "post_money_valuation": {
+      "type": "number",
+      "description": "Post-money valuation"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "accelerator_attributed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether attributed to accelerator program"
+    }
+  },
+  "required": [
+    "startup_id",
+    "round_type",
+    "amount_raised",
+    "close_date"
+  ]
+}

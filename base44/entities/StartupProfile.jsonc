@@ -1,0 +1,164 @@
+{
+  "name": "StartupProfile",
+  "type": "object",
+  "properties": {
+    "founder_email": {
+      "type": "string",
+      "description": "Email of the founding team member who submitted"
+    },
+    "company_name": {
+      "type": "string",
+      "description": "Legal or operating name of the startup"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "One-sentence description of the startup"
+    },
+    "description": {
+      "type": "string",
+      "description": "Full description of the startup, mission, and vision"
+    },
+    "sector": {
+      "type": "string",
+      "enum": [
+        "launch_systems",
+        "satellites",
+        "ground_infrastructure",
+        "space_robotics",
+        "in_space_manufacturing",
+        "lunar_infrastructure",
+        "mars_missions",
+        "space_tourism",
+        "propulsion",
+        "materials",
+        "data_analytics",
+        "communications",
+        "other"
+      ],
+      "description": "Primary aerospace/space sector"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "idea",
+        "pre_seed",
+        "seed",
+        "series_a",
+        "series_b",
+        "growth"
+      ],
+      "description": "Current funding stage"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country of incorporation"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Company website"
+    },
+    "pitch_deck_url": {
+      "type": "string",
+      "description": "URL to pitch deck (private, access-controlled)"
+    },
+    "demo_video_url": {
+      "type": "string",
+      "description": "Optional demo or explainer video"
+    },
+    "team_size": {
+      "type": "number",
+      "description": "Current number of team members"
+    },
+    "funding_target": {
+      "type": "number",
+      "description": "Target raise amount in USD"
+    },
+    "funding_raised_to_date": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount raised to date in USD"
+    },
+    "revenue_status": {
+      "type": "string",
+      "enum": [
+        "pre_revenue",
+        "revenue_generating",
+        "profitable"
+      ],
+      "default": "pre_revenue",
+      "description": "Current revenue status"
+    },
+    "visibility_tier": {
+      "type": "string",
+      "enum": [
+        "hidden",
+        "listed",
+        "featured",
+        "spotlight"
+      ],
+      "default": "hidden",
+      "description": "Admin-controlled visibility level"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_review",
+        "under_review",
+        "approved",
+        "rejected",
+        "archived"
+      ],
+      "default": "pending_review",
+      "description": "Application status"
+    },
+    "readiness_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Calculated readiness score (0-100)"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Company logo URL"
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Primary contact email"
+    },
+    "linkedin_url": {
+      "type": "string",
+      "description": "Company LinkedIn profile"
+    },
+    "interest_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of investor interest signals received"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Profile view count"
+    },
+    "accelerator_enrolled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether enrolled in micro-accelerator track"
+    },
+    "key_differentiator": {
+      "type": "string",
+      "description": "What makes this startup unique"
+    },
+    "traction_metrics": {
+      "type": "object",
+      "description": "Key traction data points"
+    }
+  },
+  "required": [
+    "founder_email",
+    "company_name",
+    "tagline",
+    "description",
+    "sector",
+    "stage",
+    "country"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Asset",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name for the asset"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "image",
+        "video",
+        "document",
+        "other"
+      ],
+      "description": "Type of asset"
+    },
+    "url": {
+      "type": "string",
+      "description": "Public URL of the uploaded file"
+    },
+    "file_size": {
+      "type": "number",
+      "description": "File size in bytes"
+    },
+    "mime_type": {
+      "type": "string",
+      "description": "MIME type of the file"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description or notes"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for organization"
+    }
+  },
+  "required": [
+    "name",
+    "type",
+    "url"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "PairwiseVote",
+  "type": "object",
+  "properties": {
+    "voter_email": {
+      "type": "string",
+      "description": "Email of the user who cast the vote"
+    },
+    "winner_nominee_id": {
+      "type": "string",
+      "description": "The ID of the nominee chosen as the winner in the pair"
+    },
+    "loser_nominee_id": {
+      "type": "string",
+      "description": "The ID of the nominee not chosen in the pair"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "The season in which the vote was cast"
+    }
+  },
+  "required": [
+    "voter_email",
+    "winner_nominee_id",
+    "loser_nominee_id",
+    "season_id"
+  ]
+}

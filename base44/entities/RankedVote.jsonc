@@ -1,0 +1,26 @@
+{
+  "name": "RankedVote",
+  "type": "object",
+  "properties": {
+    "voter_email": {
+      "type": "string",
+      "description": "Email of the user who cast the ranked vote"
+    },
+    "ballot": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered array of nominee IDs representing the user's ranked choices"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "ID of the season this ranked vote belongs to"
+    }
+  },
+  "required": [
+    "voter_email",
+    "ballot",
+    "season_id"
+  ]
+}

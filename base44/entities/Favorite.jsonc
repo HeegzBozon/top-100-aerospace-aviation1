@@ -1,0 +1,34 @@
+{
+  "name": "Favorite",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who favorited the item"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "HonoreeMention"
+      ],
+      "description": "Type of entity being favorited"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the favorited entity"
+    }
+  },
+  "required": [
+    "user_email",
+    "entity_type",
+    "entity_id"
+  ],
+  "rls": {
+    "read": {
+      "user_email": "{{user.email}}"
+    },
+    "write": {
+      "user_email": "{{user.email}}"
+    }
+  }
+}

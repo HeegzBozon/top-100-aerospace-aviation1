@@ -1,0 +1,44 @@
+{
+  "name": "ScoreSnapshot",
+  "type": "object",
+  "properties": {
+    "baseline_name": {
+      "type": "string",
+      "description": "A unique, human-readable name for this baseline snapshot (e.g., 'Pre-Season 2 Final Scores')."
+    },
+    "snapshot_type": {
+      "type": "string",
+      "enum": [
+        "nominee",
+        "user"
+      ],
+      "description": "The type of entity this snapshot is for."
+    },
+    "target_id": {
+      "type": "string",
+      "description": "The ID of the Nominee or User this snapshot belongs to."
+    },
+    "score_data": {
+      "type": "object",
+      "description": "A JSON object containing all the score-related fields at the time of the snapshot."
+    }
+  },
+  "required": [
+    "baseline_name",
+    "snapshot_type",
+    "target_id",
+    "score_data"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

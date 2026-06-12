@@ -1,0 +1,48 @@
+{
+  "name": "Ranking",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "The user being ranked"
+    },
+    "category_id": {
+      "type": "string",
+      "description": "The category context"
+    },
+    "cycle_year": {
+      "type": "number",
+      "description": "The cycle year (e.g. 2025)"
+    },
+    "score_total": {
+      "type": "number",
+      "description": "Aggregate score"
+    },
+    "score_components": {
+      "type": "object",
+      "properties": {
+        "impact": {
+          "type": "number"
+        },
+        "leadership": {
+          "type": "number"
+        },
+        "innovation": {
+          "type": "number"
+        },
+        "community": {
+          "type": "number"
+        },
+        "trajectory": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "required": [
+    "user_email",
+    "category_id",
+    "cycle_year",
+    "score_total"
+  ]
+}

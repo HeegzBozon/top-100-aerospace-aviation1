@@ -1,0 +1,112 @@
+{
+  "name": "Contribution",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the Nominee who made this contribution"
+    },
+    "program_id": {
+      "type": "string",
+      "description": "ID of the aerospace program associated with this contribution (optional)"
+    },
+    "company_id": {
+      "type": "string",
+      "description": "ID of the company associated with this contribution (optional)"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "patent",
+        "publication",
+        "research",
+        "role",
+        "award",
+        "project",
+        "mission",
+        "technology",
+        "leadership",
+        "mentorship"
+      ],
+      "description": "Granular contribution type"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title or name of the contribution"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the contribution"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the contribution occurred or was published/filed"
+    },
+    "date_end": {
+      "type": "string",
+      "format": "date",
+      "description": "End date for contributions with duration (roles, projects)"
+    },
+    "external_links": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs to patent offices, publications, project pages, etc."
+    },
+    "impact_metrics": {
+      "type": "object",
+      "properties": {
+        "citation_count": {
+          "type": "number"
+        },
+        "download_count": {
+          "type": "number"
+        },
+        "h_index": {
+          "type": "number"
+        },
+        "funding_amount": {
+          "type": "number"
+        },
+        "team_size_led": {
+          "type": "number"
+        },
+        "lives_impacted": {
+          "type": "number"
+        }
+      },
+      "description": "Quantitative impact indicators"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Categorization tags (domains, technologies, disciplines)"
+    },
+    "verified_by_nominee": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the nominee has verified this contribution"
+    },
+    "source": {
+      "type": "string",
+      "description": "How this contribution was created (manual, signal_card_id, import)"
+    },
+    "related_signal_card_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of SignalCard records that informed this contribution"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "type",
+    "title",
+    "date"
+  ]
+}

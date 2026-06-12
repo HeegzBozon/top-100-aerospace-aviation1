@@ -1,0 +1,123 @@
+{
+  "name": "SignalCard",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the Nominee this Signal Card is for"
+    },
+    "headline": {
+      "type": "string",
+      "description": "Headline for the signal (e.g., 'Alumni X published...')"
+    },
+    "evidence_links": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Links to the evidence (e.g., paper URL, patent URL, news article URL)"
+    },
+    "source_name": {
+      "type": "string",
+      "description": "Name of the data source that generated this signal"
+    },
+    "signal_type": {
+      "type": "string",
+      "enum": [
+        "publication",
+        "citation",
+        "patent",
+        "media_mention"
+      ],
+      "description": "Type of signal detected"
+    },
+    "signal_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of when the signal event occurred"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "A",
+        "B",
+        "C"
+      ],
+      "description": "Confidence level of the match (A: Hard, B: Strong, C: Soft)"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorization (topics, programs, orgs, missions)"
+    },
+    "lens_mode": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Authority",
+          "Performance",
+          "Archive"
+        ]
+      },
+      "description": "Categorization for internal media architecture alignment"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Name of the author/inventor/publisher"
+    },
+    "author_bio": {
+      "type": "string",
+      "description": "Brief bio/affiliation of the author"
+    },
+    "organization": {
+      "type": "string",
+      "description": "Organization/institution associated with the signal"
+    },
+    "impact_metrics": {
+      "type": "object",
+      "properties": {
+        "citation_count": {
+          "type": "number"
+        },
+        "download_count": {
+          "type": "number"
+        },
+        "views": {
+          "type": "number"
+        },
+        "h_index": {
+          "type": "number"
+        }
+      },
+      "description": "Quantitative impact indicators"
+    },
+    "ai_summary": {
+      "type": "string",
+      "description": "AI-generated narrative summary of the signal"
+    },
+    "enriched_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the signal was last enriched with metadata"
+    },
+    "related_signal_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of related signals (e.g., patents cited by paper, papers implementing patent)"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "headline",
+    "evidence_links",
+    "source_name",
+    "signal_type",
+    "signal_date",
+    "confidence"
+  ]
+}

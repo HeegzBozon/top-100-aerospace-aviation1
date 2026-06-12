@@ -1,0 +1,70 @@
+{
+  "name": "HangarUpgrade",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the hangar upgrade"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this upgrade does"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "cosmetic",
+        "functional",
+        "storage",
+        "crafting_station",
+        "display"
+      ],
+      "description": "Type of upgrade"
+    },
+    "effects": {
+      "type": "object",
+      "description": "Gameplay effects (e.g., {resource_yield_boost: 1.2, crafting_speed_boost: 1.5})"
+    },
+    "required_recipe_id": {
+      "type": "string",
+      "description": "ID of the CraftingRecipe required to build this"
+    },
+    "visual_model_type": {
+      "type": "string",
+      "description": "3D model identifier for rendering in scene"
+    },
+    "placement_zone": {
+      "type": "string",
+      "enum": [
+        "personal_quarters",
+        "workshop",
+        "display_hall",
+        "outdoor"
+      ],
+      "default": "personal_quarters",
+      "description": "Where this can be placed"
+    },
+    "size": {
+      "type": "string",
+      "enum": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "default": "medium",
+      "description": "Physical size for placement"
+    },
+    "unlock_condition": {
+      "type": "string",
+      "description": "Condition to unlock this upgrade"
+    },
+    "icon_emoji": {
+      "type": "string",
+      "description": "Emoji icon for the upgrade"
+    }
+  },
+  "required": [
+    "name",
+    "category"
+  ]
+}

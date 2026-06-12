@@ -1,0 +1,45 @@
+{
+  "name": "ScoreConfig",
+  "type": "object",
+  "properties": {
+    "version_id": {
+      "type": "string",
+      "description": "Unique identifier for this config version (UUID)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Current status of this config version"
+    },
+    "yaml_blob": {
+      "type": "string",
+      "description": "The scoring configuration parameters in YAML format"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notes about this config version"
+    }
+  },
+  "required": [
+    "version_id",
+    "status",
+    "yaml_blob"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "name": "GamePlayer",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the player (links to User entity)"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "In-game display name"
+    },
+    "avatar_config": {
+      "type": "object",
+      "description": "Avatar customization settings (colors, accessories, etc.)"
+    },
+    "hangar_unlocked_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "main_hall"
+      ],
+      "description": "Areas unlocked in The Hangar"
+    },
+    "rr_current_mission": {
+      "type": "string",
+      "description": "Current mission ID in Recruitment Run"
+    },
+    "rr_missions_completed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of completed mission IDs"
+    },
+    "intellectual_property": {
+      "type": "number",
+      "default": 0,
+      "description": "Intellectual Property (IP) - Knowledge gained from exploration, missions, and artifacts"
+    },
+    "equity_points": {
+      "type": "number",
+      "default": 0,
+      "description": "Equity Points (EP) - Sweat equity earned through contributions and achievements"
+    },
+    "insight_points": {
+      "type": "number",
+      "default": 0,
+      "description": "Legacy field - migrated to intellectual_property"
+    },
+    "prestige_rank": {
+      "type": "string",
+      "enum": [
+        "Bronze",
+        "Silver",
+        "Gold",
+        "BlackBox",
+        "Platinum"
+      ],
+      "default": "Bronze",
+      "description": "Player's prestige tier"
+    },
+    "total_playtime_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Total time spent in games"
+    },
+    "active_mission_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of missions currently active for this player"
+    },
+    "completed_mission_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of missions this player has completed"
+    },
+    "daily_missions_completed_today": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of daily missions completed today"
+    },
+    "weekly_missions_completed_this_week": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of weekly missions completed this week"
+    },
+    "last_daily_reset": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time daily missions were reset"
+    },
+    "last_weekly_reset": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time weekly missions were reset"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

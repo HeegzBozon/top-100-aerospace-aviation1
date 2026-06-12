@@ -1,0 +1,65 @@
+{
+  "name": "GeneratedNarrative",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Owner of this narrative"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "short_bio",
+        "full_profile",
+        "nomination",
+        "press_bio",
+        "linkedin_about",
+        "quote_pulls"
+      ],
+      "description": "Output format type"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title or label for this narrative"
+    },
+    "content": {
+      "type": "string",
+      "description": "Generated narrative content"
+    },
+    "word_count": {
+      "type": "number",
+      "description": "Word count of the narrative"
+    },
+    "fragment_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of fragments used to generate this"
+    },
+    "is_locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "User has locked this version"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "private",
+        "public",
+        "featured"
+      ],
+      "default": "private"
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "Version number for regenerations"
+    }
+  },
+  "required": [
+    "user_email",
+    "format",
+    "content"
+  ]
+}

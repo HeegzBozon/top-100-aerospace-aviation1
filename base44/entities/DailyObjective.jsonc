@@ -1,0 +1,81 @@
+{
+  "name": "DailyObjective",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "ID of the parent huddle session"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who owns this objective"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the daily objective"
+    },
+    "success_criteria": {
+      "type": "string",
+      "description": "Criteria for success for this objective"
+    },
+    "wsjf": {
+      "type": "object",
+      "properties": {
+        "bv": {
+          "type": "number"
+        },
+        "tc": {
+          "type": "number"
+        },
+        "rr": {
+          "type": "number"
+        },
+        "size": {
+          "type": "number"
+        }
+      },
+      "description": "WSJF (Weighted Shortest Job First) score components"
+    },
+    "eisenhower": {
+      "type": "object",
+      "properties": {
+        "urgent": {
+          "type": "boolean"
+        },
+        "important": {
+          "type": "boolean"
+        }
+      },
+      "description": "Eisenhower Matrix classification (urgent, important)"
+    },
+    "est_minutes": {
+      "type": "number",
+      "description": "Estimated time in minutes to complete"
+    },
+    "linked_ticket": {
+      "type": "string",
+      "description": "Reference to a linked ticket or task ID"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "planned",
+      "description": "Current status of the objective"
+    },
+    "personal_task_id": {
+      "type": "string",
+      "description": "Optional ID of the PersonalTask this objective is linked to."
+    }
+  },
+  "required": [
+    "session_id",
+    "user_email",
+    "title",
+    "success_criteria"
+  ]
+}

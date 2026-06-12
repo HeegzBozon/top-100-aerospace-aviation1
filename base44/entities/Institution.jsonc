@@ -1,0 +1,59 @@
+{
+  "name": "Institution",
+  "type": "object",
+  "properties": {
+    "openalex_id": {
+      "type": "string",
+      "description": "OpenAlex institution identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Official institution name"
+    },
+    "country_code": {
+      "type": "string",
+      "description": "ISO 3166-1 alpha-2 country code"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "university",
+        "government",
+        "nonprofit",
+        "company",
+        "healthcare",
+        "other"
+      ],
+      "description": "Institution classification"
+    },
+    "homepage_url": {
+      "type": "string",
+      "description": "Official website URL"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Institution logo or emblem URL"
+    },
+    "display_name_alternatives": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Known aliases or alternative names"
+    },
+    "works_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total works associated with this institution"
+    },
+    "cited_by_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total citation count of institution's works"
+    }
+  },
+  "required": [
+    "openalex_id",
+    "name"
+  ]
+}

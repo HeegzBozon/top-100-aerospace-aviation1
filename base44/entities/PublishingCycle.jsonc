@@ -1,0 +1,29 @@
+{
+  "name": "PublishingCycle",
+  "type": "object",
+  "properties": {
+    "year": {
+      "type": "number",
+      "description": "The year of the cycle (e.g. 2025)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "intake",
+        "evaluation",
+        "voting",
+        "finalization",
+        "published"
+      ],
+      "default": "intake"
+    },
+    "publish_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "year",
+    "status"
+  ]
+}

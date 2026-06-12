@@ -1,0 +1,111 @@
+{
+  "name": "Credit",
+  "type": "object",
+  "description": "The connective tissue linking Person \u2192 Program with Role, Organization, Subsystem, and dates",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "Person (Nominee) ID"
+    },
+    "program_id": {
+      "type": "string",
+      "description": "Program ID"
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "Organization where credit was earned"
+    },
+    "role": {
+      "type": "string",
+      "description": "Job title/role (e.g., 'Propulsion Engineer', 'Test Pilot', 'Program Manager')"
+    },
+    "subsystem_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Primary subsystems worked on"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When person started on this program"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When person left this program (null if current)"
+    },
+    "contribution_summary": {
+      "type": "string",
+      "description": "Brief description of their contribution"
+    },
+    "evidence_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Links to proof (LinkedIn, news, patents, publications, etc.)"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "unverified",
+        "self_claimed",
+        "peer_endorsed",
+        "council_verified",
+        "disputed"
+      ],
+      "default": "unverified",
+      "description": "Verification level"
+    },
+    "verified_by_council_id": {
+      "type": "string",
+      "description": "Council that verified this credit"
+    },
+    "verified_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When council verified"
+    },
+    "claim_status": {
+      "type": "string",
+      "enum": [
+        "unclaimed",
+        "claimed_pending",
+        "claimed_approved",
+        "claimed_rejected"
+      ],
+      "default": "unclaimed",
+      "description": "Claim approval workflow"
+    },
+    "claimed_by_user_email": {
+      "type": "string",
+      "description": "User email if claimed"
+    },
+    "disputed_notes": {
+      "type": "string",
+      "description": "Notes if credit is disputed"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "program_id",
+    "role"
+  ],
+  "rls": {
+    "read": true,
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "claimed_by_user_email": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

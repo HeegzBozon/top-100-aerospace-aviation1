@@ -1,0 +1,52 @@
+{
+  "name": "FestivalStamp",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who earned the stamp"
+    },
+    "stamp_type": {
+      "type": "string",
+      "enum": [
+        "festival_attendance",
+        "summit_rsvp",
+        "nominee_share",
+        "ceremony_post",
+        "content_creation"
+      ],
+      "description": "Type of festival activity completed"
+    },
+    "stamp_name": {
+      "type": "string",
+      "description": "Display name of the stamp (e.g., 'Festival 2024 Attendee')"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what the user did to earn this stamp"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "The festival season this stamp belongs to"
+    },
+    "earned_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the stamp was earned"
+    },
+    "badge_icon": {
+      "type": "string",
+      "description": "Icon identifier for the stamp badge"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional data about the activity (e.g., which nominee was shared)"
+    }
+  },
+  "required": [
+    "user_email",
+    "stamp_type",
+    "stamp_name",
+    "season_id"
+  ]
+}

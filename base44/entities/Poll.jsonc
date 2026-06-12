@@ -1,0 +1,65 @@
+{
+  "name": "Poll",
+  "type": "object",
+  "properties": {
+    "conversation_id": {
+      "type": "string",
+      "description": "ID of the conversation/channel this poll belongs to"
+    },
+    "creator_email": {
+      "type": "string",
+      "description": "Email of poll creator"
+    },
+    "question": {
+      "type": "string",
+      "description": "The poll question"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "votes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "Poll options with vote arrays"
+    },
+    "allow_multiple": {
+      "type": "boolean",
+      "default": false,
+      "description": "Allow multiple selections"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": false,
+      "description": "Hide voter identities"
+    },
+    "ends_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When voting closes"
+    },
+    "is_closed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Manually closed"
+    }
+  },
+  "required": [
+    "conversation_id",
+    "creator_email",
+    "question",
+    "options"
+  ]
+}

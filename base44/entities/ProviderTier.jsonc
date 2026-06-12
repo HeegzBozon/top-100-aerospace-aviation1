@@ -1,0 +1,64 @@
+{
+  "name": "ProviderTier",
+  "type": "object",
+  "properties": {
+    "provider_email": {
+      "type": "string"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "verified",
+        "partner",
+        "sponsor"
+      ],
+      "default": "standard",
+      "description": "standard=20%, verified=15%, partner=10%, sponsor=5%"
+    },
+    "royalty_rate": {
+      "type": "number",
+      "default": 0.2,
+      "description": "Platform fee rate (0.20 = 20%)"
+    },
+    "royalty_cap": {
+      "type": "number",
+      "default": null,
+      "description": "Max platform fee per transaction in cents (e.g., 5000 = $50 cap)"
+    },
+    "total_bookings": {
+      "type": "number",
+      "default": 0
+    },
+    "total_reviews": {
+      "type": "number",
+      "default": 0
+    },
+    "avg_rating": {
+      "type": "number",
+      "default": 0
+    },
+    "total_earnings": {
+      "type": "number",
+      "default": 0
+    },
+    "tier_updated_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "badges": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Earned badges: top_rated, fast_responder, etc."
+    },
+    "tier_reason": {
+      "type": "string",
+      "description": "Why this tier was assigned (e.g., TOP 100 honoree, sponsor, etc.)"
+    }
+  },
+  "required": [
+    "provider_email"
+  ]
+}

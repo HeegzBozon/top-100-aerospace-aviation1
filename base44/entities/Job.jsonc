@@ -1,0 +1,227 @@
+{
+  "name": "Job",
+  "type": "object",
+  "properties": {
+    "employer_id": {
+      "type": "string",
+      "description": "Reference to the Employer entity"
+    },
+    "title": {
+      "type": "string",
+      "description": "Job title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Full job description"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Short summary for cards (250 chars)"
+    },
+    "department": {
+      "type": "string",
+      "description": "Department or team"
+    },
+    "job_type": {
+      "type": "string",
+      "enum": [
+        "full_time",
+        "part_time",
+        "contract",
+        "internship",
+        "temporary",
+        "fellowship"
+      ],
+      "default": "full_time"
+    },
+    "experience_level": {
+      "type": "string",
+      "enum": [
+        "entry",
+        "mid",
+        "senior",
+        "executive",
+        "intern"
+      ],
+      "default": "mid"
+    },
+    "location": {
+      "type": "string",
+      "description": "Primary work location"
+    },
+    "remote_policy": {
+      "type": "string",
+      "enum": [
+        "onsite",
+        "hybrid",
+        "remote",
+        "flexible"
+      ],
+      "default": "onsite"
+    },
+    "salary_min": {
+      "type": "number",
+      "description": "Minimum salary (USD)"
+    },
+    "salary_max": {
+      "type": "number",
+      "description": "Maximum salary (USD)"
+    },
+    "salary_display": {
+      "type": "string",
+      "enum": [
+        "show",
+        "hide",
+        "negotiable"
+      ],
+      "default": "show"
+    },
+    "industry_segment": {
+      "type": "string",
+      "description": "Primary industry segment"
+    },
+    "function_area": {
+      "type": "string",
+      "enum": [
+        "engineering",
+        "flight_ops",
+        "mro",
+        "manufacturing",
+        "space_systems",
+        "avionics",
+        "materials",
+        "cybersecurity",
+        "ai_automation",
+        "rd",
+        "program_management",
+        "leadership",
+        "sales_bd",
+        "supply_chain",
+        "hr_dei",
+        "other"
+      ],
+      "description": "Functional area"
+    },
+    "required_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Required skills and competencies"
+    },
+    "preferred_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nice-to-have skills"
+    },
+    "certifications_required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Required certifications (A&P, DER, CFI, etc.)"
+    },
+    "security_clearance": {
+      "type": "string",
+      "enum": [
+        "none",
+        "us_citizen",
+        "secret",
+        "top_secret",
+        "ts_sci",
+        "itar"
+      ],
+      "default": "none"
+    },
+    "education_requirement": {
+      "type": "string",
+      "enum": [
+        "none",
+        "high_school",
+        "associates",
+        "bachelors",
+        "masters",
+        "phd"
+      ],
+      "default": "bachelors"
+    },
+    "years_experience_min": {
+      "type": "number",
+      "default": 0
+    },
+    "years_experience_max": {
+      "type": "number"
+    },
+    "benefits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Benefits offered"
+    },
+    "application_url": {
+      "type": "string",
+      "description": "External application URL (if any)"
+    },
+    "application_email": {
+      "type": "string",
+      "description": "Email for applications"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "paused",
+        "closed",
+        "filled"
+      ],
+      "default": "draft"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Premium featured listing"
+    },
+    "urgent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Urgent hire flag"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Application deadline"
+    },
+    "posted_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "views_count": {
+      "type": "number",
+      "default": 0
+    },
+    "applications_count": {
+      "type": "number",
+      "default": 0
+    },
+    "saves_count": {
+      "type": "number",
+      "default": 0
+    },
+    "poster_email": {
+      "type": "string",
+      "description": "Email of user who posted the job"
+    }
+  },
+  "required": [
+    "employer_id",
+    "title",
+    "description",
+    "job_type",
+    "location",
+    "poster_email"
+  ]
+}

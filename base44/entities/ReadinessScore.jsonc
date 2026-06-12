@@ -1,0 +1,87 @@
+{
+  "name": "ReadinessScore",
+  "type": "object",
+  "properties": {
+    "startup_id": {
+      "type": "string",
+      "description": "ID of the StartupProfile being evaluated"
+    },
+    "reviewer_email": {
+      "type": "string",
+      "description": "Email of the admin/reviewer"
+    },
+    "team_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 20,
+      "description": "Team quality and completeness (0-20)"
+    },
+    "market_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 20,
+      "description": "Market size and opportunity (0-20)"
+    },
+    "product_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 20,
+      "description": "Product maturity and differentiation (0-20)"
+    },
+    "traction_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 20,
+      "description": "Traction and validation (0-20)"
+    },
+    "pitch_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 20,
+      "description": "Pitch quality and clarity (0-20)"
+    },
+    "total_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Sum of all scores (0-100)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Detailed evaluation notes"
+    },
+    "recommendation": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "needs_work",
+        "reject",
+        "accelerator_candidate"
+      ],
+      "description": "Reviewer recommendation"
+    },
+    "strengths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Key strengths identified"
+    },
+    "areas_for_improvement": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Areas needing work"
+    }
+  },
+  "required": [
+    "startup_id",
+    "reviewer_email",
+    "team_score",
+    "market_score",
+    "product_score",
+    "traction_score",
+    "pitch_score"
+  ]
+}

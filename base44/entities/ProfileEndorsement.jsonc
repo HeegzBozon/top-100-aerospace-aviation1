@@ -1,0 +1,43 @@
+{
+  "name": "ProfileEndorsement",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the nominee being endorsed"
+    },
+    "field_name": {
+      "type": "string",
+      "description": "Specific field being verified (e.g., 'bio', 'achievements', 'company')"
+    },
+    "endorsed_by": {
+      "type": "string",
+      "description": "Email of user providing the endorsement"
+    },
+    "endorsement_type": {
+      "type": "string",
+      "enum": [
+        "verified_info",
+        "accuracy_check",
+        "personal_knowledge"
+      ],
+      "default": "verified_info",
+      "description": "Type of endorsement"
+    },
+    "confidence_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "description": "Endorser's confidence in the information"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "field_name",
+    "endorsed_by"
+  ]
+}

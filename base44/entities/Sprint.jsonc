@@ -1,0 +1,53 @@
+{
+  "name": "Sprint",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the sprint, e.g., 'Sprint 24.5'"
+    },
+    "capacity_points": {
+      "type": "number",
+      "description": "Total available story points for the sprint"
+    },
+    "allocated_points": {
+      "type": "number",
+      "default": 0,
+      "description": "Sum of story points for all tickets in the sprint"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date of the sprint"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "End date of the sprint"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "active",
+        "completed"
+      ],
+      "default": "planning",
+      "description": "Current status of the sprint"
+    },
+    "goal": {
+      "type": "string",
+      "description": "The one-sentence mission objective for this sprint."
+    },
+    "lessons_learned": {
+      "type": "string",
+      "description": "Notes on what was learned during this sprint, for review in the next one."
+    }
+  },
+  "required": [
+    "name",
+    "capacity_points",
+    "start_date",
+    "end_date"
+  ]
+}

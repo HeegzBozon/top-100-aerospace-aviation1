@@ -1,0 +1,22 @@
+{
+  "name": "BugRankedVote",
+  "description": "Records a user's ordered ballot of bugs by urgency/criticality.",
+  "type": "object",
+  "properties": {
+    "voter_email": {
+      "type": "string",
+      "description": "Email of the user who cast the ranked vote."
+    },
+    "ballot": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered array of bug IDs representing the user's ranking by urgency."
+    }
+  },
+  "required": [
+    "voter_email",
+    "ballot"
+  ]
+}

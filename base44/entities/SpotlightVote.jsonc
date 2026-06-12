@@ -1,0 +1,43 @@
+{
+  "name": "SpotlightVote",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "ID of the nominee receiving the spotlight"
+    },
+    "voter_email": {
+      "type": "string",
+      "description": "Email of the user giving the spotlight"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "rising_star",
+        "rock_star",
+        "super_star",
+        "north_star"
+      ],
+      "description": "The spotlight category being awarded"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "The season in which the spotlight was awarded"
+    },
+    "context": {
+      "type": "string",
+      "enum": [
+        "pairwise",
+        "dedicated"
+      ],
+      "default": "pairwise",
+      "description": "How the spotlight was awarded - during pairwise voting or through dedicated nomination"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "voter_email",
+    "category",
+    "season_id"
+  ]
+}

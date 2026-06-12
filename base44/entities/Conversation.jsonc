@@ -1,0 +1,139 @@
+{
+  "name": "Conversation",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "dm",
+        "channel"
+      ],
+      "default": "dm",
+      "description": "Direct message or channel"
+    },
+    "name": {
+      "type": "string",
+      "description": "Channel name (for channels only)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Channel description (for channels only)"
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Email addresses of participants"
+    },
+    "is_private": {
+      "type": "boolean",
+      "default": false,
+      "description": "Private channel (invite only) vs public"
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "System default channel - cannot be deleted"
+    },
+    "is_readonly": {
+      "type": "boolean",
+      "default": false,
+      "description": "Only admins can post (announcements)"
+    },
+    "is_hidden": {
+      "type": "boolean",
+      "default": false,
+      "description": "Hidden from channel list (admin only)"
+    },
+    "channel_category": {
+      "type": "string",
+      "enum": [
+        "general",
+        "announcements",
+        "support",
+        "community",
+        "custom"
+      ],
+      "default": "custom",
+      "description": "Legacy category enum (kept for backwards compat)"
+    },
+    "category_id": {
+      "type": "string",
+      "description": "ID of the ChannelCategory this channel belongs to"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji or icon identifier for the channel"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Sort order within its category"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Creator of the channel"
+    },
+    "moderator_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Users who can moderate this channel"
+    },
+    "last_message_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of last message for sorting"
+    },
+    "last_message_preview": {
+      "type": "string",
+      "description": "Preview text of last message"
+    },
+    "pinned_message_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of pinned messages"
+    },
+    "member_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of members in channel"
+    },
+    "rrf_stage": {
+      "type": "string",
+      "enum": [
+        "FORM",
+        "STORM",
+        "NORM",
+        "PERFORM"
+      ],
+      "default": "FORM",
+      "description": "RRF relationship stage for this conversation"
+    },
+    "crp_current_step": {
+      "type": "number",
+      "default": 1,
+      "description": "Current active CRP step (1-16)"
+    },
+    "crp_completed_steps": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "default": [],
+      "description": "Array of completed CRP step numbers"
+    },
+    "crp_notes": {
+      "type": "object",
+      "description": "Perry notes keyed by step number: { '1': 'note text', ... }"
+    }
+  },
+  "required": [
+    "type",
+    "participants"
+  ]
+}

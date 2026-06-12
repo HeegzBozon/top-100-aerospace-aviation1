@@ -1,0 +1,39 @@
+{
+  "name": "AvailabilityException",
+  "type": "object",
+  "properties": {
+    "provider_email": {
+      "type": "string"
+    },
+    "exception_type": {
+      "type": "string",
+      "enum": [
+        "blocked",
+        "available"
+      ],
+      "default": "blocked",
+      "description": "blocked = unavailable, available = override to open"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reason": {
+      "type": "string",
+      "description": "e.g. Vacation, Holiday, Conference"
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "provider_email",
+    "start_date",
+    "end_date"
+  ]
+}

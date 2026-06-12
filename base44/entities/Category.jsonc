@@ -1,0 +1,35 @@
+{
+  "name": "Category",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique name of the category"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the category scope"
+    },
+    "annual_quota": {
+      "type": "number",
+      "default": 100,
+      "description": "Max honorees for this category"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this category is currently accepting nominations"
+    },
+    "weight_impact": {
+      "type": "number",
+      "default": 1.0
+    },
+    "weight_leadership": {
+      "type": "number",
+      "default": 1.0
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

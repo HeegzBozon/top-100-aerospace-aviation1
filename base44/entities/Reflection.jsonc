@@ -1,0 +1,41 @@
+{
+  "name": "Reflection",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "rose": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "bud": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "thorn": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "mood": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 5
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "rose",
+    "bud",
+    "thorn",
+    "occurred_at"
+  ]
+}

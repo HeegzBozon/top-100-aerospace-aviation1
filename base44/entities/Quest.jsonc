@@ -1,0 +1,146 @@
+{
+  "name": "Quest",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 50
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of what the user needs to do"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "DAILY",
+        "SEASONAL",
+        "SPONSORED"
+      ]
+    },
+    "sponsor_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "reward": {
+      "type": "object",
+      "properties": {
+        "stardust": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "clout": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "starpower_delta": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "badge_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        }
+      },
+      "additionalProperties": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "people",
+        "ideas",
+        "bugs",
+        "cross_cutting",
+        "community"
+      ],
+      "description": "Which leaderboard category this quest belongs to"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "common",
+        "skillful",
+        "epic"
+      ],
+      "description": "Quest difficulty level affecting rewards"
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "The action required, e.g., 'pairwise_vote', 'endorse', 'tip_share'"
+          },
+          "target": {
+            "type": "number",
+            "description": "How many times the action needs to be performed"
+          },
+          "context": {
+            "type": "string",
+            "description": "Additional context or constraints for the requirement"
+          }
+        }
+      },
+      "description": "Array of requirements that must be met to complete the quest"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the quest becomes available"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the quest expires"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the quest is currently active and can be accepted"
+    },
+    "max_completions": {
+      "type": "number",
+      "description": "Maximum number of times this quest can be completed by a single user"
+    },
+    "cooldown_hours": {
+      "type": "number",
+      "description": "Hours that must pass before the quest can be accepted again"
+    },
+    "priority_score": {
+      "type": "number",
+      "default": 0,
+      "description": "WSJF/priority score for quest ordering in the UI"
+    }
+  },
+  "required": [
+    "code",
+    "title",
+    "type",
+    "reward"
+  ]
+}

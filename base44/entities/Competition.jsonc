@@ -1,0 +1,95 @@
+{
+  "name": "Competition",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the competition (e.g., 'Top 100 Women in Aviation 2024')"
+    },
+    "league_id": {
+      "type": "string",
+      "description": "ID of the parent League this competition belongs to"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the competition"
+    },
+    "competition_type": {
+      "type": "string",
+      "enum": [
+        "top_100",
+        "top_50",
+        "top_25",
+        "rising_stars",
+        "lifetime_achievement",
+        "custom"
+      ],
+      "default": "top_100",
+      "description": "Type of competition"
+    },
+    "category": {
+      "type": "string",
+      "description": "Specific category within the league (e.g., 'Leadership', 'Innovation', 'Technical Excellence')"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When nominations open"
+    },
+    "nomination_deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Last day for nominations"
+    },
+    "voting_start": {
+      "type": "string",
+      "format": "date",
+      "description": "When voting opens"
+    },
+    "voting_end": {
+      "type": "string",
+      "format": "date",
+      "description": "When voting closes"
+    },
+    "results_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When results are announced"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "nominations_open",
+        "nominations_closed",
+        "voting_open",
+        "voting_closed",
+        "results_published",
+        "completed"
+      ],
+      "default": "planning",
+      "description": "Current status of the competition"
+    },
+    "max_nominees": {
+      "type": "number",
+      "default": 100,
+      "description": "Maximum number of nominees allowed"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Email of the user who created this competition"
+    },
+    "managed_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of user emails who can manage this competition"
+    }
+  },
+  "required": [
+    "name",
+    "league_id",
+    "description"
+  ]
+}

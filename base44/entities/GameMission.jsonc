@@ -1,0 +1,128 @@
+{
+  "name": "GameMission",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Mission name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Mission description"
+    },
+    "mission_type": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "research",
+        "special"
+      ],
+      "description": "Type of mission"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "tutorial",
+        "easy",
+        "medium",
+        "hard",
+        "expert"
+      ],
+      "default": "easy",
+      "description": "Mission difficulty"
+    },
+    "objectives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "visit_location",
+              "collect_artifact",
+              "interact_object",
+              "complete_minigame",
+              "earn_points"
+            ],
+            "description": "Type of objective"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable objective description"
+          },
+          "target_id": {
+            "type": "string",
+            "description": "ID of target location/artifact/object"
+          },
+          "target_count": {
+            "type": "number",
+            "default": 1,
+            "description": "Number of times objective must be completed"
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this objective is completed"
+          },
+          "current_count": {
+            "type": "number",
+            "default": 0,
+            "description": "Current progress toward target_count"
+          }
+        }
+      },
+      "default": [],
+      "description": "Mission objectives that must be completed"
+    },
+    "rewards": {
+      "type": "object",
+      "properties": {
+        "insight_points": {
+          "type": "number",
+          "description": "IP reward for completing mission"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Artifact IDs to award"
+        },
+        "badges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Badge IDs to award"
+        }
+      },
+      "description": "Rewards given upon mission completion"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this mission expires (for daily/weekly)"
+    },
+    "repeatable": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether mission can be completed multiple times"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "expired"
+      ],
+      "default": "active",
+      "description": "Mission availability status"
+    }
+  },
+  "required": [
+    "name",
+    "mission_type"
+  ]
+}

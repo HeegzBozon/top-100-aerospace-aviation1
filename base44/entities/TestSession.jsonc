@@ -1,0 +1,86 @@
+{
+  "name": "TestSession",
+  "type": "object",
+  "properties": {
+    "test_case_id": {
+      "type": "string",
+      "description": "ID of the test case being executed"
+    },
+    "feedback_id": {
+      "type": "string",
+      "description": "ID of the original feedback item"
+    },
+    "tester_email": {
+      "type": "string",
+      "description": "Email of the user performing the test"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "passed",
+        "failed",
+        "blocked"
+      ],
+      "default": "in_progress",
+      "description": "Current status of the test session"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the test session started"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the test session completed"
+    },
+    "step_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_number": {
+            "type": "number",
+            "description": "Step number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed",
+              "blocked"
+            ],
+            "description": "Result of this step"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes about this step"
+          }
+        },
+        "required": [
+          "step_number",
+          "status"
+        ]
+      },
+      "description": "Results for each test step"
+    },
+    "overall_notes": {
+      "type": "string",
+      "description": "Overall notes about the test session"
+    },
+    "environment_tested": {
+      "type": "string",
+      "description": "Environment where the test was performed"
+    },
+    "browser_info": {
+      "type": "string",
+      "description": "Browser/user agent information"
+    }
+  },
+  "required": [
+    "test_case_id",
+    "feedback_id",
+    "tester_email"
+  ]
+}

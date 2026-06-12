@@ -1,0 +1,100 @@
+{
+  "name": "TipEntry",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the tip/training"
+    },
+    "content": {
+      "type": "string",
+      "description": "Full content or description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Technical",
+        "Leadership",
+        "Process",
+        "Communication",
+        "Innovation"
+      ],
+      "description": "Category of the tip"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email of the author"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of the author"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "Beginner",
+        "Intermediate",
+        "Advanced"
+      ],
+      "default": "Beginner",
+      "description": "Difficulty level"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorization"
+    },
+    "upvotes": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of upvotes"
+    },
+    "upvoted_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of user emails who have upvoted this tip"
+    },
+    "views": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of views"
+    }
+  },
+  "required": [
+    "title",
+    "content",
+    "category",
+    "author_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

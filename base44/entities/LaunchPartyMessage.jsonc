@@ -1,0 +1,32 @@
+{
+  "name": "LaunchPartyMessage",
+  "type": "object",
+  "properties": {
+    "launch_id": {
+      "type": "string",
+      "description": "LL2 launch ID this message belongs to"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of sender"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email of sender"
+    },
+    "text": {
+      "type": "string",
+      "description": "Message body"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was sent"
+    }
+  },
+  "required": [
+    "launch_id",
+    "author_email",
+    "text"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "name": "HuddleSession",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the huddle session (YYYY-MM-DD)"
+    },
+    "team_id": {
+      "type": "string",
+      "description": "ID of the team (or user email for solo mode)"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "team",
+        "solo"
+      ],
+      "description": "Mode of the huddle (team or solo)"
+    },
+    "start_ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the huddle started"
+    },
+    "end_ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the huddle ended"
+    },
+    "duration": {
+      "type": "number",
+      "description": "Duration of the huddle in minutes"
+    },
+    "vibe_snapshot": {
+      "type": "object",
+      "description": "JSON snapshot of team/individual vibe metrics"
+    },
+    "readiness_snapshot": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Snapshot of readiness score (0-1)"
+    },
+    "capacity_snapshot": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Snapshot of team/individual capacity (0-1)"
+    },
+    "okr_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "References to related OKRs or strategic goals"
+    }
+  },
+  "required": [
+    "date",
+    "team_id",
+    "mode",
+    "start_ts"
+  ]
+}

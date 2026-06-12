@@ -1,0 +1,56 @@
+{
+  "name": "Review",
+  "type": "object",
+  "properties": {
+    "booking_id": {
+      "type": "string",
+      "description": "ID of the completed booking"
+    },
+    "service_id": {
+      "type": "string",
+      "description": "ID of the service reviewed"
+    },
+    "reviewer_email": {
+      "type": "string",
+      "description": "Email of the client leaving review"
+    },
+    "provider_email": {
+      "type": "string",
+      "description": "Email of the service provider"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Star rating 1-5"
+    },
+    "title": {
+      "type": "string",
+      "description": "Review headline"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Review text"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": true,
+      "description": "Verified purchase review"
+    },
+    "provider_response": {
+      "type": "string",
+      "description": "Provider's response to review"
+    },
+    "provider_response_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "booking_id",
+    "service_id",
+    "reviewer_email",
+    "provider_email",
+    "rating"
+  ]
+}

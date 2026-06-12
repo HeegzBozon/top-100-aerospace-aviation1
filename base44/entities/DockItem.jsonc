@@ -1,0 +1,33 @@
+{
+  "name": "DockItem",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "The label for the dock item (used for tooltips/accessibility)."
+    },
+    "pageName": {
+      "type": "string",
+      "description": "The name of the page to link to (e.g., 'Home', 'Standings')."
+    },
+    "icon": {
+      "type": "string",
+      "description": "The name of the Lucide icon to display (e.g., 'Home', 'Trophy')."
+    },
+    "order": {
+      "type": "number",
+      "description": "The display order of the item in the dock (lower numbers first)."
+    },
+    "isEnabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the item is currently visible in the dock."
+    }
+  },
+  "required": [
+    "label",
+    "pageName",
+    "icon",
+    "order"
+  ]
+}

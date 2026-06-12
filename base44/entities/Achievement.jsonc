@@ -1,0 +1,51 @@
+{
+  "name": "Achievement",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "nomination_submitted",
+        "vote_cast",
+        "tip_shared",
+        "sprint_completed",
+        "top_contributor"
+      ],
+      "description": "Type of achievement"
+    },
+    "title": {
+      "type": "string",
+      "description": "Achievement title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Achievement description"
+    },
+    "points": {
+      "type": "number",
+      "default": 10,
+      "description": "Points awarded"
+    },
+    "badge_icon": {
+      "type": "string",
+      "description": "Icon identifier for the badge"
+    }
+  },
+  "required": [
+    "user_email",
+    "type",
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "user_email": "{{user.email}}"
+    },
+    "write": {
+      "user_email": "{{user.email}}"
+    }
+  }
+}

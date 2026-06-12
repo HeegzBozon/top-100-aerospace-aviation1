@@ -1,0 +1,40 @@
+{
+  "name": "Streak",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "habit_type": {
+      "type": "string",
+      "enum": [
+        "WATER",
+        "RBT",
+        "BALLOT",
+        "SIDEQUEST"
+      ]
+    },
+    "current": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "best": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "last_completed_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    }
+  },
+  "required": [
+    "user_id",
+    "habit_type",
+    "current",
+    "best"
+  ]
+}

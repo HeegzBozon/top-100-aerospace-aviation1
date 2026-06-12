@@ -1,0 +1,30 @@
+{
+  "name": "IdempotencyRecord",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "request_fingerprint": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "first_seen_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "response_digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "key",
+    "first_seen_at"
+  ]
+}

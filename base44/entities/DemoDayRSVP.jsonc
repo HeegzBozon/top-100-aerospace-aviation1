@@ -1,0 +1,38 @@
+{
+  "name": "DemoDayRSVP",
+  "type": "object",
+  "properties": {
+    "demo_day_id": {
+      "type": "string",
+      "description": "Demo day event ID"
+    },
+    "attendee_email": {
+      "type": "string",
+      "description": "Attendee email"
+    },
+    "attendee_type": {
+      "type": "string",
+      "enum": [
+        "investor",
+        "founder",
+        "mentor",
+        "press",
+        "other"
+      ],
+      "description": "Type of attendee"
+    },
+    "attended": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether they actually attended"
+    },
+    "feedback": {
+      "type": "string",
+      "description": "Post-event feedback"
+    }
+  },
+  "required": [
+    "demo_day_id",
+    "attendee_email"
+  ]
+}

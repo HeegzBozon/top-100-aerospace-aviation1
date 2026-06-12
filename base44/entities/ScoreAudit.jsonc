@@ -1,0 +1,58 @@
+{
+  "name": "ScoreAudit",
+  "type": "object",
+  "properties": {
+    "actor_email": {
+      "type": "string",
+      "description": "Email of the user performing the action"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "create_draft",
+        "update_draft",
+        "publish",
+        "rollback",
+        "run_preview",
+        "create_experiment",
+        "update_experiment",
+        "delete_experiment"
+      ],
+      "description": "Type of action performed"
+    },
+    "version_id": {
+      "type": "string",
+      "description": "ID of the ScoreConfig version involved"
+    },
+    "experiment_id": {
+      "type": "string",
+      "description": "ID of the ScoreExperiment involved (if applicable)"
+    },
+    "diff": {
+      "type": "string",
+      "description": "YAML diff of changes made (if applicable)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the action occurred"
+    }
+  },
+  "required": [
+    "actor_email",
+    "action_type",
+    "timestamp"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

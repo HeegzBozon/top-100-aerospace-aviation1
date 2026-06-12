@@ -1,0 +1,49 @@
+{
+  "name": "Standing",
+  "description": "A daily snapshot of a nominee's rank and scores for historical tracking.",
+  "type": "object",
+  "properties": {
+    "season_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "user_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "rank": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "aura": {
+      "type": "number"
+    },
+    "starpower_score": {
+      "type": "number",
+      "description": "The nominee's starpower score on this date."
+    },
+    "elo_rating": {
+      "type": "number",
+      "description": "The nominee's ELO rating on this date."
+    },
+    "borda_score": {
+      "type": "number",
+      "description": "The nominee's Borda score on this date."
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date of the snapshot."
+    },
+    "nominee_id": {
+      "type": "string",
+      "description": "The ID of the nominee."
+    }
+  },
+  "required": [
+    "season_id",
+    "user_id",
+    "rank",
+    "aura"
+  ]
+}

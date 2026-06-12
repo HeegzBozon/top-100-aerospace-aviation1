@@ -1,0 +1,103 @@
+{
+  "name": "Opportunity",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Opportunity title"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "speaking",
+        "panel",
+        "workshop",
+        "mentorship",
+        "internship",
+        "fellowship",
+        "board_seat",
+        "advisory",
+        "partnership",
+        "media",
+        "research",
+        "sponsorship"
+      ],
+      "description": "Type of opportunity"
+    },
+    "description": {
+      "type": "string",
+      "description": "Full description"
+    },
+    "employer_id": {
+      "type": "string",
+      "description": "Sponsoring employer if applicable"
+    },
+    "organizer_name": {
+      "type": "string",
+      "description": "Name of organizing entity"
+    },
+    "organizer_email": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "is_virtual": {
+      "type": "boolean",
+      "default": false
+    },
+    "date_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "date_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date"
+    },
+    "eligibility": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Who is eligible: TOP100 Alumni, Nominees, Public, etc."
+    },
+    "compensation": {
+      "type": "string",
+      "description": "Paid, Unpaid, Honorarium, etc."
+    },
+    "application_url": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "open",
+        "closed",
+        "cancelled"
+      ],
+      "default": "open"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "views_count": {
+      "type": "number",
+      "default": 0
+    },
+    "applications_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "description"
+  ]
+}
