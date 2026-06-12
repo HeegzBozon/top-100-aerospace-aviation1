@@ -53,6 +53,7 @@ const CommonGround = lazy(() => import('@/pages/CommonGround'));
 const CommonGroundSimulator = lazy(() => import('@/pages/CommonGroundSimulator'));
 const SessionPortal = lazy(() => import('@/pages/SessionPortal'));
 const SessionJoin = lazy(() => import('@/pages/SessionJoin'));
+const About = lazy(() => import('@/pages/About'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -193,6 +194,7 @@ const AuthenticatedApp = () => {
       <Route path="/common-ground-sim" element={<CommonGroundSimulator />} />
       <Route path="/session-portal/*" element={<SessionPortal />} />
       <Route path="/session-portal/join/:code" element={<SessionJoin />} />
+      <Route path="/about" element={<About />} />
       <Route path="/Nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/top100-tv" element={
