@@ -22,6 +22,7 @@ import EditorialNav from '@/components/publication/EditorialNav';
 import EditorialSection from '@/components/publication/EditorialSection';
 import PublicationLoading from '@/components/publication/PublicationLoading';
 import DiscoveryTracker from '@/components/publication/DiscoveryTracker';
+import EditorialBreak from '@/components/publication/EditorialBreak';
 import useTop100WomenNominees from '@/components/publication/useTop100WomenNominees';
 import { publicationBrand as brandColors, top100Women2025Config } from '@/components/publication/publicationConfig';
 
@@ -70,6 +71,19 @@ export default function Top100Women2025() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, nominees.length]);
+
+  // Prefetch next/prev nominee images for instant transitions
+  useEffect(() => {
+    if (!selectedNominee) return;
+    const idx = nominees.findIndex(n => n.id === selectedNominee.id);
+    [nominees[idx + 1], nominees[idx - 1]].forEach(n => {
+      const src = n?.avatar_url || n?.photo_url;
+      if (src) {
+        const img = new Image();
+        img.src = src;
+      }
+    });
+  }, [selectedNominee, nominees]);
   
   const { scrollYProgress } = useScroll({ target: containerRef });
 
@@ -223,6 +237,9 @@ export default function Top100Women2025() {
         <ArchiveExportSection nominees={nominees} compact />
       </EditorialSection>
 
+      {/* Editorial break */}
+      <EditorialBreak text="One hundred names. Thousands of nominations. Every honoree validated by peers, measured by signal — not by status." />
+
       {/* SECTION 5: The Index */}
       <EditorialSection id="honorees">
         <EditorialLedger 
@@ -235,6 +252,12 @@ export default function Top100Women2025() {
       <EditorialSection id="orbital-index">
         <OrbitalIndexComingSoon />
       </EditorialSection>
+
+      {/* Editorial break */}
+      <EditorialBreak
+        kicker="The Methodology"
+        text="We don't rank. We measure. The verified reputation graph of aerospace & aviation."
+      />
 
       {/* SECTION 8: Archive */}
       <EditorialSection id="archive">

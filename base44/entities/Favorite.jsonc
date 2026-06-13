@@ -9,7 +9,8 @@
     "entity_type": {
       "type": "string",
       "enum": [
-        "HonoreeMention"
+        "HonoreeMention",
+        "Nominee"
       ],
       "description": "Type of entity being favorited"
     },

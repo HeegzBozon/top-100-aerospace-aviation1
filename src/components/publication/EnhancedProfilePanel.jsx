@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import FlowerButton from './FlowerButton';
+import FollowNomineeButton from './FollowNomineeButton';
 import {
   X, Star, Globe, Briefcase,
   Linkedin, Instagram, ExternalLink, Share2, Sparkles,
@@ -640,9 +641,10 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
           {/* Bottom nav */}
           <div className="flex flex-col px-3 pb-3 pt-1"
             style={{ background: b.cream, borderTop: `1px solid ${b.navy}08` }}>
-            {/* Flower reaction */}
-            <div className="flex justify-center pb-1">
+            {/* Flower reaction + Signal follow */}
+            <div className="flex items-center justify-center gap-3 pb-1">
               <FlowerButton nominee={nominee} currentUserEmail={currentUserEmail} />
+              <FollowNomineeButton nominee={nominee} currentUserEmail={currentUserEmail} />
             </div>
             {/* Slide controls */}
             <div className="flex items-center justify-between">
