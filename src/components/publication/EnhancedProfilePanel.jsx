@@ -205,8 +205,12 @@ function Slide1({ nominee, onClose, onShare }) {
 
         {/* Name */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <h2 className="text-[28px] font-bold text-white leading-tight"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif", textShadow: '0 2px 16px rgba(0,0,0,0.5)' }}>
+          <h2 className="font-bold text-white leading-tight"
+            style={{
+              fontSize: (nominee.name?.length || 0) > 22 ? 21 : 28,
+              fontFamily: "'Playfair Display', Georgia, serif",
+              textShadow: '0 2px 16px rgba(0,0,0,0.5)',
+            }}>
             {nominee.name}
           </h2>
           {(nominee.title || nominee.professional_role) && (
@@ -521,10 +525,21 @@ function Slide4({ nominee, onClose, onShare, onNextNominee, hasNextNominee, onPr
           </div>
         </div>
 
-        <p className="text-center text-[9px] font-semibold tracking-[0.15em] uppercase mt-5"
-          style={{ color: `${b.navy}40` }}>
-          TOP 100 Women in Aerospace &amp; Aviation · 2025 Edition
-        </p>
+        <div className="mt-5 space-y-2">
+          {/* Claim profile entry point */}
+          <a
+            href="/ClaimProfile"
+            className="flex items-center justify-center gap-1.5 text-[11px] font-bold transition-opacity hover:opacity-70"
+            style={{ color: b.goldDeep }}
+          >
+            Is this you? Claim &amp; verify your profile
+            <ChevronRight className="w-3 h-3" />
+          </a>
+          <p className="text-center text-[9px] font-semibold tracking-[0.15em] uppercase"
+            style={{ color: `${b.navy}40` }}>
+            TOP 100 Women in Aerospace &amp; Aviation · 2025 Edition
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -533,7 +548,14 @@ function Slide4({ nominee, onClose, onShare, onNextNominee, hasNextNominee, onPr
 // ═══════════════════════════════════════════════════════════════════════════
 // Root
 // ═══════════════════════════════════════════════════════════════════════════
-const SLIDES = [Slide1, Slide2, Slide3, Slide4];
+const hasImpactContent = (n) => !!(
+  n?.linkedin_follow_reason ||
+  n?.linkedin_proudest_achievement ||
+  n?.nomination_reason ||
+  n?.rising_star_count > 0 ||
+  n?.rock_star_count > 0 ||
+  n?.north_star_count > 0
+);
 
 const slideVariants = {
   enter: (dir) => ({ x: dir > 0 ? '55%' : '-55%', opacity: 0, scale: 0.97 }),
@@ -544,6 +566,10 @@ const slideVariants = {
 export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, onNextNominee, hasNextNominee, onPrevNominee, hasPrevNominee, autoPlaying = false, onAutoPlayChange }) {
   const [slide, setSlide] = useState(0);
   const [dir, setDir] = useState(1);
+  // Skip the Impact slide entirely when the honoree has no impact content
+  const SLIDES = hasImpactContent(nominee)
+    ? [Slide1, Slide2, Slide3, Slide4]
+    : [Slide1, Slide2, Slide4];
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -591,7 +617,7 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
 
   if (!nominee) return null;
 
-  const SlideComponent = SLIDES[slide];
+  const SlideComponent = SLIDES[Math.min(slide, SLIDES.length - 1)];
   const isFirst = slide === 0;
   const isLast  = slide === SLIDES.length - 1;
 

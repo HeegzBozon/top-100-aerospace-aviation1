@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { base44 } from '@/api/base44Client';
 
 const b = { navy: '#1e3a5a', gold: '#c9a87c', goldDeep: '#a07840', rose: '#d4a090' };
@@ -37,6 +38,12 @@ export default function FollowNomineeButton({ nominee, currentUserEmail }) {
         entity_id: nominee.id,
       });
       setFavorite(created);
+      confetti({
+        particleCount: 60,
+        spread: 70,
+        origin: { y: 0.8 },
+        colors: ['#c9a87c', '#d4a090', '#e8d4b8', '#faf8f5'],
+      });
     }
     setBusy(false);
   };
@@ -54,7 +61,7 @@ export default function FollowNomineeButton({ nominee, currentUserEmail }) {
       }}
     >
       <Star className="w-3 h-3" fill={isFollowing ? 'white' : 'none'} />
-      {isFollowing ? 'Signalled' : 'Signal'}
+      {isFollowing ? 'Following' : 'Follow'}
     </motion.button>
   );
 }

@@ -149,27 +149,26 @@ const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl, wreathDataU
         <div style={{ margin: '10px 0', height: 1, width: 48,
           background: `linear-gradient(to right, ${b.gold}90, transparent)` }} />
 
-        {/* Bio excerpt */}
+        {/* Six-word story — headline */}
+        {nominee.six_word_story && (
+          <p style={{
+            margin: '0 0 8px', fontSize: 16, lineHeight: 1.4,
+            fontStyle: 'italic', fontWeight: 600, color: b.goldLight,
+            fontFamily: 'Georgia, serif',
+          }}>
+            "{nominee.six_word_story}"
+          </p>
+        )}
+
+        {/* Bio excerpt — 2 lines max */}
         {bio && (
           <p style={{
             margin: 0, fontSize: 12, lineHeight: 1.65, color: `${b.cream}85`,
             fontFamily: 'system-ui, sans-serif',
-            display: '-webkit-box', WebkitLineClamp: 3,
+            display: '-webkit-box', WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical', overflow: 'hidden',
           }}>
             {bio}
-          </p>
-        )}
-
-        {/* Six-word story */}
-        {nominee.six_word_story && (
-          <p style={{
-            margin: '8px 0 0', fontSize: 11,
-            fontStyle: 'italic', color: `${b.goldLight}cc`,
-            fontFamily: 'Georgia, serif',
-            flexShrink: 0,
-          }}>
-            "{nominee.six_word_story}"
           </p>
         )}
       </div>
@@ -242,12 +241,14 @@ export default function ShareableCard({ nominee, rank, onClose }) {
     toDataUrl(WREATH_URL, setWreathDataUrl);
   }, [nominee.avatar_url, nominee.photo_url]);
 
-  const shareUrl  = `${window.location.origin}/Top100Women2025`;
-  const shareText = `Congratulations to ${nominee.name} — named to the TOP 100 Women in Aerospace & Aviation 2025! #TOP100Aerospace #WomenInAviation`;
+  const shareUrl  = `${window.location.origin}/Top100Women2025?nominee=${nominee.id}`;
+  const shareText = [
+    `Congratulations to ${nominee.name}${rank ? ` (#${rank})` : ''} — named to the TOP 100 Women in Aerospace & Aviation 2025!`,
+    nominee.six_word_story ? `"${nominee.six_word_story}"` : null,
+    '#TOP100Aerospace #WomenInAviation',
+  ].filter(Boolean).join('\n\n');
 
-  const handleDownload = async () => {
-    setIsExporting(true);
-    try {
+  const renderCardCanvas = () => {
       const W = 700, H = 390, SCALE = 2;
       const canvas = document.createElement('canvas');
       canvas.width = W * SCALE;
@@ -408,17 +409,41 @@ export default function ShareableCard({ nominee, rank, onClose }) {
       ctx.fillRect(rx, textY + 6, 48, 1);
       textY += 20;
 
-      // Bio (3 lines max)
+      // Six-word story — headline (wrapped)
+      if (nominee.six_word_story) {
+        ctx.font = 'italic 600 15px Georgia, serif';
+        ctx.fillStyle = b.goldLight;
+        const sWords = `"${nominee.six_word_story}"`.split(' ');
+        let sLine = '';
+        for (const word of sWords) {
+          const test = sLine ? `${sLine} ${word}` : word;
+          if (ctx.measureText(test).width > maxW) {
+            ctx.fillText(sLine, rx, textY);
+            textY += 22;
+            sLine = word;
+          } else {
+            sLine = test;
+          }
+        }
+        if (sLine) { ctx.fillText(sLine, rx, textY); textY += 22; }
+        textY += 4;
+      }
+
+      // Bio (2 lines max, clean ellipsis)
       const bio = nominee.description || nominee.bio;
       if (bio) {
         ctx.font = '12px system-ui';
         ctx.fillStyle = b.cream + 'd9';
         const words = bio.split(' ');
-        let line = '', lineCount = 0;
+        let line = '', lineCount = 0, truncated = false;
         for (const word of words) {
           const test = line ? `${line} ${word}` : word;
           if (ctx.measureText(test).width > maxW) {
-            if (lineCount >= 2) { ctx.fillText(line + '…', rx, textY); break; }
+            if (lineCount >= 1) {
+              ctx.fillText(line.replace(/[,;:.]?$/, '') + '…', rx, textY);
+              truncated = true;
+              break;
+            }
             ctx.fillText(line, rx, textY);
             textY += 18; lineCount++;
             line = word;
@@ -426,15 +451,7 @@ export default function ShareableCard({ nominee, rank, onClose }) {
             line = test;
           }
         }
-        if (lineCount < 3 && line) { ctx.fillText(line, rx, textY); textY += 18; }
-        textY += 4;
-      }
-
-      // Six-word story
-      if (nominee.six_word_story) {
-        ctx.font = 'italic 11px Georgia, serif';
-        ctx.fillStyle = b.goldLight + 'cc';
-        ctx.fillText(`"${nominee.six_word_story}"`, rx, textY + 4);
+        if (!truncated && line) { ctx.fillText(line, rx, textY); }
       }
 
       // ── Footer bar ──
@@ -459,11 +476,36 @@ export default function ShareableCard({ nominee, rank, onClose }) {
       ctx.textAlign = 'right';
       ctx.fillText('The Orbital Edition · 2025', W - 24, H - 17);
 
-      // ── Download ──
+      return canvas;
+  };
+
+  const handleDownload = async () => {
+    setIsExporting(true);
+    try {
+      const canvas = renderCardCanvas();
       const link = document.createElement('a');
       link.download = `TOP100-${(nominee.name || 'honoree').replace(/\s+/g, '-')}-2025.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const canNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
+  const handleNativeShare = async () => {
+    setIsExporting(true);
+    try {
+      const canvas = renderCardCanvas();
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+      const file = new File([blob], `TOP100-${(nominee.name || 'honoree').replace(/\s+/g, '-')}-2025.png`, { type: 'image/png' });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], text: shareText });
+      } else {
+        await navigator.share({ text: shareText, url: shareUrl });
+      }
+    } catch (err) {
+      if (err?.name !== 'AbortError') console.error(err);
     } finally {
       setIsExporting(false);
     }
@@ -538,7 +580,17 @@ export default function ShareableCard({ nominee, rank, onClose }) {
 
           {/* Actions */}
           <div className="px-8 pb-8 space-y-3">
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              {canNativeShare && (
+                <ActionBtn
+                  onClick={handleNativeShare}
+                  disabled={isExporting}
+                  icon={Share2}
+                  label="Share Card"
+                  bg={`linear-gradient(135deg,${b.rose},${b.gold})`}
+                  textColor={b.navyDark}
+                />
+              )}
               <ActionBtn
                 onClick={handleDownload}
                 disabled={isExporting}
