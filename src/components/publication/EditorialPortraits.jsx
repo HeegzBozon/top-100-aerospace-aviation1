@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import NomineeImage from '@/components/publication/NomineeImage';
 import { publicationBrand as brandColors } from '@/components/publication/publicationConfig';
@@ -95,10 +96,15 @@ const QuoteCard = ({ quote, index }) => (
 
 // Cover Story Card — the #1, treated like a magazine cover
 const CoverStoryCard = ({ nominee, onSelect }) => {
+  const cardRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: cardRef, offset: ['start end', 'end start'] });
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ['-8%', '8%']);
+
   if (!nominee) return null;
-  
+
   return (
     <motion.article
+      ref={cardRef}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -107,13 +113,15 @@ const CoverStoryCard = ({ nominee, onSelect }) => {
       className="group cursor-pointer relative"
     >
       <div className="relative aspect-[3/4] md:aspect-[4/5] overflow-hidden">
-        {/* Image */}
-        <NomineeImage
-          nominee={nominee}
-          priority
-          className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-          fallbackClassName="w-full h-full text-8xl"
-        />
+        {/* Image with parallax depth */}
+        <motion.div className="absolute inset-[-10%]" style={{ y: parallaxY }}>
+          <NomineeImage
+            nominee={nominee}
+            priority
+            className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+            fallbackClassName="w-full h-full text-8xl"
+          />
+        </motion.div>
         
         {/* Permanent gradient overlay */}
         <div 
