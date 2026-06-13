@@ -1,9 +1,10 @@
 import HomeHeroSlider from '@/components/home-v2/HomeHeroSlider';
 import LeadConnectorChatWidget from '@/components/home-v2/LeadConnectorChatWidget';
 import GlobalNewsletterFooter from '@/components/shared/GlobalNewsletterFooter';
-import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Menu, X, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
 
 const NAV_LINKS = [
   { label: 'Operation: Moon Joy', to: '/moon-joy' },
@@ -17,6 +18,13 @@ const NAV_LINKS = [
 
 export default function HomeV2() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me()
+      .then(u => setIsAdmin(u?.role === 'admin'))
+      .catch(() => {});
+  }, []);
 
   return (
     <>
@@ -79,6 +87,16 @@ export default function HomeV2() {
                 </Link>
               )
             ))}
+            {isAdmin && (
+              <Link
+                to="/Admin"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 px-5 py-3.5 text-sm font-semibold text-[#c9a87c] hover:bg-white/5 transition-all border-t border-[#c9a87c]/20"
+              >
+                <Shield className="w-4 h-4" />
+                Admin Portal
+              </Link>
+            )}
           </div>
         )}
       </div>
