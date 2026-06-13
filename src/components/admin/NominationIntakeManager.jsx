@@ -22,8 +22,19 @@ const typeLabels = {
   angels: 'TOP 100 Angels',
 };
 
+// Match a nomination track to its open season by name keyword
+const TRACK_KEYWORDS = { women: 'women', men: 'men', angels: 'angels' };
+
+function findSeasonForTrack(seasons, track) {
+  const keyword = TRACK_KEYWORDS[track];
+  if (!keyword) return null;
+  const open = seasons.filter(s => s.status === 'nominations_open' || s.status === 'voting_open');
+  return open.find(s => s.name?.toLowerCase().includes(keyword)) || null;
+}
+
 export default function NominationIntakeManager() {
   const [items, setItems] = useState([]);
+  const [seasons, setSeasons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
@@ -31,7 +42,10 @@ export default function NominationIntakeManager() {
   const [approvingId, setApprovingId] = useState(null);
   const { toast } = useToast();
 
-  useEffect(() => { loadItems(); }, []);
+  useEffect(() => {
+    loadItems();
+    base44.entities.Season.list('-created_date').then(setSeasons);
+  }, []);
 
   const loadItems = async () => {
     setLoading(true);
@@ -50,7 +64,36 @@ export default function NominationIntakeManager() {
     if (item.nominee_id) return;
     setApprovingId(item.id);
 
+    // Resolve target season from nomination track
+    const season = findSeasonForTrack(seasons, item.nomination_type);
+    if (!season) {
+      setApprovingId(null);
+      toast({ variant: 'destructive', title: 'No open season found', description: `No open season matches the "${typeLabels[item.nomination_type] || item.nomination_type}" track.` });
+      return;
+    }
+
+    // Duplicate detection: same email or exact name in the target season
+    const seasonNominees = await base44.entities.Nominee.filter({ season_id: season.id });
+    const email = (item.nominee_email || '').toLowerCase().trim();
+    const name = (item.nominee_name || '').toLowerCase().trim();
+    const duplicate = seasonNominees.find(n =>
+      (email && n.nominee_email?.toLowerCase().trim() === email) ||
+      (name && n.name?.toLowerCase().trim() === name)
+    );
+    if (duplicate) {
+      const link = window.confirm(`"${duplicate.name}" already exists in ${season.name} (status: ${duplicate.status}).\n\nOK = link this nomination to the existing nominee\nCancel = abort`);
+      if (link) {
+        const patch = { status: 'approved', nominee_id: duplicate.id, admin_notes: `${item.admin_notes ? item.admin_notes + '\n' : ''}Linked to existing nominee (duplicate detected).` };
+        await base44.entities.NominationIntake.update(item.id, patch);
+        setItems(prev => prev.map(entry => entry.id === item.id ? { ...entry, ...patch } : entry));
+        toast({ title: 'Linked to existing nominee', description: `${item.nominee_name} matched ${duplicate.name}.` });
+      }
+      setApprovingId(null);
+      return;
+    }
+
     const nominee = await base44.entities.Nominee.create({
+      season_id: season.id,
       name: item.nominee_name,
       nominee_email: item.nominee_email || '',
       linkedin_profile_url: item.link?.includes('linkedin.com') ? item.link : '',
