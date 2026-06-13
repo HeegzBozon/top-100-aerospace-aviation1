@@ -214,7 +214,14 @@ function Slide1({ nominee, onClose, onShare }) {
             {nominee.name}
           </h2>
           {(nominee.title || nominee.professional_role) && (
-            <p className="text-xs font-semibold mt-0.5 tracking-wide" style={{ color: b.goldLight }}>
+            <p className="text-xs font-semibold mt-0.5 tracking-wide"
+              style={{
+                color: b.goldLight,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}>
               {nominee.title || nominee.professional_role}
               {nominee.company && <span style={{ color: 'rgba(255,255,255,0.4)' }}> · {nominee.company}</span>}
             </p>

@@ -137,6 +137,8 @@ const HonoreeCard = React.forwardRef(({ nominee, rank, photoDataUrl, wreathDataU
             margin: 0, marginBottom: 2,
             fontSize: 13, fontWeight: 600, color: b.goldLight,
             fontFamily: 'system-ui, sans-serif', lineHeight: 1.4,
+            display: '-webkit-box', WebkitLineClamp: 1,
+            WebkitBoxOrient: 'vertical', overflow: 'hidden',
           }}>
             {nominee.title || nominee.professional_role}
             {nominee.company && (
