@@ -21,6 +21,7 @@ import AuthenticatedIntelligenceHeader from '@/components/publication/Authentica
 import EditorialNav from '@/components/publication/EditorialNav';
 import EditorialSection from '@/components/publication/EditorialSection';
 import PublicationLoading from '@/components/publication/PublicationLoading';
+import DiscoveryTracker from '@/components/publication/DiscoveryTracker';
 import useTop100WomenNominees from '@/components/publication/useTop100WomenNominees';
 import { publicationBrand as brandColors, top100Women2025Config } from '@/components/publication/publicationConfig';
 
@@ -32,7 +33,43 @@ export default function Top100Women2025() {
   const [activeSection, setActiveSection] = useState('hero');
   const [showCountdown, setShowCountdown] = useState(false);
   const [user, setUser] = useState(null);
+  const [discoveredIds, setDiscoveredIds] = useState(() => {
+    try {
+      return new Set(JSON.parse(localStorage.getItem('t100w25_discovered') || '[]'));
+    } catch {
+      return new Set();
+    }
+  });
   const containerRef = useRef(null);
+
+  // Track discovered honorees + sync profile deep-link to URL
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (selectedNominee) {
+      setDiscoveredIds(prev => {
+        if (prev.has(selectedNominee.id)) return prev;
+        const next = new Set(prev);
+        next.add(selectedNominee.id);
+        localStorage.setItem('t100w25_discovered', JSON.stringify([...next]));
+        return next;
+      });
+      url.searchParams.set('nominee', selectedNominee.id);
+    } else {
+      url.searchParams.delete('nominee');
+    }
+    window.history.replaceState({}, '', url);
+  }, [selectedNominee]);
+
+  // Open profile from ?nominee= deep link once data loads
+  useEffect(() => {
+    if (loading || nominees.length === 0) return;
+    const nomineeId = new URLSearchParams(window.location.search).get('nominee');
+    if (nomineeId) {
+      const target = nominees.find(n => n.id === nomineeId);
+      if (target) setSelectedNominee(target);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, nominees.length]);
   
   const { scrollYProgress } = useScroll({ target: containerRef });
 
@@ -208,6 +245,11 @@ export default function Top100Women2025() {
       <section id="closing">
         <EditorialClosing />
       </section>
+
+      {/* Discovery progress tracker */}
+      {!showCountdown && !selectedNominee && (
+        <DiscoveryTracker discoveredCount={discoveredIds.size} total={nominees.length} />
+      )}
 
       {/* Profile Panel */}
       {selectedNominee && (
