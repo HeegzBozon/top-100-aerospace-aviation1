@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { getDashboardStats } from '@/functions/getDashboardStats';
 import { getAnalyticsData } from '@/functions/getAnalyticsData';
 import AnalyticsPanel from '@/components/analytics/AnalyticsPanel';
+import CrossSeasonOverview from '@/components/admin/CrossSeasonOverview';
 import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -213,28 +214,27 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
     const loadPlatformData = useCallback(async () => {
         setPlatformLoading(true);
         try {
-            const [seasons, events] = await Promise.all([
+            const [seasons, events, allNominees, intakeItems] = await Promise.all([
                 base44.entities.Season.list('-created_date', 50).catch(() => []),
                 base44.entities.Event.list('-created_date', 3).catch(() => []),
+                base44.entities.Nominee.filter({}, '-created_date', 100000).catch(() => []),
+                base44.entities.NominationIntake.list('-created_date', 1000).catch(() => []),
             ]);
 
             const ACTIVE_STATUSES = ['nominations_open', 'voting_open', 'review', 'rollover'];
             const activeSeasons = seasons.filter(s => ACTIVE_STATUSES.includes(s.status) || s.status === 'planning');
             const primaryActiveSeason = activeSeasons[0] || seasons[0] || null;
 
-            let allSeasonNominees = [];
-            if (activeSeasons.length > 0) {
-                // we can just fetch all and filter by active season ids
-                const allNominees = await base44.entities.Nominee.filter({}, '-created_date', 100000).catch(() => []);
-                const activeSeasonIds = activeSeasons.map(s => s.id);
-                allSeasonNominees = allNominees.filter(n => activeSeasonIds.includes(n.season_id));
-            }
+            const activeSeasonIds = activeSeasons.map(s => s.id);
+            const allSeasonNominees = allNominees.filter(n => activeSeasonIds.includes(n.season_id));
 
             setPlatformData({
                 primaryActiveSeason,
                 activeSeasons,
                 seasons,
+                allNominees,
                 allSeasonNominees,
+                intakeItems,
                 upcomingEvents: events.filter(e => new Date(e.event_date) > new Date()).length,
             });
         } catch (err) {
@@ -685,11 +685,16 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                                 pass: !!(s?.voting_start && s?.voting_end),
                                 detail: s?.voting_start ? `Opens ${new Date(s.voting_start).toLocaleDateString()}` : 'Missing dates',
                             },
-                            {
-                                label: 'Nominees enrolled',
-                                pass: (platformData?.seasonNomineeCount || 0) > 0,
-                                detail: `${platformData?.seasonNomineeCount ?? 0} nominees`,
-                            },
+                            (() => {
+                                const count = selectedSeasonId === 'all'
+                                    ? platformData?.allSeasonNominees?.length ?? 0
+                                    : platformData?.allSeasonNominees?.filter(n => n.season_id === selectedSeasonId).length ?? 0;
+                                return {
+                                    label: 'Nominees enrolled',
+                                    pass: count > 0,
+                                    detail: `${count.toLocaleString()} nominees`,
+                                };
+                            })(),
                             {
                                 label: 'Scoring config active',
                                 pass: !!(s?.scoring_config?.use_holistic_v3),
@@ -785,6 +790,15 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                     })()}
                 </div>
             </div>
+
+            {/* ── Cross-Season Tracker + Intake Pipeline ───────────────────── */}
+            <CrossSeasonOverview
+                seasons={platformData?.seasons}
+                nominees={platformData?.allNominees}
+                intakeItems={platformData?.intakeItems}
+                onNavigate={onNavigate}
+                loading={platformLoading}
+            />
 
             {/* ── Site Traffic ─────────────────────────────────────────────── */}
             <div className="rounded-xl p-5" style={{ background: B.surface, border: `1px solid ${B.border}` }}>
