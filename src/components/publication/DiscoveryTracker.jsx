@@ -14,7 +14,20 @@ const MILESTONES = [
 export default function DiscoveryTracker({ discoveredCount, total }) {
   const [expanded, setExpanded] = useState(false);
   const [toast, setToast] = useState(null);
+  const [showIntro, setShowIntro] = useState(false);
   const prevCount = useRef(discoveredCount);
+
+  // First-time onboarding prompt
+  useEffect(() => {
+    if (discoveredCount > 0 && !localStorage.getItem('t100w25_tracker_intro')) {
+      setShowIntro(true);
+    }
+  }, [discoveredCount]);
+
+  const dismissIntro = () => {
+    localStorage.setItem('t100w25_tracker_intro', '1');
+    setShowIntro(false);
+  };
 
   // Milestone toast when crossing a threshold
   useEffect(() => {
@@ -35,7 +48,40 @@ export default function DiscoveryTracker({ discoveredCount, total }) {
   const R = 20, C = 2 * Math.PI * R;
 
   return (
-    <div className="fixed bottom-24 left-4 z-40 flex flex-col items-start gap-2">
+    <div className="fixed top-16 right-4 z-40 flex flex-col items-end gap-2">
+      {/* First-time onboarding callout */}
+      <AnimatePresence>
+        {showIntro && !expanded && (
+          <motion.div
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 12 }}
+            transition={{ delay: 0.6 }}
+            className="order-2 rounded-2xl px-4 py-3 shadow-2xl backdrop-blur-md relative"
+            style={{
+              background: 'rgba(15, 28, 48, 0.95)',
+              border: `1px solid ${brandColors.goldPrestige}50`,
+              maxWidth: 240,
+            }}
+          >
+            <div className="absolute -top-1.5 right-5 w-3 h-3 rotate-45"
+              style={{ background: 'rgba(15, 28, 48, 0.95)', borderTop: `1px solid ${brandColors.goldPrestige}50`, borderLeft: `1px solid ${brandColors.goldPrestige}50` }} />
+            <p className="text-[9px] uppercase tracking-[0.25em] mb-1" style={{ color: brandColors.goldPrestige }}>
+              Your Discovery Journey
+            </p>
+            <p className="text-[12px] leading-relaxed text-white/85">
+              You just discovered your first honoree! Tap profiles to explore all {total} — this ring tracks your progress.
+            </p>
+            <button
+              onClick={dismissIntro}
+              className="mt-2 text-[11px] font-bold px-3 py-1.5 rounded-full"
+              style={{ background: brandColors.goldPrestige, color: '#0f1c30' }}
+            >
+              Got it
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Milestone toast */}
       <AnimatePresence>
         {toast && (
@@ -100,7 +146,7 @@ export default function DiscoveryTracker({ discoveredCount, total }) {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         whileTap={{ scale: 0.92 }}
-        onClick={() => setExpanded(e => !e)}
+        onClick={() => { if (showIntro) dismissIntro(); setExpanded(e => !e); }}
         aria-label="Discovery progress"
         className="relative w-12 h-12 rounded-full shadow-xl backdrop-blur-md flex items-center justify-center"
         style={{
