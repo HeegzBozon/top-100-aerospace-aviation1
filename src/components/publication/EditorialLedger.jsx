@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ChevronDown, Globe } from 'lucide-react';
+import { Search, ChevronDown, Globe, Eye, Check } from 'lucide-react';
 import NomineeImage from '@/components/publication/NomineeImage';
 import { publicationBrand as brandColors } from '@/components/publication/publicationConfig';
 
 // Mobile Card for Index
-const MobileIndexCard = ({ nominee, index, onClick }) => {
+const MobileIndexCard = ({ nominee, index, onClick, viewed }) => {
   const rank = nominee.finalRank || index + 1;
   
   return (
@@ -55,6 +55,16 @@ const MobileIndexCard = ({ nominee, index, onClick }) => {
         </p>
       </div>
       
+      {/* Viewed indicator */}
+      {viewed && (
+        <span
+          className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide px-2 py-1 rounded-full flex-shrink-0"
+          style={{ background: `${brandColors.goldPrestige}18`, color: brandColors.goldPrestige }}
+        >
+          <Check className="w-3 h-3" /> Viewed
+        </span>
+      )}
+
       {/* Chevron */}
       <ChevronDown 
         className="w-4 h-4 -rotate-90 flex-shrink-0" 
@@ -65,7 +75,7 @@ const MobileIndexCard = ({ nominee, index, onClick }) => {
 };
 
 // Minimal Index Row (Desktop)
-const IndexRow = ({ nominee, index, onClick }) => {
+const IndexRow = ({ nominee, index, onClick, viewed }) => {
   const rank = nominee.finalRank || index + 1;
   
   return (
@@ -133,15 +143,30 @@ const IndexRow = ({ nominee, index, onClick }) => {
           {nominee.country || '—'}
         </span>
       </td>
-      
+
+      {/* Viewed */}
+      <td className="py-4 w-20">
+        {viewed && (
+          <span
+            className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide px-2 py-1 rounded-full"
+            style={{ background: `${brandColors.goldPrestige}18`, color: brandColors.goldPrestige }}
+          >
+            <Check className="w-3 h-3" /> Viewed
+          </span>
+        )}
+      </td>
+
     </motion.tr>
   );
 };
 
-export default function EditorialLedger({ nominees, onSelectNominee }) {
+export default function EditorialLedger({ nominees, onSelectNominee, discoveredIds }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [hideViewed, setHideViewed] = useState(false);
+  const viewedSet = discoveredIds || new Set();
+  const viewedCount = nominees.filter(n => viewedSet.has(n.id)).length;
 
   // Extract unique countries
   const countries = useMemo(() => {
@@ -157,9 +182,11 @@ export default function EditorialLedger({ nominees, onSelectNominee }) {
         n.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         n.company?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCountry = selectedCountry === 'all' || n.country === selectedCountry;
-      return matchesSearch && matchesCountry;
+      const matchesViewed = !hideViewed || !viewedSet.has(n.id);
+      return matchesSearch && matchesCountry && matchesViewed;
     });
-  }, [nominees, searchTerm, selectedCountry]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nominees, searchTerm, selectedCountry, hideViewed, discoveredIds]);
 
   return (
     <section 
@@ -260,10 +287,24 @@ export default function EditorialLedger({ nominees, onSelectNominee }) {
         </motion.div>
 
         {/* Results Count */}
-        <div className="mb-4 md:mb-8 pb-3 md:pb-4 border-b" style={{ borderColor: `${brandColors.ink}10` }}>
+        <div className="mb-4 md:mb-8 pb-3 md:pb-4 border-b flex items-center justify-between gap-3" style={{ borderColor: `${brandColors.ink}10` }}>
           <p className="text-[11px] md:text-xs" style={{ color: `${brandColors.ink}40` }}>
             {filteredNominees.length} of {nominees.length} indexed
+            {viewedCount > 0 && <span style={{ color: brandColors.goldPrestige }}> · {viewedCount} viewed</span>}
           </p>
+          {viewedCount > 0 && (
+            <button
+              onClick={() => setHideViewed(v => !v)}
+              className="flex items-center gap-1.5 text-[11px] md:text-xs font-semibold px-3 py-1.5 rounded-full transition-colors"
+              style={{
+                background: hideViewed ? brandColors.goldPrestige : `${brandColors.ink}06`,
+                color: hideViewed ? 'white' : `${brandColors.ink}70`,
+              }}
+            >
+              <Eye className="w-3.5 h-3.5" />
+              {hideViewed ? 'Showing unviewed' : 'Hide viewed'}
+            </button>
+          )}
         </div>
 
         {/* Mobile Card List */}
@@ -274,6 +315,7 @@ export default function EditorialLedger({ nominees, onSelectNominee }) {
               nominee={nominee}
               index={index}
               onClick={onSelectNominee}
+              viewed={viewedSet.has(nominee.id)}
             />
           ))}
         </div>
@@ -295,6 +337,7 @@ export default function EditorialLedger({ nominees, onSelectNominee }) {
                 <th className="pb-3 text-left text-[10px] tracking-[0.2em] uppercase font-normal hidden lg:table-cell" style={{ color: `${brandColors.ink}40` }}>
                   Region
                 </th>
+                <th className="pb-3 w-20" />
               </tr>
             </thead>
             <tbody>
@@ -304,6 +347,7 @@ export default function EditorialLedger({ nominees, onSelectNominee }) {
                   nominee={nominee}
                   index={index}
                   onClick={onSelectNominee}
+                  viewed={viewedSet.has(nominee.id)}
                 />
               ))}
             </tbody>

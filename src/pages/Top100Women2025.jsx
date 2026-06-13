@@ -245,6 +245,7 @@ export default function Top100Women2025() {
         <EditorialLedger 
           nominees={nominees} 
           onSelectNominee={setSelectedNominee} 
+          discoveredIds={discoveredIds}
         />
       </EditorialSection>
 
