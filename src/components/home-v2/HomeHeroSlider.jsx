@@ -1,25 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight, Globe2, MapPin, Rocket, Joystick, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NominationCountdown from '@/components/home-v2/NominationCountdown';
-
-function useIsLiveNow() {
-  const [live, setLive] = useState(false);
-  useEffect(() => {
-    const check = () => {
-      const pt = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
-      const day = pt.getDay();
-      const totalMin = pt.getHours() * 60 + pt.getMinutes();
-      setLive(day >= 1 && day <= 5 && totalMin >= 810 && totalMin < 900);
-    };
-    check();
-    const id = setInterval(check, 30000);
-    return () => clearInterval(id);
-  }, []);
-  return live;
-}
 
 const slides = [
   {
@@ -82,7 +66,6 @@ function SlideButton({ action, variant = 'primary' }) {
 
 export default function HomeHeroSlider() {
   const [active, setActive] = useState(0);
-  const isLive = useIsLiveNow();
   const slide = slides[active];
   const Icon = slide.icon;
 
@@ -158,27 +141,6 @@ export default function HomeHeroSlider() {
 
               {slide.id === 'think-global' && (
                 <div className="mt-5 flex flex-wrap items-center gap-3">
-                  <Link
-                    to="/moon-joy"
-                    className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95 hover:shadow-[0_0_20px_rgba(201,168,124,0.4)]"
-                    style={{ background: 'linear-gradient(135deg, rgba(201,168,124,0.25), rgba(201,168,124,0.12))', border: '1px solid rgba(201,168,124,0.55)', color: '#c9a87c' }}
-                  >
-                    {isLive ? (
-                      <>
-                        <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse flex-shrink-0" />
-                        <span className="text-red-300">LIVE NOW</span>
-                        <span className="text-white/40">·</span>
-                        RSVP — Operation: Moon Joy
-                        <ArrowRight className="w-3 h-3" />
-                      </>
-                    ) : (
-                      <>
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c]" />
-                        RSVP — Operation: Moon Joy
-                        <ArrowRight className="w-3 h-3" />
-                      </>
-                    )}
-                  </Link>
                   <Link
                     to="/survey?id=69e65fc6dc017363a733c2e5"
                     className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
