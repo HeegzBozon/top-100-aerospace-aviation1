@@ -1,16 +1,34 @@
 import { motion } from 'framer-motion';
-import { Rocket, Share2, Eye, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Rocket, Share2, Eye, Lock, ChevronLeft } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 
 export default function ListBuilderHeader({ listName, count, isPublished, onShare, onPreview }) {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate('/');
+  };
+
   return (
     <div
       className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 backdrop-blur-md border-b"
       style={{ background: 'rgba(250,248,245,0.92)', borderColor: `${brand.navy}12` }}
     >
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+        <motion.button
+          whileTap={{ scale: 0.92 }}
+          onClick={handleBack}
+          aria-label="Go back"
+          className="h-8 shrink-0 rounded-full flex items-center justify-center gap-1 px-2 lg:px-3"
+          style={{ background: `${brand.navy}0D`, color: brand.navy }}
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span className="hidden lg:inline text-[11px] font-bold uppercase tracking-[0.12em]">Back</span>
+        </motion.button>
         <div
-          className="h-8 w-8 rounded-full flex items-center justify-center"
+          className="h-8 w-8 shrink-0 rounded-full flex items-center justify-center"
           style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
         >
           <Rocket className="w-3.5 h-3.5 text-white" />
