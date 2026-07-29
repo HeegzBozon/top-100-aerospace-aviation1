@@ -55,6 +55,7 @@ const SessionPortal = lazy(() => import('@/pages/SessionPortal'));
 const SessionJoin = lazy(() => import('@/pages/SessionJoin'));
 const MyTop100 = lazy(() => import('@/pages/MyTop100'));
 const PublicTop100List = lazy(() => import('@/pages/PublicTop100List'));
+const SeasonArchive = lazy(() => import('@/pages/SeasonArchive'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -197,6 +198,8 @@ const AuthenticatedApp = () => {
       <Route path="/session-portal/join/:code" element={<SessionJoin />} />
       <Route path="/my-top100" element={<MyTop100 />} />
       <Route path="/top100-list/:shareCode" element={<PublicTop100List />} />
+      <Route path="/archive/:seasonId" element={<SeasonArchive />} />
+      <Route path="/volume-one" element={<Navigate to="/archive/696aec2d99297cdbe96ee71e" replace />} />
       <Route path="/Nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/top100-tv" element={
