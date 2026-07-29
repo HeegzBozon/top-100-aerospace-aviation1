@@ -1,5 +1,4 @@
 import HomeHeroSlider from '@/components/home-v2/HomeHeroSlider';
-import LeadConnectorChatWidget from '@/components/home-v2/LeadConnectorChatWidget';
 import GlobalNewsletterFooter from '@/components/shared/GlobalNewsletterFooter';
 import { useState, useEffect } from 'react';
 import { Menu, X, Shield } from 'lucide-react';
@@ -102,7 +101,6 @@ export default function HomeV2() {
       </div>
 
       <HomeHeroSlider />
-      <LeadConnectorChatWidget />
     </>
   );
 }
