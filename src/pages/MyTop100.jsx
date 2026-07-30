@@ -11,7 +11,7 @@ import DesktopSearchPanel from '@/components/my-top100/DesktopSearchPanel';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
 import NominationHub from '@/components/my-top100/NominationHub';
 import HubListTabs from '@/components/my-top100/HubListTabs';
-import NominateWelcome from '@/components/my-top100/NominateWelcome';
+import StartHereSplit from '@/components/my-top100/StartHereSplit';
 import { saveRankedVote } from '@/functions/saveRankedVote';
 import { Loader2, Pencil, Check, Rocket, LogIn, ListOrdered } from 'lucide-react';
 
@@ -286,7 +286,8 @@ export default function MyTop100() {
       {/* ── START HERE TAB ── */}
       {activeTab === 'start' && (
         <div className="flex-1 overflow-y-auto">
-          <NominateWelcome
+          <StartHereSplit
+            user={user}
             hasExisting={totalNominations > 0 || rankings.length > 0}
             onBegin={() => setActiveTab('nominate')}
             onVote={() => setActiveTab('list')}
