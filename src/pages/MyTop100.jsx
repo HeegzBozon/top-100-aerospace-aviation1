@@ -8,10 +8,9 @@ import NomineeSearchDrawer from '@/components/my-top100/NomineeSearchDrawer';
 import ShareCard from '@/components/my-top100/ShareCard';
 import PublishBanner from '@/components/my-top100/PublishBanner';
 import DesktopSearchPanel from '@/components/my-top100/DesktopSearchPanel';
-import ListImpactBar from '@/components/my-top100/ListImpactBar';
-import ListEmptyState from '@/components/my-top100/ListEmptyState';
+import NominationHub from '@/components/my-top100/NominationHub';
 import { saveRankedVote } from '@/functions/saveRankedVote';
-import { Loader2, Pencil, Check, Rocket, LogIn } from 'lucide-react';
+import { Loader2, Pencil, Check, Rocket, LogIn, ListOrdered } from 'lucide-react';
 
 function generateShareCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -30,6 +29,8 @@ export default function MyTop100() {
   const [showSearch, setShowSearch] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [saveTimer, setSaveTimer] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('women');
+  const [hubNominations, setHubNominations] = useState({ women: [], men: [], angels: [], local_legends: [] });
 
   useEffect(() => {
     const init = async () => {
@@ -56,6 +57,25 @@ export default function MyTop100() {
     };
     init();
   }, []);
+
+  // Hub nomination draft persistence
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('hub_nominations_draft');
+      if (saved) setHubNominations(JSON.parse(saved));
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('hub_nominations_draft', JSON.stringify(hubNominations));
+  }, [hubNominations]);
+
+  const addHubNomination = (category, factory) =>
+    setHubNominations((p) => ({ ...p, [category]: [...p[category], factory()] }));
+  const updateHubNomination = (category, idx, field, value) =>
+    setHubNominations((p) => ({ ...p, [category]: p[category].map((n, i) => (i === idx ? { ...n, [field]: value } : n)) }));
+  const removeHubNomination = (category, idx) =>
+    setHubNominations((p) => ({ ...p, [category]: p[category].filter((_, i) => i !== idx) }));
 
   // Debounced auto-save
   const scheduleSave = useCallback((updatedRankings, updatedName, updatedPublished) => {
@@ -231,19 +251,45 @@ export default function MyTop100() {
         onShare={() => setShowShare(true)}
       />
 
-      {/* Impact / progress bar — mobile-first, spans full width */}
-      <div className="lg:px-6 lg:max-w-7xl lg:mx-auto lg:w-full">
-        <ListImpactBar rankings={rankings} />
+      {/* ── NOMINATIONS HUB (primary) ── */}
+      <div className="lg:max-w-3xl lg:mx-auto lg:w-full">
+        <NominationHub
+          activeCategory={activeCategory}
+          onCategoryChange={setActiveCategory}
+          nominations={hubNominations}
+          onAddNomination={addHubNomination}
+          onUpdateNomination={updateHubNomination}
+          onRemoveNomination={removeHubNomination}
+          onAddExisting={handleAdd}
+          nominator={user}
+        />
       </div>
 
-      {/* ── DESKTOP: two-column ── */}
-      <div className="hidden lg:flex flex-1 gap-6 px-6 py-6 max-w-7xl mx-auto w-full">
-        {/* Left: search panel */}
+      {/* ── Divider: Your Top 100 List ── */}
+      <div className="px-4 py-6 lg:py-8 lg:max-w-7xl lg:mx-auto lg:w-full">
+        <div className="flex items-center gap-3 mb-1">
+          <div className="flex-1 h-px" style={{ background: `${brand.navy}10` }} />
+          <ListOrdered className="w-4 h-4" style={{ color: brand.gold }} />
+          <h2
+            className="text-sm font-bold uppercase tracking-[0.2em]"
+            style={{ color: `${brand.navy}70` }}
+          >
+            Your Top 100 List
+          </h2>
+          <div className="flex-1 h-px" style={{ background: `${brand.navy}10` }} />
+        </div>
+        <p className="text-center text-[11px] mt-2" style={{ color: `${brand.navy}40` }}>
+          {rankings.length === 0
+            ? 'Search above or nominate someone to start building your ranked list.'
+            : `${rankings.length} of 100 honorees ranked · drag to reorder`}
+        </p>
+      </div>
+
+      {/* ── DESKTOP: two-column list builder ── */}
+      <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full">
         <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start" style={{ maxHeight: 'calc(100vh - 80px)' }}>
           <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} />
         </div>
-
-        {/* Right: list */}
         <div className="flex-1 flex flex-col">
           {ListNameEditor}
           <PublishBanner
@@ -264,7 +310,7 @@ export default function MyTop100() {
         </div>
       </div>
 
-      {/* ── MOBILE: stacked ── */}
+      {/* ── MOBILE: stacked list builder ── */}
       <div className="lg:hidden flex flex-col flex-1">
         {ListNameEditor}
         <PublishBanner
@@ -285,7 +331,7 @@ export default function MyTop100() {
           />
         </div>
 
-        {rankings.length > 0 && rankings.length < 100 && (
+        {rankings.length < 100 && (
           <div className="fixed bottom-6 right-4 z-20">
             <motion.button
               whileTap={{ scale: 0.92 }}
