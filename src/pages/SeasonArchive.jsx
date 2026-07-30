@@ -6,6 +6,7 @@ import ArchiveHonoreeCard from '@/components/archive/ArchiveHonoreeCard';
 import ArchiveHonoreeDetail from '@/components/archive/ArchiveHonoreeDetail';
 import ArchiveVolumeSwitcher from '@/components/archive/ArchiveVolumeSwitcher';
 import ArchiveContinueNav from '@/components/archive/ArchiveContinueNav';
+import NominateCTA from '@/components/archive/NominateCTA';
 
 const navy = '#1e3a5a';
 const gold = '#c9a87c';
@@ -78,6 +79,12 @@ export default function SeasonArchive() {
           )}
         </header>
 
+        {!loading && nominees.length > 0 && (
+          <div className="mb-6 sm:mb-8">
+            <NominateCTA />
+          </div>
+        )}
+
         {loading ? (
           <div className="flex justify-center py-20">
             <Loader2 className="w-7 h-7 animate-spin" style={{ color: navy }} />
@@ -100,6 +107,7 @@ export default function SeasonArchive() {
         )}
       </div>
 
+      {!loading && nominees.length > 0 && <NominateCTA variant="banner" />}
       {!loading && <ArchiveContinueNav currentSeasonId={seasonId} />}
 
       <ArchiveHonoreeDetail nominee={selected} onClose={() => setSelected(null)} />
