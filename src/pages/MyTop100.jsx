@@ -9,6 +9,7 @@ import ShareCard from '@/components/my-top100/ShareCard';
 import PublishBanner from '@/components/my-top100/PublishBanner';
 import DesktopSearchPanel from '@/components/my-top100/DesktopSearchPanel';
 import NominationHub from '@/components/my-top100/NominationHub';
+import HubListTabs from '@/components/my-top100/HubListTabs';
 import { saveRankedVote } from '@/functions/saveRankedVote';
 import { Loader2, Pencil, Check, Rocket, LogIn, ListOrdered } from 'lucide-react';
 
@@ -31,6 +32,7 @@ export default function MyTop100() {
   const [saveTimer, setSaveTimer] = useState(null);
   const [activeCategory, setActiveCategory] = useState('women');
   const [hubNominations, setHubNominations] = useState({ women: [], men: [], angels: [], local_legends: [] });
+  const [activeTab, setActiveTab] = useState('nominate');
 
   useEffect(() => {
     const init = async () => {
@@ -166,6 +168,7 @@ export default function MyTop100() {
   };
 
   const addedIds = new Set(rankings.map(r => r.nominee_id));
+  const totalNominations = Object.values(hubNominations).reduce((sum, arr) => sum + arr.length, 0);
 
   if (loading) {
     return (
@@ -251,108 +254,114 @@ export default function MyTop100() {
         onShare={() => setShowShare(true)}
       />
 
-      {/* ── NOMINATIONS HUB (primary) ── */}
-      <div className="lg:max-w-3xl lg:mx-auto lg:w-full">
-        <NominationHub
-          activeCategory={activeCategory}
-          onCategoryChange={setActiveCategory}
-          submittedNominations={hubNominations}
-          onAddNomination={addHubNomination}
-          onRemoveNomination={removeHubNomination}
-          onAddExisting={(nominee) => {
-            addExistingToHub(activeCategory, nominee);
-            handleAdd(nominee);
-          }}
-          nominator={user}
-        />
-      </div>
+      <HubListTabs
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        nominationCount={totalNominations}
+        listCount={rankings.length}
+      />
 
-      {/* ── Divider: Your Top 100 List ── */}
-      <div className="px-4 py-6 lg:py-8 lg:max-w-7xl lg:mx-auto lg:w-full">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="flex-1 h-px" style={{ background: `${brand.navy}10` }} />
-          <ListOrdered className="w-4 h-4" style={{ color: brand.gold }} />
-          <h2
-            className="text-sm font-bold uppercase tracking-[0.2em]"
-            style={{ color: `${brand.navy}70` }}
-          >
-            Your Top 100 List
-          </h2>
-          <div className="flex-1 h-px" style={{ background: `${brand.navy}10` }} />
-        </div>
-        <p className="text-center text-[11px] mt-2" style={{ color: `${brand.navy}40` }}>
-          {rankings.length === 0
-            ? 'Search above or nominate someone to start building your ranked list.'
-            : `${rankings.length} of 100 honorees ranked · drag to reorder`}
-        </p>
-      </div>
-
-      {/* ── DESKTOP: two-column list builder ── */}
-      <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full">
-        <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start" style={{ maxHeight: 'calc(100vh - 80px)' }}>
-          <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} />
-        </div>
-        <div className="flex-1 flex flex-col">
-          {ListNameEditor}
-          <PublishBanner
-            rankings={rankings}
-            isPublished={isPublished}
-            saving={saving}
-            onPublish={handlePublish}
-            onSaveDraft={handleSaveDraft}
+      {/* ── NOMINATE TAB ── */}
+      {activeTab === 'nominate' && (
+        <div className="flex-1 overflow-y-auto lg:max-w-3xl lg:mx-auto lg:w-full">
+          <NominationHub
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+            submittedNominations={hubNominations}
+            onAddNomination={addHubNomination}
+            onRemoveNomination={removeHubNomination}
+            onAddExisting={(nominee) => {
+              addExistingToHub(activeCategory, nominee);
+              handleAdd(nominee);
+            }}
+            nominator={user}
           />
-          <ListCanvas
-            rankings={rankings}
-            onReorder={handleReorder}
-            onRemove={handleRemove}
-            onAddMore={() => {}}
-            onAdd={handleAdd}
-            addedIds={addedIds}
-          />
+          {rankings.length > 0 && (
+            <div className="px-4 pb-6 pt-2">
+              <button
+                onClick={() => setActiveTab('list')}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold transition-all"
+                style={{ background: 'white', border: `1px solid ${brand.navy}15`, color: brand.navy }}
+              >
+                <ListOrdered className="w-4 h-4" style={{ color: brand.gold }} />
+                View your Top 100 list ({rankings.length})
+              </button>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
-      {/* ── MOBILE: stacked list builder ── */}
-      <div className="lg:hidden flex flex-col flex-1">
-        {ListNameEditor}
-        <PublishBanner
-          rankings={rankings}
-          isPublished={isPublished}
-          saving={saving}
-          onPublish={handlePublish}
-          onSaveDraft={handleSaveDraft}
-        />
-        <div className="flex-1">
-          <ListCanvas
-            rankings={rankings}
-            onReorder={handleReorder}
-            onRemove={handleRemove}
-            onAddMore={() => setShowSearch(true)}
-            onAdd={handleAdd}
-            addedIds={addedIds}
-          />
-        </div>
-
-        {rankings.length < 100 && (
-          <div className="fixed bottom-6 right-4 z-20">
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              onClick={() => setShowSearch(true)}
-              className="h-14 w-14 rounded-full flex items-center justify-center text-white text-2xl shadow-2xl"
-              style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
-            >
-              +
-            </motion.button>
+      {/* ── MY LIST TAB ── */}
+      {activeTab === 'list' && (
+        <>
+          {/* Desktop: two-column */}
+          <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full">
+            <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start" style={{ maxHeight: 'calc(100vh - 80px)' }}>
+              <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} />
+            </div>
+            <div className="flex-1 flex flex-col">
+              {ListNameEditor}
+              <PublishBanner
+                rankings={rankings}
+                isPublished={isPublished}
+                saving={saving}
+                onPublish={handlePublish}
+                onSaveDraft={handleSaveDraft}
+              />
+              <ListCanvas
+                rankings={rankings}
+                onReorder={handleReorder}
+                onRemove={handleRemove}
+                onAddMore={() => {}}
+                onAdd={handleAdd}
+                addedIds={addedIds}
+              />
+            </div>
           </div>
-        )}
 
-        <NomineeSearchDrawer
-          isOpen={showSearch}
-          onClose={() => setShowSearch(false)}
-          onAdd={handleAdd}
-          addedIds={addedIds}
-        />
-      </div>
+          {/* Mobile: stacked */}
+          <div className="lg:hidden flex flex-col flex-1">
+            {ListNameEditor}
+            <PublishBanner
+              rankings={rankings}
+              isPublished={isPublished}
+              saving={saving}
+              onPublish={handlePublish}
+              onSaveDraft={handleSaveDraft}
+            />
+            <div className="flex-1">
+              <ListCanvas
+                rankings={rankings}
+                onReorder={handleReorder}
+                onRemove={handleRemove}
+                onAddMore={() => setShowSearch(true)}
+                onAdd={handleAdd}
+                addedIds={addedIds}
+              />
+            </div>
+
+            {rankings.length < 100 && (
+              <div className="fixed bottom-6 right-4 z-20">
+                <motion.button
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => setShowSearch(true)}
+                  className="h-14 w-14 rounded-full flex items-center justify-center text-white text-2xl shadow-2xl"
+                  style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
+                >
+                  +
+                </motion.button>
+              </div>
+            )}
+
+            <NomineeSearchDrawer
+              isOpen={showSearch}
+              onClose={() => setShowSearch(false)}
+              onAdd={handleAdd}
+              addedIds={addedIds}
+            />
+          </div>
+        </>
+      )}
 
       <ShareCard
         isOpen={showShare}
