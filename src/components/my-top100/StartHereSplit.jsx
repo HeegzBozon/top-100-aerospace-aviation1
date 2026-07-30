@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
-import { ArrowRight, CheckCircle2, LogOut, Sparkles, Vote } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Cpu, LogOut, Sparkles, Vote } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand, CONNECTION_OPTIONS } from '@/components/nominate/NominateConfig';
 
-export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onSaved }) {
+export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onSaved, onOpenOS }) {
   const [name, setName] = useState(user?.full_name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [connection, setConnection] = useState(user?.aerospace_connection || '');
@@ -66,6 +66,17 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
             <p className="text-[13px] leading-relaxed" style={{ color: '#a8a8a8' }}>
               This form takes about 3 minutes per nomination. There's no limit on how many people you nominate. Every single one gets reviewed personally.
             </p>
+          </div>
+
+          <div className="mt-7 flex flex-col sm:flex-row items-start gap-3">
+            <button
+              onClick={onOpenOS}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5"
+              style={{ background: 'transparent', border: `1.5px solid ${brand.navy}22`, color: brand.navy }}
+            >
+              <Cpu className="w-4 h-4" style={{ color: brand.gold }} />
+              Explore the Top 100 OS
+            </button>
           </div>
 
           <p className="text-[12px] mt-6 max-w-md leading-relaxed" style={{ color: '#b5b5b5' }}>

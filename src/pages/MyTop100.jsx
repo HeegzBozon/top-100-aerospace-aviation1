@@ -9,6 +9,7 @@ import ShareCard from '@/components/my-top100/ShareCard';
 import PublishBanner from '@/components/my-top100/PublishBanner';
 import DesktopSearchPanel from '@/components/my-top100/DesktopSearchPanel';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
+import Top100OSModal from '@/components/my-top100/Top100OSModal';
 import NominationHub from '@/components/my-top100/NominationHub';
 import HubListTabs from '@/components/my-top100/HubListTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
@@ -37,6 +38,7 @@ export default function MyTop100() {
   const [activeTab, setActiveTab] = useState('start');
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [explorerProfile, setExplorerProfile] = useState(null);
+  const [showOS, setShowOS] = useState(false);
 
   const openExplorer = () => { setExplorerProfile(null); setExplorerOpen(true); };
   const openProfileFromList = async (item) => {
@@ -292,6 +294,7 @@ export default function MyTop100() {
             onBegin={() => setActiveTab('nominate')}
             onVote={() => setActiveTab('list')}
             onSaved={(c) => setUser((u) => ({ ...u, aerospace_connection: c }))}
+            onOpenOS={() => setShowOS(true)}
           />
         </div>
       )}
@@ -416,6 +419,8 @@ export default function MyTop100() {
         onAdd={handleAdd}
         initialNominee={explorerProfile}
       />
+
+      <Top100OSModal isOpen={showOS} onClose={() => setShowOS(false)} />
     </div>
   );
 }
