@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
-import { Sparkles, ListOrdered } from 'lucide-react';
+import { Rocket, Sparkles, ListOrdered } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 
 export default function HubListTabs({ activeTab, onTabChange, nominationCount, listCount }) {
   const tabs = [
+    { key: 'start', label: 'Start Here', icon: Rocket },
     { key: 'nominate', label: 'Nominate', icon: Sparkles, badge: nominationCount },
     { key: 'list', label: 'Vote', icon: ListOrdered, badge: listCount },
   ];

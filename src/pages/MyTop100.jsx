@@ -33,7 +33,7 @@ export default function MyTop100() {
   const [saveTimer, setSaveTimer] = useState(null);
   const [activeCategory, setActiveCategory] = useState('women');
   const [hubNominations, setHubNominations] = useState({ women: [], men: [], angels: [], local_legends: [] });
-  const [activeTab, setActiveTab] = useState('nominate');
+  const [activeTab, setActiveTab] = useState('start');
 
   useEffect(() => {
     const init = async () => {
@@ -262,31 +262,32 @@ export default function MyTop100() {
         listCount={rankings.length}
       />
 
+      {/* ── START HERE TAB ── */}
+      {activeTab === 'start' && (
+        <div className="flex-1 overflow-y-auto">
+          <NominateWelcome
+            hasExisting={totalNominations > 0 || rankings.length > 0}
+            onBegin={() => setActiveTab('nominate')}
+            onVote={() => setActiveTab('list')}
+          />
+        </div>
+      )}
+
       {/* ── NOMINATE TAB ── */}
       {activeTab === 'nominate' && (
         <div className="flex-1 overflow-y-auto lg:max-w-3xl lg:mx-auto lg:w-full">
-          <NominateWelcome
-            hasExisting={totalNominations > 0 || rankings.length > 0}
-            onBegin={() => {
-              const hub = document.getElementById('nomination-hub');
-              if (hub) hub.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          <NominationHub
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+            submittedNominations={hubNominations}
+            onAddNomination={addHubNomination}
+            onRemoveNomination={removeHubNomination}
+            onAddExisting={(nominee) => {
+              addExistingToHub(activeCategory, nominee);
+              handleAdd(nominee);
             }}
-            onBuildList={() => setActiveTab('list')}
+            nominator={user}
           />
-          <div id="nomination-hub" className="scroll-mt-20">
-            <NominationHub
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-              submittedNominations={hubNominations}
-              onAddNomination={addHubNomination}
-              onRemoveNomination={removeHubNomination}
-              onAddExisting={(nominee) => {
-                addExistingToHub(activeCategory, nominee);
-                handleAdd(nominee);
-              }}
-              nominator={user}
-            />
-          </div>
           {rankings.length > 0 && (
             <div className="px-4 pb-6 pt-2">
               <button

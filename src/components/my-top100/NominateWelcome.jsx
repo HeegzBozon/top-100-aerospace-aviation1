@@ -1,24 +1,16 @@
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, ListOrdered } from 'lucide-react';
+import { Sparkles, ArrowRight, Vote } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 
-export default function NominateWelcome({ onBegin, onBuildList, hasExisting }) {
+export default function NominateWelcome({ onBegin, onVote, hasExisting }) {
   return (
-    <div className="px-5 pt-8 pb-10 max-w-2xl mx-auto w-full">
+    <div className="px-5 pt-10 pb-10 max-w-2xl mx-auto w-full">
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="flex flex-col items-start"
       >
-        {/* App preview tag */}
-        <span
-          className="inline-flex items-center text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-md mb-5"
-          style={{ background: '#f1f1f1', color: '#5e5e5e' }}
-        >
-          App Preview
-        </span>
-
         {/* Nominations open badge */}
         <span
           className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide uppercase px-3.5 py-1.5 rounded-full mb-6"
@@ -65,12 +57,12 @@ export default function NominateWelcome({ onBegin, onBuildList, hasExisting }) {
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.97 }}
-            onClick={onBuildList}
+            onClick={onVote}
             className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl text-sm font-bold transition-all"
             style={{ background: 'transparent', border: `1.5px solid ${brand.gold}`, color: brand.gold }}
           >
-            <ListOrdered className="w-4 h-4" />
-            Build My Top 100 List
+            <Vote className="w-4 h-4" />
+            Vote
           </motion.button>
         </div>
 
