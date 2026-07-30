@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
-import { GripVertical, X, ChevronUp, ChevronDown, Star } from 'lucide-react';
+import { GripVertical, X, ChevronUp, ChevronDown } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
+import ListEmptyState from '@/components/my-top100/ListEmptyState';
 
 const RANK_COLORS = {
   1: { bg: '#FFD700', text: '#7a5200' },
@@ -9,37 +10,11 @@ const RANK_COLORS = {
   3: { bg: '#cd7f32', text: '#fff' },
 };
 
-export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore }) {
+export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, onAdd, addedIds }) {
   const [dragging, setDragging] = useState(null);
 
   if (rankings.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 px-8 text-center">
-        <div
-          className="h-20 w-20 rounded-full flex items-center justify-center mb-6"
-          style={{ background: `linear-gradient(135deg, ${brand.navy}10, ${brand.gold}15)` }}
-        >
-          <Star className="w-8 h-8" style={{ color: `${brand.gold}80` }} />
-        </div>
-        <h3
-          className="text-xl font-bold mb-2"
-          style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
-        >
-          Start building your list
-        </h3>
-        <p className="text-sm leading-relaxed mb-6" style={{ color: `${brand.navy}60` }}>
-          Search and add the aerospace & aviation leaders who inspire you. Your ranked list becomes your official ballot.
-        </p>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={onAddMore}
-          className="px-6 py-3 rounded-full text-sm font-bold text-white shadow-lg"
-          style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
-        >
-          + Browse Nominees
-        </motion.button>
-      </div>
-    );
+    return <ListEmptyState onAdd={onAdd} addedIds={addedIds} onBrowse={onAddMore} />;
   }
 
   return (

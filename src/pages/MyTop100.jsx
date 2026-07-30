@@ -8,6 +8,8 @@ import NomineeSearchDrawer from '@/components/my-top100/NomineeSearchDrawer';
 import ShareCard from '@/components/my-top100/ShareCard';
 import PublishBanner from '@/components/my-top100/PublishBanner';
 import DesktopSearchPanel from '@/components/my-top100/DesktopSearchPanel';
+import ListImpactBar from '@/components/my-top100/ListImpactBar';
+import ListEmptyState from '@/components/my-top100/ListEmptyState';
 import { saveRankedVote } from '@/functions/saveRankedVote';
 import { Loader2, Pencil, Check, Rocket, LogIn } from 'lucide-react';
 
@@ -225,8 +227,14 @@ export default function MyTop100() {
         listName={listName}
         count={rankings.length}
         isPublished={isPublished}
+        saving={saving}
         onShare={() => setShowShare(true)}
       />
+
+      {/* Impact / progress bar — mobile-first, spans full width */}
+      <div className="lg:px-6 lg:max-w-7xl lg:mx-auto lg:w-full">
+        <ListImpactBar rankings={rankings} />
+      </div>
 
       {/* ── DESKTOP: two-column ── */}
       <div className="hidden lg:flex flex-1 gap-6 px-6 py-6 max-w-7xl mx-auto w-full">
@@ -250,6 +258,8 @@ export default function MyTop100() {
             onReorder={handleReorder}
             onRemove={handleRemove}
             onAddMore={() => {}}
+            onAdd={handleAdd}
+            addedIds={addedIds}
           />
         </div>
       </div>
@@ -270,6 +280,8 @@ export default function MyTop100() {
             onReorder={handleReorder}
             onRemove={handleRemove}
             onAddMore={() => setShowSearch(true)}
+            onAdd={handleAdd}
+            addedIds={addedIds}
           />
         </div>
 

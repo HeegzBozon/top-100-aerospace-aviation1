@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Rocket, Share2, Eye, Lock, ChevronLeft } from 'lucide-react';
+import { Rocket, Share2, Eye, Lock, ChevronLeft, Archive } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
+import ListSavedBadge from '@/components/my-top100/ListSavedBadge';
 
-export default function ListBuilderHeader({ listName, count, isPublished, onShare, onPreview }) {
+export default function ListBuilderHeader({ listName, count, isPublished, onShare, onPreview, saving }) {
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -33,17 +34,31 @@ export default function ListBuilderHeader({ listName, count, isPublished, onShar
         >
           <Rocket className="w-3.5 h-3.5 text-white" />
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: `${brand.navy}60` }}>
             TOP 100 · My List
           </p>
-          <p className="text-xs font-semibold leading-none truncate max-w-[140px]" style={{ color: brand.navy }}>
+          <p className="text-xs font-semibold leading-none truncate max-w-[120px]" style={{ color: brand.navy }}>
             {listName || 'My Top 100'}
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Saved badge */}
+        <ListSavedBadge saving={saving} />
+
+        {/* Browse archives deep link */}
+        <motion.button
+          whileTap={{ scale: 0.92 }}
+          onClick={() => navigate('/archive/696aec2d99297cdbe96ee71e')}
+          className="hidden sm:flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[10px] font-semibold transition-all"
+          style={{ background: `${brand.navy}08`, color: `${brand.navy}70` }}
+        >
+          <Archive className="w-3 h-3" />
+          Archives
+        </motion.button>
+
         {/* Count badge */}
         <div
           className="h-7 min-w-[28px] px-2 rounded-full flex items-center justify-center text-[11px] font-bold"
