@@ -4,6 +4,8 @@ import { base44 } from '@/api/base44Client';
 import { ChevronLeft, Loader2 } from 'lucide-react';
 import ArchiveHonoreeCard from '@/components/archive/ArchiveHonoreeCard';
 import ArchiveHonoreeDetail from '@/components/archive/ArchiveHonoreeDetail';
+import ArchiveVolumeSwitcher from '@/components/archive/ArchiveVolumeSwitcher';
+import ArchiveContinueNav from '@/components/archive/ArchiveContinueNav';
 
 const navy = '#1e3a5a';
 const gold = '#c9a87c';
@@ -38,8 +40,9 @@ export default function SeasonArchive() {
 
   return (
     <div className="min-h-screen" style={{ background: '#faf8f5' }}>
-      <div className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3 backdrop-blur-md border-b"
+      <div className="sticky top-0 z-30 backdrop-blur-md border-b"
         style={{ background: 'rgba(250,248,245,0.92)', borderColor: `${navy}12` }}>
+        <div className="flex items-center gap-3 px-4 py-3">
         <button
           onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
           aria-label="Go back"
@@ -53,6 +56,8 @@ export default function SeasonArchive() {
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: `${navy}60` }}>The Archive</p>
           <p className="text-xs font-semibold truncate" style={{ color: navy }}>{season?.name || 'Loading…'}</p>
         </div>
+        </div>
+        <ArchiveVolumeSwitcher currentSeasonId={seasonId} />
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -94,6 +99,8 @@ export default function SeasonArchive() {
           </div>
         )}
       </div>
+
+      {!loading && <ArchiveContinueNav currentSeasonId={seasonId} />}
 
       <ArchiveHonoreeDetail nominee={selected} onClose={() => setSelected(null)} />
     </div>

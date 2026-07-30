@@ -3,14 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { publicationBrand as brandColors } from '@/components/publication/publicationConfig';
 
-const VOLUMES = [
-  { year: '2021', volume: 'Volume I', title: 'TOP 100 Aviation & Aerospace Professionals', note: 'The Volume of Record', path: '/volume-one-top100' },
-  { year: '2021', volume: 'Volume I · Component', title: 'Women in Aerospace & Aviation', note: 'Season 1', path: '/volume-one' },
-  { year: '2021', volume: 'Volume I · Component', title: 'Men in Aerospace & Aviation', note: 'Season 1', path: '/volume-one-men' },
-  { year: '2022', volume: 'Volume II', title: 'TOP 100 Aviation & Aerospace Professionals', note: 'The Volume of Record', path: '/volume-two-top100' },
-  { year: '2022', volume: 'Volume II · Component', title: 'Women in Aerospace & Aviation', note: 'Season 2', path: '/volume-two-women' },
-  { year: '2022', volume: 'Volume II · Component', title: 'Men in Aerospace & Aviation', note: 'Season 2', path: '/volume-two-men' },
-];
+import { ARCHIVE_VOLUMES as VOLUMES } from '@/components/archive/archiveVolumes';
 
 export default function ArchiveVolumesSection() {
   return (
