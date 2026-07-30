@@ -10,6 +10,7 @@ import PublishBanner from '@/components/my-top100/PublishBanner';
 import DesktopSearchPanel from '@/components/my-top100/DesktopSearchPanel';
 import NominationHub from '@/components/my-top100/NominationHub';
 import HubListTabs from '@/components/my-top100/HubListTabs';
+import NominateWelcome from '@/components/my-top100/NominateWelcome';
 import { saveRankedVote } from '@/functions/saveRankedVote';
 import { Loader2, Pencil, Check, Rocket, LogIn, ListOrdered } from 'lucide-react';
 
@@ -264,18 +265,28 @@ export default function MyTop100() {
       {/* ── NOMINATE TAB ── */}
       {activeTab === 'nominate' && (
         <div className="flex-1 overflow-y-auto lg:max-w-3xl lg:mx-auto lg:w-full">
-          <NominationHub
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
-            submittedNominations={hubNominations}
-            onAddNomination={addHubNomination}
-            onRemoveNomination={removeHubNomination}
-            onAddExisting={(nominee) => {
-              addExistingToHub(activeCategory, nominee);
-              handleAdd(nominee);
+          <NominateWelcome
+            hasExisting={totalNominations > 0 || rankings.length > 0}
+            onBegin={() => {
+              const hub = document.getElementById('nomination-hub');
+              if (hub) hub.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }}
-            nominator={user}
+            onBuildList={() => setActiveTab('list')}
           />
+          <div id="nomination-hub" className="scroll-mt-20">
+            <NominationHub
+              activeCategory={activeCategory}
+              onCategoryChange={setActiveCategory}
+              submittedNominations={hubNominations}
+              onAddNomination={addHubNomination}
+              onRemoveNomination={removeHubNomination}
+              onAddExisting={(nominee) => {
+                addExistingToHub(activeCategory, nominee);
+                handleAdd(nominee);
+              }}
+              nominator={user}
+            />
+          </div>
           {rankings.length > 0 && (
             <div className="px-4 pb-6 pt-2">
               <button
