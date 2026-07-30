@@ -75,7 +75,7 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onS
               style={{ background: 'transparent', border: `1.5px solid ${brand.navy}22`, color: brand.navy }}
             >
               <Cpu className="w-4 h-4" style={{ color: brand.gold }} />
-              Explore the Top 100 OS
+              How it works
             </button>
           </div>
 
