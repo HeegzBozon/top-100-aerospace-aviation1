@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Plus, Check, Filter, Sparkles, Zap, ArrowDownUp, BadgeCheck, UserPlus, Award } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
+import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 
 const CATEGORIES = ['All', 'Women', 'Men', 'Angels'];
@@ -50,6 +50,7 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
   const [loading, setLoading] = useState(false);
   const [bulkAdding, setBulkAdding] = useState(false);
   const [nominating, setNominating] = useState(null); // nominee object when nominating
+  const [inlineNominate, setInlineNominate] = useState(false); // show inline new-nominee form
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -59,6 +60,7 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
     } else {
       // reset sub-views when closed
       setNominating(null);
+      setInlineNominate(false);
       setShowSortMenu(false);
     }
   }, [isOpen, category]);
@@ -149,7 +151,13 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
               <div className="w-10 h-1 rounded-full" style={{ background: `${brand.navy}20` }} />
             </div>
 
-            {nominating ? (
+            {inlineNominate ? (
+              <InlineNominateNew
+                initialName={query}
+                onBack={() => setInlineNominate(false)}
+                onDone={() => { setInlineNominate(false); setQuery(''); }}
+              />
+            ) : nominating ? (
               <NomineeNominateSheet
                 nominee={nominating}
                 onBack={() => setNominating(null)}
@@ -345,7 +353,7 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
                       })}
 
                       {sortedFiltered.length === 0 && !loading && (
-                        <EmptyResults query={query} onClose={onClose} />
+                        <EmptyResults query={query} onStartNominate={() => setInlineNominate(true)} onClose={onClose} />
                       )}
                     </div>
                   )}
@@ -418,7 +426,7 @@ function NomineeRow({ nominee, isAdded, onAdd, onNominate, compact }) {
   );
 }
 
-function EmptyResults({ query, onClose }) {
+function EmptyResults({ query, onStartNominate, onClose }) {
   return (
     <div className="text-center py-10 px-4">
       <div className="h-14 w-14 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: `${brand.navy}06` }}>
@@ -429,18 +437,17 @@ function EmptyResults({ query, onClose }) {
       </h3>
       <p className="text-xs leading-relaxed mb-5 max-w-[260px] mx-auto" style={{ color: `${brand.navy}60` }}>
         {query
-          ? `We couldn't find “${query}” in the verified directory. If they belong in aerospace & aviation, nominate them yourself.`
+          ? `We couldn't find “${query}” in the verified directory. If they belong in aerospace & aviation, nominate them right here.`
           : 'No nominees match your filters. Try adjusting, or nominate someone new.'}
       </p>
-      <Link
-        to="/nominate"
-        onClick={onClose}
+      <button
+        onClick={onStartNominate}
         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg"
         style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
       >
         <UserPlus className="w-4 h-4" />
-        Submit a new nomination
-      </Link>
+        Nominate {query ? `"${query}"` : 'someone new'}
+      </button>
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Plus, Check, Filter, ArrowDownUp, BadgeCheck, Award, UserPlus } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
+import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 
 const DISCIPLINES = [
@@ -36,6 +36,7 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
   const [randomOrder, setRandomOrder] = useState([]);
   const [loading, setLoading] = useState(true);
   const [nominating, setNominating] = useState(null);
+  const [inlineNominate, setInlineNominate] = useState(false);
 
   useEffect(() => {
     base44.entities.Nominee.list('-created_date', 200).then(r => {
@@ -180,17 +181,17 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
             </h3>
             <p className="text-xs leading-relaxed mb-5 max-w-[240px] mx-auto" style={{ color: `${brand.navy}60` }}>
               {query
-                ? `We couldn't find “${query}” in the verified directory. Nominate them yourself.`
+                ? `We couldn't find “${query}” in the verified directory. Nominate them right here.`
                 : 'No nominees match your filters. Try adjusting, or nominate someone new.'}
             </p>
-            <Link
-              to="/nominate"
+            <button
+              onClick={() => setInlineNominate(true)}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg"
               style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
             >
               <UserPlus className="w-4 h-4" />
-              Submit a new nomination
-            </Link>
+              Nominate {query ? `"${query}"` : 'someone new'}
+            </button>
           </div>
         ) : (
           sortedFiltered.slice(0, 150).map(nominee => {
@@ -269,6 +270,27 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
                 onDone={() => setNominating(null)}
               />
             </motion.div>
+          </>
+        )}
+
+        {/* Inline new-nominee modal overlay */}
+        {inlineNominate && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              style={{ background: 'rgba(10,18,30,0.5)', backdropFilter: 'blur(4px)' }}
+              onClick={() => setInlineNominate(false)}
+            />
+            <div
+              className="fixed left-1/2 top-1/2 z-50 w-[420px] max-w-[92vw] max-h-[80vh] -translate-x-1/2 -translate-y-1/2 rounded-3xl overflow-hidden flex flex-col"
+              style={{ background: brand.cream, boxShadow: '0 20px 60px rgba(10,18,30,0.3)' }}
+            >
+              <InlineNominateNew
+                initialName={query}
+                onBack={() => setInlineNominate(false)}
+                onDone={() => { setInlineNominate(false); setQuery(''); }}
+              />
+            </div>
           </>
         )}
       </AnimatePresence>
