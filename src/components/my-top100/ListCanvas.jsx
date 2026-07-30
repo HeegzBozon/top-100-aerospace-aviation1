@@ -10,7 +10,7 @@ const RANK_COLORS = {
   3: { bg: '#cd7f32', text: '#fff' },
 };
 
-export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, onAdd, addedIds }) {
+export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, onAdd, addedIds, onViewProfile }) {
   const [dragging, setDragging] = useState(null);
 
   if (rankings.length === 0) {
@@ -63,29 +63,34 @@ export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, o
                     {rank}
                   </div>
 
-                  {/* Avatar */}
-                  <div
-                    className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold overflow-hidden"
-                    style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
+                  {/* Avatar + info (click to view profile) */}
+                  <button
+                    type="button"
+                    onClick={() => onViewProfile?.(item)}
+                    className="flex items-center gap-3 flex-1 min-w-0 text-left"
                   >
-                    {item.nominee_avatar ? (
-                      <img src={item.nominee_avatar} alt={item.nominee_name} className="w-full h-full object-cover" />
-                    ) : (
-                      item.nominee_name?.[0]?.toUpperCase()
-                    )}
-                  </div>
+                    <div
+                      className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold overflow-hidden"
+                      style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
+                    >
+                      {item.nominee_avatar ? (
+                        <img src={item.nominee_avatar} alt={item.nominee_name} className="w-full h-full object-cover" />
+                      ) : (
+                        item.nominee_name?.[0]?.toUpperCase()
+                      )}
+                    </div>
 
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate" style={{ color: brand.navy }}>
-                      {item.nominee_name}
-                    </p>
-                    {item.nominee_title && (
-                      <p className="text-[10px] truncate" style={{ color: `${brand.navy}55` }}>
-                        {item.nominee_title}{item.nominee_company ? ` · ${item.nominee_company}` : ''}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate" style={{ color: brand.navy }}>
+                        {item.nominee_name}
                       </p>
-                    )}
-                  </div>
+                      {item.nominee_title && (
+                        <p className="text-[10px] truncate" style={{ color: `${brand.navy}55` }}>
+                          {item.nominee_title}{item.nominee_company ? ` · ${item.nominee_company}` : ''}
+                        </p>
+                      )}
+                    </div>
+                  </button>
 
                   {/* Actions */}
                   <div className="flex items-center gap-1 shrink-0">

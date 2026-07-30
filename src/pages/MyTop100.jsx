@@ -8,6 +8,7 @@ import NomineeSearchDrawer from '@/components/my-top100/NomineeSearchDrawer';
 import ShareCard from '@/components/my-top100/ShareCard';
 import PublishBanner from '@/components/my-top100/PublishBanner';
 import DesktopSearchPanel from '@/components/my-top100/DesktopSearchPanel';
+import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
 import NominationHub from '@/components/my-top100/NominationHub';
 import HubListTabs from '@/components/my-top100/HubListTabs';
 import NominateWelcome from '@/components/my-top100/NominateWelcome';
@@ -34,6 +35,26 @@ export default function MyTop100() {
   const [activeCategory, setActiveCategory] = useState('women');
   const [hubNominations, setHubNominations] = useState({ women: [], men: [], angels: [], local_legends: [] });
   const [activeTab, setActiveTab] = useState('start');
+  const [explorerOpen, setExplorerOpen] = useState(false);
+  const [explorerProfile, setExplorerProfile] = useState(null);
+
+  const openExplorer = () => { setExplorerProfile(null); setExplorerOpen(true); };
+  const openProfileFromList = async (item) => {
+    setExplorerOpen(true);
+    setExplorerProfile(null);
+    try {
+      const full = await base44.entities.Nominee.get(item.nominee_id);
+      setExplorerProfile(full);
+    } catch {
+      setExplorerProfile({
+        id: item.nominee_id,
+        name: item.nominee_name,
+        title: item.nominee_title,
+        company: item.nominee_company,
+        avatar_url: item.nominee_avatar,
+      });
+    }
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -246,7 +267,7 @@ export default function MyTop100() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: brand.cream }}>
+    <div className="min-h-screen flex flex-col relative" style={{ background: brand.cream }}>
       <ListBuilderHeader
         listName={listName}
         count={rankings.length}
@@ -309,7 +330,7 @@ export default function MyTop100() {
           {/* Desktop: two-column */}
           <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full overflow-hidden">
             <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start overflow-hidden" style={{ maxHeight: 'calc(100vh - 80px)' }}>
-              <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} />
+              <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} onOpenExplorer={openExplorer} onViewProfile={(n) => { setExplorerProfile(n); setExplorerOpen(true); }} />
             </div>
             <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
               {ListNameEditor}
@@ -327,6 +348,7 @@ export default function MyTop100() {
                 onAddMore={() => {}}
                 onAdd={handleAdd}
                 addedIds={addedIds}
+                onViewProfile={openProfileFromList}
               />
             </div>
           </div>
@@ -349,6 +371,7 @@ export default function MyTop100() {
                 onAddMore={() => setShowSearch(true)}
                 onAdd={handleAdd}
                 addedIds={addedIds}
+                onViewProfile={openProfileFromList}
               />
             </div>
 
@@ -382,6 +405,14 @@ export default function MyTop100() {
         userName={user?.full_name}
         listName={listName}
         shareCode={shareCode}
+      />
+
+      <NomineeExplorerPopover
+        isOpen={explorerOpen}
+        onClose={() => { setExplorerOpen(false); setExplorerProfile(null); }}
+        addedIds={addedIds}
+        onAdd={handleAdd}
+        initialNominee={explorerProfile}
       />
     </div>
   );

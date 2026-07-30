@@ -29,7 +29,7 @@ const SORTS = [
 
 const PAGE_SIZE = 40;
 
-export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAdd }) {
+export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAdd, initialNominee }) {
   const [query, setQuery] = useState('');
   const [discipline, setDiscipline] = useState('all');
   const [sort, setSort] = useState('random');
@@ -57,7 +57,13 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
   }, [isOpen]);
 
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [query, discipline, sort, verifiedOnly]);
-  useEffect(() => { if (!isOpen) { setViewingProfile(null); setNominating(null); setInlineNominate(false); } }, [isOpen]);
+  useEffect(() => {
+    if (isOpen) {
+      setViewingProfile(initialNominee || null);
+    } else {
+      setViewingProfile(null); setNominating(null); setInlineNominate(false);
+    }
+  }, [isOpen, initialNominee]);
 
   const sortedFiltered = useMemo(() => {
     const list = nominees.filter(n => {
@@ -99,14 +105,14 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-[200]"
+            className="absolute inset-0 z-[200]"
             style={{ background: 'rgba(10,18,30,0.55)', backdropFilter: 'blur(6px)' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
           />
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-3 pointer-events-none">
+          <div className="absolute inset-0 z-[200] flex items-center justify-center p-3 pointer-events-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

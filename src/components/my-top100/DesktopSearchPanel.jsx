@@ -5,7 +5,6 @@ import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
-import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 
 const DISCIPLINES = [
@@ -27,7 +26,7 @@ const SORTS = [
   { key: 'verified', label: 'Verified First' },
 ];
 
-export default function DesktopSearchPanel({ addedIds, onAdd }) {
+export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, onViewProfile }) {
   const [query, setQuery] = useState('');
   const [discipline, setDiscipline] = useState('all');
   const [sort, setSort] = useState('random');
@@ -38,7 +37,6 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
   const [loading, setLoading] = useState(true);
   const [nominating, setNominating] = useState(null);
   const [inlineNominate, setInlineNominate] = useState(false);
-  const [showExplorer, setShowExplorer] = useState(false);
 
   useEffect(() => {
     base44.entities.Nominee.list('-created_date', 2000).then(r => {
@@ -206,24 +204,30 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
                 className="flex items-center gap-3 p-3 rounded-2xl border transition-all"
                 style={{ background: isAdded ? `${brand.navy}04` : 'white', borderColor: isAdded ? `${brand.gold}40` : `${brand.navy}08` }}
               >
-                <div
-                  className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold overflow-hidden"
-                  style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
+                <button
+                  type="button"
+                  onClick={() => onViewProfile(nominee)}
+                  className="flex items-center gap-3 flex-1 min-w-0 text-left"
                 >
-                  {nominee.avatar_url || nominee.photo_url ? (
-                    <img src={nominee.avatar_url || nominee.photo_url} alt={nominee.name} className="w-full h-full object-cover" />
-                  ) : nominee.name?.[0]?.toUpperCase()}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1">
-                    <p className="text-sm font-semibold truncate" style={{ color: brand.navy }}>{nominee.name}</p>
-                    {verified && <BadgeCheck className="w-3.5 h-3.5 shrink-0" style={{ color: brand.gold }} />}
+                  <div
+                    className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold overflow-hidden"
+                    style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
+                  >
+                    {nominee.avatar_url || nominee.photo_url ? (
+                      <img src={nominee.avatar_url || nominee.photo_url} alt={nominee.name} className="w-full h-full object-cover" />
+                    ) : nominee.name?.[0]?.toUpperCase()}
                   </div>
-                  <p className="text-[10px] truncate" style={{ color: `${brand.navy}55` }}>
-                    {nominee.title || nominee.professional_role}{nominee.company ? ` · ${nominee.company}` : ''}
-                  </p>
-                </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1">
+                      <p className="text-sm font-semibold truncate" style={{ color: brand.navy }}>{nominee.name}</p>
+                      {verified && <BadgeCheck className="w-3.5 h-3.5 shrink-0" style={{ color: brand.gold }} />}
+                    </div>
+                    <p className="text-[10px] truncate" style={{ color: `${brand.navy}55` }}>
+                      {nominee.title || nominee.professional_role}{nominee.company ? ` · ${nominee.company}` : ''}
+                    </p>
+                  </div>
+                </button>
 
                 <button
                   onClick={() => setNominating(nominee)}
@@ -248,7 +252,7 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
             }
             {sortedFiltered.length > 10 && (
             <button
-              onClick={() => setShowExplorer(true)}
+              onClick={onOpenExplorer}
               className="w-full py-3 mt-2 rounded-2xl text-sm font-bold transition-all"
               style={{ background: 'white', border: `1px solid ${brand.navy}15`, color: brand.navy }}
             >
@@ -308,13 +312,6 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
           </>
         )}
         </AnimatePresence>
-
-        <NomineeExplorerPopover
-        isOpen={showExplorer}
-        onClose={() => setShowExplorer(false)}
-        addedIds={addedIds}
-        onAdd={onAdd}
-        />
         </div>
         );
         }
