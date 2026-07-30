@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Rocket, Share2, Eye, Lock, ChevronLeft, Archive } from 'lucide-react';
+import { Rocket, Share2, Eye, Lock, ChevronLeft, Archive, Home } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 import ListSavedBadge from '@/components/my-top100/ListSavedBadge';
 
@@ -47,6 +47,18 @@ export default function ListBuilderHeader({ listName, count, isPublished, onShar
       <div className="flex items-center gap-2">
         {/* Saved badge */}
         <ListSavedBadge saving={saving} />
+
+        {/* Home */}
+        <motion.button
+          whileTap={{ scale: 0.92 }}
+          onClick={() => navigate('/')}
+          aria-label="Home"
+          className="flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[10px] font-semibold transition-all"
+          style={{ background: `${brand.navy}08`, color: `${brand.navy}70` }}
+        >
+          <Home className="w-3 h-3" />
+          <span className="hidden sm:inline">Home</span>
+        </motion.button>
 
         {/* Browse archives deep link */}
         <motion.button

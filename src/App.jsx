@@ -187,7 +187,8 @@ const AuthenticatedApp = () => {
       <Route path="/local-legends" element={<LocalLegends />} />
       <Route path="/local-legends-pro" element={<LocalLegendsPro />} />
       <Route path="/local-legends/apply" element={<LocalLegendsApply />} />
-      <Route path="/nominate" element={<NominationForm />} />
+      <Route path="/nominate" element={<MyTop100 />} />
+      <Route path="/nominate-intro" element={<NominationForm />} />
       <Route path="/hangouts" element={<Hangouts />} />
       <Route path="/moon-joy" element={<Hangouts />} />
       <Route path="/2030-vision" element={<Vision2030 />} />
@@ -196,7 +197,7 @@ const AuthenticatedApp = () => {
       <Route path="/common-ground-sim" element={<CommonGroundSimulator />} />
       <Route path="/session-portal/*" element={<SessionPortal />} />
       <Route path="/session-portal/join/:code" element={<SessionJoin />} />
-      <Route path="/my-top100" element={<MyTop100 />} />
+      <Route path="/my-top100" element={<Navigate to="/nominate" replace />} />
       <Route path="/top100-list/:shareCode" element={<PublicTop100List />} />
       <Route path="/archive/:seasonId" element={<SeasonArchive />} />
       <Route path="/volume-one" element={<Navigate to="/archive/696aec2d99297cdbe96ee71e" replace />} />

@@ -7,7 +7,7 @@ import { base44 } from '@/api/base44Client';
 
 const NAV_LINKS = [
   { label: 'Operation: Moon Joy', to: '/moon-joy' },
-  { label: 'Nominate', to: '/nominate' },
+  { label: 'Nominate', to: '/nominate-intro' },
   { label: 'Local Legends', to: '/local-legends' },
   { label: 'Publication', to: '/Top100Women2025' },
   { label: '2030 Vision', to: '/2030-vision' },

@@ -53,7 +53,7 @@ export default function NominationForm({ isPreview = false } = {}) {
   // Live flow: show the splash, then hand off to the unified My Top 100 hub.
   useEffect(() => {
     if (isPreview) return;
-    const timer = setTimeout(() => navigate('/my-top100', { replace: true }), 2000);
+    const timer = setTimeout(() => navigate('/nominate', { replace: true }), 2000);
     return () => clearTimeout(timer);
   }, [isPreview, navigate]);
 
