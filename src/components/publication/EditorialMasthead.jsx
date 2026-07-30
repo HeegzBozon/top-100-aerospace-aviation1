@@ -39,12 +39,22 @@ export default function EditorialMasthead() {
           >
             Official Publication
           </p>
-          <p
-            className="text-[9px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] uppercase"
-            style={{ color: `${brandColors.ink}50` }}
-          >
-            Vol I — 2025
-          </p>
+          <div className="flex items-center gap-3 md:gap-5">
+            <a
+              href="#volumes"
+              className="text-[9px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] uppercase border-b pb-0.5 transition-opacity hover:opacity-60"
+              style={{ color: brandColors.goldPrestige, borderColor: `${brandColors.goldPrestige}60` }}
+            >
+              Archive
+            </a>
+            <span className="w-px h-3" style={{ background: `${brandColors.ink}20` }} />
+            <p
+              className="text-[9px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] uppercase"
+              style={{ color: `${brandColors.ink}50` }}
+            >
+              Vol I — 2025
+            </p>
+          </div>
         </motion.div>
 
         {/* Main Title — Editorial confidence */}
