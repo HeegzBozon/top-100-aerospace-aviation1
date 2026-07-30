@@ -47,14 +47,15 @@ export default function NominationForm({ isPreview = false } = {}) {
 
   const [stage, setStage] = useState(STAGES.WELCOME);
   const [submitting, setSubmitting] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [draftRestored, setDraftRestored] = useState(false);
 
+  // Live flow: show the splash, then hand off to the unified My Top 100 hub.
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 2000);
+    if (isPreview) return;
+    const timer = setTimeout(() => navigate('/my-top100', { replace: true }), 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isPreview, navigate]);
 
   useEffect(() => {
     let active = true;
@@ -293,7 +294,7 @@ export default function NominationForm({ isPreview = false } = {}) {
 
   const handleExit = () => navigate('/');
 
-  if (showSplash && !isPreview) {
+  if (!isPreview) {
     return <NominationSplash />;
   }
 
