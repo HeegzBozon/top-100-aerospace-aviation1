@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
+import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 
 const DISCIPLINES = [
   { key: 'all', label: 'All Fields' },
@@ -19,32 +20,33 @@ const DISCIPLINES = [
 ];
 
 const SORTS = [
-  { key: 'aura', label: 'Top Aura' },
+  { key: 'random', label: 'Random' },
   { key: 'name', label: 'Name A–Z' },
   { key: 'recent', label: 'Recently Added' },
-  { key: 'starpower', label: 'Starpower' },
   { key: 'verified', label: 'Verified First' },
 ];
 
 export default function DesktopSearchPanel({ addedIds, onAdd }) {
   const [query, setQuery] = useState('');
   const [discipline, setDiscipline] = useState('all');
-  const [sort, setSort] = useState('aura');
+  const [sort, setSort] = useState('random');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [nominees, setNominees] = useState([]);
+  const [randomOrder, setRandomOrder] = useState([]);
   const [loading, setLoading] = useState(true);
   const [nominating, setNominating] = useState(null);
 
   useEffect(() => {
-    base44.entities.Nominee.list('-aura_score', 200).then(r => {
+    base44.entities.Nominee.list('-created_date', 200).then(r => {
       setNominees(r);
+      setRandomOrder(stableShuffle(r));
       setLoading(false);
     });
   }, []);
 
   const sortedFiltered = useMemo(() => {
-    let list = nominees.filter(n => {
+    const list = nominees.filter(n => {
       if (query) {
         const q = query.toLowerCase();
         const matches =
@@ -55,24 +57,24 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
           n.organization?.toLowerCase().includes(q);
         if (!matches) return false;
       }
-      if (discipline !== 'all' && n.discipline !== discipline) return false;
+      if (!matchDiscipline(n, discipline)) return false;
       if (verifiedOnly && !(n.verified_status === 'fully_verified' || n.verified_status === 'partially_verified')) return false;
       return true;
     });
 
+    const rankIndex = (n) => randomOrder.findIndex(r => r.id === n.id);
     const byKey = {
-      aura: (a, b) => (b.aura_score || 0) - (a.aura_score || 0),
-      starpower: (a, b) => (b.starpower_score || 0) - (a.starpower_score || 0),
+      random: (a, b) => rankIndex(a) - rankIndex(b),
       name: (a, b) => (a.name || '').localeCompare(b.name || ''),
       recent: (a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0),
       verified: (a, b) => {
         const av = a.verified_status === 'fully_verified' ? 2 : a.verified_status === 'partially_verified' ? 1 : 0;
         const bv = b.verified_status === 'fully_verified' ? 2 : b.verified_status === 'partially_verified' ? 1 : 0;
-        return bv - av || (b.aura_score || 0) - (a.aura_score || 0);
+        return bv - av || rankIndex(a) - rankIndex(b);
       },
     };
-    return list.sort(byKey[sort] || byKey.aura);
-  }, [nominees, query, discipline, sort, verifiedOnly]);
+    return list.sort(byKey[sort] || byKey.random);
+  }, [nominees, randomOrder, query, discipline, sort, verifiedOnly]);
 
   const activeSortLabel = SORTS.find(s => s.key === sort)?.label;
 

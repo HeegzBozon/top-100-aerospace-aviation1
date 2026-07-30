@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
+import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 
 const CATEGORIES = ['All', 'Women', 'Men', 'Angels'];
 
@@ -21,10 +22,9 @@ const DISCIPLINES = [
 ];
 
 const SORTS = [
-  { key: 'aura', label: 'Top Aura' },
+  { key: 'random', label: 'Random' },
   { key: 'name', label: 'Name A–Z' },
   { key: 'recent', label: 'Recently Added' },
-  { key: 'starpower', label: 'Starpower' },
   { key: 'verified', label: 'Verified First' },
 ];
 
@@ -42,10 +42,11 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
   const [discipline, setDiscipline] = useState('all');
-  const [sort, setSort] = useState('aura');
+  const [sort, setSort] = useState('random');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [nominees, setNominees] = useState([]);
+  const [randomOrder, setRandomOrder] = useState([]);
   const [loading, setLoading] = useState(false);
   const [bulkAdding, setBulkAdding] = useState(false);
   const [nominating, setNominating] = useState(null); // nominee object when nominating
@@ -65,8 +66,9 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
   const loadNominees = async () => {
     setLoading(true);
     try {
-      const results = await base44.entities.Nominee.list('-aura_score', 200);
+      const results = await base44.entities.Nominee.list('-created_date', 200);
       setNominees(results);
+      setRandomOrder(stableShuffle(results));
     } catch { setNominees([]); }
     setLoading(false);
   };
@@ -78,24 +80,24 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
         n.company?.toLowerCase().includes(query.toLowerCase()) ||
         n.professional_role?.toLowerCase().includes(query.toLowerCase());
       const matchesCat = nomineeMatchesCategory(n, category);
-      const matchesDisc = discipline === 'all' || n.discipline === discipline;
+      const matchesDisc = matchDiscipline(n, discipline);
       const matchesVerified = !verifiedOnly || n.verified_status === 'fully_verified' || n.verified_status === 'partially_verified';
       return matchesQuery && matchesCat && matchesDisc && matchesVerified;
     });
 
+    const rankIndex = (n) => randomOrder.findIndex(r => r.id === n.id);
     const byKey = {
-      aura: (a, b) => (b.aura_score || 0) - (a.aura_score || 0),
-      starpower: (a, b) => (b.starpower_score || 0) - (a.starpower_score || 0),
+      random: (a, b) => rankIndex(a) - rankIndex(b),
       name: (a, b) => (a.name || '').localeCompare(b.name || ''),
       recent: (a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0),
       verified: (a, b) => {
         const av = a.verified_status === 'fully_verified' ? 2 : a.verified_status === 'partially_verified' ? 1 : 0;
         const bv = b.verified_status === 'fully_verified' ? 2 : b.verified_status === 'partially_verified' ? 1 : 0;
-        return bv - av || (b.aura_score || 0) - (a.aura_score || 0);
+        return bv - av || rankIndex(a) - rankIndex(b);
       },
     };
-    return list.sort(byKey[sort] || byKey.aura);
-  }, [nominees, query, category, discipline, sort, verifiedOnly]);
+    return list.sort(byKey[sort] || byKey.random);
+  }, [nominees, randomOrder, query, category, discipline, sort, verifiedOnly]);
 
   // Smart suggestions: highest aura_score not yet added (independent of query)
   const suggestions = useMemo(() => {
@@ -103,8 +105,7 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
     return nominees
       .filter(n => !addedIds.has(n.id))
       .filter(n => category === 'All' || nomineeMatchesCategory(n, category))
-      .filter(n => discipline === 'all' || n.discipline === discipline)
-      .sort((a, b) => (b.aura_score || 0) - (a.aura_score || 0))
+      .filter(n => matchDiscipline(n, discipline))
       .slice(0, 4);
   }, [nominees, addedIds, query, category, discipline]);
 
