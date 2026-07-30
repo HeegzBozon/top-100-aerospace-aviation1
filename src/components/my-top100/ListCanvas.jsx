@@ -18,7 +18,7 @@ export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, o
   }
 
   return (
-    <div className="px-4 py-4">
+    <div className="px-4 py-4 min-w-0">
       <Reorder.Group
         axis="y"
         values={rankings}

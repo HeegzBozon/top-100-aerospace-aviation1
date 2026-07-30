@@ -295,11 +295,11 @@ export default function MyTop100() {
       {activeTab === 'list' && (
         <>
           {/* Desktop: two-column */}
-          <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full">
-            <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start" style={{ maxHeight: 'calc(100vh - 80px)' }}>
+          <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full overflow-hidden">
+            <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start overflow-hidden" style={{ maxHeight: 'calc(100vh - 80px)' }}>
               <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} />
             </div>
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
               {ListNameEditor}
               <PublishBanner
                 rankings={rankings}

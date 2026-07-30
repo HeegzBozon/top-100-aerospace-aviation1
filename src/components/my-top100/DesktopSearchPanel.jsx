@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
+import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 
 const DISCIPLINES = [
@@ -37,9 +38,10 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
   const [loading, setLoading] = useState(true);
   const [nominating, setNominating] = useState(null);
   const [inlineNominate, setInlineNominate] = useState(false);
+  const [showExplorer, setShowExplorer] = useState(false);
 
   useEffect(() => {
-    base44.entities.Nominee.list('-created_date', 200).then(r => {
+    base44.entities.Nominee.list('-created_date', 2000).then(r => {
       setNominees(r);
       setRandomOrder(stableShuffle(r));
       setLoading(false);
@@ -194,7 +196,8 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
             </button>
           </div>
         ) : (
-          sortedFiltered.slice(0, 150).map(nominee => {
+          <>
+          {sortedFiltered.slice(0, 10).map(nominee => {
             const isAdded = addedIds.has(nominee.id);
             const verified = nominee.verified_status === 'fully_verified';
             return (
@@ -241,9 +244,20 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
                 </button>
               </div>
             );
-          })
-        )}
-      </div>
+            })
+            }
+            {sortedFiltered.length > 10 && (
+            <button
+              onClick={() => setShowExplorer(true)}
+              className="w-full py-3 mt-2 rounded-2xl text-sm font-bold transition-all"
+              style={{ background: 'white', border: `1px solid ${brand.navy}15`, color: brand.navy }}
+            >
+              Show more ({sortedFiltered.length - 10} more nominees)
+            </button>
+            )}
+            </>
+            )}
+            </div>
 
       {/* Nominate modal overlay */}
       <AnimatePresence>
@@ -293,7 +307,14 @@ export default function DesktopSearchPanel({ addedIds, onAdd }) {
             </div>
           </>
         )}
-      </AnimatePresence>
-    </div>
-  );
-}
+        </AnimatePresence>
+
+        <NomineeExplorerPopover
+        isOpen={showExplorer}
+        onClose={() => setShowExplorer(false)}
+        addedIds={addedIds}
+        onAdd={onAdd}
+        />
+        </div>
+        );
+        }

@@ -5,7 +5,7 @@ import { brand } from '@/components/nominate/NominateConfig';
 export default function HubListTabs({ activeTab, onTabChange, nominationCount, listCount }) {
   const tabs = [
     { key: 'nominate', label: 'Nominate', icon: Sparkles, badge: nominationCount },
-    { key: 'list', label: 'My List', icon: ListOrdered, badge: listCount },
+    { key: 'list', label: 'Vote', icon: ListOrdered, badge: listCount },
   ];
 
   return (
