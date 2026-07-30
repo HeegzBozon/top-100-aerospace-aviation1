@@ -187,8 +187,7 @@ const AuthenticatedApp = () => {
       <Route path="/local-legends" element={<LocalLegends />} />
       <Route path="/local-legends-pro" element={<LocalLegendsPro />} />
       <Route path="/local-legends/apply" element={<LocalLegendsApply />} />
-      <Route path="/nominate" element={<MyTop100 />} />
-      <Route path="/nominate-intro" element={<NominationForm />} />
+      <Route path="/nominate" element={<NominationForm />} />
       <Route path="/hangouts" element={<Hangouts />} />
       <Route path="/moon-joy" element={<Hangouts />} />
       <Route path="/2030-vision" element={<Vision2030 />} />

@@ -21,6 +21,7 @@ import StageLocalLegends from '@/components/nominate/StageLocalLegends';
 import StageReview from '@/components/nominate/StageReview';
 import StageConfirmation from '@/components/nominate/StageConfirmation';
 import NominationSplash from '@/components/nominate/NominationSplash';
+import MyTop100 from '@/pages/MyTop100';
 
 const SURVEY_ID = '69f45633daacf496cacd8666';
 const DRAFT_KEY = 'top100_nomination_draft_v1';
@@ -49,13 +50,14 @@ export default function NominationForm({ isPreview = false } = {}) {
   const [submitting, setSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [draftRestored, setDraftRestored] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
-  // Live flow: show the splash, then hand off to the unified My Top 100 hub.
+  // Live flow: show the splash, then reveal the unified My Top 100 hub inline.
   useEffect(() => {
     if (isPreview) return;
-    const timer = setTimeout(() => navigate('/nominate', { replace: true }), 2000);
+    const timer = setTimeout(() => setShowSplash(false), 2000);
     return () => clearTimeout(timer);
-  }, [isPreview, navigate]);
+  }, [isPreview]);
 
   useEffect(() => {
     let active = true;
@@ -295,7 +297,7 @@ export default function NominationForm({ isPreview = false } = {}) {
   const handleExit = () => navigate('/');
 
   if (!isPreview) {
-    return <NominationSplash />;
+    return showSplash ? <NominationSplash /> : <MyTop100 />;
   }
 
   return (
