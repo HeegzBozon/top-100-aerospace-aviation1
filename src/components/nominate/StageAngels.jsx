@@ -3,12 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Plus, Check, Trash2, SkipForward, TrendingUp } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Plus, Check, Trash2, SkipForward, TrendingUp } from 'lucide-react';
 import { brand } from './NominateConfig';
 import CategoryHeader from './CategoryHeader';
 import HubMeter from './HubMeter';
 
-export default function StageAngels({ nominations, onAdd, onUpdate, onRemove, onNext, onSkip }) {
+export default function StageAngels({ nominations, onAdd, onUpdate, onRemove, onNext, onSkip, onPrev, prevLabel, onNavigate }) {
   const firstRef = useRef(null);
   useEffect(() => { setTimeout(() => firstRef.current?.focus(), 200); }, []);
 
@@ -21,6 +21,7 @@ export default function StageAngels({ nominations, onAdd, onUpdate, onRemove, on
         icon={TrendingUp}
         title="Do you know an investor who is backing the future of aerospace, aviation, or space?"
         intro="TOP 100 Angels in Aerospace & Aviation recognizes the investors, angels, and capital allocators who are funding the next era of flight. Pre-seed to growth stage. Institutional to individual. If they're putting money behind this industry, they deserve to be known."
+        onNavigate={onNavigate}
       />
 
       <HubMeter count={nominations.length} label="angels" />
@@ -94,9 +95,16 @@ export default function StageAngels({ nominations, onAdd, onUpdate, onRemove, on
       )}
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
-        <button onClick={onSkip} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer order-2 sm:order-1" style={{ color: `${brand.navy}55` }}>
-          <SkipForward className="w-3.5 h-3.5" /> Skip this category
-        </button>
+        <div className="flex items-center gap-4 order-2 sm:order-1">
+          {onPrev && (
+            <button onClick={onPrev} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer" style={{ color: `${brand.navy}55` }}>
+              <ArrowLeft className="w-3.5 h-3.5" /> {prevLabel}
+            </button>
+          )}
+          <button onClick={onSkip} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer" style={{ color: `${brand.navy}55` }}>
+            <SkipForward className="w-3.5 h-3.5" /> Skip
+          </button>
+        </div>
         <Button
           onClick={onNext}
           size="lg"

@@ -3,12 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Plus, Check, Trash2, SkipForward, MapPin } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Plus, Check, Trash2, SkipForward, MapPin } from 'lucide-react';
 import { brand, LOCAL_LEGEND_TYPES } from './NominateConfig';
 import CategoryHeader from './CategoryHeader';
 import HubMeter from './HubMeter';
 
-export default function StageLocalLegends({ nominations, onAdd, onUpdate, onRemove, onNext, onSkip }) {
+export default function StageLocalLegends({ nominations, onAdd, onUpdate, onRemove, onNext, onSkip, onPrev, prevLabel, onNavigate }) {
   const firstRef = useRef(null);
   useEffect(() => { setTimeout(() => firstRef.current?.focus(), 200); }, []);
 
@@ -21,6 +21,7 @@ export default function StageLocalLegends({ nominations, onAdd, onUpdate, onRemo
         icon={MapPin}
         title="Do you know a local business that makes life work for the aerospace community?"
         intro="Local Legends spotlights the gyms, salons, barbers, med spas, meal prep services, childcare providers, and wellness practices that fuel the people building the future of flight. It's simple — you nominate them, we reach out. If they say yes, they're in."
+        onNavigate={onNavigate}
       />
 
       <HubMeter count={nominations.length} label="local legends" />
@@ -112,9 +113,16 @@ export default function StageLocalLegends({ nominations, onAdd, onUpdate, onRemo
       )}
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
-        <button onClick={onSkip} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer order-2 sm:order-1" style={{ color: `${brand.navy}55` }}>
-          <SkipForward className="w-3.5 h-3.5" /> Skip this category
-        </button>
+        <div className="flex items-center gap-4 order-2 sm:order-1">
+          {onPrev && (
+            <button onClick={onPrev} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer" style={{ color: `${brand.navy}55` }}>
+              <ArrowLeft className="w-3.5 h-3.5" /> {prevLabel}
+            </button>
+          )}
+          <button onClick={onSkip} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer" style={{ color: `${brand.navy}55` }}>
+            <SkipForward className="w-3.5 h-3.5" /> Skip
+          </button>
+        </div>
         <Button
           onClick={onNext}
           size="lg"

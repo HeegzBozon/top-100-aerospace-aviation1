@@ -64,6 +64,7 @@ export const emptyPersonNomination = () => ({
   name: '',
   role_org: '',
   link: '',
+  email: '',
   location: '',
   reason_contribution: '',
   reason_impact: '',

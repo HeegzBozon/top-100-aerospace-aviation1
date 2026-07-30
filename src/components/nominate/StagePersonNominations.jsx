@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Plus, Check, Trash2, SkipForward } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Plus, Check, Trash2, SkipForward } from 'lucide-react';
 import { brand, GUIDED_PROMPTS } from './NominateConfig';
 import CategoryHeader from './CategoryHeader';
 import HubMeter from './HubMeter';
@@ -26,6 +26,9 @@ export default function StagePersonNominations({
   onRemove,
   onNext,
   onSkip,
+  onPrev,
+  prevLabel,
+  onNavigate,
   stageNumber,
   categoryLabel,
   accentColor,
@@ -55,6 +58,7 @@ export default function StagePersonNominations({
         icon={icon}
         title={title}
         intro={intro}
+        onNavigate={onNavigate}
       />
 
       <HubMeter count={nominations.length} label="nominations" />
@@ -105,8 +109,12 @@ export default function StagePersonNominations({
               <Input value={nom.role_org} onChange={e => onUpdate(idx, 'role_org', e.target.value)} placeholder="e.g. Propulsion Engineer at Blue Origin" className="bg-white h-11" />
             </Field>
 
-            <Field label="LinkedIn, website, or email" hint="Optional but helpful">
+            <Field label="LinkedIn or website" hint="Optional but helpful">
               <Input value={nom.link} onChange={e => onUpdate(idx, 'link', e.target.value)} placeholder="https://..." className="bg-white h-11" />
+            </Field>
+
+            <Field label="Email" hint="Optional">
+              <Input type="email" value={nom.email || ''} onChange={e => onUpdate(idx, 'email', e.target.value)} placeholder="name@example.com" className="bg-white h-11" />
             </Field>
 
             <Field label="City / Country">
@@ -162,9 +170,16 @@ export default function StagePersonNominations({
 
       {/* Footer actions */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
-        <button onClick={onSkip} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer order-2 sm:order-1" style={{ color: `${brand.navy}55` }}>
-          <SkipForward className="w-3.5 h-3.5" /> Skip this category
-        </button>
+        <div className="flex items-center gap-4 order-2 sm:order-1">
+          {onPrev && (
+            <button onClick={onPrev} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer" style={{ color: `${brand.navy}55` }}>
+              <ArrowLeft className="w-3.5 h-3.5" /> {prevLabel}
+            </button>
+          )}
+          <button onClick={onSkip} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer" style={{ color: `${brand.navy}55` }}>
+            <SkipForward className="w-3.5 h-3.5" /> Skip
+          </button>
+        </div>
         <Button
           onClick={onNext}
           size="lg"

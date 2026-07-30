@@ -125,6 +125,11 @@ export default function NominationForm({ isPreview = false } = {}) {
     if (i < STAGE_ORDER.length - 1) setStage(STAGE_ORDER[i + 1]);
   };
 
+  const goToCategory = (n) => {
+    const map = { 1: STAGES.WOMEN, 2: STAGES.MEN, 3: STAGES.ANGELS, 4: STAGES.LOCAL_LEGENDS };
+    if (map[n]) goTo(map[n]);
+  };
+
   // Generic helpers for each category
   const updateAboutYou = (field, value) => setAboutYou(p => ({ ...p, [field]: value }));
 
@@ -223,6 +228,7 @@ export default function NominationForm({ isPreview = false } = {}) {
         ...intakeBase,
         nomination_type: 'women',
         nominee_name: n.name,
+        nominee_email: n.email,
         role_org: n.role_org,
         link: n.link,
         location: n.location,
@@ -233,6 +239,7 @@ export default function NominationForm({ isPreview = false } = {}) {
         ...intakeBase,
         nomination_type: 'men',
         nominee_name: n.name,
+        nominee_email: n.email,
         role_org: n.role_org,
         link: n.link,
         location: n.location,
@@ -323,12 +330,15 @@ export default function NominationForm({ isPreview = false } = {}) {
           pronounSubject="she"
           addLabel="Nominate another woman"
           nextLabel="Next: TOP 100 Men"
+          prevLabel="Back"
           nominations={nominations.women}
           onAdd={() => addNomination('women', emptyPersonNomination)}
           onUpdate={(idx, f, v) => updateNomination('women', idx, f, v)}
           onRemove={(idx) => removeNomination('women', idx)}
           onNext={handleNextWomen}
           onSkip={() => goTo(STAGES.MEN)}
+          onPrev={() => goTo(STAGES.ABOUT_YOU)}
+          onNavigate={goToCategory}
         />
       )}
 
@@ -344,12 +354,15 @@ export default function NominationForm({ isPreview = false } = {}) {
           pronounSubject="he"
           addLabel="Nominate another man"
           nextLabel="Next: TOP 100 Angels"
+          prevLabel="Back to Women"
           nominations={nominations.men}
           onAdd={() => addNomination('men', emptyPersonNomination)}
           onUpdate={(idx, f, v) => updateNomination('men', idx, f, v)}
           onRemove={(idx) => removeNomination('men', idx)}
           onNext={handleNextMen}
           onSkip={() => goTo(STAGES.ANGELS)}
+          onPrev={() => goTo(STAGES.WOMEN)}
+          onNavigate={goToCategory}
         />
       )}
 
@@ -361,6 +374,9 @@ export default function NominationForm({ isPreview = false } = {}) {
           onRemove={(idx) => removeNomination('angels', idx)}
           onNext={handleNextAngels}
           onSkip={() => goTo(STAGES.LOCAL_LEGENDS)}
+          onPrev={() => goTo(STAGES.MEN)}
+          prevLabel="Back to Men"
+          onNavigate={goToCategory}
         />
       )}
 
@@ -372,6 +388,9 @@ export default function NominationForm({ isPreview = false } = {}) {
           onRemove={(idx) => removeNomination('local_legends', idx)}
           onNext={handleNextLocalLegends}
           onSkip={() => goTo(STAGES.REVIEW)}
+          onPrev={() => goTo(STAGES.ANGELS)}
+          prevLabel="Back to Angels"
+          onNavigate={goToCategory}
         />
       )}
 

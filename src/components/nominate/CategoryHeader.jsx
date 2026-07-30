@@ -5,7 +5,14 @@ import { brand } from './NominateConfig';
  * Strong section header that makes each category feel like its own distinct stage.
  * Shows: stage indicator (X of 4), big category badge, title, intro.
  */
-export default function CategoryHeader({ stageNumber, categoryLabel, accentColor, title, intro, icon: Icon }) {
+const NAV_ITEMS = [
+  { n: 1, label: 'Women' },
+  { n: 2, label: 'Men' },
+  { n: 3, label: 'Angels' },
+  { n: 4, label: 'Local Legends' },
+];
+
+export default function CategoryHeader({ stageNumber, categoryLabel, accentColor, title, intro, icon: Icon, onNavigate }) {
   const accent = accentColor || brand.gold;
 
   return (
@@ -15,17 +22,27 @@ export default function CategoryHeader({ stageNumber, categoryLabel, accentColor
       transition={{ duration: 0.4 }}
       className="relative pb-2"
     >
-      {/* Stage progress indicator */}
-      <div className="flex items-center gap-2 mb-6">
-        {[1, 2, 3, 4].map(n => (
-          <div
-            key={n}
-            className="h-1 flex-1 rounded-full transition-all"
-            style={{
-              background: n < stageNumber ? brand.navy : n === stageNumber ? accent : `${brand.navy}15`,
-            }}
-          />
-        ))}
+      {/* Clickable category menu */}
+      <div className="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide -mx-1 px-1">
+        {NAV_ITEMS.map(item => {
+          const isActive = item.n === stageNumber;
+          const isPast = item.n < stageNumber;
+          return (
+            <button
+              key={item.n}
+              onClick={() => onNavigate?.(item.n)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0"
+              style={{
+                background: isActive ? accent : isPast ? `${brand.navy}10` : 'transparent',
+                color: isActive ? '#fff' : isPast ? brand.navy : `${brand.navy}55`,
+                border: `1px solid ${isActive ? accent : isPast ? `${brand.navy}20` : `${brand.navy}15`}`,
+              }}
+            >
+              {isPast && <span className="w-1.5 h-1.5 rounded-full" style={{ background: brand.navy }} />}
+              {item.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Big category badge */}
@@ -38,7 +55,7 @@ export default function CategoryHeader({ stageNumber, categoryLabel, accentColor
         </div>
         <div>
           <div className="text-[10px] font-bold uppercase tracking-[0.25em]" style={{ color: `${brand.navy}50` }}>
-            Stage {stageNumber} of 4
+            Category {stageNumber} of 4
           </div>
           <div className="text-base font-bold tracking-wide" style={{ color: accent }}>
             {categoryLabel}
