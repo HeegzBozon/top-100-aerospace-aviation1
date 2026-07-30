@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Clock } from 'lucide-react';
+import { BookOpen, Clock, Library } from 'lucide-react';
 import ComingSoonIntelligenceTab from '@/components/publication/ComingSoonIntelligenceTab';
 import PublicationTabSearch from '@/components/publication/PublicationTabSearch';
 
@@ -52,58 +52,26 @@ export default function AuthenticatedIntelligenceHeader({ nominees = [], onSelec
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" defaultValue="publication">
+          <div className="flex items-center gap-2 md:gap-4" style={{ borderBottom: `1px solid ${brandColors.ink}10` }}>
           <TabsList 
-            className="grid w-full max-w-md grid-cols-2 h-auto p-0.5 bg-transparent border-0"
-            style={{ 
-              background: 'transparent',
-              borderBottom: `1px solid ${brandColors.ink}10`
-            }}
+            className="grid max-w-md flex-1 grid-cols-2 h-auto p-0.5 bg-transparent border-0"
+            style={{ background: 'transparent' }}
           >
-            <TabsTrigger
-              value="publication"
-              className="relative rounded-none border-0 px-3 py-3 text-xs md:text-sm font-medium transition-none data-[state=active]:bg-transparent data-[state=active]:text-inherit"
-              style={{
-                color: activeTab === 'publication' ? brandColors.navyDeep : `${brandColors.ink}60`,
-              }}
-            >
-              <motion.div
-                className="flex items-center gap-1.5 md:gap-2"
-                layout
-              >
-                <BookOpen className="w-4 h-4 md:w-5 md:h-5" />
-                <span className="hidden sm:inline">Publication</span>
-              </motion.div>
-              {activeTab === 'publication' && (
-                <motion.div
-                  layoutId="activeIndicator"
-                  className="absolute bottom-0 left-0 right-0 h-0.5"
-                  style={{ background: brandColors.goldPrestige }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                />
-              )}
-            </TabsTrigger>
-
-            <TabsTrigger
-              value="coming-soon"
-              className="relative rounded-none border-0 px-3 py-3 text-xs md:text-sm font-medium transition-none data-[state=active]:bg-transparent data-[state=active]:text-inherit"
-              style={{
-                color: activeTab === 'coming-soon' ? brandColors.navyDeep : `${brandColors.ink}60`,
-              }}
-            >
-              <motion.div className="flex items-center gap-1.5 md:gap-2" layout>
-                <Clock className="w-4 h-4 md:w-5 md:h-5" />
-                <span className="hidden sm:inline">Coming Soon</span>
-              </motion.div>
-              {activeTab === 'coming-soon' && (
-                <motion.div
-                  layoutId="activeIndicator"
-                  className="absolute bottom-0 left-0 right-0 h-0.5"
-                  style={{ background: brandColors.goldPrestige }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                />
-              )}
-            </TabsTrigger>
+...
           </TabsList>
+          <a
+            href="#volumes"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('volumes')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+            className="flex shrink-0 items-center gap-1.5 md:gap-2 px-3 py-3 text-xs md:text-sm font-medium transition-opacity hover:opacity-70"
+            style={{ color: `${brandColors.ink}60` }}
+          >
+            <Library className="w-4 h-4 md:w-5 md:h-5" />
+            <span className="hidden sm:inline">Archive</span>
+          </a>
+          </div>
 
           {/* Content */}
           <div className="mt-6 md:mt-8">
