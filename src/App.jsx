@@ -202,6 +202,7 @@ const AuthenticatedApp = () => {
       <Route path="/volume-one" element={<Navigate to="/archive/696aec2d99297cdbe96ee71e" replace />} />
       <Route path="/volume-one-men" element={<Navigate to="/archive/6a6b699d7b16a7017ce0c3c0" replace />} />
       <Route path="/volume-one-top100" element={<Navigate to="/archive/6a6b70136ccb7c358f77dd7f" replace />} />
+      <Route path="/volume-two-women" element={<Navigate to="/archive/6a6b756e5c6a4773130e2511" replace />} />
       <Route path="/Nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/nominations" element={<Navigate to="/nominate" replace />} />
       <Route path="/top100-tv" element={
