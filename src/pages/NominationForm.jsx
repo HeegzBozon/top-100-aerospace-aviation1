@@ -29,11 +29,40 @@ export default function NominationForm({ isPreview = false } = {}) {
   const [stage, setStage] = useState(STAGES.WELCOME);
   const [submitting, setSubmitting] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const authenticated = await base44.auth.isAuthenticated();
+        if (!authenticated || !active) return;
+        const me = await base44.auth.me();
+        if (!active) return;
+        setCurrentUser(me);
+        setAboutYou(prev => ({
+          ...prev,
+          name: prev.name || me.full_name || '',
+          email: prev.email || me.email || '',
+        }));
+      } catch { /* not logged in — that's fine */ }
+    })();
+    return () => { active = false; };
+  }, []);
+
+  const handleLoginRedirect = () => {
+    const nextUrl = window.location.pathname + window.location.search;
+    base44.auth.redirectToLogin(nextUrl);
+  };
+
+  const handleLogout = async () => {
+    await base44.auth.logout(window.location.pathname);
+  };
 
   const [aboutYou, setAboutYou] = useState({ name: '', email: '', connection: '' });
   const [nominations, setNominations] = useState({
@@ -238,6 +267,9 @@ export default function NominationForm({ isPreview = false } = {}) {
           data={aboutYou}
           onUpdate={updateAboutYou}
           onContinue={() => goTo(STAGES.WOMEN)}
+          user={currentUser}
+          onLogin={handleLoginRedirect}
+          onLogout={handleLogout}
         />
       )}
 

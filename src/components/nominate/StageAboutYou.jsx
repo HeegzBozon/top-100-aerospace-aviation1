@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, LogIn, UserPlus, LogOut, CheckCircle2 } from 'lucide-react';
 import { brand, CONNECTION_OPTIONS } from './NominateConfig';
 
-export default function StageAboutYou({ data, onUpdate, onContinue }) {
+export default function StageAboutYou({ data, onUpdate, onContinue, user, onLogin, onLogout }) {
   const firstRef = useRef(null);
-  useEffect(() => { setTimeout(() => firstRef.current?.focus(), 200); }, []);
+  useEffect(() => { if (!user) setTimeout(() => firstRef.current?.focus(), 200); }, [user]);
 
   const valid = data.name?.trim() && data.email?.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email) && data.connection;
 
@@ -22,6 +22,40 @@ export default function StageAboutYou({ data, onUpdate, onContinue }) {
       <h1 className="text-2xl md:text-4xl font-bold leading-tight" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
         First, tell us a little about you.
       </h1>
+
+      {user ? (
+        <div className="rounded-2xl border p-4 flex items-center justify-between gap-3" style={{ borderColor: `${brand.gold}45`, background: `${brand.gold}0F` }}>
+          <div className="flex items-center gap-3 min-w-0">
+            <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: brand.navy }} />
+            <div className="min-w-0">
+              <p className="text-sm font-semibold truncate" style={{ color: brand.navy }}>{user.full_name || user.email}</p>
+              <p className="text-xs truncate" style={{ color: `${brand.navy}80` }}>Signed in — your details are pre-filled</p>
+            </div>
+          </div>
+          <button onClick={onLogout} className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full" style={{ color: brand.navy, background: 'white' }}>
+            <LogOut className="w-3.5 h-3.5" /> Log out
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: `${brand.navy}70` }}>
+            Have an account?
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2.5">
+            <button onClick={onLogin} className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all hover:-translate-y-0.5" style={{ borderColor: brand.navy, color: brand.navy, background: 'white' }}>
+              <LogIn className="w-4 h-4" /> Log in
+            </button>
+            <button onClick={onLogin} className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all hover:-translate-y-0.5 text-white" style={{ background: brand.navy }}>
+              <UserPlus className="w-4 h-4" /> Create account
+            </button>
+          </div>
+          <div className="flex items-center gap-3 py-1">
+            <div className="h-px flex-1" style={{ background: `${brand.navy}18` }} />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: `${brand.navy}60` }}>or continue as guest</span>
+            <div className="h-px flex-1" style={{ background: `${brand.navy}18` }} />
+          </div>
+        </div>
+      )}
 
       <div className="space-y-5">
         <Field label="Your Name" required>
