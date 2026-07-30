@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { n: 4, label: 'Local Legends' },
 ];
 
-export default function CategoryHeader({ stageNumber, categoryLabel, accentColor, title, intro, icon: Icon, onNavigate }) {
+export default function CategoryHeader({ stageNumber, categoryLabel, accentColor, title, intro, icon: Icon, onNavigate, counts = {} }) {
   const accent = accentColor || brand.gold;
 
   return (
@@ -22,23 +22,46 @@ export default function CategoryHeader({ stageNumber, categoryLabel, accentColor
       transition={{ duration: 0.4 }}
       className="relative pb-2"
     >
+      {/* Multi-category hint */}
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: `${brand.gold}20` }}>
+          <span className="text-[10px]" style={{ color: brand.gold }}>✦</span>
+        </div>
+        <p className="text-[11px] font-semibold leading-tight" style={{ color: `${brand.navy}70` }}>
+          Nominate across <span style={{ color: brand.navy }}>all four categories</span> — jump to any anytime.
+        </p>
+      </div>
+
       {/* Clickable category menu */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide -mx-1 px-1">
+      <div className="grid grid-cols-4 gap-2 mb-6">
         {NAV_ITEMS.map(item => {
           const isActive = item.n === stageNumber;
           const isPast = item.n < stageNumber;
+          const count = counts[item.n] || 0;
           return (
             <button
               key={item.n}
               onClick={() => onNavigate?.(item.n)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0"
+              className="relative flex flex-col items-center justify-center gap-1 px-2 py-3 rounded-2xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer"
               style={{
-                background: isActive ? accent : isPast ? `${brand.navy}10` : 'transparent',
+                background: isActive ? accent : isPast ? `${brand.navy}08` : 'white',
                 color: isActive ? '#fff' : isPast ? brand.navy : `${brand.navy}55`,
-                border: `1px solid ${isActive ? accent : isPast ? `${brand.navy}20` : `${brand.navy}15`}`,
+                border: `2px solid ${isActive ? accent : isPast ? `${brand.navy}25` : `${brand.navy}12`}`,
+                boxShadow: isActive ? `0 6px 20px ${accent}40` : 'none',
               }}
             >
-              {isPast && <span className="w-1.5 h-1.5 rounded-full" style={{ background: brand.navy }} />}
+              {count > 0 && (
+                <span
+                  className="absolute -top-2 -right-2 min-w-5 h-5 px-1 rounded-full flex items-center justify-center text-[10px] font-bold"
+                  style={{
+                    background: isActive ? '#fff' : brand.gold,
+                    color: isActive ? accent : '#fff',
+                    border: `1.5px solid ${isActive ? accent : 'white'}`,
+                  }}
+                >
+                  {count}
+                </span>
+              )}
               {item.label}
             </button>
           );

@@ -339,6 +339,7 @@ export default function NominationForm({ isPreview = false } = {}) {
           onSkip={() => goTo(STAGES.MEN)}
           onPrev={() => goTo(STAGES.ABOUT_YOU)}
           onNavigate={goToCategory}
+          counts={{ 1: nominations.women.length, 2: nominations.men.length, 3: nominations.angels.length, 4: nominations.local_legends.length }}
         />
       )}
 
@@ -363,6 +364,7 @@ export default function NominationForm({ isPreview = false } = {}) {
           onSkip={() => goTo(STAGES.ANGELS)}
           onPrev={() => goTo(STAGES.WOMEN)}
           onNavigate={goToCategory}
+          counts={{ 1: nominations.women.length, 2: nominations.men.length, 3: nominations.angels.length, 4: nominations.local_legends.length }}
         />
       )}
 
@@ -377,6 +379,7 @@ export default function NominationForm({ isPreview = false } = {}) {
           onPrev={() => goTo(STAGES.MEN)}
           prevLabel="Back to Men"
           onNavigate={goToCategory}
+          counts={{ 1: nominations.women.length, 2: nominations.men.length, 3: nominations.angels.length, 4: nominations.local_legends.length }}
         />
       )}
 
@@ -391,6 +394,7 @@ export default function NominationForm({ isPreview = false } = {}) {
           onPrev={() => goTo(STAGES.ANGELS)}
           prevLabel="Back to Angels"
           onNavigate={goToCategory}
+          counts={{ 1: nominations.women.length, 2: nominations.men.length, 3: nominations.angels.length, 4: nominations.local_legends.length }}
         />
       )}
 
