@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Plus } from 'lucide-react';
+import { Sparkles, Plus, Trash2, Check, UserCheck } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { brand, emptyPersonNomination, emptyAngelNomination, emptyLocalLegend } from '@/components/nominate/NominateConfig';
-import HubNominationCard from '@/components/my-top100/HubNominationCard';
+import { brand } from '@/components/nominate/NominateConfig';
 import HubEnergyTracker from '@/components/my-top100/HubEnergyTracker';
+import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 
 export const HUB_CATEGORIES = [
   {
@@ -16,7 +16,6 @@ export const HUB_CATEGORIES = [
     body: 'TOP 100 Women in Aerospace & Aviation spotlights accomplished women across every discipline. Engineering. Operations. Policy. Research. Entrepreneurship. Flight. Space. If she\u2019s building the future of this industry, she belongs in the conversation.',
     pronoun: 'her',
     type: 'person',
-    factory: emptyPersonNomination,
   },
   {
     key: 'men',
@@ -27,7 +26,6 @@ export const HUB_CATEGORIES = [
     body: 'TOP 100 Men in Aerospace & Aviation celebrates the men shaping the future of flight \u2014 from engineers and test pilots to executives and founders. If he\u2019s pushing the boundaries of what\u2019s possible, he belongs in the conversation.',
     pronoun: 'his',
     type: 'person',
-    factory: emptyPersonNomination,
   },
   {
     key: 'angels',
@@ -38,7 +36,6 @@ export const HUB_CATEGORIES = [
     body: 'TOP 100 Angels recognizes the investors fueling the next era of flight \u2014 from seed-stage space startups to advanced air mobility. If they\u2019re writing the checks that launch the future, they belong in the conversation.',
     pronoun: 'their',
     type: 'angel',
-    factory: emptyAngelNomination,
   },
   {
     key: 'local_legends',
@@ -49,11 +46,11 @@ export const HUB_CATEGORIES = [
     body: 'Local Legends spotlights the boutique gyms, wellness studios, salons, and neighborhood spots that keep the aerospace workforce thriving. If they make your corner of the industry feel like home, nominate them.',
     pronoun: 'their',
     type: 'local_legend',
-    factory: emptyLocalLegend,
   },
 ];
 
-export default function NominationHub({ activeCategory, onCategoryChange, nominations, onAddNomination, onUpdateNomination, onRemoveNomination, onAddExisting, nominator }) {
+export default function NominationHub({ activeCategory, onCategoryChange, submittedNominations, onAddNomination, onRemoveNomination, onAddExisting, nominator }) {
+  const [showPopover, setShowPopover] = useState(false);
   const [nominees, setNominees] = useState([]);
 
   useEffect(() => {
@@ -65,19 +62,28 @@ export default function NominationHub({ activeCategory, onCategoryChange, nomina
   }, []);
 
   const category = HUB_CATEGORIES.find((c) => c.key === activeCategory);
-  const categoryNominations = nominations[activeCategory] || [];
-  const totalCount = Object.values(nominations).reduce((sum, arr) => sum + arr.length, 0);
+  const categoryNominations = (submittedNominations[activeCategory] || []).filter((n) => !n.existing);
+  const existingAdded = (submittedNominations[activeCategory] || []).filter((n) => n.existing);
+  const totalCount = Object.values(submittedNominations).reduce((sum, arr) => sum + arr.length, 0);
 
-  const handleAdd = () => {
-    onAddNomination(activeCategory, category.factory);
+  const handleSubmitted = (result) => {
+    if (result.existing) {
+      onAddExisting(result.nominee);
+      return;
+    }
+    onAddNomination(activeCategory, result.summary);
+    setShowPopover(false);
   };
 
-  const handleUpdate = (idx, field, value) => {
-    onUpdateNomination(activeCategory, idx, field, value);
+  const displaySummary = (n) => {
+    if (category.type === 'local_legend') return n.business_name || 'Untitled business';
+    return n.name || 'Untitled nominee';
   };
 
-  const handleRemove = (idx) => {
-    onRemoveNomination(activeCategory, idx);
+  const displaySub = (n) => {
+    if (category.type === 'local_legend') return [n.business_type, n.city].filter(Boolean).join(' · ');
+    if (category.type === 'angel') return [n.firm, n.investing_in].filter(Boolean).join(' · ') || 'Angel investor';
+    return n.role_org || '';
   };
 
   return (
@@ -142,34 +148,91 @@ export default function NominationHub({ activeCategory, onCategoryChange, nomina
         <HubEnergyTracker count={totalCount} />
       </div>
 
-      {/* Nomination cards */}
-      <div className="px-4 pb-4 space-y-4">
+      {/* Submitted nomination summaries */}
+      <div className="px-4 pb-4 space-y-2.5">
         <AnimatePresence>
-          {categoryNominations.map((nom, idx) => (
-            <HubNominationCard
-              key={idx}
-              category={category}
-              index={idx}
-              data={nom}
-              onChange={(field, value) => handleUpdate(idx, field, value)}
-              onRemove={() => handleRemove(idx)}
-              onAddExisting={onAddExisting}
-              nominees={nominees}
-              nominator={nominator}
-            />
+          {categoryNominations.map((n, idx) => (
+            <motion.div
+              key={`${activeCategory}-${idx}`}
+              layout
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="flex items-center gap-3 rounded-2xl px-4 py-3"
+              style={{ background: 'white', border: `1px solid ${brand.navy}10` }}
+            >
+              <div className="h-9 w-9 rounded-full flex items-center justify-center shrink-0" style={{ background: `${brand.gold}18` }}>
+                <Check className="w-4 h-4" style={{ color: brand.gold }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold truncate" style={{ color: brand.navy }}>
+                  {displaySummary(n)}
+                </p>
+                {displaySub(n) && (
+                  <p className="text-[11px] truncate" style={{ color: `${brand.navy}50` }}>{displaySub(n)}</p>
+                )}
+                <p className="text-[9px] font-bold uppercase tracking-wide mt-0.5" style={{ color: '#2d8a4f' }}>
+                  Submitted for review
+                </p>
+              </div>
+              <button
+                onClick={() => onRemoveNomination(activeCategory, idx)}
+                className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 transition-colors"
+                style={{ background: `${brand.navy}05` }}
+              >
+                <Trash2 className="w-3.5 h-3.5" style={{ color: '#c0392b' }} />
+              </button>
+            </motion.div>
+          ))}
+
+          {/* Existing nominees added directly to list */}
+          {existingAdded.map((n, idx) => (
+            <motion.div
+              key={`existing-${idx}`}
+              layout
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="flex items-center gap-3 rounded-2xl px-4 py-3"
+              style={{ background: `${brand.navy}05`, border: `1px solid ${brand.navy}10` }}
+            >
+              <div className="h-9 w-9 rounded-full flex items-center justify-center shrink-0" style={{ background: brand.navy }}>
+                <UserCheck className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold truncate" style={{ color: brand.navy }}>{n.nominee?.name}</p>
+                <p className="text-[11px]" style={{ color: `${brand.navy}50` }}>Added to your Top 100 list</p>
+              </div>
+            </motion.div>
           ))}
         </AnimatePresence>
 
-        {/* Add another */}
+        {/* Add nomination button */}
         <button
-          onClick={handleAdd}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold border-2 border-dashed transition-all"
-          style={{ borderColor: `${brand.navy}20`, color: `${brand.navy}60`, background: 'transparent' }}
+          onClick={() => setShowPopover(true)}
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold transition-all"
+          style={{
+            background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`,
+            color: 'white',
+          }}
         >
           <Plus className="w-4 h-4" />
-          Add {categoryNominations.length > 0 ? 'another' : 'a'} nomination
+          {categoryNominations.length > 0 ? 'Add another nomination' : 'Add a nomination'}
         </button>
       </div>
+
+      {/* Popover form */}
+      <AnimatePresence>
+        {showPopover && (
+          <HubNominationPopover
+            category={category}
+            nominees={nominees}
+            nominator={nominator}
+            onClose={() => setShowPopover(false)}
+            onSubmitted={handleSubmitted}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

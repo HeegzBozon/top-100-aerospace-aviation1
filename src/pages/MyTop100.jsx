@@ -70,10 +70,10 @@ export default function MyTop100() {
     localStorage.setItem('hub_nominations_draft', JSON.stringify(hubNominations));
   }, [hubNominations]);
 
-  const addHubNomination = (category, factory) =>
-    setHubNominations((p) => ({ ...p, [category]: [...p[category], factory()] }));
-  const updateHubNomination = (category, idx, field, value) =>
-    setHubNominations((p) => ({ ...p, [category]: p[category].map((n, i) => (i === idx ? { ...n, [field]: value } : n)) }));
+  const addHubNomination = (category, summary) =>
+    setHubNominations((p) => ({ ...p, [category]: [...p[category], summary] }));
+  const addExistingToHub = (category, nominee) =>
+    setHubNominations((p) => ({ ...p, [category]: [...p[category], { existing: true, nominee }] }));
   const removeHubNomination = (category, idx) =>
     setHubNominations((p) => ({ ...p, [category]: p[category].filter((_, i) => i !== idx) }));
 
@@ -256,11 +256,13 @@ export default function MyTop100() {
         <NominationHub
           activeCategory={activeCategory}
           onCategoryChange={setActiveCategory}
-          nominations={hubNominations}
+          submittedNominations={hubNominations}
           onAddNomination={addHubNomination}
-          onUpdateNomination={updateHubNomination}
           onRemoveNomination={removeHubNomination}
-          onAddExisting={handleAdd}
+          onAddExisting={(nominee) => {
+            addExistingToHub(activeCategory, nominee);
+            handleAdd(nominee);
+          }}
           nominator={user}
         />
       </div>
