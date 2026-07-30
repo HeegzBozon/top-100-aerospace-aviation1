@@ -11,6 +11,7 @@ import EditorialLedger from '@/components/publication/EditorialLedger';
 import SignalReport from '@/components/publication/SignalReport';
 import OrbitalIndexComingSoon from '@/components/publication/OrbitalIndexComingSoon';
 import ArchiveExportSection from '@/components/publication/ArchiveExportSection';
+import ArchiveVolumesSection from '@/components/publication/ArchiveVolumesSection';
 import EditorialClosing from '@/components/publication/EditorialClosing';
 import EnhancedProfilePanel from '@/components/publication/EnhancedProfilePanel';
 import ShareableCard from '@/components/publication/ShareableCard';
@@ -259,6 +260,11 @@ export default function Top100Women2025() {
         kicker="The Methodology"
         text="We don't rank. We measure. The verified reputation graph of aerospace & aviation."
       />
+
+      {/* SECTION 7.5: Previous Volumes */}
+      <EditorialSection id="volumes">
+        <ArchiveVolumesSection />
+      </EditorialSection>
 
       {/* SECTION 8: Archive */}
       <EditorialSection id="archive">
