@@ -98,6 +98,10 @@
       "type": "string",
       "description": "Primary industry role"
     },
+    "aerospace_connection": {
+      "type": "string",
+      "description": "Saved answer to 'Your connection to aerospace and aviation' from the Start Here screen, so it pre-fills on future visits"
+    },
     "onboarding_completed": {
       "type": "boolean",
       "default": false

@@ -291,6 +291,7 @@ export default function MyTop100() {
             hasExisting={totalNominations > 0 || rankings.length > 0}
             onBegin={() => setActiveTab('nominate')}
             onVote={() => setActiveTab('list')}
+            onSaved={(c) => setUser((u) => ({ ...u, aerospace_connection: c }))}
           />
         </div>
       )}

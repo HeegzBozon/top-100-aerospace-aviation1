@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle2, LogOut, Sparkles, Vote } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand, CONNECTION_OPTIONS } from '@/components/nominate/NominateConfig';
 
-export default function StartHereSplit({ user, hasExisting, onBegin, onVote }) {
+export default function StartHereSplit({ user, hasExisting, onBegin, onVote, onSaved }) {
   const [name, setName] = useState(user?.full_name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [connection, setConnection] = useState(user?.aerospace_connection || '');
@@ -22,6 +22,7 @@ export default function StartHereSplit({ user, hasExisting, onBegin, onVote }) {
     try {
       // Persist the connection answer so it pre-fills next time
       await base44.auth.updateMe({ aerospace_connection: connection });
+      onSaved?.(connection);
     } catch { /* ignore — proceed anyway */ }
     setSaving(false);
     onBegin();
