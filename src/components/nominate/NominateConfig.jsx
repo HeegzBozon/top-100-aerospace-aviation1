@@ -44,11 +44,30 @@ export const STAGE_ORDER = [
 ];
 
 // Empty record templates
+export const GUIDED_PROMPTS = [
+  { key: 'reason_contribution', label: "What is their primary contribution to the industry?" },
+  { key: 'reason_impact', label: "How have they impacted others in the field?" },
+  { key: 'reason_leadership', label: "What makes their approach or leadership unique?" },
+];
+
+// Combine the three guided prompt answers into a single reason string for storage.
+export function combineGuidedReason(n) {
+  const parts = [
+    n.reason_contribution?.trim() && `Primary contribution: ${n.reason_contribution.trim()}`,
+    n.reason_impact?.trim() && `Impact on others: ${n.reason_impact.trim()}`,
+    n.reason_leadership?.trim() && `Leadership approach: ${n.reason_leadership.trim()}`,
+  ].filter(Boolean);
+  return parts.join('\n\n') || n.reason?.trim() || '';
+}
+
 export const emptyPersonNomination = () => ({
   name: '',
   role_org: '',
   link: '',
   location: '',
+  reason_contribution: '',
+  reason_impact: '',
+  reason_leadership: '',
   reason: '',
   share_name: '',
 });

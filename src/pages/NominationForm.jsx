@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Users } from 'lucide-react';
+import { Sparkles, Users, CheckCircle2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -9,6 +9,8 @@ import {
   emptyPersonNomination,
   emptyAngelNomination,
   emptyLocalLegend,
+  combineGuidedReason,
+  brand,
 } from '@/components/nominate/NominateConfig';
 import NominateShell from '@/components/nominate/NominateShell';
 import StageWelcome from '@/components/nominate/StageWelcome';
@@ -21,6 +23,23 @@ import StageConfirmation from '@/components/nominate/StageConfirmation';
 import NominationSplash from '@/components/nominate/NominationSplash';
 
 const SURVEY_ID = '69f45633daacf496cacd8666';
+const DRAFT_KEY = 'top100_nomination_draft_v1';
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function saveDraft(data) {
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)); } catch { /* ignore */ }
+}
+
+function clearDraft() {
+  try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+}
 
 export default function NominationForm({ isPreview = false } = {}) {
   const navigate = useNavigate();
@@ -30,6 +49,7 @@ export default function NominationForm({ isPreview = false } = {}) {
   const [submitting, setSubmitting] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
+  const [draftRestored, setDraftRestored] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 2000);
@@ -64,13 +84,30 @@ export default function NominationForm({ isPreview = false } = {}) {
     await base44.auth.logout(window.location.pathname);
   };
 
-  const [aboutYou, setAboutYou] = useState({ name: '', email: '', connection: '' });
-  const [nominations, setNominations] = useState({
-    women: [],
-    men: [],
-    angels: [],
-    local_legends: [],
+  const [aboutYou, setAboutYou] = useState(() => {
+    const d = loadDraft();
+    return d?.aboutYou || { name: '', email: '', connection: '' };
   });
+  const [nominations, setNominations] = useState(() => {
+    const d = loadDraft();
+    return d?.nominations || { women: [], men: [], angels: [], local_legends: [] };
+  });
+
+  // Restore draft stage if present
+  useEffect(() => {
+    const d = loadDraft();
+    if (d?.stage && d.stage !== STAGES.WELCOME && d.stage !== STAGES.CONFIRMATION) {
+      setStage(d.stage);
+      setDraftRestored(true);
+      const t = setTimeout(() => setDraftRestored(false), 4000);
+      return () => clearTimeout(t);
+    }
+  }, []);
+
+  // Autosave draft whenever data changes
+  useEffect(() => {
+    saveDraft({ stage, aboutYou, nominations });
+  }, [stage, aboutYou, nominations]);
 
   const stageIndex = STAGE_ORDER.indexOf(stage);
   const progress = (stageIndex / (STAGE_ORDER.length - 1)) * 100;
@@ -123,11 +160,11 @@ export default function NominationForm({ isPreview = false } = {}) {
   };
 
   const handleNextWomen = () => {
-    if (!validateCategory(nominations.women, ['name', 'role_org', 'reason', 'share_name'], 'Woman')) return;
+    if (!validateCategory(nominations.women, ['name', 'role_org', 'reason_contribution', 'share_name'], 'Woman')) return;
     goTo(STAGES.MEN);
   };
   const handleNextMen = () => {
-    if (!validateCategory(nominations.men, ['name', 'role_org', 'reason', 'share_name'], 'Man')) return;
+    if (!validateCategory(nominations.men, ['name', 'role_org', 'reason_contribution', 'share_name'], 'Man')) return;
     goTo(STAGES.ANGELS);
   };
   const handleNextAngels = () => {
@@ -189,7 +226,7 @@ export default function NominationForm({ isPreview = false } = {}) {
         role_org: n.role_org,
         link: n.link,
         location: n.location,
-        reason: n.reason,
+        reason: combineGuidedReason(n),
         share_name: n.share_name,
       })),
       ...nominations.men.filter(n => n.name?.trim()).map(n => ({
@@ -199,7 +236,7 @@ export default function NominationForm({ isPreview = false } = {}) {
         role_org: n.role_org,
         link: n.link,
         location: n.location,
-        reason: n.reason,
+        reason: combineGuidedReason(n),
         share_name: n.share_name,
       })),
       ...nominations.angels.filter(n => n.name?.trim()).map(n => ({
@@ -242,6 +279,7 @@ export default function NominationForm({ isPreview = false } = {}) {
       angels_count: nominations.angels.length,
       local_legends_count: nominations.local_legends.length,
     });
+    clearDraft();
     setSubmitting(false);
     setStage(STAGES.CONFIRMATION);
   };
@@ -347,7 +385,12 @@ export default function NominationForm({ isPreview = false } = {}) {
       )}
 
       {stage === STAGES.CONFIRMATION && (
-        <StageConfirmation />
+        <StageConfirmation
+          womenCount={nominations.women.length}
+          menCount={nominations.men.length}
+          angelsCount={nominations.angels.length}
+          localLegendsCount={nominations.local_legends.length}
+        />
       )}
     </NominateShell>
   );

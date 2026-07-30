@@ -4,9 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Plus, Check, Trash2, SkipForward } from 'lucide-react';
-import { brand } from './NominateConfig';
+import { brand, GUIDED_PROMPTS } from './NominateConfig';
 import CategoryHeader from './CategoryHeader';
 import HubMeter from './HubMeter';
+import ImpactMeter from './ImpactMeter';
 
 /**
  * Generic stage for TOP 100 Women / Men.
@@ -112,9 +113,28 @@ export default function StagePersonNominations({
               <Input value={nom.location} onChange={e => onUpdate(idx, 'location', e.target.value)} placeholder="e.g. Houston, USA" className="bg-white h-11" />
             </Field>
 
-            <Field label={`Why does ${pronounSubject} deserve to be recognized?`} required hint="A sentence or two. What is she doing? Why does it matter? Why now?">
-              <Textarea value={nom.reason} onChange={e => onUpdate(idx, 'reason', e.target.value)} rows={3} className="bg-white" />
-            </Field>
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: `${brand.navy}70` }}>
+                  Why does {pronounSubject} deserve to be recognized?<span style={{ color: brand.gold }}> *</span>
+                </label>
+                <ImpactMeter text={`${nom.reason_contribution || ''} ${nom.reason_impact || ''} ${nom.reason_leadership || ''}`} />
+              </div>
+              <div className="space-y-3">
+                {GUIDED_PROMPTS.map((p) => (
+                  <div key={p.key}>
+                    <p className="text-[11px] font-medium mb-1" style={{ color: `${brand.navy}55` }}>{p.label}</p>
+                    <Textarea
+                      value={nom[p.key] || ''}
+                      onChange={e => onUpdate(idx, p.key, e.target.value)}
+                      rows={2}
+                      className="bg-white text-sm"
+                      placeholder="A sentence or two…"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
 
             <Field label={`May we tell ${pronoun} you nominated ${pronoun}?`} required>
               <ChoiceGroup

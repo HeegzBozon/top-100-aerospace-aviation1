@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { brand } from './NominateConfig';
 import { Link } from 'react-router-dom';
 
-export default function StageConfirmation() {
+export default function StageConfirmation({ womenCount = 0, menCount = 0, angelsCount = 0, localLegendsCount = 0 }) {
   const [copied, setCopied] = useState(false);
   const url = `${window.location.origin}/nominate`;
+  const total = womenCount + menCount + angelsCount + localLegendsCount;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(url);
@@ -26,14 +27,27 @@ export default function StageConfirmation() {
           <CheckCircle2 className="w-10 h-10" style={{ color: brand.gold }} />
         </div>
 
-        <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
           You just did something that matters.
         </h1>
 
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8" style={{ background: `${brand.gold}18`, border: `1px solid ${brand.gold}35` }}>
+          <CheckCircle2 className="w-4 h-4" style={{ color: brand.gold }} />
+          <span className="text-sm font-semibold" style={{ color: brand.navy }}>{total} {total === 1 ? 'nomination' : 'nominations'} submitted</span>
+        </div>
+
+        {total > 0 && (
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {womenCount > 0 && <Pill label="Women" count={womenCount} />}
+            {menCount > 0 && <Pill label="Men" count={menCount} />}
+            {angelsCount > 0 && <Pill label="Angels" count={angelsCount} />}
+            {localLegendsCount > 0 && <Pill label="Local Legends" count={localLegendsCount} />}
+          </div>
+        )}
+
         <div className="space-y-4 text-sm sm:text-base leading-relaxed mb-10" style={{ color: `${brand.navy}80` }}>
-          <p>Every name you submitted gets reviewed personally by the TOP 100 team. If they're a fit, we'll reach out within <strong style={{ color: brand.navy }}>5 business days</strong>.</p>
+          <p>Every name you submitted enters the <strong style={{ color: brand.navy }}>Season 4 review queue</strong> and gets reviewed personally by the TOP 100 team. If they're a fit, we'll reach out within <strong style={{ color: brand.navy }}>5 business days</strong>.</p>
           <p>For Local Legends nominations, the message they receive will include your name unless you chose to remain anonymous.</p>
-          <p className="text-sm" style={{ color: `${brand.navy}60` }}>For TOP 100 Women, Men, and Angels nominations, selection follows our Season 4 process.</p>
         </div>
 
         <div className="rounded-2xl border bg-white p-5 mb-8" style={{ borderColor: `${brand.navy}10` }}>
@@ -63,6 +77,14 @@ export default function StageConfirmation() {
           top100aero.space
         </p>
       </motion.div>
+    </div>
+  );
+}
+
+function Pill({ label, count }) {
+  return (
+    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: 'white', border: `1px solid ${brand.gold}40`, color: brand.navy }}>
+      <span style={{ color: brand.gold }}>{count}</span> {label}
     </div>
   );
 }
