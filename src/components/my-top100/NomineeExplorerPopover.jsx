@@ -7,6 +7,7 @@ import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import NomineeProfilePanel from '@/components/my-top100/NomineeProfilePanel';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
+import { filterPoolNominees } from '@/components/my-top100/nomineePoolFilter';
 
 const DISCIPLINES = [
   { key: 'all', label: 'All Fields' },
@@ -49,8 +50,9 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     setLoading(true);
     base44.entities.Nominee.list('-created_date', 2000).then(r => {
       if (!active) return;
-      setNominees(r);
-      setRandomOrder(stableShuffle(r));
+      const pool = filterPoolNominees(r);
+      setNominees(pool);
+      setRandomOrder(stableShuffle(pool));
       setLoading(false);
     });
     return () => { active = false; };

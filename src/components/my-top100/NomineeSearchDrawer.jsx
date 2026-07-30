@@ -6,6 +6,7 @@ import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
+import { filterPoolNominees } from '@/components/my-top100/nomineePoolFilter';
 
 const CATEGORIES = ['All', 'Women', 'Men', 'Angels'];
 
@@ -68,9 +69,10 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
   const loadNominees = async () => {
     setLoading(true);
     try {
-      const results = await base44.entities.Nominee.list('-created_date', 200);
-      setNominees(results);
-      setRandomOrder(stableShuffle(results));
+      const results = await base44.entities.Nominee.list('-created_date', 2000);
+      const pool = filterPoolNominees(results);
+      setNominees(pool);
+      setRandomOrder(stableShuffle(pool));
     } catch { setNominees([]); }
     setLoading(false);
   };

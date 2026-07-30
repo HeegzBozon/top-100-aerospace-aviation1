@@ -7,6 +7,7 @@ import ArchiveHonoreeDetail from '@/components/archive/ArchiveHonoreeDetail';
 import ArchiveVolumeSwitcher from '@/components/archive/ArchiveVolumeSwitcher';
 import ArchiveContinueNav from '@/components/archive/ArchiveContinueNav';
 import NominateCTA from '@/components/archive/NominateCTA';
+import { getArchiveAppearance } from '@/components/archive/archiveVolumes';
 
 const navy = '#1e3a5a';
 const gold = '#c9a87c';
@@ -23,17 +24,21 @@ export default function SeasonArchive() {
     let active = true;
     setLoading(true);
     (async () => {
-      const [s, list] = await Promise.all([
+      const [s, all] = await Promise.all([
         base44.entities.Season.filter({ id: seasonId }),
-        base44.entities.Nominee.filter({ season_id: seasonId }, '-created_date', 500),
+        base44.entities.Nominee.list('-created_date', 2000),
       ]);
       if (!active) return;
       setSeason(s?.[0] || null);
-      setNominees(
-        [...list].sort(
-          (a, b) => (a.raw_nomination_data?.rank ?? 9999) - (b.raw_nomination_data?.rank ?? 9999)
-        )
-      );
+      const list = all
+        .filter((n) => n.season_id === seasonId || getArchiveAppearance(n, seasonId))
+        .map((n) => {
+          const app = getArchiveAppearance(n, seasonId);
+          const rank = app?.rank ?? n.raw_nomination_data?.rank ?? 9999;
+          return { ...n, _archiveRank: rank, _archiveVolume: app?.volume ?? n.raw_nomination_data?.volume };
+        })
+        .sort((a, b) => (a._archiveRank ?? 9999) - (b._archiveRank ?? 9999));
+      setNominees(list);
       setLoading(false);
     })();
     return () => { active = false; };
@@ -99,8 +104,17 @@ export default function SeasonArchive() {
               <ArchiveHonoreeCard
                 key={n.id}
                 nominee={n}
-                rank={n.raw_nomination_data?.rank ?? '—'}
-                onClick={() => setSelected(n)}
+                rank={n._archiveRank ?? '—'}
+                onClick={() =>
+                  setSelected({
+                    ...n,
+                    raw_nomination_data: {
+                      ...(n.raw_nomination_data || {}),
+                      rank: n._archiveRank,
+                      volume: n._archiveVolume,
+                    },
+                  })
+                }
               />
             ))}
           </div>

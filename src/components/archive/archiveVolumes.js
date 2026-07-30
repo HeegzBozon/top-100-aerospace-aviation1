@@ -9,3 +9,24 @@ export const ARCHIVE_VOLUMES = [
 
 export const getVolumeIndex = (seasonId) =>
   ARCHIVE_VOLUMES.findIndex((v) => v.seasonId === seasonId);
+
+export const ARCHIVE_SEASON_IDS = ARCHIVE_VOLUMES.map((v) => v.seasonId);
+
+// Resolves a nominee's appearance (rank/volume) for a given archive season.
+// After de-duplication, a single master nominee may carry appearances across
+// multiple volumes via raw_nomination_data.archive_appearances.
+export function getArchiveAppearance(nominee, seasonId) {
+  const apps = nominee?.raw_nomination_data?.archive_appearances;
+  if (Array.isArray(apps)) {
+    const match = apps.find((a) => a.season_id === seasonId);
+    if (match) return match;
+  }
+  if (nominee?.season_id === seasonId) {
+    const r = nominee.raw_nomination_data || {};
+    return { season_id: seasonId, rank: r.rank, volume: r.volume, artifact: r.artifact, source: r.source };
+  }
+  return null;
+}
+
+export const isArchiveNominee = (nominee) =>
+  ARCHIVE_SEASON_IDS.includes(nominee?.season_id);

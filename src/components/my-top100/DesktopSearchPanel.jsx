@@ -6,6 +6,7 @@ import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
+import { filterPoolNominees } from '@/components/my-top100/nomineePoolFilter';
 
 const DISCIPLINES = [
   { key: 'all', label: 'All Fields' },
@@ -40,8 +41,9 @@ export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, on
 
   useEffect(() => {
     base44.entities.Nominee.list('-created_date', 2000).then(r => {
-      setNominees(r);
-      setRandomOrder(stableShuffle(r));
+      const pool = filterPoolNominees(r);
+      setNominees(pool);
+      setRandomOrder(stableShuffle(pool));
       setLoading(false);
     });
   }, []);
