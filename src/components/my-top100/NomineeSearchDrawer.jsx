@@ -164,6 +164,7 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
                 nominee={nominating}
                 onBack={() => setNominating(null)}
                 onDone={() => setNominating(null)}
+                onAddToList={onAdd}
               />
             ) : (
               <>
@@ -400,30 +401,16 @@ function NomineeRow({ nominee, isAdded, onAdd, onNominate, compact }) {
         </p>
       </div>
 
-      {/* Nominate action */}
-      {!compact && (
-        <button
-          onClick={() => onNominate(nominee)}
-          className="shrink-0 flex items-center gap-1 px-2.5 h-8 rounded-full text-[11px] font-bold transition-all"
-          style={{ background: `${brand.gold}15`, color: brand.gold }}
-          title="Submit a formal nomination"
-        >
-          <Award className="w-3.5 h-3.5" />
-          Nominate
-        </button>
-      )}
-
-      {/* Add / Added */}
-      <motion.button
-        whileTap={{ scale: 0.88 }}
-        onClick={() => !isAdded && onAdd(nominee)}
-        className="h-8 w-8 rounded-full shrink-0 flex items-center justify-center transition-all"
-        style={{
-          background: isAdded ? `${brand.gold}20` : `linear-gradient(135deg, ${brand.navy}, #0b2542)`,
-        }}
+      <button
+        onClick={() => !isAdded && onNominate(nominee)}
+        disabled={isAdded}
+        className="shrink-0 flex items-center gap-1 px-2.5 h-8 rounded-full text-[11px] font-bold transition-all"
+        style={{ background: isAdded ? `${brand.gold}20` : `${brand.gold}15`, color: brand.gold }}
+        title={isAdded ? 'Added to your Top 100' : 'Nominate and add to your Top 100'}
       >
-        {isAdded ? <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> : <Plus className="w-3.5 h-3.5 text-white" />}
-      </motion.button>
+        {isAdded ? <Check className="w-3.5 h-3.5" /> : <Award className="w-3.5 h-3.5" />}
+        {isAdded ? 'Added' : 'Nominate'}
+      </button>
     </motion.div>
   );
 }

@@ -9,7 +9,7 @@ const SHARE_OPTIONS = [
   { value: 'no', label: 'Keep it anonymous' },
 ];
 
-export default function NomineeNominateSheet({ nominee, onBack, onDone }) {
+export default function NomineeNominateSheet({ nominee, onBack, onDone, onAddToList }) {
   const [form, setForm] = useState({
     reason_contribution: '',
     reason_impact: '',
@@ -53,6 +53,7 @@ export default function NomineeNominateSheet({ nominee, onBack, onDone }) {
       });
 
       base44.analytics.track({ eventName: 'my_top100_quick_nominate', properties: { nominee_id: nominee.id } });
+      if (onAddToList) onAddToList(nominee);
       setDone(true);
     } catch (e) {
       console.warn('Quick nominate failed', e);

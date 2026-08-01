@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import {
-  ArrowLeft, Plus, Check, Award, BadgeCheck, Globe,
+  ArrowLeft, Check, Award, BadgeCheck, Globe,
   Linkedin, Instagram, Youtube, MapPin, Building2, Briefcase,
 } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
@@ -139,21 +139,14 @@ export default function NomineeProfilePanel({ nominee, onBack, onAdd, onNominate
       </div>
 
       {/* Sticky action bar */}
-      <div className="px-5 py-3.5 border-t shrink-0 flex items-center gap-2" style={{ borderColor: `${brand.navy}08`, background: 'white' }}>
+      <div className="px-5 py-3.5 border-t shrink-0" style={{ borderColor: `${brand.navy}08`, background: 'white' }}>
         <button
-          onClick={() => onNominate(nominee)}
-          className="flex-1 flex items-center justify-center gap-2 h-11 rounded-full text-sm font-bold transition-all active:scale-95"
-          style={{ background: `${brand.gold}15`, color: brand.gold }}
-        >
-          <Award className="w-4 h-4" /> Nominate
-        </button>
-        <button
-          onClick={() => !isAdded && onAdd(nominee)}
+          onClick={() => !isAdded && onNominate(nominee)}
           disabled={isAdded}
-          className="flex-1 flex items-center justify-center gap-2 h-11 rounded-full text-sm font-bold text-white transition-all active:scale-95"
-          style={{ background: isAdded ? `${brand.gold}25` : `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: isAdded ? brand.gold : 'white' }}
+          className="w-full flex items-center justify-center gap-2 h-11 rounded-full text-sm font-bold transition-all active:scale-95"
+          style={{ background: isAdded ? `${brand.gold}20` : `${brand.gold}15`, color: brand.gold }}
         >
-          {isAdded ? <><Check className="w-4 h-4" /> Added</> : <><Plus className="w-4 h-4" /> Add to Top 100</>}
+          {isAdded ? <><Check className="w-4 h-4" /> Added to your Top 100</> : <><Award className="w-4 h-4" /> Nominate</>}
         </button>
       </div>
     </motion.div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, Plus, Check, Filter, ArrowDownUp, BadgeCheck, Award, UserPlus, Loader2, ChevronRight } from 'lucide-react';
+import { Search, X, Check, Filter, ArrowDownUp, BadgeCheck, Award, UserPlus, Loader2, ChevronRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
@@ -274,21 +274,14 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                           <ChevronRight className="w-4 h-4 shrink-0" style={{ color: `${brand.navy}30` }} />
 
                           <button
-                            onClick={(e) => { e.stopPropagation(); setNominating(nominee); }}
+                            onClick={(e) => { e.stopPropagation(); if (!isAdded) setNominating(nominee); }}
+                            disabled={isAdded}
                             className="shrink-0 flex items-center gap-1 px-2.5 h-8 rounded-full text-[11px] font-bold transition-all"
-                            style={{ background: `${brand.gold}15`, color: brand.gold }}
-                            title="Submit a formal nomination"
+                            style={{ background: isAdded ? `${brand.gold}20` : `${brand.gold}15`, color: brand.gold }}
+                            title={isAdded ? 'Added to your Top 100' : 'Nominate and add to your Top 100'}
                           >
-                            <Award className="w-3.5 h-3.5" />
-                            Nominate
-                          </button>
-
-                          <button
-                            onClick={(e) => { e.stopPropagation(); !isAdded && onAdd(nominee); }}
-                            className="h-8 w-8 rounded-full shrink-0 flex items-center justify-center transition-all active:scale-90"
-                            style={{ background: isAdded ? `${brand.gold}20` : `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
-                          >
-                            {isAdded ? <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> : <Plus className="w-3.5 h-3.5 text-white" />}
+                            {isAdded ? <Check className="w-3.5 h-3.5" /> : <Award className="w-3.5 h-3.5" />}
+                            {isAdded ? 'Added' : 'Nominate'}
                           </button>
                         </div>
                       );
@@ -335,6 +328,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                         nominee={nominating}
                         onBack={() => setNominating(null)}
                         onDone={() => setNominating(null)}
+                        onAddToList={onAdd}
                       />
                     </motion.div>
                   </>
