@@ -28,13 +28,22 @@ const SORTS = [
   { key: 'verified', label: 'Verified First' },
 ];
 
+const CATEGORIES = [
+  { key: 'all', label: 'All' },
+  { key: 'women', label: 'Women' },
+  { key: 'men', label: 'Men' },
+  { key: 'angels', label: 'Angels' },
+];
+
 const PAGE_SIZE = 40;
 
 export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAdd, initialNominee }) {
   const [query, setQuery] = useState('');
   const [discipline, setDiscipline] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [sort, setSort] = useState('random');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [seasonCategory, setSeasonCategory] = useState({});
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [nominees, setNominees] = useState([]);
   const [randomOrder, setRandomOrder] = useState([]);
@@ -48,17 +57,38 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     if (!isOpen) return;
     let active = true;
     setLoading(true);
-    base44.entities.Nominee.list('-created_date', 2000).then(r => {
+    Promise.all([
+      base44.entities.Nominee.list('-created_date', 2000),
+      base44.entities.Season.list('name', 100),
+    ]).then(([r, seasons]) => {
       if (!active) return;
+      const catMap = {};
+      (seasons || []).forEach(s => {
+        const nm = (s.name || '').toLowerCase();
+        if (nm.includes('angel')) catMap[s.id] = 'angels';
+        else if (nm.includes('women')) catMap[s.id] = 'women';
+        else if (nm.includes('men')) catMap[s.id] = 'men';
+      });
+      setSeasonCategory(catMap);
       const pool = filterPoolNominees(r);
-      setNominees(pool);
-      setRandomOrder(stableShuffle(pool));
+      // Dedupe by normalized name — cross-season duplicates (e.g. S3 2025 ↔ 2026 Women)
+      // surface as identical rows; keep the most recent record per name.
+      const seen = new Set();
+      const deduped = pool.filter(n => {
+        const key = (n.name || '').trim().toLowerCase();
+        if (!key) return true;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setNominees(deduped);
+      setRandomOrder(stableShuffle(deduped));
       setLoading(false);
     });
     return () => { active = false; };
   }, [isOpen]);
 
-  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [query, discipline, sort, verifiedOnly]);
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [query, discipline, sort, verifiedOnly, categoryFilter]);
   useEffect(() => {
     if (isOpen) {
       setViewingProfile(initialNominee || null);
@@ -81,6 +111,15 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
       }
       if (!matchDiscipline(n, discipline)) return false;
       if (verifiedOnly && !(n.verified_status === 'fully_verified' || n.verified_status === 'partially_verified')) return false;
+      if (categoryFilter !== 'all') {
+        const cat = seasonCategory[n.season_id] || (() => {
+          const t = `${n.description || ''} ${n.industry || ''} ${n.category || ''}`.toLowerCase();
+          if (t.includes('woman') || t.includes('female')) return 'women';
+          if (t.includes('angel') || t.includes('investor')) return 'angels';
+          return null;
+        })();
+        if (cat !== categoryFilter) return false;
+      }
       return true;
     });
 
@@ -96,7 +135,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
       },
     };
     return list.sort(byKey[sort] || byKey.random);
-  }, [nominees, randomOrder, query, discipline, sort, verifiedOnly]);
+  }, [nominees, randomOrder, query, discipline, sort, verifiedOnly, categoryFilter, seasonCategory]);
 
   const activeSortLabel = SORTS.find(s => s.key === sort)?.label;
   const visible = sortedFiltered.slice(0, visibleCount);
@@ -154,6 +193,18 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
 
               {/* Filters row */}
               <div className="flex items-center gap-2 px-6 py-3 border-b flex-wrap shrink-0" style={{ borderColor: `${brand.navy}08`, background: 'white' }}>
+                <div className="flex items-center gap-1 p-1 rounded-full" style={{ background: `${brand.navy}06` }}>
+                  {CATEGORIES.map(c => (
+                    <button
+                      key={c.key}
+                      onClick={() => setCategoryFilter(c.key)}
+                      className="px-2.5 py-1 rounded-full text-xs font-semibold transition-all"
+                      style={{ background: categoryFilter === c.key ? brand.navy : 'transparent', color: categoryFilter === c.key ? 'white' : `${brand.navy}70` }}
+                    >
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
                 <div className="flex items-center gap-1.5">
                   <Filter className="w-3.5 h-3.5" style={{ color: `${brand.navy}50` }} />
                   <select
