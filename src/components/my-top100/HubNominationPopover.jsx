@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Loader2, Check, Search } from 'lucide-react';
+import { X, Send, Loader2, Check, Search, ArrowRight, ArrowLeft, CornerDownLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import {
   brand,
@@ -11,24 +11,61 @@ import {
 import LocationSelect from '@/components/my-top100/LocationSelect';
 
 const SHARE_OPTIONS = [
-  { value: 'yes', label: 'Yes, credit me' },
-  { value: 'no', label: 'Keep it anonymous' },
+  { value: 'yes', label: 'Yes, credit me', sub: 'Your name shows on the nomination.' },
+  { value: 'no', label: 'Keep it anonymous', sub: 'We will keep your name private.' },
 ];
 
 const PRIMARY_CATEGORIES = [
-  { key: 'women', label: 'Women' },
-  { key: 'men', label: 'Men' },
+  { key: 'women', label: 'Women', sub: 'Women in aerospace & aviation' },
+  { key: 'men', label: 'Men', sub: 'Men in aerospace & aviation' },
 ];
+
+const YESNO = [
+  { value: 'yes', label: 'Yes' },
+  { value: 'no', label: 'No' },
+];
+
+const STEPS = [
+  'category',
+  'name',
+  'role',
+  'contact',
+  'location',
+  'contribution',
+  'impact',
+  'leadership',
+  'credit',
+  'angels',
+  'review',
+];
+
+const STEP_META = {
+  category: { q: 'Who are you nominating?', hint: 'Pick a track. You can add them as an Angel too, later.' },
+  name: { q: "What's their name?", hint: 'Search the verified directory — or type a new name.' },
+  role: { q: 'What do they do?', hint: 'Current role and organization. The more specific, the better.' },
+  contact: { q: 'How can we find them?', hint: 'Optional — but it helps us verify.' },
+  location: { q: 'Where are they based?', hint: 'Primary location, plus any secondary.' },
+  contribution: { q: 'What is their primary contribution?', hint: 'One specific example beats ten adjectives.' },
+  impact: { q: 'How have they impacted others in the field?', hint: 'Think people, programs, or culture.' },
+  leadership: { q: 'What makes their approach or leadership unique?', hint: 'Optional — but this is what separates them.' },
+  credit: { q: 'Want the credit?', hint: 'We will show your name unless you say otherwise.' },
+  angels: { q: 'Also recognize them as an Angel investor?', hint: 'They will appear in both their main tab and Angels.' },
+  review: { q: 'Ready to submit?', hint: 'Take one last look.' },
+};
 
 export default function HubNominationPopover({ onClose, onSubmitted, nominees, nominator }) {
   const [form, setForm] = useState(emptyPersonNomination);
   const [nominationCategory, setNominationCategory] = useState('women');
-  const [alsoAngels, setAlsoAngels] = useState(false);
+  const [alsoAngels, setAlsoAngels] = useState('no');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedNominee, setSelectedNominee] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
+  const [step, setStep] = useState(0);
+
+  const activeRef = useRef(null);
+  const stepId = STEPS[step];
 
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -59,13 +96,26 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
   const canSubmit =
     form.name?.trim() && form.role_org?.trim() && form.reason_contribution?.trim() && form.reason_impact?.trim() && form.share_name;
 
+  const canAdvance = useCallback(
+    (id) => {
+      switch (id) {
+        case 'name': return !!form.name?.trim();
+        case 'role': return !!form.role_org?.trim();
+        case 'contribution': return !!form.reason_contribution?.trim();
+        case 'impact': return !!form.reason_impact?.trim();
+        case 'credit': return !!form.share_name;
+        default: return true;
+      }
+    },
+    [form]
+  );
+
   const handleSubmit = async () => {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
     setError('');
     try {
       const reason = combineGuidedReason(form);
-
       const baseIntake = {
         nominee_name: (form.name || '').trim(),
         role_org: (form.role_org || '').trim(),
@@ -79,17 +129,15 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
         source: 'my_top100_hub',
         status: 'new',
       };
-
       await base44.entities.NominationIntake.create({ ...baseIntake, nomination_type: nominationCategory });
-      if (alsoAngels) {
+      if (alsoAngels === 'yes') {
         await base44.entities.NominationIntake.create({ ...baseIntake, nomination_type: 'angels' });
       }
-
-      base44.analytics.track({ eventName: 'hub_nomination_submitted', properties: { category: nominationCategory, also_angels: alsoAngels, existing: !!selectedNominee } });
+      base44.analytics.track({ eventName: 'hub_nomination_submitted', properties: { category: nominationCategory, also_angels: alsoAngels === 'yes', existing: !!selectedNominee } });
       if (selectedNominee) {
-        onSubmitted({ existing: true, nominee: selectedNominee, category: nominationCategory, also_angels: alsoAngels });
+        onSubmitted({ existing: true, nominee: selectedNominee, category: nominationCategory, also_angels: alsoAngels === 'yes' });
       } else {
-        onSubmitted({ existing: false, summary: { ...form, category: nominationCategory, also_angels: alsoAngels }, category: nominationCategory, also_angels: alsoAngels });
+        onSubmitted({ existing: false, summary: { ...form, category: nominationCategory, also_angels: alsoAngels === 'yes' }, category: nominationCategory, also_angels: alsoAngels === 'yes' });
       }
       setDone(true);
     } catch (e) {
@@ -99,8 +147,74 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
     setSubmitting(false);
   };
 
-  const inputCls = 'w-full text-sm rounded-xl border p-3 bg-white outline-none transition-colors';
+  const goNext = useCallback(() => {
+    if (done || submitting) return;
+    if (step < STEPS.length - 1) {
+      if (!canAdvance(STEPS[step])) return;
+      setStep((s) => s + 1);
+    } else {
+      handleSubmit();
+    }
+  }, [step, done, submitting, canAdvance]);
+
+  const goBack = useCallback(() => {
+    setStep((s) => Math.max(0, s - 1));
+  }, []);
+
+  // Keyboard controls — keep latest handlers in refs so the listener stays stable
+  const goNextRef = useRef(goNext);
+  goNextRef.current = goNext;
+  const goBackRef = useRef(goBack);
+  goBackRef.current = goBack;
+  const selectChoiceRef = useRef(() => {});
+  selectChoiceRef.current = (value) => {
+    if (stepId === 'category') setNominationCategory(value);
+    else if (stepId === 'credit') update('share_name', value);
+    else if (stepId === 'angels') setAlsoAngels(value);
+    setTimeout(() => goNextRef.current(), 120);
+  };
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') { onClose(); return; }
+      const tag = (e.target?.tagName || '').toLowerCase();
+      const isChoice = stepId === 'category' || stepId === 'credit' || stepId === 'angels';
+      if (e.key === 'Enter') {
+        if (tag === 'textarea' && !e.metaKey && !e.ctrlKey) return;
+        e.preventDefault();
+        goNextRef.current();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goNextRef.current();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goBackRef.current();
+      } else if (isChoice && (e.key === '1' || e.key === '2')) {
+        const opts = stepId === 'category' ? PRIMARY_CATEGORIES : YESNO;
+        const idx = Number(e.key) - 1;
+        if (opts[idx]) {
+          e.preventDefault();
+          selectChoiceRef.current(opts[idx].value);
+        }
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [stepId, onClose]);
+
+  // Focus the active input when the step changes
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (activeRef.current && typeof activeRef.current.focus === 'function') activeRef.current.focus();
+    }, 80);
+    return () => clearTimeout(t);
+  }, [step]);
+
+  const progress = ((step + 1) / STEPS.length) * 100;
+  const inputCls = 'w-full text-base rounded-2xl border p-4 bg-white outline-none transition-colors';
   const inputStyle = { borderColor: `${brand.navy}15`, color: brand.navy };
+  const meta = STEP_META[stepId] || {};
+  const blocked = !canAdvance(stepId) && step < STEPS.length - 1;
 
   return (
     <AnimatePresence>
@@ -120,19 +234,19 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0.5 }}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-          className="relative w-full sm:max-w-lg max-h-[88vh] flex flex-col rounded-t-3xl sm:rounded-3xl overflow-hidden"
+          className="relative w-full sm:max-w-xl max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-3xl overflow-hidden"
           style={{ background: brand.cream, boxShadow: '0 -10px 40px rgba(10,18,30,0.3)' }}
         >
           {done ? (
-            <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
+            <div className="flex flex-col items-center justify-center py-14 px-6 text-center">
               <div className="h-14 w-14 rounded-full flex items-center justify-center mb-4" style={{ background: `linear-gradient(135deg, ${brand.gold}, #b8884a)` }}>
                 <Check className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-base font-bold mb-1" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
+              <h3 className="text-lg font-bold mb-1" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
                 Nomination submitted
               </h3>
               <p className="text-xs leading-relaxed max-w-xs mb-5" style={{ color: `${brand.navy}60` }}>
-                Your nomination for {form.name} is in review. Once approved, they'll appear in the verified directory.
+                Your nomination for {form.name} is in review. Once approved, they will appear in the verified directory.
               </p>
               <button
                 onClick={onClose}
@@ -144,215 +258,185 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
             </div>
           ) : (
             <>
-              {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 shrink-0" style={{ borderBottom: `1px solid ${brand.navy}10`, background: 'white' }}>
-                <div>
+              {/* Header: progress + close */}
+              <div className="px-4 pt-3 pb-2 shrink-0" style={{ background: 'white' }}>
+                <div className="flex items-center justify-between mb-2">
                   <p className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: `${brand.navy}50` }}>
-                    TOP 100 Aerospace & Aviation
+                    New Nomination · {step + 1} / {STEPS.length}
                   </p>
-                  <h3 className="text-sm font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
-                    New Nomination
-                  </h3>
+                  <button onClick={onClose} className="h-8 w-8 rounded-full flex items-center justify-center" style={{ background: `${brand.navy}08` }}>
+                    <X className="w-4 h-4" style={{ color: brand.navy }} />
+                  </button>
                 </div>
-                <button onClick={onClose} className="h-8 w-8 rounded-full flex items-center justify-center" style={{ background: `${brand.navy}08` }}>
-                  <X className="w-4 h-4" style={{ color: brand.navy }} />
-                </button>
+                <div className="h-1 w-full rounded-full overflow-hidden" style={{ background: `${brand.navy}10` }}>
+                  <motion.div className="h-full rounded-full" style={{ background: `linear-gradient(90deg, ${brand.gold}, ${brand.navy})` }} animate={{ width: `${progress}%` }} transition={{ type: 'spring', stiffness: 200, damping: 30 }} />
+                </div>
               </div>
 
-              {/* Body */}
-              <div className="overflow-y-auto px-4 py-4 space-y-4 flex-1">
-                {/* Category select */}
-                <div>
-                  <label className="block text-[11px] font-bold mb-2 uppercase tracking-wide" style={{ color: `${brand.navy}70` }}>
-                    Nominate for
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {PRIMARY_CATEGORIES.map((c) => (
-                      <button
-                        key={c.key}
-                        type="button"
-                        onClick={() => setNominationCategory(c.key)}
-                        className="text-xs font-semibold py-2.5 rounded-xl border transition-all"
-                        style={{
-                          background: nominationCategory === c.key ? brand.navy : 'white',
-                          color: nominationCategory === c.key ? 'white' : `${brand.navy}70`,
-                          borderColor: nominationCategory === c.key ? brand.navy : `${brand.navy}15`,
-                        }}
-                      >
-                        {c.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Also Angels checkbox */}
-                <button
-                  type="button"
-                  onClick={() => setAlsoAngels((v) => !v)}
-                  className="w-full flex items-center gap-3 p-3 rounded-2xl border text-left transition-all"
-                  style={{
-                    background: alsoAngels ? `${brand.gold}12` : 'white',
-                    borderColor: alsoAngels ? brand.gold : `${brand.navy}15`,
-                  }}
-                >
-                  <div
-                    className="h-5 w-5 rounded-md flex items-center justify-center shrink-0 border"
-                    style={{ background: alsoAngels ? brand.gold : 'white', borderColor: alsoAngels ? brand.gold : `${brand.navy}30` }}
+              {/* Step body */}
+              <div className="overflow-y-auto px-6 py-6 flex-1">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={stepId}
+                    initial={{ opacity: 0, x: 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -24 }}
+                    transition={{ duration: 0.22 }}
                   >
-                    {alsoAngels && <Check className="w-3.5 h-3.5 text-white" />}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-bold" style={{ color: brand.navy }}>Also nominate for Angels</p>
-                    <p className="text-[10px]" style={{ color: `${brand.navy}50` }}>Recognize them as an angel investor too — they'll show in both tabs.</p>
-                  </div>
-                </button>
+                    <h2 className="text-xl sm:text-2xl font-bold mb-1 leading-tight" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
+                      {meta.q}
+                    </h2>
+                    {meta.hint && <p className="text-xs mb-5" style={{ color: `${brand.navy}50` }}>{meta.hint}</p>}
 
-                <Field label="NAME *" hint="Search for them, or type a new name">
-                  <div className="relative">
-                    <input
-                      value={form.name}
-                      onChange={(e) => {
-                        update('name', e.target.value);
-                        setShowSuggestions(true);
-                        if (selectedNominee && e.target.value.trim().toLowerCase() !== selectedNominee.name.toLowerCase()) {
-                          setSelectedNominee(null);
-                        }
-                      }}
-                      onFocus={() => setShowSuggestions(true)}
-                      onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                      placeholder="Search or type a name…"
-                      className={inputCls}
-                      style={inputStyle}
-                    />
-                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: `${brand.navy}30` }} />
-                    <AnimatePresence>
-                      {showSuggestions && matches.length > 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -4 }}
-                          className="absolute z-20 left-0 right-0 mt-1 rounded-xl overflow-hidden shadow-lg"
-                          style={{ background: 'white', border: `1px solid ${brand.navy}15` }}
-                        >
-                          {matches.map((n) => (
-                            <button
-                              key={n.id}
-                              onMouseDown={(e) => { e.preventDefault(); selectExisting(n); }}
-                              className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-[#f9f7f4] transition-colors"
+                    {stepId === 'category' && (
+                      <ChoiceList options={PRIMARY_CATEGORIES} value={nominationCategory} onPick={(v) => selectChoiceRef.current(v)} />
+                    )}
+
+                    {stepId === 'name' && (
+                      <div className="relative">
+                        <input
+                          ref={activeRef}
+                          value={form.name}
+                          onChange={(e) => {
+                            update('name', e.target.value);
+                            setShowSuggestions(true);
+                            if (selectedNominee && e.target.value.trim().toLowerCase() !== selectedNominee.name.toLowerCase()) {
+                              setSelectedNominee(null);
+                            }
+                          }}
+                          onFocus={() => setShowSuggestions(true)}
+                          onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                          placeholder="Search or type a name…"
+                          className={inputCls}
+                          style={inputStyle}
+                        />
+                        <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: `${brand.navy}30` }} />
+                        <AnimatePresence>
+                          {showSuggestions && matches.length > 0 && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -4 }}
+                              className="absolute z-20 left-0 right-0 mt-1 rounded-xl overflow-hidden shadow-lg"
+                              style={{ background: 'white', border: `1px solid ${brand.navy}15` }}
                             >
-                              <div className="h-8 w-8 rounded-full overflow-hidden shrink-0" style={{ background: `${brand.navy}08` }}>
-                                {(n.photo_url || n.avatar_url) ? (
-                                  <img src={n.photo_url || n.avatar_url} alt={n.name} className="h-full w-full object-cover" />
-                                ) : (
-                                  <div className="h-full w-full flex items-center justify-center text-[10px] font-bold" style={{ color: brand.navy }}>
-                                    {n.name?.[0]?.toUpperCase()}
+                              {matches.map((n) => (
+                                <button
+                                  key={n.id}
+                                  onMouseDown={(e) => { e.preventDefault(); selectExisting(n); }}
+                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-[#f9f7f4] transition-colors"
+                                >
+                                  <div className="h-8 w-8 rounded-full overflow-hidden shrink-0" style={{ background: `${brand.navy}08` }}>
+                                    {(n.photo_url || n.avatar_url) ? (
+                                      <img src={n.photo_url || n.avatar_url} alt={n.name} className="h-full w-full object-cover" />
+                                    ) : (
+                                      <div className="h-full w-full flex items-center justify-center text-[10px] font-bold" style={{ color: brand.navy }}>
+                                        {n.name?.[0]?.toUpperCase()}
+                                      </div>
+                                    )}
                                   </div>
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs font-bold truncate" style={{ color: brand.navy }}>{n.name}</p>
-                                <p className="text-[10px] truncate" style={{ color: `${brand.navy}50` }}>
-                                  {n.professional_role || n.title}{n.organization || n.company ? ` · ${n.organization || n.company}` : ''}
-                                </p>
-                              </div>
-                              <span className="text-[9px] font-bold uppercase shrink-0" style={{ color: brand.gold }}>Add</span>
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </Field>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-bold truncate" style={{ color: brand.navy }}>{n.name}</p>
+                                    <p className="text-[10px] truncate" style={{ color: `${brand.navy}50` }}>
+                                      {n.professional_role || n.title}{n.organization || n.company ? ` · ${n.organization || n.company}` : ''}
+                                    </p>
+                                  </div>
+                                  <span className="text-[9px] font-bold uppercase shrink-0" style={{ color: brand.gold }}>Add</span>
+                                </button>
+                              ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                        {selectedNominee && (
+                          <div className="flex items-center gap-1.5 text-[11px] mt-2" style={{ color: '#2d8a4f' }}>
+                            <Check className="w-3.5 h-3.5" /> Pre-filled from an existing profile — review the questions and submit
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-                {selectedNominee && (
-                  <div className="flex items-center gap-1.5 text-[10px] -mt-1" style={{ color: '#2d8a4f' }}>
-                    <Check className="w-3 h-3" /> Pre-filled from an existing profile — review the questions and submit
-                  </div>
-                )}
+                    {stepId === 'role' && (
+                      <input ref={activeRef} value={form.role_org} onChange={(e) => update('role_org', e.target.value)} placeholder="e.g. Propulsion Engineer at Blue Origin" className={inputCls} style={inputStyle} />
+                    )}
 
-                <Field label="CURRENT ROLE AND ORGANIZATION *" hint="As specific as you can. Helps us find them.">
-                  <input value={form.role_org} onChange={(e) => update('role_org', e.target.value)} placeholder="e.g. Propulsion Engineer at Blue Origin" className={inputCls} style={inputStyle} />
-                </Field>
+                    {stepId === 'contact' && (
+                      <div className="space-y-3">
+                        <input ref={activeRef} value={form.link} onChange={(e) => update('link', e.target.value)} placeholder="LinkedIn or website (https://…)" className={inputCls} style={inputStyle} />
+                        <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="Email (optional)" className={inputCls} style={inputStyle} />
+                      </div>
+                    )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Field label="LINKEDIN OR WEBSITE" hint="Optional">
-                    <input value={form.link} onChange={(e) => update('link', e.target.value)} placeholder="https://..." className={inputCls} style={inputStyle} />
-                  </Field>
-                  <Field label="EMAIL" hint="Optional">
-                    <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="name@example.com" className={inputCls} style={inputStyle} />
-                  </Field>
-                </div>
+                    {stepId === 'location' && (
+                      <LocationSelect value={form.location} onChange={(v) => update('location', v)} />
+                    )}
 
-                <Field label="LOCATION" hint="Primary + secondary (optional)">
-                  <LocationSelect value={form.location} onChange={(v) => update('location', v)} />
-                </Field>
+                    {(stepId === 'contribution' || stepId === 'impact' || stepId === 'leadership') && (
+                      (() => {
+                        const key = stepId === 'contribution' ? 'reason_contribution' : stepId === 'impact' ? 'reason_impact' : 'reason_leadership';
+                        return (
+                          <textarea
+                            ref={activeRef}
+                            value={form[key]}
+                            onChange={(e) => update(key, e.target.value)}
+                            rows={4}
+                            placeholder="Share a specific example…"
+                            className="w-full text-base rounded-2xl border p-4 bg-white outline-none resize-none"
+                            style={inputStyle}
+                          />
+                        );
+                      })()
+                    )}
 
-                {GUIDED_PROMPTS.map((p) => (
-                  <div key={p.key}>
-                    <label className="block text-[11px] font-bold mb-1.5 uppercase tracking-wide" style={{ color: `${brand.navy}70` }}>
-                      {p.label}
-                    </label>
-                    <textarea
-                      value={form[p.key]}
-                      onChange={(e) => update(p.key, e.target.value)}
-                      rows={2}
-                      placeholder="Share a specific example…"
-                      className="w-full text-sm rounded-xl border p-3 bg-white outline-none resize-none"
-                      style={inputStyle}
-                    />
-                  </div>
-                ))}
+                    {stepId === 'credit' && (
+                      <ChoiceList options={SHARE_OPTIONS} value={form.share_name} onPick={(v) => selectChoiceRef.current(v)} />
+                    )}
 
-                {/* Credit */}
-                <div>
-                  <label className="block text-[11px] font-bold mb-2 uppercase tracking-wide" style={{ color: `${brand.navy}70` }}>
-                    CREDIT YOUR NAME?
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {SHARE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => update('share_name', opt.value)}
-                        className="text-xs font-semibold py-2.5 rounded-xl border transition-all"
-                        style={{
-                          background: form.share_name === opt.value ? brand.navy : 'white',
-                          color: form.share_name === opt.value ? 'white' : `${brand.navy}70`,
-                          borderColor: form.share_name === opt.value ? brand.navy : `${brand.navy}15`,
-                        }}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                    {stepId === 'angels' && (
+                      <ChoiceList options={YESNO} value={alsoAngels} onPick={(v) => selectChoiceRef.current(v)} />
+                    )}
 
-                {error && <p className="text-xs font-medium" style={{ color: '#c0392b' }}>{error}</p>}
+                    {stepId === 'review' && (
+                      <ReviewSummary form={form} nominationCategory={nominationCategory} alsoAngels={alsoAngels === 'yes'} selectedNominee={selectedNominee} />
+                    )}
+
+                    {error && <p className="text-xs font-medium mt-4" style={{ color: '#c0392b' }}>{error}</p>}
+                  </motion.div>
+                </AnimatePresence>
               </div>
 
-              {/* Footer */}
-              <div className="px-4 py-3 shrink-0" style={{ borderTop: `1px solid ${brand.navy}10`, background: 'white' }}>
-                <motion.button
-                  whileTap={{ scale: canSubmit ? 0.97 : 1 }}
-                  onClick={handleSubmit}
-                  disabled={!canSubmit || submitting}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold transition-all"
-                  style={{
-                    background: canSubmit ? `linear-gradient(135deg, ${brand.navy}, #0b2542)` : `${brand.navy}15`,
-                    color: 'white',
-                  }}
-                >
-                  {submitting ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Submitting…</>
-                  ) : (
-                    <><Send className="w-4 h-4" /> Submit Nomination</>
-                  )}
-                </motion.button>
-                {!canSubmit && !submitting && (
-                  <p className="text-[10px] text-center mt-2" style={{ color: `${brand.navy}50` }}>
-                    Complete name, role, contribution, impact, and credit to submit.
-                  </p>
+              {/* Footer: nav controls */}
+              <div className="px-4 py-3 shrink-0 flex items-center gap-2" style={{ borderTop: `1px solid ${brand.navy}10`, background: 'white' }}>
+                {step > 0 && (
+                  <button onClick={goBack} className="h-11 w-11 shrink-0 rounded-2xl flex items-center justify-center" style={{ background: `${brand.navy}08` }} aria-label="Back">
+                    <ArrowLeft className="w-4 h-4" style={{ color: brand.navy }} />
+                  </button>
+                )}
+                {stepId === 'review' ? (
+                  <motion.button
+                    whileTap={{ scale: canSubmit ? 0.97 : 1 }}
+                    onClick={handleSubmit}
+                    disabled={!canSubmit || submitting}
+                    className="flex-1 flex items-center justify-center gap-2 h-11 rounded-2xl text-sm font-bold transition-all"
+                    style={{ background: canSubmit ? `linear-gradient(135deg, ${brand.navy}, #0b2542)` : `${brand.navy}15`, color: 'white' }}
+                  >
+                    {submitting ? (<><Loader2 className="w-4 h-4 animate-spin" /> Submitting…</>) : (<><Send className="w-4 h-4" /> Submit Nomination</>)}
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    whileTap={{ scale: blocked ? 1 : 0.97 }}
+                    onClick={goNext}
+                    disabled={blocked}
+                    className="flex-1 flex items-center justify-center gap-2 h-11 rounded-2xl text-sm font-bold transition-all"
+                    style={{ background: blocked ? `${brand.navy}15` : `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: 'white' }}
+                  >
+                    {blocked ? 'Fill this in to continue' : (<>Continue <ArrowRight className="w-4 h-4" /></>)}
+                  </motion.button>
                 )}
               </div>
+
+              <p className="text-center text-[10px] pb-2" style={{ color: `${brand.navy}40`, background: 'white' }}>
+                <CornerDownLeft className="inline w-3 h-3 mr-1" /> Enter to continue · ← → to navigate · Esc to close
+              </p>
             </>
           )}
         </motion.div>
@@ -361,14 +445,61 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
   );
 }
 
-function Field({ label, hint, children }) {
+function ChoiceList({ options, value, onPick }) {
   return (
-    <div>
-      <label className="block text-[11px] font-bold mb-1 uppercase tracking-wide" style={{ color: `${brand.navy}70` }}>
-        {label}
-      </label>
-      {hint && <p className="text-[10px] mb-1.5" style={{ color: `${brand.navy}40` }}>{hint}</p>}
-      {children}
+    <div className="space-y-2.5">
+      {options.map((opt, i) => {
+        const active = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onPick(opt.value)}
+            className="w-full flex items-center gap-3 p-4 rounded-2xl border text-left transition-all"
+            style={{
+              background: active ? brand.navy : 'white',
+              color: active ? 'white' : brand.navy,
+              borderColor: active ? brand.navy : `${brand.navy}15`,
+            }}
+          >
+            <span className="h-7 w-7 shrink-0 rounded-full flex items-center justify-center text-[11px] font-bold" style={{ background: active ? 'rgba(255,255,255,0.15)' : `${brand.navy}08`, color: active ? 'white' : `${brand.navy}60` }}>
+              {i + 1}
+            </span>
+            <span className="flex-1">
+              <span className="block text-sm font-bold">{opt.label}</span>
+              {opt.sub && <span className="block text-[11px]" style={{ color: active ? 'rgba(255,255,255,0.7)' : `${brand.navy}50` }}>{opt.sub}</span>}
+            </span>
+            {active && <Check className="w-4 h-4 shrink-0" />}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function ReviewSummary({ form, nominationCategory, alsoAngels, selectedNominee }) {
+  const rows = [
+    ['Track', nominationCategory ? nominationCategory.charAt(0).toUpperCase() + nominationCategory.slice(1) : '—'],
+    ['Name', form.name || '—'],
+    ['Role / Org', form.role_org || '—'],
+    ['Link', form.link || '—'],
+    ['Email', form.email || '—'],
+    ['Location', form.location || '—'],
+    ['Primary contribution', form.reason_contribution || '—'],
+    ['Impact', form.reason_impact || '—'],
+    ['Leadership', form.reason_leadership || '—'],
+    ['Credit', form.share_name === 'yes' ? 'Credited' : form.share_name === 'no' ? 'Anonymous' : '—'],
+    ['Also Angels', alsoAngels ? 'Yes' : 'No'],
+    ['From directory', selectedNominee ? 'Yes' : 'No'],
+  ];
+  return (
+    <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${brand.navy}15`, background: 'white' }}>
+      {rows.map((r, i) => (
+        <div key={r[0]} className="flex items-start gap-3 px-4 py-2.5" style={{ borderBottom: i < rows.length - 1 ? `1px solid ${brand.navy}08` : 'none' }}>
+          <span className="w-32 shrink-0 text-[10px] font-bold uppercase tracking-wide pt-0.5" style={{ color: `${brand.navy}50` }}>{r[0]}</span>
+          <span className="flex-1 text-xs whitespace-pre-wrap" style={{ color: brand.navy }}>{r[1]}</span>
+        </div>
+      ))}
     </div>
   );
 }
