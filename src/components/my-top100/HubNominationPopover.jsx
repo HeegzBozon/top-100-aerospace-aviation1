@@ -8,6 +8,7 @@ import {
   GUIDED_PROMPTS,
   emptyPersonNomination,
 } from '@/components/nominate/NominateConfig';
+import LocationSelect from '@/components/my-top100/LocationSelect';
 
 const SHARE_OPTIONS = [
   { value: 'yes', label: 'Yes, credit me' },
@@ -24,6 +25,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
   const [nominationCategory, setNominationCategory] = useState('women');
   const [alsoAngels, setAlsoAngels] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedNominee, setSelectedNominee] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
@@ -41,16 +43,17 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
           .slice(0, 5)
       : [];
 
-  const resetForm = () => {
-    setForm(emptyPersonNomination());
-    setNominationCategory('women');
-    setAlsoAngels(false);
-  };
-
   const selectExisting = (nominee) => {
     setShowSuggestions(false);
-    onSubmitted({ existing: true, nominee, category: nominationCategory, also_angels: alsoAngels });
-    resetForm();
+    setSelectedNominee(nominee);
+    setForm({
+      ...emptyPersonNomination(),
+      name: nominee.name || '',
+      role_org: [nominee.title || nominee.professional_role, nominee.company || nominee.organization].filter(Boolean).join(' · '),
+      link: nominee.linkedin_profile_url || nominee.website_url || '',
+      email: nominee.nominee_email || '',
+      location: nominee.country || '',
+    });
   };
 
   const canSubmit =
@@ -82,8 +85,12 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
         await base44.entities.NominationIntake.create({ ...baseIntake, nomination_type: 'angels' });
       }
 
-      base44.analytics.track({ eventName: 'hub_nomination_submitted', properties: { category: nominationCategory, also_angels: alsoAngels } });
-      onSubmitted({ existing: false, summary: { ...form, category: nominationCategory, also_angels: alsoAngels }, category: nominationCategory, also_angels: alsoAngels });
+      base44.analytics.track({ eventName: 'hub_nomination_submitted', properties: { category: nominationCategory, also_angels: alsoAngels, existing: !!selectedNominee } });
+      if (selectedNominee) {
+        onSubmitted({ existing: true, nominee: selectedNominee, category: nominationCategory, also_angels: alsoAngels });
+      } else {
+        onSubmitted({ existing: false, summary: { ...form, category: nominationCategory, also_angels: alsoAngels }, category: nominationCategory, also_angels: alsoAngels });
+      }
       setDone(true);
     } catch (e) {
       console.warn('Hub nomination failed', e);
@@ -204,7 +211,13 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
                   <div className="relative">
                     <input
                       value={form.name}
-                      onChange={(e) => { update('name', e.target.value); setShowSuggestions(true); }}
+                      onChange={(e) => {
+                        update('name', e.target.value);
+                        setShowSuggestions(true);
+                        if (selectedNominee && e.target.value.trim().toLowerCase() !== selectedNominee.name.toLowerCase()) {
+                          setSelectedNominee(null);
+                        }
+                      }}
                       onFocus={() => setShowSuggestions(true)}
                       onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                       placeholder="Search or type a name…"
@@ -251,6 +264,12 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
                   </div>
                 </Field>
 
+                {selectedNominee && (
+                  <div className="flex items-center gap-1.5 text-[10px] -mt-1" style={{ color: '#2d8a4f' }}>
+                    <Check className="w-3 h-3" /> Pre-filled from an existing profile — review the questions and submit
+                  </div>
+                )}
+
                 <Field label="CURRENT ROLE AND ORGANIZATION *" hint="As specific as you can. Helps us find them.">
                   <input value={form.role_org} onChange={(e) => update('role_org', e.target.value)} placeholder="e.g. Propulsion Engineer at Blue Origin" className={inputCls} style={inputStyle} />
                 </Field>
@@ -264,8 +283,8 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
                   </Field>
                 </div>
 
-                <Field label="LOCATION" hint="Optional">
-                  <input value={form.location} onChange={(e) => update('location', e.target.value)} placeholder="Houston, TX" className={inputCls} style={inputStyle} />
+                <Field label="LOCATION" hint="Primary + secondary (optional)">
+                  <LocationSelect value={form.location} onChange={(v) => update('location', v)} />
                 </Field>
 
                 {GUIDED_PROMPTS.map((p) => (
