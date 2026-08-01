@@ -260,7 +260,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+        className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

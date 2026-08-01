@@ -9,6 +9,7 @@ import ShareCard from '@/components/my-top100/ShareCard';
 import PublishBanner from '@/components/my-top100/PublishBanner';
 import DesktopSearchPanel from '@/components/my-top100/DesktopSearchPanel';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
+import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
 import NominationHub from '@/components/my-top100/NominationHub';
 import HubListTabs from '@/components/my-top100/HubListTabs';
@@ -40,6 +41,7 @@ export default function MyTop100() {
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [explorerProfile, setExplorerProfile] = useState(null);
   const [showOS, setShowOS] = useState(false);
+  const [nominationNominee, setNominationNominee] = useState(null);
 
   const openExplorer = () => { setExplorerProfile(null); setExplorerOpen(true); };
   const openProfileFromList = async (item) => {
@@ -340,7 +342,7 @@ export default function MyTop100() {
           {/* Desktop: two-column */}
           <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full overflow-hidden">
             <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start overflow-hidden" style={{ maxHeight: 'calc(100vh - 80px)' }}>
-              <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} onOpenExplorer={openExplorer} onViewProfile={(n) => { setExplorerProfile(n); setExplorerOpen(true); }} nominator={user} />
+              <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} onOpenExplorer={openExplorer} onViewProfile={(n) => { setExplorerProfile(n); setExplorerOpen(true); }} nominator={user} onNominate={setNominationNominee} />
             </div>
             <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
               {ListNameEditor}
@@ -408,6 +410,7 @@ export default function MyTop100() {
               onAdd={handleAdd}
               addedIds={addedIds}
               nominator={user}
+              onNominate={setNominationNominee}
             />
           </div>
         </div>
@@ -444,6 +447,19 @@ export default function MyTop100() {
         onAdd={handleAdd}
         initialNominee={explorerProfile}
       />
+
+      {nominationNominee && (
+        <HubNominationPopover
+          nominees={[]}
+          nominator={user}
+          initialNominee={nominationNominee}
+          onClose={() => setNominationNominee(null)}
+          onSubmitted={(result) => {
+            if (result.existing && result.nominee) handleAdd(result.nominee, { nomination_category: result.category, also_angels: result.also_angels });
+            setNominationNominee(null);
+          }}
+        />
+      )}
 
       <Top100OSModal isOpen={showOS} onClose={() => setShowOS(false)} />
     </div>

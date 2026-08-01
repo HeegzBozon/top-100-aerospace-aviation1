@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Check, Filter, ArrowDownUp, BadgeCheck, Award, UserPlus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
-import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
@@ -34,7 +33,7 @@ const CATEGORIES = [
   { key: 'angels', label: 'Angels' },
 ];
 
-export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, onViewProfile, nominator }) {
+export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, onViewProfile, nominator, onNominate }) {
   const [query, setQuery] = useState('');
   const [discipline, setDiscipline] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -44,7 +43,6 @@ export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, on
   const [seasonCategory, setSeasonCategory] = useState({});
   const [randomOrder, setRandomOrder] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [nominating, setNominating] = useState(null);
   const [inlineNominate, setInlineNominate] = useState(false);
 
   useEffect(() => {
@@ -248,7 +246,7 @@ export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, on
                 </button>
 
                 <button
-                  onClick={() => !isAdded && setNominating(nominee)}
+                  onClick={() => !isAdded && onNominate(nominee)}
                   disabled={isAdded}
                   className="shrink-0 flex items-center gap-1 px-2.5 h-8 rounded-full text-[11px] font-bold transition-all"
                   style={{ background: isAdded ? `${brand.gold}20` : `${brand.gold}15`, color: brand.gold }}
@@ -276,19 +274,6 @@ export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, on
 
       {/* Nominate modal overlay */}
       <AnimatePresence>
-        {nominating && (
-          <HubNominationPopover
-            nominees={nominees}
-            nominator={nominator}
-            initialNominee={nominating}
-            onClose={() => setNominating(null)}
-            onSubmitted={(result) => {
-              if (result.existing && result.nominee) onAdd(result.nominee, { nomination_category: result.category, also_angels: result.also_angels });
-              setNominating(null);
-            }}
-          />
-        )}
-
         {/* Inline new-nominee modal overlay */}
         {inlineNominate && (
           <>
