@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Check, Filter, ArrowDownUp, BadgeCheck, Award, UserPlus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
-import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
+import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
@@ -34,7 +34,7 @@ const CATEGORIES = [
   { key: 'angels', label: 'Angels' },
 ];
 
-export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, onViewProfile }) {
+export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, onViewProfile, nominator }) {
   const [query, setQuery] = useState('');
   const [discipline, setDiscipline] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -277,30 +277,16 @@ export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, on
       {/* Nominate modal overlay */}
       <AnimatePresence>
         {nominating && (
-          <>
-            <motion.div
-              className="fixed inset-0 z-40"
-              style={{ background: 'rgba(10,18,30,0.5)', backdropFilter: 'blur(4px)' }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setNominating(null)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, x: '-50%', y: '-50%' }}
-              animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
-              exit={{ opacity: 0, scale: 0.96, x: '-50%', y: '-50%' }}
-              className="fixed left-1/2 top-1/2 z-50 w-[420px] max-w-[92vw] max-h-[80vh] rounded-3xl overflow-hidden flex flex-col"
-              style={{ background: brand.cream, boxShadow: '0 20px 60px rgba(10,18,30,0.3)' }}
-            >
-              <NomineeNominateSheet
-                nominee={nominating}
-                onBack={() => setNominating(null)}
-                onDone={() => setNominating(null)}
-                onAddToList={onAdd}
-              />
-            </motion.div>
-          </>
+          <HubNominationPopover
+            nominees={nominees}
+            nominator={nominator}
+            initialNominee={nominating}
+            onClose={() => setNominating(null)}
+            onSubmitted={(result) => {
+              if (result.existing && result.nominee) onAdd(result.nominee, { nomination_category: result.category, also_angels: result.also_angels });
+              setNominating(null);
+            }}
+          />
         )}
 
         {/* Inline new-nominee modal overlay */}

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Plus, Check, Filter, Sparkles, Zap, ArrowDownUp, BadgeCheck, UserPlus, Award } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
-import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
+import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
@@ -36,7 +36,7 @@ const SORTS = [
 
 // Category resolution is season-based — see getNomineeCategory in nomineeCategory.js
 
-export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }) {
+export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds, nominator }) {
   const [query, setQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [discipline, setDiscipline] = useState('all');
@@ -156,11 +156,15 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
                 onDone={() => { setInlineNominate(false); setQuery(''); }}
               />
             ) : nominating ? (
-              <NomineeNominateSheet
-                nominee={nominating}
-                onBack={() => setNominating(null)}
-                onDone={() => setNominating(null)}
-                onAddToList={onAdd}
+              <HubNominationPopover
+                nominees={nominees}
+                nominator={nominator}
+                initialNominee={nominating}
+                onClose={() => setNominating(null)}
+                onSubmitted={(result) => {
+                  if (result.existing && result.nominee) onAdd(result.nominee, { nomination_category: result.category, also_angels: result.also_angels });
+                  setNominating(null);
+                }}
               />
             ) : (
               <>

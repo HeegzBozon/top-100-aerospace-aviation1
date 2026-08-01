@@ -79,7 +79,7 @@ const STEP_META = {
   review: { q: 'Ready to submit?', hint: 'Take one last look.' },
 };
 
-export default function HubNominationPopover({ onClose, onSubmitted, nominees, nominator }) {
+export default function HubNominationPopover({ onClose, onSubmitted, nominees, nominator, initialNominee }) {
   const [form, setForm] = useState(emptyPersonNomination);
   const [nominationCategory, setNominationCategory] = useState('women');
   const [alsoAngels, setAlsoAngels] = useState('no');
@@ -94,6 +94,24 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
   const stepId = STEPS[step];
 
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+
+  // Pre-fill from a browse-list nominee (skips the category/name/contact steps)
+  useEffect(() => {
+    if (!initialNominee) return;
+    setSelectedNominee(initialNominee);
+    setForm({
+      ...emptyPersonNomination(),
+      name: initialNominee.name || '',
+      role_org: [initialNominee.title || initialNominee.professional_role, initialNominee.company || initialNominee.organization].filter(Boolean).join(' · '),
+      link: initialNominee.linkedin_profile_url || initialNominee.website_url || '',
+      email: initialNominee.nominee_email || '',
+      location: initialNominee.country || '',
+    });
+    const t = `${initialNominee.description || ''} ${initialNominee.industry || ''} ${initialNominee.category || ''}`.toLowerCase();
+    if (t.includes('woman') || t.includes('female')) setNominationCategory('women');
+    else setNominationCategory('men');
+    setStep(STEPS.indexOf('contribution'));
+  }, [initialNominee]);
 
   const matches =
     form.name && form.name.trim().length > 1

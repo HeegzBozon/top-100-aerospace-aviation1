@@ -313,48 +313,34 @@ export default function MyTop100() {
             user={user}
             hasExisting={totalNominations > 0 || rankings.length > 0}
             onBegin={() => setActiveTab('nominate')}
-            onVote={() => setActiveTab('list')}
+            onVote={() => setActiveTab('vote')}
             onSaved={(c) => setUser((u) => ({ ...u, aerospace_connection: c }))}
             onOpenOS={() => setShowOS(true)}
           />
         </div>
       )}
 
-      {/* ── NOMINATE TAB ── */}
+      {/* ── NOMINATE TAB (merged: nomination form + browse + ranked list) ── */}
       {activeTab === 'nominate' && (
-        <div className="flex-1 overflow-y-auto lg:max-w-3xl lg:mx-auto lg:w-full">
-          <NominationHub
-            submittedNominations={hubNominations}
-            onAddNomination={addHubNomination}
-            onRemoveNomination={removeHubNomination}
-            onAddExisting={(nominee, meta) => {
-              addExistingToHub(meta.category, nominee, meta.also_angels);
-              handleAdd(nominee, { nomination_category: meta.category, also_angels: meta.also_angels });
-            }}
-            nominator={user}
-          />
-          {rankings.length > 0 && (
-            <div className="px-4 pb-6 pt-2">
-              <button
-                onClick={() => setActiveTab('list')}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold transition-all"
-                style={{ background: 'white', border: `1px solid ${brand.navy}15`, color: brand.navy }}
-              >
-                <ListOrdered className="w-4 h-4" style={{ color: brand.gold }} />
-                View your Top 100 list ({rankings.length})
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Nomination form + submitted nominations */}
+          <div className="shrink-0 max-h-[42vh] lg:max-h-[46vh] overflow-y-auto lg:max-w-3xl lg:mx-auto lg:w-full">
+            <NominationHub
+              submittedNominations={hubNominations}
+              onAddNomination={addHubNomination}
+              onRemoveNomination={removeHubNomination}
+              onAddExisting={(nominee, meta) => {
+                addExistingToHub(meta.category, nominee, meta.also_angels);
+                handleAdd(nominee, { nomination_category: meta.category, also_angels: meta.also_angels });
+              }}
+              nominator={user}
+            />
+          </div>
 
-      {/* ── MY LIST TAB ── */}
-      {activeTab === 'list' && (
-        <>
           {/* Desktop: two-column */}
           <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full overflow-hidden">
             <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start overflow-hidden" style={{ maxHeight: 'calc(100vh - 80px)' }}>
-              <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} onOpenExplorer={openExplorer} onViewProfile={(n) => { setExplorerProfile(n); setExplorerOpen(true); }} />
+              <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} onOpenExplorer={openExplorer} onViewProfile={(n) => { setExplorerProfile(n); setExplorerOpen(true); }} nominator={user} />
             </div>
             <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
               {ListNameEditor}
@@ -380,7 +366,7 @@ export default function MyTop100() {
           </div>
 
           {/* Mobile: stacked */}
-          <div className="lg:hidden flex flex-col flex-1">
+          <div className="lg:hidden flex flex-col flex-1 overflow-y-auto">
             {ListNameEditor}
             <PublishBanner
               rankings={rankings}
@@ -421,9 +407,25 @@ export default function MyTop100() {
               onClose={() => setShowSearch(false)}
               onAdd={handleAdd}
               addedIds={addedIds}
+              nominator={user}
             />
           </div>
-        </>
+        </div>
+      )}
+
+      {/* ── VOTE TAB (placeholder) ── */}
+      {activeTab === 'vote' && (
+        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+          <div className="h-14 w-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: `${brand.gold}18` }}>
+            <ListOrdered className="w-6 h-6" style={{ color: brand.gold }} />
+          </div>
+          <h2 className="text-lg font-bold mb-1.5" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
+            Voting opens soon
+          </h2>
+          <p className="text-xs leading-relaxed max-w-xs" style={{ color: `${brand.navy}60` }}>
+            Build your Top 100 list on the Nominate tab — ranked-choice voting launches here next.
+          </p>
+        </div>
       )}
 
       <ShareCard
