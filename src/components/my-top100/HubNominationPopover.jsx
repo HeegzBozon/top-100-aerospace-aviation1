@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2, Check, Search, ArrowRight, ArrowLeft, CornerDownLeft } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { base44 } from '@/api/base44Client';
 import {
   brand,
@@ -25,10 +26,38 @@ const YESNO = [
   { value: 'no', label: 'No' },
 ];
 
+function celebrate() {
+  try {
+    confetti({ particleCount: 70, spread: 70, origin: { y: 0.75 }, colors: ['#c9a87c', '#1e3a5a', '#e8d9c3'] });
+    setTimeout(() => confetti({ particleCount: 45, angle: 60, spread: 55, origin: { x: 0, y: 0.7 }, colors: ['#c9a87c', '#1e3a5a'] }), 140);
+    setTimeout(() => confetti({ particleCount: 45, angle: 120, spread: 55, origin: { x: 1, y: 0.7 }, colors: ['#c9a87c', '#1e3a5a'] }), 280);
+  } catch (e) { /* noop */ }
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    const ctx = new AC();
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((f, i) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = f;
+      o.connect(g);
+      g.connect(ctx.destination);
+      const t = ctx.currentTime + i * 0.085;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.14, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.24);
+      o.start(t);
+      o.stop(t + 0.25);
+    });
+    setTimeout(() => ctx.close(), 700);
+  } catch (e) { /* noop */ }
+}
+
 const STEPS = [
   'category',
   'name',
-  'role',
   'contact',
   'contribution',
   'impact',
@@ -41,10 +70,9 @@ const STEPS = [
 const STEP_META = {
   category: { q: 'Who are you nominating?', hint: 'Pick a track. You can add them as an Angel too, later.' },
   name: { q: "What's their name?", hint: 'Search the verified directory — or type a new name.' },
-  role: { q: 'What do they do?', hint: 'Current role and organization. The more specific, the better.' },
   contact: { q: 'How can we find them?', hint: 'Optional — but it helps us verify.' },
-  contribution: { q: 'What is their primary contribution?', hint: 'One specific example beats ten adjectives.' },
-  impact: { q: 'How have they impacted others in the field?', hint: 'Think people, programs, or culture.' },
+  contribution: { q: 'What is their primary contribution?', hint: 'Optional — one specific example beats ten adjectives.' },
+  impact: { q: 'How have they impacted others in the field?', hint: 'Optional — think people, programs, or culture.' },
   leadership: { q: 'What makes their approach or leadership unique?', hint: 'Optional — but this is what separates them.' },
   credit: { q: 'Want the credit?', hint: 'We will show your name unless you say otherwise.' },
   angels: { q: 'Also recognize them as an Angel investor?', hint: 'They will appear in both their main tab and Angels.' },
@@ -91,16 +119,12 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
     });
   };
 
-  const canSubmit =
-    form.name?.trim() && form.role_org?.trim() && form.reason_contribution?.trim() && form.reason_impact?.trim() && form.share_name;
+  const canSubmit = form.name?.trim() && form.share_name;
 
   const canAdvance = useCallback(
     (id) => {
       switch (id) {
         case 'name': return !!form.name?.trim();
-        case 'role': return !!form.role_org?.trim();
-        case 'contribution': return !!form.reason_contribution?.trim();
-        case 'impact': return !!form.reason_impact?.trim();
         case 'credit': return !!form.share_name;
         default: return true;
       }
@@ -137,6 +161,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
       } else {
         onSubmitted({ existing: false, summary: { ...form, category: nominationCategory, also_angels: alsoAngels === 'yes' }, category: nominationCategory, also_angels: alsoAngels === 'yes' });
       }
+      celebrate();
       setDone(true);
     } catch (e) {
       console.warn('Hub nomination failed', e);
@@ -350,10 +375,6 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
                       </div>
                     )}
 
-                    {stepId === 'role' && (
-                      <input ref={activeRef} value={form.role_org} onChange={(e) => update('role_org', e.target.value)} placeholder="e.g. Propulsion Engineer at Blue Origin" className={inputCls} style={inputStyle} />
-                    )}
-
                     {stepId === 'contact' && (
                       <div className="space-y-3">
                         <input ref={activeRef} value={form.link} onChange={(e) => update('link', e.target.value)} placeholder="LinkedIn or website (https://…)" className={inputCls} style={inputStyle} />
@@ -481,7 +502,6 @@ function ReviewSummary({ form, nominationCategory, alsoAngels, selectedNominee }
     ['Leadership', form.reason_leadership || '—'],
     ['Credit', form.share_name === 'yes' ? 'Credited' : form.share_name === 'no' ? 'Anonymous' : '—'],
     ['Also Angels', alsoAngels ? 'Yes' : 'No'],
-    ['From directory', selectedNominee ? 'Yes' : 'No'],
   ];
   return (
     <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${brand.navy}15`, background: 'white' }}>
