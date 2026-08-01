@@ -1,5 +1,4 @@
 import { base44 } from '@/api/base44Client';
-import { filterPoolNominees } from '@/components/my-top100/nomineePoolFilter';
 
 // Build a map of season_id -> 'women' | 'men' | 'angels' from a seasons list.
 // Order matters: "women" contains "men" as a substring, so check Angels → Women → Men.
@@ -40,8 +39,14 @@ export function dedupeByName(list) {
 }
 
 // Strip archive records and cross-season duplicates in one pass.
+// The candidate pool is now unified and additive: every unique person across
+// all seasons (including the 2021/2022 archive volumes) is browsable and
+// nominatable for future seasons. Archive records stay reachable on the
+// /archive/:seasonId pages; they are no longer stripped from the browse pool.
+// (Voting remains protected: AnchorVoting filters by season_participation,
+//  not this pool, so archive honorees don't leak into an active vote.)
 export function prepareNomineePool(rawList) {
-  return dedupeByName(filterPoolNominees(rawList));
+  return dedupeByName(rawList);
 }
 
 // Fetch nominees + seasons together and return the active, deduped pool plus
