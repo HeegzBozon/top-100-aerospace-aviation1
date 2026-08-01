@@ -16,7 +16,8 @@ import HubListTabs from '@/components/my-top100/HubListTabs';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
 import { saveRankedVote } from '@/functions/saveRankedVote';
-import { Loader2, Pencil, Check, Rocket, LogIn, ListOrdered } from 'lucide-react';
+import { Loader2, Pencil, Check, Rocket, LogIn } from 'lucide-react';
+import AnchorVoting from '@/components/voting/AnchorVoting';
 
 function generateShareCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -416,18 +417,10 @@ export default function MyTop100() {
         </div>
       )}
 
-      {/* ── VOTE TAB (placeholder) ── */}
+      {/* ── VOTE TAB (anchor selection) ── */}
       {activeTab === 'vote' && (
-        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-          <div className="h-14 w-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: `${brand.gold}18` }}>
-            <ListOrdered className="w-6 h-6" style={{ color: brand.gold }} />
-          </div>
-          <h2 className="text-lg font-bold mb-1.5" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
-            Voting opens soon
-          </h2>
-          <p className="text-xs leading-relaxed max-w-xs" style={{ color: `${brand.navy}60` }}>
-            Build your Top 100 list on the Nominate tab — ranked-choice voting launches here next.
-          </p>
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <AnchorVoting user={user} />
         </div>
       )}
 
