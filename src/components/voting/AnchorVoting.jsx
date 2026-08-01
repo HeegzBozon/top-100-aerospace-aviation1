@@ -5,7 +5,6 @@ import { submitAnchorVote } from '@/functions/submitAnchorVote';
 import { awardStardust } from '@/functions/awardStardust';
 import { progressQuest } from '@/functions/progressQuest';
 import { brand } from '@/components/nominate/NominateConfig';
-import { prepareNomineePool } from '@/components/my-top100/nomineeCategory';
 import {
   Loader2, Info, X, ArrowUp, ArrowDown, Check, Linkedin, Instagram, Youtube, Globe,
 } from 'lucide-react';
@@ -56,11 +55,28 @@ export default function AnchorVoting({ user }) {
           setLoading(false);
           return;
         }
-        const raw = await base44.entities.Nominee.filter({
-          season_id: activeSeason.id,
-          status: { $in: ['active', 'approved', 'winner', 'finalist'] },
+        const VOTABLE = ['active', 'approved', 'winner', 'finalist'];
+        const raw = await base44.entities.Nominee.list('-created_date', 2000);
+        // Dedupe by name, preferring the master record (it carries season_participation).
+        const byName = new Map();
+        for (const n of raw) {
+          const key = (n.name || '').trim().toLowerCase();
+          if (!key) continue;
+          const cur = byName.get(key);
+          if (!cur || (n.raw_nomination_data?.is_master && !cur.raw_nomination_data?.is_master)) {
+            byName.set(key, n);
+          }
+        }
+        // Participation-aware: a nominee is in this season's voting pool if their
+        // season_participation includes the active season with a votable status,
+        // or (legacy fallback) their record season_id matches with a votable status.
+        const prepared = Array.from(byName.values()).filter((n) => {
+          const parts = n.raw_nomination_data?.season_participation;
+          if (Array.isArray(parts) && parts.length) {
+            return parts.some((p) => p.season_id === activeSeason.id && VOTABLE.includes(p.status));
+          }
+          return n.season_id === activeSeason.id && VOTABLE.includes(n.status);
         });
-        const prepared = prepareNomineePool(raw);
         if (!active) return;
         setSeason(activeSeason);
         setPool(prepared);
