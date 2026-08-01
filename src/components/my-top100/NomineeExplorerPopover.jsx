@@ -7,7 +7,7 @@ import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import NomineeProfilePanel from '@/components/my-top100/NomineeProfilePanel';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
-import { filterPoolNominees } from '@/components/my-top100/nomineePoolFilter';
+import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
 
 const DISCIPLINES = [
   { key: 'all', label: 'All Fields' },
@@ -57,32 +57,11 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
     if (!isOpen) return;
     let active = true;
     setLoading(true);
-    Promise.all([
-      base44.entities.Nominee.list('-created_date', 2000),
-      base44.entities.Season.list('name', 100),
-    ]).then(([r, seasons]) => {
+    loadNomineePool().then(({ pool, seasonCategory }) => {
       if (!active) return;
-      const catMap = {};
-      (seasons || []).forEach(s => {
-        const nm = (s.name || '').toLowerCase();
-        if (nm.includes('angel')) catMap[s.id] = 'angels';
-        else if (nm.includes('women')) catMap[s.id] = 'women';
-        else if (nm.includes('men')) catMap[s.id] = 'men';
-      });
-      setSeasonCategory(catMap);
-      const pool = filterPoolNominees(r);
-      // Dedupe by normalized name — cross-season duplicates (e.g. S3 2025 ↔ 2026 Women)
-      // surface as identical rows; keep the most recent record per name.
-      const seen = new Set();
-      const deduped = pool.filter(n => {
-        const key = (n.name || '').trim().toLowerCase();
-        if (!key) return true;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-      setNominees(deduped);
-      setRandomOrder(stableShuffle(deduped));
+      setSeasonCategory(seasonCategory);
+      setNominees(pool);
+      setRandomOrder(stableShuffle(pool));
       setLoading(false);
     });
     return () => { active = false; };
@@ -111,15 +90,7 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
       }
       if (!matchDiscipline(n, discipline)) return false;
       if (verifiedOnly && !(n.verified_status === 'fully_verified' || n.verified_status === 'partially_verified')) return false;
-      if (categoryFilter !== 'all') {
-        const cat = seasonCategory[n.season_id] || (() => {
-          const t = `${n.description || ''} ${n.industry || ''} ${n.category || ''}`.toLowerCase();
-          if (t.includes('woman') || t.includes('female')) return 'women';
-          if (t.includes('angel') || t.includes('investor')) return 'angels';
-          return null;
-        })();
-        if (cat !== categoryFilter) return false;
-      }
+      if (categoryFilter !== 'all' && getNomineeCategory(n, seasonCategory) !== categoryFilter) return false;
       return true;
     });
 

@@ -6,9 +6,14 @@ import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
-import { filterPoolNominees } from '@/components/my-top100/nomineePoolFilter';
+import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
 
-const CATEGORIES = ['All', 'Women', 'Men', 'Angels'];
+const CATEGORIES = [
+  { key: 'all', label: 'All' },
+  { key: 'women', label: 'Women' },
+  { key: 'men', label: 'Men' },
+  { key: 'angels', label: 'Angels' },
+];
 
 const DISCIPLINES = [
   { key: 'all', label: 'All Fields' },
@@ -29,24 +34,16 @@ const SORTS = [
   { key: 'verified', label: 'Verified First' },
 ];
 
-// Map filter pills to nominee fields for bulk-add + suggestions
-function nomineeMatchesCategory(n, cat) {
-  if (cat === 'All') return true;
-  const text = `${n.description || ''} ${n.industry || ''} ${n.discipline || ''} ${n.category || ''}`.toLowerCase();
-  if (cat === 'Women') return text.includes('woman') || text.includes('women') || text.includes('female');
-  if (cat === 'Men') return text.includes('man') || text.includes('men') || text.includes('male');
-  if (cat === 'Angels') return text.includes('angel') || text.includes('investor') || text.includes('vc');
-  return true;
-}
+// Category resolution is season-based — see getNomineeCategory in nomineeCategory.js
 
 export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }) {
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [discipline, setDiscipline] = useState('all');
   const [sort, setSort] = useState('random');
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [nominees, setNominees] = useState([]);
+  const [seasonCategory, setSeasonCategory] = useState({});
   const [randomOrder, setRandomOrder] = useState([]);
   const [loading, setLoading] = useState(false);
   const [bulkAdding, setBulkAdding] = useState(false);
@@ -64,15 +61,15 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
       setInlineNominate(false);
       setShowSortMenu(false);
     }
-  }, [isOpen, category]);
+  }, [isOpen, categoryFilter]);
 
   const loadNominees = async () => {
     setLoading(true);
     try {
-      const results = await base44.entities.Nominee.list('-created_date', 2000);
-      const pool = filterPoolNominees(results);
+      const { pool, seasonCategory } = await loadNomineePool();
       setNominees(pool);
       setRandomOrder(stableShuffle(pool));
+      setSeasonCategory(seasonCategory);
     } catch { setNominees([]); }
     setLoading(false);
   };
@@ -83,10 +80,9 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
         n.title?.toLowerCase().includes(query.toLowerCase()) ||
         n.company?.toLowerCase().includes(query.toLowerCase()) ||
         n.professional_role?.toLowerCase().includes(query.toLowerCase());
-      const matchesCat = nomineeMatchesCategory(n, category);
+      const matchesCat = categoryFilter === 'all' || getNomineeCategory(n, seasonCategory) === categoryFilter;
       const matchesDisc = matchDiscipline(n, discipline);
-      const matchesVerified = !verifiedOnly || n.verified_status === 'fully_verified' || n.verified_status === 'partially_verified';
-      return matchesQuery && matchesCat && matchesDisc && matchesVerified;
+      return matchesQuery && matchesCat && matchesDisc;
     });
 
     const rankIndex = (n) => randomOrder.findIndex(r => r.id === n.id);
@@ -101,30 +97,30 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
       },
     };
     return list.sort(byKey[sort] || byKey.random);
-  }, [nominees, randomOrder, query, category, discipline, sort, verifiedOnly]);
+  }, [nominees, randomOrder, query, categoryFilter, discipline, sort, seasonCategory]);
 
   // Smart suggestions: highest aura_score not yet added (independent of query)
   const suggestions = useMemo(() => {
     if (query) return [];
     return nominees
       .filter(n => !addedIds.has(n.id))
-      .filter(n => category === 'All' || nomineeMatchesCategory(n, category))
+      .filter(n => categoryFilter === 'all' || getNomineeCategory(n, seasonCategory) === categoryFilter)
       .filter(n => matchDiscipline(n, discipline))
       .slice(0, 4);
-  }, [nominees, addedIds, query, category, discipline]);
+  }, [nominees, addedIds, query, categoryFilter, discipline, seasonCategory]);
 
   // Bulk add: all matches in current category not yet added
   const handleBulkAddCategory = async () => {
     setBulkAdding(true);
     const toAdd = nominees
       .filter(n => !addedIds.has(n.id))
-      .filter(n => nomineeMatchesCategory(n, category))
+      .filter(n => categoryFilter === 'all' || getNomineeCategory(n, seasonCategory) === categoryFilter)
       .slice(0, 100 - addedIds.size);
     for (const n of toAdd) onAdd(n);
     setBulkAdding(false);
   };
 
-  const bulkCount = nominees.filter(n => !addedIds.has(n.id) && nomineeMatchesCategory(n, category)).length;
+  const bulkCount = nominees.filter(n => !addedIds.has(n.id) && (categoryFilter === 'all' || getNomineeCategory(n, seasonCategory) === categoryFilter)).length;
 
   const activeSortLabel = SORTS.find(s => s.key === sort)?.label;
 
@@ -176,7 +172,6 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
                     </h2>
                     <p className="text-[10px]" style={{ color: `${brand.navy}50` }}>
                       {sortedFiltered.length} {sortedFiltered.length === 1 ? 'result' : 'results'}
-                      {verifiedOnly && ' · verified only'}
                     </p>
                   </div>
                   <button onClick={onClose} className="h-8 w-8 rounded-full flex items-center justify-center" style={{ background: `${brand.navy}08` }}>
@@ -206,15 +201,15 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
                 <div className="flex gap-2 px-4 pb-2.5 overflow-x-auto scrollbar-hide">
                   {CATEGORIES.map(cat => (
                     <button
-                      key={cat}
-                      onClick={() => setCategory(cat)}
+                      key={cat.key}
+                      onClick={() => setCategoryFilter(cat.key)}
                       className="shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
                       style={{
-                        background: category === cat ? brand.navy : `${brand.navy}08`,
-                        color: category === cat ? 'white' : `${brand.navy}70`,
+                        background: categoryFilter === cat.key ? brand.navy : `${brand.navy}08`,
+                        color: categoryFilter === cat.key ? 'white' : `${brand.navy}70`,
                       }}
                     >
-                      {cat}
+                      {cat.label}
                     </button>
                   ))}
                 </div>
@@ -274,18 +269,6 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
                     </AnimatePresence>
                   </div>
 
-                  {/* Verified toggle */}
-                  <button
-                    onClick={() => setVerifiedOnly(v => !v)}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
-                    style={{
-                      background: verifiedOnly ? `${brand.gold}20` : `${brand.navy}08`,
-                      color: verifiedOnly ? brand.gold : `${brand.navy}70`,
-                    }}
-                  >
-                    <BadgeCheck className="w-3.5 h-3.5" />
-                    Verified
-                  </button>
                 </div>
 
                 {/* Results list */}
@@ -297,7 +280,7 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
                   ) : (
                     <div className="space-y-2">
                       {/* Bulk add bar */}
-                      {!query && category !== 'All' && discipline === 'all' && !verifiedOnly && bulkCount > 0 && (
+                      {!query && categoryFilter !== 'all' && discipline === 'all' && bulkCount > 0 && (
                         <motion.button
                           initial={{ opacity: 0, y: -8 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -309,7 +292,7 @@ export default function NomineeSearchDrawer({ isOpen, onClose, onAdd, addedIds }
                         >
                           <Zap className="w-4 h-4" style={{ color: brand.gold }} />
                           <span className="text-xs font-bold flex-1 text-left">
-                            {bulkAdding ? 'Adding…' : `Bulk add ${bulkCount} ${category} nominees`}
+                            {bulkAdding ? 'Adding…' : `Bulk add ${bulkCount} ${CATEGORIES.find(c => c.key === categoryFilter)?.label || ''} nominees`}
                           </span>
                           {!bulkAdding && <Plus className="w-3.5 h-3.5" style={{ color: brand.gold }} />}
                         </motion.button>

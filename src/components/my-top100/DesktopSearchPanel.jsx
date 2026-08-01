@@ -6,7 +6,7 @@ import { brand } from '@/components/nominate/NominateConfig';
 import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
 import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
-import { filterPoolNominees } from '@/components/my-top100/nomineePoolFilter';
+import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
 
 const DISCIPLINES = [
   { key: 'all', label: 'All Fields' },
@@ -27,25 +27,37 @@ const SORTS = [
   { key: 'verified', label: 'Verified First' },
 ];
 
+const CATEGORIES = [
+  { key: 'all', label: 'All' },
+  { key: 'women', label: 'Women' },
+  { key: 'men', label: 'Men' },
+  { key: 'angels', label: 'Angels' },
+];
+
 export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, onViewProfile }) {
   const [query, setQuery] = useState('');
   const [discipline, setDiscipline] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [sort, setSort] = useState('random');
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [nominees, setNominees] = useState([]);
+  const [seasonCategory, setSeasonCategory] = useState({});
   const [randomOrder, setRandomOrder] = useState([]);
   const [loading, setLoading] = useState(true);
   const [nominating, setNominating] = useState(null);
   const [inlineNominate, setInlineNominate] = useState(false);
 
   useEffect(() => {
-    base44.entities.Nominee.list('-created_date', 2000).then(r => {
-      const pool = filterPoolNominees(r);
+    let active = true;
+    setLoading(true);
+    loadNomineePool().then(({ pool, seasonCategory }) => {
+      if (!active) return;
       setNominees(pool);
       setRandomOrder(stableShuffle(pool));
+      setSeasonCategory(seasonCategory);
       setLoading(false);
     });
+    return () => { active = false; };
   }, []);
 
   const sortedFiltered = useMemo(() => {
@@ -61,7 +73,7 @@ export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, on
         if (!matches) return false;
       }
       if (!matchDiscipline(n, discipline)) return false;
-      if (verifiedOnly && !(n.verified_status === 'fully_verified' || n.verified_status === 'partially_verified')) return false;
+      if (categoryFilter !== 'all' && getNomineeCategory(n, seasonCategory) !== categoryFilter) return false;
       return true;
     });
 
@@ -77,7 +89,7 @@ export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, on
       },
     };
     return list.sort(byKey[sort] || byKey.random);
-  }, [nominees, randomOrder, query, discipline, sort, verifiedOnly]);
+  }, [nominees, randomOrder, query, discipline, sort, categoryFilter, seasonCategory]);
 
   const activeSortLabel = SORTS.find(s => s.key === sort)?.label;
 
@@ -157,14 +169,18 @@ export default function DesktopSearchPanel({ addedIds, onAdd, onOpenExplorer, on
           </AnimatePresence>
         </div>
 
-        <button
-          onClick={() => setVerifiedOnly(v => !v)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
-          style={{ background: verifiedOnly ? `${brand.gold}20` : `${brand.navy}08`, color: verifiedOnly ? brand.gold : `${brand.navy}70` }}
-        >
-          <BadgeCheck className="w-3.5 h-3.5" />
-          Verified
-        </button>
+        <div className="flex items-center gap-1 p-1 rounded-full" style={{ background: `${brand.navy}06` }}>
+          {CATEGORIES.map(c => (
+            <button
+              key={c.key}
+              onClick={() => setCategoryFilter(c.key)}
+              className="px-2.5 py-1 rounded-full text-xs font-semibold transition-all"
+              style={{ background: categoryFilter === c.key ? brand.navy : 'transparent', color: categoryFilter === c.key ? 'white' : `${brand.navy}70` }}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Results */}
