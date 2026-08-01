@@ -41,6 +41,20 @@
           "category": {
             "type": "string"
           },
+          "nomination_category": {
+            "type": "string",
+            "enum": [
+              "women",
+              "men",
+              "angels"
+            ],
+            "description": "Primary nomination track this list entry belongs to"
+          },
+          "also_angels": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, this shared entry also appears in the Angels tab"
+          },
           "note": {
             "type": "string"
           }

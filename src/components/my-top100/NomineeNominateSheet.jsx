@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowLeft, Send, Check, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand, combineGuidedReason, GUIDED_PROMPTS } from '@/components/nominate/NominateConfig';
@@ -9,6 +9,17 @@ const SHARE_OPTIONS = [
   { value: 'no', label: 'Keep it anonymous' },
 ];
 
+const PRIMARY_CATEGORIES = [
+  { key: 'women', label: 'Women' },
+  { key: 'men', label: 'Men' },
+];
+
+function inferCategory(nominee) {
+  const text = `${nominee?.description || ''} ${nominee?.industry || ''} ${nominee?.discipline || ''} ${nominee?.category || ''}`.toLowerCase();
+  if (text.includes('woman') || text.includes('female')) return 'women';
+  return 'men';
+}
+
 export default function NomineeNominateSheet({ nominee, onBack, onDone, onAddToList }) {
   const [form, setForm] = useState({
     reason_contribution: '',
@@ -16,6 +27,8 @@ export default function NomineeNominateSheet({ nominee, onBack, onDone, onAddToL
     reason_leadership: '',
     share_name: '',
   });
+  const [nominationCategory, setNominationCategory] = useState(() => inferCategory(nominee));
+  const [alsoAngels, setAlsoAngels] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -28,17 +41,9 @@ export default function NomineeNominateSheet({ nominee, onBack, onDone, onAddToL
     setSubmitting(true);
     try {
       const me = await base44.auth.me().catch(() => ({ full_name: '', email: '' }));
-
-      // Infer nomination track from nominee metadata
-      const text = `${nominee.description || ''} ${nominee.industry || ''} ${nominee.discipline || ''} ${nominee.category || ''}`.toLowerCase();
-      let nomination_type = 'men';
-      if (text.includes('angel') || text.includes('investor') || text.includes('vc')) nomination_type = 'angels';
-      else if (text.includes('woman') || text.includes('female')) nomination_type = 'women';
-
       const reason = combineGuidedReason(form);
 
-      await base44.entities.NominationIntake.create({
-        nomination_type,
+      const baseIntake = {
         nominee_name: nominee.name,
         nominee_email: nominee.nominee_email || '',
         role_org: nominee.title || nominee.professional_role || '',
@@ -50,10 +55,16 @@ export default function NomineeNominateSheet({ nominee, onBack, onDone, onAddToL
         nominator_email: me.email || '',
         source: 'my_top100_quick_nominate',
         status: 'new',
-      });
+      };
 
-      base44.analytics.track({ eventName: 'my_top100_quick_nominate', properties: { nominee_id: nominee.id } });
-      if (onAddToList) onAddToList(nominee);
+      await base44.entities.NominationIntake.create({ ...baseIntake, nomination_type: nominationCategory });
+
+      if (alsoAngels) {
+        await base44.entities.NominationIntake.create({ ...baseIntake, nomination_type: 'angels' });
+      }
+
+      base44.analytics.track({ eventName: 'my_top100_quick_nominate', properties: { nominee_id: nominee.id, category: nominationCategory, also_angels: alsoAngels } });
+      if (onAddToList) onAddToList(nominee, { nomination_category: nominationCategory, also_angels: alsoAngels });
       setDone(true);
     } catch (e) {
       console.warn('Quick nominate failed', e);
@@ -111,6 +122,52 @@ export default function NomineeNominateSheet({ nominee, onBack, onDone, onAddToL
       )}
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+        {/* Category select */}
+        <div>
+          <label className="block text-xs font-bold mb-2" style={{ color: brand.navy }}>
+            Nominate for
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {PRIMARY_CATEGORIES.map(c => (
+              <button
+                key={c.key}
+                type="button"
+                onClick={() => setNominationCategory(c.key)}
+                className="text-xs font-semibold py-2.5 rounded-2xl border transition-all"
+                style={{
+                  background: nominationCategory === c.key ? brand.navy : 'white',
+                  color: nominationCategory === c.key ? 'white' : `${brand.navy}70`,
+                  borderColor: nominationCategory === c.key ? brand.navy : `${brand.navy}15`,
+                }}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Also Angels checkbox */}
+        <button
+          type="button"
+          onClick={() => setAlsoAngels(v => !v)}
+          className="w-full flex items-center gap-3 p-3 rounded-2xl border text-left transition-all"
+          style={{
+            background: alsoAngels ? `${brand.gold}12` : 'white',
+            borderColor: alsoAngels ? brand.gold : `${brand.navy}15`,
+          }}
+        >
+          <div
+            className="h-5 w-5 rounded-md flex items-center justify-center shrink-0 border"
+            style={{ background: alsoAngels ? brand.gold : 'white', borderColor: alsoAngels ? brand.gold : `${brand.navy}30` }}
+          >
+            {alsoAngels && <Check className="w-3.5 h-3.5 text-white" />}
+          </div>
+          <div className="flex-1">
+            <p className="text-xs font-bold" style={{ color: brand.navy }}>Also nominate for Angels</p>
+            <p className="text-[10px]" style={{ color: `${brand.navy}50` }}>Recognize them as an angel investor too — they'll show in both tabs.</p>
+          </div>
+        </button>
+
         {GUIDED_PROMPTS.map(p => (
           <div key={p.key}>
             <label className="block text-xs font-bold mb-1.5" style={{ color: brand.navy }}>

@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Loader2, Check, Search, Plus } from 'lucide-react';
+import { X, Send, Loader2, Check, Search } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import {
   brand,
   combineGuidedReason,
   GUIDED_PROMPTS,
-  LOCAL_LEGEND_TYPES,
   emptyPersonNomination,
-  emptyAngelNomination,
-  emptyLocalLegend,
 } from '@/components/nominate/NominateConfig';
 
 const SHARE_OPTIONS = [
@@ -17,27 +14,24 @@ const SHARE_OPTIONS = [
   { value: 'no', label: 'Keep it anonymous' },
 ];
 
-const FACTORIES = {
-  person: emptyPersonNomination,
-  angel: emptyAngelNomination,
-  local_legend: emptyLocalLegend,
-};
+const PRIMARY_CATEGORIES = [
+  { key: 'women', label: 'Women' },
+  { key: 'men', label: 'Men' },
+];
 
-export default function HubNominationPopover({ category, onClose, onSubmitted, nominees, nominator }) {
-  const [form, setForm] = useState(FACTORIES[category.type]());
+export default function HubNominationPopover({ onClose, onSubmitted, nominees, nominator }) {
+  const [form, setForm] = useState(emptyPersonNomination);
+  const [nominationCategory, setNominationCategory] = useState('women');
+  const [alsoAngels, setAlsoAngels] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
 
-  const isPerson = category.type === 'person';
-  const isAngel = category.type === 'angel';
-  const isLocal = category.type === 'local_legend';
-
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
   const matches =
-    isPerson && form.name && form.name.trim().length > 1
+    form.name && form.name.trim().length > 1
       ? nominees
           .filter(
             (n) =>
@@ -47,61 +41,49 @@ export default function HubNominationPopover({ category, onClose, onSubmitted, n
           .slice(0, 5)
       : [];
 
-  const selectExisting = (nominee) => {
-    setShowSuggestions(false);
-    onSubmitted({ existing: true, nominee });
-    setForm(FACTORIES[category.type]());
+  const resetForm = () => {
+    setForm(emptyPersonNomination());
+    setNominationCategory('women');
+    setAlsoAngels(false);
   };
 
-  const canSubmit = (() => {
-    if (isPerson) return form.name?.trim() && form.role_org?.trim() && form.reason_contribution?.trim() && form.reason_impact?.trim() && form.share_name;
-    if (isAngel) return form.name?.trim() && form.investing_in?.trim() && form.reason?.trim() && form.share_name;
-    if (isLocal) return form.business_name?.trim() && form.business_type?.trim() && form.city?.trim() && form.reason?.trim() && form.share_name;
-    return false;
-  })();
+  const selectExisting = (nominee) => {
+    setShowSuggestions(false);
+    onSubmitted({ existing: true, nominee, category: nominationCategory, also_angels: alsoAngels });
+    resetForm();
+  };
+
+  const canSubmit =
+    form.name?.trim() && form.role_org?.trim() && form.reason_contribution?.trim() && form.reason_impact?.trim() && form.share_name;
 
   const handleSubmit = async () => {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
     setError('');
     try {
-      const reason = isPerson ? combineGuidedReason(form) : form.reason?.trim() || '';
+      const reason = combineGuidedReason(form);
 
-      if (isPerson || isAngel) {
-        await base44.entities.NominationIntake.create({
-          nomination_type: category.key,
-          nominee_name: (form.name || '').trim(),
-          role_org: (form.role_org || '').trim(),
-          firm: isAngel ? (form.firm || '').trim() : '',
-          link: (form.link || '').trim(),
-          nominee_email: (form.email || '').trim(),
-          location: (form.location || '').trim(),
-          investing_in: isAngel ? (form.investing_in || '').trim() : '',
-          reason,
-          share_name: form.share_name,
-          nominator_name: nominator?.full_name || '',
-          nominator_email: nominator?.email || '',
-          source: 'my_top100_hub',
-          status: 'new',
-        });
-      } else if (isLocal) {
-        await base44.entities.LocalLegendNomination.create({
-          business_name: form.business_name.trim(),
-          business_type: form.business_type,
-          city: form.city.trim(),
-          owner_name: (form.owner_name || '').trim(),
-          link: (form.link || '').trim(),
-          reason: form.reason.trim(),
-          share_name: form.share_name,
-          nominator_name: nominator?.full_name || '',
-          nominator_email: nominator?.email || '',
-          source: 'my_top100_hub',
-          status: 'new',
-        });
+      const baseIntake = {
+        nominee_name: (form.name || '').trim(),
+        role_org: (form.role_org || '').trim(),
+        link: (form.link || '').trim(),
+        nominee_email: (form.email || '').trim(),
+        location: (form.location || '').trim(),
+        reason,
+        share_name: form.share_name,
+        nominator_name: nominator?.full_name || '',
+        nominator_email: nominator?.email || '',
+        source: 'my_top100_hub',
+        status: 'new',
+      };
+
+      await base44.entities.NominationIntake.create({ ...baseIntake, nomination_type: nominationCategory });
+      if (alsoAngels) {
+        await base44.entities.NominationIntake.create({ ...baseIntake, nomination_type: 'angels' });
       }
 
-      base44.analytics.track({ eventName: 'hub_nomination_submitted', properties: { category: category.key } });
-      onSubmitted({ existing: false, summary: { ...form, category: category.key } });
+      base44.analytics.track({ eventName: 'hub_nomination_submitted', properties: { category: nominationCategory, also_angels: alsoAngels } });
+      onSubmitted({ existing: false, summary: { ...form, category: nominationCategory, also_angels: alsoAngels }, category: nominationCategory, also_angels: alsoAngels });
       setDone(true);
     } catch (e) {
       console.warn('Hub nomination failed', e);
@@ -143,7 +125,7 @@ export default function HubNominationPopover({ category, onClose, onSubmitted, n
                 Nomination submitted
               </h3>
               <p className="text-xs leading-relaxed max-w-xs mb-5" style={{ color: `${brand.navy}60` }}>
-                Your nomination for {isLocal ? form.business_name : form.name} is in review. Once approved, they'll appear in the verified directory.
+                Your nomination for {form.name} is in review. Once approved, they'll appear in the verified directory.
               </p>
               <button
                 onClick={onClose}
@@ -159,7 +141,7 @@ export default function HubNominationPopover({ category, onClose, onSubmitted, n
               <div className="flex items-center justify-between px-4 py-3 shrink-0" style={{ borderBottom: `1px solid ${brand.navy}10`, background: 'white' }}>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: `${brand.navy}50` }}>
-                    {category.heading}
+                    TOP 100 Aerospace & Aviation
                   </p>
                   <h3 className="text-sm font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
                     New Nomination
@@ -172,146 +154,135 @@ export default function HubNominationPopover({ category, onClose, onSubmitted, n
 
               {/* Body */}
               <div className="overflow-y-auto px-4 py-4 space-y-4 flex-1">
-                {isPerson && (
-                  <>
-                    <Field label="NAME *" hint={`Search for ${category.pronoun}, or type a new name`}>
-                      <div className="relative">
-                        <input
-                          value={form.name}
-                          onChange={(e) => { update('name', e.target.value); setShowSuggestions(true); }}
-                          onFocus={() => setShowSuggestions(true)}
-                          onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                          placeholder={`Search or type a name…`}
-                          className={inputCls}
-                          style={inputStyle}
-                        />
-                        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: `${brand.navy}30` }} />
-                        <AnimatePresence>
-                          {showSuggestions && matches.length > 0 && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -4 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -4 }}
-                              className="absolute z-20 left-0 right-0 mt-1 rounded-xl overflow-hidden shadow-lg"
-                              style={{ background: 'white', border: `1px solid ${brand.navy}15` }}
-                            >
-                              {matches.map((n) => (
-                                <button
-                                  key={n.id}
-                                  onMouseDown={(e) => { e.preventDefault(); selectExisting(n); }}
-                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-[#f9f7f4] transition-colors"
-                                >
-                                  <div className="h-8 w-8 rounded-full overflow-hidden shrink-0" style={{ background: `${brand.navy}08` }}>
-                                    {(n.photo_url || n.avatar_url) ? (
-                                      <img src={n.photo_url || n.avatar_url} alt={n.name} className="h-full w-full object-cover" />
-                                    ) : (
-                                      <div className="h-full w-full flex items-center justify-center text-[10px] font-bold" style={{ color: brand.navy }}>
-                                        {n.name?.[0]?.toUpperCase()}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold truncate" style={{ color: brand.navy }}>{n.name}</p>
-                                    <p className="text-[10px] truncate" style={{ color: `${brand.navy}50` }}>
-                                      {n.professional_role || n.title}{n.organization || n.company ? ` · ${n.organization || n.company}` : ''}
-                                    </p>
-                                  </div>
-                                  <span className="text-[9px] font-bold uppercase shrink-0" style={{ color: brand.gold }}>Add</span>
-                                </button>
-                              ))}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    </Field>
-
-                    <Field label="CURRENT ROLE AND ORGANIZATION *" hint="As specific as you can. Helps us find them.">
-                      <input value={form.role_org} onChange={(e) => update('role_org', e.target.value)} placeholder="e.g. Propulsion Engineer at Blue Origin" className={inputCls} style={inputStyle} />
-                    </Field>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Field label="LINKEDIN OR WEBSITE" hint="Optional">
-                        <input value={form.link} onChange={(e) => update('link', e.target.value)} placeholder="https://..." className={inputCls} style={inputStyle} />
-                      </Field>
-                      <Field label="EMAIL" hint="Optional">
-                        <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="name@example.com" className={inputCls} style={inputStyle} />
-                      </Field>
-                    </div>
-
-                    <Field label="LOCATION" hint="Optional">
-                      <input value={form.location} onChange={(e) => update('location', e.target.value)} placeholder="Houston, TX" className={inputCls} style={inputStyle} />
-                    </Field>
-
-                    {GUIDED_PROMPTS.map((p) => (
-                      <div key={p.key}>
-                        <label className="block text-[11px] font-bold mb-1.5 uppercase tracking-wide" style={{ color: `${brand.navy}70` }}>
-                          {p.label}
-                        </label>
-                        <textarea
-                          value={form[p.key]}
-                          onChange={(e) => update(p.key, e.target.value)}
-                          rows={2}
-                          placeholder="Share a specific example…"
-                          className="w-full text-sm rounded-xl border p-3 bg-white outline-none resize-none"
-                          style={inputStyle}
-                        />
-                      </div>
+                {/* Category select */}
+                <div>
+                  <label className="block text-[11px] font-bold mb-2 uppercase tracking-wide" style={{ color: `${brand.navy}70` }}>
+                    Nominate for
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {PRIMARY_CATEGORIES.map((c) => (
+                      <button
+                        key={c.key}
+                        type="button"
+                        onClick={() => setNominationCategory(c.key)}
+                        className="text-xs font-semibold py-2.5 rounded-xl border transition-all"
+                        style={{
+                          background: nominationCategory === c.key ? brand.navy : 'white',
+                          color: nominationCategory === c.key ? 'white' : `${brand.navy}70`,
+                          borderColor: nominationCategory === c.key ? brand.navy : `${brand.navy}15`,
+                        }}
+                      >
+                        {c.label}
+                      </button>
                     ))}
-                  </>
-                )}
+                  </div>
+                </div>
 
-                {isAngel && (
-                  <>
-                    <Field label="ANGEL NAME *">
-                      <input value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="Jane Doe" className={inputCls} style={inputStyle} />
-                    </Field>
-                    <Field label="FIRM / FUND">
-                      <input value={form.firm} onChange={(e) => update('firm', e.target.value)} placeholder="Starbridge Capital" className={inputCls} style={inputStyle} />
-                    </Field>
-                    <Field label="INVESTING IN *" hint="What sectors / stages do they back?">
-                      <input value={form.investing_in} onChange={(e) => update('investing_in', e.target.value)} placeholder="Seed-stage space startups, aviation mobility" className={inputCls} style={inputStyle} />
-                    </Field>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Field label="LINKEDIN OR WEBSITE" hint="Optional">
-                        <input value={form.link} onChange={(e) => update('link', e.target.value)} placeholder="https://..." className={inputCls} style={inputStyle} />
-                      </Field>
-                      <Field label="LOCATION" hint="Optional">
-                        <input value={form.location} onChange={(e) => update('location', e.target.value)} placeholder="San Francisco, CA" className={inputCls} style={inputStyle} />
-                      </Field>
-                    </div>
-                    <Field label="WHY THEY DESERVE RECOGNITION *">
-                      <textarea value={form.reason} onChange={(e) => update('reason', e.target.value)} rows={3} placeholder="Share their investment thesis, notable portfolio companies, or impact on the ecosystem…" className="w-full text-sm rounded-xl border p-3 bg-white outline-none resize-none" style={inputStyle} />
-                    </Field>
-                  </>
-                )}
+                {/* Also Angels checkbox */}
+                <button
+                  type="button"
+                  onClick={() => setAlsoAngels((v) => !v)}
+                  className="w-full flex items-center gap-3 p-3 rounded-2xl border text-left transition-all"
+                  style={{
+                    background: alsoAngels ? `${brand.gold}12` : 'white',
+                    borderColor: alsoAngels ? brand.gold : `${brand.navy}15`,
+                  }}
+                >
+                  <div
+                    className="h-5 w-5 rounded-md flex items-center justify-center shrink-0 border"
+                    style={{ background: alsoAngels ? brand.gold : 'white', borderColor: alsoAngels ? brand.gold : `${brand.navy}30` }}
+                  >
+                    {alsoAngels && <Check className="w-3.5 h-3.5 text-white" />}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-bold" style={{ color: brand.navy }}>Also nominate for Angels</p>
+                    <p className="text-[10px]" style={{ color: `${brand.navy}50` }}>Recognize them as an angel investor too — they'll show in both tabs.</p>
+                  </div>
+                </button>
 
-                {isLocal && (
-                  <>
-                    <Field label="BUSINESS NAME *">
-                      <input value={form.business_name} onChange={(e) => update('business_name', e.target.value)} placeholder="Skyline Pilates & Wellness" className={inputCls} style={inputStyle} />
-                    </Field>
-                    <Field label="BUSINESS TYPE *">
-                      <select value={form.business_type} onChange={(e) => update('business_type', e.target.value)} className={inputCls} style={inputStyle}>
-                        <option value="">Select a category…</option>
-                        {LOCAL_LEGEND_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                      </select>
-                    </Field>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Field label="CITY / AEROSPACE HUB *">
-                        <input value={form.city} onChange={(e) => update('city', e.target.value)} placeholder="Huntsville, AL" className={inputCls} style={inputStyle} />
-                      </Field>
-                      <Field label="OWNER NAME" hint="Optional, if known">
-                        <input value={form.owner_name} onChange={(e) => update('owner_name', e.target.value)} placeholder="Owner name" className={inputCls} style={inputStyle} />
-                      </Field>
-                    </div>
-                    <Field label="WEBSITE / INSTAGRAM / LISTING" hint="Optional">
-                      <input value={form.link} onChange={(e) => update('link', e.target.value)} placeholder="https://..." className={inputCls} style={inputStyle} />
-                    </Field>
-                    <Field label="WHY THIS BUSINESS DESERVES A SPOTLIGHT *">
-                      <textarea value={form.reason} onChange={(e) => update('reason', e.target.value)} rows={3} placeholder="What makes this spot special to the aerospace community?" className="w-full text-sm rounded-xl border p-3 bg-white outline-none resize-none" style={inputStyle} />
-                    </Field>
-                  </>
-                )}
+                <Field label="NAME *" hint="Search for them, or type a new name">
+                  <div className="relative">
+                    <input
+                      value={form.name}
+                      onChange={(e) => { update('name', e.target.value); setShowSuggestions(true); }}
+                      onFocus={() => setShowSuggestions(true)}
+                      onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                      placeholder="Search or type a name…"
+                      className={inputCls}
+                      style={inputStyle}
+                    />
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: `${brand.navy}30` }} />
+                    <AnimatePresence>
+                      {showSuggestions && matches.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          className="absolute z-20 left-0 right-0 mt-1 rounded-xl overflow-hidden shadow-lg"
+                          style={{ background: 'white', border: `1px solid ${brand.navy}15` }}
+                        >
+                          {matches.map((n) => (
+                            <button
+                              key={n.id}
+                              onMouseDown={(e) => { e.preventDefault(); selectExisting(n); }}
+                              className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-[#f9f7f4] transition-colors"
+                            >
+                              <div className="h-8 w-8 rounded-full overflow-hidden shrink-0" style={{ background: `${brand.navy}08` }}>
+                                {(n.photo_url || n.avatar_url) ? (
+                                  <img src={n.photo_url || n.avatar_url} alt={n.name} className="h-full w-full object-cover" />
+                                ) : (
+                                  <div className="h-full w-full flex items-center justify-center text-[10px] font-bold" style={{ color: brand.navy }}>
+                                    {n.name?.[0]?.toUpperCase()}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-bold truncate" style={{ color: brand.navy }}>{n.name}</p>
+                                <p className="text-[10px] truncate" style={{ color: `${brand.navy}50` }}>
+                                  {n.professional_role || n.title}{n.organization || n.company ? ` · ${n.organization || n.company}` : ''}
+                                </p>
+                              </div>
+                              <span className="text-[9px] font-bold uppercase shrink-0" style={{ color: brand.gold }}>Add</span>
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </Field>
+
+                <Field label="CURRENT ROLE AND ORGANIZATION *" hint="As specific as you can. Helps us find them.">
+                  <input value={form.role_org} onChange={(e) => update('role_org', e.target.value)} placeholder="e.g. Propulsion Engineer at Blue Origin" className={inputCls} style={inputStyle} />
+                </Field>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Field label="LINKEDIN OR WEBSITE" hint="Optional">
+                    <input value={form.link} onChange={(e) => update('link', e.target.value)} placeholder="https://..." className={inputCls} style={inputStyle} />
+                  </Field>
+                  <Field label="EMAIL" hint="Optional">
+                    <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="name@example.com" className={inputCls} style={inputStyle} />
+                  </Field>
+                </div>
+
+                <Field label="LOCATION" hint="Optional">
+                  <input value={form.location} onChange={(e) => update('location', e.target.value)} placeholder="Houston, TX" className={inputCls} style={inputStyle} />
+                </Field>
+
+                {GUIDED_PROMPTS.map((p) => (
+                  <div key={p.key}>
+                    <label className="block text-[11px] font-bold mb-1.5 uppercase tracking-wide" style={{ color: `${brand.navy}70` }}>
+                      {p.label}
+                    </label>
+                    <textarea
+                      value={form[p.key]}
+                      onChange={(e) => update(p.key, e.target.value)}
+                      rows={2}
+                      placeholder="Share a specific example…"
+                      className="w-full text-sm rounded-xl border p-3 bg-white outline-none resize-none"
+                      style={inputStyle}
+                    />
+                  </div>
+                ))}
 
                 {/* Credit */}
                 <div>
@@ -359,7 +330,7 @@ export default function HubNominationPopover({ category, onClose, onSubmitted, n
                 </motion.button>
                 {!canSubmit && !submitting && (
                   <p className="text-[10px] text-center mt-2" style={{ color: `${brand.navy}50` }}>
-                    {isPerson ? 'Complete name, role, contribution, impact, and credit to submit.' : 'Complete all required fields to submit.'}
+                    Complete name, role, contribution, impact, and credit to submit.
                   </p>
                 )}
               </div>

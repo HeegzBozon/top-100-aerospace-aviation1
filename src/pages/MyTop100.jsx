@@ -12,6 +12,7 @@ import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopove
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
 import NominationHub from '@/components/my-top100/NominationHub';
 import HubListTabs from '@/components/my-top100/HubListTabs';
+import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
 import { saveRankedVote } from '@/functions/saveRankedVote';
 import { Loader2, Pencil, Check, Rocket, LogIn, ListOrdered } from 'lucide-react';
@@ -33,8 +34,8 @@ export default function MyTop100() {
   const [showSearch, setShowSearch] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [saveTimer, setSaveTimer] = useState(null);
-  const [activeCategory, setActiveCategory] = useState('women');
-  const [hubNominations, setHubNominations] = useState({ women: [], men: [], angels: [], local_legends: [] });
+  const [hubNominations, setHubNominations] = useState({ women: [], men: [], angels: [] });
+  const [listCategory, setListCategory] = useState('all');
   const [activeTab, setActiveTab] = useState('start');
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [explorerProfile, setExplorerProfile] = useState(null);
@@ -68,7 +69,11 @@ export default function MyTop100() {
         if (lists.length > 0) {
           const existing = lists[0];
           setMyList(existing);
-          setRankings(existing.rankings || []);
+          setRankings((existing.rankings || []).map(r => ({
+            ...r,
+            nomination_category: r.nomination_category || 'women',
+            also_angels: !!r.also_angels,
+          })));
           setListName(existing.list_name || 'My Top 100');
           setIsPublished(existing.is_published || false);
           setShareCode(existing.share_code || generateShareCode());
@@ -88,7 +93,7 @@ export default function MyTop100() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem('hub_nominations_draft');
-      if (saved) setHubNominations(JSON.parse(saved));
+      if (saved) { const parsed = JSON.parse(saved); delete parsed.local_legends; setHubNominations(parsed); }
     } catch { /* ignore */ }
   }, []);
 
@@ -98,8 +103,8 @@ export default function MyTop100() {
 
   const addHubNomination = (category, summary) =>
     setHubNominations((p) => ({ ...p, [category]: [...p[category], summary] }));
-  const addExistingToHub = (category, nominee) =>
-    setHubNominations((p) => ({ ...p, [category]: [...p[category], { existing: true, nominee }] }));
+  const addExistingToHub = (category, nominee, also_angels) =>
+    setHubNominations((p) => ({ ...p, [category]: [...p[category], { existing: true, nominee, also_angels }] }));
   const removeHubNomination = (category, idx) =>
     setHubNominations((p) => ({ ...p, [category]: p[category].filter((_, i) => i !== idx) }));
 
@@ -137,12 +142,18 @@ export default function MyTop100() {
     if (showSaving) setSaving(false);
   };
 
-  const handleReorder = (newOrder) => {
+  const handleReorder = (newFilteredOrder) => {
+    let newOrder = newFilteredOrder;
+    if (listCategory !== 'all') {
+      const filteredIds = new Set(newFilteredOrder.map(r => r.nominee_id));
+      let fi = 0;
+      newOrder = rankings.map(item => filteredIds.has(item.nominee_id) ? newFilteredOrder[fi++] : item);
+    }
     setRankings(newOrder);
     scheduleSave(newOrder, listName, isPublished);
   };
 
-  const handleAdd = (nominee) => {
+  const handleAdd = (nominee, meta = {}) => {
     if (rankings.length >= 100) return;
     if (rankings.find(r => r.nominee_id === nominee.id)) return;
 
@@ -154,6 +165,8 @@ export default function MyTop100() {
       nominee_company: nominee.company || nominee.organization || '',
       nominee_avatar: nominee.avatar_url || nominee.photo_url || '',
       category: nominee.discipline || 'general',
+      nomination_category: meta.nomination_category || 'women',
+      also_angels: !!meta.also_angels,
     };
     const newRankings = [...rankings, newItem];
     setRankings(newRankings);
@@ -193,6 +206,14 @@ export default function MyTop100() {
 
   const addedIds = new Set(rankings.map(r => r.nominee_id));
   const totalNominations = Object.values(hubNominations).reduce((sum, arr) => sum + arr.length, 0);
+  const womenRankings = rankings.filter(r => r.nomination_category === 'women');
+  const menRankings = rankings.filter(r => r.nomination_category === 'men');
+  const angelsRankings = rankings.filter(r => r.nomination_category === 'angels' || r.also_angels);
+  const visibleRankings = listCategory === 'all' ? rankings
+    : listCategory === 'women' ? womenRankings
+    : listCategory === 'men' ? menRankings
+    : angelsRankings;
+  const listCategoryCounts = { all: rankings.length, women: womenRankings.length, men: menRankings.length, angels: angelsRankings.length };
 
   if (loading) {
     return (
@@ -303,14 +324,12 @@ export default function MyTop100() {
       {activeTab === 'nominate' && (
         <div className="flex-1 overflow-y-auto lg:max-w-3xl lg:mx-auto lg:w-full">
           <NominationHub
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
             submittedNominations={hubNominations}
             onAddNomination={addHubNomination}
             onRemoveNomination={removeHubNomination}
-            onAddExisting={(nominee) => {
-              addExistingToHub(activeCategory, nominee);
-              handleAdd(nominee);
+            onAddExisting={(nominee, meta) => {
+              addExistingToHub(meta.category, nominee, meta.also_angels);
+              handleAdd(nominee, { nomination_category: meta.category, also_angels: meta.also_angels });
             }}
             nominator={user}
           />
@@ -346,8 +365,10 @@ export default function MyTop100() {
                 onPublish={handlePublish}
                 onSaveDraft={handleSaveDraft}
               />
+              <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
               <ListCanvas
-                rankings={rankings}
+                rankings={visibleRankings}
+                totalCount={rankings.length}
                 onReorder={handleReorder}
                 onRemove={handleRemove}
                 onAddMore={() => {}}
@@ -369,8 +390,10 @@ export default function MyTop100() {
               onSaveDraft={handleSaveDraft}
             />
             <div className="flex-1">
+              <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
               <ListCanvas
-                rankings={rankings}
+                rankings={visibleRankings}
+                totalCount={rankings.length}
                 onReorder={handleReorder}
                 onRemove={handleRemove}
                 onAddMore={() => setShowSearch(true)}

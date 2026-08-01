@@ -10,8 +10,9 @@ const RANK_COLORS = {
   3: { bg: '#cd7f32', text: '#fff' },
 };
 
-export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, onAdd, addedIds, onViewProfile }) {
+export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, onAdd, addedIds, onViewProfile, totalCount }) {
   const [dragging, setDragging] = useState(null);
+  const total = totalCount ?? rankings.length;
 
   if (rankings.length === 0) {
     return <ListEmptyState onAdd={onAdd} addedIds={addedIds} onBrowse={onAddMore} />;
@@ -142,14 +143,14 @@ export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, o
       </Reorder.Group>
 
       {/* Add more CTA at the bottom of list */}
-      {rankings.length < 100 && (
+      {total < 100 && (
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={onAddMore}
           className="mt-4 w-full py-3.5 rounded-2xl border-2 border-dashed text-sm font-semibold transition-all"
           style={{ borderColor: `${brand.navy}20`, color: `${brand.navy}60` }}
         >
-          + Add More ({100 - rankings.length} slots remaining)
+          + Add More ({100 - total} slots remaining)
         </motion.button>
       )}
     </div>
