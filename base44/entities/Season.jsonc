@@ -107,12 +107,13 @@
         },
         "eligibility_window_years": {
           "type": "number",
-          "default": 3,
-          "description": "How many years back nominees are eligible"
+          "default": 0,
+          "description": "How many years back nominees are eligible. 0 = no limit (indefinite rollover)"
         },
         "require_revalidation": {
           "type": "boolean",
-          "default": true
+          "default": false,
+          "description": "Whether nominees must re-validate when rolling over. False = all carry forward indefinitely"
         },
         "revalidation_method": {
           "type": "string",

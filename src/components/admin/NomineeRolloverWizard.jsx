@@ -47,7 +47,7 @@ export default function NomineeRolloverWizard({ sourceSeason, allSeasons = [], o
     queryFn: async () => {
       const nominees = await base44.entities.Nominee.filter({ 
         season_id: sourceSeason.id,
-        status: 'active'
+        status: { $in: ['pending', 'approved', 'active', 'winner', 'finalist'] }
       });
       return nominees;
     },
@@ -182,7 +182,7 @@ export default function NomineeRolloverWizard({ sourceSeason, allSeasons = [], o
               1. Select Target
             </span>
             <span className={step >= 1 ? 'text-blue-600 font-medium' : 'text-gray-400'}>
-              2. Review Eligible
+              2. Review Nominees
             </span>
             <span className={step >= 2 ? 'text-blue-600 font-medium' : 'text-gray-400'}>
               3. Confirm
@@ -279,7 +279,7 @@ export default function NomineeRolloverWizard({ sourceSeason, allSeasons = [], o
               </div>
 
               <div className="flex items-center justify-between text-sm text-gray-600 py-2 border-b">
-                <span>{filteredNominees.length} eligible nominees</span>
+                <span>{filteredNominees.length} nominees</span>
                 <span className="flex items-center gap-4">
                   <span className="flex items-center gap-1 text-green-600">
                     <CheckCircle className="w-4 h-4" /> {selectedNominees.size} selected
@@ -363,7 +363,7 @@ export default function NomineeRolloverWizard({ sourceSeason, allSeasons = [], o
                 <div className="p-4 bg-blue-50 rounded-lg text-center">
                   <Clock className="w-8 h-8 mx-auto text-blue-500 mb-2" />
                   <p className="text-2xl font-bold text-blue-800">{selectedNominees.size}</p>
-                  <p className="text-sm text-blue-600">Need Revalidation</p>
+                  <p className="text-sm text-blue-600">Carrying Forward</p>
                 </div>
               </div>
 
