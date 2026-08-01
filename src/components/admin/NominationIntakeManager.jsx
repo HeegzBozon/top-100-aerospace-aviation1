@@ -72,26 +72,45 @@ export default function NominationIntakeManager() {
       return;
     }
 
-    // Duplicate detection: same email or exact name in the target season
-    const seasonNominees = await base44.entities.Nominee.filter({ season_id: season.id });
+    // Pool-aware: search the ENTIRE candidate pool (all seasons) for an existing
+    // master by normalized name or email. If found, link to it and append a
+    // season_participation entry instead of creating a duplicate record.
     const email = (item.nominee_email || '').toLowerCase().trim();
     const name = (item.nominee_name || '').toLowerCase().trim();
-    const duplicate = seasonNominees.find(n =>
-      (email && n.nominee_email?.toLowerCase().trim() === email) ||
-      (name && n.name?.toLowerCase().trim() === name)
+    const norm = (s) => (s || '').toLowerCase().trim().replace(/\s+/g, ' ');
+    const pool = await base44.entities.Nominee.list('-created_date', 2000);
+    const matches = pool.filter(n =>
+      (email && (n.nominee_email || '').toLowerCase().trim() === email) ||
+      (name && norm(n.name) === norm(name))
     );
-    if (duplicate) {
-      const link = window.confirm(`"${duplicate.name}" already exists in ${season.name} (status: ${duplicate.status}).\n\nOK = link this nomination to the existing nominee\nCancel = abort`);
-      if (link) {
-        const patch = { status: 'approved', nominee_id: duplicate.id, admin_notes: `${item.admin_notes ? item.admin_notes + '\n' : ''}Linked to existing nominee (duplicate detected).` };
-        await base44.entities.NominationIntake.update(item.id, patch);
-        setItems(prev => prev.map(entry => entry.id === item.id ? { ...entry, ...patch } : entry));
-        toast({ title: 'Linked to existing nominee', description: `${item.nominee_name} matched ${duplicate.name}.` });
-      }
+    const existing = matches.find(n => n.raw_nomination_data?.is_master) || matches[0];
+
+    if (existing) {
+      const sameSeason = existing.season_id === season.id;
+      const proceed = window.confirm(`"${existing.name}" already exists in the candidate pool${sameSeason ? ` (${season.name})` : ' (another season)'}, status: ${existing.status}.\n\nOK = link to this master & add them to ${season.name}\nCancel = abort`);
+      if (!proceed) { setApprovingId(null); return; }
+      const r = existing.raw_nomination_data || {};
+      const parts = Array.isArray(r.season_participation) ? r.season_participation : [];
+      const already = parts.some(p => p.season_id === season.id);
+      const updatedParts = already ? parts : [...parts, { nominee_id: existing.id, season_id: season.id, status: 'pending' }];
+      const fillGap = (cur, val) => (cur && cur.trim()) ? cur : (val || '');
+      await base44.entities.Nominee.update(existing.id, {
+        raw_nomination_data: { ...r, is_master: true, season_participation: updatedParts },
+        nominee_email: fillGap(existing.nominee_email, item.nominee_email),
+        linkedin_profile_url: fillGap(existing.linkedin_profile_url, item.link?.includes('linkedin.com') ? item.link : ''),
+        website_url: fillGap(existing.website_url, item.link && !item.link.includes('linkedin.com') ? item.link : ''),
+        title: fillGap(existing.title, item.role_org || item.firm),
+        country: fillGap(existing.country, item.location),
+      });
+      const patch = { status: 'approved', nominee_id: existing.id, admin_notes: `${item.admin_notes ? item.admin_notes + '\n' : ''}Linked to pool master & added to ${season.name}.` };
+      await base44.entities.NominationIntake.update(item.id, patch);
+      setItems(prev => prev.map(entry => entry.id === item.id ? { ...entry, ...patch } : entry));
       setApprovingId(null);
+      toast({ title: 'Linked to pool master', description: `${item.nominee_name} → ${existing.name} (added to ${season.name}).` });
       return;
     }
 
+    // No existing master — create a new master seeded with participation
     const nominee = await base44.entities.Nominee.create({
       season_id: season.id,
       name: item.nominee_name,
@@ -106,14 +125,14 @@ export default function NominationIntakeManager() {
       nominated_by: item.nominator_email,
       category: typeLabels[item.nomination_type] || item.nomination_type,
       status: 'pending',
-      raw_nomination_data: item,
+      raw_nomination_data: { ...item, is_master: true, season_participation: [{ nominee_id: null, season_id: season.id, status: 'pending' }], merged_nominee_ids: [] },
     });
 
     const patch = { status: 'approved', nominee_id: nominee.id };
     await base44.entities.NominationIntake.update(item.id, patch);
     setItems(prev => prev.map(entry => entry.id === item.id ? { ...entry, ...patch } : entry));
     setApprovingId(null);
-    toast({ title: 'Nominee record created' });
+    toast({ title: 'Pool master created' });
   };
 
   const filtered = useMemo(() => items.filter(item => {
