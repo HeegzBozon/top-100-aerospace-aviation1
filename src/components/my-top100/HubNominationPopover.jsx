@@ -8,7 +8,7 @@ import {
   GUIDED_PROMPTS,
   emptyPersonNomination,
 } from '@/components/nominate/NominateConfig';
-import LocationSelect from '@/components/my-top100/LocationSelect';
+
 
 const SHARE_OPTIONS = [
   { value: 'yes', label: 'Yes, credit me', sub: 'Your name shows on the nomination.' },
@@ -16,8 +16,8 @@ const SHARE_OPTIONS = [
 ];
 
 const PRIMARY_CATEGORIES = [
-  { key: 'women', label: 'Women', sub: 'Women in aerospace & aviation' },
-  { key: 'men', label: 'Men', sub: 'Men in aerospace & aviation' },
+  { value: 'women', label: 'Women', sub: 'Women in aerospace & aviation' },
+  { value: 'men', label: 'Men', sub: 'Men in aerospace & aviation' },
 ];
 
 const YESNO = [
@@ -30,7 +30,6 @@ const STEPS = [
   'name',
   'role',
   'contact',
-  'location',
   'contribution',
   'impact',
   'leadership',
@@ -44,7 +43,6 @@ const STEP_META = {
   name: { q: "What's their name?", hint: 'Search the verified directory — or type a new name.' },
   role: { q: 'What do they do?', hint: 'Current role and organization. The more specific, the better.' },
   contact: { q: 'How can we find them?', hint: 'Optional — but it helps us verify.' },
-  location: { q: 'Where are they based?', hint: 'Primary location, plus any secondary.' },
   contribution: { q: 'What is their primary contribution?', hint: 'One specific example beats ten adjectives.' },
   impact: { q: 'How have they impacted others in the field?', hint: 'Think people, programs, or culture.' },
   leadership: { q: 'What makes their approach or leadership unique?', hint: 'Optional — but this is what separates them.' },
@@ -234,7 +232,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0.5 }}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-          className="relative w-full sm:max-w-xl max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-3xl overflow-hidden"
+          className="relative w-full sm:max-w-xl max-h-[95vh] flex flex-col rounded-t-3xl sm:rounded-3xl overflow-hidden"
           style={{ background: brand.cream, boxShadow: '0 -10px 40px rgba(10,18,30,0.3)' }}
         >
           {done ? (
@@ -293,62 +291,59 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
                     )}
 
                     {stepId === 'name' && (
-                      <div className="relative">
-                        <input
-                          ref={activeRef}
-                          value={form.name}
-                          onChange={(e) => {
-                            update('name', e.target.value);
-                            setShowSuggestions(true);
-                            if (selectedNominee && e.target.value.trim().toLowerCase() !== selectedNominee.name.toLowerCase()) {
-                              setSelectedNominee(null);
-                            }
-                          }}
-                          onFocus={() => setShowSuggestions(true)}
-                          onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                          placeholder="Search or type a name…"
-                          className={inputCls}
-                          style={inputStyle}
-                        />
-                        <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: `${brand.navy}30` }} />
-                        <AnimatePresence>
-                          {showSuggestions && matches.length > 0 && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -4 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -4 }}
-                              className="absolute z-20 left-0 right-0 mt-1 rounded-xl overflow-hidden shadow-lg"
-                              style={{ background: 'white', border: `1px solid ${brand.navy}15` }}
-                            >
-                              {matches.map((n) => (
-                                <button
-                                  key={n.id}
-                                  onMouseDown={(e) => { e.preventDefault(); selectExisting(n); }}
-                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-[#f9f7f4] transition-colors"
-                                >
-                                  <div className="h-8 w-8 rounded-full overflow-hidden shrink-0" style={{ background: `${brand.navy}08` }}>
-                                    {(n.photo_url || n.avatar_url) ? (
-                                      <img src={n.photo_url || n.avatar_url} alt={n.name} className="h-full w-full object-cover" />
-                                    ) : (
-                                      <div className="h-full w-full flex items-center justify-center text-[10px] font-bold" style={{ color: brand.navy }}>
-                                        {n.name?.[0]?.toUpperCase()}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold truncate" style={{ color: brand.navy }}>{n.name}</p>
-                                    <p className="text-[10px] truncate" style={{ color: `${brand.navy}50` }}>
-                                      {n.professional_role || n.title}{n.organization || n.company ? ` · ${n.organization || n.company}` : ''}
-                                    </p>
-                                  </div>
-                                  <span className="text-[9px] font-bold uppercase shrink-0" style={{ color: brand.gold }}>Add</span>
-                                </button>
-                              ))}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                      <div>
+                        <div className="relative">
+                          <input
+                            ref={activeRef}
+                            value={form.name}
+                            onChange={(e) => {
+                              update('name', e.target.value);
+                              setShowSuggestions(true);
+                              if (selectedNominee && e.target.value.trim().toLowerCase() !== selectedNominee.name.toLowerCase()) {
+                                setSelectedNominee(null);
+                              }
+                            }}
+                            onFocus={() => setShowSuggestions(true)}
+                            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                            placeholder="Search or type a name…"
+                            className={inputCls}
+                            style={inputStyle}
+                          />
+                          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: `${brand.navy}30` }} />
+                        </div>
+
+                        {showSuggestions && matches.length > 0 && (
+                          <div className="mt-2 rounded-xl overflow-hidden" style={{ background: 'white', border: `1px solid ${brand.navy}15` }}>
+                            {matches.map((n, i) => (
+                              <button
+                                key={n.id}
+                                onMouseDown={(e) => { e.preventDefault(); selectExisting(n); }}
+                                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-[#f9f7f4] transition-colors"
+                                style={i < matches.length - 1 ? { borderBottom: `1px solid ${brand.navy}08` } : undefined}
+                              >
+                                <div className="h-9 w-9 rounded-full overflow-hidden shrink-0" style={{ background: `${brand.navy}08` }}>
+                                  {(n.photo_url || n.avatar_url) ? (
+                                    <img src={n.photo_url || n.avatar_url} alt={n.name} className="h-full w-full object-cover" />
+                                  ) : (
+                                    <div className="h-full w-full flex items-center justify-center text-xs font-bold" style={{ color: brand.navy }}>
+                                      {n.name?.[0]?.toUpperCase()}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-bold truncate" style={{ color: brand.navy }}>{n.name}</p>
+                                  <p className="text-[10px] truncate" style={{ color: `${brand.navy}50` }}>
+                                    {n.professional_role || n.title}{n.organization || n.company ? ` · ${n.organization || n.company}` : ''}
+                                  </p>
+                                </div>
+                                <span className="text-[9px] font-bold uppercase shrink-0 px-2 py-1 rounded-full" style={{ background: `${brand.gold}15`, color: brand.gold }}>Add</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
                         {selectedNominee && (
-                          <div className="flex items-center gap-1.5 text-[11px] mt-2" style={{ color: '#2d8a4f' }}>
+                          <div className="flex items-center gap-1.5 text-[11px] mt-3" style={{ color: '#2d8a4f' }}>
                             <Check className="w-3.5 h-3.5" /> Pre-filled from an existing profile — review the questions and submit
                           </div>
                         )}
@@ -364,10 +359,6 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
                         <input ref={activeRef} value={form.link} onChange={(e) => update('link', e.target.value)} placeholder="LinkedIn or website (https://…)" className={inputCls} style={inputStyle} />
                         <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="Email (optional)" className={inputCls} style={inputStyle} />
                       </div>
-                    )}
-
-                    {stepId === 'location' && (
-                      <LocationSelect value={form.location} onChange={(v) => update('location', v)} />
                     )}
 
                     {(stepId === 'contribution' || stepId === 'impact' || stepId === 'leadership') && (
