@@ -9,7 +9,7 @@ function isSameDay(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
-export default function HeroMonthCalendar({ events = [] }) {
+export default function HeroMonthCalendar({ events = [], bare = false }) {
   const today = new Date();
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
 
@@ -46,8 +46,12 @@ export default function HeroMonthCalendar({ events = [] }) {
     }).sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
   }, [events, cursor]);
 
+  const wrapperClass = bare
+    ? 'flex h-full flex-col p-1'
+    : 'flex h-full flex-col rounded-3xl border border-white/10 bg-[#07111f]/60 p-5 backdrop-blur-xl shadow-[0_0_40px_rgba(201,168,124,0.10)]';
+
   return (
-    <div className="flex h-full flex-col rounded-3xl border border-white/10 bg-[#07111f]/60 p-5 backdrop-blur-xl shadow-[0_0_40px_rgba(201,168,124,0.10)]">
+    <div className={wrapperClass}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#c9a87c]">
