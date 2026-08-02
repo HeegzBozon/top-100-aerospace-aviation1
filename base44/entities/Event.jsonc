@@ -15,6 +15,11 @@
       "format": "date-time",
       "description": "When the event occurs"
     },
+    "event_end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional end time for multi-hour or multi-day events"
+    },
     "event_type": {
       "type": "string",
       "enum": [
@@ -24,22 +29,59 @@
         "awards",
         "meetup"
       ],
-      "description": "Type of event"
+      "description": "Legacy type bucket (kept for backward compat with EventManagement)"
+    },
+    "experience_type": {
+      "type": "string",
+      "enum": [
+        "Workshop",
+        "Office Hours",
+        "Live Build",
+        "Build Challenge",
+        "AMA",
+        "Mission Theatre",
+        "Awards",
+        "Social",
+        "Celebration",
+        "Meetup",
+        "Training"
+      ],
+      "description": "The experience format \u2014 mirrors the Base44 ambassador event taxonomy. Programs people join & events they participate in."
+    },
+    "guild": {
+      "type": "string",
+      "description": "The guild/community this event feeds (e.g., Builders, Mission Control, Local Legends, Investors, Alumni). Drives the Attend an Event \u2192 Join a Guild bridge."
     },
     "location": {
       "type": "string",
       "description": "Event location (virtual/physical)"
     },
+    "meeting_url": {
+      "type": "string",
+      "description": "Virtual meeting / livestream link"
+    },
     "organizer": {
       "type": "string",
-      "description": "Event organizer"
+      "description": "Event organizer (legacy display field)"
+    },
+    "host_email": {
+      "type": "string",
+      "description": "Email of the host / community ambassador who created the event"
+    },
+    "host_name": {
+      "type": "string",
+      "description": "Display name of the host"
+    },
+    "host_avatar_url": {
+      "type": "string",
+      "description": "Host avatar URL"
     },
     "attendees": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "List of attendee emails"
+      "description": "List of attendee emails (RSVPs)"
     },
     "status": {
       "type": "string",
@@ -49,7 +91,30 @@
         "completed"
       ],
       "default": "upcoming",
-      "description": "Event status"
+      "description": "Lifecycle status of the event"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "official",
+        "community"
+      ],
+      "default": "official",
+      "description": "Whether this is an official TOP 100 event or community-submitted"
+    },
+    "moderation_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "approved",
+      "description": "Approval workflow for community-submitted events. Official events default to approved."
+    },
+    "submitted_by_email": {
+      "type": "string",
+      "description": "Email of the community member who submitted the event"
     },
     "is_official": {
       "type": "boolean",
@@ -65,6 +130,17 @@
       "type": "string",
       "description": "Cover image URL for the event"
     },
+    "capacity": {
+      "type": "number",
+      "description": "Maximum attendees (0 = unlimited)"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags / topics"
+    },
     "party_mode": {
       "type": "boolean",
       "default": false,
@@ -79,6 +155,6 @@
   "required": [
     "title",
     "event_date",
-    "event_type"
+    "experience_type"
   ]
 }

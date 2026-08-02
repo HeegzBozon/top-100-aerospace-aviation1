@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import GlobalNewsletterFooter from '@/components/shared/GlobalNewsletterFooter';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
-import EditorialHero from '@/components/home-v3/EditorialHero';
+import ExperienceHero from '@/components/events/ExperienceHero';
 import PublicationBody from '@/components/publication/PublicationBody';
 import PublicationLoading from '@/components/publication/PublicationLoading';
 import useTop100WomenNominees from '@/components/publication/useTop100WomenNominees';
@@ -13,6 +13,7 @@ import useTop100WomenNominees from '@/components/publication/useTop100WomenNomin
 const NAV_LINKS = [
   { label: 'Operation: Moon Joy', to: '/moon-joy' },
   { label: 'Nominate', to: '/nominate' },
+  { label: 'Calendar', to: '/events' },
   { label: 'Local Legends', to: '/local-legends' },
   { label: 'Publication', to: '/Top100Women2025' },
   { label: '2030 Vision', to: '/2030-vision' },
@@ -128,7 +129,7 @@ export default function HomeV3() {
           style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
           className="sticky top-0 z-0 h-screen w-full overflow-hidden"
         >
-          <EditorialHero />
+          <ExperienceHero />
         </motion.div>
       </div>
 
