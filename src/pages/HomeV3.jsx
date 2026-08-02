@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useScroll, useTransform, motion } from 'framer-motion';
 import { Menu, X, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -25,6 +26,16 @@ export default function HomeV3() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const { loading: pubLoading } = useTop100WomenNominees();
+
+  // Sticky-hero parallax: hero pins, fades + scales as the publication rises over it.
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.94]);
+  const heroY = useTransform(scrollYProgress, [0, 0.8], [0, -40]);
 
   useEffect(() => {
     base44.auth.me()
@@ -111,13 +122,20 @@ export default function HomeV3() {
         )}
       </div>
 
-      <EditorialHero />
+      {/* Sticky hero — pins and dissolves as the publication scrolls up over it */}
+      <div ref={heroRef} className="relative bg-[#07111f]">
+        <motion.div
+          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+          className="sticky top-0 z-0 h-screen w-full overflow-hidden"
+        >
+          <EditorialHero />
+        </motion.div>
+      </div>
 
-      {/* Gradient dissolve: navy hero → cream publication */}
-      <div className="h-24 w-full bg-gradient-to-b from-[#07111f] to-[#faf8f5] sm:h-32" />
-
-      {/* Publication body — full editorial issue */}
-      {pubLoading ? <PublicationLoading /> : <PublicationBody />}
+      {/* Publication body — rises over the dissolved hero, full editorial issue */}
+      <div className="relative z-10">
+        {pubLoading ? <PublicationLoading /> : <PublicationBody />}
+      </div>
     </>
   );
 }
