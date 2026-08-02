@@ -197,6 +197,8 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
 
   const initials = userData.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?';
   const displayAvatar = userData.avatar_url;
+  const effectiveBio = userData.bio
+    || (pendingSubmission?.status === 'ready' ? (pendingSubmission?.final_bio || pendingSubmission?.generated_bio || '') : '');
 
   return (
     <div className="space-y-6">
@@ -293,7 +295,7 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Bio / About</label>
-          {userData.bio && (
+          {effectiveBio && (
             <button
               type="button"
               onClick={() => setStoryBuilderOpen(true)}
@@ -305,16 +307,19 @@ export default function UserProfileEditor({ user, nominee, onNomineeUpdate }) {
           )}
         </div>
 
-        {userData.bio ? (
+        {effectiveBio ? (
           <div className="relative group">
             <Textarea
-              value={userData.bio}
+              value={effectiveBio}
               onChange={(e) => {
                 setUserData(prev => ({ ...prev, bio: e.target.value }));
                 if (nominee) setNomineeData(prev => ({ ...prev, bio: e.target.value }));
               }}
               className="min-h-[120px] text-sm bg-white border-slate-200 rounded-xl resize-none focus:border-slate-400 transition-colors leading-relaxed"
             />
+            {pendingSubmission?.status === 'ready' && !userData.bio && (
+              <p className="text-[10px] text-slate-400 mt-1.5 italic">Editorial draft loaded — edit to make it yours, then save.</p>
+            )}
           </div>
         ) : pendingSubmission ? (
           <div className="w-full rounded-2xl border-2 overflow-hidden" style={{ borderColor: `${brand.gold}40`, background: brand.cream }}>
