@@ -65,6 +65,7 @@ export default function ExperienceHero() {
   );
 
   return (
+    <>
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#07111f] px-4 py-16 text-center sm:px-8">
       <div className="absolute inset-0 pointer-events-none">
         {stars.map((s) => (
@@ -73,6 +74,22 @@ export default function ExperienceHero() {
       </div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(201,168,124,0.20),transparent_44%),radial-gradient(circle_at_82%_78%,rgba(74,144,184,0.14),transparent_30%)]" />
 
+      <div className="relative z-10 mx-auto w-full max-w-5xl">
+        {/* Nominations countdown — above the fold */}
+        <motion.div
+          key="countdown"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mx-auto max-w-2xl"
+        >
+          <NominationCountdown />
+        </motion.div>
+      </div>
+    </section>
+
+    {/* Below the fold — masthead, chamber calendar, and explore rail */}
+    <section className="relative overflow-hidden bg-[#07111f] px-4 py-16 text-center sm:px-8">
       <div className="relative z-10 mx-auto w-full max-w-5xl">
         {/* Masthead */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-5 flex flex-col items-center gap-3">
@@ -86,17 +103,6 @@ export default function ExperienceHero() {
           <p className="max-w-xl text-sm leading-7 text-slate-300 sm:text-base">
             The modern aerospace chamber — a media, events & ecosystem company. <span className="text-white">Explore</span> the signal, <span className="text-[#c9a87c]">participate</span> in the ritual, <span className="text-white">accelerate</span> the work, <span className="text-[#c9a87c]">consult</span> the expertise.
           </p>
-        </motion.div>
-
-        {/* Nominations countdown — the season program milestone */}
-        <motion.div
-          key="countdown"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mx-auto max-w-2xl"
-        >
-          <NominationCountdown />
         </motion.div>
 
         {/* Chamber calendar — next event, RSVP, and month view */}
@@ -192,5 +198,6 @@ export default function ExperienceHero() {
         )}
       </AnimatePresence>
     </section>
+    </>
   );
 }
