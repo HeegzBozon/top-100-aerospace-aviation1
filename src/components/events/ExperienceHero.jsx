@@ -6,6 +6,7 @@ import { base44 } from '@/api/base44Client';
 import EventCard from './EventCard';
 import CommunityEventForm from './CommunityEventForm';
 import NominationCountdown from '@/components/home-v2/NominationCountdown';
+import YearProgressHourglass from '@/components/home-v2/YearProgressHourglass';
 import ChamberCalendarSection from './ChamberCalendarSection';
 import ChamberModeRail from './ChamberModeRail';
 import MemberPortalPanel from './MemberPortalPanel';
@@ -75,14 +76,15 @@ export default function ExperienceHero() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(201,168,124,0.20),transparent_44%),radial-gradient(circle_at_82%_78%,rgba(74,144,184,0.14),transparent_30%)]" />
 
       <div className="relative z-10 mx-auto w-full max-w-5xl">
-        {/* Nominations countdown — above the fold */}
+        {/* Year progress hourglass + nominations countdown — above the fold */}
         <motion.div
-          key="countdown"
+          key="hero-stack"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mx-auto max-w-2xl"
+          className="mx-auto flex max-w-2xl flex-col gap-3"
         >
+          <YearProgressHourglass />
           <NominationCountdown />
         </motion.div>
       </div>
