@@ -51,7 +51,9 @@ export default function AnchorVoting({ user }) {
         const seasons = await base44.entities.Season.list('-created_date', 100);
         const activeSeason =
           seasons.find((s) => s.status === 'voting_open') ||
-          seasons.find((s) => s.status === 'active') ||
+          seasons.find((s) => s.status === 'nominations_open') ||
+          seasons.find((s) => s.status === 'rollover') ||
+          seasons.find((s) => s.status !== 'archived') ||
           seasons[0] ||
           null;
         if (!activeSeason) {
@@ -71,15 +73,16 @@ export default function AnchorVoting({ user }) {
             byName.set(key, n);
           }
         }
-        // Participation-aware: a nominee is in this season's voting pool if their
-        // season_participation includes the active season with a votable status,
-        // or (legacy fallback) their record season_id matches with a votable status.
+        // Unified candidate pool: a nominee is votable if they have a
+        // non-rejected participation entry in ANY season (the master index
+        // spans 2021 → present). Legacy records without the index fall back to
+        // a votable status on the active season.
         const prepared = Array.from(byName.values()).filter((n) => {
           const parts = n.raw_nomination_data?.season_participation;
           if (Array.isArray(parts) && parts.length) {
-            return parts.some((p) => p.season_id === activeSeason.id && VOTABLE.includes(p.status));
+            return parts.some((p) => p.status && p.status !== 'rejected');
           }
-          return n.season_id === activeSeason.id && VOTABLE.includes(n.status);
+          return activeSeason && n.season_id === activeSeason.id && VOTABLE.includes(n.status);
         });
         if (!active) return;
         setSeason(activeSeason);
