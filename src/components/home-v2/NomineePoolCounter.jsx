@@ -21,7 +21,7 @@ export default function NomineePoolCounter() {
       <div className="flex h-full flex-col items-center justify-center px-4 py-3.5 text-center">
         <div className="mb-1 flex items-center gap-1.5 text-[#c9a87c]">
           <Users className="h-3.5 w-3.5" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Candidate Pool</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Nominees</span>
         </div>
         <div
           className="text-3xl font-bold tabular-nums text-white sm:text-4xl"
@@ -29,7 +29,6 @@ export default function NomineePoolCounter() {
         >
           {count === null ? '—' : count.toLocaleString()}
         </div>
-        <p className="mt-0.5 text-[10px] font-semibold text-white/45">verified nominees · all seasons</p>
       </div>
     </div>
   );
