@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2, Check, Search, ArrowRight, ArrowLeft, CornerDownLeft } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -257,7 +258,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
   const meta = STEP_META[stepId] || {};
   const blocked = !canAdvance(stepId) && step < STEPS.length - 1;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center"
@@ -471,7 +472,8 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
           )}
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
