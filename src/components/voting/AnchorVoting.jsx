@@ -212,6 +212,7 @@ export default function AnchorVoting({ user }) {
     <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
       {/* Voting surface */}
       <div className="flex-1 flex flex-col min-w-0 px-4 pt-4 pb-6 lg:px-8">
+        <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
         {/* Header row */}
         <div className="flex items-center justify-between mb-1">
           <div>
@@ -263,7 +264,7 @@ export default function AnchorVoting({ user }) {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-3 lg:gap-4 flex-1 min-h-0">
           {currentSet.map((nominee, idx) => {
             const isTop = nominee.id === topId;
             const isBottom = nominee.id === bottomId;
@@ -299,6 +300,7 @@ export default function AnchorVoting({ user }) {
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
       </div>
 
       {/* Evidence popover (anonymized) */}
