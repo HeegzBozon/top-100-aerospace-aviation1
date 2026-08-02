@@ -4,6 +4,7 @@ import ShopHero from '@/components/shop/ShopHero';
 import GroundControlFlagship from '@/components/shop/GroundControlFlagship';
 import MerchGrid from '@/components/shop/MerchGrid';
 import PartnerSpotlight from '@/components/shop/PartnerSpotlight';
+import ComicCardDrop from '@/components/shop/ComicCardDrop';
 
 const NAVY = '#07111f';
 const GOLD = '#c9a87c';
@@ -20,6 +21,9 @@ export default function Shop() {
 
         {/* Merchandise collection */}
         <MerchGrid />
+
+        {/* Comics & trading cards — coming soon */}
+        <ComicCardDrop />
 
         {/* Featured partner */}
         <PartnerSpotlight />
