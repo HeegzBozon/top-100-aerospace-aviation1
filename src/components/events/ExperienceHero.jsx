@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Plus, Radio, CalendarDays, X } from 'lucide-react';
+import { ArrowRight, Plus, CalendarDays, ShoppingBag, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { toast } from 'sonner';
-import { useCountdown, pad } from './useCountdown';
 import EventCard from './EventCard';
 import CommunityEventForm from './CommunityEventForm';
+import NominationCountdown from '@/components/home-v2/NominationCountdown';
 import ChamberModeRail from './ChamberModeRail';
 import MemberPortalPanel from './MemberPortalPanel';
 import { eventMatchesMode, eventMatchesRitual } from './chamberModes';
@@ -55,8 +54,6 @@ export default function ExperienceHero() {
     () => events.filter((e) => eventMatchesMode(e, mode) && eventMatchesRitual(e, ritual)).slice(0, 12),
     [events, mode, ritual],
   );
-  const countdown = useCountdown(featured?.event_date);
-
   const handleRSVP = (id, attendees) => {
     setEvents((prev) => prev.map((e) => (e.id === id ? { ...e, attendees, rsvp_count: attendees.length } : e)));
   };
@@ -90,81 +87,48 @@ export default function ExperienceHero() {
           </p>
         </motion.div>
 
-        {/* Live / Next-Up featured countdown */}
+        {/* Primary featured — Nominations deadline (the season program milestone) */}
+        <motion.div
+          key="nominations"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mx-auto max-w-2xl"
+        >
+          <NominationCountdown />
+        </motion.div>
+
+        {/* Secondary — Next chamber event (live now or next upcoming) */}
         <AnimatePresence mode="wait">
           {loading ? (
-            <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mx-auto max-w-2xl rounded-3xl border border-white/10 bg-white/5 p-6">
+            <motion.div key="sec-loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mx-auto mt-3 max-w-2xl rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
               <div className="h-3 w-40 animate-pulse rounded bg-white/10" />
-              <div className="mt-4 grid grid-cols-4 gap-2">
-                {[0, 1, 2, 3].map((i) => <div key={i} className="h-14 animate-pulse rounded-xl bg-white/5" />)}
-              </div>
             </motion.div>
           ) : (liveNow || featured) ? (
             <motion.div
-              key="featured"
-              initial={{ opacity: 0, y: 18 }}
+              key={(liveNow || featured).id}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mx-auto max-w-2xl overflow-hidden rounded-3xl border border-[#c9a87c]/25 bg-[#07111f]/60 backdrop-blur-xl shadow-[0_0_50px_rgba(201,168,124,0.15)]"
+              exit={{ opacity: 0 }}
+              className="mx-auto mt-3 flex max-w-2xl items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-md"
             >
-              <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-white/8">
-                <div className="flex items-center gap-2">
-                  <span className={`relative flex h-2 w-2 ${liveNow ? '' : 'opacity-50'}`}>
-                    {liveNow && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-70" />}
-                    <span className={`relative inline-flex h-2 w-2 rounded-full ${liveNow ? 'bg-red-400' : 'bg-[#c9a87c] animate-pulse'}`} />
-                  </span>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#c9a87c]">
-                    {liveNow ? 'Live Now' : 'Next Up'}
-                  </p>
-                </div>
-                {featured?.guild && <p className="text-[11px] font-semibold uppercase tracking-wider text-white/40">{featured.guild}</p>}
+              <span className={`relative flex h-2 w-2 shrink-0 ${liveNow ? '' : 'opacity-60'}`}>
+                {liveNow && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-70" />}
+                <span className={`relative inline-flex h-2 w-2 rounded-full ${liveNow ? 'bg-red-400' : 'bg-[#c9a87c] animate-pulse'}`} />
+              </span>
+              <div className="min-w-0 flex-1 text-left">
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#c9a87c]">{liveNow ? 'Live Now' : 'Next Chamber Event'}</p>
+                <p className="truncate text-xs font-semibold text-white">{(liveNow || featured).title}</p>
               </div>
-
-              <div className="px-5 py-4 text-left">
-                <h2 className="text-xl font-bold text-white sm:text-2xl">{(liveNow || featured).title}</h2>
-                {(liveNow || featured).description && (
-                  <p className="mt-1 line-clamp-2 text-xs text-white/55">{(liveNow || featured).description}</p>
-                )}
-
-                {!liveNow && (
-                  <div className="mt-4 grid grid-cols-4 gap-2">
-                    {['Days', 'Hours', 'Mins', 'Secs'].map((label, i) => (
-                      <div key={label} className="rounded-xl border border-white/10 bg-white/8 px-1.5 py-2.5 text-center">
-                        <div className="text-lg font-bold tabular-nums text-white sm:text-2xl">
-                          {pad([countdown.days, countdown.hours, countdown.mins, countdown.secs][i])}
-                        </div>
-                        <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-white/40">{label}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="mt-4 flex items-center gap-2">
-                  {(liveNow || featured).meeting_url ? (
-                    <a
-                      href={(liveNow || featured).meeting_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-bold transition-all hover:scale-[1.03]"
-                      style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)', color: '#07111f' }}
-                    >
-                      <Radio className="h-3.5 w-3.5" /> {liveNow ? 'Join Now' : 'Get the Link'}
-                    </a>
-                  ) : null}
-                  <Link to="/events" className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-xs font-bold text-white/85 transition-colors hover:bg-white/10">
-                    Full Calendar <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-              </div>
+              {(liveNow || featured).meeting_url ? (
+                <a href={(liveNow || featured).meeting_url} target="_blank" rel="noopener noreferrer" className="shrink-0 rounded-full px-3.5 py-1.5 text-[10px] font-bold text-[#07111f]" style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}>
+                  {liveNow ? 'Join' : 'Link'}
+                </a>
+              ) : (
+                <Link to="/events" className="shrink-0 text-[10px] font-bold text-white/55 transition-colors hover:text-[#c9a87c]">Calendar →</Link>
+              )}
             </motion.div>
-          ) : (
-            <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto max-w-xl rounded-3xl border border-white/10 bg-white/5 p-8">
-              <p className="text-sm text-white/70">No experiences scheduled yet. Be the first to host one.</p>
-              <button onClick={() => setShowHost(true)} className="mt-4 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-bold" style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)', color: '#07111f' }}>
-                <Plus className="h-3.5 w-3.5" /> Host an Experience
-              </button>
-            </motion.div>
-          )}
+          ) : null}
         </AnimatePresence>
 
         {/* View toggle — public experience feed vs member portal */}
@@ -213,6 +177,9 @@ export default function ExperienceHero() {
               </button>
               <Link to="/nominate" className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-[#0a1526] shadow-[0_0_32px_rgba(201,168,124,0.35)] transition-all hover:scale-[1.03]" style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}>
                 Nominate a Leader <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link to="/Shop" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-bold text-white/85 transition-all hover:bg-white/10">
+                <ShoppingBag className="h-4 w-4 text-[#c9a87c]" /> Shop
               </Link>
             </motion.div>
           </>
