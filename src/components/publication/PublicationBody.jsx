@@ -17,7 +17,7 @@ import EnhancedProfilePanel from '@/components/publication/EnhancedProfilePanel'
 import ShareableCard from '@/components/publication/ShareableCard';
 import CountdownLanding from '@/components/publication/CountdownLanding';
 import UnauthenticatedCTA from '@/components/public/UnauthenticatedCTA';
-import LtPerryButton from '@/components/public/LtPerryButton';
+import RsvpFloatingButton from '@/components/public/RsvpFloatingButton';
 import AuthenticatedIntelligenceHeader from '@/components/publication/AuthenticatedIntelligenceHeader';
 import EditorialNav from '@/components/publication/EditorialNav';
 import EditorialSection from '@/components/publication/EditorialSection';
@@ -152,8 +152,8 @@ export default function PublicationBody() {
       {/* Unauthenticated User CTAs */}
       <UnauthenticatedCTA user={user} />
 
-      {/* Lt. Perry Button - visible to all users */}
-      <LtPerryButton />
+      {/* RSVP floating button — visible to all users */}
+      <RsvpFloatingButton />
 
       {/* Countdown Landing */}
       {showCountdown && <CountdownLanding onReveal={() => setShowCountdown(false)} />}
