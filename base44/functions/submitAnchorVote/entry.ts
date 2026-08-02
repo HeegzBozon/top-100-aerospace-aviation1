@@ -5,11 +5,11 @@ function expectedScore(ra, rb) {
   return 1 / (1 + Math.pow(10, (rb - ra) / 400));
 }
 
-// An "anchor selection" is one Fellow judging five nominees: tap the one to
-// advance FIRST, then tap the one to advance LAST. That yields 7 observed
-// pairwise comparisons — top beats each of the other four, and each of the
-// three middle nominees beats the bottom. The 3 middle-vs-middle edges are
-// intentionally NOT imputed (Bradley-Terry handles the missing edges natively).
+// An "anchor selection" is one Fellow judging four nominees: tap the one to
+// advance FIRST, then tap the one to advance LAST. That yields 5 observed
+// pairwise comparisons — top beats each of the other three, and each of the
+// two middle nominees beats the bottom. The 1 middle-vs-middle edge is
+// intentionally NOT imputed (Bradley-Terry handles the missing edge natively).
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -21,13 +21,13 @@ export default async function(req) {
       return Response.json({ error: 'Missing required parameters.' }, { status: 400 });
     }
     const neutrals = Array.isArray(neutral_nominee_ids) ? neutral_nominee_ids.filter(Boolean) : [];
-    if (neutrals.length !== 3) {
-      return Response.json({ error: 'Exactly three neutral nominees are required.' }, { status: 400 });
+    if (neutrals.length !== 2) {
+      return Response.json({ error: 'Exactly two neutral nominees are required.' }, { status: 400 });
     }
 
     const ids = [top_nominee_id, ...neutrals, bottom_nominee_id];
-    if (new Set(ids).size !== 5) {
-      return Response.json({ error: 'All five nominees must be distinct.' }, { status: 400 });
+    if (new Set(ids).size !== 4) {
+      return Response.json({ error: 'All four nominees must be distinct.' }, { status: 400 });
     }
 
     const service = base44.asServiceRole;

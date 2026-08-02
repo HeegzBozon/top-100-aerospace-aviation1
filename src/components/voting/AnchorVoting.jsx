@@ -25,7 +25,7 @@ function shuffle(arr) {
 function drawSet(pool, exclude = []) {
   const avail = pool.filter((n) => !exclude.includes(n.id));
   const src = avail.length >= 5 ? avail : pool;
-  return shuffle(src).slice(0, 5);
+  return shuffle(src).slice(0, 4);
 }
 
 export default function AnchorVoting({ user }) {
@@ -87,7 +87,7 @@ export default function AnchorVoting({ user }) {
         if (!active) return;
         setSeason(activeSeason);
         setPool(prepared);
-        if (prepared.length >= 5) setCurrentSet(drawSet(prepared, []));
+        if (prepared.length >= 4) setCurrentSet(drawSet(prepared, []));
         setLoading(false);
       } catch (e) {
         if (!active) return;
@@ -185,7 +185,7 @@ export default function AnchorVoting({ user }) {
     );
   }
 
-  if (pool.length < 5) {
+  if (pool.length < 4) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-6 text-center py-16">
         <div className="h-12 w-12 rounded-2xl flex items-center justify-center mb-4" style={{ background: `${brand.gold}18` }}>
@@ -195,7 +195,7 @@ export default function AnchorVoting({ user }) {
           Not enough nominees to vote
         </h2>
         <p className="text-xs max-w-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
-          Anchor selection needs at least five nominees in the active pool. Check back once the season is seeded.
+          Anchor selection needs at least four nominees in the active pool. Check back once the season is seeded.
         </p>
       </div>
     );
@@ -203,7 +203,7 @@ export default function AnchorVoting({ user }) {
 
   const prompt =
     phase === 'best' ? 'Which of these would you advance first?' :
-    phase === 'worst' ? 'And which of these four would you advance last?' :
+    phase === 'worst' ? 'And which of these three would you advance last?' :
     phase === 'submitting' ? 'Recording your comparisons…' :
     phase === 'review' ? 'Reviewing your last set.' :
     'Anchored. Drawing the next set.';
@@ -219,7 +219,7 @@ export default function AnchorVoting({ user }) {
               Anchor Selection
             </h2>
             <p className="text-[11px] leading-snug max-w-md" style={{ color: `${brand.navy}60` }}>
-              Two taps. The one you advance first and the one you advance last become anchors — seven real comparisons, recorded as observations.
+              Two taps. The one you advance first and the one you advance last become anchors — five real comparisons, recorded as observations.
             </p>
           </div>
           <span className="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full" style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}>
@@ -263,27 +263,24 @@ export default function AnchorVoting({ user }) {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 lg:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
           {currentSet.map((nominee, idx) => {
             const isTop = nominee.id === topId;
             const isBottom = nominee.id === bottomId;
             const token = String.fromCharCode(65 + idx);
             // All cards stay clickable in 'worst' so the top pick can be de-selected by tapping it again.
             const selectable = phase === 'best' || phase === 'worst';
-            // Inverse-pyramid layout on desktop: 3 across the top, 2 centered below.
-            const placement = idx === 3 ? 'lg:col-start-2' : idx === 4 ? 'lg:col-start-4' : '';
             return (
-              <div key={nominee.id} className={`lg:col-span-2 ${placement}`}>
-                <JudgeCard
-                  nominee={nominee}
-                  token={token}
-                  isTop={isTop}
-                  isBottom={isBottom}
-                  selectable={selectable && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
-                  onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
-                  onSelect={() => handleSelect(nominee)}
-                />
-              </div>
+              <JudgeCard
+                key={nominee.id}
+                nominee={nominee}
+                token={token}
+                isTop={isTop}
+                isBottom={isBottom}
+                selectable={selectable && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
+                onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
+                onSelect={() => handleSelect(nominee)}
+              />
             );
           })}
         </div>
@@ -298,7 +295,7 @@ export default function AnchorVoting({ user }) {
               className="mt-5 flex items-center justify-center gap-2 text-sm font-bold"
               style={{ color: brand.gold }}
             >
-              <Check className="w-4 h-4" /> 7 comparisons recorded
+              <Check className="w-4 h-4" /> 5 comparisons recorded
             </motion.div>
           )}
         </AnimatePresence>
