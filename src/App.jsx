@@ -58,6 +58,7 @@ const MyTop100 = lazy(() => import('@/pages/MyTop100'));
 const PublicTop100List = lazy(() => import('@/pages/PublicTop100List'));
 const SeasonArchive = lazy(() => import('@/pages/SeasonArchive'));
 const EventsCalendar = lazy(() => import('@/pages/EventsCalendar'));
+const GroundControl = lazy(() => import('@/pages/GroundControl'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -203,6 +204,7 @@ const AuthenticatedApp = () => {
       <Route path="/top100-list/:shareCode" element={<PublicTop100List />} />
       <Route path="/archive/:seasonId" element={<SeasonArchive />} />
       <Route path="/events" element={<EventsCalendar />} />
+      <Route path="/ground-control" element={<GroundControl />} />
       <Route path="/volume-one" element={<Navigate to="/archive/696aec2d99297cdbe96ee71e" replace />} />
       <Route path="/volume-one-men" element={<Navigate to="/archive/6a6b699d7b16a7017ce0c3c0" replace />} />
       <Route path="/volume-one-top100" element={<Navigate to="/archive/6a6b70136ccb7c358f77dd7f" replace />} />
