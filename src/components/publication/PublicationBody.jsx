@@ -29,7 +29,7 @@ import { publicationBrand as brandColors, top100Women2025Config } from '@/compon
 // Shared, stateful publication body. Rendered by both the standalone
 // /Top100Women2025 route and the HomeV3 composed front door so the two
 // views never drift apart.
-export default function PublicationBody() {
+export default function PublicationBody({ suppressFloatingActions = false }) {
   const { nominees, loading } = useTop100WomenNominees();
   const [selectedNominee, setSelectedNominee] = useState(null);
   const [autoPlaying, setAutoPlaying] = useState(false);
@@ -152,8 +152,8 @@ export default function PublicationBody() {
       {/* Unauthenticated User CTAs */}
       <UnauthenticatedCTA user={user} />
 
-      {/* RSVP floating button — visible to all users */}
-      <RsvpFloatingButton />
+      {/* RSVP floating button — hidden when a host page renders its own dock */}
+      {!suppressFloatingActions && <RsvpFloatingButton />}
 
       {/* Countdown Landing */}
       {showCountdown && <CountdownLanding onReveal={() => setShowCountdown(false)} />}
