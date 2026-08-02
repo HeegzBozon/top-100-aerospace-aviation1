@@ -143,6 +143,13 @@ export default function AnchorVoting({ user }) {
       setPhase('worst');
       return;
     }
+    if (phase === 'worst' && nominee.id === topId) {
+      // De-select the "first" anchor by clicking it again → back to the first prompt.
+      setTopId(null);
+      setBottomId(null);
+      setPhase('best');
+      return;
+    }
     if (phase === 'worst' && nominee.id !== topId) {
       const bottom = nominee.id;
       const neutrals = currentSet.filter((n) => n.id !== topId && n.id !== bottom).map((n) => n.id);
@@ -256,12 +263,13 @@ export default function AnchorVoting({ user }) {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
           {currentSet.map((nominee, idx) => {
             const isTop = nominee.id === topId;
             const isBottom = nominee.id === bottomId;
             const token = String.fromCharCode(65 + idx);
-            const selectable = phase === 'best' || (phase === 'worst' && !isTop);
+            // All cards stay clickable in 'worst' so the top pick can be de-selected by tapping it again.
+            const selectable = phase === 'best' || phase === 'worst';
             return (
               <JudgeCard
                 key={nominee.id}
