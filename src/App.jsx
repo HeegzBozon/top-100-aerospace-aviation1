@@ -40,6 +40,7 @@ const STARSummit = lazy(() => import('@/pages/STARSummit'));
 const ArtemisMissionBrief = lazy(() => import('@/pages/ArtemisMissionBrief'));
 const MissionRooms = lazy(() => import('@/pages/MissionRooms'));
 const HomeV2 = lazy(() => import('@/pages/HomeV2'));
+const HomeV3 = lazy(() => import('@/pages/HomeV3'));
 const SurveyPage = lazy(() => import('@/pages/SurveyPage'));
 const EmailTemplatePreview = lazy(() => import('@/pages/EmailTemplatePreview'));
 const LocalLegends = lazy(() => import('@/pages/LocalLegends'));
@@ -178,6 +179,7 @@ const AuthenticatedApp = () => {
           <MissionRooms />
         </LayoutWrapper>
       } />
+      <Route path="/home-v3" element={<HomeV3 />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />
       <Route path="/Home" element={<Navigate to="/" replace />} />
