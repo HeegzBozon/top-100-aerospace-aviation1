@@ -145,7 +145,7 @@ export default function CalendarHero({ events = [], loading = false, user = null
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mx-auto w-full max-w-6xl overflow-hidden rounded-3xl border border-[#c9a87c]/20 bg-[#07111f] shadow-[0_0_60px_rgba(201,168,124,0.12)]"
+      className="flex h-[100svh] w-full flex-col overflow-hidden bg-[#07111f]"
     >
       {/* ── Top bar ── */}
       <div className="flex items-center gap-3 border-b border-white/8 bg-[#0a1626]/70 px-4 py-2.5">
@@ -206,7 +206,7 @@ export default function CalendarHero({ events = [], loading = false, user = null
       </div>
 
       {/* ── Body ── */}
-      <div className="flex">
+      <div className="flex flex-1 overflow-hidden">
         {/* Left sidebar */}
         <aside className="hidden w-64 shrink-0 flex-col gap-4 border-r border-white/8 bg-[#0a1626]/40 p-4 lg:flex">
           {/* Mini-month */}
@@ -272,7 +272,7 @@ export default function CalendarHero({ events = [], loading = false, user = null
         </aside>
 
         {/* Main week grid */}
-        <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 flex-1 flex-col">
           {/* Weekday header */}
           <div className="grid grid-cols-[44px_repeat(7,1fr)] border-b border-white/8">
             <div />
@@ -310,7 +310,8 @@ export default function CalendarHero({ events = [], loading = false, user = null
           </div>
 
           {/* Time grid */}
-          <div className="relative grid grid-cols-[44px_repeat(7,1fr)]" style={{ height: gridHeight }}>
+          <div className="flex-1 overflow-y-auto">
+            <div className="relative grid grid-cols-[44px_repeat(7,1fr)]" style={{ height: gridHeight }}>
             {/* Hour axis */}
             <div className="relative">
               {Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => START_HOUR + i).map((h, i) => (
@@ -353,6 +354,7 @@ export default function CalendarHero({ events = [], loading = false, user = null
                 </div>
               );
             })}
+            </div>
           </div>
         </div>
 

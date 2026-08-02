@@ -64,7 +64,7 @@ export default function ExperienceHero() {
   );
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#07111f] px-4 py-16 text-center sm:px-8">
+    <section className="relative flex min-h-screen flex-col overflow-hidden bg-[#07111f]">
       <div className="absolute inset-0 pointer-events-none">
         {stars.map((s) => (
           <span key={s.id} className={`absolute rounded-full bg-white/70 ${s.size} animate-pulse`} style={{ top: s.top, left: s.left, animationDelay: s.delay }} />
@@ -72,7 +72,7 @@ export default function ExperienceHero() {
       </div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(201,168,124,0.20),transparent_44%),radial-gradient(circle_at_82%_78%,rgba(74,144,184,0.14),transparent_30%)]" />
 
-      <div className="relative z-10 mx-auto w-full max-w-5xl">
+      <div className="relative z-10 w-full">
         {/* Google Calendar-style hero interface */}
         <CalendarHero events={events} loading={loading} user={user} onHost={() => setShowHost(true)} />
 
