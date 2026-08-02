@@ -1,17 +1,13 @@
 import { motion } from 'framer-motion';
-import { ArrowUp, Info } from 'lucide-react';
+import { ArrowUp, ArrowDown, Info } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
-import { disciplineLabel, orgScaleLabel, regionLabel } from '@/components/voting/anonymize';
 
-// Anonymized "judge" card: no name, no photo, no employer name, no socials.
-// Surfaces role/seniority, discipline, org scale, region, and an impact
-// snippet directly on the card so a Fellow can judge without opening detail.
-export default function JudgeCard({ nominee, token, isTop, selectable, onInfo, onSelect }) {
-  const role = nominee.professional_role || nominee.title || 'Aerospace professional';
-  const discipline = disciplineLabel(nominee);
-  const scale = orgScaleLabel(nominee);
-  const region = regionLabel(nominee);
-  const impact = nominee.impact_summary || nominee.description || '';
+// Blind "judge" card — rolls over last year's pairwise evidence set:
+// six word story + biography snippet. Identity withheld.
+export default function JudgeCard({ nominee, token, isTop, isBottom, selectable, onInfo, onSelect }) {
+  const story = nominee.six_word_story || '';
+  const bio = nominee.bio || nominee.description || nominee.impact_summary || '';
+  const anchored = isTop || isBottom;
 
   return (
     <motion.div
@@ -22,13 +18,13 @@ export default function JudgeCard({ nominee, token, isTop, selectable, onInfo, o
       tabIndex={selectable ? 0 : -1}
       className="relative rounded-2xl p-3 flex flex-col gap-2 transition-all border"
       style={{
-        background: isTop ? `${brand.gold}12` : 'white',
-        borderColor: isTop ? brand.gold : `${brand.navy}10`,
-        opacity: isTop ? 0.65 : 1,
+        background: isTop ? `${brand.gold}12` : isBottom ? `${brand.navy}06` : 'white',
+        borderColor: isTop ? brand.gold : isBottom ? `${brand.navy}30` : `${brand.navy}10`,
+        opacity: anchored ? 0.7 : 1,
         cursor: selectable ? 'pointer' : 'default',
       }}
     >
-      {/* Token + anchor badge + evidence button */}
+      {/* Token + anchor badges + evidence button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div
@@ -42,6 +38,11 @@ export default function JudgeCard({ nominee, token, isTop, selectable, onInfo, o
               <ArrowUp className="w-3 h-3" /> First
             </span>
           )}
+          {isBottom && (
+            <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: brand.navy, color: 'white' }}>
+              <ArrowDown className="w-3 h-3" /> Last
+            </span>
+          )}
         </div>
         <button
           onClick={(e) => { e.stopPropagation(); onInfo(); }}
@@ -53,32 +54,19 @@ export default function JudgeCard({ nominee, token, isTop, selectable, onInfo, o
         </button>
       </div>
 
-      {/* Role / seniority (kept) */}
-      <p className="text-sm font-bold leading-snug" style={{ color: brand.navy }}>{role}</p>
-
-      {/* Evidence chips: discipline · org scale · region */}
-      {(discipline || scale || region) && (
-        <div className="flex flex-wrap gap-1.5">
-          {discipline && <Chip>{discipline}</Chip>}
-          {scale && <Chip>{scale}</Chip>}
-          {region && <Chip>{region}</Chip>}
-        </div>
+      {/* Six word story (last year's hook) */}
+      {story ? (
+        <p className="text-sm font-semibold italic leading-snug line-clamp-2" style={{ color: brand.navy }}>
+          <span style={{ color: brand.gold }}>"</span>{story}<span style={{ color: brand.gold }}>"</span>
+        </p>
+      ) : (
+        <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: `${brand.navy}40` }}>No story on file</p>
       )}
 
-      {/* Contribution evidence snippet */}
-      {impact && (
-        <p className="text-[11px] leading-relaxed line-clamp-3" style={{ color: `${brand.navy}70` }}>
-          {impact}
-        </p>
+      {/* Biography snippet (last year's body) */}
+      {bio && (
+        <p className="text-[11px] leading-relaxed line-clamp-3" style={{ color: `${brand.navy}70` }}>{bio}</p>
       )}
     </motion.div>
-  );
-}
-
-function Chip({ children }) {
-  return (
-    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}>
-      {children}
-    </span>
   );
 }

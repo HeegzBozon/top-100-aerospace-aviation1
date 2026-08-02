@@ -6,7 +6,7 @@ import { awardStardust } from '@/functions/awardStardust';
 import { progressQuest } from '@/functions/progressQuest';
 import { brand } from '@/components/nominate/NominateConfig';
 import {
-  Loader2, Info, ArrowUp, ArrowDown, Check,
+  Loader2, Info, ArrowUp, ArrowDown, Check, Undo2, ArrowLeft,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import JudgeCard from '@/components/voting/JudgeCard';
@@ -41,6 +41,7 @@ export default function AnchorVoting({ user }) {
   const [panelNominee, setPanelNominee] = useState(null);
   const [panelToken, setPanelToken] = useState('A');
   const [sessionCount, setSessionCount] = useState(0);
+  const [history, setHistory] = useState([]); // completed sets for review/back
 
   // Load active season + nominee pool once.
   useEffect(() => {
@@ -95,6 +96,7 @@ export default function AnchorVoting({ user }) {
   }, []);
 
   const advance = useCallback(() => {
+    setHistory((prev) => [...prev, { set: currentSet, topId, bottomId }].slice(-5));
     setTopId(null);
     setBottomId(null);
     setPhase('best');
@@ -105,7 +107,32 @@ export default function AnchorVoting({ user }) {
     });
     setCurrentSet(drawSet(pool, seenIds));
     setSessionCount((c) => c + 1);
-  }, [currentSet, pool, seenIds]);
+  }, [currentSet, pool, seenIds, topId, bottomId]);
+
+  // Mid-set undo: clear the "first" anchor and return to the first prompt.
+  const undoFirstPick = useCallback(() => {
+    setTopId(null);
+    setBottomId(null);
+    setPhase('best');
+  }, []);
+
+  // Go back to review the last completed set (read-only — vote already recorded).
+  const goBack = useCallback(() => {
+    if (!history.length) return;
+    const last = history[history.length - 1];
+    setHistory(history.slice(0, -1));
+    setCurrentSet(last.set);
+    setTopId(last.topId);
+    setBottomId(last.bottomId);
+    setPhase('review');
+  }, [history]);
+
+  const resumeVoting = useCallback(() => {
+    setTopId(null);
+    setBottomId(null);
+    setPhase('best');
+    setCurrentSet(drawSet(pool, seenIds));
+  }, [pool, seenIds]);
 
   const handleSelect = async (nominee) => {
     if (phase === 'best') {
@@ -168,6 +195,7 @@ export default function AnchorVoting({ user }) {
     phase === 'best' ? 'Which of these would you advance first?' :
     phase === 'worst' ? 'And which of these four would you advance last?' :
     phase === 'submitting' ? 'Recording your comparisons…' :
+    phase === 'review' ? 'Reviewing your last set.' :
     'Anchored. Drawing the next set.';
 
   return (
@@ -205,10 +233,30 @@ export default function AnchorVoting({ user }) {
           </motion.div>
         </AnimatePresence>
 
+        {/* Controls: undo mid-set / review last set / resume */}
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
+          {phase === 'worst' && (
+            <button onClick={undoFirstPick} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80` }}>
+              <Undo2 className="w-3.5 h-3.5" /> Undo first pick
+            </button>
+          )}
+          {history.length > 0 && (phase === 'best' || phase === 'worst') && (
+            <button onClick={goBack} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80` }}>
+              <ArrowLeft className="w-3.5 h-3.5" /> Review last set
+            </button>
+          )}
+          {phase === 'review' && (
+            <button onClick={resumeVoting} className="text-[11px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: brand.gold, color: 'white' }}>
+              Resume voting
+            </button>
+          )}
+        </div>
+
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2.5">
           {currentSet.map((nominee, idx) => {
             const isTop = nominee.id === topId;
+            const isBottom = nominee.id === bottomId;
             const token = String.fromCharCode(65 + idx);
             const selectable = phase === 'best' || (phase === 'worst' && !isTop);
             return (
@@ -217,7 +265,8 @@ export default function AnchorVoting({ user }) {
                 nominee={nominee}
                 token={token}
                 isTop={isTop}
-                selectable={selectable && phase !== 'submitting' && phase !== 'success'}
+                isBottom={isBottom}
+                selectable={selectable && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
               />
