@@ -7,6 +7,7 @@ import EventCard from './EventCard';
 import CommunityEventForm from './CommunityEventForm';
 import NominationCountdown from '@/components/home-v2/NominationCountdown';
 import YearProgressHourglass from '@/components/home-v2/YearProgressHourglass';
+import NomineePoolCounter from '@/components/home-v2/NomineePoolCounter';
 import ChamberCalendarSection from './ChamberCalendarSection';
 import ChamberModeRail from './ChamberModeRail';
 import MemberPortalPanel from './MemberPortalPanel';
@@ -84,7 +85,14 @@ export default function ExperienceHero() {
           transition={{ duration: 0.5 }}
           className="mx-auto flex max-w-2xl flex-col gap-3"
         >
-          <YearProgressHourglass />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+            <div className="w-full sm:w-[65%]">
+              <YearProgressHourglass />
+            </div>
+            <div className="w-full sm:w-[35%]">
+              <NomineePoolCounter />
+            </div>
+          </div>
           <NominationCountdown />
         </motion.div>
       </div>
