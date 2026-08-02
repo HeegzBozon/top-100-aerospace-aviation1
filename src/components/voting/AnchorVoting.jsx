@@ -263,24 +263,27 @@ export default function AnchorVoting({ user }) {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 lg:gap-4">
           {currentSet.map((nominee, idx) => {
             const isTop = nominee.id === topId;
             const isBottom = nominee.id === bottomId;
             const token = String.fromCharCode(65 + idx);
             // All cards stay clickable in 'worst' so the top pick can be de-selected by tapping it again.
             const selectable = phase === 'best' || phase === 'worst';
+            // Inverse-pyramid layout on desktop: 3 across the top, 2 centered below.
+            const placement = idx === 3 ? 'lg:col-start-2' : idx === 4 ? 'lg:col-start-4' : '';
             return (
-              <JudgeCard
-                key={nominee.id}
-                nominee={nominee}
-                token={token}
-                isTop={isTop}
-                isBottom={isBottom}
-                selectable={selectable && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
-                onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
-                onSelect={() => handleSelect(nominee)}
-              />
+              <div key={nominee.id} className={`lg:col-span-2 ${placement}`}>
+                <JudgeCard
+                  nominee={nominee}
+                  token={token}
+                  isTop={isTop}
+                  isBottom={isBottom}
+                  selectable={selectable && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
+                  onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
+                  onSelect={() => handleSelect(nominee)}
+                />
+              </div>
             );
           })}
         </div>
