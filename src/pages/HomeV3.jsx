@@ -9,6 +9,7 @@ import ExperienceHero from '@/components/events/ExperienceHero';
 import PublicationBody from '@/components/publication/PublicationBody';
 import PublicationLoading from '@/components/publication/PublicationLoading';
 import useTop100WomenNominees from '@/components/publication/useTop100WomenNominees';
+import NominationCountdown from '@/components/home-v2/NominationCountdown';
 
 const NAV_LINKS = [
   { label: 'Operation: Moon Joy', to: '/moon-joy' },
@@ -131,6 +132,11 @@ export default function HomeV3() {
         >
           <ExperienceHero />
         </motion.div>
+      </div>
+
+      {/* Bridge band — nominations-close countdown carries over from the prior editorial hero */}
+      <div className="relative z-10 flex justify-center bg-[#faf8f5] pt-10">
+        <NominationCountdown />
       </div>
 
       {/* Publication body — rises over the dissolved hero, full editorial issue */}
