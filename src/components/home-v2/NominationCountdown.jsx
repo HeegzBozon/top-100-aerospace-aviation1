@@ -41,9 +41,9 @@ export default function NominationCountdown() {
       </div>
 
       {/* Countdown + CTA side by side */}
-      <div className="flex items-center gap-3 px-4 py-4 sm:px-5">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-4 sm:px-5">
         {/* Timer blocks */}
-        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 flex-1">
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 w-full sm:flex-1">
           {units.map(([label, value]) => (
             <div key={label} className="rounded-xl border border-white/10 bg-white/8 px-1.5 py-2.5 text-center">
               <div className="text-lg font-bold text-white sm:text-2xl tabular-nums">{String(value).padStart(2, '0')}</div>
@@ -53,7 +53,7 @@ export default function NominationCountdown() {
         </div>
 
         {/* Nominate + Edit Profile CTAs */}
-        <div className="flex-shrink-0 flex flex-col gap-2" style={{ minWidth: '96px' }}>
+        <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex-shrink-0 sm:flex sm:flex-col">
           <Link
             to="/nominate"
             className="group flex flex-col items-center justify-center gap-1 rounded-2xl px-4 py-2.5 text-center transition-all hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(201,168,124,0.5)]"
