@@ -21,7 +21,7 @@ const CATEGORY_STYLE = {
 function Badge({ category }) {
   const s = CATEGORY_STYLE[category] || CATEGORY_STYLE.men;
   return (
-    <span className="shrink-0 text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full" style={{ background: s.bg, color: s.text }}>
+    <span className="shrink-0 text-[9px] lg:text-[11px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full" style={{ background: s.bg, color: s.text }}>
       {category}
     </span>
   );
@@ -106,16 +106,16 @@ export default function NominateIntakePanel({
         <div className="h-12 w-12 rounded-2xl mx-auto flex items-center justify-center mb-3" style={{ background: `${brand.gold}18` }}>
           <Sparkles className="w-5 h-5" style={{ color: brand.gold }} />
         </div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: `${brand.navy}50` }}>
+        <p className="text-[10px] lg:text-xs font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: `${brand.navy}50` }}>
           Nominate
         </p>
         <h1
-          className="text-xl sm:text-2xl font-bold leading-tight mb-2 max-w-xl mx-auto"
+          className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight mb-2 max-w-xl mx-auto"
           style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
         >
           Who deserves to be in the Top 100?
         </h1>
-        <p className="text-xs leading-relaxed max-w-lg mx-auto" style={{ color: `${brand.navy}60` }}>
+        <p className="text-xs lg:text-sm leading-relaxed max-w-lg mx-auto" style={{ color: `${brand.navy}60` }}>
           Nominate the women, men, and angel investors shaping aerospace &amp; aviation. Choose a category in the form — and check the box to also nominate someone as an angel.
         </p>
       </div>
@@ -138,7 +138,7 @@ export default function NominateIntakePanel({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search name, role, company…"
-            className="flex-1 text-sm bg-transparent outline-none"
+            className="flex-1 text-sm lg:text-base bg-transparent outline-none"
             style={{ color: brand.navy }}
           />
           {hasQuery && (
@@ -165,12 +165,12 @@ export default function NominateIntakePanel({
                 </div>
               ) : matches.length === 0 ? (
                 <div className="p-3">
-                  <p className="text-xs mb-2.5" style={{ color: `${brand.navy}60` }}>
+                  <p className="text-xs lg:text-sm mb-2.5" style={{ color: `${brand.navy}60` }}>
                     No matches for <span className="font-semibold" style={{ color: brand.navy }}>“{query.trim()}”</span> in the verified directory.
                   </p>
                   <button
                     onClick={openNew}
-                    className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold text-white"
+                    className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm lg:text-base font-bold text-white"
                     style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
                   >
                     <UserPlus className="w-4 h-4" />
@@ -197,11 +197,11 @@ export default function NominateIntakePanel({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1">
-                            <p className="text-sm font-semibold truncate" style={{ color: brand.navy }}>{nominee.name}</p>
+                            <p className="text-sm lg:text-base font-semibold truncate" style={{ color: brand.navy }}>{nominee.name}</p>
                             {verified && <BadgeCheck className="w-3.5 h-3.5 shrink-0" style={{ color: brand.gold }} />}
                             {isAdded && <Check className="w-3.5 h-3.5 shrink-0" style={{ color: brand.gold }} />}
                           </div>
-                          <p className="text-[10px] truncate" style={{ color: `${brand.navy}55` }}>
+                          <p className="text-[10px] lg:text-xs truncate" style={{ color: `${brand.navy}55` }}>
                             {nominee.title || nominee.professional_role}{nominee.company ? ` · ${nominee.company}` : ''}
                           </p>
                         </div>
@@ -211,7 +211,7 @@ export default function NominateIntakePanel({
                   })}
                   <button
                     onClick={onOpenExplorer}
-                    className="w-full flex items-center justify-center gap-2 mt-1 px-3 py-2 rounded-xl text-xs font-bold"
+                    className="w-full flex items-center justify-center gap-2 mt-1 px-3 py-2 rounded-xl text-xs lg:text-sm font-bold"
                     style={{ color: brand.navy, background: `${brand.navy}05` }}
                   >
                     <Compass className="w-3.5 h-3.5" style={{ color: brand.gold }} />
@@ -228,7 +228,7 @@ export default function NominateIntakePanel({
       <div className="px-4 pb-3 space-y-2 shrink-0">
         <button
           onClick={openNew}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold transition-all"
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm lg:text-base font-bold transition-all"
           style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: 'white' }}
         >
           <Plus className="w-4 h-4" />
@@ -236,7 +236,7 @@ export default function NominateIntakePanel({
         </button>
         <button
           onClick={onOpenExplorer}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold transition-all"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm lg:text-base font-semibold transition-all"
           style={{ background: 'white', border: `1px solid ${brand.navy}15`, color: brand.navy }}
         >
           <Compass className="w-4 h-4" style={{ color: brand.gold }} />
@@ -262,14 +262,14 @@ export default function NominateIntakePanel({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-0.5">
-                  <p className="text-sm font-bold truncate" style={{ color: brand.navy }}>{displayName(n)}</p>
+                  <p className="text-sm lg:text-base font-bold truncate" style={{ color: brand.navy }}>{displayName(n)}</p>
                   <Badge category={n._cat} />
                   {n.also_angels && n._cat !== 'angels' && <Badge category="angels" />}
                 </div>
                 {displaySub(n) && (
-                  <p className="text-[11px] truncate" style={{ color: `${brand.navy}50` }}>{displaySub(n)}</p>
+                  <p className="text-[11px] lg:text-sm truncate" style={{ color: `${brand.navy}50` }}>{displaySub(n)}</p>
                 )}
-                <p className="text-[9px] font-bold uppercase tracking-wide mt-0.5" style={{ color: '#2d8a4f' }}>
+                <p className="text-[9px] lg:text-[11px] font-bold uppercase tracking-wide mt-0.5" style={{ color: '#2d8a4f' }}>
                   {n.existing ? 'On your Top 100 list' : 'Submitted for review'}
                 </p>
               </div>
