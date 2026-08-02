@@ -4,14 +4,11 @@ import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import ListBuilderHeader from '@/components/my-top100/ListBuilderHeader';
 import ListCanvas from '@/components/my-top100/ListCanvas';
-import NomineeSearchDrawer from '@/components/my-top100/NomineeSearchDrawer';
 import ShareCard from '@/components/my-top100/ShareCard';
 import PublishBanner from '@/components/my-top100/PublishBanner';
-import DesktopSearchPanel from '@/components/my-top100/DesktopSearchPanel';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
-import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
-import NominationHub from '@/components/my-top100/NominationHub';
+import NominateIntakePanel from '@/components/my-top100/NominateIntakePanel';
 import HubListTabs from '@/components/my-top100/HubListTabs';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
@@ -33,7 +30,6 @@ export default function MyTop100() {
   const [shareCode, setShareCode] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [saveTimer, setSaveTimer] = useState(null);
   const [hubNominations, setHubNominations] = useState({ women: [], men: [], angels: [] });
@@ -42,7 +38,6 @@ export default function MyTop100() {
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [explorerProfile, setExplorerProfile] = useState(null);
   const [showOS, setShowOS] = useState(false);
-  const [nominationNominee, setNominationNominee] = useState(null);
 
   const openExplorer = () => { setExplorerProfile(null); setExplorerOpen(true); };
   const openProfileFromList = async (item) => {
@@ -323,28 +318,27 @@ export default function MyTop100() {
         </div>
       )}
 
-      {/* ── NOMINATE TAB (merged: nomination form + browse + ranked list) ── */}
+      {/* ── NOMINATE TAB (split: intake on the left, ranked list on the right) ── */}
       {activeTab === 'nominate' && (
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Nomination form + submitted nominations */}
-          <div className="shrink-0 max-h-[42vh] lg:max-h-[46vh] overflow-y-auto lg:max-w-3xl lg:mx-auto lg:w-full">
-            <NominationHub
-              submittedNominations={hubNominations}
-              onAddNomination={addHubNomination}
-              onRemoveNomination={removeHubNomination}
-              onAddExisting={(nominee, meta) => {
-                addExistingToHub(meta.category, nominee, meta.also_angels);
-                handleAdd(nominee, { nomination_category: meta.category, also_angels: meta.also_angels });
-              }}
-              nominator={user}
-            />
-          </div>
-
-          {/* Desktop: two-column */}
+          {/* Desktop: two-column split */}
           <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full overflow-hidden">
-            <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start overflow-hidden" style={{ maxHeight: 'calc(100vh - 80px)' }}>
-              <DesktopSearchPanel addedIds={addedIds} onAdd={handleAdd} onOpenExplorer={openExplorer} onViewProfile={(n) => { setExplorerProfile(n); setExplorerOpen(true); }} nominator={user} onNominate={setNominationNominee} />
+            {/* Left: nominate intake (search-first) */}
+            <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start overflow-y-auto" style={{ maxHeight: 'calc(100vh - 80px)' }}>
+              <NominateIntakePanel
+                submittedNominations={hubNominations}
+                onAddNomination={addHubNomination}
+                onRemoveNomination={removeHubNomination}
+                onAddExisting={(nominee, meta) => {
+                  addExistingToHub(meta.category, nominee, meta.also_angels);
+                  handleAdd(nominee, { nomination_category: meta.category, also_angels: meta.also_angels });
+                }}
+                nominator={user}
+                addedIds={addedIds}
+                onOpenExplorer={openExplorer}
+              />
             </div>
+            {/* Right: Top 100 ranked list */}
             <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
               {ListNameEditor}
               <PublishBanner
@@ -360,7 +354,7 @@ export default function MyTop100() {
                 totalCount={rankings.length}
                 onReorder={handleReorder}
                 onRemove={handleRemove}
-                onAddMore={() => {}}
+                onAddMore={openExplorer}
                 onAdd={handleAdd}
                 addedIds={addedIds}
                 onViewProfile={openProfileFromList}
@@ -370,6 +364,18 @@ export default function MyTop100() {
 
           {/* Mobile: stacked */}
           <div className="lg:hidden flex flex-col flex-1 overflow-y-auto">
+            <NominateIntakePanel
+              submittedNominations={hubNominations}
+              onAddNomination={addHubNomination}
+              onRemoveNomination={removeHubNomination}
+              onAddExisting={(nominee, meta) => {
+                addExistingToHub(meta.category, nominee, meta.also_angels);
+                handleAdd(nominee, { nomination_category: meta.category, also_angels: meta.also_angels });
+              }}
+              nominator={user}
+              addedIds={addedIds}
+              onOpenExplorer={openExplorer}
+            />
             {ListNameEditor}
             <PublishBanner
               rankings={rankings}
@@ -385,34 +391,12 @@ export default function MyTop100() {
                 totalCount={rankings.length}
                 onReorder={handleReorder}
                 onRemove={handleRemove}
-                onAddMore={() => setShowSearch(true)}
+                onAddMore={openExplorer}
                 onAdd={handleAdd}
                 addedIds={addedIds}
                 onViewProfile={openProfileFromList}
               />
             </div>
-
-            {rankings.length < 100 && (
-              <div className="fixed bottom-6 right-4 z-20">
-                <motion.button
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => setShowSearch(true)}
-                  className="h-14 w-14 rounded-full flex items-center justify-center text-white text-2xl shadow-2xl"
-                  style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)` }}
-                >
-                  +
-                </motion.button>
-              </div>
-            )}
-
-            <NomineeSearchDrawer
-              isOpen={showSearch}
-              onClose={() => setShowSearch(false)}
-              onAdd={handleAdd}
-              addedIds={addedIds}
-              nominator={user}
-              onNominate={setNominationNominee}
-            />
           </div>
         </div>
       )}
@@ -440,19 +424,6 @@ export default function MyTop100() {
         onAdd={handleAdd}
         initialNominee={explorerProfile}
       />
-
-      {nominationNominee && (
-        <HubNominationPopover
-          nominees={[]}
-          nominator={user}
-          initialNominee={nominationNominee}
-          onClose={() => setNominationNominee(null)}
-          onSubmitted={(result) => {
-            if (result.existing && result.nominee) handleAdd(result.nominee, { nomination_category: result.category, also_angels: result.also_angels });
-            setNominationNominee(null);
-          }}
-        />
-      )}
 
       <Top100OSModal isOpen={showOS} onClose={() => setShowOS(false)} />
     </div>
