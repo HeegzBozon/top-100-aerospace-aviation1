@@ -324,7 +324,7 @@ export default function MyTop100() {
           {/* Desktop: two-column split */}
           <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full overflow-hidden">
             {/* Left: nominate intake (search-first) */}
-            <div className="w-80 xl:w-96 shrink-0 sticky top-[60px] self-start overflow-y-auto" style={{ maxHeight: 'calc(100vh - 80px)' }}>
+            <div className="flex-1 min-w-0 sticky top-[60px] self-start overflow-y-auto" style={{ maxHeight: 'calc(100vh - 80px)' }}>
               <NominateIntakePanel
                 submittedNominations={hubNominations}
                 onAddNomination={addHubNomination}
@@ -339,7 +339,7 @@ export default function MyTop100() {
               />
             </div>
             {/* Right: Top 100 ranked list */}
-            <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+            <div className="flex-1 min-w-0 max-w-xl flex flex-col overflow-hidden">
               {ListNameEditor}
               <PublishBanner
                 rankings={rankings}
