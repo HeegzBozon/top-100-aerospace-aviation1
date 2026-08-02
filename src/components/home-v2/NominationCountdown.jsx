@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight, Star, UserCog } from 'lucide-react';
 
 const targetDate = new Date('2026-09-01T00:00:00');
 
@@ -52,16 +52,25 @@ export default function NominationCountdown() {
           ))}
         </div>
 
-        {/* Nominate CTA */}
-        <Link
-          to="/nominate"
-          className="group flex-shrink-0 flex flex-col items-center justify-center gap-1.5 rounded-2xl px-4 py-3 sm:px-5 sm:py-4 text-center transition-all hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(201,168,124,0.5)]"
-          style={{ background: 'linear-gradient(135deg, #c9a87c, #d4a96a)', minWidth: '90px' }}
-        >
-          <Star className="w-4 h-4 text-[#07111f]" />
-          <span className="text-[11px] font-black uppercase tracking-widest text-[#07111f] leading-tight">Nominate<br />Now</span>
-          <ArrowRight className="w-3 h-3 text-[#07111f] group-hover:translate-x-0.5 transition-transform" />
-        </Link>
+        {/* Nominate + Edit Profile CTAs */}
+        <div className="flex-shrink-0 flex flex-col gap-2" style={{ minWidth: '96px' }}>
+          <Link
+            to="/nominate"
+            className="group flex flex-col items-center justify-center gap-1 rounded-2xl px-4 py-2.5 text-center transition-all hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(201,168,124,0.5)]"
+            style={{ background: 'linear-gradient(135deg, #c9a87c, #d4a96a)' }}
+          >
+            <Star className="w-4 h-4 text-[#07111f]" />
+            <span className="text-[11px] font-black uppercase tracking-widest text-[#07111f] leading-tight">Nominate Now</span>
+            <ArrowRight className="w-3 h-3 text-[#07111f] group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+          <Link
+            to="/Profile"
+            className="group flex flex-col items-center justify-center gap-1 rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-center transition-all hover:scale-105 active:scale-95 hover:bg-white/10"
+          >
+            <UserCog className="w-4 h-4 text-[#c9a87c]" />
+            <span className="text-[11px] font-black uppercase tracking-widest text-white/85 leading-tight">Edit Profile</span>
+          </Link>
+        </div>
       </div>
     </div>
   );
