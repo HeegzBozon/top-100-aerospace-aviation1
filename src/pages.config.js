@@ -94,7 +94,6 @@ const Passport                   = lazy(() => import('./pages/Passport'));
 const PaymentCancel              = lazy(() => import('./pages/PaymentCancel'));
 const PaymentSuccess             = lazy(() => import('./pages/PaymentSuccess'));
 const PrivacyPolicy              = lazy(() => import('./pages/PrivacyPolicy'));
-const Profile                    = lazy(() => import('./pages/Profile'));
 const ProfileView                = lazy(() => import('./pages/ProfileView'));
 const Publisher                  = lazy(() => import('./pages/Publisher'));
 const RaisingJupiter             = lazy(() => import('./pages/RaisingJupiter'));
@@ -163,7 +162,6 @@ export const PAGES = {
     "PaymentCancel": PaymentCancel,
     "PaymentSuccess": PaymentSuccess,
     "PrivacyPolicy": PrivacyPolicy,
-    "Profile": Profile,
     "ProfileView": ProfileView,
     "Publisher": Publisher,
     "RaisingJupiter": RaisingJupiter,
