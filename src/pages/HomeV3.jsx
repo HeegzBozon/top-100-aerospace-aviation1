@@ -5,6 +5,9 @@ import { base44 } from '@/api/base44Client';
 import GlobalNewsletterFooter from '@/components/shared/GlobalNewsletterFooter';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import EditorialHero from '@/components/home-v3/EditorialHero';
+import PublicationBody from '@/components/publication/PublicationBody';
+import PublicationLoading from '@/components/publication/PublicationLoading';
+import useTop100WomenNominees from '@/components/publication/useTop100WomenNominees';
 
 const NAV_LINKS = [
   { label: 'Operation: Moon Joy', to: '/moon-joy' },
@@ -21,6 +24,7 @@ const NAV_LINKS = [
 export default function HomeV3() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const { loading: pubLoading } = useTop100WomenNominees();
 
   useEffect(() => {
     base44.auth.me()
@@ -108,6 +112,12 @@ export default function HomeV3() {
       </div>
 
       <EditorialHero />
+
+      {/* Gradient dissolve: navy hero → cream publication */}
+      <div className="h-24 w-full bg-gradient-to-b from-[#07111f] to-[#faf8f5] sm:h-32" />
+
+      {/* Publication body — full editorial issue */}
+      {pubLoading ? <PublicationLoading /> : <PublicationBody />}
     </>
   );
 }

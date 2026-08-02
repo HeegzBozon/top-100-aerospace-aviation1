@@ -108,13 +108,13 @@ export default function EditorialHero() {
             Nominate a Leader
             <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link
-            to="/Top100Women2025"
+          <a
+            href="#hero"
             className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-4 text-sm font-bold text-white backdrop-blur-md transition-all hover:bg-white/10"
           >
             View the Publication
             <ArrowRight className="h-4 w-4" />
-          </Link>
+          </a>
         </motion.div>
 
         {/* Secondary utility links */}
