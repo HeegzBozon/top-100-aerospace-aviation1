@@ -67,7 +67,7 @@ export default function ExperienceHero() {
 
   return (
     <>
-    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#07111f] px-4 py-16 text-center sm:px-8">
+    <section className="relative flex min-h-[100svh] flex-col items-center justify-start overflow-hidden bg-[#07111f] px-4 pt-8 pb-20 text-center sm:px-8 sm:pt-12">
       <div className="absolute inset-0 pointer-events-none">
         {stars.map((s) => (
           <span key={s.id} className={`absolute rounded-full bg-white/70 ${s.size} animate-pulse`} style={{ top: s.top, left: s.left, animationDelay: s.delay }} />
