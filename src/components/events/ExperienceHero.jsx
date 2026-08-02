@@ -5,7 +5,8 @@ import { ArrowRight, Plus, CalendarDays, ShoppingBag, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import EventCard from './EventCard';
 import CommunityEventForm from './CommunityEventForm';
-import CalendarHero from './CalendarHero';
+import NominationCountdown from '@/components/home-v2/NominationCountdown';
+import HeroMonthCalendar from './HeroMonthCalendar';
 import ChamberModeRail from './ChamberModeRail';
 import MemberPortalPanel from './MemberPortalPanel';
 import { eventMatchesMode, eventMatchesRitual } from './chamberModes';
@@ -64,7 +65,7 @@ export default function ExperienceHero() {
   );
 
   return (
-    <section className="relative flex min-h-screen flex-col overflow-hidden bg-[#07111f]">
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#07111f] px-4 py-16 text-center sm:px-8">
       <div className="absolute inset-0 pointer-events-none">
         {stars.map((s) => (
           <span key={s.id} className={`absolute rounded-full bg-white/70 ${s.size} animate-pulse`} style={{ top: s.top, left: s.left, animationDelay: s.delay }} />
@@ -72,9 +73,72 @@ export default function ExperienceHero() {
       </div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(201,168,124,0.20),transparent_44%),radial-gradient(circle_at_82%_78%,rgba(74,144,184,0.14),transparent_30%)]" />
 
-      <div className="relative z-10 w-full">
-        {/* Google Calendar-style hero interface */}
-        <CalendarHero events={events} loading={loading} user={user} onHost={() => setShowHost(true)} />
+      <div className="relative z-10 mx-auto w-full max-w-5xl">
+        {/* Masthead */}
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-5 flex flex-col items-center gap-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a87c]/35 bg-[#c9a87c]/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-[#c9a87c] backdrop-blur-md">
+            <CalendarDays className="h-3.5 w-3.5" /> Chamber New.0 · Aerospace Experience Calendar
+          </div>
+          <h1 className="leading-[0.95] tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <span className="block text-4xl font-bold text-white sm:text-5xl md:text-6xl">We don't rank.</span>
+            <span className="block text-4xl font-bold text-[#c9a87c] sm:text-5xl md:text-6xl">We measure.</span>
+          </h1>
+          <p className="max-w-xl text-sm leading-7 text-slate-300 sm:text-base">
+            The modern aerospace chamber — a media, events & ecosystem company. <span className="text-white">Explore</span> the signal, <span className="text-[#c9a87c]">participate</span> in the ritual, <span className="text-white">accelerate</span> the work, <span className="text-[#c9a87c]">consult</span> the expertise.
+          </p>
+        </motion.div>
+
+        {/* Central interface — nominations deadline + next chamber event + month calendar */}
+        <motion.div
+          key="central"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-3 lg:grid-cols-2"
+        >
+          {/* Left column — the season program milestones */}
+          <div className="flex flex-col gap-3">
+            <NominationCountdown />
+
+            {/* Next chamber event (live now or next upcoming) */}
+            <AnimatePresence mode="wait">
+              {loading ? (
+                <motion.div key="sec-loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
+                  <div className="h-3 w-40 animate-pulse rounded bg-white/10" />
+                </motion.div>
+              ) : (liveNow || featured) ? (
+                <motion.div
+                  key={(liveNow || featured).id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-md"
+                >
+                  <span className={`relative flex h-2 w-2 shrink-0 ${liveNow ? '' : 'opacity-60'}`}>
+                    {liveNow && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-70" />}
+                    <span className={`relative inline-flex h-2 w-2 rounded-full ${liveNow ? 'bg-red-400' : 'bg-[#c9a87c] animate-pulse'}`} />
+                  </span>
+                  <div className="min-w-0 flex-1 text-left">
+                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#c9a87c]">{liveNow ? 'Live Now' : 'Next Chamber Event'}</p>
+                    <p className="truncate text-xs font-semibold text-white">{(liveNow || featured).title}</p>
+                  </div>
+                  {(liveNow || featured).meeting_url ? (
+                    <a href={(liveNow || featured).meeting_url} target="_blank" rel="noopener noreferrer" className="shrink-0 rounded-full px-3.5 py-1.5 text-[10px] font-bold text-[#07111f]" style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}>
+                      {liveNow ? 'Join' : 'Link'}
+                    </a>
+                  ) : (
+                    <Link to="/events" className="shrink-0 text-[10px] font-bold text-white/55 transition-colors hover:text-[#c9a87c]">Calendar →</Link>
+                  )}
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </div>
+
+          {/* Right column — month calendar */}
+          <div className="min-h-[260px]">
+            <HeroMonthCalendar events={events} />
+          </div>
+        </motion.div>
 
         {/* View toggle — public experience feed vs member portal */}
         {user && (
