@@ -60,7 +60,7 @@ export default function NominationCountdown() {
             style={{ background: 'linear-gradient(135deg, #c9a87c, #d4a96a)' }}
           >
             <Star className="w-4 h-4 text-[#07111f]" />
-            <span className="text-[11px] font-black uppercase tracking-widest text-[#07111f] leading-tight">Nominate Now</span>
+            <span className="text-[11px] font-black uppercase tracking-widest text-[#07111f] leading-tight">Nominations</span>
             <ArrowRight className="w-3 h-3 text-[#07111f] group-hover:translate-x-0.5 transition-transform" />
           </Link>
           <Link
