@@ -7,8 +7,9 @@ import { toast } from 'sonner';
 import { useCountdown, pad } from './useCountdown';
 import EventCard from './EventCard';
 import CommunityEventForm from './CommunityEventForm';
-
-const TYPE_FILTERS = ['All', 'Workshop', 'Office Hours', 'Live Build', 'AMA', 'Mission Theatre', 'Social'];
+import ChamberModeRail from './ChamberModeRail';
+import MemberPortalPanel from './MemberPortalPanel';
+import { eventMatchesMode, eventMatchesRitual } from './chamberModes';
 
 function fetchUser() {
   return base44.auth.me().catch(() => null);
@@ -25,7 +26,9 @@ export default function ExperienceHero() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const [filter, setFilter] = useState('All');
+  const [mode, setMode] = useState('Participate');
+  const [ritual, setRitual] = useState('All');
+  const [view, setView] = useState('public');
   const [showHost, setShowHost] = useState(false);
 
   useEffect(() => {
@@ -49,8 +52,8 @@ export default function ExperienceHero() {
   const liveNow = useMemo(() => events.find(isLive), [events]);
   const featured = useMemo(() => events[0], [events]);
   const filtered = useMemo(
-    () => (filter === 'All' ? events.slice(0, 12) : events.filter((e) => e.experience_type === filter).slice(0, 12)),
-    [events, filter],
+    () => events.filter((e) => eventMatchesMode(e, mode) && eventMatchesRitual(e, ritual)).slice(0, 12),
+    [events, mode, ritual],
   );
   const countdown = useCountdown(featured?.event_date);
 
@@ -76,14 +79,14 @@ export default function ExperienceHero() {
         {/* Masthead */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-5 flex flex-col items-center gap-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a87c]/35 bg-[#c9a87c]/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-[#c9a87c] backdrop-blur-md">
-            <CalendarDays className="h-3.5 w-3.5" /> Season 4 — 2026 · The Experience Calendar
+            <CalendarDays className="h-3.5 w-3.5" /> Chamber New.0 · Aerospace Experience Calendar
           </div>
           <h1 className="leading-[0.95] tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
             <span className="block text-4xl font-bold text-white sm:text-5xl md:text-6xl">We don't rank.</span>
             <span className="block text-4xl font-bold text-[#c9a87c] sm:text-5xl md:text-6xl">We measure.</span>
           </h1>
           <p className="max-w-xl text-sm leading-7 text-slate-300 sm:text-base">
-            A media & experience company for aerospace. Programs to <span className="text-white">join</span>, events to <span className="text-[#c9a87c]">participate</span> in.
+            The modern aerospace chamber — a media, events & ecosystem company. <span className="text-white">Explore</span> the signal, <span className="text-[#c9a87c]">participate</span> in the ritual, <span className="text-white">accelerate</span> the work, <span className="text-[#c9a87c]">consult</span> the expertise.
           </p>
         </motion.div>
 
@@ -164,48 +167,56 @@ export default function ExperienceHero() {
           )}
         </AnimatePresence>
 
-        {/* Type filter chips */}
-        {!loading && filtered.length > 0 && (
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-            {TYPE_FILTERS.map((t) => (
-              <button
-                key={t}
-                onClick={() => setFilter(t)}
-                className={`rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all ${
-                  filter === t
-                    ? 'bg-[#c9a87c] text-[#07111f]'
-                    : 'border border-white/15 bg-white/5 text-white/60 hover:text-white'
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+        {/* View toggle — public experience feed vs member portal */}
+        {user && (
+          <div className="mt-7 flex items-center justify-center gap-2">
+            <button
+              onClick={() => setView(view === 'public' ? 'portal' : 'public')}
+              className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/70 transition-all hover:text-[#c9a87c]"
+            >
+              {view === 'public' ? '↳ My Chamber Portal' : '↳ Public Experience Feed'}
+            </button>
           </div>
         )}
 
-        {/* Horizontal rail */}
-        {!loading && filtered.length > 0 && (
-          <div className="mt-6 flex w-full snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            {filtered.map((e, i) => (
-              <div key={e.id} className="snap-start">
-                <EventCard event={e} user={user} onRSVP={handleRSVP} index={i} />
+        {view === 'portal' && user ? (
+          <div className="mt-6">
+            <MemberPortalPanel user={user} events={events} />
+          </div>
+        ) : (
+          <>
+            {/* Chamber mode rail — the four pillars */}
+            {!loading && (
+              <div className="mt-7">
+                <ChamberModeRail mode={mode} setMode={setMode} ritual={ritual} setRitual={setRitual} />
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
-        {/* Primary CTAs */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <button
-            onClick={() => setShowHost(true)}
-            className="inline-flex items-center gap-2 rounded-full border border-[#c9a87c]/40 bg-[#c9a87c]/10 px-6 py-3 text-sm font-bold text-[#c9a87c] backdrop-blur-md transition-all hover:bg-[#c9a87c]/20"
-          >
-            <Plus className="h-4 w-4" /> Host an Experience
-          </button>
-          <Link to="/nominate" className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-[#0a1526] shadow-[0_0_32px_rgba(201,168,124,0.35)] transition-all hover:scale-[1.03]" style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}>
-            Nominate a Leader <ArrowRight className="h-4 w-4" />
-          </Link>
-        </motion.div>
+            {/* Horizontal rail */}
+            {!loading && filtered.length > 0 && (
+              <div className="mt-6 flex w-full snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                {filtered.map((e, i) => (
+                  <div key={e.id} className="snap-start">
+                    <EventCard event={e} user={user} onRSVP={handleRSVP} index={i} />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Primary CTAs */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <button
+                onClick={() => setShowHost(true)}
+                className="inline-flex items-center gap-2 rounded-full border border-[#c9a87c]/40 bg-[#c9a87c]/10 px-6 py-3 text-sm font-bold text-[#c9a87c] backdrop-blur-md transition-all hover:bg-[#c9a87c]/20"
+              >
+                <Plus className="h-4 w-4" /> Host an Experience
+              </button>
+              <Link to="/nominate" className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-[#0a1526] shadow-[0_0_32px_rgba(201,168,124,0.35)] transition-all hover:scale-[1.03]" style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}>
+                Nominate a Leader <ArrowRight className="h-4 w-4" />
+              </Link>
+            </motion.div>
+          </>
+        )}
       </div>
 
       {/* Host modal */}

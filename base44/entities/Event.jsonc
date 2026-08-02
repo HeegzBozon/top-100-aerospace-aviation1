@@ -48,6 +48,35 @@
       ],
       "description": "The experience format \u2014 mirrors the Base44 ambassador event taxonomy. Programs people join & events they participate in."
     },
+    "chamber_ritual": {
+      "type": "string",
+      "enum": [
+        "Ribbon Cutting",
+        "Networking Mixer",
+        "Policy Mixer",
+        "Advocacy Briefing",
+        "Incubator Milestone",
+        "Demo Day",
+        "Mentor Office Hours",
+        "Awards Gala",
+        "Workshop",
+        "AMA",
+        "Build Challenge",
+        "Celebration"
+      ],
+      "description": "Chamber 2.0 ritual classification \u2014 groups events by the role they play in the aerospace ecosystem (connect, advocate, enable)."
+    },
+    "member_tier": {
+      "type": "string",
+      "enum": [
+        "Public",
+        "Member",
+        "Verified",
+        "Premium"
+      ],
+      "default": "Public",
+      "description": "Minimum membership tier required to RSVP / access this event. Drives the exclusive-chamber gating."
+    },
     "guild": {
       "type": "string",
       "description": "The guild/community this event feeds (e.g., Builders, Mission Control, Local Legends, Investors, Alumni). Drives the Attend an Event \u2192 Join a Guild bridge."

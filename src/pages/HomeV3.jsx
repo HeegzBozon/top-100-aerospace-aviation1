@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import GlobalNewsletterFooter from '@/components/shared/GlobalNewsletterFooter';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
+import AdvocacyStrip from '@/components/events/AdvocacyStrip';
 import ExperienceHero from '@/components/events/ExperienceHero';
 import PublicationBody from '@/components/publication/PublicationBody';
 import PublicationLoading from '@/components/publication/PublicationLoading';
@@ -49,6 +50,11 @@ export default function HomeV3() {
     <>
       {/* Announcement banner — thin, rotating, dismissible */}
       <AnnouncementBanner />
+
+      {/* Advocacy strip — editorial news/policy ticker (the chamber advocacy layer) */}
+      <div className="relative z-[99]">
+        <AdvocacyStrip />
+      </div>
 
       {/* Minimal floating nav — top center */}
       <div className="fixed top-4 left-1/2 z-[100] -translate-x-1/2 flex items-center gap-6">
