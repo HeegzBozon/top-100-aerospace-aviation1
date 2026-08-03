@@ -94,6 +94,14 @@ export default function ExperienceHero() {
             </div>
           </div>
           <NominationCountdown />
+          {/* Brand mark — below the nominations countdown */}
+          <div className="mt-2 flex items-center justify-center">
+            <img
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/5d2b9cc54_generated_image.png"
+              alt="TOP 100 Aerospace & Aviation"
+              className="h-16 w-auto object-contain opacity-90 sm:h-20"
+            />
+          </div>
         </motion.div>
       </div>
     </section>
