@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, ChevronRight, Check, Sparkles, Compass, Telescope } from 'lucide-react';
+import { Mail, ChevronRight, Check, Sparkles, Compass, Telescope, Rocket, ArrowRight } from 'lucide-react';
 import { subscribeNewsletter } from '@/functions/subscribeNewsletter';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import AdvocacyStrip from '@/components/events/AdvocacyStrip';
@@ -10,6 +10,20 @@ import HomeDock from '@/components/home-v3/HomeDock';
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
 const CREAM = '#faf8f5';
+
+const GC_STATS = [
+  { value: '2021', label: 'Established' },
+  { value: '300+', label: 'Verified Fellows' },
+  { value: '40+', label: 'Countries' },
+  { value: '70+', label: 'Disciplines' },
+];
+
+const GC_PERKS = [
+  'Operating infrastructure installed & managed for you',
+  'The verified reputation graph — searchable, not ranked',
+  'Direct messaging to opted-in Fellows & operators',
+  'Design-partner pricing for the first five employers',
+];
 
 const PERKS = [
   {
@@ -231,6 +245,81 @@ export default function Subscribe() {
             </motion.div>
           ))}
         </div>
+
+        {/* Ground Control upsell */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-16 overflow-hidden rounded-2xl"
+          style={{ background: '#07111f' }}
+        >
+          <div className="relative px-6 py-10 md:px-12 md:py-14">
+            <div
+              className="pointer-events-none absolute inset-0 opacity-40"
+              style={{ background: 'radial-gradient(circle at 50% 0%, rgba(201,168,124,0.18), transparent 55%)' }}
+            />
+            <div className="relative">
+              <div
+                className="mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em]"
+                style={{ borderColor: `${GOLD}40`, background: `${GOLD}12`, color: GOLD, fontFamily: "'Montserrat', sans-serif'" }}
+              >
+                <Rocket className="h-3.5 w-3.5" /> Ground Control
+              </div>
+
+              <h2
+                className="mb-4 text-3xl font-bold leading-tight md:text-4xl text-white"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                Aerospace runs on relationships.
+                <br />
+                <span style={{ color: GOLD }}>Ground Control keeps none from falling through the cracks.</span>
+              </h2>
+              <p
+                className="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-white/55"
+                style={{ fontFamily: "'Montserrat', sans-serif" }}
+              >
+                Operating infrastructure for aerospace & aviation businesses — installed and managed for you.
+              </p>
+
+              <div className="mb-8 grid max-w-2xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:grid-cols-4">
+                {GC_STATS.map((s) => (
+                  <div key={s.label} className="bg-[#07111f] px-4 py-5 text-center">
+                    <p
+                      className="text-2xl"
+                      style={{ color: GOLD, fontFamily: "'Playfair Display', Georgia, serif" }}
+                    >
+                      {s.value}
+                    </p>
+                    <p
+                      className="mt-1 text-[9px] font-bold uppercase tracking-[0.18em] text-white/40"
+                      style={{ fontFamily: "'Montserrat', sans-serif" }}
+                    >
+                      {s.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <ul className="mb-8 space-y-2.5">
+                {GC_PERKS.map((perk) => (
+                  <li key={perk} className="flex items-start gap-2.5 text-sm text-white/75">
+                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: GOLD }} />
+                    <span style={{ fontFamily: "'Montserrat', sans-serif" }}>{perk}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                to="/ground-control"
+                className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] transition-transform hover:scale-[1.02]"
+                style={{ background: `linear-gradient(135deg, ${GOLD}, #d8b98d)`, color: '#07111f', fontFamily: "'Montserrat', sans-serif" }}
+              >
+                Explore Ground Control <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       <div className="h-24" />
