@@ -19,6 +19,7 @@ import { base44 } from '@/api/base44Client';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import AdvocacyStrip from '@/components/events/AdvocacyStrip';
 import HomeDock from '@/components/home-v3/HomeDock';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -81,6 +82,35 @@ const EXPERIENCES = [
     href: LETS_TALK_URL,
   },
 ];
+
+const EXPERIENCE_DETAILS = {
+  launch_party: [
+    'Virtual doors open worldwide — join from anywhere',
+    'Honoree reveal + season kickoff remarks',
+    'Live toast at midnight across time zones',
+    'Photo wall + community shoutouts in party mode',
+  ],
+  live_build: [
+    'Real-time, build-in-public ship sessions',
+    'Watch the work happen and ask questions in the chat',
+    'Waitlist members get the calendar invite first',
+  ],
+  workshop: [
+    'Facilitated working sessions on real tactics',
+    'Measurement, narrative, and ecosystem building tracks',
+    'Seats are limited; waitlist gets first dibs',
+  ],
+  ama: [
+    'Ask-me-anything with honorees, operators & mission leaders',
+    'Submit questions ahead of time',
+    'Claim a spot when dates are announced',
+  ],
+  lets_talk: [
+    '1:1 with the TOP 100 team',
+    'Partnerships, nominations, press — all welcome',
+    '15–30 minutes, on your schedule',
+  ],
+};
 
 export default function Rsvp() {
   const [selected, setSelected] = useState(null); // experience key
@@ -233,6 +263,37 @@ export default function Rsvp() {
                 >
                   {exp.description}
                 </p>
+
+                <div className="mb-5">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.14em] transition-colors hover:opacity-70"
+                        style={{ color: GOLD, fontFamily: "'Montserrat', sans-serif" }}
+                      >
+                        More info <ChevronRight className="h-3 w-3" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      sideOffset={6}
+                      className="w-72 rounded-2xl border bg-white p-4 shadow-xl"
+                      style={{ borderColor: `${NAVY}15` }}
+                    >
+                      <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em]" style={{ color: GOLD, fontFamily: "'Montserrat', sans-serif" }}>
+                        What to expect
+                      </p>
+                      <ul className="space-y-1.5">
+                        {(EXPERIENCE_DETAILS[exp.key] || []).map((line) => (
+                          <li key={line} className="flex items-start gap-2 text-sm leading-5" style={{ color: `${NAVY}cc`, fontFamily: "'Montserrat', sans-serif" }}>
+                            <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" style={{ color: GOLD }} />
+                            <span>{line}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
                 {isExternal ? (
                   <a
