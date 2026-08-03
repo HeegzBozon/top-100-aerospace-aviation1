@@ -393,9 +393,7 @@ export default function Rsvp() {
                       )}
                     </button>
 
-                    <p className="text-center text-xs" style={{ color: `${NAVY}80`, fontFamily: "'Montserrat', sans-serif" }}>
-                      We route every RSVP through GoHighLevel. You'll only hear from us about this experience.
-                    </p>
+
                   </form>
                 )}
               </div>
