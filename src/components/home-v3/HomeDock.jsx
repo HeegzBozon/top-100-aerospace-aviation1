@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Shield, CalendarCheck, Users, ShoppingBag, Mail, ChevronRight, Check } from 'lucide-react';
+import { Menu, X, Shield, CalendarCheck, Users, ShoppingBag, Mail } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { subscribeNewsletter } from '@/functions/subscribeNewsletter';
 
 const NAV_LINKS = [
   { label: 'Operation: Moon Joy', to: '/moon-joy' },
@@ -102,7 +101,7 @@ export default function HomeDock() {
           <span>RSVP</span>
         </a>
 
-        <DockNewsletter />
+        <DockLink to="/subscribe" icon={Mail} label="Subscribe" />
 
         <DockLink to="/Shop" icon={ShoppingBag} label="Shop" />
       </div>
@@ -123,79 +122,5 @@ function DockLink({ to, icon: Icon, label }) {
       <Icon className="h-4 w-4" />
       <span className="hidden sm:inline">{label}</span>
     </Link>
-  );
-}
-
-function DockNewsletter() {
-  const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState('idle');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email || !email.includes('@')) return;
-    setStatus('loading');
-    try {
-      await subscribeNewsletter({ email, source: 'general' });
-      setStatus('success');
-    } catch {
-      setStatus('idle');
-    }
-  };
-
-  if (!open) {
-    return (
-      <button
-        onClick={() => setOpen(true)}
-        className="flex h-11 items-center gap-1.5 rounded-full px-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white/70 transition-all hover:bg-white/10 hover:text-[#c9a87c]"
-      >
-        <Mail className="h-4 w-4" />
-        <span className="hidden sm:inline">Subscribe</span>
-      </button>
-    );
-  }
-
-  return (
-    <div className="relative">
-      <div
-        className="absolute bottom-14 right-0 w-64 rounded-2xl p-3 shadow-2xl"
-        style={{ background: 'rgba(7,17,31,0.97)', border: '1px solid rgba(201,168,124,0.2)', backdropFilter: 'blur(20px)' }}
-      >
-        {status === 'success' ? (
-          <div className="flex items-center gap-1.5 px-1 py-2 text-xs font-semibold text-[#c9a87c]">
-            <Check className="h-4 w-4" /> You're in — check your inbox.
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex items-center gap-2">
-            <input
-              type="email"
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Your email"
-              className="flex-1 px-3 py-2 rounded-full text-xs text-white placeholder-white/40 focus:outline-none focus:ring-1"
-              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(201,168,124,0.3)' }}
-            />
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="inline-flex items-center gap-1 px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all hover:opacity-90"
-              style={{ background: '#c9a87c', color: '#07111f' }}
-            >
-              {status === 'loading' ? '…' : 'Join'}
-              <ChevronRight className="h-3 w-3" />
-            </button>
-          </form>
-        )}
-      </div>
-
-      <button
-        onClick={() => setOpen(false)}
-        className="flex h-11 items-center gap-1.5 rounded-full px-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#c9a87c] transition-all hover:bg-white/10"
-      >
-        <Mail className="h-4 w-4" />
-        <span className="hidden sm:inline">Subscribe</span>
-      </button>
-    </div>
   );
 }

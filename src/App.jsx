@@ -61,6 +61,7 @@ const EventsCalendar = lazy(() => import('@/pages/EventsCalendar'));
 const GroundControl = lazy(() => import('@/pages/GroundControl'));
 const Shop = lazy(() => import('@/pages/Shop'));
 const Membership = lazy(() => import('@/pages/Membership'));
+const Subscribe = lazy(() => import('@/pages/Subscribe'));
 const Profile = lazy(() => import('@/pages/Profile'));
 
 
@@ -210,6 +211,7 @@ const AuthenticatedApp = () => {
       <Route path="/ground-control" element={<GroundControl />} />
       <Route path="/Shop" element={<Shop />} />
       <Route path="/Membership" element={<Membership />} />
+      <Route path="/subscribe" element={<Subscribe />} />
       <Route path="/Profile" element={<Profile />} />
       <Route path="/volume-one" element={<Navigate to="/archive/696aec2d99297cdbe96ee71e" replace />} />
       <Route path="/volume-one-men" element={<Navigate to="/archive/6a6b699d7b16a7017ce0c3c0" replace />} />
