@@ -1,7 +1,10 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
+import { createProMembershipCheckout } from '@/functions/createProMembershipCheckout';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -11,15 +14,41 @@ const CREAM = '#faf8f5';
 export default function AccessTierCard({ tier, index }) {
   const popular = tier.id === 'pro';
   const business = tier.id === 'business';
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const handleCTA = () => {
+  const handleCTA = async () => {
+    setError(null);
+
     if (tier.id === 'public') {
       base44.auth.redirectToLogin();
-    } else if (business) {
+      return;
+    }
+
+    if (business) {
       window.location.href = `mailto:partnerships@top100aerospace.com?subject=${encodeURIComponent('Business Membership — Design Partner Inquiry')}`;
-    } else {
-      // Pro: route to checkout when ready; for now, contact
-      window.location.href = `mailto:partnerships@top100aerospace.com?subject=${encodeURIComponent('Pro Membership')}`;
+      return;
+    }
+
+    // Pro
+    try {
+      const authed = await base44.auth.isAuthenticated();
+      if (authed) {
+        navigate('/Profile');
+        return;
+      }
+      setLoading(true);
+      const res = await createProMembershipCheckout({});
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      } else {
+        setError(res.data?.error || 'Something went wrong. Please try again.');
+        setLoading(false);
+      }
+    } catch (e) {
+      setError(e.message || 'Something went wrong. Please try again.');
+      setLoading(false);
     }
   };
 
@@ -68,7 +97,15 @@ export default function AccessTierCard({ tier, index }) {
             Contact Sales
           </span>
         ) : (
-          <>
+          <div>
+            {tier.pricePrefix && (
+              <span
+                className="block text-xs font-medium uppercase tracking-[0.14em]"
+                style={{ color: `${NAVY}80`, fontFamily: "'Montserrat', sans-serif" }}
+              >
+                {tier.pricePrefix}
+              </span>
+            )}
             <span
               className="text-3xl font-bold"
               style={{ color: NAVY }}
@@ -76,7 +113,7 @@ export default function AccessTierCard({ tier, index }) {
               {tier.price}
             </span>
             <span className="ml-1 text-sm text-gray-500">{tier.priceNote}</span>
-          </>
+          </div>
         )}
       </div>
 
@@ -101,8 +138,18 @@ export default function AccessTierCard({ tier, index }) {
         ))}
       </ul>
 
+      {error && (
+        <p
+          className="mb-3 text-center text-xs font-medium"
+          style={{ color: '#b91c1c', fontFamily: "'Montserrat', sans-serif" }}
+        >
+          {error}
+        </p>
+      )}
+
       <Button
         onClick={handleCTA}
+        disabled={loading}
         className="w-full font-bold"
         style={{
           background: popular
@@ -115,7 +162,7 @@ export default function AccessTierCard({ tier, index }) {
           fontFamily: "'Montserrat', sans-serif",
         }}
       >
-        {tier.cta}
+        {loading ? 'Redirecting to Stripe…' : tier.cta}
       </Button>
     </motion.div>
   );

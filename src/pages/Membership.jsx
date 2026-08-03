@@ -35,8 +35,9 @@ const ACCESS_TIERS = [
     id: 'pro',
     name: 'Pro',
     audience: 'Individual, paid',
-    price: '$249',
+    price: '$100',
     priceNote: '/year',
+    pricePrefix: 'Starting at',
     description:
       'The pitch is not visibility — visibility is earned. The pitch is the graph: the verified network, searchable.',
     features: [
