@@ -1,298 +1,220 @@
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Check, Users, Building2, Rocket, Crown, Star, Briefcase } from 'lucide-react';
+import { Rocket, Briefcase } from 'lucide-react';
 import { motion } from 'framer-motion';
+import StandingAxis from '@/components/membership/StandingAxis';
+import AccessTierCard from '@/components/membership/AccessTierCard';
+import SelectionIntegrityLine from '@/components/membership/SelectionIntegrityLine';
 
-const brandColors = {
-  navyDeep: '#1e3a5a',
-  skyBlue: '#4a90b8',
-  goldPrestige: '#c9a87c',
-  goldLight: '#e8d4b8',
-  roseAccent: '#d4a574',
-  cream: '#faf8f5',
-};
+const NAVY = '#1e3a5a';
+const GOLD = '#c9a87c';
+const CREAM = '#faf8f5';
 
-const MEMBERSHIP_TIERS = [
+const ACCESS_TIERS = [
   {
-    id: 'basic',
-    name: 'Basic',
+    id: 'public',
+    name: 'Public',
+    audience: 'Free, forever',
     price: 'Free',
-    priceNote: 'Always free',
-    description: 'Perfect for individuals exploring the aerospace & aviation community.',
-    icon: Users,
-    color: brandColors.skyBlue,
+    priceNote: 'always',
+    description:
+      'Browse the published Volumes. Read the Dispatch. Submit nominations. Attend open events. Receive the newsletter.',
     features: [
-      'Access to public directory',
-      'View nominee profiles',
-      'Community news & updates',
-      'Basic networking features',
-      'Event announcements',
+      'Browse published Volumes',
+      'Read The Dispatch newsletter',
+      'Submit nominations — free forever',
+      'Attend open events',
+      'Receive the newsletter',
     ],
     cta: 'Join Free',
-    popular: false,
   },
   {
-    id: 'professional',
+    id: 'pro',
     name: 'Pro',
+    audience: 'Individual, paid',
     price: '$249',
     priceNote: '/year',
-    description: 'For professionals seeking to expand their network and visibility.',
-    icon: Star,
-    color: brandColors.goldPrestige,
+    description:
+      'The pitch is not visibility — visibility is earned. The pitch is the graph: the verified network, searchable.',
     features: [
-      'Everything in Basic',
-      'Enhanced profile visibility',
-      'Priority nomination consideration',
-      'Direct messaging',
-      'Exclusive webinars & events',
-      'Industry insights & reports',
+      'Search the verified network by discipline, domain, geography, seniority',
+      'Direct messaging to Fellows who have opted in',
+      'Season briefings and closed Moon Joy sessions',
+      'Archive access across all Volumes',
+      'Phoenix Project proposal rights',
     ],
-    cta: 'Upgrade to Pro',
-    popular: true,
+    cta: 'Get Pro',
   },
   {
     id: 'business',
     name: 'Business',
-    price: '$1,999',
-    priceNote: '/year',
-    description: 'For businesses & organizations connecting with top aerospace talent.',
-    icon: Building2,
-    color: brandColors.navyDeep,
+    audience: 'Organization, paid',
+    price: null,
+    priceNote: '',
+    description:
+      'Where the revenue lives. Run as a design-partner motion — five aerospace employers, discounted, in exchange for telling us what the product needs to be.',
     features: [
-      'Everything in Pro',
-      'Company profile page',
-      'Job posting privileges',
-      'Talent sourcing tools',
-      'Sponsor opportunities',
-      'Partner badge & recognition',
-      'Dedicated account manager',
+      'Talent search and saved searches',
+      'Verified company profile',
+      'Roles board',
+      'Season sponsorship eligibility (eligibility to buy, not sponsorship itself)',
+      'Named account contact',
     ],
     cta: 'Contact Sales',
-    popular: false,
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 'Custom',
-    priceNote: 'Contact us',
-    description: 'Tailored solutions for large organizations and government agencies.',
-    icon: Crown,
-    color: brandColors.roseAccent,
-    features: [
-      'Everything in Business',
-      'Custom integrations',
-      'White-label options',
-      'Bulk team accounts',
-      'Priority support',
-      'Custom reporting & analytics',
-      'Strategic partnership benefits',
-    ],
-    cta: 'Get in Touch',
-    popular: false,
   },
 ];
 
-function TierCard({ tier, index }) {
-  const Icon = tier.icon;
-  
-  const handleCTA = () => {
-    if (tier.id === 'basic') {
-      base44.auth.redirectToLogin();
-    } else {
-      // For paid tiers, could redirect to contact or checkout
-      window.location.href = `mailto:partnerships@top100aerospace.com?subject=${encodeURIComponent(`Interest in ${tier.name} Membership`)}`;
-    }
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className={`relative rounded-2xl p-6 flex flex-col h-full ${
-        tier.popular ? 'ring-2 ring-offset-2' : 'border'
-      }`}
-      style={{
-        background: tier.popular 
-          ? `linear-gradient(135deg, ${brandColors.cream}, white)` 
-          : 'white',
-        borderColor: tier.popular ? brandColors.goldPrestige : `${brandColors.navyDeep}20`,
-        ringColor: tier.popular ? brandColors.goldPrestige : undefined,
-      }}
-    >
-      {tier.popular && (
-        <div 
-          className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white"
-          style={{ background: brandColors.goldPrestige }}
-        >
-          MOST POPULAR
-        </div>
-      )}
-
-      <div className="flex items-center gap-3 mb-4">
-        <div 
-          className="w-12 h-12 rounded-xl flex items-center justify-center"
-          style={{ background: `${tier.color}15` }}
-        >
-          <Icon className="w-6 h-6" style={{ color: tier.color }} />
-        </div>
-        <div>
-          <h3 
-            className="text-lg font-bold"
-            style={{ color: brandColors.navyDeep, fontFamily: "'Montserrat', sans-serif" }}
-          >
-            {tier.name}
-          </h3>
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <span 
-          className="text-3xl font-bold"
-          style={{ color: brandColors.navyDeep }}
-        >
-          {tier.price}
-        </span>
-        <span className="text-sm text-gray-500 ml-1">{tier.priceNote}</span>
-      </div>
-
-      <p 
-        className="text-sm mb-6"
-        style={{ color: `${brandColors.navyDeep}99`, fontFamily: "'Montserrat', sans-serif" }}
-      >
-        {tier.description}
-      </p>
-
-      <ul className="space-y-3 mb-6 flex-1">
-        {tier.features.map((feature, idx) => (
-          <li key={idx} className="flex items-start gap-2">
-            <Check 
-              className="w-4 h-4 mt-0.5 flex-shrink-0" 
-              style={{ color: tier.color }} 
-            />
-            <span 
-              className="text-sm"
-              style={{ color: brandColors.navyDeep, fontFamily: "'Montserrat', sans-serif" }}
-            >
-              {feature}
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      <Button
-        onClick={handleCTA}
-        className="w-full"
-        style={{
-          background: tier.popular 
-            ? `linear-gradient(135deg, ${brandColors.goldPrestige}, ${brandColors.roseAccent})`
-            : tier.id === 'basic' 
-              ? brandColors.navyDeep 
-              : 'transparent',
-          color: tier.id === 'basic' || tier.popular ? 'white' : brandColors.navyDeep,
-          border: tier.id !== 'basic' && !tier.popular ? `2px solid ${brandColors.navyDeep}` : 'none',
-          fontFamily: "'Montserrat', sans-serif",
-        }}
-      >
-        {tier.cta}
-      </Button>
-    </motion.div>
-  );
-}
-
 export default function Membership() {
   return (
-    <div className="min-h-screen p-4 md:p-8" style={{ background: brandColors.cream }}>
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen p-4 md:p-8" style={{ background: CREAM }}>
+      <div className="mx-auto max-w-5xl">
         {/* Hero */}
-        <div className="text-center mb-12">
+        <div className="mb-14 text-center">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
-            style={{ background: `${brandColors.goldPrestige}20` }}
+            className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2"
+            style={{ background: `${GOLD}20` }}
           >
-            <Rocket className="w-4 h-4" style={{ color: brandColors.goldPrestige }} />
-            <span 
+            <Rocket className="h-4 w-4" style={{ color: GOLD }} />
+            <span
               className="text-sm font-medium"
-              style={{ color: brandColors.navyDeep, fontFamily: "'Montserrat', sans-serif" }}
+              style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif" }}
             >
-              Join the Network
+              Two axes. Never touching.
             </span>
           </motion.div>
 
-          <h1 
-            className="text-4xl md:text-5xl font-bold mb-4"
-            style={{ 
-              color: brandColors.navyDeep, 
-              fontFamily: "'Playfair Display', Georgia, serif" 
-            }}
+          <h1
+            className="mb-4 text-4xl font-bold md:text-5xl"
+            style={{ color: NAVY, fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            Choose Your Membership
+            Standing is earned. Access is purchased.
           </h1>
-          <p 
-            className="text-lg max-w-2xl mx-auto"
-            style={{ 
-              color: `${brandColors.navyDeep}99`, 
-              fontFamily: "'Montserrat', sans-serif" 
-            }}
+          <p
+            className="mx-auto max-w-2xl text-base md:text-lg"
+            style={{ color: `${NAVY}99`, fontFamily: "'Montserrat', sans-serif" }}
           >
-            Connect with aerospace & aviation leaders. From individual professionals 
-            to enterprise organizations, we have a membership tier for you.
+            The modern aerospace chamber runs on two axes that never touch. What you
+            earn here, no one can buy. What you buy here, buys you no standing.
           </p>
         </div>
 
-        {/* Tiers Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {MEMBERSHIP_TIERS.map((tier, index) => (
-            <TierCard key={tier.id} tier={tier} index={index} />
+        {/* Axis I — Standing */}
+        <StandingAxis />
+
+        {/* Axis II — Access */}
+        <div className="mb-8 text-center">
+          <span
+            className="text-[11px] font-bold uppercase tracking-[0.24em]"
+            style={{ color: GOLD }}
+          >
+            Axis II · Access
+          </span>
+          <h2
+            className="mt-2 text-2xl md:text-3xl font-bold"
+            style={{ color: NAVY, fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Tools and community. Never standing.
+          </h2>
+        </div>
+
+        <div className="mb-8 grid gap-6 md:grid-cols-3">
+          {ACCESS_TIERS.map((tier, index) => (
+            <AccessTierCard key={tier.id} tier={tier} index={index} />
           ))}
         </div>
 
-        {/* FAQ / Additional Info */}
-        <div 
-          className="rounded-2xl p-8 text-center"
-          style={{ background: `${brandColors.navyDeep}08` }}
+        {/* Permanent integrity line */}
+        <SelectionIntegrityLine />
+
+        {/* Fellows comped callout */}
+        <div
+          className="mb-12 rounded-2xl p-6 text-center"
+          style={{ background: `${NAVY}08` }}
         >
-          <h2 
-            className="text-2xl font-bold mb-4"
-            style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', serif" }}
+          <h3
+            className="mb-2 text-xl font-bold"
+            style={{ color: NAVY, fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Fellows get Pro comped. Permanently.
+          </h3>
+          <p
+            className="mx-auto max-w-2xl text-sm leading-6"
+            style={{ color: `${NAVY}99`, fontFamily: "'Montserrat', sans-serif" }}
+          >
+            It costs nothing, it is the correct signal, and it means every Fellow is
+            inside the tool — generating the engagement data our measurement thesis
+            depends on.
+          </p>
+        </div>
+
+        {/* Partner — off the pricing page */}
+        <div
+          className="mb-12 rounded-2xl border p-6"
+          style={{ borderColor: `${NAVY}20`, background: 'white' }}
+        >
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3
+                className="text-lg font-bold"
+                style={{ color: NAVY, fontFamily: "'Montserrat', sans-serif" }}
+              >
+                Partner
+              </h3>
+              <p
+                className="mt-1 max-w-xl text-sm leading-6"
+                style={{ color: `${NAVY}99`, fontFamily: "'Montserrat', sans-serif" }}
+              >
+                Sponsorship, API access, research and data licensing, Local Legends
+                placement. Sales-led, priced per engagement — not on this page.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() =>
+                (window.location.href = `mailto:partnerships@top100aerospace.com?subject=${encodeURIComponent('Partner Inquiry')}`)
+              }
+              style={{
+                borderColor: NAVY,
+                color: NAVY,
+                fontFamily: "'Montserrat', sans-serif",
+              }}
+            >
+              <Briefcase className="mr-2 h-4 w-4" />
+              Talk to Partnerships
+            </Button>
+          </div>
+        </div>
+
+        {/* Close */}
+        <div
+          className="rounded-2xl p-8 text-center"
+          style={{ background: `${NAVY}08` }}
+        >
+          <h2
+            className="mb-3 text-2xl font-bold"
+            style={{ color: NAVY, fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Questions?
           </h2>
-          <p 
+          <p
             className="mb-6"
-            style={{ color: `${brandColors.navyDeep}99`, fontFamily: "'Montserrat', sans-serif" }}
+            style={{ color: `${NAVY}99`, fontFamily: "'Montserrat', sans-serif" }}
           >
-            Our team is here to help you find the right membership for your needs.
+            Our team is here to help you find the right access for your needs.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link to="/About">
             <Button
-              variant="outline"
-              onClick={() => window.location.href = 'mailto:support@top100aerospace.com'}
-              style={{ 
-                borderColor: brandColors.navyDeep, 
-                color: brandColors.navyDeep,
-                fontFamily: "'Montserrat', sans-serif"
+              style={{
+                background: NAVY,
+                color: 'white',
+                fontFamily: "'Montserrat', sans-serif",
               }}
             >
-              <Briefcase className="w-4 h-4 mr-2" />
-              Contact Support
+              Learn More About Us
             </Button>
-            <Link to={createPageUrl('About')}>
-              <Button
-                style={{ 
-                  background: brandColors.navyDeep, 
-                  color: 'white',
-                  fontFamily: "'Montserrat', sans-serif"
-                }}
-              >
-                Learn More About Us
-              </Button>
-            </Link>
-          </div>
+          </Link>
         </div>
       </div>
     </div>
