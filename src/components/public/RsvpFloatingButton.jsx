@@ -1,14 +1,13 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { CalendarCheck } from 'lucide-react';
 
-const RSVP_URL = 'https://calendar.app.google/TrL8saY6XS6tdVj1A';
+const MotionLink = motion(Link);
 
 export default function RsvpFloatingButton() {
   return (
-    <motion.a
-      href={RSVP_URL}
-      target="_blank"
-      rel="noopener noreferrer"
+    <MotionLink
+      to="/rsvp"
       initial={{ opacity: 0, scale: 0.8, y: 12 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ delay: 0.5, type: 'spring', stiffness: 220, damping: 18 }}
@@ -20,6 +19,6 @@ export default function RsvpFloatingButton() {
     >
       <CalendarCheck className="h-4 w-4" />
       RSVP
-    </motion.a>
+    </MotionLink>
   );
 }

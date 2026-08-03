@@ -1,0 +1,47 @@
+{
+  "name": "Rsvp",
+  "type": "object",
+  "properties": {
+    "experience_type": {
+      "type": "string",
+      "enum": [
+        "launch_party",
+        "live_build",
+        "workshop",
+        "ama",
+        "lets_talk"
+      ],
+      "description": "Which experience the user RSVP'd or joined the waitlist for"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "rsvp",
+        "waitlist"
+      ],
+      "default": "rsvp",
+      "description": "Confirmed RSVP for a dated event, or waitlist for an undated experience"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the attendee"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name of the attendee"
+    },
+    "party_size": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of seats reserved (used for the launch party)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional note from the attendee"
+    }
+  },
+  "required": [
+    "experience_type",
+    "user_email"
+  ]
+}

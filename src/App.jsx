@@ -63,6 +63,7 @@ const Shop = lazy(() => import('@/pages/Shop'));
 const Membership = lazy(() => import('@/pages/Membership'));
 const Subscribe = lazy(() => import('@/pages/Subscribe'));
 const Profile = lazy(() => import('@/pages/Profile'));
+const Rsvp = lazy(() => import('@/pages/Rsvp'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -213,6 +214,7 @@ const AuthenticatedApp = () => {
       <Route path="/Membership" element={<Membership />} />
       <Route path="/subscribe" element={<Subscribe />} />
       <Route path="/Profile" element={<Profile />} />
+      <Route path="/rsvp" element={<Rsvp />} />
       <Route path="/volume-one" element={<Navigate to="/archive/696aec2d99297cdbe96ee71e" replace />} />
       <Route path="/volume-one-men" element={<Navigate to="/archive/6a6b699d7b16a7017ce0c3c0" replace />} />
       <Route path="/volume-one-top100" element={<Navigate to="/archive/6a6b70136ccb7c358f77dd7f" replace />} />

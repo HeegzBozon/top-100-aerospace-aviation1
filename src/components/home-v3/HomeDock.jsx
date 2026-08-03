@@ -16,7 +16,6 @@ const NAV_LINKS = [
   { label: 'Mission Theatre', to: '/LaunchParty' },
 ];
 
-const RSVP_URL = 'https://calendar.app.google/TrL8saY6XS6tdVj1A';
 
 // Single sticky bottom dock that consolidates the old top-center nav, the
 // top-right menu toggle, and the floating RSVP button into one glass bar.
@@ -94,16 +93,14 @@ export default function HomeDock() {
 
         <DockLink to="/nominate" icon={Users} label="Nominate" />
 
-        <a
-          href={RSVP_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          to="/rsvp"
           className="flex h-11 items-center gap-1.5 rounded-full px-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[#07111f] transition-all hover:brightness-105 active:scale-95"
           style={{ background: 'linear-gradient(135deg, #c9a87c, #e0c79a)' }}
         >
           <CalendarCheck className="h-4 w-4" />
           <span>RSVP</span>
-        </a>
+        </Link>
 
         <DockLink to="/subscribe" icon={Mail} label="Subscribe" />
 
