@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Shield, CalendarCheck, Users, ShoppingBag, Mail } from 'lucide-react';
+import { Menu, X, Shield, CalendarCheck, Users, ShoppingBag, Mail, Home } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const NAV_LINKS = [
@@ -85,6 +85,10 @@ export default function HomeDock() {
         >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
+
+        <Divider />
+
+        <DockLink to="/" icon={Home} label="Home" />
 
         <Divider />
 
