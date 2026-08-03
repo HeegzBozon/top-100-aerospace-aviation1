@@ -15,6 +15,7 @@ import StartHereSplit from '@/components/my-top100/StartHereSplit';
 import { saveRankedVote } from '@/functions/saveRankedVote';
 import { Loader2, Pencil, Check, Rocket, LogIn } from 'lucide-react';
 import AnchorVoting from '@/components/voting/AnchorVoting';
+import VoteComingSoon from '@/components/my-top100/VoteComingSoon';
 
 function generateShareCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -401,10 +402,10 @@ export default function MyTop100() {
         </div>
       )}
 
-      {/* ── VOTE TAB (anchor selection) ── */}
+      {/* ── VOTE TAB (anchor selection — admins only; teaser for everyone else) ── */}
       {activeTab === 'vote' && (
         <div className="flex-1 flex flex-col overflow-hidden">
-          <AnchorVoting user={user} />
+          {user?.role === 'admin' ? <AnchorVoting user={user} /> : <VoteComingSoon />}
         </div>
       )}
 
