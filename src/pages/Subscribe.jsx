@@ -95,7 +95,7 @@ export default function Subscribe() {
             className="mb-4 text-4xl font-bold md:text-5xl"
             style={{ color: NAVY, fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            We don't rank. We measure.
+            Not a ranking. A record.
           </h1>
           <p
             className="mx-auto max-w-xl text-base md:text-lg"

@@ -1011,7 +1011,7 @@ export default function Hangouts() {
           className="rounded-2xl p-8 border border-[#c9a87c]/20 mb-6"
           style={{ background: 'rgba(201,168,124,0.04)' }}>
           <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">The philosophy.</p>
-          {pullQuote("We don't rank. We measure.")}
+          {pullQuote("Not a ranking. A record.")}
           <p className="text-white/65 text-sm leading-relaxed mb-3">That distinction matters more than it might seem. Rankings create winners and losers. Measurement creates records. A ranking is a moment in time. A record is permanent.</p>
           <p className="text-white/65 text-sm leading-relaxed mb-3">What we built is the institutional infrastructure that aerospace and aviation has never had: a credentialed community, a verified talent graph, and a live activation layer — all in one platform. The index, the archive, the governance system, and now the community engagement layer through Operation: Moon Joy.</p>
           <p className="text-white/65 text-sm leading-relaxed">Think of it as the Chamber of Commerce for the new space economy. Operation: Moon Joy is the activation surface. The talent graph is the moat.</p>

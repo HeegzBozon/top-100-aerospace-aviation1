@@ -115,8 +115,8 @@ export default function ExperienceHero() {
             <CalendarDays className="h-3.5 w-3.5" /> Chamber New.0 · Aerospace Experience Calendar
           </div>
           <h1 className="leading-[0.95] tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-            <span className="block text-4xl font-bold text-white sm:text-5xl md:text-6xl">We don't rank.</span>
-            <span className="block text-4xl font-bold text-[#c9a87c] sm:text-5xl md:text-6xl">We measure.</span>
+            <span className="block text-4xl font-bold text-white sm:text-5xl md:text-6xl">Not a ranking.</span>
+            <span className="block text-4xl font-bold text-[#c9a87c] sm:text-5xl md:text-6xl">A record.</span>
           </h1>
           <p className="max-w-xl text-sm leading-7 text-slate-300 sm:text-base">
             The modern aerospace chamber — a media, events & ecosystem company. <span className="text-white">Explore</span> the signal, <span className="text-[#c9a87c]">participate</span> in the ritual, <span className="text-white">accelerate</span> the work, <span className="text-[#c9a87c]">consult</span> the expertise.

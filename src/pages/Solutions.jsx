@@ -125,7 +125,7 @@ export default function Solutions() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            We don't rank. We measure. TOP 100 Aerospace &amp; Aviation is the verified reputation graph — 300+ independently assessed Fellows across 40+ countries. Built for enterprises that need credible talent intelligence, not opinion polls.
+            Not a ranking — a record. TOP 100 Aerospace &amp; Aviation is the verified reputation graph — 300+ independently assessed Fellows across 40+ countries. Built for enterprises that need credible talent intelligence, not opinion polls.
           </motion.p>
 
           <motion.div

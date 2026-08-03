@@ -178,7 +178,7 @@ export default function Vision2030() {
           <p className="uppercase tracking-[0.25em] text-[#c9a87c] text-xs font-semibold mb-4">The Platform</p>
           <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             className="text-3xl md:text-4xl font-bold text-white mb-8 leading-snug">
-            We don't rank. We measure.
+            Not a ranking. A record.
           </h2>
         </motion.div>
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}

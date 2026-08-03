@@ -55,10 +55,10 @@ export default function EditorialHero() {
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
           <span className="block text-5xl font-bold text-white sm:text-6xl md:text-7xl lg:text-8xl">
-            We don't rank.
-          </span>
+            Not a ranking.
+           </span>
           <span className="mt-1 block text-5xl font-bold text-[#c9a87c] sm:text-6xl md:text-7xl lg:text-8xl">
-            We measure.
+            A record.
           </span>
         </motion.h1>
 

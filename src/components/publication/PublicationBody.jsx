@@ -260,7 +260,7 @@ export default function PublicationBody({ suppressFloatingActions = false }) {
       {/* Editorial break */}
       <EditorialBreak
         kicker="The Methodology"
-        text="We don't rank. We measure. The verified reputation graph of aerospace & aviation."
+        text="Not a ranking — a record. The verified reputation graph of aerospace & aviation."
       />
 
       {/* SECTION 7.5: Previous Volumes */}
