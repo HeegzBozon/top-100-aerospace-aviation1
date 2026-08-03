@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import StandingAxis from '@/components/membership/StandingAxis';
 import AccessTierCard from '@/components/membership/AccessTierCard';
 import SelectionIntegrityLine from '@/components/membership/SelectionIntegrityLine';
+import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
+import AdvocacyStrip from '@/components/events/AdvocacyStrip';
+import HomeDock from '@/components/home-v3/HomeDock';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -66,8 +69,14 @@ const ACCESS_TIERS = [
 
 export default function Membership() {
   return (
-    <div className="min-h-screen p-4 md:p-8" style={{ background: CREAM }}>
-      <div className="mx-auto max-w-5xl">
+    <div className="min-h-screen" style={{ background: CREAM }}>
+      {/* HomeV3-aligned top chrome */}
+      <AnnouncementBanner />
+      <div className="relative z-[99]">
+        <AdvocacyStrip />
+      </div>
+
+      <div className="mx-auto max-w-5xl p-4 md:p-8">
         {/* Hero */}
         <div className="mb-14 text-center">
           <motion.div
@@ -217,6 +226,12 @@ export default function Membership() {
           </Link>
         </div>
       </div>
+
+      {/* Spacer so the sticky dock never covers content */}
+      <div className="h-24" />
+
+      {/* HomeV3-aligned sticky bottom dock */}
+      <HomeDock />
     </div>
   );
 }
