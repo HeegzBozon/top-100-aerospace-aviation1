@@ -150,7 +150,7 @@ function DockNewsletter() {
         className="flex h-11 items-center gap-1.5 rounded-full px-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white/70 transition-all hover:bg-white/10 hover:text-[#c9a87c]"
       >
         <Mail className="h-4 w-4" />
-        <span className="hidden sm:inline">Newsletter</span>
+        <span className="hidden sm:inline">Subscribe</span>
       </button>
     );
   }
@@ -194,7 +194,7 @@ function DockNewsletter() {
         className="flex h-11 items-center gap-1.5 rounded-full px-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#c9a87c] transition-all hover:bg-white/10"
       >
         <Mail className="h-4 w-4" />
-        <span className="hidden sm:inline">Newsletter</span>
+        <span className="hidden sm:inline">Subscribe</span>
       </button>
     </div>
   );
