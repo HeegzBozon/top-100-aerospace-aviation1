@@ -105,7 +105,7 @@ const AuthenticatedApp = () => {
       </div>
     }>
     <Routes>
-      <Route path="/" element={<HomeV2 />} />
+      <Route path="/" element={<HomeV3 />} />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />
       <Route path="/onboarding-admin" element={<OnboardingAdmin />} />
