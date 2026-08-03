@@ -1,6 +1,5 @@
-
 import { createClientFromRequest } from 'npm:@base44/sdk@0.5.0';
-import { runProcessBatch } from './processScoreBatch';
+import { runProcessBatch } from '../../shared/scoreBatch.ts';
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -11,10 +10,10 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
  */
 async function runScheduledUpdate(serviceRole) {
     console.log('[MASTER] Starting full score recalculation...');
-    
+
     const seasons = await serviceRole.entities.Season.list('-start_date');
     const activeSeason = seasons.find(s => ['voting_open', 'active', 'nominations_open'].includes(s.status)) || seasons[0];
-    
+
     if (!activeSeason) {
         throw new Error('No active or valid season found. Aborting.');
     }
@@ -31,7 +30,7 @@ async function runScheduledUpdate(serviceRole) {
         const result = await runProcessBatch(serviceRole, activeSeason.id, batchIndex);
         const processedInBatch = result.processed || 0;
         totalProcessed += processedInBatch;
-        
+
         console.log(`[MASTER] Batch ${batchIndex} complete. Processed in batch: ${processedInBatch}`);
 
         if (processedInBatch === 0) {
