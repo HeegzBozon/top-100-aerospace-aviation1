@@ -18,7 +18,7 @@ export default function YearProgressHourglass() {
   const [data, setData] = useState(getYearProgress);
 
   useEffect(() => {
-    const t = setInterval(() => setData(getYearProgress()), 1000);
+    const t = setInterval(() => setData(getYearProgress()), 80);
     return () => clearInterval(t);
   }, []);
 
@@ -116,16 +116,24 @@ export default function YearProgressHourglass() {
           <div className="relative h-2.5 w-full overflow-hidden rounded-full border border-white/10 bg-white/5">
             <motion.div
               className="absolute inset-y-0 left-0 rounded-full"
-              style={{ background: 'linear-gradient(90deg, #c9a87c, #e8cf9e, #c9a87c)', boxShadow: '0 0 14px rgba(201,168,124,0.6)' }}
-              initial={{ width: 0 }}
-              animate={{ width: `${percent}%` }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
+              style={{
+                background: 'linear-gradient(90deg, #a38965, #c9a87c 30%, #e8cf9e 50%, #c9a87c 70%, #a38965)',
+                backgroundSize: '300% 100%',
+                boxShadow: '0 0 14px rgba(201,168,124,0.55)',
+              }}
+              initial={false}
+              animate={{ width: `${percent}%`, backgroundPositionX: ['0%', '300%'] }}
+              transition={{
+                width: { duration: 0.12, ease: 'linear' },
+                backgroundPositionX: { duration: 6, repeat: Infinity, ease: 'linear' },
+              }}
             >
+              {/* Seamless sand sheen — travels fully off-screen before looping */}
               <motion.div
-                className="absolute inset-0 rounded-full"
-                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)' }}
-                animate={{ x: ['-100%', '100%'] }}
-                transition={{ duration: 2.4, repeat: Infinity, ease: 'linear' }}
+                className="absolute inset-y-0 left-0 w-[40%] rounded-full"
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)' }}
+                animate={{ x: ['-40%', '260%'] }}
+                transition={{ duration: 3.2, repeat: Infinity, ease: 'linear' }}
               />
             </motion.div>
           </div>
