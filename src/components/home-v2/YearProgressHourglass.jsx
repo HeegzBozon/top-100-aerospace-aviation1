@@ -84,17 +84,10 @@ export default function YearProgressHourglass() {
           {data.p > 0.001 && data.p < 0.999 && (
             <div className="pointer-events-none absolute left-1/2 top-[46px] -translate-x-1/2">
               {sandDots.map((i) => (
-                <motion.span
+                <span
                   key={i}
-                  className="absolute h-[2px] w-[2px] rounded-full bg-[#e8cf9e]"
-                  initial={{ y: 0, opacity: 0 }}
-                  animate={{ y: [0, 18], opacity: [0, 1, 0] }}
-                  transition={{
-                    duration: 0.7,
-                    repeat: Infinity,
-                    delay: i * 0.14,
-                    ease: 'easeIn',
-                  }}
+                  className="yp-dot absolute h-[2px] w-[2px] rounded-full bg-[#e8cf9e]"
+                  style={{ animationDelay: `${i * 0.14}s` }}
                 />
               ))}
             </div>
@@ -114,28 +107,12 @@ export default function YearProgressHourglass() {
 
           {/* Track */}
           <div className="relative h-2.5 w-full overflow-hidden rounded-full border border-white/10 bg-white/5">
-            <motion.div
-              className="absolute inset-y-0 left-0 rounded-full"
-              style={{
-                background: 'linear-gradient(90deg, #a38965, #c9a87c 30%, #e8cf9e 50%, #c9a87c 70%, #a38965)',
-                backgroundSize: '300% 100%',
-                boxShadow: '0 0 14px rgba(201,168,124,0.55)',
-              }}
-              initial={false}
-              animate={{ width: `${percent}%`, backgroundPositionX: ['0%', '300%'] }}
-              transition={{
-                width: { duration: 0.12, ease: 'linear' },
-                backgroundPositionX: { duration: 6, repeat: Infinity, ease: 'linear' },
-              }}
+            <div
+              className="yp-fill absolute inset-y-0 left-0 rounded-full"
+              style={{ width: `${percent}%` }}
             >
-              {/* Seamless sand sheen — travels fully off-screen before looping */}
-              <motion.div
-                className="absolute inset-y-0 left-0 w-[40%] rounded-full"
-                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)' }}
-                animate={{ x: ['-40%', '260%'] }}
-                transition={{ duration: 3.2, repeat: Infinity, ease: 'linear' }}
-              />
-            </motion.div>
+              <div className="yp-sheen absolute inset-y-0 left-0 w-[40%] rounded-full" />
+            </div>
           </div>
 
           <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-white/45">
