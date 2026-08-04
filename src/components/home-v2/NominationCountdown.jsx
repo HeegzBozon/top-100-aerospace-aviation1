@@ -30,9 +30,9 @@ export default function NominationCountdown() {
   ], [timeLeft]);
 
   return (
-    <div className="max-w-2xl rounded-3xl border border-[#c9a87c]/30 bg-[#07111f]/60 backdrop-blur-xl shadow-[0_0_50px_rgba(201,168,124,0.15)]">
+    <div className="mt-7 max-w-2xl rounded-3xl border border-[#c9a87c]/30 bg-[#07111f]/60 backdrop-blur-xl shadow-[0_0_50px_rgba(201,168,124,0.15)]">
       {/* Header row */}
-      <div className="flex items-center justify-between px-5 pt-3.5 pb-2.5 border-b border-white/8">
+      <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-white/8">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] animate-pulse" />
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#c9a87c]">Nominations close</p>
@@ -41,7 +41,7 @@ export default function NominationCountdown() {
       </div>
 
       {/* Countdown + CTA side by side */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 sm:px-5">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-4 sm:px-5">
         {/* Timer blocks */}
         <div className="grid grid-cols-4 gap-1.5 sm:gap-2 w-full sm:flex-1">
           {units.map(([label, value]) => (
