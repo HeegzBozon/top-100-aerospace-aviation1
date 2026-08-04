@@ -11,12 +11,7 @@ function getYearProgress() {
   const p = Math.min(Math.max(elapsed / total, 0), 1);
   const dayOfYear = Math.floor(elapsed / 86400000) + 1;
   const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-  const remainingMs = Math.max(end - now.getTime(), 0);
-  const days = Math.floor(remainingMs / 86400000);
-  const hours = Math.floor((remainingMs % 86400000) / 3600000);
-  const minutes = Math.floor((remainingMs % 3600000) / 60000);
-  const seconds = Math.floor((remainingMs % 60000) / 1000);
-  return { p, dayOfYear, totalDays: isLeap ? 366 : 365, year, days, hours, minutes, seconds };
+  return { p, dayOfYear, totalDays: isLeap ? 366 : 365, year };
 }
 
 export default function YearProgressHourglass() {
@@ -38,7 +33,7 @@ export default function YearProgressHourglass() {
 
   return (
     <div className="mx-auto max-w-2xl rounded-3xl border border-[#c9a87c]/25 bg-[#07111f]/50 backdrop-blur-xl shadow-[0_0_40px_rgba(201,168,124,0.10)]">
-      <div className="flex items-center gap-4 px-5 py-4">
+      <div className="flex items-center gap-4 px-4 py-3">
         {/* Hourglass visual */}
         <div className="relative h-[72px] w-[56px] shrink-0">
           <svg viewBox="0 0 56 72" className="h-full w-full drop-shadow-[0_0_10px_rgba(201,168,124,0.35)]">
@@ -130,39 +125,8 @@ export default function YearProgressHourglass() {
             </span>
             <span>Dec 31</span>
           </div>
-
-          {/* Countdown to year end */}
-          <div className="mt-2 flex items-center justify-between gap-1">
-            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/45">Time remaining</span>
-            <div className="flex items-center gap-1.5 tabular-nums">
-              <CountdownUnit value={data.days} label="d" />
-              <Sep />
-              <CountdownUnit value={data.hours} label="h" />
-              <Sep />
-              <CountdownUnit value={data.minutes} label="m" />
-              <Sep />
-              <CountdownUnit value={data.seconds} label="s" />
-            </div>
-          </div>
         </div>
       </div>
     </div>
   );
-}
-
-function pad(n) {
-  return String(n).padStart(2, '0');
-}
-
-function CountdownUnit({ value, label }) {
-  return (
-    <span className="text-[11px] font-bold text-white">
-      {pad(value)}
-      <span className="ml-0.5 text-[9px] font-semibold text-[#c9a87c]">{label}</span>
-    </span>
-  );
-}
-
-function Sep() {
-  return <span className="text-[10px] text-white/25">:</span>;
 }
