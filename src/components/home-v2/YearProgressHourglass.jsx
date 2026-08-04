@@ -106,7 +106,7 @@ export default function YearProgressHourglass() {
               <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#c9a87c]">{data.year} Year Progress</span>
             </div>
             <span className="text-2xl font-bold tabular-nums text-white sm:text-3xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-              {percent.toFixed(2)}<span className="text-base text-[#c9a87c]">%</span>
+              {percent.toFixed(5)}<span className="text-base text-[#c9a87c]">%</span>
             </span>
           </div>
 
