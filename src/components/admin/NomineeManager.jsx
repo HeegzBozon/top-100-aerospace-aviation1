@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Loader2, UserPlus, Search, Edit, Eye, ShieldCheck, ShieldOff, Trophy, Brain, Download, Medal, ContactRound } from 'lucide-react';
+import { Loader2, UserPlus, Search, Edit, Eye, ShieldCheck, ShieldOff, Trophy, Brain, Download, Medal, ContactRound, Database } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import NomineeForm from './NomineeForm';
 import NomineeViewModal from './NomineeViewModal';
@@ -24,6 +24,7 @@ export default function NomineeManager({ seasons }) {
   const [viewingNominee, setViewingNominee] = useState(null);
   const [reviewingNominee, setReviewingNominee] = useState(null); // New state for review wizard
   const [processingId, setProcessingId] = useState(null);
+  const [exportingFull, setExportingFull] = useState(false);
 
   const { toast } = useToast();
 
@@ -379,6 +380,87 @@ export default function NomineeManager({ seasons }) {
     });
   };
 
+  // Flatten a nominee record into a flat { key: string } map, expanding nested
+  // objects one level deep (e.g. social_stats.linkedin_followers) and joining
+  // arrays with '; '. Built-in fields are kept as top-level keys.
+  const flattenNominee = (obj, prefix = '', out = {}) => {
+    for (const [k, v] of Object.entries(obj || {})) {
+      const key = prefix ? `${prefix}.${k}` : k;
+      if (v === null || v === undefined) continue;
+      if (Array.isArray(v)) {
+        out[key] = v.map((x) => (typeof x === 'object' ? JSON.stringify(x) : String(x))).join('; ');
+      } else if (typeof v === 'object') {
+        flattenNominee(v, key, out);
+      } else {
+        out[key] = String(v);
+      }
+    }
+    return out;
+  };
+
+  const handleExportFullPool = async () => {
+    setExportingFull(true);
+    try {
+      // Fetch the entire candidate pool across all seasons (no season filter).
+      const all = await Nominee.list('-created_date', 5000);
+      if (!all || all.length === 0) {
+        toast({ variant: 'destructive', title: 'No nominees', description: 'No nominee records found.' });
+        return;
+      }
+
+      // Flatten every record so we keep as much data as each nominee has.
+      const flatRows = all.map((n) => {
+        const built = { id: n.id || '', created_date: n.created_date || '', updated_date: n.updated_date || '', created_by_id: n.created_by_id || '' };
+        return { ...flattenNominee(n), ...built };
+      });
+
+      // Stable column order: put the most useful identifying fields first,
+      // then every other field discovered across the pool, sorted.
+      const keySet = new Set();
+      flatRows.forEach((r) => Object.keys(r).forEach((k) => keySet.add(k)));
+      const preferred = [
+        'id', 'name', 'nominee_email', 'status', 'season_id',
+        'title', 'company', 'country', 'continent', 'industry', 'professional_role',
+        'linkedin_profile_url', 'instagram_url', 'tiktok_url', 'youtube_url', 'website_url',
+        'nominated_by', 'created_date',
+      ];
+      const headers = [
+        ...preferred.filter((k) => keySet.has(k)),
+        ...[...keySet].filter((k) => !preferred.includes(k)).sort(),
+      ];
+
+      const esc = (v) => {
+        const s = v == null ? '' : String(v);
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+
+      const csv = [
+        headers.join(','),
+        ...flatRows.map((r) => headers.map((h) => esc(r[h] ?? '')).join(',')),
+      ].join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `nominees_full_pool_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: 'Full pool export complete',
+        description: `Exported ${all.length} nominees across all seasons with ${headers.length} fields.`,
+      });
+    } catch (e) {
+      console.error('Full pool export failed:', e);
+      toast({ variant: 'destructive', title: 'Export failed', description: e.message });
+    } finally {
+      setExportingFull(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
     let colorClass = '';
     switch (status) {
@@ -417,6 +499,10 @@ export default function NomineeManager({ seasons }) {
             <h2 className="text-xl font-bold text-gray-800">Nominee Manager</h2>
             <p className="text-sm text-gray-500">Approve, reject, and manage nominees for each season.</p>
           </div>
+          <Button onClick={handleExportFullPool} disabled={exportingFull} className="ml-2 bg-indigo-600 hover:bg-indigo-700">
+            {exportingFull ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Database className="w-4 h-4 mr-2" />}
+            Export Full Pool (CSV)
+          </Button>
         </div>
         {seasons && seasons.length > 0 && (
           <div className="flex flex-col sm:flex-row items-center gap-4">
