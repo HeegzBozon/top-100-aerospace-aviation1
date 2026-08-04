@@ -28,6 +28,9 @@ export default function YearProgressHourglass() {
   }, []);
 
   const percent = useMemo(() => data.p * 100, [data.p]);
+  // Quantize so the displayed number ticks up every 5 seconds
+  const stepPct = (5 * 100) / (data.totalDays * 86400);
+  const displayPct = useMemo(() => Math.floor(percent / stepPct) * stepPct, [percent, stepPct]);
   const topFill = 1 - data.p; // sand remaining up top
   const bottomFill = data.p; // sand accumulated below
 
@@ -106,7 +109,7 @@ export default function YearProgressHourglass() {
               <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#c9a87c]">{data.year} Year Progress</span>
             </div>
             <span className="text-2xl font-bold tabular-nums text-white sm:text-3xl" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-              {percent.toFixed(5)}<span className="text-base text-[#c9a87c]">%</span>
+              {displayPct.toFixed(5)}<span className="text-base text-[#c9a87c]">%</span>
             </span>
           </div>
 
