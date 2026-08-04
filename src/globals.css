@@ -109,35 +109,6 @@ body {
   z-index: 2;
 }
 
-/* ===== YEAR PROGRESS — SAND FALL ===== */
-.yp-fill {
-  background: linear-gradient(90deg, #a38965, #c9a87c 30%, #e8cf9e 50%, #c9a87c 70%, #a38965);
-  background-size: 300% 100%;
-  box-shadow: 0 0 14px rgba(201, 168, 124, 0.55);
-  transition: width 0.12s linear;
-  animation: yp-sand-flow 6s linear infinite;
-}
-.yp-sheen {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-  animation: yp-sheen 3.2s linear infinite;
-}
-.yp-dot {
-  animation: yp-fall 0.7s ease-in infinite;
-}
-@keyframes yp-sand-flow {
-  from { background-position-x: 0%; }
-  to { background-position-x: 300%; }
-}
-@keyframes yp-sheen {
-  from { transform: translateX(-40%); }
-  to { transform: translateX(260%); }
-}
-@keyframes yp-fall {
-  0% { transform: translateY(0); opacity: 0; }
-  20% { opacity: 1; }
-  100% { transform: translateY(18px); opacity: 0; }
-}
-
 /* ===== MOBILE-FIRST RESPONSIVE ===== */
 img {
   max-width: 100%;
