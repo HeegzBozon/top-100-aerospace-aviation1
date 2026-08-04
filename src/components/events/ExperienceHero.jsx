@@ -68,7 +68,7 @@ export default function ExperienceHero() {
 
   return (
     <>
-    <section className="relative flex min-h-[100svh] flex-col items-center justify-start overflow-hidden bg-[#07111f] px-4 pt-10 pb-24 text-center sm:px-8 sm:pt-14">
+    <section className="relative flex min-h-[100svh] flex-col items-center justify-start overflow-hidden bg-[#07111f] px-4 pt-6 pb-20 text-center sm:px-8 sm:pt-10">
       <div className="absolute inset-0 pointer-events-none">
         {stars.map((s) => (
           <span key={s.id} className={`absolute rounded-full bg-white/70 ${s.size} animate-pulse`} style={{ top: s.top, left: s.left, animationDelay: s.delay }} />
@@ -83,7 +83,7 @@ export default function ExperienceHero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mx-auto flex max-w-2xl flex-col gap-5"
+          className="mx-auto flex max-w-2xl flex-col gap-4"
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
             <div className="w-full sm:w-[65%]">
@@ -95,11 +95,11 @@ export default function ExperienceHero() {
           </div>
           <NominationCountdown />
           {/* Brand mark — below the nominations countdown */}
-          <div className="mt-5 flex items-center justify-center">
+          <div className="mt-3 flex items-center justify-center">
             <img
               src="https://media.base44.com/images/public/68996845be6727838fdb822e/9066c527f_TOP100AerospaceAviationlogo.png"
               alt="TOP 100 Aerospace & Aviation"
-              className="h-20 w-auto object-contain opacity-95 sm:h-24"
+              className="h-14 w-auto object-contain opacity-95 sm:h-20"
             />
           </div>
         </motion.div>

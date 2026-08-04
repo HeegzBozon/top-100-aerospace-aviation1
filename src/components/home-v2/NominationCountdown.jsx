@@ -30,7 +30,7 @@ export default function NominationCountdown() {
   ], [timeLeft]);
 
   return (
-    <div className="mt-7 max-w-2xl rounded-3xl border border-[#c9a87c]/30 bg-[#07111f]/60 backdrop-blur-xl shadow-[0_0_50px_rgba(201,168,124,0.15)]">
+    <div className="max-w-2xl rounded-3xl border border-[#c9a87c]/30 bg-[#07111f]/60 backdrop-blur-xl shadow-[0_0_50px_rgba(201,168,124,0.15)]">
       {/* Header row */}
       <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-white/8">
         <div className="flex items-center gap-2">
