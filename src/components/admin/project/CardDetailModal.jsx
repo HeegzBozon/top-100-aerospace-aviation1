@@ -189,6 +189,17 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
             author_email: user?.email || '',
             author_name: user?.full_name || user?.email || '',
         });
+        await base44.entities.PlanningActivity.create({
+            item_entity: trace.childEntity,
+            item_id: child.id,
+            activity_type: 'parent_linked',
+            content: `Linked upstream: ${item[labelKey] || item.title || item.name || ''}`,
+            child_entity: entityName,
+            child_id: item.id,
+            child_title: item[labelKey] || item.title || item.name || '',
+            author_email: user?.email || '',
+            author_name: user?.full_name || user?.email || '',
+        });
         setChildModalOpen(false);
         await Promise.all([loadChildren(), loadActivities()]);
     };
@@ -233,6 +244,17 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
                 author_email: user?.email || '',
                 author_name: user?.full_name || user?.email || '',
             });
+            await base44.entities.PlanningActivity.create({
+                item_entity: trace.childEntity,
+                item_id: childItem.id,
+                activity_type: 'parent_linked',
+                content: `Linked upstream: ${item[labelKey] || item.title || item.name || ''}`,
+                child_entity: entityName,
+                child_id: item.id,
+                child_title: item[labelKey] || item.title || item.name || '',
+                author_email: user?.email || '',
+                author_name: user?.full_name || user?.email || '',
+            });
             setLinkMode(null);
             setSearchQuery('');
             setSearchResults([]);
@@ -255,6 +277,16 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
                 child_entity: trace.parentEntity,
                 child_id: selectedParent.id,
                 child_title: selectedParent[trace.parentLabelKey] || selectedParent.title || selectedParent.name || '',
+                author_email: user?.email || '',
+                author_name: user?.full_name || user?.email || '',
+            });
+            await base44.entities.PlanningActivity.create({
+                item_entity: trace.parentEntity,
+                item_id: selectedParent.id,
+                activity_type: 'child_created',
+                child_entity: entityName,
+                child_id: item.id,
+                child_title: item[labelKey] || item.title || item.name || '',
                 author_email: user?.email || '',
                 author_name: user?.full_name || user?.email || '',
             });
