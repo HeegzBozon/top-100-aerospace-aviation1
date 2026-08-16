@@ -22,6 +22,7 @@ export default function StoryFormModal({ item, roadmapItemId, defaultStatus, onC
         title: item?.title || '',
         description: item?.description || '',
         status: item?.status || defaultStatus || 'todo',
+        type: item?.type || 'frontend',
         story_points: item?.story_points ?? '',
         assignee_email: item?.assignee_email || '',
         roadmap_item_id: item?.roadmap_item_id || roadmapItemId || '',
@@ -71,6 +72,19 @@ export default function StoryFormModal({ item, roadmapItemId, defaultStatus, onC
                             placeholder="Given... When... Then..."
                             rows={3}
                         />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label>Type</Label>
+                        <Select value={form.type} onValueChange={v => setForm({ ...form, type: v })}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="frontend">Frontend</SelectItem>
+                                <SelectItem value="backend">Backend</SelectItem>
+                                <SelectItem value="design">Design</SelectItem>
+                                <SelectItem value="devops">DevOps</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">

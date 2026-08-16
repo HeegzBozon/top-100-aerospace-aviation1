@@ -29,6 +29,17 @@
       "default": "funnel",
       "description": "Current state of the objective in the portfolio Kanban"
     },
+    "type": {
+      "type": "string",
+      "enum": [
+        "growth",
+        "retention",
+        "revenue",
+        "community"
+      ],
+      "default": "growth",
+      "description": "Portfolio-level category for parking lot grouping"
+    },
     "owner_email": {
       "type": "string",
       "description": "Email of the person or team owning this objective"

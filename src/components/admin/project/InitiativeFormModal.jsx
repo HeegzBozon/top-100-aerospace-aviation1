@@ -24,6 +24,7 @@ export default function InitiativeFormModal({ item, objectiveId, defaultStatus, 
         name: item?.name || '',
         description: item?.description || '',
         status: item?.status || defaultStatus || 'funnel',
+        type: item?.type || 'feature',
         objective_id: item?.objective_id || objectiveId || '',
         business_value: item?.business_value || '',
         time_criticality: item?.time_criticality || '',
@@ -78,6 +79,19 @@ export default function InitiativeFormModal({ item, objectiveId, defaultStatus, 
                             placeholder="Detailed description of this initiative"
                             rows={3}
                         />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label>Type</Label>
+                        <Select value={form.type} onValueChange={v => setForm({ ...form, type: v })}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="feature">Feature</SelectItem>
+                                <SelectItem value="platform">Platform</SelectItem>
+                                <SelectItem value="operations">Operations</SelectItem>
+                                <SelectItem value="research">Research</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="space-y-1.5">

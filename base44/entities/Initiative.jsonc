@@ -24,6 +24,17 @@
       "default": "funnel",
       "description": "The current state of the Initiative in the Solution Train Kanban"
     },
+    "type": {
+      "type": "string",
+      "enum": [
+        "feature",
+        "platform",
+        "operations",
+        "research"
+      ],
+      "default": "feature",
+      "description": "Solution-level category for parking lot grouping"
+    },
     "objective_id": {
       "type": "string",
       "description": "ID of the parent Objective (Strategic Theme) this Initiative rolls up to"

@@ -21,6 +21,17 @@
       "default": "todo",
       "description": "Team-level workflow status"
     },
+    "type": {
+      "type": "string",
+      "enum": [
+        "frontend",
+        "backend",
+        "design",
+        "devops"
+      ],
+      "default": "frontend",
+      "description": "Team-level category for parking lot grouping"
+    },
     "story_points": {
       "type": "number",
       "default": 0,

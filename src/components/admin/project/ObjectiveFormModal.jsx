@@ -23,6 +23,7 @@ export default function ObjectiveFormModal({ item, defaultStatus, onClose, onSav
         description: item?.description || '',
         theme: item?.theme || '',
         status: item?.status || defaultStatus || 'funnel',
+        type: item?.type || 'growth',
         owner_email: item?.owner_email || '',
     });
     const [saving, setSaving] = useState(false);
@@ -65,6 +66,19 @@ export default function ObjectiveFormModal({ item, defaultStatus, onClose, onSav
                             placeholder="Detailed description of this strategic objective"
                             rows={3}
                         />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label>Type</Label>
+                        <Select value={form.type} onValueChange={v => setForm({ ...form, type: v })}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="growth">Growth</SelectItem>
+                                <SelectItem value="retention">Retention</SelectItem>
+                                <SelectItem value="revenue">Revenue</SelectItem>
+                                <SelectItem value="community">Community</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">

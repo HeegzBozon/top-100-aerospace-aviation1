@@ -9,6 +9,13 @@ export const LEVEL_CONFIGS = {
         labelKey: 'name',
         icon: Building2,
         accent: '#1e3a5a',
+        groupKey: 'type',
+        groups: [
+            { value: 'growth', label: 'Growth', accent: '#c9a87c' },
+            { value: 'retention', label: 'Retention', accent: '#4a90b8' },
+            { value: 'revenue', label: 'Revenue', accent: '#7ec8a8' },
+            { value: 'community', label: 'Community', accent: '#c87e9d' },
+        ],
         statuses: [
             { value: 'funnel', label: 'Funnel', color: '#5d7a94' },
             { value: 'analyzing', label: 'Analyzing', color: '#c9a87c' },
@@ -26,6 +33,13 @@ export const LEVEL_CONFIGS = {
         labelKey: 'name',
         icon: GitBranch,
         accent: '#4a90b8',
+        groupKey: 'type',
+        groups: [
+            { value: 'feature', label: 'Features', accent: '#c9a87c' },
+            { value: 'platform', label: 'Platform', accent: '#4a90b8' },
+            { value: 'operations', label: 'Operations', accent: '#7ec8a8' },
+            { value: 'research', label: 'Research', accent: '#c87e9d' },
+        ],
         statuses: [
             { value: 'funnel', label: 'Funnel', color: '#5d7a94' },
             { value: 'reviewing', label: 'Reviewing', color: '#c9a87c' },
@@ -45,6 +59,13 @@ export const LEVEL_CONFIGS = {
         labelKey: 'title',
         icon: Layers,
         accent: '#c9a87c',
+        groupKey: 'type',
+        groups: [
+            { value: 'feature', label: 'Features', accent: '#c9a87c' },
+            { value: 'enhancement', label: 'Enhancements', accent: '#4a90b8' },
+            { value: 'bug', label: 'Bugs', accent: '#c87e9d' },
+            { value: 'feedback', label: 'Feedback', accent: '#7ec8a8' },
+        ],
         statuses: [
             { value: 'backlog', label: 'Backlog', color: '#5d7a94' },
             { value: 'next_up', label: 'Next Up', color: '#c9a87c' },
@@ -62,6 +83,13 @@ export const LEVEL_CONFIGS = {
         labelKey: 'title',
         icon: ListTodo,
         accent: '#7ec8a8',
+        groupKey: 'type',
+        groups: [
+            { value: 'frontend', label: 'Frontend', accent: '#c9a87c' },
+            { value: 'backend', label: 'Backend', accent: '#4a90b8' },
+            { value: 'design', label: 'Design', accent: '#7ec8a8' },
+            { value: 'devops', label: 'DevOps', accent: '#c87e9d' },
+        ],
         statuses: [
             { value: 'todo', label: 'To Do', color: '#5d7a94' },
             { value: 'in_progress', label: 'In Progress', color: '#4a90b8' },

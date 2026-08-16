@@ -1,22 +1,14 @@
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Plus } from 'lucide-react';
-import RoadmapItemCard from './RoadmapItemCard';
 
-const GROUPS = [
-    { type: 'feature', label: 'Features', accent: '#c9a87c' },
-    { type: 'enhancement', label: 'Enhancements', accent: '#4a90b8' },
-    { type: 'bug', label: 'Bugs', accent: '#c87e9d' },
-    { type: 'feedback', label: 'Feedback', accent: '#7ec8a8' },
-];
-
-export default function TypeGrouping({ items, loading, onEdit, onCreate, onBulkUpdate }) {
+export default function TypeGrouping({ items, loading, onEdit, onCreate, onBulkUpdate, groups, groupKey, labelKey = 'title' }) {
     const handleDragEnd = (result) => {
         if (!result.destination) return;
         if (result.source.index === result.destination.index) return;
 
-        const groupType = result.type;
+        const groupValue = result.type;
         const groupItems = items
-            .filter(i => (i.type || 'feature') === groupType)
+            .filter(i => (i[groupKey] || groups[0]?.value) === groupValue)
             .sort((a, b) => (a.priority || 0) - (b.priority || 0));
 
         const [moved] = groupItems.splice(result.source.index, 1);
@@ -32,20 +24,16 @@ export default function TypeGrouping({ items, loading, onEdit, onCreate, onBulkU
 
     return (
         <div>
-            <p className="text-sm mb-3" style={{ color: '#5d7a94' }}>
-                Parking lot — explore and triage items by type. Drag to reorder priority within each lane.
-            </p>
-
             <DragDropContext onDragEnd={handleDragEnd}>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                    {GROUPS.map(group => {
+                    {groups.map(group => {
                         const groupItems = items
-                            .filter(i => (i.type || 'feature') === group.type)
+                            .filter(i => (i[groupKey] || groups[0]?.value) === group.value)
                             .sort((a, b) => (a.priority || 0) - (b.priority || 0));
 
                         return (
                             <div
-                                key={group.type}
+                                key={group.value}
                                 className="flex flex-col rounded-xl overflow-hidden"
                                 style={{ background: '#111c28', border: '1px solid #1e3a5a60', minHeight: '300px' }}
                             >
@@ -71,7 +59,7 @@ export default function TypeGrouping({ items, loading, onEdit, onCreate, onBulkU
                                     </button>
                                 </div>
 
-                                <Droppable droppableId={group.type} type={group.type}>
+                                <Droppable droppableId={group.value} type={group.value}>
                                     {(provided, snapshot) => (
                                         <div
                                             ref={provided.innerRef}
@@ -90,12 +78,23 @@ export default function TypeGrouping({ items, loading, onEdit, onCreate, onBulkU
                                                             ref={provided.innerRef}
                                                             {...provided.draggableProps}
                                                             {...provided.dragHandleProps}
+                                                            onClick={() => onEdit(item)}
+                                                            className="rounded-lg p-3 cursor-pointer transition-all"
                                                             style={{
                                                                 ...provided.draggableProps.style,
+                                                                background: '#ffffff05',
+                                                                border: '1px solid #1e3a5a30',
                                                                 opacity: snapshot.isDragging ? 0.85 : 1,
                                                             }}
                                                         >
-                                                            <RoadmapItemCard item={item} onClick={() => onEdit(item)} />
+                                                            <p className="text-xs font-medium mb-0.5" style={{ color: '#d4e0ec' }}>
+                                                                {item[labelKey]}
+                                                            </p>
+                                                            {item.description && (
+                                                                <p className="text-[10px] truncate" style={{ color: '#5d7a94' }}>
+                                                                    {item.description}
+                                                                </p>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </Draggable>
