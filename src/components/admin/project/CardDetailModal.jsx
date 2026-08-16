@@ -42,6 +42,7 @@ const ACTIVITY_ICONS = {
     update: GitBranch,
     attachment: Paperclip,
     child_created: Plus,
+    parent_linked: ArrowUp,
 };
 
 const ACTIVITY_LABELS = {
@@ -49,7 +50,8 @@ const ACTIVITY_LABELS = {
     note: 'Noted',
     update: 'Updated',
     attachment: 'Attached',
-    child_created: 'Created',
+    child_created: 'Linked Down',
+    parent_linked: 'Linked Up',
 };
 
 export default function CardDetailModal({ item, level, levelConfig, focusInput, onClose, onEdit }) {
@@ -245,6 +247,17 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
             await base44.entities[entityName].update(item.id, {
                 [trace.parentLinkField]: selectedParent.id,
             });
+            await base44.entities.PlanningActivity.create({
+                item_entity: entityName,
+                item_id: item.id,
+                activity_type: 'parent_linked',
+                content: `Linked upstream: ${selectedParent[trace.parentLabelKey] || selectedParent.title || selectedParent.name || ''}`,
+                child_entity: trace.parentEntity,
+                child_id: selectedParent.id,
+                child_title: selectedParent[trace.parentLabelKey] || selectedParent.title || selectedParent.name || '',
+                author_email: user?.email || '',
+                author_name: user?.full_name || user?.email || '',
+            });
             setParentItem(selectedParent);
             setLinkMode(null);
             setSearchQuery('');
@@ -388,7 +401,11 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
                                                 </div>
                                                 {a.activity_type === 'child_created' ? (
                                                     <p className="text-sm" style={{ color: C.text }}>
-                                                        Created <span className="font-semibold">{a.child_entity}</span>: <span className="font-medium">{a.child_title}</span>
+                                                        Linked <span className="font-semibold">{a.child_entity}</span> downstream: <span className="font-medium">{a.child_title}</span>
+                                                    </p>
+                                                ) : a.activity_type === 'parent_linked' ? (
+                                                    <p className="text-sm" style={{ color: C.text }}>
+                                                        Linked upstream to <span className="font-semibold">{a.child_entity}</span>: <span className="font-medium">{a.child_title}</span>
                                                     </p>
                                                 ) : a.activity_type === 'attachment' ? (
                                                     <a href={a.attachment_url} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline flex items-center gap-1.5">

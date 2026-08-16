@@ -23,7 +23,8 @@
         "note",
         "update",
         "attachment",
-        "child_created"
+        "child_created",
+        "parent_linked"
       ],
       "default": "comment",
       "description": "Type of activity recorded"
@@ -38,15 +39,15 @@
     },
     "child_entity": {
       "type": "string",
-      "description": "For child_created: which downstream entity was created"
+      "description": "For child_created/parent_linked: which related entity was linked"
     },
     "child_id": {
       "type": "string",
-      "description": "For child_created: ID of the created child item"
+      "description": "For child_created/parent_linked: ID of the related item"
     },
     "child_title": {
       "type": "string",
-      "description": "For child_created: title/name of the created child item"
+      "description": "For child_created/parent_linked: title/name of the related item"
     },
     "author_email": {
       "type": "string",
