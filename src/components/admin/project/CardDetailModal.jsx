@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import {
     Plus, MessageSquare, FileText, Paperclip, ArrowUp, ArrowDown,
-    Pencil, Send, Loader2, GitBranch,
+    Pencil, Send, Loader2, GitBranch, Link2, Search, X,
 } from 'lucide-react';
 import InitiativeFormModal from './InitiativeFormModal';
 import RoadmapItemFormModal from './RoadmapItemFormModal';
@@ -64,6 +64,10 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
     const [childModalOpen, setChildModalOpen] = useState(false);
     const [user, setUser] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [linkMode, setLinkMode] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [searching, setSearching] = useState(false);
     const inputRef = useRef(null);
 
     const trace = TRACEABILITY[level];
@@ -185,6 +189,124 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
         });
         setChildModalOpen(false);
         await Promise.all([loadChildren(), loadActivities()]);
+    };
+
+    const handleSearch = async (query, mode) => {
+        if (query.length < 2) { setSearchResults([]); return; }
+        setSearching(true);
+        try {
+            const targetEntity = mode === 'parent' ? trace?.parentEntity : trace?.childEntity;
+            const targetLabelKey = mode === 'parent' ? trace?.parentLabelKey : trace?.childLabelKey;
+            if (!targetEntity) return;
+            const all = await base44.entities[targetEntity].list('-updated_date', 200);
+            const lower = query.toLowerCase();
+            const linkedIds = mode === 'child'
+                ? new Set(childItems.map(c => c.id))
+                : null;
+            const filtered = all.filter(i => {
+                if (linkedIds?.has(i.id)) return false;
+                const label = i[targetLabelKey] || i.title || i.name || '';
+                return label.toLowerCase().includes(lower);
+            }).slice(0, 10);
+            setSearchResults(filtered);
+        } catch (err) {
+            console.error('Search failed:', err);
+        } finally {
+            setSearching(false);
+        }
+    };
+
+    const handleLinkChild = async (childItem) => {
+        try {
+            await base44.entities[trace.childEntity].update(childItem.id, {
+                [trace.childLinkField]: item.id,
+            });
+            await base44.entities.PlanningActivity.create({
+                item_entity: entityName,
+                item_id: item.id,
+                activity_type: 'child_created',
+                child_entity: trace.childEntity,
+                child_id: childItem.id,
+                child_title: childItem[trace.childLabelKey] || childItem.title || childItem.name || '',
+                author_email: user?.email || '',
+                author_name: user?.full_name || user?.email || '',
+            });
+            setLinkMode(null);
+            setSearchQuery('');
+            setSearchResults([]);
+            await Promise.all([loadChildren(), loadActivities()]);
+        } catch (err) {
+            console.error('Link failed:', err);
+        }
+    };
+
+    const handleLinkParent = async (selectedParent) => {
+        try {
+            await base44.entities[entityName].update(item.id, {
+                [trace.parentLinkField]: selectedParent.id,
+            });
+            setParentItem(selectedParent);
+            setLinkMode(null);
+            setSearchQuery('');
+            setSearchResults([]);
+            await loadActivities();
+        } catch (err) {
+            console.error('Link parent failed:', err);
+        }
+    };
+
+    const cancelLink = () => {
+        setLinkMode(null);
+        setSearchQuery('');
+        setSearchResults([]);
+    };
+
+    const renderSearchPanel = (mode) => {
+        const labelKey = mode === 'parent' ? trace?.parentLabelKey : trace?.childLabelKey;
+        const entityLabel = mode === 'parent' ? trace?.parentEntity : trace?.childEntity;
+        const handler = mode === 'parent' ? handleLinkParent : handleLinkChild;
+        return (
+            <div className="mt-2 space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3" style={{ color: C.muted }} />
+                        <Input
+                            autoFocus
+                            value={searchQuery}
+                            onChange={e => { setSearchQuery(e.target.value); handleSearch(e.target.value, mode); }}
+                            placeholder={`Search existing ${entityLabel}s...`}
+                            className="h-8 text-sm pl-7"
+                        />
+                    </div>
+                    <button onClick={cancelLink} className="w-7 h-7 rounded flex items-center justify-center hover:bg-slate-200">
+                        <X className="w-3.5 h-3.5" style={{ color: C.muted }} />
+                    </button>
+                </div>
+                {searching && (
+                    <div className="flex justify-center py-1"><Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: C.muted }} /></div>
+                )}
+                {searchResults.length > 0 && (
+                    <div className="max-h-32 overflow-y-auto space-y-1">
+                        {searchResults.map(r => (
+                            <button
+                                key={r.id}
+                                onClick={() => handler(r)}
+                                className="w-full text-left text-xs px-2.5 py-1.5 rounded transition-colors hover:opacity-80"
+                                style={{ background: '#ffffff', border: `1px solid ${C.rowBorder}`, color: C.text }}
+                            >
+                                <span className="flex items-center gap-1.5">
+                                    <Link2 className="w-3 h-3 flex-shrink-0" style={{ color: C.sky }} />
+                                    {r[labelKey] || r.title || r.name || '—'}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                )}
+                {searchQuery.length >= 2 && !searching && searchResults.length === 0 && (
+                    <p className="text-xs px-1" style={{ color: C.dim }}>No results found.</p>
+                )}
+            </div>
+        );
     };
 
     const renderChildModal = () => {
@@ -317,16 +439,26 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
                             Traceability
                         </span>
                         {trace?.parentEntity && (
-                            <div className="flex items-center gap-2 p-2.5 rounded-lg" style={{ background: C.rowBg, border: `1px solid ${C.rowBorder}` }}>
-                                <ArrowUp className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.sky }} />
-                                <span className="text-[10px] uppercase tracking-wider font-bold flex-shrink-0" style={{ color: C.muted }}>Upstream</span>
-                                {parentItem ? (
-                                    <span className="text-sm font-medium truncate" style={{ color: C.navy }}>
-                                        {parentItem[trace.parentLabelKey] || parentItem.title || parentItem.name || '—'}
-                                    </span>
-                                ) : (
-                                    <span className="text-xs" style={{ color: C.dim }}>Not linked</span>
-                                )}
+                            <div className="p-2.5 rounded-lg" style={{ background: C.rowBg, border: `1px solid ${C.rowBorder}` }}>
+                                <div className="flex items-center gap-2">
+                                    <ArrowUp className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.sky }} />
+                                    <span className="text-[10px] uppercase tracking-wider font-bold flex-shrink-0" style={{ color: C.muted }}>Upstream</span>
+                                    {parentItem ? (
+                                        <span className="text-sm font-medium truncate flex-1" style={{ color: C.navy }}>
+                                            {parentItem[trace.parentLabelKey] || parentItem.title || parentItem.name || '—'}
+                                        </span>
+                                    ) : (
+                                        <span className="text-xs flex-1" style={{ color: C.dim }}>Not linked</span>
+                                    )}
+                                    <button
+                                        onClick={() => { setLinkMode(linkMode === 'parent' ? null : 'parent'); setSearchQuery(''); setSearchResults([]); }}
+                                        className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md transition-colors hover:opacity-80 flex-shrink-0"
+                                        style={{ background: linkMode === 'parent' ? C.sky : `${C.sky}20`, color: linkMode === 'parent' ? 'white' : C.sky }}
+                                    >
+                                        <Link2 className="w-3 h-3" /> {parentItem ? 'Change' : 'Link'}
+                                    </button>
+                                </div>
+                                {linkMode === 'parent' && renderSearchPanel('parent')}
                             </div>
                         )}
                         {trace?.childEntity && (
@@ -338,12 +470,20 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
                                     </span>
                                     <button
                                         onClick={() => setChildModalOpen(true)}
-                                        className="ml-auto flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md transition-colors hover:opacity-90"
+                                        className="ml-auto flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md transition-colors hover:opacity-90"
                                         style={{ background: C.navy, color: 'white' }}
                                     >
-                                        <Plus className="w-3 h-3" /> Add {trace.childEntity}
+                                        <Plus className="w-3 h-3" /> New
+                                    </button>
+                                    <button
+                                        onClick={() => { setLinkMode(linkMode === 'child' ? null : 'child'); setSearchQuery(''); setSearchResults([]); }}
+                                        className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md transition-colors hover:opacity-80"
+                                        style={{ background: linkMode === 'child' ? C.green : `${C.green}20`, color: linkMode === 'child' ? 'white' : C.green }}
+                                    >
+                                        <Link2 className="w-3 h-3" /> Link
                                     </button>
                                 </div>
+                                {linkMode === 'child' && renderSearchPanel('child')}
                                 {loadingChildren ? (
                                     <div className="flex justify-center py-2"><Loader2 className="w-4 h-4 animate-spin" style={{ color: C.muted }} /></div>
                                 ) : childItems.length === 0 ? (
