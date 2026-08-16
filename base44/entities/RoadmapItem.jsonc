@@ -45,6 +45,15 @@
       "default": "feature",
       "description": "Type of roadmap item"
     },
+    "horizon": {
+      "type": "string",
+      "enum": [
+        "h1",
+        "h2",
+        "h3"
+      ],
+      "description": "Escape Velocity horizon: H1=Core (protect & extend), H2=Growth (build & scale), H3=Future (explore & incubate)"
+    },
     "initiative_id": {
       "type": "string",
       "description": "ID of the parent Initiative (Solution Train level) this Epic rolls up to"

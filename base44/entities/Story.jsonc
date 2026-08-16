@@ -32,6 +32,15 @@
       "default": "frontend",
       "description": "Team-level category for parking lot grouping"
     },
+    "horizon": {
+      "type": "string",
+      "enum": [
+        "h1",
+        "h2",
+        "h3"
+      ],
+      "description": "Escape Velocity horizon: H1=Core (protect & extend), H2=Growth (build & scale), H3=Future (explore & incubate)"
+    },
     "implementation": {
       "type": "string",
       "enum": [

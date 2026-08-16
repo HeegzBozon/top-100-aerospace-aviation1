@@ -1,5 +1,11 @@
 import { Building2, GitBranch, Layers, ListTodo } from 'lucide-react';
 
+export const HORIZONS = [
+    { value: 'h1', label: 'H1 — Core', sub: 'Protect & extend current franchises', accent: '#4a90b8' },
+    { value: 'h2', label: 'H2 — Growth', sub: 'Build & scale emerging businesses', accent: '#c9a87c' },
+    { value: 'h3', label: 'H3 — Future', sub: 'Explore & incubate future options', accent: '#c87e9d' },
+];
+
 export const LEVEL_CONFIGS = {
     portfolio: {
         label: 'Portfolio',
@@ -16,6 +22,7 @@ export const LEVEL_CONFIGS = {
             { value: 'revenue', label: 'Revenue', accent: '#7ec8a8' },
             { value: 'community', label: 'Community', accent: '#c87e9d' },
         ],
+        horizons: HORIZONS,
         statuses: [
             { value: 'funnel', label: 'Funnel', color: '#5d7a94' },
             { value: 'analyzing', label: 'Analyzing', color: '#c9a87c' },
@@ -40,6 +47,7 @@ export const LEVEL_CONFIGS = {
             { value: 'operations', label: 'Operations', accent: '#7ec8a8' },
             { value: 'research', label: 'Research', accent: '#c87e9d' },
         ],
+        horizons: HORIZONS,
         statuses: [
             { value: 'funnel', label: 'Funnel', color: '#5d7a94' },
             { value: 'reviewing', label: 'Reviewing', color: '#c9a87c' },
