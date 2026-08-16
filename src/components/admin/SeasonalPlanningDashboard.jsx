@@ -152,6 +152,7 @@ export default function SeasonalPlanningDashboard() {
                         onEdit={openEdit}
                         onCreate={openCreate}
                         onBulkUpdate={handleBulkUpdate}
+                        onUpdateItem={handleUpdateItem}
                     />
                 </TabsContent>
 

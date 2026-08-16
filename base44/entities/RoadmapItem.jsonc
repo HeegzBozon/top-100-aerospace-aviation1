@@ -76,6 +76,22 @@
       "format": "date",
       "description": "Target completion date"
     },
+    "implementation": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "difficult"
+      ],
+      "description": "Implementation difficulty for prioritization matrix (Easy/Difficult axis)"
+    },
+    "potential": {
+      "type": "string",
+      "enum": [
+        "high",
+        "low"
+      ],
+      "description": "Potential for improvement for prioritization matrix (High/Low axis)"
+    },
     "submitter_email": {
       "type": "string",
       "description": "Email of user who submitted this item"

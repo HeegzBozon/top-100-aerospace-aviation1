@@ -46,6 +46,8 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
         value_stream: 'operational',
         priority: 0,
         target_date: '',
+        implementation: '',
+        potential: '',
     });
     const [saving, setSaving] = useState(false);
 
@@ -59,6 +61,8 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
                 value_stream: item.value_stream || 'operational',
                 priority: item.priority || 0,
                 target_date: item.target_date ? item.target_date.split('T')[0] : '',
+                implementation: item.implementation || '',
+                potential: item.potential || '',
             });
         } else if (defaultStatus) {
             setForm(prev => ({ ...prev, status: defaultStatus }));
@@ -73,6 +77,8 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
                 ...form,
                 priority: Number(form.priority) || 0,
                 target_date: form.target_date || null,
+                implementation: form.implementation || null,
+                potential: form.potential || null,
             });
         } finally {
             setSaving(false);
@@ -149,6 +155,29 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
                                 value={form.target_date}
                                 onChange={e => setForm({ ...form, target_date: e.target.value })}
                             />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                            <Label>Implementation</Label>
+                            <Select value={form.implementation} onValueChange={v => setForm({ ...form, implementation: v })}>
+                                <SelectTrigger><SelectValue placeholder="Not triaged" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="easy">Easy</SelectItem>
+                                    <SelectItem value="difficult">Difficult</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label>Potential</Label>
+                            <Select value={form.potential} onValueChange={v => setForm({ ...form, potential: v })}>
+                                <SelectTrigger><SelectValue placeholder="Not triaged" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="high">High</SelectItem>
+                                    <SelectItem value="low">Low</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 

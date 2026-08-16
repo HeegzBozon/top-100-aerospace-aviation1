@@ -1,124 +1,58 @@
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Compass, Plus } from 'lucide-react';
-import RoadmapItemCard from './RoadmapItemCard';
+import { useState } from 'react';
+import { LayoutGrid, Layers } from 'lucide-react';
+import TypeGrouping from './TypeGrouping';
+import PrioritizationMatrix from './PrioritizationMatrix';
 
-const GROUPS = [
-    { type: 'feature', label: 'Features', accent: '#c9a87c' },
-    { type: 'enhancement', label: 'Enhancements', accent: '#4a90b8' },
-    { type: 'bug', label: 'Bugs', accent: '#c87e9d' },
-    { type: 'feedback', label: 'Feedback', accent: '#7ec8a8' },
-];
-
-export default function ExploreTab({ items, loading, onEdit, onCreate, onBulkUpdate }) {
-    const handleDragEnd = (result) => {
-        if (!result.destination) return;
-        if (result.source.index === result.destination.index) return;
-
-        const groupType = result.type;
-        const groupItems = items
-            .filter(i => (i.type || 'feature') === groupType)
-            .sort((a, b) => (a.priority || 0) - (b.priority || 0));
-
-        const [moved] = groupItems.splice(result.source.index, 1);
-        groupItems.splice(result.destination.index, 0, moved);
-
-        const updates = groupItems.map((item, index) => ({
-            id: item.id,
-            priority: (index + 1) * 10,
-        }));
-
-        onBulkUpdate(updates);
-    };
+export default function ExploreTab({ items, loading, onEdit, onCreate, onBulkUpdate, onUpdateItem }) {
+    const [view, setView] = useState('matrix');
 
     return (
         <div>
+            {/* View Toggle */}
             <div className="flex items-center gap-2 mb-3">
-                <Compass className="w-4 h-4" style={{ color: '#c9a87c' }} />
-                <p className="text-sm" style={{ color: '#5d7a94' }}>
-                    Parking lot — explore and triage items by type. Drag to reorder priority within each lane.
-                </p>
+                <div className="inline-flex rounded-lg overflow-hidden" style={{ border: '1px solid #1e3a5a60' }}>
+                    <button
+                        onClick={() => setView('matrix')}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors"
+                        style={{
+                            background: view === 'matrix' ? '#1e3a5a' : 'transparent',
+                            color: view === 'matrix' ? 'white' : '#5d7a94',
+                        }}
+                    >
+                        <LayoutGrid className="w-3.5 h-3.5" />
+                        Prioritization Matrix
+                    </button>
+                    <button
+                        onClick={() => setView('type')}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors"
+                        style={{
+                            background: view === 'type' ? '#1e3a5a' : 'transparent',
+                            color: view === 'type' ? 'white' : '#5d7a94',
+                        }}
+                    >
+                        <Layers className="w-3.5 h-3.5" />
+                        By Type
+                    </button>
+                </div>
             </div>
 
-            <DragDropContext onDragEnd={handleDragEnd}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                    {GROUPS.map(group => {
-                        const groupItems = items
-                            .filter(i => (i.type || 'feature') === group.type)
-                            .sort((a, b) => (a.priority || 0) - (b.priority || 0));
-
-                        return (
-                            <div
-                                key={group.type}
-                                className="flex flex-col rounded-xl overflow-hidden"
-                                style={{ background: '#111c28', border: '1px solid #1e3a5a60', minHeight: '300px' }}
-                            >
-                                <div
-                                    className="flex items-center justify-between px-3 py-2.5 border-b"
-                                    style={{ borderColor: `${group.accent}25` }}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full" style={{ background: group.accent }} />
-                                        <span className="text-xs font-bold uppercase tracking-wider" style={{ color: group.accent }}>
-                                            {group.label}
-                                        </span>
-                                        <span className="text-xs" style={{ color: '#3d6080' }}>{groupItems.length}</span>
-                                    </div>
-                                    <button
-                                        onClick={() => onCreate('backlog')}
-                                        className="p-0.5 rounded transition-colors"
-                                        style={{ color: '#3d6080' }}
-                                        onMouseEnter={e => { e.currentTarget.style.color = group.accent; }}
-                                        onMouseLeave={e => { e.currentTarget.style.color = '#3d6080'; }}
-                                    >
-                                        <Plus className="w-3.5 h-3.5" />
-                                    </button>
-                                </div>
-
-                                <Droppable droppableId={group.type} type={group.type}>
-                                    {(provided, snapshot) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            {...provided.droppableProps}
-                                            className="flex-1 p-2 space-y-2 transition-colors"
-                                            style={{ background: snapshot.isDraggingOver ? `${group.accent}08` : 'transparent' }}
-                                        >
-                                            {loading && groupItems.length === 0 && (
-                                                <div className="h-16 rounded-lg animate-pulse" style={{ background: '#ffffff08' }} />
-                                            )}
-
-                                            {groupItems.map((item, index) => (
-                                                <Draggable draggableId={item.id} index={index} key={item.id}>
-                                                    {(provided, snapshot) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            style={{
-                                                                ...provided.draggableProps.style,
-                                                                opacity: snapshot.isDragging ? 0.85 : 1,
-                                                            }}
-                                                        >
-                                                            <RoadmapItemCard item={item} onClick={() => onEdit(item)} />
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            ))}
-
-                                            {provided.placeholder}
-
-                                            {!loading && groupItems.length === 0 && (
-                                                <p className="text-center text-xs py-6" style={{ color: '#2a4a60' }}>
-                                                    No items
-                                                </p>
-                                            )}
-                                        </div>
-                                    )}
-                                </Droppable>
-                            </div>
-                        );
-                    })}
-                </div>
-            </DragDropContext>
+            {view === 'matrix' ? (
+                <PrioritizationMatrix
+                    items={items}
+                    loading={loading}
+                    onEdit={onEdit}
+                    onCreate={onCreate}
+                    onUpdateItem={onUpdateItem}
+                />
+            ) : (
+                <TypeGrouping
+                    items={items}
+                    loading={loading}
+                    onEdit={onEdit}
+                    onCreate={onCreate}
+                    onBulkUpdate={onBulkUpdate}
+                />
+            )}
         </div>
     );
 }
