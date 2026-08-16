@@ -5,6 +5,8 @@ import BacklogPanel from './gatePanels/BacklogPanel';
 import CapacityPanel from './gatePanels/CapacityPanel';
 import ObjectivesPanel from './gatePanels/ObjectivesPanel';
 import RiskPanel from './gatePanels/RiskPanel';
+import BusinessContextPanel from './gatePanels/BusinessContextPanel';
+import ArchitecturePanel from './gatePanels/ArchitecturePanel';
 import { READINESS_BLOCKS } from './planningWizardConfig';
 
 const C = {
@@ -64,9 +66,9 @@ export default function GateWorkPanel({ gate, state, setState, onToggle, onBack,
             <div className="mb-4">
                 {gate.id === 'backlog' && <BacklogPanel state={state} setState={setState} />}
                 {gate.id === 'capacity' && <CapacityPanel state={state} setState={setState} />}
-                {gate.id === 'business' && <TextDraftPanel state={state} setState={setState} field="business" placeholder="Draft the business context presentation: market situation, strategic drivers, key investments, competitive landscape..." />}
+                {gate.id === 'business' && <BusinessContextPanel state={state} setState={setState} />}
                 {gate.id === 'objectives' && <ObjectivesPanel state={state} setState={setState} />}
-                {gate.id === 'architecture' && <TextDraftPanel state={state} setState={setState} field="architecture" placeholder="Document architecture state, tech debt inventory, upgrade recommendations, dependency risks..." />}
+                {gate.id === 'architecture' && <ArchitecturePanel state={state} setState={setState} />}
                 {gate.id === 'compliance' && <ChecklistPanel state={state} setState={setState} field="compliance" items={COMPLIANCE_ITEMS} />}
                 {gate.id === 'risk' && <RiskPanel state={state} setState={setState} />}
                 {gate.id === 'facilitation' && <ChecklistPanel state={state} setState={setState} field="facilitation" items={FACILITATION_ITEMS} />}
@@ -86,28 +88,6 @@ export default function GateWorkPanel({ gate, state, setState, onToggle, onBack,
                     </button>
                 </div>
             )}
-        </div>
-    );
-}
-
-function TextDraftPanel({ state, setState, field, placeholder }) {
-    const drafts = state.drafts || {};
-    const value = drafts[field] || '';
-    const wordCount = value.trim() ? value.trim().split(/\s+/).length : 0;
-
-    return (
-        <div className="space-y-2">
-            <textarea
-                value={value}
-                onChange={e => setState(prev => ({ ...prev, drafts: { ...prev.drafts, [field]: e.target.value } }))}
-                placeholder={placeholder}
-                className="w-full min-h-[280px] p-4 rounded-lg text-sm leading-relaxed resize-y focus:outline-none transition-colors"
-                style={{ background: C.panel, border: `1px solid ${C.border}`, color: C.text }}
-            />
-            <div className="flex items-center justify-between text-[10px]" style={{ color: C.dim }}>
-                <span>Autosaved to planning state</span>
-                <span>{wordCount} words</span>
-            </div>
         </div>
     );
 }
