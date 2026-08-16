@@ -25,6 +25,9 @@ export default function ObjectiveFormModal({ item, defaultStatus, onClose, onSav
         status: item?.status || defaultStatus || 'funnel',
         type: item?.type || 'growth',
         owner_email: item?.owner_email || '',
+        horizon: item?.horizon || '',
+        implementation: item?.implementation || '',
+        potential: item?.potential || '',
     });
     const [saving, setSaving] = useState(false);
 
@@ -108,6 +111,48 @@ export default function ObjectiveFormModal({ item, defaultStatus, onClose, onSav
                             onChange={e => setForm({ ...form, owner_email: e.target.value })}
                             placeholder="owner@example.com"
                         />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#5d7a94' }}>
+                            Horizon
+                        </Label>
+                        <Select value={form.horizon} onValueChange={v => setForm({ ...form, horizon: v })}>
+                            <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="h1">H1 — Core (Protect & extend)</SelectItem>
+                                <SelectItem value="h2">H2 — Growth (Build & scale)</SelectItem>
+                                <SelectItem value="h3">H3 — Future (Explore & incubate)</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#5d7a94' }}>
+                            Prioritization Matrix
+                        </Label>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                                <Label className="text-[11px]">Implementation</Label>
+                                <Select value={form.implementation} onValueChange={v => setForm({ ...form, implementation: v })}>
+                                    <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="easy">Easy</SelectItem>
+                                        <SelectItem value="difficult">Difficult</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-[11px]">Potential</Label>
+                                <Select value={form.potential} onValueChange={v => setForm({ ...form, potential: v })}>
+                                    <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="high">High</SelectItem>
+                                        <SelectItem value="low">Low</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
