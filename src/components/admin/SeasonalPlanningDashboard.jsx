@@ -12,6 +12,7 @@ import RoadmapItemFormModal from './project/RoadmapItemFormModal';
 import ObjectiveFormModal from './project/ObjectiveFormModal';
 import InitiativeFormModal from './project/InitiativeFormModal';
 import StoryFormModal from './project/StoryFormModal';
+import CardDetailModal from './project/CardDetailModal';
 import PlanningWizard from './project/PlanningWizard';
 import { LEVEL_CONFIGS, LEVEL_ORDER } from './project/levelConfig';
 
@@ -33,6 +34,7 @@ export default function SeasonalPlanningDashboard() {
     const [editingItem, setEditingItem] = useState(null);
     const [defaultStatus, setDefaultStatus] = useState(null);
     const [wizardOpen, setWizardOpen] = useState(false);
+    const [detailState, setDetailState] = useState(null);
     const { toast } = useToast();
 
     const levelConfig = LEVEL_CONFIGS[level];
@@ -213,6 +215,9 @@ export default function SeasonalPlanningDashboard() {
                         onBulkUpdate={handleBulkUpdate}
                         onUpdateItem={handleUpdateItem}
                         levelConfig={levelConfig}
+                        level={level}
+                        onOpenDetail={(item) => setDetailState({ item, focusInput: false })}
+                        onQuickAdd={(item) => setDetailState({ item, focusInput: true })}
                     />
                 </TabsContent>
 
@@ -248,6 +253,16 @@ export default function SeasonalPlanningDashboard() {
             </Tabs>
 
             {renderFormModal()}
+            {detailState && (
+                <CardDetailModal
+                    item={detailState.item}
+                    level={level}
+                    levelConfig={levelConfig}
+                    focusInput={detailState.focusInput}
+                    onClose={() => setDetailState(null)}
+                    onEdit={openEdit}
+                />
+            )}
             <PlanningWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
         </div>
     );

@@ -109,4 +109,39 @@ export const LEVEL_CONFIGS = {
     },
 };
 
+export const TRACEABILITY = {
+    portfolio: {
+        childLevel: 'solution',
+        childEntity: 'Initiative',
+        childLabelKey: 'name',
+        childLinkField: 'objective_id',
+    },
+    solution: {
+        parentLevel: 'portfolio',
+        parentEntity: 'Objective',
+        parentLabelKey: 'name',
+        parentLinkField: 'objective_id',
+        childLevel: 'program',
+        childEntity: 'RoadmapItem',
+        childLabelKey: 'title',
+        childLinkField: 'initiative_id',
+    },
+    program: {
+        parentLevel: 'solution',
+        parentEntity: 'Initiative',
+        parentLabelKey: 'name',
+        parentLinkField: 'initiative_id',
+        childLevel: 'team',
+        childEntity: 'Story',
+        childLabelKey: 'title',
+        childLinkField: 'roadmap_item_id',
+    },
+    team: {
+        parentLevel: 'program',
+        parentEntity: 'RoadmapItem',
+        parentLabelKey: 'title',
+        parentLinkField: 'roadmap_item_id',
+    },
+};
+
 export const LEVEL_ORDER = ['portfolio', 'solution', 'program', 'team'];

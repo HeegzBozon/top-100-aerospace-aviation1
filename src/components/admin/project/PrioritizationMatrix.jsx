@@ -56,14 +56,24 @@ function getQuadrantKey(item) {
     return q ? q.key : 'staging';
 }
 
-function MatrixCard({ item, labelKey, wsjf, onClick }) {
+function MatrixCard({ item, labelKey, wsjf, onClick, onQuickAdd }) {
     return (
         <div
             onClick={onClick}
-            className="rounded-lg p-3 cursor-pointer transition-all"
+            className="relative rounded-lg p-3 cursor-pointer transition-all"
             style={{ background: '#0d1620', border: '1px solid #1e3a5a60' }}
         >
-            <p className="text-xs font-semibold mb-1.5" style={{ color: '#e8f0f8' }}>
+            {onQuickAdd && (
+                <button
+                    onClick={(e) => { e.stopPropagation(); onQuickAdd(item); }}
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10"
+                    style={{ background: '#c9a87c', color: '#0d1620' }}
+                    title="Add comment, note, or downstream item"
+                >
+                    <Plus className="w-3.5 h-3.5" />
+                </button>
+            )}
+            <p className="text-xs font-semibold mb-1.5 pr-7" style={{ color: '#e8f0f8' }}>
                 {item[labelKey]}
             </p>
             {wsjf.hasScores ? (
@@ -97,7 +107,7 @@ function MatrixCard({ item, labelKey, wsjf, onClick }) {
     );
 }
 
-export default function PrioritizationMatrix({ items, loading, onEdit, onCreate, labelKey = 'title' }) {
+export default function PrioritizationMatrix({ items, loading, onEdit, onOpenDetail, onQuickAdd, onCreate, labelKey = 'title' }) {
     const stagingItems = items.filter(i => getQuadrantKey(i) === 'staging');
     const quadrantItems = (key) => items.filter(i => getQuadrantKey(i) === key);
 
@@ -144,7 +154,7 @@ export default function PrioritizationMatrix({ items, loading, onEdit, onCreate,
 
                     {stagingItems.map((item) => (
                         <div key={item.id} className="flex-shrink-0 w-52">
-                            <MatrixCard item={item} labelKey={labelKey} wsjf={getWsjfData(item)} onClick={() => onEdit(item)} />
+                            <MatrixCard item={item} labelKey={labelKey} wsjf={getWsjfData(item)} onClick={() => onOpenDetail ? onOpenDetail(item) : onEdit(item)} onQuickAdd={onQuickAdd} />
                         </div>
                     ))}
 
@@ -202,7 +212,7 @@ export default function PrioritizationMatrix({ items, loading, onEdit, onCreate,
                                     <div className="space-y-2 flex-1">
                                         {qItems.map((item) => (
                                             <div key={item.id}>
-                                                <MatrixCard item={item} labelKey={labelKey} wsjf={getWsjfData(item)} onClick={() => onEdit(item)} />
+                                                <MatrixCard item={item} labelKey={labelKey} wsjf={getWsjfData(item)} onClick={() => onOpenDetail ? onOpenDetail(item) : onEdit(item)} onQuickAdd={onQuickAdd} />
                                             </div>
                                         ))}
 

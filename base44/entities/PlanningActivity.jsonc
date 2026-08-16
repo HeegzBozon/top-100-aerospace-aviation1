@@ -1,0 +1,65 @@
+{
+  "name": "PlanningActivity",
+  "type": "object",
+  "properties": {
+    "item_entity": {
+      "type": "string",
+      "enum": [
+        "Objective",
+        "Initiative",
+        "RoadmapItem",
+        "Story"
+      ],
+      "description": "Which SAFe entity the parent item belongs to"
+    },
+    "item_id": {
+      "type": "string",
+      "description": "ID of the parent planning item"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "comment",
+        "note",
+        "update",
+        "attachment",
+        "child_created"
+      ],
+      "default": "comment",
+      "description": "Type of activity recorded"
+    },
+    "content": {
+      "type": "string",
+      "description": "Text content for comments, notes, or attachment file name"
+    },
+    "attachment_url": {
+      "type": "string",
+      "description": "URL to uploaded attachment file"
+    },
+    "child_entity": {
+      "type": "string",
+      "description": "For child_created: which downstream entity was created"
+    },
+    "child_id": {
+      "type": "string",
+      "description": "For child_created: ID of the created child item"
+    },
+    "child_title": {
+      "type": "string",
+      "description": "For child_created: title/name of the created child item"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email of the user who created this activity"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of the user who created this activity"
+    }
+  },
+  "required": [
+    "item_entity",
+    "item_id",
+    "activity_type"
+  ]
+}

@@ -4,7 +4,7 @@ import TypeGrouping from './TypeGrouping';
 import PrioritizationMatrix from './PrioritizationMatrix';
 import HorizonView from './HorizonView';
 
-export default function ExploreTab({ items, loading, onEdit, onCreate, onBulkUpdate, onUpdateItem, levelConfig }) {
+export default function ExploreTab({ items, loading, onEdit, onCreate, onBulkUpdate, onUpdateItem, levelConfig, level, onOpenDetail, onQuickAdd }) {
     const [view, setView] = useState('matrix');
     const hasHorizons = !!levelConfig.horizons;
 
@@ -48,6 +48,8 @@ export default function ExploreTab({ items, loading, onEdit, onCreate, onBulkUpd
                     items={items}
                     loading={loading}
                     onEdit={onEdit}
+                    onOpenDetail={onOpenDetail}
+                    onQuickAdd={onQuickAdd}
                     onCreate={onCreate}
                     onUpdateItem={onUpdateItem}
                     labelKey={levelConfig.labelKey}
