@@ -11,7 +11,7 @@ import {
     LayoutDashboard, Users, Trophy, Camera, Briefcase, Rocket, Award,
     CalendarDays, DollarSign, Settings, FileText, Activity,
     RefreshCw, AlertCircle, CheckCircle2, ArrowRight, Vote, UserPlus,
-    Globe, BarChart3, Flame, ShieldCheck, Zap, Clock
+    Globe, BarChart3, Flame, ShieldCheck, Zap, Clock, ClipboardList
 } from 'lucide-react';
 
 // ── Brand tokens ──────────────────────────────────────────────────────────────
@@ -824,6 +824,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                         { label: 'Assets', tab: 'assets', icon: Camera, accent: '#c8a07e' },
                         { label: 'Startups', tab: 'startups', icon: Rocket, accent: '#c87e9d' },
                         { label: 'Settings', tab: 'settings', icon: Settings, accent: '#8a9eb8' },
+                        { label: 'Projects', tab: 'project-management', icon: ClipboardList, accent: '#c9a87c' },
                     ].map(({ label, tab, icon: Icon, accent }) => (
                         <button
                             key={tab}

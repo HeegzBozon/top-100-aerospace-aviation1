@@ -42,6 +42,7 @@ export const ADMIN_SECTIONS = [
         icon: LayoutDashboard,
         tabs: [
             { id: 'dashboard', label: 'Mission Control', icon: LayoutDashboard, component: 'AdminCommandCenter' },
+            { id: 'project-management', label: 'Project Management', icon: ClipboardList, component: 'ProjectManagementDashboard' },
         ],
     },
     {
