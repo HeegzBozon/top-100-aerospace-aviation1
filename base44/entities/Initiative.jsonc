@@ -1,15 +1,15 @@
 {
   "name": "Initiative",
-  "description": "Represents a Portfolio Epic, a large-scale strategic task that may span multiple Program Increments.",
+  "description": "Represents a Solution Train Epic, a large-scale strategic task that may span multiple Program Increments.",
   "type": "object",
   "properties": {
     "name": {
       "type": "string",
-      "description": "The name of the Epic"
+      "description": "The name of the Initiative"
     },
     "description": {
       "type": "string",
-      "description": "A detailed description of the Epic"
+      "description": "A detailed description of the Initiative"
     },
     "status": {
       "type": "string",
@@ -22,7 +22,11 @@
         "done"
       ],
       "default": "funnel",
-      "description": "The current state of the Epic in the Portfolio Kanban"
+      "description": "The current state of the Initiative in the Solution Train Kanban"
+    },
+    "objective_id": {
+      "type": "string",
+      "description": "ID of the parent Objective (Strategic Theme) this Initiative rolls up to"
     },
     "business_value": {
       "type": "number",

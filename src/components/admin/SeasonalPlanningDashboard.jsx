@@ -9,6 +9,7 @@ import IntegrateTab from './project/IntegrateTab';
 import IterateTab from './project/IterateTab';
 import ReleaseTab from './project/ReleaseTab';
 import RoadmapItemFormModal from './project/RoadmapItemFormModal';
+import HierarchyTab from './project/HierarchyTab';
 
 const B = {
     navy: '#1e3a5a',
@@ -22,7 +23,7 @@ const B = {
 export default function SeasonalPlanningDashboard() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('explore');
+    const [activeTab, setActiveTab] = useState('hierarchy');
     const [modalOpen, setModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [defaultStatus, setDefaultStatus] = useState('backlog');
@@ -139,11 +140,16 @@ export default function SeasonalPlanningDashboard() {
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList>
+                    <TabsTrigger value="hierarchy">Hierarchy</TabsTrigger>
                     <TabsTrigger value="explore">Explore</TabsTrigger>
                     <TabsTrigger value="integrate">Integrate</TabsTrigger>
                     <TabsTrigger value="iterate">Iterate</TabsTrigger>
                     <TabsTrigger value="release">Release</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="hierarchy" className="mt-4">
+                    <HierarchyTab />
+                </TabsContent>
 
                 <TabsContent value="explore" className="mt-4">
                     <ExploreTab

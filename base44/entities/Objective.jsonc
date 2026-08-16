@@ -8,11 +8,15 @@
     },
     "name": {
       "type": "string",
-      "description": "The high-level goal to be achieved"
+      "description": "The high-level strategic goal to be achieved"
     },
     "description": {
       "type": "string",
       "description": "A detailed description of the objective"
+    },
+    "theme": {
+      "type": "string",
+      "description": "Strategic theme label for portfolio-level categorization"
     },
     "owner_email": {
       "type": "string",
@@ -25,7 +29,6 @@
     }
   },
   "required": [
-    "plan_id",
     "name"
   ]
 }

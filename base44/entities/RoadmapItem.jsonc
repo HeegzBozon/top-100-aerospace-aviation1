@@ -4,7 +4,7 @@
   "properties": {
     "title": {
       "type": "string",
-      "description": "Title of the roadmap item"
+      "description": "Title of the roadmap item (Epic)"
     },
     "description": {
       "type": "string",
@@ -44,6 +44,10 @@
       ],
       "default": "feature",
       "description": "Type of roadmap item"
+    },
+    "initiative_id": {
+      "type": "string",
+      "description": "ID of the parent Initiative (Solution Train level) this Epic rolls up to"
     },
     "feedback_id": {
       "type": "string",

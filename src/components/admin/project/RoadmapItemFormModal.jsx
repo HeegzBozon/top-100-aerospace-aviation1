@@ -37,7 +37,7 @@ const STREAMS = [
     { value: 'developmental', label: 'Developmental' },
 ];
 
-export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onSave }) {
+export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onSave, defaultInitiativeId }) {
     const [form, setForm] = useState({
         title: '',
         description: '',
@@ -48,6 +48,7 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
         target_date: '',
         implementation: '',
         potential: '',
+        initiative_id: '',
     });
     const [saving, setSaving] = useState(false);
 
@@ -63,9 +64,10 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
                 target_date: item.target_date ? item.target_date.split('T')[0] : '',
                 implementation: item.implementation || '',
                 potential: item.potential || '',
+                initiative_id: item.initiative_id || (defaultInitiativeId || ''),
             });
         } else if (defaultStatus) {
-            setForm(prev => ({ ...prev, status: defaultStatus }));
+            setForm(prev => ({ ...prev, status: defaultStatus, initiative_id: defaultInitiativeId || '' }));
         }
     }, [item, defaultStatus]);
 
@@ -79,6 +81,7 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
                 target_date: form.target_date || null,
                 implementation: form.implementation || null,
                 potential: form.potential || null,
+                initiative_id: form.initiative_id || null,
             });
         } finally {
             setSaving(false);

@@ -1,0 +1,47 @@
+{
+  "name": "Story",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Story title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Acceptance criteria / description"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "todo",
+        "in_progress",
+        "done",
+        "blocked"
+      ],
+      "default": "todo",
+      "description": "Team-level workflow status"
+    },
+    "story_points": {
+      "type": "number",
+      "default": 0,
+      "description": "Story points for effort estimation"
+    },
+    "assignee_email": {
+      "type": "string",
+      "description": "Email of the team member assigned to this story"
+    },
+    "roadmap_item_id": {
+      "type": "string",
+      "description": "ID of the parent RoadmapItem (Epic) this story belongs to"
+    },
+    "priority": {
+      "type": "number",
+      "default": 0,
+      "description": "Sort priority within the parent Epic"
+    }
+  },
+  "required": [
+    "title",
+    "roadmap_item_id"
+  ]
+}
