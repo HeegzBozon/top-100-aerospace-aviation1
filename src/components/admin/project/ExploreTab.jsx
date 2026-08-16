@@ -54,6 +54,7 @@ export default function ExploreTab({ items, loading, onEdit, onCreate, onBulkUpd
                         onEdit={onEdit}
                         onCreate={onCreate}
                         onUpdateItem={onUpdateItem}
+                        labelKey={levelConfig.labelKey}
                     />
                 ) : (
                     <TypeGrouping {...groupingProps} />

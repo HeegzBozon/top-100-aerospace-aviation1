@@ -1,6 +1,7 @@
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Plus, MessageCircleQuestion } from 'lucide-react';
-import RoadmapItemCard from './RoadmapItemCard';
+
+const B = { surface: '#111c28', border: '#1e3a5a60' };
 
 const QUADRANTS = [
     {
@@ -47,7 +48,26 @@ function getQuadrantKey(item) {
     return 'staging';
 }
 
-export default function PrioritizationMatrix({ items, loading, onEdit, onCreate, onUpdateItem }) {
+function MatrixCard({ item, labelKey, onClick }) {
+    return (
+        <div
+            onClick={onClick}
+            className="rounded-lg p-3 cursor-pointer transition-all"
+            style={{ background: '#ffffff05', border: '1px solid #1e3a5a30' }}
+        >
+            <p className="text-xs font-medium mb-0.5" style={{ color: '#d4e0ec' }}>
+                {item[labelKey]}
+            </p>
+            {item.description && (
+                <p className="text-[10px] truncate" style={{ color: '#5d7a94' }}>
+                    {item.description}
+                </p>
+            )}
+        </div>
+    );
+}
+
+export default function PrioritizationMatrix({ items, loading, onEdit, onCreate, onUpdateItem, labelKey = 'title' }) {
     const stagingItems = items.filter(i => getQuadrantKey(i) === 'staging');
     const quadrantItems = (key) => items.filter(i => getQuadrantKey(i) === key);
 
@@ -72,11 +92,11 @@ export default function PrioritizationMatrix({ items, loading, onEdit, onCreate,
             {/* Staging Section */}
             <div
                 className="rounded-xl mb-4 overflow-hidden"
-                style={{ background: '#111c28', border: '1px solid #1e3a5a60' }}
+                style={{ background: B.surface, border: `1px solid ${B.border}` }}
             >
                 <div
                     className="flex items-center justify-between px-4 py-3 border-b gap-3"
-                    style={{ borderColor: '#1e3a5a60' }}
+                    style={{ borderColor: B.border }}
                 >
                     <div className="flex items-center gap-2">
                         <MessageCircleQuestion className="w-4 h-4 flex-shrink-0" style={{ color: '#c9a87c' }} />
@@ -128,7 +148,7 @@ export default function PrioritizationMatrix({ items, loading, onEdit, onCreate,
                                                 opacity: snapshot.isDragging ? 0.85 : 1,
                                             }}
                                         >
-                                            <RoadmapItemCard item={item} onClick={() => onEdit(item)} />
+                                            <MatrixCard item={item} labelKey={labelKey} onClick={() => onEdit(item)} />
                                         </div>
                                     )}
                                 </Draggable>
@@ -205,7 +225,7 @@ export default function PrioritizationMatrix({ items, loading, onEdit, onCreate,
                                                                     opacity: snapshot.isDragging ? 0.85 : 1,
                                                                 }}
                                                             >
-                                                                <RoadmapItemCard item={item} onClick={() => onEdit(item)} />
+                                                                <MatrixCard item={item} labelKey={labelKey} onClick={() => onEdit(item)} />
                                                             </div>
                                                         )}
                                                     </Draggable>

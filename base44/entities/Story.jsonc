@@ -32,6 +32,22 @@
       "default": "frontend",
       "description": "Team-level category for parking lot grouping"
     },
+    "implementation": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "difficult"
+      ],
+      "description": "Implementation difficulty for prioritization matrix (Easy/Difficult axis)"
+    },
+    "potential": {
+      "type": "string",
+      "enum": [
+        "high",
+        "low"
+      ],
+      "description": "Potential for improvement for prioritization matrix (High/Low axis)"
+    },
     "story_points": {
       "type": "number",
       "default": 0,

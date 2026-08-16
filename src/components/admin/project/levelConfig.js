@@ -22,7 +22,7 @@ export const LEVEL_CONFIGS = {
             { value: 'implementing', label: 'Implementing', color: '#4a90b8' },
             { value: 'done', label: 'Done', color: '#7ec8a8' },
         ],
-        hasMatrix: false,
+        hasMatrix: true,
         hasTypeFilter: false,
     },
     solution: {
@@ -48,7 +48,7 @@ export const LEVEL_CONFIGS = {
             { value: 'implementing', label: 'Implementing', color: '#4a90b8' },
             { value: 'done', label: 'Done', color: '#7ec8a8' },
         ],
-        hasMatrix: false,
+        hasMatrix: true,
         hasTypeFilter: false,
     },
     program: {
@@ -96,7 +96,7 @@ export const LEVEL_CONFIGS = {
             { value: 'done', label: 'Done', color: '#7ec8a8' },
             { value: 'blocked', label: 'Blocked', color: '#c87e9d' },
         ],
-        hasMatrix: false,
+        hasMatrix: true,
         hasTypeFilter: false,
     },
 };
