@@ -2,13 +2,24 @@ import { useState } from 'react';
 import { LayoutGrid, Layers } from 'lucide-react';
 import TypeGrouping from './TypeGrouping';
 import PrioritizationMatrix from './PrioritizationMatrix';
+import SimpleGrid from './SimpleGrid';
 
-export default function ExploreTab({ items, loading, onEdit, onCreate, onBulkUpdate, onUpdateItem }) {
+export default function ExploreTab({ items, loading, onEdit, onCreate, onBulkUpdate, onUpdateItem, levelConfig }) {
     const [view, setView] = useState('matrix');
+
+    if (!levelConfig.hasMatrix) {
+        return (
+            <div>
+                <p className="text-sm mb-3" style={{ color: '#5d7a94' }}>
+                    {levelConfig.label} backlog — explore and triage {levelConfig.sub.toLowerCase()}.
+                </p>
+                <SimpleGrid items={items} loading={loading} onEdit={onEdit} onCreate={onCreate} levelConfig={levelConfig} />
+            </div>
+        );
+    }
 
     return (
         <div>
-            {/* View Toggle */}
             <div className="flex items-center gap-2 mb-3">
                 <div className="inline-flex rounded-lg overflow-hidden" style={{ border: '1px solid #1e3a5a60' }}>
                     <button

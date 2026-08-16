@@ -18,6 +18,17 @@
       "type": "string",
       "description": "Strategic theme label for portfolio-level categorization"
     },
+    "status": {
+      "type": "string",
+      "enum": [
+        "funnel",
+        "analyzing",
+        "implementing",
+        "done"
+      ],
+      "default": "funnel",
+      "description": "Current state of the objective in the portfolio Kanban"
+    },
     "owner_email": {
       "type": "string",
       "description": "Email of the person or team owning this objective"

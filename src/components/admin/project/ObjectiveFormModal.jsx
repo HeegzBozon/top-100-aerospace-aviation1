@@ -6,12 +6,23 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 
-export default function ObjectiveFormModal({ item, onClose, onSave, onDelete }) {
+const STATUSES = [
+    { value: 'funnel', label: 'Funnel' },
+    { value: 'analyzing', label: 'Analyzing' },
+    { value: 'implementing', label: 'Implementing' },
+    { value: 'done', label: 'Done' },
+];
+
+export default function ObjectiveFormModal({ item, defaultStatus, onClose, onSave, onDelete }) {
     const [form, setForm] = useState({
         name: item?.name || '',
         description: item?.description || '',
         theme: item?.theme || '',
+        status: item?.status || defaultStatus || 'funnel',
         owner_email: item?.owner_email || '',
     });
     const [saving, setSaving] = useState(false);
@@ -58,21 +69,31 @@ export default function ObjectiveFormModal({ item, onClose, onSave, onDelete }) 
 
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
+                            <Label>Status</Label>
+                            <Select value={form.status} onValueChange={v => setForm({ ...form, status: v })}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    {STATUSES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-1.5">
                             <Label>Theme</Label>
                             <Input
                                 value={form.theme}
                                 onChange={e => setForm({ ...form, theme: e.target.value })}
-                                placeholder="e.g. Growth, Retention, Revenue"
+                                placeholder="e.g. Growth, Retention"
                             />
                         </div>
-                        <div className="space-y-1.5">
-                            <Label>Owner Email</Label>
-                            <Input
-                                value={form.owner_email}
-                                onChange={e => setForm({ ...form, owner_email: e.target.value })}
-                                placeholder="owner@example.com"
-                            />
-                        </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label>Owner Email</Label>
+                        <Input
+                            value={form.owner_email}
+                            onChange={e => setForm({ ...form, owner_email: e.target.value })}
+                            placeholder="owner@example.com"
+                        />
                     </div>
                 </div>
 

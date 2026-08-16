@@ -1,24 +1,17 @@
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Plus } from 'lucide-react';
-import RoadmapItemCard from './RoadmapItemCard';
 
 const B = { surface: '#111c28', border: '#1e3a5a60' };
 
-const COLUMNS = [
-    { id: 'backlog', label: 'Backlog', accent: '#5d7a94' },
-    { id: 'next_up', label: 'Next Up', accent: '#c9a87c' },
-    { id: 'in_progress', label: 'In Progress', accent: '#4a90b8' },
-    { id: 'done', label: 'Done', accent: '#7ec8a8' },
-];
-
-export default function IterateTab({ items, loading, onEdit, onCreate, onUpdateItem }) {
-    const itemsByStatus = (status) => items.filter(i => (i.status || 'backlog') === status);
+export default function IterateTab({ items, loading, onEdit, onCreate, onUpdateItem, levelConfig }) {
+    const columns = levelConfig.statuses.map(s => ({ id: s.value, label: s.label, accent: s.color }));
+    const firstStatus = columns[0]?.id;
+    const itemsByStatus = (status) => items.filter(i => (i.status || firstStatus) === status);
 
     const handleDragEnd = (result) => {
         if (!result.destination) return;
         const { source, destination } = result;
         if (source.droppableId === destination.droppableId && source.index === destination.index) return;
-
         if (source.droppableId !== destination.droppableId) {
             onUpdateItem(result.draggableId, { status: destination.droppableId });
         }
@@ -26,13 +19,13 @@ export default function IterateTab({ items, loading, onEdit, onCreate, onUpdateI
 
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                {COLUMNS.map(col => {
+            <div className="flex flex-wrap gap-3">
+                {columns.map(col => {
                     const colItems = itemsByStatus(col.id);
                     return (
                         <div
                             key={col.id}
-                            className="flex flex-col rounded-xl overflow-hidden"
+                            className="flex flex-col rounded-xl overflow-hidden flex-1 min-w-[240px]"
                             style={{ background: B.surface, border: `1px solid ${B.border}`, minHeight: '400px' }}
                         >
                             <div
@@ -80,12 +73,23 @@ export default function IterateTab({ items, loading, onEdit, onCreate, onUpdateI
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
+                                                        onClick={() => onEdit(item)}
+                                                        className="rounded-lg p-3 cursor-pointer transition-all"
                                                         style={{
                                                             ...provided.draggableProps.style,
+                                                            background: '#ffffff05',
+                                                            border: '1px solid #1e3a5a30',
                                                             opacity: snapshot.isDragging ? 0.85 : 1,
                                                         }}
                                                     >
-                                                        <RoadmapItemCard item={item} onClick={() => onEdit(item)} />
+                                                        <p className="text-xs font-medium mb-0.5" style={{ color: '#d4e0ec' }}>
+                                                            {item[levelConfig.labelKey]}
+                                                        </p>
+                                                        {item.description && (
+                                                            <p className="text-[10px] truncate" style={{ color: '#5d7a94' }}>
+                                                                {item.description}
+                                                            </p>
+                                                        )}
                                                     </div>
                                                 )}
                                             </Draggable>

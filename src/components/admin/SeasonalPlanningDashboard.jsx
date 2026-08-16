@@ -9,38 +9,46 @@ import IntegrateTab from './project/IntegrateTab';
 import IterateTab from './project/IterateTab';
 import ReleaseTab from './project/ReleaseTab';
 import RoadmapItemFormModal from './project/RoadmapItemFormModal';
-import HierarchyTab from './project/HierarchyTab';
+import ObjectiveFormModal from './project/ObjectiveFormModal';
+import InitiativeFormModal from './project/InitiativeFormModal';
+import StoryFormModal from './project/StoryFormModal';
+import { LEVEL_CONFIGS, LEVEL_ORDER } from './project/levelConfig';
 
 const B = {
     navy: '#1e3a5a',
-    navyDeep: '#0d2035',
     gold: '#c9a87c',
     sky: '#4a90b8',
+    green: '#7ec8a8',
     surface: '#111c28',
     border: '#1e3a5a60',
 };
 
 export default function SeasonalPlanningDashboard() {
+    const [level, setLevel] = useState('program');
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('hierarchy');
+    const [activeTab, setActiveTab] = useState('explore');
     const [modalOpen, setModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
-    const [defaultStatus, setDefaultStatus] = useState('backlog');
+    const [defaultStatus, setDefaultStatus] = useState(null);
     const { toast } = useToast();
+
+    const levelConfig = LEVEL_CONFIGS[level];
+    const entityName = levelConfig.entity;
 
     const loadItems = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await base44.entities.RoadmapItem.list('-priority', 500);
-            setItems(data);
+            const data = await base44.entities[entityName].list('-priority', 500);
+            const normalized = data.map(i => ({ ...i, title: i.title || i.name || '' }));
+            setItems(normalized);
         } catch (err) {
-            console.error('Failed to load roadmap items:', err);
-            toast({ variant: 'destructive', title: 'Load failed', description: 'Could not fetch roadmap items.' });
+            console.error('Failed to load items:', err);
+            toast({ variant: 'destructive', title: 'Load failed', description: `Could not fetch ${levelConfig.sub.toLowerCase()}.` });
         } finally {
             setLoading(false);
         }
-    }, [toast]);
+    }, [entityName, levelConfig, toast]);
 
     useEffect(() => {
         loadItems();
@@ -49,29 +57,29 @@ export default function SeasonalPlanningDashboard() {
     const handleSave = async (formData) => {
         try {
             if (editingItem) {
-                await base44.entities.RoadmapItem.update(editingItem.id, formData);
-                toast({ title: 'Updated', description: `"${formData.title}" saved.` });
+                await base44.entities[entityName].update(editingItem.id, formData);
+                toast({ title: 'Updated', description: `"${formData.title || formData.name}" saved.` });
             } else {
-                await base44.entities.RoadmapItem.create(formData);
-                toast({ title: 'Created', description: `"${formData.title}" added.` });
+                await base44.entities[entityName].create(formData);
+                toast({ title: 'Created', description: `"${formData.title || formData.name}" added.` });
             }
             setModalOpen(false);
             setEditingItem(null);
             await loadItems();
         } catch (err) {
-            console.error('Save failed:', err);
             toast({ variant: 'destructive', title: 'Save failed', description: err.message });
         }
     };
 
     const handleDelete = async (item) => {
-        if (!confirm(`Delete "${item.title}"?`)) return;
+        const label = item[levelConfig.labelKey] || item.title;
+        if (!confirm(`Delete "${label}"?`)) return;
         try {
-            await base44.entities.RoadmapItem.delete(item.id);
+            await base44.entities[entityName].delete(item.id);
             setItems(prev => prev.filter(i => i.id !== item.id));
             setModalOpen(false);
             setEditingItem(null);
-            toast({ title: 'Deleted', description: `"${item.title}" removed.` });
+            toast({ title: 'Deleted', description: `"${label}" removed.` });
         } catch (err) {
             toast({ variant: 'destructive', title: 'Delete failed' });
         }
@@ -82,7 +90,7 @@ export default function SeasonalPlanningDashboard() {
         if (!oldItem) return;
         setItems(prev => prev.map(i => i.id === id ? { ...i, ...data } : i));
         try {
-            await base44.entities.RoadmapItem.update(id, data);
+            await base44.entities[entityName].update(id, data);
         } catch (err) {
             setItems(prev => prev.map(i => i.id === id ? oldItem : i));
             toast({ variant: 'destructive', title: 'Update failed', description: 'Reverting change.' });
@@ -97,14 +105,14 @@ export default function SeasonalPlanningDashboard() {
             return update ? { ...i, ...update } : i;
         }));
         try {
-            await base44.entities.RoadmapItem.bulkUpdate(updates);
+            await base44.entities[entityName].bulkUpdate(updates);
         } catch (err) {
             setItems(oldItems);
             toast({ variant: 'destructive', title: 'Reorder failed', description: 'Reverting order.' });
         }
     };
 
-    const openCreate = (status = 'backlog') => {
+    const openCreate = (status = null) => {
         setEditingItem(null);
         setDefaultStatus(status);
         setModalOpen(true);
@@ -112,17 +120,39 @@ export default function SeasonalPlanningDashboard() {
 
     const openEdit = (item) => {
         setEditingItem(item);
+        setDefaultStatus(null);
         setModalOpen(true);
+    };
+
+    const renderFormModal = () => {
+        if (!modalOpen) return null;
+        const commonProps = {
+            item: editingItem,
+            onClose: () => { setModalOpen(false); setEditingItem(null); },
+            onSave: handleSave,
+            onDelete: editingItem ? () => handleDelete(editingItem) : undefined,
+        };
+        switch (level) {
+            case 'portfolio':
+                return <ObjectiveFormModal {...commonProps} defaultStatus={defaultStatus} />;
+            case 'solution':
+                return <InitiativeFormModal {...commonProps} defaultStatus={defaultStatus} />;
+            case 'program':
+                return <RoadmapItemFormModal {...commonProps} defaultStatus={defaultStatus || 'backlog'} defaultInitiativeId={editingItem?.initiative_id} />;
+            case 'team':
+                return <StoryFormModal {...commonProps} defaultStatus={defaultStatus} roadmapItemId={editingItem?.roadmap_item_id} />;
+            default:
+                return null;
+        }
     };
 
     return (
         <div className="space-y-4">
-            {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-3">
                 <div>
                     <h1 className="text-xl font-bold" style={{ color: B.navy }}>Seasonal Planning</h1>
                     <p className="text-sm" style={{ color: '#5d7a94' }}>
-                        Explore, integrate, iterate, and release your roadmap.
+                        {levelConfig.label} — {levelConfig.sub}
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -130,26 +160,43 @@ export default function SeasonalPlanningDashboard() {
                         <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${loading ? 'animate-spin' : ''}`} />
                         Refresh
                     </Button>
-                    <Button size="sm" onClick={() => openCreate('backlog')} style={{ background: B.navy, color: 'white' }}>
+                    <Button size="sm" onClick={() => openCreate(null)} style={{ background: B.navy, color: 'white' }}>
                         <Plus className="w-3.5 h-3.5 mr-1.5" />
-                        New Item
+                        New {levelConfig.singular}
                     </Button>
                 </div>
             </div>
 
-            {/* Tabs */}
+            {/* SAFe Level Switcher */}
+            <div className="flex items-center gap-1 rounded-lg overflow-hidden" style={{ border: `1px solid ${B.border}` }}>
+                {LEVEL_ORDER.map(key => {
+                    const cfg = LEVEL_CONFIGS[key];
+                    const Icon = cfg.icon;
+                    const active = level === key;
+                    return (
+                        <button
+                            key={key}
+                            onClick={() => { setLevel(key); setActiveTab('explore'); }}
+                            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors flex-1 justify-center"
+                            style={{
+                                background: active ? cfg.accent : 'transparent',
+                                color: active ? 'white' : '#5d7a94',
+                            }}
+                        >
+                            <Icon className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">{cfg.label}</span>
+                        </button>
+                    );
+                })}
+            </div>
+
             <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList>
-                    <TabsTrigger value="hierarchy">Hierarchy</TabsTrigger>
                     <TabsTrigger value="explore">Explore</TabsTrigger>
                     <TabsTrigger value="integrate">Integrate</TabsTrigger>
                     <TabsTrigger value="iterate">Iterate</TabsTrigger>
                     <TabsTrigger value="release">Release</TabsTrigger>
                 </TabsList>
-
-                <TabsContent value="hierarchy" className="mt-4">
-                    <HierarchyTab />
-                </TabsContent>
 
                 <TabsContent value="explore" className="mt-4">
                     <ExploreTab
@@ -159,6 +206,7 @@ export default function SeasonalPlanningDashboard() {
                         onCreate={openCreate}
                         onBulkUpdate={handleBulkUpdate}
                         onUpdateItem={handleUpdateItem}
+                        levelConfig={levelConfig}
                     />
                 </TabsContent>
 
@@ -167,7 +215,8 @@ export default function SeasonalPlanningDashboard() {
                         items={items}
                         loading={loading}
                         onEdit={openEdit}
-                        onCreate={openCreate}
+                        onCreate={() => openCreate(null)}
+                        levelConfig={levelConfig}
                     />
                 </TabsContent>
 
@@ -176,8 +225,9 @@ export default function SeasonalPlanningDashboard() {
                         items={items}
                         loading={loading}
                         onEdit={openEdit}
-                        onCreate={openCreate}
+                        onCreate={(status) => openCreate(status)}
                         onUpdateItem={handleUpdateItem}
+                        levelConfig={levelConfig}
                     />
                 </TabsContent>
 
@@ -186,20 +236,12 @@ export default function SeasonalPlanningDashboard() {
                         items={items}
                         loading={loading}
                         onEdit={openEdit}
+                        levelConfig={levelConfig}
                     />
                 </TabsContent>
             </Tabs>
 
-            {/* Form Modal */}
-            {modalOpen && (
-                <RoadmapItemFormModal
-                    item={editingItem}
-                    defaultStatus={defaultStatus}
-                    onClose={() => { setModalOpen(false); setEditingItem(null); }}
-                    onSave={handleSave}
-                    onDelete={editingItem ? handleDelete : undefined}
-                />
-            )}
+            {renderFormModal()}
         </div>
     );
 }

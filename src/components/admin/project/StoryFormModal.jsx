@@ -17,11 +17,11 @@ const STATUSES = [
     { value: 'blocked', label: 'Blocked' },
 ];
 
-export default function StoryFormModal({ item, roadmapItemId, onClose, onSave, onDelete }) {
+export default function StoryFormModal({ item, roadmapItemId, defaultStatus, onClose, onSave, onDelete }) {
     const [form, setForm] = useState({
         title: item?.title || '',
         description: item?.description || '',
-        status: item?.status || 'todo',
+        status: item?.status || defaultStatus || 'todo',
         story_points: item?.story_points ?? '',
         assignee_email: item?.assignee_email || '',
         roadmap_item_id: item?.roadmap_item_id || roadmapItemId || '',

@@ -41,7 +41,6 @@
     }
   },
   "required": [
-    "title",
-    "roadmap_item_id"
+    "title"
   ]
 }

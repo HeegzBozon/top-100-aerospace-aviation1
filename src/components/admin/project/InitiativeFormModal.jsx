@@ -19,11 +19,11 @@ const STATUSES = [
     { value: 'done', label: 'Done' },
 ];
 
-export default function InitiativeFormModal({ item, objectiveId, onClose, onSave, onDelete }) {
+export default function InitiativeFormModal({ item, objectiveId, defaultStatus, onClose, onSave, onDelete }) {
     const [form, setForm] = useState({
         name: item?.name || '',
         description: item?.description || '',
-        status: item?.status || 'funnel',
+        status: item?.status || defaultStatus || 'funnel',
         objective_id: item?.objective_id || objectiveId || '',
         business_value: item?.business_value || '',
         time_criticality: item?.time_criticality || '',

@@ -1,0 +1,76 @@
+import { Building2, GitBranch, Layers, ListTodo } from 'lucide-react';
+
+export const LEVEL_CONFIGS = {
+    portfolio: {
+        label: 'Portfolio',
+        sub: 'Strategic Themes',
+        singular: 'Theme',
+        entity: 'Objective',
+        labelKey: 'name',
+        icon: Building2,
+        accent: '#1e3a5a',
+        statuses: [
+            { value: 'funnel', label: 'Funnel', color: '#5d7a94' },
+            { value: 'analyzing', label: 'Analyzing', color: '#c9a87c' },
+            { value: 'implementing', label: 'Implementing', color: '#4a90b8' },
+            { value: 'done', label: 'Done', color: '#7ec8a8' },
+        ],
+        hasMatrix: false,
+        hasTypeFilter: false,
+    },
+    solution: {
+        label: 'Solution Train',
+        sub: 'Initiatives',
+        singular: 'Initiative',
+        entity: 'Initiative',
+        labelKey: 'name',
+        icon: GitBranch,
+        accent: '#4a90b8',
+        statuses: [
+            { value: 'funnel', label: 'Funnel', color: '#5d7a94' },
+            { value: 'reviewing', label: 'Reviewing', color: '#c9a87c' },
+            { value: 'analyzing', label: 'Analyzing', color: '#4a90b8' },
+            { value: 'portfolio_backlog', label: 'Backlog', color: '#5d7a94' },
+            { value: 'implementing', label: 'Implementing', color: '#4a90b8' },
+            { value: 'done', label: 'Done', color: '#7ec8a8' },
+        ],
+        hasMatrix: false,
+        hasTypeFilter: false,
+    },
+    program: {
+        label: 'ART',
+        sub: 'Epics',
+        singular: 'Epic',
+        entity: 'RoadmapItem',
+        labelKey: 'title',
+        icon: Layers,
+        accent: '#c9a87c',
+        statuses: [
+            { value: 'backlog', label: 'Backlog', color: '#5d7a94' },
+            { value: 'next_up', label: 'Next Up', color: '#c9a87c' },
+            { value: 'in_progress', label: 'In Progress', color: '#4a90b8' },
+            { value: 'done', label: 'Done', color: '#7ec8a8' },
+        ],
+        hasMatrix: true,
+        hasTypeFilter: true,
+    },
+    team: {
+        label: 'Team',
+        sub: 'Stories',
+        singular: 'Story',
+        entity: 'Story',
+        labelKey: 'title',
+        icon: ListTodo,
+        accent: '#7ec8a8',
+        statuses: [
+            { value: 'todo', label: 'To Do', color: '#5d7a94' },
+            { value: 'in_progress', label: 'In Progress', color: '#4a90b8' },
+            { value: 'done', label: 'Done', color: '#7ec8a8' },
+            { value: 'blocked', label: 'Blocked', color: '#c87e9d' },
+        ],
+        hasMatrix: false,
+        hasTypeFilter: false,
+    },
+};
+
+export const LEVEL_ORDER = ['portfolio', 'solution', 'program', 'team'];
