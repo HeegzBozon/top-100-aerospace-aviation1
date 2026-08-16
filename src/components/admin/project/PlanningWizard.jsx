@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
     Rocket, Check, Lock, ChevronRight, ChevronLeft, X,
     ClipboardList, Gauge, FileText, Target, Cpu, ShieldCheck, AlertTriangle,
@@ -48,8 +49,8 @@ export default function PlanningWizard({ open, onClose }) {
 
     const toggle = (group, id) => setState(prev => ({ ...prev, [group]: { ...prev[group], [id]: !prev[group]?.[id] } }));
 
-    return (
-        <div className="fixed inset-0 z-50 flex" style={{ background: 'rgba(13,22,32,0.96)', backdropFilter: 'blur(8px)' }}>
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex" style={{ background: 'rgba(13,22,32,0.96)', backdropFilter: 'blur(8px)' }}>
             {/* Left stepper rail */}
             <div className="w-60 flex-shrink-0 border-r flex flex-col" style={{ borderRight: `1px solid ${C.border}`, background: C.surface }}>
                 <div className="p-4 border-b" style={{ borderBottom: `1px solid ${C.border}` }}>
@@ -130,7 +131,8 @@ export default function PlanningWizard({ open, onClose }) {
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
