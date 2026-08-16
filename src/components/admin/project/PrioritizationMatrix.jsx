@@ -61,18 +61,35 @@ function MatrixCard({ item, labelKey, wsjf, onClick }) {
         <div
             onClick={onClick}
             className="rounded-lg p-3 cursor-pointer transition-all"
-            style={{ background: '#ffffff05', border: '1px solid #1e3a5a30' }}
+            style={{ background: '#0d1620', border: '1px solid #1e3a5a60' }}
         >
-            <p className="text-xs font-medium mb-0.5" style={{ color: '#d4e0ec' }}>
+            <p className="text-xs font-semibold mb-1.5" style={{ color: '#e8f0f8' }}>
                 {item[labelKey]}
             </p>
-            {wsjf.hasScores && (
-                <p className="text-[10px] mb-0.5" style={{ color: '#c9a87c' }}>
-                    WSJF {wsjf.wsjf.toFixed(1)} · CoD {wsjf.costOfDelay} · Size {wsjf.jobSize}
-                </p>
+            {wsjf.hasScores ? (
+                <div className="flex items-center gap-2 mb-1">
+                    <span
+                        className="text-sm font-bold leading-none px-2 py-1 rounded-md"
+                        style={{ background: '#c9a87c', color: '#0d1620' }}
+                    >
+                        {wsjf.wsjf.toFixed(1)}
+                    </span>
+                    <span className="text-[10px] font-medium" style={{ color: '#8da4be' }}>
+                        CoD {wsjf.costOfDelay} · Size {wsjf.jobSize}
+                    </span>
+                </div>
+            ) : (
+                <div className="mb-1">
+                    <span
+                        className="text-[10px] font-medium px-2 py-0.5 rounded-md"
+                        style={{ background: '#1e3a5a', color: '#8da4be' }}
+                    >
+                        Unscored
+                    </span>
+                </div>
             )}
             {item.description && (
-                <p className="text-[10px] truncate" style={{ color: '#5d7a94' }}>
+                <p className="text-[10px] truncate" style={{ color: '#7d96b0' }}>
                     {item.description}
                 </p>
             )}
