@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import ExploreTab from './project/ExploreTab';
@@ -12,6 +12,7 @@ import RoadmapItemFormModal from './project/RoadmapItemFormModal';
 import ObjectiveFormModal from './project/ObjectiveFormModal';
 import InitiativeFormModal from './project/InitiativeFormModal';
 import StoryFormModal from './project/StoryFormModal';
+import PlanningWizard from './project/PlanningWizard';
 import { LEVEL_CONFIGS, LEVEL_ORDER } from './project/levelConfig';
 
 const B = {
@@ -31,6 +32,7 @@ export default function SeasonalPlanningDashboard() {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [defaultStatus, setDefaultStatus] = useState(null);
+    const [wizardOpen, setWizardOpen] = useState(false);
     const { toast } = useToast();
 
     const levelConfig = LEVEL_CONFIGS[level];
@@ -164,6 +166,10 @@ export default function SeasonalPlanningDashboard() {
                         <Plus className="w-3.5 h-3.5 mr-1.5" />
                         New {levelConfig.singular}
                     </Button>
+                    <Button size="sm" onClick={() => setWizardOpen(true)} style={{ background: B.gold, color: B.surface }}>
+                        <Rocket className="w-3.5 h-3.5 mr-1.5" />
+                        Start Planning
+                    </Button>
                 </div>
             </div>
 
@@ -242,6 +248,7 @@ export default function SeasonalPlanningDashboard() {
             </Tabs>
 
             {renderFormModal()}
+            <PlanningWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
         </div>
     );
 }
