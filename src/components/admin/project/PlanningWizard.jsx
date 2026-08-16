@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    Rocket, Check, Lock, ChevronRight, ChevronLeft, X,
+    Rocket, Check, Lock, ChevronRight, ChevronLeft, X, ArrowRight,
     ClipboardList, Gauge, FileText, Target, Cpu, ShieldCheck, AlertTriangle,
     Hand, Circle, Sparkles,
 } from 'lucide-react';
@@ -9,6 +9,7 @@ import {
     READINESS_BLOCKS, DAY_ONE_PHASES, DAY_TWO_PHASES, ROAM_CATEGORIES,
     OPERATING_PRINCIPLES, WIZARD_STEPS,
 } from './planningWizardConfig';
+import GateWorkPanel from './GateWorkPanel';
 
 const STORAGE_KEY = 'top100_planning_wizard_state';
 const ICONS = { ClipboardList, Gauge, FileText, Target, Cpu, ShieldCheck, AlertTriangle, Lock, Rocket };
@@ -104,7 +105,7 @@ export default function PlanningWizard({ open, onClose }) {
 
                 <div className="flex-1 overflow-y-auto px-6 py-6">
                     {step === 0 && <BriefStep />}
-                    {step === 1 && <ReadinessStep state={state} onToggle={toggle} readinessComplete={readinessComplete} gatePassed={gatePassed} />}
+                    {step === 1 && <ReadinessStep state={state} setState={setState} onToggle={toggle} readinessComplete={readinessComplete} gatePassed={gatePassed} />}
                     {step === 2 && <ContextStep state={state} onToggle={toggle} />}
                     {step === 3 && <CommitStep state={state} setState={setState} onToggle={toggle} />}
                     {step === 4 && <LaunchStep />}
@@ -166,11 +167,26 @@ function BriefStep() {
     );
 }
 
-function ReadinessStep({ state, onToggle, readinessComplete, gatePassed }) {
+function ReadinessStep({ state, setState, onToggle, readinessComplete, gatePassed }) {
+    const [activeGate, setActiveGate] = useState(null);
+
+    if (activeGate) {
+        return (
+            <GateWorkPanel
+                gate={activeGate}
+                state={state}
+                setState={setState}
+                onToggle={onToggle}
+                onBack={() => setActiveGate(null)}
+                readinessComplete={readinessComplete}
+            />
+        );
+    }
+
     return (
         <div className="max-w-3xl mx-auto">
             <h2 className="text-xl font-bold mb-1" style={{ color: C.text }}>Day Zero — Readiness Gate</h2>
-            <p className="text-sm mb-6" style={{ color: C.muted }}>Async prep. All blocks must clear before the room convenes.</p>
+            <p className="text-sm mb-6" style={{ color: C.muted }}>Async prep. Click each block to do the work. All must clear before the room convenes.</p>
             <div className="space-y-2">
                 {READINESS_BLOCKS.map((b) => {
                     const Icon = ICONS[b.icon] || Circle;
@@ -178,8 +194,8 @@ function ReadinessStep({ state, onToggle, readinessComplete, gatePassed }) {
                     const isGate = b.isGate;
                     const locked = isGate && !readinessComplete;
                     return (
-                        <button key={b.id} onClick={() => !locked && onToggle('readiness', b.id)} disabled={locked}
-                            className="w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all"
+                        <button key={b.id} onClick={() => !locked && setActiveGate(b)} disabled={locked}
+                            className="w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all group"
                             style={{
                                 background: checked ? `${C.green}10` : C.panel,
                                 border: `1px solid ${checked ? C.green : locked ? `${C.border}` : C.border}`,
@@ -193,7 +209,14 @@ function ReadinessStep({ state, onToggle, readinessComplete, gatePassed }) {
                                 <span className="text-sm font-semibold" style={{ color: checked ? C.green : C.text }}>{b.label}</span>
                                 <p className="text-[11px]" style={{ color: C.muted }}>{b.desc}</p>
                             </div>
-                            {isGate && <span className="text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full font-bold" style={{ background: gatePassed ? C.green : C.navy, color: 'white' }}>Gate</span>}
+                            {isGate ? (
+                                <span className="text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full font-bold flex-shrink-0" style={{ background: gatePassed ? C.green : C.navy, color: 'white' }}>Gate</span>
+                            ) : (
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                    {checked && <span className="text-[9px] uppercase tracking-wider font-bold" style={{ color: C.green }}>Done</span>}
+                                    <ArrowRight className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100 transition-opacity" style={{ color: checked ? C.green : C.muted }} />
+                                </div>
+                            )}
                         </button>
                     );
                 })}
