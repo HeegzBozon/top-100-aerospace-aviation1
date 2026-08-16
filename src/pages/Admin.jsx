@@ -52,7 +52,7 @@ const SurveyManager            = lazy(() => import('@/components/admin/SurveyMan
 const BioSubmissionManager     = lazy(() => import('@/components/admin/BioSubmissionManager'));
 const LocalLegendsManager      = lazy(() => import('@/components/admin/LocalLegendsManager'));
 const NominationIntakeManager  = lazy(() => import('@/components/admin/NominationIntakeManager'));
-const ProjectManagementDashboard = lazy(() => import('@/components/admin/ProjectManagementDashboard'));
+const SeasonalPlanningDashboard = lazy(() => import('@/components/admin/SeasonalPlanningDashboard'));
 import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
@@ -192,8 +192,8 @@ export default function Admin() {
     switch (activeTab) {
       case 'dashboard':
         return <AdminCommandCenter onNavigate={setActiveTab} currentUser={currentUser} />;
-      case 'project-management':
-        return <ProjectManagementDashboard />;
+      case 'seasonal-planning':
+        return <SeasonalPlanningDashboard />;
       case 'season-command-center':
         return <SeasonCommandCenter onNavigate={setActiveTab} />;
       case 'testimonials':

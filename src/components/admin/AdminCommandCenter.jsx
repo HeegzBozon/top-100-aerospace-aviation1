@@ -824,7 +824,7 @@ export default function AdminCommandCenter({ onNavigate, currentUser }) {
                         { label: 'Assets', tab: 'assets', icon: Camera, accent: '#c8a07e' },
                         { label: 'Startups', tab: 'startups', icon: Rocket, accent: '#c87e9d' },
                         { label: 'Settings', tab: 'settings', icon: Settings, accent: '#8a9eb8' },
-                        { label: 'Projects', tab: 'project-management', icon: ClipboardList, accent: '#c9a87c' },
+                        { label: 'Seasonal Planning', tab: 'seasonal-planning', icon: ClipboardList, accent: '#c9a87c' },
                     ].map(({ label, tab, icon: Icon, accent }) => (
                         <button
                             key={tab}
