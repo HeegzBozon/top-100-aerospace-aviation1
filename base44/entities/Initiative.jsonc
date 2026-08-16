@@ -44,22 +44,6 @@
       ],
       "description": "Escape Velocity horizon: H1=Core (protect & extend), H2=Growth (build & scale), H3=Future (explore & incubate)"
     },
-    "implementation": {
-      "type": "string",
-      "enum": [
-        "easy",
-        "difficult"
-      ],
-      "description": "Implementation difficulty for prioritization matrix (Easy/Difficult axis)"
-    },
-    "potential": {
-      "type": "string",
-      "enum": [
-        "high",
-        "low"
-      ],
-      "description": "Potential for improvement for prioritization matrix (High/Low axis)"
-    },
     "objective_id": {
       "type": "string",
       "description": "ID of the parent Objective (Strategic Theme) this Initiative rolls up to"

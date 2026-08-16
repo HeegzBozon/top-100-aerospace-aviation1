@@ -1,4 +1,3 @@
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Plus, MessageCircleQuestion } from 'lucide-react';
 
 const B = { surface: '#111c28', border: '#1e3a5a60' };
@@ -8,47 +7,56 @@ const QUADRANTS = [
         key: 'opportunities',
         title: 'Opportunities',
         sub: 'Quick wins to pursue',
-        implementation: 'easy',
-        potential: 'high',
+        costHigh: true,
+        sizeSmall: true,
         accent: '#7ec8a8',
     },
     {
         key: 'radar',
         title: 'Keep on the Radar',
         sub: 'Major projects to plan',
-        implementation: 'difficult',
-        potential: 'high',
+        costHigh: true,
+        sizeSmall: false,
         accent: '#4a90b8',
     },
     {
         key: 'consider_later',
         title: 'Consider Later',
         sub: 'Low-effort fill-ins',
-        implementation: 'easy',
-        potential: 'low',
+        costHigh: false,
+        sizeSmall: true,
         accent: '#c9a87c',
     },
     {
         key: 'do_not_consider',
         title: 'Do Not Consider',
         sub: 'Thankless tasks to avoid',
-        implementation: 'difficult',
-        potential: 'low',
+        costHigh: false,
+        sizeSmall: false,
         accent: '#c87e9d',
     },
 ];
 
-function getQuadrantKey(item) {
-    if (item.implementation && item.potential) {
-        const q = QUADRANTS.find(
-            qd => qd.implementation === item.implementation && qd.potential === item.potential
-        );
-        if (q) return q.key;
-    }
-    return 'staging';
+function getWsjfData(item) {
+    const bv = Number(item.business_value) || 0;
+    const tc = Number(item.time_criticality) || 0;
+    const rr = Number(item.risk_reduction) || 0;
+    const size = Number(item.job_size) || 0;
+    const costOfDelay = bv + tc + rr;
+    const hasScores = size > 0 && (bv > 0 || tc > 0 || rr > 0);
+    return { costOfDelay, jobSize: size, hasScores, wsjf: size > 0 ? costOfDelay / size : 0 };
 }
 
-function MatrixCard({ item, labelKey, onClick }) {
+function getQuadrantKey(item) {
+    const { costOfDelay, jobSize, hasScores } = getWsjfData(item);
+    if (!hasScores) return 'staging';
+    const costHigh = costOfDelay >= 15;
+    const sizeSmall = jobSize <= 5;
+    const q = QUADRANTS.find(qd => qd.costHigh === costHigh && qd.sizeSmall === sizeSmall);
+    return q ? q.key : 'staging';
+}
+
+function MatrixCard({ item, labelKey, wsjf, onClick }) {
     return (
         <div
             onClick={onClick}
@@ -58,6 +66,11 @@ function MatrixCard({ item, labelKey, onClick }) {
             <p className="text-xs font-medium mb-0.5" style={{ color: '#d4e0ec' }}>
                 {item[labelKey]}
             </p>
+            {wsjf.hasScores && (
+                <p className="text-[10px] mb-0.5" style={{ color: '#c9a87c' }}>
+                    WSJF {wsjf.wsjf.toFixed(1)} · CoD {wsjf.costOfDelay} · Size {wsjf.jobSize}
+                </p>
+            )}
             {item.description && (
                 <p className="text-[10px] truncate" style={{ color: '#5d7a94' }}>
                     {item.description}
@@ -67,29 +80,13 @@ function MatrixCard({ item, labelKey, onClick }) {
     );
 }
 
-export default function PrioritizationMatrix({ items, loading, onEdit, onCreate, onUpdateItem, labelKey = 'title' }) {
+export default function PrioritizationMatrix({ items, loading, onEdit, onCreate, labelKey = 'title' }) {
     const stagingItems = items.filter(i => getQuadrantKey(i) === 'staging');
     const quadrantItems = (key) => items.filter(i => getQuadrantKey(i) === key);
 
-    const handleDragEnd = (result) => {
-        if (!result.destination) return;
-        if (result.source.droppableId === result.destination.droppableId) return;
-
-        const { draggableId, destination } = result;
-
-        if (destination.droppableId === 'staging') {
-            onUpdateItem(draggableId, { implementation: null, potential: null });
-        } else {
-            const q = QUADRANTS.find(qd => qd.key === destination.droppableId);
-            if (q) {
-                onUpdateItem(draggableId, { implementation: q.implementation, potential: q.potential });
-            }
-        }
-    };
-
     return (
-        <DragDropContext onDragEnd={handleDragEnd}>
-            {/* Staging Section */}
+        <div>
+            {/* Staging Section — unscored items */}
             <div
                 className="rounded-xl mb-4 overflow-hidden"
                 style={{ background: B.surface, border: `1px solid ${B.border}` }}
@@ -105,7 +102,7 @@ export default function PrioritizationMatrix({ items, loading, onEdit, onCreate,
                                 Issues Under Discussion
                             </span>
                             <p className="text-xs" style={{ color: '#5d7a94' }}>
-                                What is the problem? Who has the problem? Why is it important?
+                                Add WSJF scores to auto-place these into the matrix.
                             </p>
                         </div>
                     </div>
@@ -119,51 +116,27 @@ export default function PrioritizationMatrix({ items, loading, onEdit, onCreate,
                     </button>
                 </div>
 
-                <Droppable droppableId="staging" direction="horizontal">
-                    {(provided, snapshot) => (
-                        <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            className="flex gap-2 p-3 overflow-x-auto min-h-[90px] transition-colors"
-                            style={{ background: snapshot.isDraggingOver ? '#c9a87c08' : 'transparent' }}
-                        >
-                            {loading && stagingItems.length === 0 && (
-                                <div className="flex gap-2">
-                                    {[1, 2, 3].map(i => (
-                                        <div key={i} className="w-52 h-20 rounded-lg animate-pulse flex-shrink-0" style={{ background: '#ffffff08' }} />
-                                    ))}
-                                </div>
-                            )}
-
-                            {stagingItems.map((item, index) => (
-                                <Draggable draggableId={item.id} index={index} key={item.id}>
-                                    {(provided, snapshot) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                            className="flex-shrink-0 w-52"
-                                            style={{
-                                                ...provided.draggableProps.style,
-                                                opacity: snapshot.isDragging ? 0.85 : 1,
-                                            }}
-                                        >
-                                            <MatrixCard item={item} labelKey={labelKey} onClick={() => onEdit(item)} />
-                                        </div>
-                                    )}
-                                </Draggable>
+                <div className="flex gap-2 p-3 overflow-x-auto min-h-[90px]">
+                    {loading && stagingItems.length === 0 && (
+                        <div className="flex gap-2">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="w-52 h-20 rounded-lg animate-pulse flex-shrink-0" style={{ background: '#ffffff08' }} />
                             ))}
-
-                            {provided.placeholder}
-
-                            {!loading && stagingItems.length === 0 && (
-                                <p className="text-xs py-4 px-2" style={{ color: '#3d6080' }}>
-                                    Drag items here to triage, then move them into the matrix below.
-                                </p>
-                            )}
                         </div>
                     )}
-                </Droppable>
+
+                    {stagingItems.map((item) => (
+                        <div key={item.id} className="flex-shrink-0 w-52">
+                            <MatrixCard item={item} labelKey={labelKey} wsjf={getWsjfData(item)} onClick={() => onEdit(item)} />
+                        </div>
+                    ))}
+
+                    {!loading && stagingItems.length === 0 && (
+                        <p className="text-xs py-4 px-2" style={{ color: '#3d6080' }}>
+                            All items have WSJF scores and are placed in the matrix below.
+                        </p>
+                    )}
+                </div>
             </div>
 
             {/* Matrix */}
@@ -175,7 +148,7 @@ export default function PrioritizationMatrix({ items, loading, onEdit, onCreate,
                         className="text-[10px] font-bold text-center"
                         style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: '#5d7a94' }}
                     >
-                        Potential for Improvement
+                        Cost of Delay
                     </span>
                     <span className="text-[10px] font-bold" style={{ color: '#5d7a94' }}>Low</span>
                 </div>
@@ -186,73 +159,55 @@ export default function PrioritizationMatrix({ items, loading, onEdit, onCreate,
                         {QUADRANTS.map(q => {
                             const qItems = quadrantItems(q.key);
                             return (
-                                <Droppable droppableId={q.key} key={q.key}>
-                                    {(provided, snapshot) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            {...provided.droppableProps}
-                                            className="rounded-xl p-3 min-h-[200px] flex flex-col"
-                                            style={{
-                                                background: snapshot.isDraggingOver ? `${q.accent}10` : `${q.accent}05`,
-                                                border: `1px solid ${q.accent}25`,
-                                                backgroundImage: `linear-gradient(rgba(30,58,90,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(30,58,90,0.03) 1px, transparent 1px)`,
-                                                backgroundSize: '20px 20px',
-                                            }}
-                                        >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <div>
-                                                    <span
-                                                        className="text-xs font-bold uppercase tracking-wider"
-                                                        style={{ color: q.accent }}
-                                                    >
-                                                        {q.title}
-                                                    </span>
-                                                    <p className="text-[10px]" style={{ color: '#5d7a94' }}>{q.sub}</p>
-                                                </div>
-                                                <span className="text-xs" style={{ color: '#3d6080' }}>{qItems.length}</span>
-                                            </div>
-
-                                            <div className="space-y-2 flex-1">
-                                                {qItems.map((item, index) => (
-                                                    <Draggable draggableId={item.id} index={index} key={item.id}>
-                                                        {(provided, snapshot) => (
-                                                            <div
-                                                                ref={provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                                {...provided.dragHandleProps}
-                                                                style={{
-                                                                    ...provided.draggableProps.style,
-                                                                    opacity: snapshot.isDragging ? 0.85 : 1,
-                                                                }}
-                                                            >
-                                                                <MatrixCard item={item} labelKey={labelKey} onClick={() => onEdit(item)} />
-                                                            </div>
-                                                        )}
-                                                    </Draggable>
-                                                ))}
-                                                {provided.placeholder}
-
-                                                {!loading && qItems.length === 0 && (
-                                                    <p className="text-[10px] text-center py-4" style={{ color: '#2a4a60' }}>
-                                                        Drop items here
-                                                    </p>
-                                                )}
-                                            </div>
+                                <div
+                                    key={q.key}
+                                    className="rounded-xl p-3 min-h-[200px] flex flex-col"
+                                    style={{
+                                        background: `${q.accent}05`,
+                                        border: `1px solid ${q.accent}25`,
+                                        backgroundImage: `linear-gradient(rgba(30,58,90,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(30,58,90,0.03) 1px, transparent 1px)`,
+                                        backgroundSize: '20px 20px',
+                                    }}
+                                >
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div>
+                                            <span
+                                                className="text-xs font-bold uppercase tracking-wider"
+                                                style={{ color: q.accent }}
+                                            >
+                                                {q.title}
+                                            </span>
+                                            <p className="text-[10px]" style={{ color: '#5d7a94' }}>{q.sub}</p>
                                         </div>
-                                    )}
-                                </Droppable>
+                                        <span className="text-xs" style={{ color: '#3d6080' }}>{qItems.length}</span>
+                                    </div>
+
+                                    <div className="space-y-2 flex-1">
+                                        {qItems.map((item) => (
+                                            <div key={item.id}>
+                                                <MatrixCard item={item} labelKey={labelKey} wsjf={getWsjfData(item)} onClick={() => onEdit(item)} />
+                                            </div>
+                                        ))}
+
+                                        {!loading && qItems.length === 0 && (
+                                            <p className="text-[10px] text-center py-4" style={{ color: '#2a4a60' }}>
+                                                No items
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
                             );
                         })}
                     </div>
 
                     {/* X-axis */}
                     <div className="flex justify-between items-center mt-2 px-1">
-                        <span className="text-[10px] font-bold" style={{ color: '#5d7a94' }}>Easy</span>
-                        <span className="text-[10px] font-bold" style={{ color: '#5d7a94' }}>Implementation</span>
-                        <span className="text-[10px] font-bold" style={{ color: '#5d7a94' }}>Difficult</span>
+                        <span className="text-[10px] font-bold" style={{ color: '#5d7a94' }}>Small</span>
+                        <span className="text-[10px] font-bold" style={{ color: '#5d7a94' }}>Job Size</span>
+                        <span className="text-[10px] font-bold" style={{ color: '#5d7a94' }}>Large</span>
                     </div>
                 </div>
             </div>
-        </DragDropContext>
+        </div>
     );
 }

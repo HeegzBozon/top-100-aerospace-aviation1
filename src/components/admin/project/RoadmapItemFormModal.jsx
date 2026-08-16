@@ -46,8 +46,10 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
         value_stream: 'operational',
         priority: 0,
         target_date: '',
-        implementation: '',
-        potential: '',
+        business_value: '',
+        time_criticality: '',
+        risk_reduction: '',
+        job_size: '',
         initiative_id: '',
     });
     const [saving, setSaving] = useState(false);
@@ -62,8 +64,10 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
                 value_stream: item.value_stream || 'operational',
                 priority: item.priority || 0,
                 target_date: item.target_date ? item.target_date.split('T')[0] : '',
-                implementation: item.implementation || '',
-                potential: item.potential || '',
+                business_value: item.business_value || '',
+                time_criticality: item.time_criticality || '',
+                risk_reduction: item.risk_reduction || '',
+                job_size: item.job_size || '',
                 initiative_id: item.initiative_id || (defaultInitiativeId || ''),
             });
         } else if (defaultStatus) {
@@ -75,12 +79,20 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
         if (!form.title.trim()) return;
         setSaving(true);
         try {
+            const bv = Number(form.business_value) || 0;
+            const tc = Number(form.time_criticality) || 0;
+            const rr = Number(form.risk_reduction) || 0;
+            const size = Number(form.job_size) || 0;
+            const wsjf_score = size > 0 ? (bv + tc + rr) / size : 0;
             await onSave({
                 ...form,
                 priority: Number(form.priority) || 0,
                 target_date: form.target_date || null,
-                implementation: form.implementation || null,
-                potential: form.potential || null,
+                business_value: bv || null,
+                time_criticality: tc || null,
+                risk_reduction: rr || null,
+                job_size: size || null,
+                wsjf_score,
                 initiative_id: form.initiative_id || null,
             });
         } finally {
@@ -161,26 +173,39 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                            <Label>Implementation</Label>
-                            <Select value={form.implementation} onValueChange={v => setForm({ ...form, implementation: v })}>
-                                <SelectTrigger><SelectValue placeholder="Not triaged" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="easy">Easy</SelectItem>
-                                    <SelectItem value="difficult">Difficult</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-1.5">
-                            <Label>Potential</Label>
-                            <Select value={form.potential} onValueChange={v => setForm({ ...form, potential: v })}>
-                                <SelectTrigger><SelectValue placeholder="Not triaged" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="high">High</SelectItem>
-                                    <SelectItem value="low">Low</SelectItem>
-                                </SelectContent>
-                            </Select>
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#5d7a94' }}>
+                            WSJF Inputs (1-10)
+                        </Label>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                                <Label className="text-[11px]">Business Value</Label>
+                                <Input type="number" min={0} max={10}
+                                    value={form.business_value}
+                                    onChange={e => setForm({ ...form, business_value: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-[11px]">Time Criticality</Label>
+                                <Input type="number" min={0} max={10}
+                                    value={form.time_criticality}
+                                    onChange={e => setForm({ ...form, time_criticality: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-[11px]">Risk Reduction</Label>
+                                <Input type="number" min={0} max={10}
+                                    value={form.risk_reduction}
+                                    onChange={e => setForm({ ...form, risk_reduction: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-[11px]">Job Size</Label>
+                                <Input type="number" min={0} max={10}
+                                    value={form.job_size}
+                                    onChange={e => setForm({ ...form, job_size: e.target.value })}
+                                />
+                            </div>
                         </div>
                     </div>
 

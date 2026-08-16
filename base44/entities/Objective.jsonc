@@ -49,21 +49,25 @@
       ],
       "description": "Escape Velocity horizon: H1=Core (protect & extend), H2=Growth (build & scale), H3=Future (explore & incubate)"
     },
-    "implementation": {
-      "type": "string",
-      "enum": [
-        "easy",
-        "difficult"
-      ],
-      "description": "Implementation difficulty for prioritization matrix (Easy/Difficult axis)"
+    "business_value": {
+      "type": "number",
+      "description": "Business Value (1-10) for WSJF calculation"
     },
-    "potential": {
-      "type": "string",
-      "enum": [
-        "high",
-        "low"
-      ],
-      "description": "Potential for improvement for prioritization matrix (High/Low axis)"
+    "time_criticality": {
+      "type": "number",
+      "description": "Time Criticality (1-10) for WSJF calculation"
+    },
+    "risk_reduction": {
+      "type": "number",
+      "description": "Risk Reduction / Opportunity Enablement (1-10) for WSJF calculation"
+    },
+    "job_size": {
+      "type": "number",
+      "description": "Job Size / Effort (1-10) for WSJF calculation"
+    },
+    "wsjf_score": {
+      "type": "number",
+      "description": "Calculated WSJF score"
     },
     "owner_email": {
       "type": "string",
