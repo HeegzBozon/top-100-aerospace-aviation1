@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Sparkles, Loader2, RotateCw, CheckCircle2, AlertCircle } from 'lucide-react';
 
@@ -47,7 +47,7 @@ const SCHEMA = {
     },
 };
 
-export default function FieldGrader({ entityType, fieldType, value }) {
+export default function FieldGrader({ entityType, fieldType, value, autoGrade }) {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
@@ -55,6 +55,7 @@ export default function FieldGrader({ entityType, fieldType, value }) {
     const rubric = RUBRICS[fieldType]?.[entityType] || `A strong ${fieldType} is clear, specific, and actionable.`;
 
     const grade = async () => {
+        if (loading) return;
         if (!value || !value.trim()) return;
         setLoading(true);
         setError(null);
@@ -77,6 +78,13 @@ Respond with a score (0-10), a letter grade (A/B/C/D/F), specific feedback, what
             setLoading(false);
         }
     };
+
+    // Auto-grade on mount when requested (edit flow / review screen)
+    useEffect(() => {
+        if (autoGrade && value && String(value).trim()) {
+            grade();
+        }
+    }, [autoGrade]);
 
     // Idle state — show the Grade button
     if (!loading && !result && !error) {

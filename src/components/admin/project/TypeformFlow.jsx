@@ -32,6 +32,7 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
     const [validationError, setValidationError] = useState(null);
     const [celebrating, setCelebrating] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
+    const [inReview, setInReview] = useState(false);
     const inputRef = useRef(null);
     const onSubmitRef = useRef(onSubmit);
     onSubmitRef.current = onSubmit;
@@ -91,13 +92,18 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
             if (err) { setValidationError(err); return; }
         }
         setValidationError(null);
-        if (isLast) { handleComplete(); return; }
+        if (isLast) {
+            if (isEdit) { handleComplete(); return; }
+            setInReview(true);
+            return;
+        }
         setDirection('forward');
         setStreak(s => s + 1);
         setStepIdx(i => i + 1);
     };
 
     const goBack = () => {
+        if (inReview) { setInReview(false); return; }
         if (stepIdx > 0) {
             setDirection('backward');
             setStreak(s => Math.max(0, s - 1));
@@ -113,7 +119,11 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
             const err = step.validate(newForm);
             if (err) { setValidationError(err); return; }
         }
-        if (isLast) { handleComplete(); return; }
+        if (isLast) {
+            if (isEdit) { handleComplete(); return; }
+            setInReview(true);
+            return;
+        }
         setDirection('forward');
         setStreak(s => s + 1);
         setTimeout(() => setStepIdx(i => i + 1), 250);
@@ -128,6 +138,12 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
             const inText = tag === 'INPUT' || tag === 'TEXTAREA';
 
             if (e.key === 'Escape') { e.preventDefault(); onClose(); return; }
+
+            if (inReview) {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleComplete(); return; }
+                if (e.key === 'Backspace') { e.preventDefault(); setInReview(false); return; }
+                return;
+            }
 
             if (e.key === 'Enter' && !e.shiftKey && tag !== 'TEXTAREA') {
                 e.preventDefault(); advance(); return;
@@ -148,7 +164,7 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
         };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
-    }, [stepIdx, form, step, isLast, celebrating]);
+    }, [stepIdx, form, step, isLast, celebrating, inReview]);
 
     // --- Render ---
     const renderField = () => {
@@ -278,7 +294,7 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                             {title}
                         </span>
                         <div className="flex items-center gap-3">
-                            {streak >= 2 && (
+                            {streak >= 2 && !inReview && (
                                 <div className="flex items-center gap-1 text-xs font-bold" style={{ color: B.copper }}>
                                     <Flame className="w-3.5 h-3.5" />
                                     <span>{streak}</span>
@@ -288,99 +304,173 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                                 </div>
                             )}
                             <span className="text-xs font-medium" style={{ color: B.muted }}>
-                                {stepIdx + 1} / {steps.length}
+                                {inReview ? 'Review' : `${stepIdx + 1} / ${steps.length}`}
                             </span>
                         </div>
                     </div>
 
                     {/* Main content */}
                     <div className="flex-1 overflow-y-auto px-6 py-2">
-                        <div key={stepIdx} style={{
-                            animation: direction === 'forward'
-                                ? 'tf-slide-fwd 0.3s ease-out'
-                                : 'tf-slide-bwd 0.3s ease-out',
-                        }}>
-                            <div className="flex items-start gap-2 mb-1">
-                                <h2 className="text-xl sm:text-2xl font-bold" style={{ color: B.navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
-                                    {step?.question}
-                                </h2>
-                                {step?.help && (
-                                    <button
-                                        onClick={() => setShowHelp(s => !s)}
-                                        className="mt-1.5 flex-shrink-0 p-1 rounded-full transition-colors hover:bg-black/5"
-                                        style={{ color: showHelp ? B.copper : B.muted }}
-                                        aria-label="Show writing guide"
-                                    >
-                                        <Info className="w-4 h-4" />
-                                    </button>
-                                )}
-                            </div>
-                            {step?.subtitle && (
-                                <p className="text-sm mb-5" style={{ color: B.muted }}>{step.subtitle}</p>
-                            )}
-                            {step?.help && showHelp && (
-                                <div
-                                    className="text-xs leading-relaxed mb-4 p-3.5 rounded-lg border"
-                                    style={{ background: B.sand, borderColor: B.border, color: B.navy }}
-                                >
-                                    {step.help}
+                        {inReview ? (
+                            /* ── Pre-Flight Review Screen ── */
+                            <div key="review" style={{ animation: 'tf-slide-fwd 0.3s ease-out' }}>
+                                <div className="flex items-start gap-2 mb-1">
+                                    <h2 className="text-xl sm:text-2xl font-bold" style={{ color: B.navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
+                                        Pre-Flight Review
+                                    </h2>
                                 </div>
-                            )}
-                            <div className="mt-3">
-                                {renderField()}
-                            </div>
-                            {gradeFieldType && (form[step.key] || '').trim() && (
-                                <div className="mt-3">
-                                    <FieldGrader
-                                        key={form[step.key]}
-                                        entityType={entityType}
-                                        fieldType={gradeFieldType}
-                                        value={form[step.key]}
-                                    />
-                                </div>
-                            )}
-                            {validationError && (
-                                <div className="flex items-center gap-2 text-xs mt-3 p-2.5 rounded-lg" style={{ background: B.rose + '12', color: B.rose }}>
-                                    <span>⚠</span>
-                                    {validationError}
-                                </div>
-                            )}
-                        </div>
+                                <p className="text-sm mb-5" style={{ color: B.muted }}>
+                                    Review everything before launching. AI grades run automatically.
+                                </p>
 
-                        {/* Navigation */}
-                        <div className="flex items-center justify-between mt-6 mb-4">
-                            <div>
-                                {stepIdx > 0 ? (
-                                    <button onClick={goBack} className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity" style={{ color: B.muted }}>
+                                <div className="space-y-3">
+                                    {steps.map((s, i) => {
+                                        if (!s.key || s.type === 'wsjf' || s.type === 'custom') return null;
+                                        const val = form[s.key];
+                                        if (!val || (typeof val === 'string' && !val.trim())) return null;
+                                        const isTitleField = s.key === 'title' || s.key === 'name';
+                                        const isDescField = s.key === 'description';
+                                        const selectLabel = s.type === 'select' && s.options
+                                            ? (s.options.find(o => o.value === val)?.label || val)
+                                            : null;
+                                        return (
+                                            <div key={s.key} className="rounded-xl border p-3.5" style={{ borderColor: B.border, background: '#fff' }}>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+                                                        style={{ background: B.sand, color: B.navy }}>{i + 1}</span>
+                                                    <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: B.muted }}>
+                                                        {s.question || s.key}
+                                                    </span>
+                                                </div>
+                                                <p className="text-sm ml-7 mb-2" style={{ color: B.navy, whiteSpace: 'pre-wrap' }}>
+                                                    {selectLabel || String(val)}
+                                                </p>
+                                                {(isTitleField || isDescField) && (
+                                                    <div className="ml-7 mt-1">
+                                                        <FieldGrader
+                                                            entityType={entityType}
+                                                            fieldType={isTitleField ? 'title' : 'description'}
+                                                            value={val}
+                                                            autoGrade
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Navigation */}
+                                <div className="flex items-center justify-between mt-6 mb-4">
+                                    <button onClick={() => setInReview(false)} className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity" style={{ color: B.muted }}>
                                         <ChevronLeft className="w-4 h-4" /> Back
                                     </button>
-                                ) : onDelete && isEdit ? (
-                                    <button onClick={onDelete} className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors">
-                                        Delete
-                                    </button>
-                                ) : null}
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xs hidden sm:block" style={{ color: B.muted }}>↵ to launch</span>
+                                        <Button
+                                            onClick={handleComplete}
+                                            disabled={saving || celebrating}
+                                            className="flex items-center gap-1.5"
+                                            style={{ background: B.navy, color: 'white' }}
+                                        >
+                                            {saving ? 'Launching...' : 'Launch'}
+                                            <Rocket className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <span className="text-xs hidden sm:block" style={{ color: B.muted }}>{keyboardHint}</span>
-                                <Button
-                                    onClick={advance}
-                                    disabled={saving || (step?.required && isEmpty && !isWsjf)}
-                                    className="flex items-center gap-1.5"
-                                    style={{ background: B.navy, color: 'white' }}
-                                >
-                                    {saving ? 'Saving...' : isLast ? (isEdit ? 'Update' : 'Launch') : 'Next'}
-                                    {!isLast && <ChevronRight className="w-4 h-4" />}
-                                    {isLast && <Rocket className="w-4 h-4" />}
-                                </Button>
-                            </div>
-                        </div>
+                        ) : (
+                            /* ── Normal Step Content ── */
+                            <>
+                                <div key={stepIdx} style={{
+                                    animation: direction === 'forward'
+                                        ? 'tf-slide-fwd 0.3s ease-out'
+                                        : 'tf-slide-bwd 0.3s ease-out',
+                                }}>
+                                    <div className="flex items-start gap-2 mb-1">
+                                        <h2 className="text-xl sm:text-2xl font-bold" style={{ color: B.navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
+                                            {step?.question}
+                                        </h2>
+                                        {step?.help && (
+                                            <button
+                                                onClick={() => setShowHelp(s => !s)}
+                                                className="mt-1.5 flex-shrink-0 p-1 rounded-full transition-colors hover:bg-black/5"
+                                                style={{ color: showHelp ? B.copper : B.muted }}
+                                                aria-label="Show writing guide"
+                                            >
+                                                <Info className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                    </div>
+                                    {step?.subtitle && (
+                                        <p className="text-sm mb-5" style={{ color: B.muted }}>{step.subtitle}</p>
+                                    )}
+                                    {step?.help && showHelp && (
+                                        <div
+                                            className="text-xs leading-relaxed mb-4 p-3.5 rounded-lg border"
+                                            style={{ background: B.sand, borderColor: B.border, color: B.navy }}
+                                        >
+                                            {step.help}
+                                        </div>
+                                    )}
+                                    <div className="mt-3">
+                                        {renderField()}
+                                    </div>
+                                    {gradeFieldType && (form[step.key] || '').trim() && (
+                                        <div className="mt-3">
+                                            <FieldGrader
+                                                key={isEdit ? `edit-${stepIdx}` : form[step.key]}
+                                                entityType={entityType}
+                                                fieldType={gradeFieldType}
+                                                value={form[step.key]}
+                                                autoGrade={isEdit}
+                                            />
+                                        </div>
+                                    )}
+                                    {validationError && (
+                                        <div className="flex items-center gap-2 text-xs mt-3 p-2.5 rounded-lg" style={{ background: B.rose + '12', color: B.rose }}>
+                                            <span>⚠</span>
+                                            {validationError}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Navigation */}
+                                <div className="flex items-center justify-between mt-6 mb-4">
+                                    <div>
+                                        {stepIdx > 0 ? (
+                                            <button onClick={goBack} className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity" style={{ color: B.muted }}>
+                                                <ChevronLeft className="w-4 h-4" /> Back
+                                            </button>
+                                        ) : onDelete && isEdit ? (
+                                            <button onClick={onDelete} className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors">
+                                                Delete
+                                            </button>
+                                        ) : null}
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xs hidden sm:block" style={{ color: B.muted }}>{keyboardHint}</span>
+                                        <Button
+                                            onClick={advance}
+                                            disabled={saving || (step?.required && isEmpty && !isWsjf)}
+                                            className="flex items-center gap-1.5"
+                                            style={{ background: B.navy, color: 'white' }}
+                                        >
+                                            {saving ? 'Saving...' : isLast ? (isEdit ? 'Update' : 'Review') : 'Next'}
+                                            {!isLast && <ChevronRight className="w-4 h-4" />}
+                                            {isLast && !isEdit && <Rocket className="w-4 h-4" />}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     {/* Progress bar */}
                     <div className="h-1.5 w-full flex-shrink-0" style={{ background: B.sand }}>
                         <div className="h-full transition-all duration-500 ease-out"
                             style={{
-                                width: `${progress}%`,
+                                width: inReview ? '100%' : `${progress}%`,
                                 background: `linear-gradient(90deg, ${B.navy}, ${B.gold})`,
                             }}
                         />
