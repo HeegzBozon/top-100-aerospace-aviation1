@@ -146,6 +146,7 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                 <Input
                     ref={inputRef}
                     type={step.type === 'text' ? 'text' : step.type}
+                    autoComplete="off"
                     value={form[step.key] ?? ''}
                     onChange={e => { setForm({ ...form, [step.key]: e.target.value }); setValidationError(null); }}
                     placeholder={step.placeholder}
@@ -159,6 +160,7 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
             return (
                 <Textarea
                     ref={inputRef}
+                    autoComplete="off"
                     value={form[step.key] ?? ''}
                     onChange={e => { setForm({ ...form, [step.key]: e.target.value }); setValidationError(null); }}
                     placeholder={step.placeholder}
@@ -234,9 +236,7 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
 
     return (
         <Dialog open onOpenChange={(open) => { if (!open && !celebrating) onClose(); }}>
-            <DialogPortal>
-                <DialogOverlay className="bg-black/40" />
-                <DialogContent
+            <DialogContent
                     className="p-0 gap-0 overflow-hidden max-w-lg max-h-[85vh] flex flex-col"
                     style={{ background: B.cream, borderRadius: '1rem' }}
                     onInteractOutside={(e) => { if (!celebrating) e.preventDefault(); }}
@@ -247,7 +247,7 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                     `}</style>
 
                     {/* Top bar */}
-                    <div className="flex items-center justify-between px-6 py-4 flex-shrink-0">
+                    <div className="flex items-center justify-between px-6 py-4 pr-10 flex-shrink-0">
                         <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: B.muted }}>
                             {title}
                         </span>
@@ -264,9 +264,6 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                             <span className="text-xs font-medium" style={{ color: B.muted }}>
                                 {stepIdx + 1} / {steps.length}
                             </span>
-                            <button onClick={onClose} className="p-1 rounded-full hover:bg-black/5 transition-colors">
-                                <X className="w-5 h-5" style={{ color: B.muted }} />
-                            </button>
                         </div>
                     </div>
 
@@ -345,7 +342,6 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                         </div>
                     )}
                 </DialogContent>
-            </DialogPortal>
         </Dialog>
     );
 }
