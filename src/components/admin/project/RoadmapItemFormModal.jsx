@@ -50,7 +50,7 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
         time_criticality: '',
         risk_reduction: '',
         job_size: '',
-        initiative_id: '',
+        initiative_id: defaultInitiativeId || '',
     });
     const [saving, setSaving] = useState(false);
 
@@ -70,8 +70,8 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
                 job_size: item.job_size || '',
                 initiative_id: item.initiative_id || (defaultInitiativeId || ''),
             });
-        } else if (defaultStatus) {
-            setForm(prev => ({ ...prev, status: defaultStatus, initiative_id: defaultInitiativeId || '' }));
+        } else if (defaultInitiativeId || defaultStatus) {
+            setForm(prev => ({ ...prev, status: defaultStatus || prev.status, initiative_id: defaultInitiativeId || prev.initiative_id }));
         }
     }, [item, defaultStatus]);
 
