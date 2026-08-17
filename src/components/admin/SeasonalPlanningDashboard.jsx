@@ -204,9 +204,9 @@ export default function SeasonalPlanningDashboard() {
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList>
-                    <TabsTrigger value="explore">Explore</TabsTrigger>
-                    <TabsTrigger value="integrate">Integrate</TabsTrigger>
-                    <TabsTrigger value="iterate">Iterate</TabsTrigger>
+                    <TabsTrigger value="explore">Plan</TabsTrigger>
+                    <TabsTrigger value="integrate">Backlog</TabsTrigger>
+                    <TabsTrigger value="iterate">Sprint</TabsTrigger>
                     <TabsTrigger value="release">Release</TabsTrigger>
                 </TabsList>
 
