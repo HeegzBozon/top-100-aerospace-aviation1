@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import confetti from 'canvas-confetti';
-import { ChevronLeft, ChevronRight, X, Check, Flame, Rocket } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Check, Flame, Rocket, Info } from 'lucide-react';
 
 const B = {
     navy: '#1e3a5a',
@@ -30,6 +30,7 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
     const [streak, setStreak] = useState(0);
     const [validationError, setValidationError] = useState(null);
     const [celebrating, setCelebrating] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
     const inputRef = useRef(null);
     const onSubmitRef = useRef(onSubmit);
     onSubmitRef.current = onSubmit;
@@ -146,7 +147,11 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                 <Input
                     ref={inputRef}
                     type={step.type === 'text' ? 'text' : step.type}
+                    name={`tf-${stepIdx}`}
                     autoComplete="off"
+                    data-lpignore="true"
+                    data-1p-ignore
+                    data-form-type="other"
                     value={form[step.key] ?? ''}
                     onChange={e => { setForm({ ...form, [step.key]: e.target.value }); setValidationError(null); }}
                     placeholder={step.placeholder}
@@ -160,7 +165,11 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
             return (
                 <Textarea
                     ref={inputRef}
+                    name={`tf-${stepIdx}`}
                     autoComplete="off"
+                    data-lpignore="true"
+                    data-1p-ignore
+                    data-form-type="other"
                     value={form[step.key] ?? ''}
                     onChange={e => { setForm({ ...form, [step.key]: e.target.value }); setValidationError(null); }}
                     placeholder={step.placeholder}
@@ -207,6 +216,11 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                             <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: B.muted }}>{sf.label}</label>
                             <Input
                                 type="number" min={0} max={10}
+                                name={`tf-wsjf-${sf.key}`}
+                                autoComplete="off"
+                                data-lpignore="true"
+                                data-1p-ignore
+                                data-form-type="other"
                                 value={form[sf.key] ?? ''}
                                 onChange={e => setForm({ ...form, [sf.key]: e.target.value })}
                                 placeholder="0–10"
@@ -274,11 +288,31 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                                 ? 'tf-slide-fwd 0.3s ease-out'
                                 : 'tf-slide-bwd 0.3s ease-out',
                         }}>
-                            <h2 className="text-xl sm:text-2xl font-bold mb-1" style={{ color: B.navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
-                                {step?.question}
-                            </h2>
+                            <div className="flex items-start gap-2 mb-1">
+                                <h2 className="text-xl sm:text-2xl font-bold" style={{ color: B.navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
+                                    {step?.question}
+                                </h2>
+                                {step?.help && (
+                                    <button
+                                        onClick={() => setShowHelp(s => !s)}
+                                        className="mt-1.5 flex-shrink-0 p-1 rounded-full transition-colors hover:bg-black/5"
+                                        style={{ color: showHelp ? B.copper : B.muted }}
+                                        aria-label="Show writing guide"
+                                    >
+                                        <Info className="w-4 h-4" />
+                                    </button>
+                                )}
+                            </div>
                             {step?.subtitle && (
                                 <p className="text-sm mb-5" style={{ color: B.muted }}>{step.subtitle}</p>
+                            )}
+                            {step?.help && showHelp && (
+                                <div
+                                    className="text-xs leading-relaxed mb-4 p-3.5 rounded-lg border"
+                                    style={{ background: B.sand, borderColor: B.border, color: B.navy }}
+                                >
+                                    {step.help}
+                                </div>
                             )}
                             <div className="mt-3">
                                 {renderField()}

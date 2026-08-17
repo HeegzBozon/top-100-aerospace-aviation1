@@ -84,17 +84,18 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
     };
 
     const steps = [
-        { key: 'title', type: 'text', question: 'What needs to be done?', subtitle: 'Give this epic a clear title.', placeholder: 'e.g. Build RSVP confirmation email', required: true },
-        { key: 'description', type: 'textarea', question: 'Brief description.', subtitle: 'What does this item involve?', placeholder: 'Brief description of the item' },
+        { key: 'title', type: 'text', question: 'What needs to be done?', subtitle: 'Give this epic a clear title.', placeholder: 'e.g. Build RSVP confirmation email', required: true, help: 'Epics are program-level deliverables — something a team can build in a PI or less. Name them as outcomes with a verb: "Build RSVP confirmation email" beats "RSVP". Clear enough that someone new can infer the scope.' },
+        { key: 'description', type: 'textarea', question: 'Brief description.', subtitle: 'What does this item involve?', placeholder: 'Brief description of the item', help: 'What does this item involve? Include the "why" briefly and any key constraints. This is the spec the team will work from.' },
         {
             key: 'status', type: 'select', question: 'What status?', subtitle: 'Current workflow stage.', options: STATUSES,
             validate: (f) => (f.status !== 'backlog' && !f.initiative_id ? 'Link an upstream Initiative before advancing past Backlog.' : null),
+            help: 'Backlog → Next Up → In Progress → Done. Don\'t advance past Backlog without linking an upstream Initiative.',
         },
-        { key: 'type', type: 'select', question: 'What type of item?', subtitle: 'Press 1–4 to select.', options: TYPES },
-        { key: 'value_stream', type: 'select', question: 'Which value stream?', subtitle: 'Operational or developmental?', options: STREAMS },
-        { key: 'target_date', type: 'date', question: 'Target completion date?', subtitle: 'When should this be done?' },
-        { key: 'priority', type: 'number', question: 'What priority?', subtitle: 'Sort order — higher = first.', placeholder: '0' },
-        { key: '__wsjf__', type: 'wsjf', question: 'Score it with WSJF.', subtitle: 'Rate each factor 1–10. Leave blank to skip.' },
+        { key: 'type', type: 'select', question: 'What type of item?', subtitle: 'Press 1–4 to select.', options: TYPES, help: 'Feature = new capability. Enhancement = improvement to existing. Bug = defect fix. Feedback = sourced from user input.' },
+        { key: 'value_stream', type: 'select', question: 'Which value stream?', subtitle: 'Operational or developmental?', options: STREAMS, help: 'Operational = keeps the lights on. Developmental = builds new value. Most epics should be developmental — operational work belongs in a separate queue.' },
+        { key: 'target_date', type: 'date', question: 'Target completion date?', subtitle: 'When should this be done?', help: 'When should this be done? Pick a date that\'s realistic, not aspirational. A missed target date erodes trust in the roadmap.' },
+        { key: 'priority', type: 'number', question: 'What priority?', subtitle: 'Sort order — higher = first.', placeholder: '0', help: 'Sort order within the status column. Higher numbers float to the top. Use this to sequence work within a column — not across columns.' },
+        { key: '__wsjf__', type: 'wsjf', question: 'Score it with WSJF.', subtitle: 'Rate each factor 1–10. Leave blank to skip.', help: 'WSJF = (Business Value + Time Criticality + Risk Reduction) ÷ Job Size. Higher scores float to the top of the backlog. Rate honestly — if everything is a 10, nothing is.' },
     ];
 
     return (

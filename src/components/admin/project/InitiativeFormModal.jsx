@@ -61,15 +61,16 @@ export default function InitiativeFormModal({ item, objectiveId, defaultStatus, 
     };
 
     const steps = [
-        { key: 'name', type: 'text', question: 'Name this initiative.', subtitle: 'What large-scale effort is this?', placeholder: 'e.g. Launch Chamber 2.0 Membership Tiers', required: true },
-        { key: 'description', type: 'textarea', question: 'Describe the initiative.', subtitle: 'What does it encompass?', placeholder: 'Detailed description of this initiative' },
-        { key: 'type', type: 'select', question: 'What type of initiative?', subtitle: 'Press 1–4 to select.', options: TYPES },
+        { key: 'name', type: 'text', question: 'Name this initiative.', subtitle: 'What large-scale effort is this?', placeholder: 'e.g. Launch Chamber 2.0 Membership Tiers', required: true, help: 'Initiatives are Solution Train epics — large efforts that may span multiple Program Increments. Name them as capabilities to build or deliver, not as projects. "Launch Chamber 2.0 Tiers" beats "Chamber Project".' },
+        { key: 'description', type: 'textarea', question: 'Describe the initiative.', subtitle: 'What does it encompass?', placeholder: 'Detailed description of this initiative', help: 'What does this initiative encompass? List the scope boundaries — what\'s in and what\'s out. This prevents scope creep later.' },
+        { key: 'type', type: 'select', question: 'What type of initiative?', subtitle: 'Press 1–4 to select.', options: TYPES, help: 'Feature = user-facing capability. Platform = infrastructure/enabling. Operations = process/tooling. Research = learning/validation before building.' },
         {
             key: 'status', type: 'select', question: 'Where does this sit?', subtitle: 'Current Solution Train status.', options: STATUSES,
             validate: (f) => (f.status !== 'funnel' && !f.objective_id ? 'Link an upstream Objective before advancing past Funnel.' : null),
+            help: 'Funnel → Reviewing → Analyzing → Backlog → Implementing → Done. Don\'t advance past Funnel without linking an upstream Objective.',
         },
-        { key: 'horizon', type: 'select', question: 'Which investment horizon?', subtitle: 'H1 = Core · H2 = Growth · H3 = Future', options: HORIZONS },
-        { key: '__wsjf__', type: 'wsjf', question: 'Score it with WSJF.', subtitle: 'Rate each factor 1–10. Leave blank to skip.' },
+        { key: 'horizon', type: 'select', question: 'Which investment horizon?', subtitle: 'H1 = Core · H2 = Growth · H3 = Future', options: HORIZONS, help: 'H1 = Core (protect & extend). H2 = Growth (build & scale). H3 = Future (explore & incubate). Most initiatives should be H1 or H2.' },
+        { key: '__wsjf__', type: 'wsjf', question: 'Score it with WSJF.', subtitle: 'Rate each factor 1–10. Leave blank to skip.', help: 'WSJF = (Business Value + Time Criticality + Risk Reduction) ÷ Job Size. Higher scores float to the top of the backlog. Rate honestly — if everything is a 10, nothing is.' },
     ];
 
     return (
