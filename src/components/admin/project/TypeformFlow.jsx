@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { Dialog, DialogContent, DialogPortal, DialogOverlay } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -232,114 +232,120 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                 ? 'Type your answer, then ↵'
                 : '↵ to continue';
 
-    return createPortal(
-        <div className="fixed inset-0 z-[100] flex flex-col" style={{ background: B.cream }}>
-            <style>{`
-                @keyframes tf-slide-fwd { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-                @keyframes tf-slide-bwd { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
-            `}</style>
+    return (
+        <Dialog open onOpenChange={(open) => { if (!open && !celebrating) onClose(); }}>
+            <DialogPortal>
+                <DialogOverlay className="bg-black/40" />
+                <DialogContent
+                    className="p-0 gap-0 overflow-hidden max-w-lg max-h-[85vh] flex flex-col"
+                    style={{ background: B.cream, borderRadius: '1rem' }}
+                    onInteractOutside={(e) => { if (!celebrating) e.preventDefault(); }}
+                >
+                    <style>{`
+                        @keyframes tf-slide-fwd { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+                        @keyframes tf-slide-bwd { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+                    `}</style>
 
-            {/* Top bar */}
-            <div className="flex items-center justify-between px-6 py-4 flex-shrink-0">
-                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: B.muted }}>
-                    {title}
-                </span>
-                <div className="flex items-center gap-3">
-                    {streak >= 2 && (
-                        <div className="flex items-center gap-1 text-xs font-bold" style={{ color: B.copper }}>
-                            <Flame className="w-3.5 h-3.5" />
-                            <span>{streak}</span>
-                            {streak >= 5 && (
-                                <span className="ml-1 px-1.5 py-0.5 rounded text-[10px]" style={{ background: B.copper, color: 'white' }}>ON FIRE</span>
+                    {/* Top bar */}
+                    <div className="flex items-center justify-between px-6 py-4 flex-shrink-0">
+                        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: B.muted }}>
+                            {title}
+                        </span>
+                        <div className="flex items-center gap-3">
+                            {streak >= 2 && (
+                                <div className="flex items-center gap-1 text-xs font-bold" style={{ color: B.copper }}>
+                                    <Flame className="w-3.5 h-3.5" />
+                                    <span>{streak}</span>
+                                    {streak >= 5 && (
+                                        <span className="ml-1 px-1.5 py-0.5 rounded text-[10px]" style={{ background: B.copper, color: 'white' }}>ON FIRE</span>
+                                    )}
+                                </div>
+                            )}
+                            <span className="text-xs font-medium" style={{ color: B.muted }}>
+                                {stepIdx + 1} / {steps.length}
+                            </span>
+                            <button onClick={onClose} className="p-1 rounded-full hover:bg-black/5 transition-colors">
+                                <X className="w-5 h-5" style={{ color: B.muted }} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Main content */}
+                    <div className="flex-1 overflow-y-auto px-6 py-2">
+                        <div key={stepIdx} style={{
+                            animation: direction === 'forward'
+                                ? 'tf-slide-fwd 0.3s ease-out'
+                                : 'tf-slide-bwd 0.3s ease-out',
+                        }}>
+                            <h2 className="text-xl sm:text-2xl font-bold mb-1" style={{ color: B.navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
+                                {step?.question}
+                            </h2>
+                            {step?.subtitle && (
+                                <p className="text-sm mb-5" style={{ color: B.muted }}>{step.subtitle}</p>
+                            )}
+                            <div className="mt-3">
+                                {renderField()}
+                            </div>
+                            {validationError && (
+                                <div className="flex items-center gap-2 text-xs mt-3 p-2.5 rounded-lg" style={{ background: B.rose + '12', color: B.rose }}>
+                                    <span>⚠</span>
+                                    {validationError}
+                                </div>
                             )}
                         </div>
-                    )}
-                    <span className="text-xs font-medium" style={{ color: B.muted }}>
-                        {stepIdx + 1} / {steps.length}
-                    </span>
-                    <button onClick={onClose} className="p-1 rounded-full hover:bg-black/5 transition-colors">
-                        <X className="w-5 h-5" style={{ color: B.muted }} />
-                    </button>
-                </div>
-            </div>
 
-            {/* Main content */}
-            <div className="flex-1 flex items-center justify-center px-6 overflow-y-auto">
-                <div className="w-full max-w-xl py-4">
-                    <div key={stepIdx} style={{
-                        animation: direction === 'forward'
-                            ? 'tf-slide-fwd 0.3s ease-out'
-                            : 'tf-slide-bwd 0.3s ease-out',
-                    }}>
-                        <h2 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: B.navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
-                            {step?.question}
-                        </h2>
-                        {step?.subtitle && (
-                            <p className="text-sm mb-6" style={{ color: B.muted }}>{step.subtitle}</p>
-                        )}
-                        <div className="mt-4">
-                            {renderField()}
-                        </div>
-                        {validationError && (
-                            <div className="flex items-center gap-2 text-xs mt-3 p-2.5 rounded-lg" style={{ background: B.rose + '12', color: B.rose }}>
-                                <span>⚠</span>
-                                {validationError}
+                        {/* Navigation */}
+                        <div className="flex items-center justify-between mt-6 mb-4">
+                            <div>
+                                {stepIdx > 0 ? (
+                                    <button onClick={goBack} className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity" style={{ color: B.muted }}>
+                                        <ChevronLeft className="w-4 h-4" /> Back
+                                    </button>
+                                ) : onDelete && isEdit ? (
+                                    <button onClick={onDelete} className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors">
+                                        Delete
+                                    </button>
+                                ) : null}
                             </div>
-                        )}
-                    </div>
-
-                    {/* Navigation */}
-                    <div className="flex items-center justify-between mt-8">
-                        <div>
-                            {stepIdx > 0 ? (
-                                <button onClick={goBack} className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity" style={{ color: B.muted }}>
-                                    <ChevronLeft className="w-4 h-4" /> Back
-                                </button>
-                            ) : onDelete && isEdit ? (
-                                <button onClick={onDelete} className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors">
-                                    Delete
-                                </button>
-                            ) : null}
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className="text-xs hidden sm:block" style={{ color: B.muted }}>{keyboardHint}</span>
-                            <Button
-                                onClick={advance}
-                                disabled={saving || (step?.required && isEmpty && !isWsjf)}
-                                className="flex items-center gap-1.5"
-                                style={{ background: B.navy, color: 'white' }}
-                            >
-                                {saving ? 'Saving...' : isLast ? (isEdit ? 'Update' : 'Launch') : 'Next'}
-                                {!isLast && <ChevronRight className="w-4 h-4" />}
-                                {isLast && <Rocket className="w-4 h-4" />}
-                            </Button>
+                            <div className="flex items-center gap-3">
+                                <span className="text-xs hidden sm:block" style={{ color: B.muted }}>{keyboardHint}</span>
+                                <Button
+                                    onClick={advance}
+                                    disabled={saving || (step?.required && isEmpty && !isWsjf)}
+                                    className="flex items-center gap-1.5"
+                                    style={{ background: B.navy, color: 'white' }}
+                                >
+                                    {saving ? 'Saving...' : isLast ? (isEdit ? 'Update' : 'Launch') : 'Next'}
+                                    {!isLast && <ChevronRight className="w-4 h-4" />}
+                                    {isLast && <Rocket className="w-4 h-4" />}
+                                </Button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            {/* Progress bar */}
-            <div className="h-1.5 w-full flex-shrink-0" style={{ background: B.sand }}>
-                <div className="h-full transition-all duration-500 ease-out"
-                    style={{
-                        width: `${progress}%`,
-                        background: `linear-gradient(90deg, ${B.navy}, ${B.gold})`,
-                    }}
-                />
-            </div>
-
-            {/* Celebration overlay */}
-            {celebrating && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10" style={{ background: 'rgba(250,248,245,0.92)' }}>
-                    <div className="text-center" style={{ animation: 'tf-slide-fwd 0.4s ease-out' }}>
-                        <div className="text-5xl mb-3">🚀</div>
-                        <p className="text-xl font-bold" style={{ color: B.navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
-                            {isEdit ? 'Updated!' : 'Launched!'}
-                        </p>
+                    {/* Progress bar */}
+                    <div className="h-1.5 w-full flex-shrink-0" style={{ background: B.sand }}>
+                        <div className="h-full transition-all duration-500 ease-out"
+                            style={{
+                                width: `${progress}%`,
+                                background: `linear-gradient(90deg, ${B.navy}, ${B.gold})`,
+                            }}
+                        />
                     </div>
-                </div>
-            )}
-        </div>,
-        document.body
+
+                    {/* Celebration overlay */}
+                    {celebrating && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10" style={{ background: 'rgba(250,248,245,0.92)', borderRadius: '1rem' }}>
+                            <div className="text-center" style={{ animation: 'tf-slide-fwd 0.4s ease-out' }}>
+                                <div className="text-5xl mb-3">🚀</div>
+                                <p className="text-xl font-bold" style={{ color: B.navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
+                                    {isEdit ? 'Updated!' : 'Launched!'}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </DialogPortal>
+        </Dialog>
     );
 }
