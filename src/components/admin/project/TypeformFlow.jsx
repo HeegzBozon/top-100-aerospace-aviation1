@@ -38,11 +38,11 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
 
     // Derive entity type from title prop: "New Strategic Theme" → "Strategic Theme"
     const entityType = title?.replace(/^(New|Edit)\s+/, '').trim();
+
+    const step = steps[stepIdx];
     // Determine if this step is a title/name or description field for grading
     const gradeFieldType = step?.key === 'title' || step?.key === 'name' ? 'title'
         : step?.key === 'description' ? 'description' : null;
-
-    const step = steps[stepIdx];
     const progress = Math.round(((stepIdx + 1) / steps.length) * 100);
     const isLast = stepIdx === steps.length - 1;
     const isWsjf = step?.type === 'wsjf';
