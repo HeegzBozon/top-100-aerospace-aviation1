@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import {
     Plus, MessageSquare, FileText, Paperclip, ArrowUp, ArrowDown,
-    Pencil, Send, Loader2, GitBranch, Link2, Search, X,
+    Pencil, Send, Loader2, GitBranch, Link2, Search, X, AlertTriangle,
 } from 'lucide-react';
 import InitiativeFormModal from './InitiativeFormModal';
 import RoadmapItemFormModal from './RoadmapItemFormModal';
@@ -375,6 +375,8 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
     const itemTitle = item[labelKey] || item.title || item.name || '';
     const wsjf = Number(item.wsjf_score) || 0;
     const cod = (Number(item.business_value) || 0) + (Number(item.time_criticality) || 0) + (Number(item.risk_reduction) || 0);
+    const blockedChildren = childItems.filter(c => c.status === 'blocked').length;
+    const hasRisk = blockedChildren > 0;
 
     return (
         <>
@@ -395,6 +397,12 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
                             {cod > 0 && (
                                 <span className="text-xs" style={{ color: C.muted }}>
                                     CoD {cod} · Size {item.job_size || '—'}
+                                </span>
+                            )}
+                            {hasRisk && (
+                                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${C.copper}20`, color: C.copper }}>
+                                    <AlertTriangle className="w-3 h-3" />
+                                    {blockedChildren} blocked downstream
                                 </span>
                             )}
                         </div>
@@ -539,12 +547,16 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
                                     <p className="text-xs py-1" style={{ color: C.dim }}>No downstream items yet.</p>
                                 ) : (
                                     <div className="space-y-1">
-                                        {childItems.map(c => (
-                                            <div key={c.id} className="flex items-center gap-2 text-sm py-1.5 px-2 rounded" style={{ background: '#ffffff', border: `1px solid ${C.rowBorder}` }}>
-                                                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: C.green }} />
-                                                <span className="truncate" style={{ color: C.text }}>{c[trace.childLabelKey] || c.title || c.name || '—'}</span>
-                                            </div>
-                                        ))}
+                                        {childItems.map(c => {
+                                            const isBlocked = c.status === 'blocked';
+                                            return (
+                                                <div key={c.id} className="flex items-center gap-2 text-sm py-1.5 px-2 rounded" style={{ background: '#ffffff', border: `1px solid ${isBlocked ? C.copper + '60' : C.rowBorder}` }}>
+                                                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: isBlocked ? C.copper : C.green }} />
+                                                    <span className="truncate" style={{ color: C.text }}>{c[trace.childLabelKey] || c.title || c.name || '—'}</span>
+                                                    {isBlocked && <AlertTriangle className="w-3 h-3 flex-shrink-0 ml-auto" style={{ color: C.copper }} />}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

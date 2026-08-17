@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
@@ -33,9 +34,14 @@ export default function StoryFormModal({ item, roadmapItemId, defaultStatus, onC
         job_size: item?.job_size || '',
     });
     const [saving, setSaving] = useState(false);
+    const [linkError, setLinkError] = useState(false);
+
+    const needsParent = form.status !== 'todo' && !form.roadmap_item_id;
 
     const handleSubmit = async () => {
         if (!form.title.trim()) return;
+        if (needsParent) { setLinkError(true); return; }
+        setLinkError(false);
         setSaving(true);
         try {
             const bv = Number(form.business_value) || 0;
@@ -104,12 +110,18 @@ export default function StoryFormModal({ item, roadmapItemId, defaultStatus, onC
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
                             <Label>Status</Label>
-                            <Select value={form.status} onValueChange={v => setForm({ ...form, status: v })}>
+                            <Select value={form.status} onValueChange={v => { setLinkError(false); setForm({ ...form, status: v }); }}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                     {STATUSES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
                                 </SelectContent>
                             </Select>
+                            {linkError && needsParent && (
+                                <div className="flex items-center gap-1.5 text-xs p-2 rounded-md" style={{ background: '#c87e9d12', color: '#c87e9d' }}>
+                                    <AlertTriangle className="w-3 h-3 flex-shrink-0" />
+                                    Link an upstream Epic before advancing past To Do.
+                                </div>
+                            )}
                         </div>
                         <div className="space-y-1.5">
                             <Label>Story Points</Label>

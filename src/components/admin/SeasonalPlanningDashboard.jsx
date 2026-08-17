@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Plus, RefreshCw, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import TraceabilityHealth from './project/TraceabilityHealth';
 import ExploreTab from './project/ExploreTab';
 import IntegrateTab from './project/IntegrateTab';
 import IterateTab from './project/IterateTab';
@@ -35,6 +36,7 @@ export default function SeasonalPlanningDashboard() {
     const [defaultStatus, setDefaultStatus] = useState(null);
     const [wizardOpen, setWizardOpen] = useState(false);
     const [detailState, setDetailState] = useState(null);
+    const [forceTriage, setForceTriage] = useState(false);
     const { toast } = useToast();
 
     const levelConfig = LEVEL_CONFIGS[level];
@@ -198,6 +200,8 @@ export default function SeasonalPlanningDashboard() {
                 })}
             </div>
 
+            <TraceabilityHealth items={items} level={level} onTriage={() => { setActiveTab('explore'); setForceTriage(true); }} />
+
             <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList>
                     <TabsTrigger value="explore">Explore</TabsTrigger>
@@ -218,6 +222,8 @@ export default function SeasonalPlanningDashboard() {
                         level={level}
                         onOpenDetail={(item) => setDetailState({ item, focusInput: false })}
                         onQuickAdd={(item) => setDetailState({ item, focusInput: true })}
+                        forceTriage={forceTriage}
+                        onTriageHandled={() => setForceTriage(false)}
                     />
                 </TabsContent>
 
