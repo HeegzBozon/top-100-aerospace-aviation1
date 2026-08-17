@@ -1,23 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AlertTriangle } from 'lucide-react';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import TypeformFlow from './TypeformFlow';
 
 const STATUSES = [
     { value: 'backlog', label: 'Backlog' },
@@ -54,9 +36,6 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
         initiative_id: defaultInitiativeId || '',
     });
     const [saving, setSaving] = useState(false);
-    const [linkError, setLinkError] = useState(false);
-
-    const needsParent = form.status !== 'backlog' && !form.initiative_id;
 
     useEffect(() => {
         if (item) {
@@ -81,8 +60,6 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
 
     const handleSubmit = async () => {
         if (!form.title.trim()) return;
-        if (needsParent) { setLinkError(true); return; }
-        setLinkError(false);
         setSaving(true);
         try {
             const bv = Number(form.business_value) || 0;
@@ -106,142 +83,30 @@ export default function RoadmapItemFormModal({ item, defaultStatus, onClose, onS
         }
     };
 
+    const steps = [
+        { key: 'title', type: 'text', question: 'What needs to be done?', subtitle: 'Give this epic a clear title.', placeholder: 'e.g. Build RSVP confirmation email', required: true },
+        { key: 'description', type: 'textarea', question: 'Brief description.', subtitle: 'What does this item involve?', placeholder: 'Brief description of the item' },
+        {
+            key: 'status', type: 'select', question: 'What status?', subtitle: 'Current workflow stage.', options: STATUSES,
+            validate: (f) => (f.status !== 'backlog' && !f.initiative_id ? 'Link an upstream Initiative before advancing past Backlog.' : null),
+        },
+        { key: 'type', type: 'select', question: 'What type of item?', subtitle: 'Press 1–4 to select.', options: TYPES },
+        { key: 'value_stream', type: 'select', question: 'Which value stream?', subtitle: 'Operational or developmental?', options: STREAMS },
+        { key: 'target_date', type: 'date', question: 'Target completion date?', subtitle: 'When should this be done?' },
+        { key: 'priority', type: 'number', question: 'What priority?', subtitle: 'Sort order — higher = first.', placeholder: '0' },
+        { key: '__wsjf__', type: 'wsjf', question: 'Score it with WSJF.', subtitle: 'Rate each factor 1–10. Leave blank to skip.' },
+    ];
+
     return (
-        <Dialog open onOpenChange={onClose}>
-            <DialogContent className="max-w-lg">
-                <DialogHeader>
-                    <DialogTitle style={{ color: '#1e3a5a' }}>
-                        {item ? 'Edit Item' : 'New Roadmap Item'}
-                    </DialogTitle>
-                </DialogHeader>
-
-                <div className="space-y-4">
-                    <div className="space-y-1.5">
-                        <Label>Title</Label>
-                        <Input
-                            value={form.title}
-                            onChange={e => setForm({ ...form, title: e.target.value })}
-                            placeholder="What needs to be done?"
-                            autoFocus
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Description</Label>
-                        <Textarea
-                            value={form.description}
-                            onChange={e => setForm({ ...form, description: e.target.value })}
-                            placeholder="Brief description of the item"
-                            rows={3}
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                            <Label>Status</Label>
-                            <Select value={form.status} onValueChange={v => { setLinkError(false); setForm({ ...form, status: v }); }}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    {STATUSES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                            {linkError && needsParent && (
-                                <div className="flex items-center gap-1.5 text-xs p-2 rounded-md" style={{ background: '#c87e9d12', color: '#c87e9d' }}>
-                                    <AlertTriangle className="w-3 h-3 flex-shrink-0" />
-                                    Link an upstream Initiative before advancing past Backlog.
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <Label>Type</Label>
-                            <Select value={form.type} onValueChange={v => setForm({ ...form, type: v })}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    {TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                            <Label>Value Stream</Label>
-                            <Select value={form.value_stream} onValueChange={v => setForm({ ...form, value_stream: v })}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    {STREAMS.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <Label>Target Date</Label>
-                            <Input
-                                type="date"
-                                value={form.target_date}
-                                onChange={e => setForm({ ...form, target_date: e.target.value })}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#5d7a94' }}>
-                            WSJF Inputs (1-10)
-                        </Label>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Business Value</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.business_value}
-                                    onChange={e => setForm({ ...form, business_value: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Time Criticality</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.time_criticality}
-                                    onChange={e => setForm({ ...form, time_criticality: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Risk Reduction</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.risk_reduction}
-                                    onChange={e => setForm({ ...form, risk_reduction: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Job Size</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.job_size}
-                                    onChange={e => setForm({ ...form, job_size: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Priority (sort order, higher = first)</Label>
-                        <Input
-                            type="number"
-                            value={form.priority}
-                            onChange={e => setForm({ ...form, priority: e.target.value })}
-                        />
-                    </div>
-                </div>
-
-                <DialogFooter>
-                    <Button variant="ghost" onClick={onClose}>Cancel</Button>
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={saving || !form.title.trim()}
-                        style={{ background: '#1e3a5a', color: 'white' }}
-                    >
-                        {saving ? 'Saving...' : item ? 'Update' : 'Create'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+        <TypeformFlow
+            steps={steps}
+            form={form}
+            setForm={setForm}
+            onSubmit={handleSubmit}
+            onClose={onClose}
+            title={item ? 'Edit Roadmap Item' : 'New Roadmap Item'}
+            saving={saving}
+            isEdit={!!item}
+        />
     );
 }

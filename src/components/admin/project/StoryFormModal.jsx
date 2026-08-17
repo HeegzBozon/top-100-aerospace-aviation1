@@ -1,21 +1,18 @@
 import { useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
-import {
-    Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import TypeformFlow from './TypeformFlow';
 
 const STATUSES = [
     { value: 'todo', label: 'To Do' },
     { value: 'in_progress', label: 'In Progress' },
     { value: 'done', label: 'Done' },
     { value: 'blocked', label: 'Blocked' },
+];
+
+const TYPES = [
+    { value: 'frontend', label: 'Frontend' },
+    { value: 'backend', label: 'Backend' },
+    { value: 'design', label: 'Design' },
+    { value: 'devops', label: 'DevOps' },
 ];
 
 export default function StoryFormModal({ item, roadmapItemId, defaultStatus, onClose, onSave, onDelete }) {
@@ -34,14 +31,9 @@ export default function StoryFormModal({ item, roadmapItemId, defaultStatus, onC
         job_size: item?.job_size || '',
     });
     const [saving, setSaving] = useState(false);
-    const [linkError, setLinkError] = useState(false);
-
-    const needsParent = form.status !== 'todo' && !form.roadmap_item_id;
 
     const handleSubmit = async () => {
         if (!form.title.trim()) return;
-        if (needsParent) { setLinkError(true); return; }
-        setLinkError(false);
         setSaving(true);
         try {
             const bv = Number(form.business_value) || 0;
@@ -64,145 +56,31 @@ export default function StoryFormModal({ item, roadmapItemId, defaultStatus, onC
         }
     };
 
+    const steps = [
+        { key: 'title', type: 'text', question: 'What\'s the story?', subtitle: 'Give it a clear title.', placeholder: 'e.g. Build RSVP confirmation email', required: true },
+        { key: 'description', type: 'textarea', question: 'Acceptance criteria.', subtitle: 'Given... When... Then...', placeholder: 'Given... When... Then...' },
+        { key: 'type', type: 'select', question: 'What type of work?', subtitle: 'Press 1–4 to select.', options: TYPES },
+        {
+            key: 'status', type: 'select', question: 'What status?', subtitle: 'Current team workflow stage.', options: STATUSES,
+            validate: (f) => (f.status !== 'todo' && !f.roadmap_item_id ? 'Link an upstream Epic before advancing past To Do.' : null),
+        },
+        { key: 'story_points', type: 'number', question: 'How many story points?', subtitle: 'Effort estimation.', placeholder: '0' },
+        { key: 'assignee_email', type: 'text', question: 'Who\'s assigned?', subtitle: 'Team member email.', placeholder: 'dev@example.com' },
+        { key: 'priority', type: 'number', question: 'What priority?', subtitle: 'Sort order — higher = first.', placeholder: '0' },
+        { key: '__wsjf__', type: 'wsjf', question: 'Score it with WSJF.', subtitle: 'Rate each factor 1–10. Leave blank to skip.' },
+    ];
+
     return (
-        <Dialog open onOpenChange={onClose}>
-            <DialogContent className="max-w-lg">
-                <DialogHeader>
-                    <DialogTitle style={{ color: '#1e3a5a' }}>
-                        {item ? 'Edit Story' : 'New Story'}
-                    </DialogTitle>
-                </DialogHeader>
-
-                <div className="space-y-4">
-                    <div className="space-y-1.5">
-                        <Label>Title</Label>
-                        <Input
-                            value={form.title}
-                            onChange={e => setForm({ ...form, title: e.target.value })}
-                            placeholder="e.g. Build RSVP confirmation email"
-                            autoFocus
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Acceptance Criteria</Label>
-                        <Textarea
-                            value={form.description}
-                            onChange={e => setForm({ ...form, description: e.target.value })}
-                            placeholder="Given... When... Then..."
-                            rows={3}
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Type</Label>
-                        <Select value={form.type} onValueChange={v => setForm({ ...form, type: v })}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="frontend">Frontend</SelectItem>
-                                <SelectItem value="backend">Backend</SelectItem>
-                                <SelectItem value="design">Design</SelectItem>
-                                <SelectItem value="devops">DevOps</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                            <Label>Status</Label>
-                            <Select value={form.status} onValueChange={v => { setLinkError(false); setForm({ ...form, status: v }); }}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    {STATUSES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                            {linkError && needsParent && (
-                                <div className="flex items-center gap-1.5 text-xs p-2 rounded-md" style={{ background: '#c87e9d12', color: '#c87e9d' }}>
-                                    <AlertTriangle className="w-3 h-3 flex-shrink-0" />
-                                    Link an upstream Epic before advancing past To Do.
-                                </div>
-                            )}
-                        </div>
-                        <div className="space-y-1.5">
-                            <Label>Story Points</Label>
-                            <Input
-                                type="number" min={0}
-                                value={form.story_points}
-                                onChange={e => setForm({ ...form, story_points: e.target.value })}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                            <Label>Assignee Email</Label>
-                            <Input
-                                value={form.assignee_email}
-                                onChange={e => setForm({ ...form, assignee_email: e.target.value })}
-                                placeholder="dev@example.com"
-                            />
-                        </div>
-                        <div className="space-y-1.5">
-                            <Label>Priority</Label>
-                            <Input
-                                type="number"
-                                value={form.priority}
-                                onChange={e => setForm({ ...form, priority: e.target.value })}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#5d7a94' }}>
-                            WSJF Inputs (1-10)
-                        </Label>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Business Value</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.business_value}
-                                    onChange={e => setForm({ ...form, business_value: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Time Criticality</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.time_criticality}
-                                    onChange={e => setForm({ ...form, time_criticality: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Risk Reduction</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.risk_reduction}
-                                    onChange={e => setForm({ ...form, risk_reduction: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Job Size</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.job_size}
-                                    onChange={e => setForm({ ...form, job_size: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <DialogFooter>
-                    {onDelete && (
-                        <Button variant="destructive" onClick={onDelete} className="mr-auto">Delete</Button>
-                    )}
-                    <Button variant="ghost" onClick={onClose}>Cancel</Button>
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={saving || !form.title.trim()}
-                        style={{ background: '#1e3a5a', color: 'white' }}
-                    >
-                        {saving ? 'Saving...' : item ? 'Update' : 'Create'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+        <TypeformFlow
+            steps={steps}
+            form={form}
+            setForm={setForm}
+            onSubmit={handleSubmit}
+            onClose={onClose}
+            title={item ? 'Edit Story' : 'New Story'}
+            saving={saving}
+            isEdit={!!item}
+            onDelete={onDelete}
+        />
     );
 }

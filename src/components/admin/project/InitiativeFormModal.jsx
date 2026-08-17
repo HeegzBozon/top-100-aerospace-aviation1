@@ -1,15 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
-import {
-    Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import TypeformFlow from './TypeformFlow';
 
 const STATUSES = [
     { value: 'funnel', label: 'Funnel' },
@@ -18,6 +8,19 @@ const STATUSES = [
     { value: 'portfolio_backlog', label: 'Backlog' },
     { value: 'implementing', label: 'Implementing' },
     { value: 'done', label: 'Done' },
+];
+
+const TYPES = [
+    { value: 'feature', label: 'Feature' },
+    { value: 'platform', label: 'Platform' },
+    { value: 'operations', label: 'Operations' },
+    { value: 'research', label: 'Research' },
+];
+
+const HORIZONS = [
+    { value: 'h1', label: 'H1 — Core (Protect & extend)' },
+    { value: 'h2', label: 'H2 — Growth (Build & scale)' },
+    { value: 'h3', label: 'H3 — Future (Explore & incubate)' },
 ];
 
 export default function InitiativeFormModal({ item, objectiveId, defaultStatus, onClose, onSave, onDelete }) {
@@ -34,154 +37,52 @@ export default function InitiativeFormModal({ item, objectiveId, defaultStatus, 
         job_size: item?.job_size || '',
     });
     const [saving, setSaving] = useState(false);
-    const [linkError, setLinkError] = useState(false);
-
-    const needsParent = form.status !== 'funnel' && !form.objective_id;
 
     const handleSubmit = async () => {
         if (!form.name.trim()) return;
-        if (needsParent) { setLinkError(true); return; }
-        setLinkError(false);
         setSaving(true);
         try {
-            const wsjfInputs = ['business_value', 'time_criticality', 'risk_reduction', 'job_size'];
-            const payload = { ...form };
             const bv = Number(form.business_value) || 0;
             const tc = Number(form.time_criticality) || 0;
             const rr = Number(form.risk_reduction) || 0;
             const size = Number(form.job_size) || 0;
-            payload.wsjf_score = size > 0 ? (bv + tc + rr) / size : 0;
-            wsjfInputs.forEach(k => { payload[k] = Number(form[k]) || null; });
-            await onSave(payload);
+            const wsjf_score = size > 0 ? (bv + tc + rr) / size : 0;
+            await onSave({
+                ...form,
+                business_value: bv || null,
+                time_criticality: tc || null,
+                risk_reduction: rr || null,
+                job_size: size || null,
+                wsjf_score,
+            });
         } finally {
             setSaving(false);
         }
     };
 
+    const steps = [
+        { key: 'name', type: 'text', question: 'Name this initiative.', subtitle: 'What large-scale effort is this?', placeholder: 'e.g. Launch Chamber 2.0 Membership Tiers', required: true },
+        { key: 'description', type: 'textarea', question: 'Describe the initiative.', subtitle: 'What does it encompass?', placeholder: 'Detailed description of this initiative' },
+        { key: 'type', type: 'select', question: 'What type of initiative?', subtitle: 'Press 1–4 to select.', options: TYPES },
+        {
+            key: 'status', type: 'select', question: 'Where does this sit?', subtitle: 'Current Solution Train status.', options: STATUSES,
+            validate: (f) => (f.status !== 'funnel' && !f.objective_id ? 'Link an upstream Objective before advancing past Funnel.' : null),
+        },
+        { key: 'horizon', type: 'select', question: 'Which investment horizon?', subtitle: 'H1 = Core · H2 = Growth · H3 = Future', options: HORIZONS },
+        { key: '__wsjf__', type: 'wsjf', question: 'Score it with WSJF.', subtitle: 'Rate each factor 1–10. Leave blank to skip.' },
+    ];
+
     return (
-        <Dialog open onOpenChange={onClose}>
-            <DialogContent className="max-w-lg">
-                <DialogHeader>
-                    <DialogTitle style={{ color: '#1e3a5a' }}>
-                        {item ? 'Edit Initiative' : 'New Initiative'}
-                    </DialogTitle>
-                </DialogHeader>
-
-                <div className="space-y-4">
-                    <div className="space-y-1.5">
-                        <Label>Name</Label>
-                        <Input
-                            value={form.name}
-                            onChange={e => setForm({ ...form, name: e.target.value })}
-                            placeholder="e.g. Launch Chamber 2.0 Membership Tiers"
-                            autoFocus
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Description</Label>
-                        <Textarea
-                            value={form.description}
-                            onChange={e => setForm({ ...form, description: e.target.value })}
-                            placeholder="Detailed description of this initiative"
-                            rows={3}
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Type</Label>
-                        <Select value={form.type} onValueChange={v => setForm({ ...form, type: v })}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="feature">Feature</SelectItem>
-                                <SelectItem value="platform">Platform</SelectItem>
-                                <SelectItem value="operations">Operations</SelectItem>
-                                <SelectItem value="research">Research</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Status</Label>
-                        <Select value={form.status} onValueChange={v => { setLinkError(false); setForm({ ...form, status: v }); }}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                {STATUSES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                        {linkError && needsParent && (
-                            <div className="flex items-center gap-1.5 text-xs p-2 rounded-md" style={{ background: '#c87e9d12', color: '#c87e9d' }}>
-                                <AlertTriangle className="w-3 h-3 flex-shrink-0" />
-                                Link an upstream Objective before advancing past Funnel.
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#5d7a94' }}>
-                            Horizon
-                        </Label>
-                        <Select value={form.horizon} onValueChange={v => setForm({ ...form, horizon: v })}>
-                            <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="h1">H1 — Core (Protect & extend)</SelectItem>
-                                <SelectItem value="h2">H2 — Growth (Build & scale)</SelectItem>
-                                <SelectItem value="h3">H3 — Future (Explore & incubate)</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#5d7a94' }}>
-                            WSJF Inputs (1-10)
-                        </Label>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Business Value</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.business_value}
-                                    onChange={e => setForm({ ...form, business_value: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Time Criticality</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.time_criticality}
-                                    onChange={e => setForm({ ...form, time_criticality: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Risk Reduction</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.risk_reduction}
-                                    onChange={e => setForm({ ...form, risk_reduction: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Job Size</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.job_size}
-                                    onChange={e => setForm({ ...form, job_size: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <DialogFooter>
-                    {onDelete && (
-                        <Button variant="destructive" onClick={onDelete} className="mr-auto">Delete</Button>
-                    )}
-                    <Button variant="ghost" onClick={onClose}>Cancel</Button>
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={saving || !form.name.trim()}
-                        style={{ background: '#1e3a5a', color: 'white' }}
-                    >
-                        {saving ? 'Saving...' : item ? 'Update' : 'Create'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+        <TypeformFlow
+            steps={steps}
+            form={form}
+            setForm={setForm}
+            onSubmit={handleSubmit}
+            onClose={onClose}
+            title={item ? 'Edit Initiative' : 'New Initiative'}
+            saving={saving}
+            isEdit={!!item}
+            onDelete={onDelete}
+        />
     );
 }

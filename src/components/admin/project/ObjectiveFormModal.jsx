@@ -1,20 +1,24 @@
 import { useState } from 'react';
-import {
-    Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import TypeformFlow from './TypeformFlow';
 
 const STATUSES = [
     { value: 'funnel', label: 'Funnel' },
     { value: 'analyzing', label: 'Analyzing' },
     { value: 'implementing', label: 'Implementing' },
     { value: 'done', label: 'Done' },
+];
+
+const TYPES = [
+    { value: 'growth', label: 'Growth' },
+    { value: 'retention', label: 'Retention' },
+    { value: 'revenue', label: 'Revenue' },
+    { value: 'community', label: 'Community' },
+];
+
+const HORIZONS = [
+    { value: 'h1', label: 'H1 — Core (Protect & extend)' },
+    { value: 'h2', label: 'H2 — Growth (Build & scale)' },
+    { value: 'h3', label: 'H3 — Future (Explore & incubate)' },
 ];
 
 export default function ObjectiveFormModal({ item, defaultStatus, onClose, onSave, onDelete }) {
@@ -55,143 +59,28 @@ export default function ObjectiveFormModal({ item, defaultStatus, onClose, onSav
         }
     };
 
+    const steps = [
+        { key: 'name', type: 'text', question: 'What are you calling this strategic theme?', subtitle: 'Give it a clear, ambitious name.', placeholder: 'e.g. Expand Local Legends to 50 cities', required: true },
+        { key: 'description', type: 'textarea', question: 'Describe the objective.', subtitle: 'What does success look like?', placeholder: 'Detailed description of this strategic objective' },
+        { key: 'type', type: 'select', question: 'What type of objective?', subtitle: 'Press 1–4 to select.', options: TYPES },
+        { key: 'status', type: 'select', question: 'Where does this sit in the funnel?', subtitle: 'Current portfolio Kanban status.', options: STATUSES },
+        { key: 'theme', type: 'text', question: 'Any theme tag?', subtitle: 'Optional categorization label.', placeholder: 'e.g. Growth, Retention' },
+        { key: 'owner_email', type: 'text', question: 'Who owns this?', subtitle: 'Email of the person or team responsible.', placeholder: 'owner@example.com' },
+        { key: 'horizon', type: 'select', question: 'Which investment horizon?', subtitle: 'H1 = Core · H2 = Growth · H3 = Future', options: HORIZONS },
+        { key: '__wsjf__', type: 'wsjf', question: 'Score it with WSJF.', subtitle: 'Rate each factor 1–10. Leave blank to skip.' },
+    ];
+
     return (
-        <Dialog open onOpenChange={onClose}>
-            <DialogContent className="max-w-lg">
-                <DialogHeader>
-                    <DialogTitle style={{ color: '#1e3a5a' }}>
-                        {item ? 'Edit Strategic Theme' : 'New Strategic Theme'}
-                    </DialogTitle>
-                </DialogHeader>
-
-                <div className="space-y-4">
-                    <div className="space-y-1.5">
-                        <Label>Name</Label>
-                        <Input
-                            value={form.name}
-                            onChange={e => setForm({ ...form, name: e.target.value })}
-                            placeholder="e.g. Expand Local Legends to 50 cities"
-                            autoFocus
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Description</Label>
-                        <Textarea
-                            value={form.description}
-                            onChange={e => setForm({ ...form, description: e.target.value })}
-                            placeholder="Detailed description of this strategic objective"
-                            rows={3}
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Type</Label>
-                        <Select value={form.type} onValueChange={v => setForm({ ...form, type: v })}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="growth">Growth</SelectItem>
-                                <SelectItem value="retention">Retention</SelectItem>
-                                <SelectItem value="revenue">Revenue</SelectItem>
-                                <SelectItem value="community">Community</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                            <Label>Status</Label>
-                            <Select value={form.status} onValueChange={v => setForm({ ...form, status: v })}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    {STATUSES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-1.5">
-                            <Label>Theme</Label>
-                            <Input
-                                value={form.theme}
-                                onChange={e => setForm({ ...form, theme: e.target.value })}
-                                placeholder="e.g. Growth, Retention"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Owner Email</Label>
-                        <Input
-                            value={form.owner_email}
-                            onChange={e => setForm({ ...form, owner_email: e.target.value })}
-                            placeholder="owner@example.com"
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#5d7a94' }}>
-                            Horizon
-                        </Label>
-                        <Select value={form.horizon} onValueChange={v => setForm({ ...form, horizon: v })}>
-                            <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="h1">H1 — Core (Protect & extend)</SelectItem>
-                                <SelectItem value="h2">H2 — Growth (Build & scale)</SelectItem>
-                                <SelectItem value="h3">H3 — Future (Explore & incubate)</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#5d7a94' }}>
-                            WSJF Inputs (1-10)
-                        </Label>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Business Value</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.business_value}
-                                    onChange={e => setForm({ ...form, business_value: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Time Criticality</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.time_criticality}
-                                    onChange={e => setForm({ ...form, time_criticality: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Risk Reduction</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.risk_reduction}
-                                    onChange={e => setForm({ ...form, risk_reduction: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-[11px]">Job Size</Label>
-                                <Input type="number" min={0} max={10}
-                                    value={form.job_size}
-                                    onChange={e => setForm({ ...form, job_size: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <DialogFooter>
-                    {onDelete && (
-                        <Button variant="destructive" onClick={onDelete} className="mr-auto">Delete</Button>
-                    )}
-                    <Button variant="ghost" onClick={onClose}>Cancel</Button>
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={saving || !form.name.trim()}
-                        style={{ background: '#1e3a5a', color: 'white' }}
-                    >
-                        {saving ? 'Saving...' : item ? 'Update' : 'Create'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+        <TypeformFlow
+            steps={steps}
+            form={form}
+            setForm={setForm}
+            onSubmit={handleSubmit}
+            onClose={onClose}
+            title={item ? 'Edit Strategic Theme' : 'New Strategic Theme'}
+            saving={saving}
+            isEdit={!!item}
+            onDelete={onDelete}
+        />
     );
 }
