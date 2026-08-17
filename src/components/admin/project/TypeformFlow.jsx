@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import confetti from 'canvas-confetti';
 import { ChevronLeft, ChevronRight, X, Check, Flame, Rocket, Info } from 'lucide-react';
+import FieldGrader from './FieldGrader';
 
 const B = {
     navy: '#1e3a5a',
@@ -35,6 +36,12 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
     const onSubmitRef = useRef(onSubmit);
     onSubmitRef.current = onSubmit;
 
+    // Derive entity type from title prop: "New Strategic Theme" → "Strategic Theme"
+    const entityType = title?.replace(/^(New|Edit)\s+/, '').trim();
+    // Determine if this step is a title/name or description field for grading
+    const gradeFieldType = step?.key === 'title' || step?.key === 'name' ? 'title'
+        : step?.key === 'description' ? 'description' : null;
+
     const step = steps[stepIdx];
     const progress = Math.round(((stepIdx + 1) / steps.length) * 100);
     const isLast = stepIdx === steps.length - 1;
@@ -56,6 +63,11 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
         const timer = setTimeout(() => inputRef.current?.focus(), 200);
         return () => clearTimeout(timer);
     }, [stepIdx, isWsjf, step?.type]);
+
+    // Reset help popover on step change
+    useEffect(() => {
+        setShowHelp(false);
+    }, [stepIdx]);
 
     // --- Navigation ---
     const handleComplete = () => {
@@ -317,6 +329,16 @@ export default function TypeformFlow({ steps, form, setForm, onSubmit, onClose, 
                             <div className="mt-3">
                                 {renderField()}
                             </div>
+                            {gradeFieldType && (form[step.key] || '').trim() && (
+                                <div className="mt-3">
+                                    <FieldGrader
+                                        key={form[step.key]}
+                                        entityType={entityType}
+                                        fieldType={gradeFieldType}
+                                        value={form[step.key]}
+                                    />
+                                </div>
+                            )}
                             {validationError && (
                                 <div className="flex items-center gap-2 text-xs mt-3 p-2.5 rounded-lg" style={{ background: B.rose + '12', color: B.rose }}>
                                     <span>⚠</span>
