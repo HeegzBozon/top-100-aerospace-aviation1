@@ -267,6 +267,7 @@ export default function SeasonalPlanningDashboard() {
                     focusInput={detailState.focusInput}
                     onClose={() => setDetailState(null)}
                     onEdit={openEdit}
+                    onDelete={handleDelete}
                 />
             )}
             <PlanningWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />

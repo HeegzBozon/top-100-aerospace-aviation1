@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import {
     Plus, MessageSquare, FileText, Paperclip, ArrowUp, ArrowDown,
-    Pencil, Send, Loader2, GitBranch, Link2, Search, X, AlertTriangle,
+    Pencil, Send, Loader2, GitBranch, Link2, Search, X, AlertTriangle, Trash2,
 } from 'lucide-react';
 import InitiativeFormModal from './InitiativeFormModal';
 import RoadmapItemFormModal from './RoadmapItemFormModal';
@@ -54,7 +54,7 @@ const ACTIVITY_LABELS = {
     parent_linked: 'Linked Up',
 };
 
-export default function CardDetailModal({ item, level, levelConfig, focusInput, onClose, onEdit }) {
+export default function CardDetailModal({ item, level, levelConfig, focusInput, onClose, onEdit, onDelete }) {
     const [activities, setActivities] = useState([]);
     const [loadingActivities, setLoadingActivities] = useState(true);
     const [newContent, setNewContent] = useState('');
@@ -575,6 +575,15 @@ export default function CardDetailModal({ item, level, levelConfig, focusInput, 
                         >
                             <Pencil className="w-3.5 h-3.5 mr-1.5" /> Edit Item
                         </Button>
+                        {onDelete && (
+                            <Button
+                                onClick={() => { if (confirm(`Delete "${itemTitle}"? This cannot be undone.`)) { onDelete(item); onClose(); } }}
+                                variant="ghost"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                                <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Delete
+                            </Button>
+                        )}
                         <Button onClick={onClose} variant="ghost">Close</Button>
                     </DialogFooter>
                 </DialogContent>
