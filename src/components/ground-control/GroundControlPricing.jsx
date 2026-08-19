@@ -11,7 +11,7 @@ export default function GroundControlPricing() {
       <div className="mx-auto max-w-5xl">
         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#c9a87c]">Pricing</p>
         <h2 className="mt-3 font-serif text-4xl leading-tight text-white sm:text-5xl" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-          Three levels of support.
+          Four levels of support.
         </h2>
 
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
