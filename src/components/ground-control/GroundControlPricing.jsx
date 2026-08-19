@@ -1,4 +1,5 @@
 const TIERS = [
+  { name: 'Starter', price: '$97', best: 'Run it yourself — the Loom starter kit', rows: ['Missed-call text-back', 'One pipeline', '500 texts / 5,000 emails', 'Dashboard access', 'Community support'] },
   { name: 'Preflight', price: '$497', best: 'Owner-operators who need the leaks closed', rows: ['One pipeline', 'Two core automations', '500 texts / 5,000 emails', 'Dashboard access', 'Email support, 48 hrs'] },
   { name: 'Takeoff', price: '$997', best: 'Growing shops with a real pipeline to manage', rows: ['Up to three pipelines', 'Six automations incl. quote follow-up', 'One lead-capture funnel', '2,000 texts / 25,000 emails', 'Priority support, 24 hrs'], featured: true },
   { name: 'Cruise', price: '$1,997', best: 'Teams who want the campaigns run for them', rows: ['Up to three pipelines', 'Six automations + campaign automation', 'Campaigns written & run for you', '5,000 texts / 100,000 emails', 'Same-day support'] },
@@ -13,7 +14,7 @@ export default function GroundControlPricing() {
           Three levels of support.
         </h2>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
+        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {TIERS.map((t) => (
             <div key={t.name} className={`flex flex-col rounded-2xl border p-6 ${t.featured ? 'border-[#c9a87c]/50 bg-[#c9a87c]/[0.06]' : 'border-white/10 bg-white/[0.02]'}`}>
               {t.featured && <span className="mb-3 inline-block w-fit rounded-full bg-[#c9a87c] px-3 py-1 text-[9px] font-bold uppercase tracking-widest text-[#07111f]">Most Popular</span>}

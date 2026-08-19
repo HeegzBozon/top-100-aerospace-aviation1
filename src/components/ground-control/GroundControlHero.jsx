@@ -8,7 +8,7 @@ const STATS = [
   { value: '70+', label: 'Disciplines' },
 ];
 
-export default function GroundControlHero() {
+export default function GroundControlHero({ onRequestAudit, onRequestTrial }) {
   return (
     <section className="relative overflow-hidden bg-[#07111f] px-6 pb-20 pt-32">
       <div className="pointer-events-none absolute inset-0 opacity-40" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(201,168,124,0.18), transparent 55%)' }} />
@@ -28,12 +28,12 @@ export default function GroundControlHero() {
         </p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <a href="https://calendar.app.google.com/TrL8saY6XS6tdVj1A" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#07111f] transition-transform hover:scale-[1.02]" style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}>
+          <button onClick={onRequestAudit} className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#07111f] transition-transform hover:scale-[1.02]" style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}>
             Request a Free Audit <ArrowRight className="h-4 w-4" />
-          </a>
-          <a href="mailto:hello@top100aerospace.com?subject=Free%20Trial%20Request%20-%20Ground%20Control" className="inline-flex items-center gap-2 rounded-full border border-[#c9a87c]/40 bg-[#c9a87c]/10 px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#c9a87c] transition-colors hover:bg-[#c9a87c]/20">
+          </button>
+          <button onClick={onRequestTrial} className="inline-flex items-center gap-2 rounded-full border border-[#c9a87c]/40 bg-[#c9a87c]/10 px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#c9a87c] transition-colors hover:bg-[#c9a87c]/20">
             Request a Free Trial
-          </a>
+          </button>
         </div>
         <div className="mt-4">
           <a href="#features" className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/40 transition-colors hover:text-[#c9a87c]">
