@@ -73,6 +73,55 @@
       "type": "string",
       "description": "The honoree's career told in exactly six words. Used in editorial layouts and shareable cards."
     },
+    "accent_color": {
+      "type": "string",
+      "enum": [
+        "rose_gold",
+        "copper",
+        "nasa_blue",
+        "sand",
+        "slate"
+      ],
+      "default": "rose_gold",
+      "description": "Governed personalization: curated accent applied to the Fellow's profile surface."
+    },
+    "cover_key": {
+      "type": "string",
+      "enum": [
+        "none",
+        "orbit",
+        "launch",
+        "runway",
+        "lunar",
+        "horizon"
+      ],
+      "default": "none",
+      "description": "Governed personalization: cover chosen from the verified platform set."
+    },
+    "module_order": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "eight",
+          "wall",
+          "record",
+          "card"
+        ]
+      },
+      "default": [
+        "eight",
+        "wall",
+        "record",
+        "card"
+      ],
+      "description": "Governed personalization: order of the modules below the identity header."
+    },
+    "profile_last_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time the Fellow opened their own profile. Used to compute return-trigger state."
+    },
     "location": {
       "type": "string",
       "description": "City, Country"

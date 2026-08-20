@@ -64,6 +64,7 @@ const Membership = lazy(() => import('@/pages/Membership'));
 const Subscribe = lazy(() => import('@/pages/Subscribe'));
 const Profile = lazy(() => import('@/pages/Profile'));
 const Rsvp = lazy(() => import('@/pages/Rsvp'));
+const FellowHome = lazy(() => import('@/pages/FellowHome'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -106,7 +107,9 @@ const AuthenticatedApp = () => {
       </div>
     }>
     <Routes>
-      <Route path="/" element={<HomeV3 />} />
+      {/* Logged-in Fellows land on their own profile; visitors get the editorial home */}
+      <Route path="/" element={isAuthenticated ? <FellowHome /> : <HomeV3 />} />
+      <Route path="/fellow" element={<FellowHome />} />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />
       <Route path="/onboarding-admin" element={<OnboardingAdmin />} />

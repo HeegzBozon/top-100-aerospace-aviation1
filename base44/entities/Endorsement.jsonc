@@ -6,6 +6,10 @@
       "type": "string",
       "description": "ID of the nominee being endorsed"
     },
+    "nominee_email": {
+      "type": "string",
+      "description": "Email of the Fellow being endorsed. Used to resolve the wall when no Nominee record exists."
+    },
     "endorser_email": {
       "type": "string",
       "description": "Email of the user giving the endorsement"
@@ -18,11 +22,45 @@
       "type": "number",
       "default": 1,
       "description": "The weight of the endorsement, potentially influenced by endorser's power"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "signal",
+        "authored"
+      ],
+      "default": "signal",
+      "description": "'signal' = legacy weighted endorsement. 'authored' = written, attributed wall entry."
+    },
+    "body": {
+      "type": "string",
+      "description": "The authored endorsement text rendered on the wall"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of the author, shown with the entry"
+    },
+    "author_avatar_url": {
+      "type": "string",
+      "description": "Author headshot shown beside the entry"
+    },
+    "author_headline": {
+      "type": "string",
+      "description": "Author role and organization, shown under their name"
+    },
+    "moderation_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Governance state. Only approved authored entries render publicly."
     }
   },
   "required": [
     "nominee_id",
-    "endorser_email",
-    "season_id"
+    "endorser_email"
   ]
 }
