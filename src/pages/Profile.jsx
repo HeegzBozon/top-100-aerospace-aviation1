@@ -195,7 +195,7 @@ export default function Profile() {
 
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <Link
-            to={`/ProfileView?user=${encodeURIComponent(user?.email || '')}`}
+            to={nominee?.id ? `/profiles/${nominee.id}` : `/ProfileView?user=${encodeURIComponent(user?.email || '')}`}
             className="flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity mt-2"
             style={{ color: B.navy }}
           >

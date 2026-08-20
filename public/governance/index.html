@@ -1,144 +1,79 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-
-<meta name="robots" content="index, follow, max-image-preview:large" />
-<link rel="canonical" href="https://top100aero.space/governance" />
-
-<title>Governance — How Selection Works and What It Cannot Be Bought | TOP 100</title>
-<meta name="description" content="How TOP 100 Aerospace &amp; Aviation separates commercial activity from selection. Community nomination, blind pairwise voting, permanent record. We don't rank. We measure." />
-<meta name="author" content="TOP 100 Aerospace &amp; Aviation" />
-
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://top100aero.space/governance" />
-<meta property="og:title" content="Governance — TOP 100 Aerospace &amp; Aviation" />
-<meta property="og:description" content="Selection is blind to billing at the data layer. How community nomination, blind pairwise voting, and the permanent record work, and what commercial activity cannot touch." />
-<meta property="og:site_name" content="TOP 100 Aerospace &amp; Aviation" />
-<meta property="og:locale" content="en_US" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:site" content="@top100aero" />
-<meta name="twitter:title" content="Governance — TOP 100 Aerospace &amp; Aviation" />
-<meta name="twitter:description" content="Selection is blind to billing at the data layer. Community nomination, blind pairwise voting, permanent record." />
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Governance — TOP 100 Aerospace & Aviation",
-  "url": "https://top100aero.space/governance",
-  "description": "How TOP 100 Aerospace & Aviation separates commercial activity from selection: community nomination, blind pairwise voting, and a permanent verified record.",
-  "publisher": { "@type": "Organization", "name": "TOP 100 Aerospace & Aviation", "url": "https://top100aero.space" }
-}
-</script>
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Governance — TOP 100 in Aerospace &amp; Aviation</title>
+<meta name="description" content="How TOP 100 in Aerospace &amp; Aviation selects, measures, and records. Standards, methodology, and the commercial firewall." />
+<link rel="canonical" href="https://top100aero.space/governance/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Governance — TOP 100 in Aerospace &amp; Aviation" />
+<meta property="og:description" content="Standards, measurement methodology, and the commercial firewall." />
+<meta property="og:url" content="https://top100aero.space/governance/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
-  :root{ --navy:#07111f; --navy2:#0a1626; --gold:#c9a87c; --cream:#faf8f5; }
-  *{box-sizing:border-box;-webkit-font-smoothing:antialiased}
-  body{margin:0;background:var(--navy);color:#fff;font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.7}
-  .serif{font-family:'Playfair Display',Georgia,'Times New Roman',serif}
-  .wrap{max-width:760px;margin:0 auto;padding:0 22px}
-  a{color:var(--gold)}
-  .eyebrow{font-size:10px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
-  .topbar{position:sticky;top:0;z-index:50;background:rgba(7,17,31,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(201,168,124,.18)}
-  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:12px;padding-bottom:12px;max-width:1080px}
-  .brand{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);text-decoration:none}
-  .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}
-  .back{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none}
-  header.hero{padding:70px 0 44px;text-align:center;background:radial-gradient(circle at 50% 0%,rgba(201,168,124,.16),transparent 58%)}
-  h1{font-size:clamp(32px,6vw,54px);line-height:1.1;margin:14px 0 16px}
-  .thesis{font-size:15px;color:rgba(255,255,255,.62);max-width:560px;margin:0 auto}
-  section{padding:44px 0;border-top:1px solid rgba(255,255,255,.07)}
-  h2{font-size:clamp(23px,3.4vw,32px);line-height:1.2;margin:8px 0 16px}
-  p{font-size:15px;color:rgba(255,255,255,.72)}
-  .cond{border:1px solid rgba(201,168,124,.22);background:rgba(255,255,255,.02);border-radius:16px;padding:22px;margin-bottom:14px}
-  .cond h3{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
-  .cond p{margin:0;font-size:14px}
-  ol.steps{padding-left:0;list-style:none;counter-reset:s}
-  ol.steps li{counter-increment:s;position:relative;padding-left:52px;margin-bottom:20px;font-size:15px;color:rgba(255,255,255,.72)}
-  ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;border:1px solid rgba(201,168,124,.4);color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',Georgia,serif;font-size:15px}
-  ol.steps li b{color:#fff;display:block;margin-bottom:2px}
-  .callout{border:1px solid rgba(201,168,124,.3);background:rgba(201,168,124,.06);border-radius:16px;padding:22px}
-  .callout b{color:var(--gold);text-transform:uppercase;letter-spacing:.14em;font-size:11px;display:block;margin-bottom:8px}
-  .callout p{margin:0;font-size:14px;color:rgba(255,255,255,.68)}
-  .draft{border:1px dashed rgba(255,255,255,.25);border-radius:12px;padding:14px 16px;font-size:12px;color:rgba(255,255,255,.45);margin-top:34px}
-  footer{padding:44px 0 60px;border-top:1px solid rgba(255,255,255,.07);font-size:12px;color:rgba(255,255,255,.35)}
+  :root { --navy:#1e3a5a; --gold:#c9a87c; --cream:#faf8f5; --sand:#f1ece4; --ink:#2c3a48; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--cream); color:var(--ink); font-family:'Montserrat',system-ui,sans-serif; line-height:1.65; }
+  a { color:var(--navy); }
+  .wrap { max-width:760px; margin:0 auto; padding:56px 24px 96px; }
+  .eyebrow { font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); font-weight:600; }
+  h1 { font-family:'Playfair Display',Georgia,serif; color:var(--navy); font-size:44px; line-height:1.1; margin:14px 0 18px; }
+  h2 { font-family:'Playfair Display',Georgia,serif; color:var(--navy); font-size:24px; margin:44px 0 10px; }
+  .lede { font-size:19px; color:var(--navy); }
+  .rule { height:1px; background:var(--gold); opacity:.4; margin:40px 0; }
+  .card { background:#fff; border:1px solid var(--sand); border-radius:14px; padding:22px 24px; margin:16px 0; }
+  .card h3 { font-family:'Playfair Display',Georgia,serif; color:var(--navy); margin:0 0 6px; font-size:18px; }
+  .card p { margin:0; font-size:15px; }
+  ul { padding-left:20px; }
+  li { margin:8px 0; }
+  footer { margin-top:64px; border-top:1px solid var(--sand); padding-top:22px; font-size:13px; color:#7b8794; }
+  .nav { display:flex; gap:18px; flex-wrap:wrap; font-size:13px; font-weight:600; }
 </style>
 </head>
 <body>
+<div class="wrap">
+  <p class="eyebrow">Est. 2021 — Institutional Record</p>
+  <h1>Governance</h1>
+  <p class="lede">We do not run a popularity contest. We maintain a verified reputation graph for aerospace and aviation, and we publish what it measures.</p>
 
-<header class="topbar">
-  <div class="wrap">
-    <a class="brand" href="/"><span class="dot"></span> TOP 100 Aerospace &amp; Aviation</a>
-    <a class="back" href="/">&larr; Back to platform</a>
+  <div class="rule"></div>
+
+  <h2>What this institution is</h2>
+  <p>TOP 100 in Aerospace &amp; Aviation is a measurement platform. Each cycle produces a Volume: a permanent, published record of measured standing across eight professional domains. A Volume is immutable once finalized. We correct errors of fact by annotation, never by silent revision.</p>
+
+  <h2>Standards of selection</h2>
+  <ul>
+    <li><strong>Verification precedes measurement.</strong> A record enters the graph only after its claims are checked against primary or institutional sources.</li>
+    <li><strong>Measurement is multi-layer.</strong> No single signal — social, editorial, or otherwise — determines standing.</li>
+    <li><strong>Domains are normalized against themselves.</strong> A propulsion engineer is measured against propulsion, not against policy.</li>
+    <li><strong>Bands are visible. Weights are not.</strong> Influence tier bands are published. The formulas that produce them are withheld, permanently, to protect the graph from optimization.</li>
+  </ul>
+
+  <div class="card">
+    <h3>Measurement methodology</h3>
+    <p>The layers we measure, what qualifies as evidence, and why weights stay closed. <a href="/governance/measurement/">Read the methodology &rarr;</a></p>
   </div>
-</header>
 
-<header class="hero">
-  <div class="wrap">
-    <p class="eyebrow">Governance</p>
-    <h1 class="serif">We don't rank.<br><span style="color:var(--gold)">We measure.</span></h1>
-    <p class="thesis">TOP 100 Aerospace &amp; Aviation is a measurement platform and a verified professional index. It is not an awards list, and selection is not for sale. This page states how that separation is enforced.</p>
+  <div class="card">
+    <h3>Commercial firewall</h3>
+    <p>Our non-endorsement statement, and the guarantee that no commercial relationship touches selection. <a href="/governance/firewall/">Read the firewall statement &rarr;</a></p>
   </div>
-</header>
 
-<section>
-  <div class="wrap">
-    <p class="eyebrow">Structural separation</p>
-    <h2 class="serif">What commercial activity cannot touch</h2>
-    <p>TOP 100 operates commercial service lines, including Ground Control, memberships, and sponsorships. Those exist alongside selection, never inside it. Four conditions hold that line.</p>
+  <h2>Correction and dispute</h2>
+  <p>Fellows and Nominees may contest any verified claim on their own record. Contested entries are marked as under review while adjudicated, and the outcome is recorded. Standing is never adjusted as a courtesy, a settlement, or a condition of any commercial arrangement.</p>
 
-    <div class="cond">
-      <h3>One — Selection is blind to billing at the data layer</h3>
-      <p>Scoring and selection read nomination, evaluation, and voting records. They do not read payment, subscription, sponsorship, or membership records. No billing field is an input to any scoring layer.</p>
+  <footer>
+    <div class="nav">
+      <a href="/governance/measurement/">Measurement</a>
+      <a href="/governance/firewall/">Firewall</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/PrivacyPolicy">Privacy</a>
+      <a href="/">Home</a>
     </div>
-    <div class="cond">
-      <h3>Two — No paid placement, ever</h3>
-      <p>No position in the index, and no inclusion in it, can be purchased, accelerated, or influenced by spending. There is no sponsored slot and no paid tier of recognition.</p>
-    </div>
-    <div class="cond">
-      <h3>Three — Voting is blind and comparative</h3>
-      <p>Selection runs on community nomination followed by blind pairwise comparison. Voters compare candidates without seeing scores, standing, or commercial relationship.</p>
-    </div>
-    <div class="cond">
-      <h3>Four — The record is permanent and auditable</h3>
-      <p>Nominations, evaluations, and votes are retained as a permanent record. Selection outcomes are reconstructable from that record rather than from editorial discretion.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <p class="eyebrow">Method</p>
-    <h2 class="serif">How selection actually works</h2>
-    <ol class="steps">
-      <li><b>Community nomination</b>Anyone may nominate, from anywhere, at no cost. Nominations stay open year round.</li>
-      <li><b>Verification</b>Identity, role, and claimed record are checked before a candidate enters the comparison pool.</li>
-      <li><b>Blind pairwise voting</b>Candidates are compared against one another rather than scored in isolation, without visible standing.</li>
-      <li><b>Multi-layer measurement</b>Perception, objective achievement, subject-matter expert evaluation, narrative influence, and normalization are combined. No single layer decides an outcome.</li>
-      <li><b>Permanent record</b>The result is published as a verified profile and retained as a record, not reissued as a yearly ranking.</li>
-    </ol>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="callout">
-      <b>Non-endorsement statement</b>
-      <p>Commercial service lines of TOP 100 Aerospace &amp; Aviation, including Ground Control, memberships, sponsorships, and merchandise, are independent of the TOP 100 selection process. Purchasing any product or service does not affect, accelerate, or guarantee nomination, evaluation, inclusion, or standing in any TOP 100 index. The selection process is governed separately and is not for sale.</p>
-    </div>
-    <div class="draft">
-      Editorial note for internal review: the four separation conditions and the method summary on this page are drafted from the platform's stated governance model and require sign-off before this page is linked from the primary navigation or cited in investor materials.
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    © TOP 100 Aerospace &amp; Aviation · Governance · <a href="/">top100aero.space</a>
-  </div>
-</footer>
-
+    <p>TOP 100 in Aerospace &amp; Aviation — Est. 2021</p>
+  </footer>
+</div>
 </body>
 </html>
