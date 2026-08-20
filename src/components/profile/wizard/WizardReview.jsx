@@ -5,6 +5,7 @@ import { WIZARD_COLORS as B } from './WizardField';
 export default function WizardReview({ steps, form, saving, onBack, onEdit, onSubmit }) {
   const display = (s) => {
     const v = form[s.key];
+    if (s.type === 'headshot') return v ? 'Photo uploaded' : null;
     if (s.type === 'consent') return v === true ? s.affirmative : v === false ? s.negative : null;
     if (s.type === 'tags') return Array.isArray(v) && v.length ? v.join(' · ') : null;
     return v && String(v).trim() ? String(v) : null;
@@ -23,8 +24,16 @@ export default function WizardReview({ steps, form, saving, onBack, onEdit, onSu
       </p>
 
       {/* The two signature answers, set as editorial type */}
-      {(form.one_word || form.six_word_story) && (
+      {(form.avatar_url || form.one_word || form.six_word_story) && (
         <div className="rounded-2xl p-6 mb-5 text-center" style={{ background: B.navy }}>
+          {form.avatar_url && (
+            <img
+              src={form.avatar_url}
+              alt="Your headshot"
+              className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
+              style={{ border: `2px solid ${B.gold}` }}
+            />
+          )}
           {form.one_word && (
             <p
               className="mb-3"

@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Check, Plus, X } from 'lucide-react';
 import { countWordsIn } from './profileWizardSteps';
+import WizardHeadshot from './WizardHeadshot';
 
 const B = {
   navy: '#1e3a5a',
@@ -22,9 +23,20 @@ const noAutofill = {
   'data-form-type': 'other',
 };
 
-const WizardField = forwardRef(function WizardField({ step, form, setForm, onCommit, clearError }, ref) {
+const WizardField = forwardRef(function WizardField({ step, form, setForm, onCommit, clearError, onError }, ref) {
   const [tagDraft, setTagDraft] = useState('');
   const set = (val) => { setForm({ ...form, [step.key]: val }); clearError?.(); };
+
+  // ── Headshot upload ──
+  if (step.type === 'headshot') {
+    return (
+      <WizardHeadshot
+        value={form[step.key] || ''}
+        onChange={(url) => set(url)}
+        onError={onError}
+      />
+    );
+  }
 
   // ── Consent: two large editorial choices ──
   if (step.type === 'consent') {

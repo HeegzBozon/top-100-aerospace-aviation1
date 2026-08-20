@@ -4,7 +4,7 @@ import ProfileWizard from './ProfileWizard';
 
 const B = { navy: '#1e3a5a', gold: '#c9a87c', sand: '#f5f0e8', muted: '#5d7a94', border: '#e8e0d4' };
 
-const REQUIRED = ['nomination_accepted', 'industry_role', 'one_word', 'six_word_story'];
+const REQUIRED = ['avatar_url', 'industry_role', 'one_word', 'six_word_story'];
 
 export default function ProfileWizardLaunch({ user, nominee, onSaved }) {
   const [open, setOpen] = useState(false);
@@ -28,23 +28,31 @@ export default function ProfileWizardLaunch({ user, nominee, onSaved }) {
         <div className="relative flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: B.gold }}>
-              {complete ? 'Your Record' : 'Nomination Acceptance'}
+              {complete ? 'Your Record' : 'Update Your Profile'}
             </p>
             <h2
               className="text-xl sm:text-2xl font-bold mb-1.5 text-white"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
-              {complete ? 'Revisit your guided profile' : 'Accept your nomination, build your record'}
+              {complete ? 'Revisit your guided profile' : 'Update your profile, guided'}
             </h2>
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.68)' }}>
               {complete
-                ? 'Your one word and six word story are on file. Step back through any answer.'
-                : 'A short guided walk through everything we need, including your one word and your six word story.'}
+                ? 'Your headshot, one word, and six word story are on file. Step back through any answer.'
+                : 'A short guided walk through everything we need, including your headshot, your one word, and your six word story.'}
             </p>
 
             {/* One word / six word preview once set */}
-            {complete && (user?.one_word || user?.six_word_story) && (
+            {complete && (user?.avatar_url || user?.one_word || user?.six_word_story) && (
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3">
+                {user?.avatar_url && (
+                  <img
+                    src={user.avatar_url}
+                    alt=""
+                    className="w-8 h-8 rounded-full object-cover"
+                    style={{ border: `1px solid ${B.gold}` }}
+                  />
+                )}
                 {user?.one_word && (
                   <span
                     className="text-sm uppercase tracking-[0.14em]"
@@ -82,7 +90,7 @@ export default function ProfileWizardLaunch({ user, nominee, onSaved }) {
             style={{ background: B.gold, color: B.navy }}
           >
             {complete ? <Check className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
-            {complete ? 'Review my answers' : 'Begin'}
+            {complete ? 'Review my answers' : 'Update profile'}
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

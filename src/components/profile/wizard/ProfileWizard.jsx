@@ -8,7 +8,7 @@ import { profileWizardSteps, WIZARD_SECTIONS } from './profileWizardSteps';
 import WizardField, { WIZARD_COLORS as B } from './WizardField';
 import WizardReview from './WizardReview';
 
-const FIELDS = ['nomination_accepted', 'publish_consent', 'industry_role', 'headline', 'location', 'one_word', 'six_word_story', 'bio', 'expertise_tags', 'linkedin_url', 'website_url'];
+const FIELDS = ['avatar_url', 'publish_consent', 'industry_role', 'headline', 'location', 'one_word', 'six_word_story', 'bio', 'expertise_tags', 'linkedin_url', 'website_url'];
 
 export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
   const steps = profileWizardSteps;
@@ -27,6 +27,7 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
     if (!seed.six_word_story && nominee?.six_word_story) seed.six_word_story = nominee.six_word_story;
     if (!seed.bio && nominee?.bio) seed.bio = nominee.bio;
     if (!seed.industry_role && nominee?.title) seed.industry_role = nominee.title;
+    if (!seed.avatar_url && nominee?.avatar_url) seed.avatar_url = nominee.avatar_url;
     return seed;
   });
 
@@ -45,7 +46,7 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
   useEffect(() => { setShowHelp(false); setError(null); }, [stepIdx]);
 
   useEffect(() => {
-    if (step?.type === 'consent') return;
+    if (step?.type === 'consent' || step?.type === 'headshot') return;
     const t = setTimeout(() => inputRef.current?.focus(), 220);
     return () => clearTimeout(t);
   }, [stepIdx, step?.type]);
@@ -85,17 +86,14 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
   const handleSubmit = async () => {
     setSaving(true);
     try {
-      const payload = { ...form, profile_wizard_completed: true };
-      if (form.nomination_accepted === true && !user?.nomination_accepted_date) {
-        payload.nomination_accepted_date = new Date().toISOString();
-      }
-      await base44.auth.updateMe(payload);
+      await base44.auth.updateMe({ ...form, profile_wizard_completed: true });
 
       // Mirror the editorial answers onto the nominee record so public profiles match
       if (nominee?.id) {
         await base44.entities.Nominee.update(nominee.id, {
           six_word_story: form.six_word_story,
           bio: form.bio,
+          avatar_url: form.avatar_url,
         }).catch(() => {});
       }
 
@@ -141,7 +139,8 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
   }, [stepIdx, form, step, inReview, done, saving]);
 
   const hint = step?.type === 'consent' ? 'Press 1 or 2'
-    : step?.type === 'tags' ? '↵ adds · Next to continue'
+    : step?.type === 'headshot' ? '↵ to continue'
+      : step?.type === 'tags' ? '↵ adds · Next to continue'
       : step?.type === 'textarea' || step?.type === 'sixword' ? '⌘ + ↵ to continue'
         : '↵ to continue';
 
@@ -214,6 +213,7 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
                     setForm={setForm}
                     onCommit={commitAndAdvance}
                     clearError={() => setError(null)}
+                    onError={setError}
                   />
                 </div>
 

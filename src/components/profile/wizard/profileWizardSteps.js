@@ -1,8 +1,7 @@
-// Step definitions for the guided profile / nomination acceptance experience.
+// Step definitions for the guided profile builder.
 // Each step is one question. Sections drive the chapter label in the wizard chrome.
 
 export const WIZARD_SECTIONS = [
-  { id: 'accept', label: 'Acceptance' },
   { id: 'identity', label: 'Identity' },
   { id: 'voice', label: 'Your Voice' },
   { id: 'record', label: 'The Record' },
@@ -11,30 +10,15 @@ export const WIZARD_SECTIONS = [
 const countWords = (v) => String(v || '').trim().split(/\s+/).filter(Boolean).length;
 
 export const profileWizardSteps = [
-  // ── ACCEPTANCE ──────────────────────────────────────────────
-  {
-    key: 'nomination_accepted',
-    section: 'accept',
-    type: 'consent',
-    question: 'Do you accept your nomination?',
-    subtitle: 'You were nominated by the community. Accepting confirms you would like to be considered and included in the verified index.',
-    affirmative: 'Yes, I accept my nomination',
-    negative: 'Not right now',
-    required: true,
-    help: 'Accepting a nomination does not guarantee selection. Selection runs on community nomination and blind pairwise voting, and cannot be purchased.',
-  },
-  {
-    key: 'publish_consent',
-    section: 'accept',
-    type: 'consent',
-    question: 'May we publish your profile?',
-    subtitle: 'This covers your name, role, photo, and the answers you give here appearing in the public index and editorial features.',
-    affirmative: 'Yes, publish my profile',
-    negative: 'Keep my profile private for now',
-    required: true,
-  },
-
   // ── IDENTITY ────────────────────────────────────────────────
+  {
+    key: 'avatar_url',
+    section: 'identity',
+    type: 'headshot',
+    question: 'Let us put a face to the name.',
+    subtitle: 'Your headshot leads your profile, your trading card, and any editorial feature you appear in.',
+    help: 'Front-facing, well lit, shoulders up. Avoid group photos and heavy filters. A phone photo against a plain wall works better than an old cropped conference shot.',
+  },
   {
     key: 'industry_role',
     section: 'identity',
@@ -130,6 +114,16 @@ export const profileWizardSteps = [
     question: 'Anywhere else we should look?',
     subtitle: 'A personal site, portfolio, lab page, or company profile. Optional.',
     placeholder: 'yoursite.com',
+  },
+  {
+    key: 'publish_consent',
+    section: 'record',
+    type: 'consent',
+    question: 'Ready to go public?',
+    subtitle: 'This covers your name, role, photo, and the answers you have given appearing in the public index and editorial features.',
+    affirmative: 'Yes, publish my profile',
+    negative: 'Keep my profile private for now',
+    required: true,
   },
 ];
 
