@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -19,6 +20,7 @@ import LaurelAvatar from '@/components/profile/LaurelAvatar';
 import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
+import { statusByKey } from '@/components/fellow-home/fellowStatuses';
 
 const brandColors = {
     navyDeep: '#1e3a5a',
@@ -79,6 +81,19 @@ export default function ProfileView({ userId: propUserId = null }) {
         queryFn: () => base44.entities.FellowProfileSettings.filter({ fellow_email: wallEmail }).then((r) => r?.[0] || null).catch(() => null),
     });
     const ownerAccent = accentValue(ownerSettings?.domain_accent || accentForDiscipline(profiles?.nominee?.discipline));
+    const ownerStatus = statusByKey(ownerSettings?.status_key);
+
+    // Count a visit once per mount, and only from another member. Owner-visible only.
+    const counted = useRef(false);
+    useEffect(() => {
+        if (counted.current) return;
+        if (!viewer?.email || !wallEmail || viewer.email === wallEmail) return;
+        if (!ownerSettings?.id) return;
+        counted.current = true;
+        base44.entities.FellowProfileSettings.update(ownerSettings.id, {
+            profile_view_count: (ownerSettings.profile_view_count || 0) + 1,
+        }).catch(() => {});
+    }, [viewer?.email, wallEmail, ownerSettings]);
 
     if (isLoading) {
         return (
@@ -171,6 +186,13 @@ export default function ProfileView({ userId: propUserId = null }) {
                             <h1 className="text-2xl font-bold mb-1" style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', serif" }}>{displayName}</h1>
                             {(user?.handle || nominee?.handle) && (
                                 <p className="text-sm font-medium mb-3 text-slate-500">@{user?.handle || nominee?.handle || 'user'}</p>
+                            )}
+
+                            {ownerStatus && (
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-3" style={{ background: `${ownerAccent}14`, color: brandColors.navyDeep }}>
+                                    <span className="text-sm leading-none">{ownerStatus.glyph}</span>
+                                    {ownerStatus.label}
+                                </div>
                             )}
 
                             {sixWordStory && (

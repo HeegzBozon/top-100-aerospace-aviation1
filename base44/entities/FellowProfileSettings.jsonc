@@ -40,6 +40,20 @@
       "type": "string",
       "description": "Six word story, max 60 characters"
     },
+    "status_key": {
+      "type": "string",
+      "description": "Key of a curated status from the approved status set. Never free text."
+    },
+    "status_set_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the current status was set. Used to age out stale statuses."
+    },
+    "profile_view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of visits to this Fellow's public profile by other members. Owner-visible only."
+    },
     "activity_seen_at": {
       "type": "string",
       "format": "date-time",

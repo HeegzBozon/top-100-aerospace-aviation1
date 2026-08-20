@@ -17,6 +17,7 @@ import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import FlightographyModule from '@/components/fellow-home/FlightographyModule';
 import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
 import ActivityStream from '@/components/fellow-home/ActivityStream';
+import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
 import SeasonPulse from '@/components/fellow-home/SeasonPulse';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
@@ -31,6 +32,7 @@ export default function Profile() {
   const [activityLoading, setActivityLoading] = useState(true);
   const [activityError, setActivityError] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [savingStatus, setSavingStatus] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [wizardOpen, setWizardOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -108,6 +110,31 @@ export default function Profile() {
     }
   };
 
+  // Status is a curated key, saved directly on the settings record.
+  const saveStatus = async (statusKey) => {
+    const previous = settings;
+    setSettings((s) => ({ ...s, status_key: statusKey }));
+    setSavingStatus(true);
+    const patch = { status_key: statusKey, status_set_at: new Date().toISOString() };
+    try {
+      if (settings?.id) {
+        await base44.entities.FellowProfileSettings.update(settings.id, patch);
+      } else {
+        const created = await base44.entities.FellowProfileSettings.create({
+          fellow_email: user.email,
+          fellow_id: nominee?.id,
+          domain_accent: settings?.domain_accent,
+          ...patch,
+        });
+        setSettings(created);
+      }
+    } catch (error) {
+      setSettings(previous);
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
   const handleExportData = async () => {
     setExporting(true);
     try {
@@ -138,6 +165,9 @@ export default function Profile() {
 
   const accent = accentValue(settings?.domain_accent);
   const order = orderedModules(settings?.module_order);
+  const publicPath = nominee?.id
+    ? `/profiles/${nominee.id}`
+    : `/ProfileView?user=${encodeURIComponent(user?.email || '')}`;
 
   const fellowModules = {
     eight: <TheEight key="eight" rankings={rankings} isOwner accent={accent} />,
@@ -183,45 +213,58 @@ export default function Profile() {
         {/* Position 2 — locked. Present and quiet. */}
         <VerificationBand nominee={nominee} accent={accent} />
 
-        <ActivityStream
-          loading={activityLoading}
-          error={activityError}
-          events={events}
-          accent={accent}
-          onAcknowledge={events.length ? acknowledgeActivity : null}
-        />
+        {/* Retro two-column: rail left, working surface right */}
+        <div className="grid grid-cols-1 lg:grid-cols-[288px_1fr] gap-5 items-start">
+          <aside className="lg:sticky lg:top-4">
+            <FellowLeftRail
+              user={user}
+              nominee={nominee}
+              accent={accent}
+              statusKey={settings?.status_key}
+              savingStatus={savingStatus}
+              onStatusChange={saveStatus}
+              viewCount={settings?.profile_view_count || 0}
+              endorsementCount={entries.filter((e) => e.moderation_status === 'approved').length}
+              publicPath={publicPath}
+            />
+          </aside>
 
-        <SeasonPulse />
+          <div className="space-y-5 min-w-0">
+            <ActivityStream
+              loading={activityLoading}
+              error={activityError}
+              events={events}
+              accent={accent}
+              onAcknowledge={events.length ? acknowledgeActivity : null}
+            />
 
-        <div className="flex items-start justify-between gap-3 flex-wrap">
-          <Link
-            to={nominee?.id ? `/profiles/${nominee.id}` : `/ProfileView?user=${encodeURIComponent(user?.email || '')}`}
-            className="flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity mt-2"
-            style={{ color: B.navy }}
-          >
-            <ExternalLink className="w-4 h-4" />
-            View Public Profile
-          </Link>
-          <PersonalizationBar
-            settings={settings}
-            order={order}
-            accent={accent}
-            saving={saving}
-            error={saveError}
-            onChange={savePersonalization}
-          />
-        </div>
+            <SeasonPulse />
 
-        <ProfileWizardLaunch user={user} nominee={nominee} onSaved={loadUser} />
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <Link
+                to={publicPath}
+                className="flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity mt-2"
+                style={{ color: B.navy }}
+              >
+                <ExternalLink className="w-4 h-4" />
+                View Public Profile
+              </Link>
+              <PersonalizationBar
+                settings={settings}
+                order={order}
+                accent={accent}
+                saving={saving}
+                error={saveError}
+                onChange={savePersonalization}
+              />
+            </div>
 
-        {/* Positions 3+ — Fellow-configured order */}
-        {order.map((key) => fellowModules[key])}
+            <ProfileWizardLaunch user={user} nominee={nominee} onSaved={loadUser} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+            {/* Positions 3+ — Fellow-configured order */}
+            {order.map((key) => fellowModules[key])}
+
             <UnifiedProfileEditor user={user} />
-          </div>
-          <div className="space-y-6">
             <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
             {nominee && <NomineeNewsSection nomineeId={nominee.id} />}
           </div>
