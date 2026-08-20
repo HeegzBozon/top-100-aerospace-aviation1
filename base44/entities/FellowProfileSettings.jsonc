@@ -1,0 +1,52 @@
+{
+  "name": "FellowProfileSettings",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow who owns these settings. Stable key across User and Nominee records."
+    },
+    "fellow_id": {
+      "type": "string",
+      "description": "Optional Nominee record id for the Fellow, when one exists"
+    },
+    "domain_accent": {
+      "type": "string",
+      "enum": [
+        "space_rd",
+        "commercial_aviation",
+        "defense",
+        "manufacturing",
+        "operations",
+        "engineering",
+        "policy",
+        "entrepreneurship"
+      ],
+      "description": "One of eight domain-derived accents. Defaults are derived from the Fellow's primary discipline."
+    },
+    "cover_asset_id": {
+      "type": "string",
+      "description": "Key of a cover from the verified asset library. No user upload."
+    },
+    "module_order": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Ordered module keys. Validated server-side against the allowlist; positions 1 and 2 are locked."
+    },
+    "six_word_story": {
+      "type": "string",
+      "description": "Six word story, max 60 characters"
+    },
+    "activity_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time the Fellow acknowledged their profile activity"
+    }
+  },
+  "required": [
+    "fellow_email"
+  ]
+}

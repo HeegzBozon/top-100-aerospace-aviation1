@@ -2,31 +2,36 @@ import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Loader2, Download, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { saveProfileSettings } from '@/functions/saveProfileSettings';
+import { syncProfileActivity } from '@/functions/syncProfileActivity';
 import UnifiedProfileEditor from '@/components/dashboard/UnifiedProfileEditor';
 import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
-import NomineeContributionsSection from '@/components/profile/NomineeContributionsSection';
-import NomineeCareerHistorySection from '@/components/profile/NomineeCareerHistorySection';
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
-import ResearchStatsCard from '@/components/profile/ResearchStatsCard';
 import ProfileWizardLaunch from '@/components/profile/wizard/ProfileWizardLaunch';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
 import FellowIdentityHeader from '@/components/fellow-home/FellowIdentityHeader';
+import VerificationBand from '@/components/fellow-home/VerificationBand';
 import TheEight from '@/components/fellow-home/TheEight';
 import EndorsementWall from '@/components/fellow-home/EndorsementWall';
+import FlightographyModule from '@/components/fellow-home/FlightographyModule';
 import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
-import ReturnState from '@/components/fellow-home/ReturnState';
+import ActivityStream from '@/components/fellow-home/ActivityStream';
 import SeasonPulse from '@/components/fellow-home/SeasonPulse';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
-import { B, accentValue, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
+import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [nominee, setNominee] = useState(null);
+  const [settings, setSettings] = useState(null);
   const [rankings, setRankings] = useState([]);
-  const [appearances, setAppearances] = useState(0);
-  const [newSince, setNewSince] = useState(0);
+  const [events, setEvents] = useState([]);
+  const [activityLoading, setActivityLoading] = useState(true);
+  const [activityError, setActivityError] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [wizardOpen, setWizardOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
@@ -46,20 +51,18 @@ export default function Profile() {
       const lists = await base44.entities.UserTop100List.filter({ user_email: currentUser.email }, '-updated_date', 1).catch(() => []);
       setRankings(lists?.[0]?.rankings || []);
 
-      // Return-state signals
-      const lastSeen = currentUser?.profile_last_seen ? new Date(currentUser.profile_last_seen) : null;
-      const wall = await base44.entities.Endorsement.filter({ nominee_email: currentUser.email }, '-created_date', 50).catch(() => []);
-      setNewSince(lastSeen ? (wall || []).filter((e) => e.kind === 'authored' && new Date(e.created_date) > lastSeen).length : 0);
-
-      if (nom?.id) {
-        const others = await base44.entities.UserTop100List.list('-updated_date', 200).catch(() => []);
-        setAppearances(
-          (others || []).filter(
-            (l) => l.user_email !== currentUser.email && (l.rankings || []).slice(0, 8).some((r) => r.nominee_id === nom.id)
-          ).length
-        );
+      const found = await base44.entities.FellowProfileSettings.filter({ fellow_email: currentUser.email }).catch(() => []);
+      if (found?.[0]) {
+        setSettings(found[0]);
+      } else {
+        // Unconfigured Fellows get an accent derived from their primary discipline.
+        setSettings({
+          domain_accent: accentForDiscipline(nom?.discipline),
+          cover_asset_id: 'none',
+          module_order: [],
+          six_word_story: currentUser.six_word_story || '',
+        });
       }
-      base44.auth.updateMe({ profile_last_seen: new Date().toISOString() }).catch(() => {});
     } catch (error) {
       console.error('Error loading user:', error);
     } finally {
@@ -67,7 +70,43 @@ export default function Profile() {
     }
   }, []);
 
+  const loadActivity = useCallback(async () => {
+    setActivityLoading(true);
+    setActivityError(false);
+    try {
+      const res = await syncProfileActivity({});
+      setEvents(res?.data?.events || []);
+    } catch (error) {
+      setActivityError(true);
+    } finally {
+      setActivityLoading(false);
+    }
+  }, []);
+
   useEffect(() => { loadUser(); }, [loadUser]);
+  useEffect(() => { loadActivity(); }, [loadActivity]);
+
+  const acknowledgeActivity = async () => {
+    const ids = events.map((e) => e.id);
+    setEvents([]);
+    await Promise.all(ids.map((id) => base44.entities.ProfileActivity.update(id, { seen: true }).catch(() => {})));
+  };
+
+  const savePersonalization = async (patch) => {
+    const previous = settings;
+    setSettings((s) => ({ ...s, ...patch }));
+    setSaving(true);
+    setSaveError('');
+    try {
+      const res = await saveProfileSettings(patch);
+      if (res?.data?.settings) setSettings(res.data.settings);
+    } catch (error) {
+      setSettings(previous);
+      setSaveError(error?.response?.data?.error || 'That change was rejected.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleExportData = async () => {
     setExporting(true);
@@ -97,13 +136,8 @@ export default function Profile() {
     );
   }
 
-  const accent = accentValue(user?.accent_color);
-  const order = orderedModules(user?.module_order);
-
-  const savePersonalization = async (patch) => {
-    setUser((u) => ({ ...u, ...patch }));
-    await base44.auth.updateMe(patch);
-  };
+  const accent = accentValue(settings?.domain_accent);
+  const order = orderedModules(settings?.module_order);
 
   const fellowModules = {
     eight: <TheEight key="eight" rankings={rankings} isOwner accent={accent} />,
@@ -119,80 +153,87 @@ export default function Profile() {
         onApprove={approve}
       />
     ),
+    flightography: (
+      <FlightographyModule
+        key="flightography"
+        nominee={nominee}
+        user={user}
+        accent={accent}
+        onNomineeUpdate={setNominee}
+        onUserUpdate={setUser}
+      />
+    ),
   };
 
   return (
     <div className="min-h-screen overflow-x-hidden sf-pro" style={{ background: B.cream }}>
-      {/* Rotating announcement banner from the home surface */}
       <AnnouncementBanner />
       <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
-        {/* Identity — the home surface starts with who you are */}
+        {/* Position 1 — locked. Identity above credential. */}
         <FellowIdentityHeader
           user={user}
           nominee={nominee}
           accent={accent}
           isOwner
+          coverKey={settings?.cover_asset_id}
+          sixWordStory={settings?.six_word_story || user?.six_word_story}
           onEditIdentity={() => setWizardOpen(true)}
         />
 
-        <ReturnState
-          newEndorsements={newSince}
-          appearances={appearances}
-          emptySlots={8 - Math.min(8, rankings.length)}
+        {/* Position 2 — locked. Present and quiet. */}
+        <VerificationBand nominee={nominee} accent={accent} />
+
+        <ActivityStream
+          loading={activityLoading}
+          error={activityError}
+          events={events}
           accent={accent}
+          onAcknowledge={events.length ? acknowledgeActivity : null}
         />
 
-        {/* Season countdowns + live info, carried over from Home */}
         <SeasonPulse />
 
-        <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
           <Link
             to={`/ProfileView?user=${encodeURIComponent(user?.email || '')}`}
-            className="flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity mt-2"
             style={{ color: B.navy }}
           >
             <ExternalLink className="w-4 h-4" />
             View Public Profile
           </Link>
-          <PersonalizationBar user={user} order={order} accent={accent} onChange={savePersonalization} />
+          <PersonalizationBar
+            settings={settings}
+            order={order}
+            accent={accent}
+            saving={saving}
+            error={saveError}
+            onChange={savePersonalization}
+          />
         </div>
 
         <ProfileWizardLaunch user={user} nominee={nominee} onSaved={loadUser} />
 
+        {/* Positions 3+ — Fellow-configured order */}
         {order.map((key) => fellowModules[key])}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* LEFT COLUMN - Profile Editor */}
           <div className="lg:col-span-2">
             <UnifiedProfileEditor user={user} />
           </div>
-
-          {/* RIGHT COLUMN - Shareable Card + Nominee sections */}
           <div className="space-y-6">
             <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
-            <ResearchStatsCard nominee={nominee} user={user} onNomineeUpdate={setNominee} onUserUpdate={setUser} />
-            {nominee && (
-              <>
-                <NomineeCareerHistorySection nominee={nominee} />
-                <NomineeContributionsSection nomineeId={nominee.id} />
-                <NomineeNewsSection nomineeId={nominee.id} />
-              </>
-            )}
+            {nominee && <NomineeNewsSection nomineeId={nominee.id} />}
           </div>
         </div>
 
-        {/* Data Export - Subtle Link */}
         <div className="mt-8 flex justify-end">
           <button
             onClick={handleExportData}
             disabled={exporting}
             className="text-xs text-[var(--muted)] hover:text-[var(--text)] transition-colors flex items-center gap-1.5"
           >
-            {exporting ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
-              <Download className="w-3 h-3" />
-            )}
+            {exporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
             {exporting ? 'Exporting...' : 'Download my data'}
           </button>
         </div>

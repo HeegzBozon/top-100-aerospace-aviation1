@@ -18,6 +18,7 @@ import ProfileExpertiseTags from '@/components/profile/ProfileExpertiseTags';
 import LaurelAvatar from '@/components/profile/LaurelAvatar';
 import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
+import { accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
 
 const brandColors = {
     navyDeep: '#1e3a5a',
@@ -70,6 +71,14 @@ export default function ProfileView({ userId: propUserId = null }) {
 
     const wallEmail = profiles?.user?.email || profiles?.nominee?.nominee_email;
     const { entries: wallEntries, submit: submitWallEntry, approve: approveWallEntry } = useEndorsementWall(wallEmail, profiles?.nominee?.id);
+
+    // Visitors see the owner's governed accent. No edit affordance is derived from it.
+    const { data: ownerSettings } = useQuery({
+        queryKey: ['fellowProfileSettings', wallEmail],
+        enabled: !!wallEmail,
+        queryFn: () => base44.entities.FellowProfileSettings.filter({ fellow_email: wallEmail }).then((r) => r?.[0] || null).catch(() => null),
+    });
+    const ownerAccent = accentValue(ownerSettings?.domain_accent || accentForDiscipline(profiles?.nominee?.discipline));
 
     if (isLoading) {
         return (
@@ -266,7 +275,7 @@ export default function ProfileView({ userId: propUserId = null }) {
                                     isOwner={!!viewer && viewer.email === wallEmail}
                                     canWrite={!!viewer && viewer.email !== wallEmail}
                                     isAdmin={viewer?.role === 'admin'}
-                                    accent={brandColors.goldPrestige}
+                                    accent={ownerAccent}
                                     onSubmit={(body) => submitWallEntry(body, viewer)}
                                     onApprove={approveWallEntry}
                                 />

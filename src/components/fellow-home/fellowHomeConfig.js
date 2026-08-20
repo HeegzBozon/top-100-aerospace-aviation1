@@ -10,13 +10,19 @@ export const B = {
   muted: 'rgba(30,58,90,0.58)',
 };
 
+// Eight domain accents, one per discipline. Derived from the domain set, never arbitrary.
 export const ACCENTS = [
-  { key: 'rose_gold', label: 'Rose Gold', value: '#c9a87c' },
-  { key: 'copper', label: 'Copper', value: '#b06a45' },
-  { key: 'nasa_blue', label: 'NASA Blue', value: '#4a7fb5' },
-  { key: 'sand', label: 'Sand', value: '#a89170' },
-  { key: 'slate', label: 'Slate', value: '#6b7f95' },
+  { key: 'space_rd', label: 'Orbital', value: '#4a7fb5' },
+  { key: 'commercial_aviation', label: 'Horizon', value: '#5b8ca6' },
+  { key: 'defense', label: 'Slate', value: '#4d5f6f' },
+  { key: 'manufacturing', label: 'Copper', value: '#b06a45' },
+  { key: 'operations', label: 'Sandstone', value: '#8a7f6a' },
+  { key: 'engineering', label: 'Steel', value: '#7a8fa6' },
+  { key: 'policy', label: 'Bronze', value: '#705c4a' },
+  { key: 'entrepreneurship', label: 'Rose Gold', value: '#c9a87c' },
 ];
+
+export const DEFAULT_ACCENT = 'entrepreneurship';
 
 export const COVERS = [
   { key: 'none', label: 'None', url: null },
@@ -27,17 +33,34 @@ export const COVERS = [
   { key: 'horizon', label: 'Horizon', url: 'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=1600&q=80' },
 ];
 
+// Locked modules hold positions 1 and 2 and are never reorderable.
+export const LOCKED_MODULES = [
+  { key: 'identity', label: 'Identity header' },
+  { key: 'verification', label: 'Verification and influence' },
+];
+
 export const MODULES = [
   { key: 'eight', label: 'The Eight' },
   { key: 'wall', label: 'Endorsements' },
+  { key: 'flightography', label: 'Flightography' },
 ];
 
 export const DEFAULT_MODULE_ORDER = MODULES.map((m) => m.key);
 
-export const accentValue = (key) => (ACCENTS.find((a) => a.key === key) || ACCENTS[0]).value;
+export const accentValue = (key) =>
+  (ACCENTS.find((a) => a.key === key) || ACCENTS.find((a) => a.key === DEFAULT_ACCENT)).value;
+
+export const accentForDiscipline = (discipline) =>
+  ACCENTS.some((a) => a.key === discipline) ? discipline : DEFAULT_ACCENT;
+
 export const coverUrl = (key) => (COVERS.find((c) => c.key === key) || COVERS[0]).url;
 
+export const moduleLabel = (key) =>
+  ([...LOCKED_MODULES, ...MODULES].find((m) => m.key === key) || {}).label || key;
+
+// Reorderable modules only. Locked positions are rendered structurally, never in this list.
 export const orderedModules = (order) => {
   const valid = (order || []).filter((k) => DEFAULT_MODULE_ORDER.includes(k));
-  return [...valid, ...DEFAULT_MODULE_ORDER.filter((k) => !valid.includes(k))];
+  const deduped = valid.filter((k, i) => valid.indexOf(k) === i);
+  return [...deduped, ...DEFAULT_MODULE_ORDER.filter((k) => !deduped.includes(k))];
 };

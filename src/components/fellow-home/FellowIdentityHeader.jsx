@@ -1,8 +1,9 @@
 import { BadgeCheck, MapPin, Pencil } from 'lucide-react';
 import { B, coverUrl } from './fellowHomeConfig';
 
-export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity }) {
-  const cover = coverUrl(user?.cover_key);
+export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory }) {
+  const cover = coverUrl(coverKey !== undefined ? coverKey : user?.cover_key);
+  const story = sixWordStory || user?.six_word_story;
   const avatar = user?.avatar_url || nominee?.avatar_url;
   const name = user?.full_name || nominee?.name || 'Unnamed Fellow';
   const verified = nominee?.verified_status && nominee.verified_status !== 'unverified';
@@ -61,7 +62,7 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
             )}
           </div>
 
-          {user?.six_word_story && (
+          {story && (
             <p
               className="mt-4 max-w-2xl"
               style={{
@@ -72,7 +73,7 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
                 lineHeight: 1.45,
               }}
             >
-              &ldquo;{user.six_word_story}&rdquo;
+              &ldquo;{story}&rdquo;
             </p>
           )}
 

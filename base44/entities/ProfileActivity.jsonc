@@ -1,0 +1,53 @@
+{
+  "name": "ProfileActivity",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow whose profile the event belongs to"
+    },
+    "fellow_id": {
+      "type": "string",
+      "description": "Optional Nominee record id for the Fellow"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "endorsement_received",
+        "added_to_list",
+        "flightography_verified",
+        "slot_vacant"
+      ],
+      "description": "What happened on the profile"
+    },
+    "module_key": {
+      "type": "string",
+      "description": "Module the indicator renders on, e.g. wall, eight, flightography"
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Id of the originating record. Used to keep event generation idempotent."
+    },
+    "actor_id": {
+      "type": "string",
+      "description": "Who caused the event, when attributable"
+    },
+    "actor_name": {
+      "type": "string",
+      "description": "Denormalized actor display name"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One line describing the event for the return-state surface"
+    },
+    "seen": {
+      "type": "boolean",
+      "default": false,
+      "description": "Drives return-trigger rendering. Clears when acknowledged."
+    }
+  },
+  "required": [
+    "fellow_email",
+    "event_type"
+  ]
+}
