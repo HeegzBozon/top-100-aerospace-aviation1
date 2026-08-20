@@ -29,7 +29,7 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
       )}
 
       <div className="px-5 sm:px-8 pb-7">
-        <div className="flex items-end gap-4 -mt-10 sm:-mt-12">
+        <div className="relative z-10 flex items-end gap-4 -mt-10 sm:-mt-12">
           <div
             className="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden shrink-0 flex items-center justify-center"
             style={{ background: B.sand, border: `3px solid ${accent}`, boxShadow: '0 8px 26px rgba(22,41,63,0.18)' }}
