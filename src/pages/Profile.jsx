@@ -16,6 +16,8 @@ import TheEight from '@/components/fellow-home/TheEight';
 import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
 import ReturnState from '@/components/fellow-home/ReturnState';
+import SeasonPulse from '@/components/fellow-home/SeasonPulse';
+import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
 
@@ -121,6 +123,8 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen overflow-x-hidden sf-pro" style={{ background: B.cream }}>
+      {/* Rotating announcement banner from the home surface */}
+      <AnnouncementBanner />
       <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
         {/* Identity — the home surface starts with who you are */}
         <FellowIdentityHeader
@@ -137,6 +141,9 @@ export default function Profile() {
           emptySlots={8 - Math.min(8, rankings.length)}
           accent={accent}
         />
+
+        {/* Season countdowns + live info, carried over from Home */}
+        <SeasonPulse />
 
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <Link
