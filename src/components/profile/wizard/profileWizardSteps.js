@@ -15,7 +15,7 @@ export const profileWizardSteps = [
     key: 'avatar_url',
     section: 'identity',
     type: 'headshot',
-    question: 'Let us put a face to the name.',
+    question: 'Start with your face.',
     subtitle: 'Your headshot leads your profile, your trading card, and any editorial feature you appear in.',
     help: 'Front-facing, well lit, shoulders up. Avoid group photos and heavy filters. A phone photo against a plain wall works better than an old cropped conference shot.',
   },
@@ -32,7 +32,7 @@ export const profileWizardSteps = [
     key: 'headline',
     section: 'identity',
     type: 'text',
-    question: 'Give us your headline.',
+    question: 'What is your headline?',
     subtitle: 'One line that positions you. This sits at the top of your public profile.',
     placeholder: 'e.g. Building the next generation of lunar landers',
   },
@@ -41,7 +41,7 @@ export const profileWizardSteps = [
     section: 'identity',
     type: 'text',
     question: 'Where are you based?',
-    subtitle: 'City and country. We use this for the geographic distribution of the index.',
+    subtitle: 'City and country. This places you on the map of the index.',
     placeholder: 'e.g. Houston, United States',
   },
 
@@ -74,8 +74,8 @@ export const profileWizardSteps = [
     help: 'Six words forces a real choice. Aim for a turn: where you started, what changed, where you are now. Punctuation is free, words are not.',
     validate: (form) => {
       const n = countWords(form.six_word_story);
-      if (n === 0) return 'Give us six words.';
-      if (n !== 6) return `That is ${n} word${n === 1 ? '' : 's'}. We need exactly six.`;
+      if (n === 0) return 'Six words, exactly.';
+      if (n !== 6) return `That is ${n} word${n === 1 ? '' : 's'}. Six is the constraint.`;
       return null;
     },
   },
@@ -95,7 +95,7 @@ export const profileWizardSteps = [
     section: 'record',
     type: 'tags',
     question: 'What are your disciplines?',
-    subtitle: 'Up to six. These place you in the index and connect you to others in your field.',
+    subtitle: 'Up to six. These connect you to others working in your field.',
     placeholder: 'e.g. Propulsion, Avionics, UAV',
     max: 6,
   },
@@ -104,14 +104,14 @@ export const profileWizardSteps = [
     section: 'record',
     type: 'text',
     question: 'Your LinkedIn?',
-    subtitle: 'Used for verification and to enrich your record.',
+    subtitle: 'Strengthens your verification and fills in your record automatically.',
     placeholder: 'linkedin.com/in/yourname',
   },
   {
     key: 'website_url',
     section: 'record',
     type: 'text',
-    question: 'Anywhere else we should look?',
+    question: 'Anywhere else worth seeing?',
     subtitle: 'A personal site, portfolio, lab page, or company profile. Optional.',
     placeholder: 'yoursite.com',
   },
@@ -120,7 +120,7 @@ export const profileWizardSteps = [
     section: 'record',
     type: 'consent',
     question: 'Ready to go public?',
-    subtitle: 'This covers your name, role, photo, and the answers you have given appearing in the public index and editorial features.',
+    subtitle: 'Your name, role, photo, and answers become part of the public index and editorial features. Your call, and you can change it any time.',
     affirmative: 'Yes, publish my profile',
     negative: 'Keep my profile private for now',
     required: true,

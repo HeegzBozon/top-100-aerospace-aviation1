@@ -34,12 +34,12 @@ export default function ProfileWizardLaunch({ user, nominee, onSaved }) {
               className="text-xl sm:text-2xl font-bold mb-1.5 text-white"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
-              {complete ? 'Revisit your guided profile' : 'Update your profile, guided'}
+              {complete ? 'Revisit your story' : 'Tell your story, guided'}
             </h2>
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.68)' }}>
               {complete
-                ? 'Your headshot, one word, and six word story are on file. Step back through any answer.'
-                : 'A short guided walk through everything we need, including your headshot, your one word, and your six word story.'}
+                ? 'Your headshot, one word, and six word story are live. Step back through any answer.'
+                : 'A few guided questions to help you say it well: your headshot, your one word, and your six word story.'}
             </p>
 
             {/* One word / six word preview once set */}
