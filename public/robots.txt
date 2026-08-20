@@ -14,7 +14,7 @@ Allow: /local-legends
 Allow: /artemis-mission-brief
 Allow: /community-round
 Allow: /star-summit
-Allow: /nominate
+Allow: /ground-control
 Allow: /terms
 Allow: /PrivacyPolicy
 
