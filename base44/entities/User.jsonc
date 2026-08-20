@@ -65,6 +65,14 @@
       "type": "string",
       "description": "User biography"
     },
+    "one_word": {
+      "type": "string",
+      "description": "A single word the honoree chooses to define their work. Used in editorial layouts and on the trading card."
+    },
+    "six_word_story": {
+      "type": "string",
+      "description": "The honoree's career told in exactly six words. Used in editorial layouts and shareable cards."
+    },
     "location": {
       "type": "string",
       "description": "City, Country"
@@ -101,6 +109,26 @@
     "aerospace_connection": {
       "type": "string",
       "description": "Saved answer to 'Your connection to aerospace and aviation' from the Start Here screen, so it pre-fills on future visits"
+    },
+    "nomination_accepted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the honoree has formally accepted their nomination via the profile wizard"
+    },
+    "nomination_accepted_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of nomination acceptance"
+    },
+    "publish_consent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Consent to publish the honoree's name, likeness, and profile in the verified index"
+    },
+    "profile_wizard_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the guided profile builder has been completed at least once"
     },
     "onboarding_completed": {
       "type": "boolean",

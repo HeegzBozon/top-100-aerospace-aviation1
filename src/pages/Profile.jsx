@@ -11,6 +11,7 @@ import NomineeContributionsSection from '@/components/profile/NomineeContributio
 import NomineeCareerHistorySection from '@/components/profile/NomineeCareerHistorySection';
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
 import ResearchStatsCard from '@/components/profile/ResearchStatsCard';
+import ProfileWizardLaunch from '@/components/profile/wizard/ProfileWizardLaunch';
 
 const brandColors = {
   cream: '#faf8f5',
@@ -85,6 +86,8 @@ export default function Profile() {
             View Public Profile
           </Link>
         </div>
+        <ProfileWizardLaunch user={user} nominee={nominee} onSaved={loadUser} />
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* LEFT COLUMN - Profile Editor */}
           <div className="lg:col-span-2">
