@@ -12,7 +12,7 @@ export default function TheEight({ rankings, isOwner, accent }) {
     <section className="rounded-3xl p-5 sm:p-7" style={{ background: '#fff', border: `1px solid ${B.border}` }}>
       <div className="flex items-baseline gap-3 flex-wrap mb-1">
         <h2 className="text-xl sm:text-2xl font-bold" style={{ color: B.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
-          The Eight
+          My TOP 100
         </h2>
         <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: accent }}>
           {filled} of 8 named
@@ -24,33 +24,30 @@ export default function TheEight({ rankings, isOwner, accent }) {
           : "The eight people at the top of this Fellow's ranked list."}
       </p>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
         {slots.map((entry, i) => (
-          <div key={i} className="rounded-2xl p-3 text-center" style={{ background: entry ? B.cream : 'transparent', border: entry ? `1px solid ${B.border}` : `1px dashed ${B.border}` }}>
-            <div className="text-[10px] font-bold mb-2" style={{ color: accent }}>{String(i + 1).padStart(2, '0')}</div>
+          <div key={i} className="text-center">
+            <div className="text-[9px] font-bold mb-1.5" style={{ color: accent }}>{String(i + 1).padStart(2, '0')}</div>
             {entry ? (
               <>
-                <div className="w-12 h-12 rounded-full mx-auto mb-2 overflow-hidden flex items-center justify-center" style={{ background: B.sand }}>
+                <div className="w-11 h-11 rounded-full mx-auto mb-1.5 overflow-hidden flex items-center justify-center" style={{ background: B.sand, border: `1px solid ${B.border}` }}>
                   {entry.nominee_avatar ? (
                     <img src={entry.nominee_avatar} alt={entry.nominee_name} className="w-full h-full object-cover" />
                   ) : (
                     <span className="text-sm font-bold" style={{ color: B.navy }}>{(entry.nominee_name || '?').charAt(0)}</span>
                   )}
                 </div>
-                <p className="text-xs font-semibold leading-tight" style={{ color: B.navy }}>{entry.nominee_name}</p>
-                {entry.nominee_title && (
-                  <p className="text-[10px] mt-1 leading-tight" style={{ color: B.muted }}>{entry.nominee_title}</p>
-                )}
+                <p className="text-[11px] font-semibold leading-tight" style={{ color: B.navy }}>{entry.nominee_name}</p>
               </>
             ) : (
               <Link to="/nominate" className="block group">
                 <div
-                  className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center transition-colors group-hover:bg-black/[0.04]"
+                  className="w-11 h-11 rounded-full mx-auto mb-1.5 flex items-center justify-center transition-colors group-hover:bg-black/[0.04]"
                   style={{ border: `1px dashed ${B.border}` }}
                 >
-                  <Plus className="w-4 h-4" style={{ color: B.muted }} />
+                  <Plus className="w-3.5 h-3.5" style={{ color: B.muted }} />
                 </div>
-                <p className="text-xs font-semibold" style={{ color: B.muted }}>
+                <p className="text-[11px] font-semibold" style={{ color: B.muted }}>
                   {isOwner ? 'Open' : 'Unnamed'}
                 </p>
               </Link>
