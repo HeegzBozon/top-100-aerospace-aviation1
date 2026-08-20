@@ -12,7 +12,7 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
     <header className="rounded-3xl overflow-hidden" style={{ background: '#fff', border: `1px solid ${B.border}` }}>
       {/* Cover slot — season state takes the space when supplied */}
       {coverContent ? (
-        <div className="relative pb-10 sm:pb-12" style={{ background: B.navyDeep }}>
+        <div className="relative pb-10 sm:pb-12" style={{ background: B.sand }}>
           {coverContent}
           <div className="absolute left-0 right-0 bottom-0 h-[3px]" style={{ background: accent }} />
         </div>

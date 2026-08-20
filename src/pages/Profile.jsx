@@ -18,7 +18,7 @@ import FlightographyModule from '@/components/fellow-home/FlightographyModule';
 import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
 import ActivityStream from '@/components/fellow-home/ActivityStream';
 import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
-import SeasonPulse from '@/components/fellow-home/SeasonPulse';
+import SeasonBand from '@/components/fellow-home/SeasonBand';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
@@ -208,7 +208,7 @@ export default function Profile() {
           coverKey={settings?.cover_asset_id}
           sixWordStory={settings?.six_word_story || user?.six_word_story}
           onEditIdentity={() => setWizardOpen(true)}
-          coverContent={<SeasonPulse inCover />}
+          coverContent={<SeasonBand accent={accent} />}
         />
 
         {/* Position 2 — locked. Present and quiet. */}
