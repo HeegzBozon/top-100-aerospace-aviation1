@@ -1,11 +1,27 @@
+import { useState } from 'react';
+import { Loader2, ArrowRight } from 'lucide-react';
+import { createGroundControlStarterCheckout } from '@/functions/createGroundControlStarterCheckout';
+
 const TIERS = [
-  { name: 'Starter', price: '$97', best: 'Run it yourself — the Loom starter kit', rows: ['Missed-call text-back', 'One pipeline', '500 texts / 5,000 emails', 'Dashboard access', 'Community support'] },
+  { name: 'Starter', price: '$97', best: 'Run it yourself — the Loom starter kit', rows: ['Missed-call text-back', 'One pipeline', '500 texts / 5,000 emails', 'Dashboard access', 'Community support'], cta: 'subscribe' },
   { name: 'Preflight', price: '$497', best: 'Owner-operators who need the leaks closed', rows: ['One pipeline', 'Two core automations', '500 texts / 5,000 emails', 'Dashboard access', 'Email support, 48 hrs'] },
   { name: 'Takeoff', price: '$997', best: 'Growing shops with a real pipeline to manage', rows: ['Up to three pipelines', 'Six automations incl. quote follow-up', 'One lead-capture funnel', '2,000 texts / 25,000 emails', 'Priority support, 24 hrs'], featured: true },
   { name: 'Cruise', price: '$1,997', best: 'Teams who want the campaigns run for them', rows: ['Up to three pipelines', 'Six automations + campaign automation', 'Campaigns written & run for you', '5,000 texts / 100,000 emails', 'Same-day support'] },
 ];
 
 export default function GroundControlPricing() {
+  const [loading, setLoading] = useState(false);
+
+  const startStarter = async () => {
+    setLoading(true);
+    try {
+      const res = await createGroundControlStarterCheckout();
+      if (res?.url) window.location.href = res.url;
+    } catch {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="bg-[#07111f] px-6 py-24">
       <div className="mx-auto max-w-5xl">
@@ -28,6 +44,16 @@ export default function GroundControlPricing() {
                   </li>
                 ))}
               </ul>
+              {t.cta === 'subscribe' && (
+                <button
+                  onClick={startStarter}
+                  disabled={loading}
+                  className="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#07111f] transition-transform hover:scale-[1.02] disabled:opacity-70 pt-6"
+                  style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}
+                >
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Start for $97/mo <ArrowRight className="h-4 w-4" /></>}
+                </button>
+              )}
             </div>
           ))}
         </div>
