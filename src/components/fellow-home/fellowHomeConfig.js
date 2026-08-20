@@ -30,8 +30,6 @@ export const COVERS = [
 export const MODULES = [
   { key: 'eight', label: 'The Eight' },
   { key: 'wall', label: 'Endorsements' },
-  { key: 'record', label: 'The Record' },
-  { key: 'card', label: 'Trading Card' },
 ];
 
 export const DEFAULT_MODULE_ORDER = MODULES.map((m) => m.key);

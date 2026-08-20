@@ -15,6 +15,9 @@ import ProviderServicesList from '@/components/profile/ProviderServicesList';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import ProfileSocialLinks from '@/components/profile/ProfileSocialLinks';
 import ProfileExpertiseTags from '@/components/profile/ProfileExpertiseTags';
+import LaurelAvatar from '@/components/profile/LaurelAvatar';
+import EndorsementWall from '@/components/fellow-home/EndorsementWall';
+import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 
 const brandColors = {
     navyDeep: '#1e3a5a',
@@ -64,6 +67,9 @@ export default function ProfileView({ userId: propUserId = null }) {
     });
 
     const { data: profiles, isLoading } = useProfileResolution(targetId, targetEmail);
+
+    const wallEmail = profiles?.user?.email || profiles?.nominee?.nominee_email;
+    const { entries: wallEntries, submit: submitWallEntry, approve: approveWallEntry } = useEndorsementWall(wallEmail, profiles?.nominee?.id);
 
     if (isLoading) {
         return (
@@ -147,11 +153,11 @@ export default function ProfileView({ userId: propUserId = null }) {
                                 </button>
                             </Link>
                         )}
-                        <img
+                        <LaurelAvatar
                                 src={displayAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&size=128&background=random`}
-                                className="w-32 h-32 rounded-full border-4 mx-auto mb-4 object-cover"
-                                style={{ borderColor: brandColors.cream }}
                                 alt={displayName}
+                                size={128}
+                                designation={nominee ? (['winner', 'finalist'].includes(nominee.status) ? 'alumni' : 'nominee') : null}
                             />
                             <h1 className="text-2xl font-bold mb-1" style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', serif" }}>{displayName}</h1>
                             {(user?.handle || nominee?.handle) && (
@@ -249,6 +255,21 @@ export default function ProfileView({ userId: propUserId = null }) {
                         {(nominee || (user?.custom_card_stats?.length > 0)) && (
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
                                 <ShareableProfileCard user={user} nominee={nominee} readOnly />
+                            </motion.div>
+                        )}
+
+                        {/* Endorsement Wall — attributed peer endorsements */}
+                        {wallEmail && (
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                                <EndorsementWall
+                                    entries={wallEntries}
+                                    isOwner={!!viewer && viewer.email === wallEmail}
+                                    canWrite={!!viewer && viewer.email !== wallEmail}
+                                    isAdmin={viewer?.role === 'admin'}
+                                    accent={brandColors.goldPrestige}
+                                    onSubmit={(body) => submitWallEntry(body, viewer)}
+                                    onApprove={approveWallEntry}
+                                />
                             </motion.div>
                         )}
 

@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react';
-import { User } from '@/entities/User';
+import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Loader2, Download, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import UnifiedProfileEditor from '@/components/dashboard/UnifiedProfileEditor';
 import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
@@ -12,38 +10,62 @@ import NomineeCareerHistorySection from '@/components/profile/NomineeCareerHisto
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
 import ResearchStatsCard from '@/components/profile/ResearchStatsCard';
 import ProfileWizardLaunch from '@/components/profile/wizard/ProfileWizardLaunch';
-
-const brandColors = {
-  cream: '#faf8f5',
-  navyDeep: '#1e3a5a',
-  goldPrestige: '#c9a87c',
-};
+import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
+import FellowIdentityHeader from '@/components/fellow-home/FellowIdentityHeader';
+import TheEight from '@/components/fellow-home/TheEight';
+import EndorsementWall from '@/components/fellow-home/EndorsementWall';
+import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
+import ReturnState from '@/components/fellow-home/ReturnState';
+import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
+import { B, accentValue, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [nominee, setNominee] = useState(null);
+  const [rankings, setRankings] = useState([]);
+  const [appearances, setAppearances] = useState(0);
+  const [newSince, setNewSince] = useState(0);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
 
-  useEffect(() => {
-    loadUser();
-  }, []);
+  const { entries, approve } = useEndorsementWall(user?.email, nominee?.id);
 
-  const loadUser = async () => {
+  const loadUser = useCallback(async () => {
     try {
-      const currentUser = await User.me();
+      const currentUser = await base44.auth.me();
       setUser(currentUser);
+      if (!currentUser?.email) return;
 
-      if (currentUser?.email) {
-        const nominees = await base44.entities.Nominee.filter({ nominee_email: currentUser.email }).catch(() => []);
-        if (nominees?.length > 0) setNominee(nominees[0]);
+      const nominees = await base44.entities.Nominee.filter({ nominee_email: currentUser.email }).catch(() => []);
+      const nom = nominees?.[0] || null;
+      setNominee(nom);
+
+      const lists = await base44.entities.UserTop100List.filter({ user_email: currentUser.email }, '-updated_date', 1).catch(() => []);
+      setRankings(lists?.[0]?.rankings || []);
+
+      // Return-state signals
+      const lastSeen = currentUser?.profile_last_seen ? new Date(currentUser.profile_last_seen) : null;
+      const wall = await base44.entities.Endorsement.filter({ nominee_email: currentUser.email }, '-created_date', 50).catch(() => []);
+      setNewSince(lastSeen ? (wall || []).filter((e) => e.kind === 'authored' && new Date(e.created_date) > lastSeen).length : 0);
+
+      if (nom?.id) {
+        const others = await base44.entities.UserTop100List.list('-updated_date', 200).catch(() => []);
+        setAppearances(
+          (others || []).filter(
+            (l) => l.user_email !== currentUser.email && (l.rankings || []).slice(0, 8).some((r) => r.nominee_id === nom.id)
+          ).length
+        );
       }
+      base44.auth.updateMe({ profile_last_seen: new Date().toISOString() }).catch(() => {});
     } catch (error) {
       console.error('Error loading user:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => { loadUser(); }, [loadUser]);
 
   const handleExportData = async () => {
     setExporting(true);
@@ -67,26 +89,70 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: brandColors.cream }}>
-        <Loader2 className="w-10 h-10 animate-spin" style={{ color: brandColors.goldPrestige }} />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: B.cream }}>
+        <Loader2 className="w-10 h-10 animate-spin" style={{ color: B.gold }} />
       </div>
     );
   }
 
+  const accent = accentValue(user?.accent_color);
+  const order = orderedModules(user?.module_order);
+
+  const savePersonalization = async (patch) => {
+    setUser((u) => ({ ...u, ...patch }));
+    await base44.auth.updateMe(patch);
+  };
+
+  const fellowModules = {
+    eight: <TheEight key="eight" rankings={rankings} isOwner accent={accent} />,
+    wall: (
+      <EndorsementWall
+        key="wall"
+        entries={entries}
+        isOwner
+        canWrite={false}
+        isAdmin={user?.role === 'admin'}
+        accent={accent}
+        onSubmit={() => {}}
+        onApprove={approve}
+      />
+    ),
+  };
+
   return (
-    <div className="min-h-screen overflow-x-hidden sf-pro" style={{ background: brandColors.cream }}>
-      <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto">
-        <div className="flex justify-end mb-4">
+    <div className="min-h-screen overflow-x-hidden sf-pro" style={{ background: B.cream }}>
+      <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
+        {/* Identity — the home surface starts with who you are */}
+        <FellowIdentityHeader
+          user={user}
+          nominee={nominee}
+          accent={accent}
+          isOwner
+          onEditIdentity={() => setWizardOpen(true)}
+        />
+
+        <ReturnState
+          newEndorsements={newSince}
+          appearances={appearances}
+          emptySlots={8 - Math.min(8, rankings.length)}
+          accent={accent}
+        />
+
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <Link
             to={`/ProfileView?user=${encodeURIComponent(user?.email || '')}`}
             className="flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity"
-            style={{ color: brandColors.navyDeep }}
+            style={{ color: B.navy }}
           >
             <ExternalLink className="w-4 h-4" />
             View Public Profile
           </Link>
+          <PersonalizationBar user={user} order={order} accent={accent} onChange={savePersonalization} />
         </div>
+
         <ProfileWizardLaunch user={user} nominee={nominee} onSaved={loadUser} />
+
+        {order.map((key) => fellowModules[key])}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* LEFT COLUMN - Profile Editor */}
@@ -94,7 +160,7 @@ export default function Profile() {
             <UnifiedProfileEditor user={user} />
           </div>
 
-          {/* RIGHT COLUMN - Gamification + Shareable Card + Nominee sections */}
+          {/* RIGHT COLUMN - Shareable Card + Nominee sections */}
           <div className="space-y-6">
             <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
             <ResearchStatsCard nominee={nominee} user={user} onNomineeUpdate={setNominee} onUserUpdate={setUser} />
@@ -125,9 +191,17 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Sticky bottom dock — new HomeDock (replaces Comms layout dock/footer) */}
       <div className="h-28" />
       <HomeDock />
+
+      {wizardOpen && (
+        <ProfileWizard
+          user={user}
+          nominee={nominee}
+          onClose={() => setWizardOpen(false)}
+          onSaved={loadUser}
+        />
+      )}
     </div>
   );
 }
