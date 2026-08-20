@@ -15,6 +15,7 @@ Allow: /artemis-mission-brief
 Allow: /community-round
 Allow: /star-summit
 Allow: /ground-control
+Allow: /governance
 Allow: /terms
 Allow: /PrivacyPolicy
 

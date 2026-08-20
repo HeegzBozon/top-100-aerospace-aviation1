@@ -1,4 +1,3 @@
-
 const brandColors = {
   navyDeep: '#1e3a5a',
   goldPrestige: '#c9a87c',
@@ -10,7 +9,7 @@ const footerLinks = [
   { label: 'Categories', modalType: 'categories' },
   { label: 'Sponsors', modalType: 'sponsors' },
   { label: 'Press', modalType: 'press' },
-  { label: 'Governance', modalType: 'governance' },
+  { label: 'Governance', href: '/governance' },
   { label: 'Contact', modalType: 'contact' },
 ];
 
@@ -44,7 +43,16 @@ export default function LandingFooter({ onFooterLinkClick }) {
 
           {/* Links */}
            <nav className="flex flex-wrap items-center justify-center gap-6">
-             {footerLinks.map((link) => (
+             {footerLinks.map((link) => link.href ? (
+               <a
+                 key={link.label}
+                 href={link.href}
+                 className="hover:text-white transition-colors text-sm"
+                 style={{ fontFamily: "'Montserrat', sans-serif", color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}
+               >
+                 {link.label}
+               </a>
+             ) : (
                <button
                  key={link.label}
                  onClick={() => onFooterLinkClick(link.modalType)}
