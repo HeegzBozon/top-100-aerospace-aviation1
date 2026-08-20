@@ -1,7 +1,7 @@
 import { BadgeCheck, MapPin, Pencil } from 'lucide-react';
 import { B, coverUrl } from './fellowHomeConfig';
 
-export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory }) {
+export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent }) {
   const cover = coverUrl(coverKey !== undefined ? coverKey : user?.cover_key);
   const story = sixWordStory || user?.six_word_story;
   const avatar = user?.avatar_url || nominee?.avatar_url;
@@ -10,16 +10,23 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
 
   return (
     <header className="rounded-3xl overflow-hidden" style={{ background: '#fff', border: `1px solid ${B.border}` }}>
-      {/* Cover — expressive, but structurally subordinate */}
-      <div
-        className="h-32 sm:h-44 relative"
-        style={{
-          background: cover ? `url(${cover}) center/cover` : `linear-gradient(120deg, ${B.navyDeep}, ${B.navy})`,
-        }}
-      >
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(22,41,63,0.15), rgba(22,41,63,0.65))' }} />
-        <div className="absolute left-0 right-0 bottom-0 h-[3px]" style={{ background: accent }} />
-      </div>
+      {/* Cover slot — season state takes the space when supplied */}
+      {coverContent ? (
+        <div className="relative pb-10 sm:pb-12" style={{ background: B.navyDeep }}>
+          {coverContent}
+          <div className="absolute left-0 right-0 bottom-0 h-[3px]" style={{ background: accent }} />
+        </div>
+      ) : (
+        <div
+          className="h-32 sm:h-44 relative"
+          style={{
+            background: cover ? `url(${cover}) center/cover` : `linear-gradient(120deg, ${B.navyDeep}, ${B.navy})`,
+          }}
+        >
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(22,41,63,0.15), rgba(22,41,63,0.65))' }} />
+          <div className="absolute left-0 right-0 bottom-0 h-[3px]" style={{ background: accent }} />
+        </div>
+      )}
 
       <div className="px-5 sm:px-8 pb-7">
         <div className="flex items-end gap-4 -mt-10 sm:-mt-12">

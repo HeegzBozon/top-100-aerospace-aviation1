@@ -208,6 +208,7 @@ export default function Profile() {
           coverKey={settings?.cover_asset_id}
           sixWordStory={settings?.six_word_story || user?.six_word_story}
           onEditIdentity={() => setWizardOpen(true)}
+          coverContent={<SeasonPulse inCover />}
         />
 
         {/* Position 2 — locked. Present and quiet. */}
@@ -237,8 +238,6 @@ export default function Profile() {
               accent={accent}
               onAcknowledge={events.length ? acknowledgeActivity : null}
             />
-
-            <SeasonPulse />
 
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <Link
