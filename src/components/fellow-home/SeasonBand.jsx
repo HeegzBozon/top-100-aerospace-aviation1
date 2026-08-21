@@ -4,7 +4,6 @@ import SeasonCountdown from '@/components/fellow-home/season/SeasonCountdown';
 import NomineeTally from '@/components/fellow-home/season/NomineeTally';
 import YearProgressRule from '@/components/fellow-home/season/YearProgressRule';
 import MonthCalendar from '@/components/fellow-home/season/MonthCalendar';
-import WeatherWidget from '@/components/fellow-home/season/WeatherWidget';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // Season state, staged as an editorial masthead band rather than the
@@ -27,14 +26,13 @@ export default function SeasonBand({ accent }) {
           style={{ borderColor: `${B.navy}14` }}
         >
           <YearProgressRule accent={accent} />
-          <div className="mt-3 pt-3 border-t space-y-2.5" style={{ borderColor: `${B.navy}14` }}>
+          <div className="mt-3 pt-3 border-t" style={{ borderColor: `${B.navy}14` }}>
             <MonthCalendar accent={accent} />
-            <WeatherWidget accent={accent} />
           </div>
         </div>
       </div>
 
-      <div className="mt-6 flex items-center gap-5 flex-wrap">
+      <div className="mt-2.5 flex items-center gap-5 flex-wrap">
         <Link
           to="/nominate"
           className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70"
