@@ -1,8 +1,9 @@
 import { BadgeCheck, MapPin, Plus } from 'lucide-react';
+import StatusPicker from './StatusPicker';
 import { B, coverUrl } from './fellowHomeConfig';
 import FellowIdentityActions from './FellowIdentityActions';
 
-export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent, publicPath, hasStory, onAvatarTap, clusterContent, blurbsContent }) {
+export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent, publicPath, hasStory, onAvatarTap, clusterContent, blurbsContent, statusKey, savingStatus, onStatusChange }) {
   const cover = coverUrl(coverKey !== undefined ? coverKey : user?.cover_key);
   const avatar = user?.avatar_url || nominee?.avatar_url;
   const name = user?.full_name || nominee?.name || 'Unnamed Fellow';
@@ -108,6 +109,15 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
                   publicPath={publicPath}
                   accent={accent}
                   onEdit={onEditIdentity}
+                  statusSlot={
+                    <StatusPicker
+                      compact
+                      statusKey={statusKey}
+                      accent={accent}
+                      saving={savingStatus}
+                      onChange={onStatusChange}
+                    />
+                  }
                 />
               )}
             </div>

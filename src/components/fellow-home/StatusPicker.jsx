@@ -3,7 +3,7 @@ import { Check, Loader2 } from 'lucide-react';
 import { FELLOW_STATUSES, statusByKey } from '@/components/fellow-home/fellowStatuses';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
-export default function StatusPicker({ statusKey, accent, saving, onChange }) {
+export default function StatusPicker({ statusKey, accent, saving, onChange, compact }) {
   const [open, setOpen] = useState(false);
   const current = statusByKey(statusKey);
 
@@ -11,7 +11,7 @@ export default function StatusPicker({ statusKey, accent, saving, onChange }) {
     <div>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-2 text-left rounded-lg px-2.5 py-2 transition-colors hover:bg-black/[0.03]"
+        className={`flex items-center gap-2 text-left rounded-lg px-2.5 py-2 transition-colors hover:bg-black/[0.03] ${compact ? '' : 'w-full'}`}
         style={{ border: `1px solid ${B.navy}14` }}
       >
         <span className="text-lg leading-none">{current?.glyph || '☆'}</span>

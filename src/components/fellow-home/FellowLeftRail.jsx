@@ -6,7 +6,6 @@ import AnnouncementsRail from '@/components/fellow-home/AnnouncementsRail';
 import CommunityBulletinsRail from '@/components/fellow-home/CommunityBulletinsRail';
 import ConnectionsRail from '@/components/fellow-home/ConnectionsRail';
 import EndorsementWall from '@/components/fellow-home/EndorsementWall';
-import StatusPicker from '@/components/fellow-home/StatusPicker';
 import FellowStatsBox from '@/components/fellow-home/FellowStatsBox';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
@@ -45,15 +44,6 @@ export default function FellowLeftRail({
 
   return (
     <div className="space-y-4">
-      <RailBlock title="Your status" accent={accent}>
-        <StatusPicker
-          statusKey={statusKey}
-          accent={accent}
-          saving={savingStatus}
-          onChange={onStatusChange}
-        />
-      </RailBlock>
-
       <AnnouncementsRail accent={accent} />
 
       <CommunityBulletinsRail user={user} accent={accent} />

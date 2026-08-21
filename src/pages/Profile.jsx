@@ -206,6 +206,9 @@ export default function Profile() {
           sixWordStory={settings?.six_word_story || user?.six_word_story}
           onEditIdentity={() => setWizardOpen(true)}
           publicPath={publicPath}
+          statusKey={settings?.status_key}
+          savingStatus={savingStatus}
+          onStatusChange={saveStatus}
           coverContent={
             <SeasonBand
               accent={accent}
