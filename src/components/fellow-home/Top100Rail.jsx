@@ -47,7 +47,7 @@ export default function Top100Rail({ rankings, groups = [], onOpen, accent }) {
     <section className="rounded-2xl overflow-hidden" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
       <div className="px-5 py-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${B.border}` }}>
         <h2 className="text-sm font-bold uppercase tracking-[0.16em]" style={{ color: B.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>My TOP 100</h2>
-        <span className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: B.muted }}>{rankings.length} named</span>
+        <Link to="/nominate" className="text-[10px] font-semibold uppercase tracking-[0.14em] hover:opacity-70" style={{ color: accent }}>Refine</Link>
       </div>
       <div className="px-5 py-4 flex gap-4 overflow-x-auto scrollbar-hide">
         {rankings.map((r) => {
