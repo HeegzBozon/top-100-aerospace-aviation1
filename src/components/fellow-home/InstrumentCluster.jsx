@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Clapperboard, Newspaper, ListOrdered } from 'lucide-react';
 import StoriesBar from '@/components/fellow-home/StoriesBar';
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
@@ -19,9 +18,11 @@ function Tab({ active, onClick, icon: Icon, label, accent }) {
 }
 
 // The masthead's instrument cluster: My TOP 100 (default), Stories, In the News.
-export default function InstrumentCluster({ user, nominee, accent, groups = [], onOpen, onAdd, top100 = [] }) {
+// Tab state is owned by the page (persisted in the URL) so it survives navigation.
+export default function InstrumentCluster({ user, nominee, accent, groups = [], onOpen, onAdd, top100 = [], activeTab = 'top100', onTabChange, top100Loading, storiesLoading }) {
   const hasNews = !!nominee?.id;
-  const [tab, setTab] = useState('top100');
+  const tab = activeTab;
+  const setTab = onTabChange || (() => {});
 
   return (
     <div className="space-y-3">
@@ -30,8 +31,8 @@ export default function InstrumentCluster({ user, nominee, accent, groups = [], 
         <Tab active={tab === 'stories'} onClick={() => setTab('stories')} icon={Clapperboard} label="Stories" accent={accent} />
         {hasNews && <Tab active={tab === 'news'} onClick={() => setTab('news')} icon={Newspaper} label="In the News" accent={accent} />}
       </div>
-      {tab === 'top100' && <Top100Rail rankings={top100} groups={groups} onOpen={onOpen} accent={accent} />}
-      {tab === 'stories' && <StoriesBar user={user} accent={accent} groups={groups} onOpen={onOpen} onAdd={onAdd} />}
+      {tab === 'top100' && <Top100Rail rankings={top100} groups={groups} onOpen={onOpen} accent={accent} loading={top100Loading} />}
+      {tab === 'stories' && <StoriesBar user={user} accent={accent} groups={groups} onOpen={onOpen} onAdd={onAdd} loading={storiesLoading} />}
       {tab === 'news' && hasNews && <NomineeNewsSection nomineeId={nominee.id} />}
     </div>
   );

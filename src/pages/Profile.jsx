@@ -34,6 +34,17 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
 
+  // Instrument cluster tab persists in the URL so returning Fellows land where they left off.
+  const [tab, setTab] = useState(() => new URLSearchParams(window.location.search).get('tab') || 'top100');
+  const handleTabChange = (next) => {
+    setTab(next);
+    try {
+      const u = new URL(window.location.href);
+      u.searchParams.set('tab', next);
+      window.history.replaceState({}, '', u);
+    } catch {}
+  };
+
   const { entries, approve } = useEndorsementWall(user?.email, nominee?.id);
   const story = useStoryExperience(user);
   const top100 = useMyTop100(user?.email);
@@ -235,6 +246,10 @@ export default function Profile() {
               onOpen={story.openViewer}
               onAdd={story.openCreate}
               top100={top100.rankings}
+              activeTab={tab}
+              onTabChange={handleTabChange}
+              top100Loading={top100.loading}
+              storiesLoading={story.loading}
             />
           }
           blurbsContent={<MastheadEditorial oneWord={user?.one_word} sixWordStory={settings?.six_word_story || user?.six_word_story} settings={settings} user={user} accent={accent} />}

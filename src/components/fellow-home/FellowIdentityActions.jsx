@@ -15,7 +15,9 @@ export default function FellowIdentityActions({ user, publicPath, accent, onEdit
 
   return (
     <div className="flex items-center gap-3 flex-wrap justify-end">
-      <StatusPicker statusKey={statusKey} accent={accent} saving={savingStatus} onChange={onStatusChange} compact />
+      <div className="w-full md:w-auto md:flex md:justify-end">
+        <StatusPicker statusKey={statusKey} accent={accent} saving={savingStatus} onChange={onStatusChange} compact />
+      </div>
       {!complete && (
         <div className="flex items-center gap-2">
           <div className="h-1 rounded-full w-20" style={{ background: B.border }}>

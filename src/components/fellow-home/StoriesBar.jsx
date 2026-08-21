@@ -18,7 +18,25 @@ function avatar(src, name) {
 }
 
 // Presentational story rail. Viewer/composer state is owned by useStoryExperience.
-export default function StoriesBar({ user, accent, groups = [], onOpen, onAdd }) {
+export default function StoriesBar({ user, accent, groups = [], onOpen, onAdd, loading }) {
+  if (loading) {
+    return (
+      <section className="rounded-2xl overflow-hidden" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
+        <div className="px-5 py-3" style={{ borderBottom: `1px solid ${B.border}` }}>
+          <div className="h-3 w-20 rounded animate-pulse" style={{ background: `${B.navy}14` }} />
+        </div>
+        <div className="px-5 py-4 flex gap-4 overflow-hidden">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="flex flex-col items-center gap-1 shrink-0">
+              <div className="w-14 h-14 rounded-full animate-pulse" style={{ background: `${B.navy}10` }} />
+              <div className="h-2 w-10 rounded animate-pulse" style={{ background: `${B.navy}14` }} />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   const myGroupIdx = groups.findIndex((g) => g.author.email === user?.email);
   const others = groups.filter((g) => g.author.email !== user?.email);
 

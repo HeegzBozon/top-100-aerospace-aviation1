@@ -4,7 +4,7 @@ import { useStories } from '@/components/fellow-home/useStories';
 // Single source of truth for story state on the profile: the masthead avatar
 // ring and the in-cluster Stories tab both drive this one viewer/composer.
 export function useStoryExperience(user) {
-  const { groups, create } = useStories(user);
+  const { groups, create, loading } = useStories(user);
   const [viewerIdx, setViewerIdx] = useState(null);
   const [creating, setCreating] = useState(false);
 
@@ -25,6 +25,7 @@ export function useStoryExperience(user) {
   return {
     groups,
     create,
+    loading,
     viewerIdx,
     closeViewer,
     creating,

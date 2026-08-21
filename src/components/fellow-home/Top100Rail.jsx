@@ -19,8 +19,25 @@ function avatar(src, name) {
 }
 
 // My TOP 100 rail — each entry carries a story ring when that Fellow has a live story.
-// Mirrors the profile-avatar pattern: gradient ring = story available, tap to view.
-export default function Top100Rail({ rankings, groups = [], onOpen, accent }) {
+export default function Top100Rail({ rankings, groups = [], onOpen, accent, loading }) {
+  if (loading) {
+    return (
+      <section className="rounded-2xl overflow-hidden" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
+        <div className="px-5 py-3" style={{ borderBottom: `1px solid ${B.border}` }}>
+          <div className="h-3 w-28 rounded animate-pulse" style={{ background: `${B.navy}14` }} />
+        </div>
+        <div className="px-5 py-4 flex gap-4 overflow-hidden">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex flex-col items-center gap-1 shrink-0">
+              <div className="w-14 h-14 rounded-full animate-pulse" style={{ background: `${B.navy}10` }} />
+              <div className="h-2 w-10 rounded animate-pulse" style={{ background: `${B.navy}14` }} />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   if (!rankings.length) {
     return (
       <section className="rounded-2xl overflow-hidden" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
