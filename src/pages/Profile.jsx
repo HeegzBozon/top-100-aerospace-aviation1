@@ -252,7 +252,7 @@ export default function Profile() {
               storiesLoading={story.loading}
             />
           }
-          blurbsContent={<MastheadEditorial oneWord={user?.one_word} sixWordStory={settings?.six_word_story || user?.six_word_story} settings={settings} user={user} accent={accent} />}
+          blurbsContent={<MastheadEditorial oneWord={user?.one_word} sixWordStory={settings?.six_word_story || user?.six_word_story} settings={settings} user={user} accent={accent} onUserUpdate={setUser} onSettingsUpdate={setSettings} />}
         />
 
         {/* Retro two-column: rail left, working surface right */}
