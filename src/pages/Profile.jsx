@@ -13,6 +13,9 @@ import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
 import FellowBlurbs from '@/components/fellow-home/FellowBlurbs';
 import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
+import { useStoryExperience } from '@/components/fellow-home/useStoryExperience';
+import StoryViewer from '@/components/fellow-home/StoryViewer';
+import StoryCreate from '@/components/fellow-home/StoryCreate';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
@@ -31,6 +34,7 @@ export default function Profile() {
   const [exporting, setExporting] = useState(false);
 
   const { entries, approve } = useEndorsementWall(user?.email, nominee?.id);
+  const story = useStoryExperience(user);
 
   const loadUser = useCallback(async () => {
     try {
@@ -204,9 +208,19 @@ export default function Profile() {
           onEditIdentity={() => setWizardOpen(true)}
           publicPath={publicPath}
           coverContent={<SeasonBand accent={accent} />}
+          hasStory={story.hasStory}
+          onAvatarTap={story.onAvatarTap}
+          clusterContent={
+            <InstrumentCluster
+              user={user}
+              nominee={nominee}
+              accent={accent}
+              groups={story.groups}
+              onOpen={story.openViewer}
+              onAdd={story.openCreate}
+            />
+          }
         />
-
-        <InstrumentCluster user={user} nominee={nominee} accent={accent} />
 
         {/* Retro two-column: rail left, working surface right */}
         <div className="grid grid-cols-1 lg:grid-cols-[288px_1fr] gap-5 items-start">
@@ -269,6 +283,18 @@ export default function Profile() {
           onClose={() => setWizardOpen(false)}
           onSaved={loadUser}
         />
+      )}
+
+      {story.viewerIdx !== null && story.groups[story.viewerIdx] && (
+        <StoryViewer
+          groups={story.groups}
+          startGroupIdx={story.viewerIdx}
+          onClose={story.closeViewer}
+          viewerEmail={user?.email}
+        />
+      )}
+      {story.creating && (
+        <StoryCreate user={user} accent={accent} onCreate={story.create} onClose={story.closeCreate} />
       )}
     </div>
   );

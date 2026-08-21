@@ -18,11 +18,11 @@ function Tab({ active, onClick, icon: Icon, label, accent }) {
 }
 
 // The masthead's instrument cluster: live signal (Stories) and press (In the News), toggled.
-export default function InstrumentCluster({ user, nominee, accent }) {
+export default function InstrumentCluster({ user, nominee, accent, groups = [], onOpen, onAdd }) {
   const hasNews = !!nominee?.id;
   const [tab, setTab] = useState('stories');
 
-  if (!hasNews) return <StoriesBar user={user} accent={accent} />;
+  if (!hasNews) return <StoriesBar user={user} accent={accent} groups={groups} onOpen={onOpen} onAdd={onAdd} />;
 
   return (
     <div className="space-y-3">
@@ -30,7 +30,7 @@ export default function InstrumentCluster({ user, nominee, accent }) {
         <Tab active={tab === 'stories'} onClick={() => setTab('stories')} icon={Clapperboard} label="Stories" accent={accent} />
         <Tab active={tab === 'news'} onClick={() => setTab('news')} icon={Newspaper} label="In the News" accent={accent} />
       </div>
-      {tab === 'stories' && <StoriesBar user={user} accent={accent} />}
+      {tab === 'stories' && <StoriesBar user={user} accent={accent} groups={groups} onOpen={onOpen} onAdd={onAdd} />}
       {tab === 'news' && <NomineeNewsSection nomineeId={nominee.id} />}
     </div>
   );
