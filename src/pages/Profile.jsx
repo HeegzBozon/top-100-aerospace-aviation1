@@ -2,21 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Loader2, Download } from 'lucide-react';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
-import { syncProfileActivity } from '@/functions/syncProfileActivity';
 import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
-import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
 import FellowIdentityHeader from '@/components/fellow-home/FellowIdentityHeader';
 import TheEight from '@/components/fellow-home/TheEight';
-import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import FlightographyModule from '@/components/fellow-home/FlightographyModule';
 import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
-import ActivityStream from '@/components/fellow-home/ActivityStream';
 import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
 import FellowBlurbs from '@/components/fellow-home/FellowBlurbs';
-import StoriesBar from '@/components/fellow-home/StoriesBar';
+import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
@@ -26,9 +22,6 @@ export default function Profile() {
   const [nominee, setNominee] = useState(null);
   const [settings, setSettings] = useState(null);
   const [rankings, setRankings] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [activityLoading, setActivityLoading] = useState(true);
-  const [activityError, setActivityError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingEightVisibility, setSavingEightVisibility] = useState(false);
@@ -71,27 +64,7 @@ export default function Profile() {
     }
   }, []);
 
-  const loadActivity = useCallback(async () => {
-    setActivityLoading(true);
-    setActivityError(false);
-    try {
-      const res = await syncProfileActivity({});
-      setEvents(res?.data?.events || []);
-    } catch (error) {
-      setActivityError(true);
-    } finally {
-      setActivityLoading(false);
-    }
-  }, []);
-
   useEffect(() => { loadUser(); }, [loadUser]);
-  useEffect(() => { loadActivity(); }, [loadActivity]);
-
-  const acknowledgeActivity = async () => {
-    const ids = events.map((e) => e.id);
-    setEvents([]);
-    await Promise.all(ids.map((id) => base44.entities.ProfileActivity.update(id, { seen: true }).catch(() => {})));
-  };
 
   const savePersonalization = async (patch) => {
     const previous = settings;
@@ -204,18 +177,6 @@ export default function Profile() {
         onVisibilityChange={saveEightVisibility}
       />
     ),
-    wall: (
-      <EndorsementWall
-        key="wall"
-        entries={entries}
-        isOwner
-        canWrite={false}
-        isAdmin={user?.role === 'admin'}
-        accent={accent}
-        onSubmit={() => {}}
-        onApprove={approve}
-      />
-    ),
     flightography: (
       <FlightographyModule
         key="flightography"
@@ -245,8 +206,7 @@ export default function Profile() {
           coverContent={<SeasonBand accent={accent} />}
         />
 
-        {/* Position 2 — locked. Present and quiet. */}
-
+        <InstrumentCluster user={user} nominee={nominee} accent={accent} />
 
         {/* Retro two-column: rail left, working surface right */}
         <div className="grid grid-cols-1 lg:grid-cols-[288px_1fr] gap-5 items-start">
@@ -260,20 +220,14 @@ export default function Profile() {
               onStatusChange={saveStatus}
               viewCount={settings?.profile_view_count || 0}
               endorsementCount={entries.filter((e) => e.moderation_status === 'approved').length}
+              wallEntries={entries}
+              onApproveWall={approve}
               publicPath={publicPath}
             />
           </aside>
 
           <div className="space-y-5 min-w-0">
-            <StoriesBar user={user} accent={accent} />
             <FellowBlurbs settings={settings} user={user} accent={accent} />
-            <ActivityStream
-              loading={activityLoading}
-              error={activityError}
-              events={events}
-              accent={accent}
-              onAcknowledge={events.length ? acknowledgeActivity : null}
-            />
 
             <div className="flex items-start justify-end gap-3 flex-wrap">
               <PersonalizationBar
@@ -290,7 +244,6 @@ export default function Profile() {
             {order.map((key) => fellowModules[key])}
 
             <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
-            {nominee && <NomineeNewsSection nomineeId={nominee.id} />}
           </div>
         </div>
 

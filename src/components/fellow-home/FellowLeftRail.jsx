@@ -5,6 +5,7 @@ import RailBlock from '@/components/fellow-home/RailBlock';
 import AnnouncementsRail from '@/components/fellow-home/AnnouncementsRail';
 import CommunityBulletinsRail from '@/components/fellow-home/CommunityBulletinsRail';
 import ConnectionsRail from '@/components/fellow-home/ConnectionsRail';
+import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import StatusPicker from '@/components/fellow-home/StatusPicker';
 import FellowStatsBox from '@/components/fellow-home/FellowStatsBox';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
@@ -29,6 +30,8 @@ export default function FellowLeftRail({
   onStatusChange,
   viewCount,
   endorsementCount,
+  wallEntries,
+  onApproveWall,
   publicPath,
 }) {
   const [copied, setCopied] = useState(false);
@@ -56,6 +59,16 @@ export default function FellowLeftRail({
       <CommunityBulletinsRail user={user} accent={accent} />
 
       <ConnectionsRail user={user} accent={accent} />
+
+      <EndorsementWall
+        entries={wallEntries || []}
+        isOwner
+        canWrite={false}
+        isAdmin={user?.role === 'admin'}
+        accent={accent}
+        onSubmit={() => {}}
+        onApprove={onApproveWall}
+      />
 
       <RailBlock title="The record" accent={accent}>
         <FellowStatsBox

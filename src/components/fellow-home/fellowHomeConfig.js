@@ -41,7 +41,6 @@ export const LOCKED_MODULES = [
 
 export const MODULES = [
   { key: 'eight', label: 'The Eight' },
-  { key: 'wall', label: 'Endorsements' },
   { key: 'flightography', label: 'Flightography' },
 ];
 
