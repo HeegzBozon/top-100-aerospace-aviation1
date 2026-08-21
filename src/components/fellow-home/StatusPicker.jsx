@@ -3,26 +3,30 @@ import { Check, Loader2 } from 'lucide-react';
 import { FELLOW_STATUSES, statusByKey } from '@/components/fellow-home/fellowStatuses';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
-export default function StatusPicker({ statusKey, accent, saving, onChange, compact }) {
+export default function StatusPicker({ statusKey, accent, saving, onChange, compact, centered }) {
   const [open, setOpen] = useState(false);
   const current = statusByKey(statusKey);
 
+  const buttonClass = centered
+    ? 'flex items-center gap-2 justify-center rounded-full px-5 py-2.5 transition-colors hover:bg-black/[0.04]'
+    : `flex items-center gap-2 text-left rounded-lg px-2.5 py-2 transition-colors hover:bg-black/[0.03] ${compact ? '' : 'w-full'}`;
+
   return (
-    <div>
+    <div className={centered ? 'flex flex-col items-center w-full' : ''}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`flex items-center gap-2 text-left rounded-lg px-2.5 py-2 transition-colors hover:bg-black/[0.03] ${compact ? '' : 'w-full'}`}
-        style={{ border: `1px solid ${B.navy}14` }}
+        className={buttonClass}
+        style={{ border: `1px solid ${B.navy}${centered ? '1f' : '14'}` }}
       >
         <span className="text-lg leading-none">{current?.glyph || '☆'}</span>
-        <span className="flex-1 text-sm font-medium" style={{ color: current ? B.navy : '#8b95a1' }}>
+        <span className={`text-sm font-medium ${centered ? '' : 'flex-1'}`} style={{ color: current ? B.navy : '#8b95a1' }}>
           {current?.label || 'Set your status'}
         </span>
         {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: accent }} />}
       </button>
 
       {open && (
-        <div className="mt-2 grid grid-cols-1 gap-1">
+        <div className={`mt-2 grid grid-cols-1 gap-1 ${centered ? 'w-full max-w-xs' : ''}`}>
           {FELLOW_STATUSES.map((s) => (
             <button
               key={s.key}

@@ -109,20 +109,23 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
                   publicPath={publicPath}
                   accent={accent}
                   onEdit={onEditIdentity}
-                  statusSlot={
-                    <StatusPicker
-                      compact
-                      statusKey={statusKey}
-                      accent={accent}
-                      saving={savingStatus}
-                      onChange={onStatusChange}
-                    />
-                  }
                 />
               )}
             </div>
           )}
         </div>
+
+        {isOwner && (
+          <div className="mt-5 flex justify-center">
+            <StatusPicker
+              centered
+              statusKey={statusKey}
+              accent={accent}
+              saving={savingStatus}
+              onChange={onStatusChange}
+            />
+          </div>
+        )}
 
         {/* Instrument cluster — stories and press live inside the masthead */}
         {clusterContent && (
