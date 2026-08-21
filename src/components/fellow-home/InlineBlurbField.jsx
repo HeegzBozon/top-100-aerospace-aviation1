@@ -26,7 +26,7 @@ export default function InlineBlurbField({ value, emptyLabel, accent, multiline 
   if (editing) {
     const Input = multiline ? 'textarea' : 'input';
     return (
-      <div className="w-full md:w-72 space-y-2 md:mx-auto">
+      <div className="w-72 space-y-2">
         <Input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}

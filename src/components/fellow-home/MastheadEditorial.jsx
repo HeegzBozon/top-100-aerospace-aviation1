@@ -35,7 +35,7 @@ export default function MastheadEditorial({ oneWord, sixWordStory, settings, use
   };
 
   return (
-    <div className="flex flex-col gap-4 md:items-center md:text-center">
+    <div className="flex flex-row flex-wrap gap-3 md:justify-center md:items-center">
       {/* One word — the artistic anchor of the cluster */}
       <InlineBlurbField
         value={oneWord}
@@ -77,7 +77,7 @@ export default function MastheadEditorial({ oneWord, sixWordStory, settings, use
         maxLength={ABOUT_MAX}
         onSave={saveAbout}
       >
-        <p className="text-sm leading-relaxed whitespace-pre-wrap md:max-w-xs md:mx-auto" style={{ color: B.navy }}>{about}</p>
+        <p className="text-sm leading-relaxed whitespace-pre-wrap max-w-xs text-left" style={{ color: B.navy }}>{about}</p>
       </InlineBlurbField>
     </div>
   );
