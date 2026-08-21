@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Megaphone, Loader2, Send, X } from 'lucide-react';
+import { Megaphone, Loader2, Send, X, Pencil, Check } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import { Textarea } from '@/components/ui/textarea';
 import { useMyConnections } from '@/components/fellow-home/useConnections';
@@ -47,6 +47,12 @@ export default function BulletinsModule({ user, accent }) {
   const [body, setBody] = useState('');
   const [posting, setPosting] = useState(false);
 
+  // Edit state (CRUD)
+  const [editingId, setEditingId] = useState(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editBody, setEditBody] = useState('');
+  const [saving, setSaving] = useState(false);
+
   const emailsKey = emails.join(',');
 
   const load = async () => {
@@ -55,7 +61,7 @@ export default function BulletinsModule({ user, accent }) {
     setError(false);
     try {
       const res = await base44.entities.Bulletin.filter({ author_email: { $in: emails } }, '-created_date', 30);
-      setBulletins(res || []);
+      setBulletins((res || []).filter((b) => b.scope !== 'platform'));
     } catch {
       setError(true);
     } finally {
@@ -67,10 +73,14 @@ export default function BulletinsModule({ user, accent }) {
 
   useEffect(() => {
     const unsub = base44.entities.Bulletin.subscribe((event) => {
+      if (event.data?.scope === 'platform') return;
       if (event.type === 'create') {
         if (emails.includes(event.data?.author_email)) {
           setBulletins((b) => [event.data, ...b].slice(0, 30));
         }
+      }
+      if (event.type === 'update') {
+        setBulletins((b) => b.map((x) => (x.id === event.data?.id ? event.data : x)));
       }
       if (event.type === 'delete') {
         setBulletins((b) => b.filter((x) => x.id !== event.data?.id));
@@ -87,6 +97,7 @@ export default function BulletinsModule({ user, accent }) {
         author_email: user.email,
         author_name: user.full_name,
         author_avatar_url: user.avatar_url || '',
+        scope: 'network',
         title: title.trim().slice(0, 120),
         body: body.trim().slice(0, 1000),
       });
@@ -96,6 +107,27 @@ export default function BulletinsModule({ user, accent }) {
     } catch {
     } finally {
       setPosting(false);
+    }
+  };
+
+  const startEdit = (b) => {
+    setEditingId(b.id);
+    setEditTitle(b.title || '');
+    setEditBody(b.body || '');
+  };
+
+  const saveEdit = async () => {
+    if (!editTitle.trim() && !editBody.trim()) return;
+    setSaving(true);
+    try {
+      await base44.entities.Bulletin.update(editingId, {
+        title: editTitle.trim().slice(0, 120),
+        body: editBody.trim().slice(0, 1000),
+      });
+      setEditingId(null);
+    } catch {
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -159,17 +191,46 @@ export default function BulletinsModule({ user, accent }) {
             <article key={b.id} className="group flex gap-3 pb-3" style={{ borderBottom: `1px solid ${B.border}` }}>
               <Avatar src={b.author_avatar_url} name={b.author_name} />
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-2 mb-0.5">
-                  <span className="text-xs font-semibold truncate" style={{ color: B.navy }}>{b.author_name || 'Fellow'}</span>
-                  <span className="text-[10px] uppercase tracking-wider shrink-0" style={{ color: B.muted }}>{timeAgo(b.created_date)}</span>
-                </div>
-                {b.title && <h3 className="text-sm font-bold mb-0.5" style={{ color: B.navy }}>{b.title}</h3>}
-                {b.body && <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: B.navy }}>{b.body}</p>}
+                {editingId === b.id ? (
+                  <div className="space-y-2">
+                    <input
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      placeholder="Subject"
+                      maxLength={120}
+                      className="w-full text-sm font-semibold bg-transparent outline-none"
+                      style={{ color: B.navy }}
+                    />
+                    <Textarea value={editBody} onChange={(e) => setEditBody(e.target.value)} maxLength={1000} rows={3} className="text-sm" />
+                    <div className="flex items-center justify-end gap-2">
+                      <button onClick={() => setEditingId(null)} disabled={saving} className="text-xs font-semibold uppercase tracking-[0.14em] flex items-center gap-1 hover:opacity-70" style={{ color: B.muted }}>
+                        <X className="w-3.5 h-3.5" /> Cancel
+                      </button>
+                      <button onClick={saveEdit} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.14em] text-white disabled:opacity-60" style={{ background: B.navy }}>
+                        {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />} Save
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                      <span className="text-xs font-semibold truncate" style={{ color: B.navy }}>{b.author_name || 'Fellow'}</span>
+                      <span className="text-[10px] uppercase tracking-wider shrink-0" style={{ color: B.muted }}>{timeAgo(b.created_date)}</span>
+                    </div>
+                    {b.title && <h3 className="text-sm font-bold mb-0.5" style={{ color: B.navy }}>{b.title}</h3>}
+                    {b.body && <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: B.navy }}>{b.body}</p>}
+                  </>
+                )}
               </div>
-              {isOwn(b) && (
-                <button onClick={() => remove(b.id)} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 self-start" style={{ color: B.muted }}>
-                  <X className="w-3.5 h-3.5" />
-                </button>
+              {isOwn(b) && editingId !== b.id && (
+                <div className="flex flex-col gap-1 shrink-0 self-start opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => startEdit(b)} style={{ color: B.muted }} className="hover:opacity-70">
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                  <button onClick={() => remove(b.id)} style={{ color: B.muted }} className="hover:opacity-70">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               )}
             </article>
           ))

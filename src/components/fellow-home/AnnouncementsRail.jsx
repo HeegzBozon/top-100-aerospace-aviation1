@@ -1,32 +1,62 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CalendarDays, Vote, Sparkles } from 'lucide-react';
+import { Megaphone, ArrowRight, Loader2 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import RailBlock from '@/components/fellow-home/RailBlock';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
-// Curated institutional announcements — season-relevant, never free text.
-const ITEMS = [
-  { id: 'noms', label: 'Nominations close Sept 1', detail: 'Final days to enter', icon: CalendarDays, to: '/nominate' },
-  { id: 'vote', label: 'Season 4 voting opens', detail: 'September 15', icon: Vote, to: '/nominate' },
-  { id: 'reveal', label: 'Aura reveal', detail: 'Following cycle close', icon: Sparkles, to: '/top100-tv' },
-];
-
+// The institution's voice — platform-scoped bulletins, admin-authored.
 export default function AnnouncementsRail({ accent }) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = async () => {
+    try {
+      const res = await base44.entities.Bulletin.filter({ scope: 'platform' }, '-created_date', 6);
+      setItems(res || []);
+    } catch {
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    const unsub = base44.entities.Bulletin.subscribe((e) => {
+      if (e.data?.scope === 'platform') load();
+    });
+    return unsub;
+  }, []);
+
   return (
-    <RailBlock title="Announcements" accent={accent}>
-      <div className="space-y-2.5">
-        {ITEMS.map((a) => (
-          <Link key={a.id} to={a.to} className="block group">
-            <div className="flex items-start gap-2.5">
-              <a.icon className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: accent }} />
-              <div className="min-w-0">
-                <p className="text-[12px] font-semibold leading-snug" style={{ color: B.navy }}>{a.label}</p>
-                <p className="text-[11px] leading-snug" style={{ color: B.muted }}>{a.detail}</p>
+    <RailBlock title="Platform Bulletins" accent={accent}>
+      {loading ? (
+        <div className="flex justify-center py-2"><Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: B.muted }} /></div>
+      ) : items.length === 0 ? (
+        <p className="text-[11px] leading-snug" style={{ color: B.muted }}>No platform bulletins right now.</p>
+      ) : (
+        <div className="space-y-2.5">
+          {items.map((b) => {
+            const inner = (
+              <div className="flex items-start gap-2.5">
+                <Megaphone className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: accent }} />
+                <div className="min-w-0">
+                  {b.title && <p className="text-[12px] font-semibold leading-snug" style={{ color: B.navy }}>{b.title}</p>}
+                  {b.body && <p className="text-[11px] leading-snug" style={{ color: B.muted }}>{b.body}</p>}
+                </div>
+                {b.link && <ArrowRight className="w-3 h-3 mt-1 ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: B.muted }} />}
               </div>
-              <ArrowRight className="w-3 h-3 mt-1 ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: B.muted }} />
-            </div>
-          </Link>
-        ))}
-      </div>
+            );
+            return b.link ? (
+              <Link key={b.id} to={b.link} className="block group">{inner}</Link>
+            ) : (
+              <div key={b.id} className="group">{inner}</div>
+            );
+          })}
+        </div>
+      )}
     </RailBlock>
   );
 }

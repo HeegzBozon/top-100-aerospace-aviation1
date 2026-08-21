@@ -4,7 +4,7 @@
   "properties": {
     "author_email": {
       "type": "string",
-      "description": "Email of the Fellow who posted the bulletin"
+      "description": "Email of the Fellow who posted the bulletin. Platform bulletins use the 'platform' sentinel."
     },
     "author_name": {
       "type": "string",
@@ -14,6 +14,15 @@
       "type": "string",
       "description": "Author avatar URL"
     },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "platform",
+        "network"
+      ],
+      "default": "network",
+      "description": "'platform' = institutional announcement (admin-only). 'network' = Fellow-authored bulletin."
+    },
     "title": {
       "type": "string",
       "description": "Bulletin subject line, max 120 characters"
@@ -21,9 +30,54 @@
     "body": {
       "type": "string",
       "description": "Bulletin body, max 1000 characters"
+    },
+    "link": {
+      "type": "string",
+      "description": "Optional CTA route for platform bulletins (e.g. /nominate)"
     }
   },
   "required": [
     "author_email"
-  ]
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "$or": [
+        {
+          "data.scope": {
+            "$ne": "platform"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }
