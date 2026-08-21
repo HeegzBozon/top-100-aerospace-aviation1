@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Sparkles, ExternalLink } from 'lucide-react';
 import { B } from './fellowHomeConfig';
+import StatusPicker from './StatusPicker';
 
 const ESSENTIALS = ['avatar_url', 'industry_role', 'one_word', 'six_word_story'];
 
 // Identity-area controls: edit the record, view it publicly, and see what is still missing.
-export default function FellowIdentityActions({ user, publicPath, accent, onEdit }) {
+export default function FellowIdentityActions({ user, publicPath, accent, onEdit, statusKey, savingStatus, onStatusChange }) {
   const filled = ESSENTIALS.filter((f) => {
     const v = user?.[f];
     return typeof v === 'boolean' ? v === true : v && String(v).trim();
@@ -14,6 +15,7 @@ export default function FellowIdentityActions({ user, publicPath, accent, onEdit
 
   return (
     <div className="flex items-center gap-3 flex-wrap justify-end">
+      <StatusPicker statusKey={statusKey} accent={accent} saving={savingStatus} onChange={onStatusChange} compact />
       {!complete && (
         <div className="flex items-center gap-2">
           <div className="h-1 rounded-full w-20" style={{ background: B.border }}>
