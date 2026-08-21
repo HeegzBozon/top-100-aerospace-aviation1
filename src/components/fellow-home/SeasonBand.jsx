@@ -27,7 +27,7 @@ export default function SeasonBand({ accent }) {
           style={{ borderColor: `${B.navy}14` }}
         >
           <YearProgressRule accent={accent} />
-          <div className="mt-5 pt-5 border-t space-y-5" style={{ borderColor: `${B.navy}14` }}>
+          <div className="mt-3 pt-3 border-t space-y-2.5" style={{ borderColor: `${B.navy}14` }}>
             <MonthCalendar accent={accent} />
             <WeatherWidget accent={accent} />
           </div>

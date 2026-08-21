@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog, MapPin } from 'lucide-react';
+import { Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // WMO weather code → icon + plain label
@@ -60,23 +60,15 @@ export default function WeatherWidget({ accent }) {
 
   if (state.status === 'loading') {
     return (
-      <div className="animate-pulse">
-        <div className="h-2 w-20 rounded mb-3" style={{ background: `${B.navy}18` }} />
-        <div className="h-7 w-24 rounded" style={{ background: `${B.navy}12` }} />
-      </div>
+      <div className="animate-pulse h-4 w-32 rounded" style={{ background: `${B.navy}14` }} />
     );
   }
 
   if (state.status === 'error') {
     return (
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: B.muted }}>
-          Conditions
-        </p>
-        <p className="text-xs" style={{ color: B.muted }}>
-          Local conditions are unavailable right now.
-        </p>
-      </div>
+      <p className="text-[10px]" style={{ color: B.muted }}>
+        Local conditions unavailable.
+      </p>
     );
   }
 
@@ -84,19 +76,14 @@ export default function WeatherWidget({ accent }) {
 
   return (
     <div>
-      <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2 flex items-center gap-1" style={{ color: B.muted }}>
-        <MapPin className="w-3 h-3" /> {state.data.name}
-      </p>
-      <div className="flex items-center gap-3">
-        <Icon className="w-8 h-8 flex-shrink-0" style={{ color: accent }} />
-        <div>
-          <p className="text-2xl font-bold leading-none tabular-nums" style={{ color: B.navy }}>
-            {state.data.temp}°
-          </p>
-          <p className="text-[11px] mt-1" style={{ color: B.muted }}>
-            {label} · {state.data.high}° / {state.data.low}°
-          </p>
-        </div>
+      <div className="flex items-center gap-2">
+        <Icon className="w-4 h-4 flex-shrink-0" style={{ color: accent }} />
+        <p className="text-sm font-bold leading-none tabular-nums" style={{ color: B.navy }}>
+          {state.data.temp}°
+        </p>
+        <p className="text-[10px] truncate" style={{ color: B.muted }}>
+          {label} · {state.data.high}°/{state.data.low}° · {state.data.name}
+        </p>
       </div>
     </div>
   );
