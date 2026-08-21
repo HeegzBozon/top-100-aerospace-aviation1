@@ -16,7 +16,7 @@ import ActivityStream from '@/components/fellow-home/ActivityStream';
 import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
 import FellowBlurbs from '@/components/fellow-home/FellowBlurbs';
-import BulletinsModule from '@/components/fellow-home/BulletinsModule';
+import StoriesBar from '@/components/fellow-home/StoriesBar';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
@@ -265,6 +265,7 @@ export default function Profile() {
           </aside>
 
           <div className="space-y-5 min-w-0">
+            <StoriesBar user={user} accent={accent} />
             <FellowBlurbs settings={settings} user={user} accent={accent} />
             <ActivityStream
               loading={activityLoading}
@@ -287,8 +288,6 @@ export default function Profile() {
 
             {/* Positions 3+ — Fellow-configured order */}
             {order.map((key) => fellowModules[key])}
-
-            <BulletinsModule user={user} accent={accent} />
 
             <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
             {nominee && <NomineeNewsSection nomineeId={nominee.id} />}

@@ -2,85 +2,50 @@
   "name": "Story",
   "type": "object",
   "properties": {
-    "title": {
+    "author_email": {
       "type": "string",
-      "description": "Story title"
+      "description": "Email of the Fellow who posted the story"
     },
-    "description": {
+    "author_name": {
       "type": "string",
-      "description": "Acceptance criteria / description"
+      "description": "Display name of the author"
     },
-    "status": {
+    "author_avatar_url": {
       "type": "string",
-      "enum": [
-        "todo",
-        "in_progress",
-        "done",
-        "blocked"
-      ],
-      "default": "todo",
-      "description": "Team-level workflow status"
+      "description": "Author avatar URL"
     },
-    "type": {
+    "media_url": {
       "type": "string",
-      "enum": [
-        "frontend",
-        "backend",
-        "design",
-        "devops"
-      ],
-      "default": "frontend",
-      "description": "Team-level category for parking lot grouping"
+      "description": "Image URL for the story frame (uploaded)"
     },
-    "horizon": {
+    "caption": {
       "type": "string",
-      "enum": [
-        "h1",
-        "h2",
-        "h3"
-      ],
-      "description": "Escape Velocity horizon: H1=Core (protect & extend), H2=Growth (build & scale), H3=Future (explore & incubate)"
-    },
-    "story_points": {
-      "type": "number",
-      "default": 0,
-      "description": "Story points for effort estimation"
-    },
-    "assignee_email": {
-      "type": "string",
-      "description": "Email of the team member assigned to this story"
-    },
-    "roadmap_item_id": {
-      "type": "string",
-      "description": "ID of the parent RoadmapItem (Epic) this story belongs to"
-    },
-    "priority": {
-      "type": "number",
-      "default": 0,
-      "description": "Sort priority within the parent Epic"
-    },
-    "business_value": {
-      "type": "number",
-      "description": "Business Value (1-10) for WSJF calculation"
-    },
-    "time_criticality": {
-      "type": "number",
-      "description": "Time Criticality (1-10) for WSJF calculation"
-    },
-    "risk_reduction": {
-      "type": "number",
-      "description": "Risk Reduction / Opportunity Enablement (1-10) for WSJF calculation"
-    },
-    "job_size": {
-      "type": "number",
-      "description": "Job Size / Effort (1-10) for WSJF calculation"
-    },
-    "wsjf_score": {
-      "type": "number",
-      "description": "Calculated WSJF score"
+      "description": "Optional short caption, max 200 characters"
     }
   },
   "required": [
-    "title"
-  ]
+    "author_email",
+    "media_url"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "data.author_email": "{{user.email}}"
+    },
+    "update": {
+      "data.author_email": "{{user.email}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

@@ -28,9 +28,6 @@ export default function ActivityStream({ loading, error, events, accent, onAckno
         className="rounded-2xl px-5 py-5"
         style={{ background: '#fff', border: `1px dashed ${B.border}` }}
       >
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: accent }}>
-          Since you were last here
-        </p>
         <p className="text-sm" style={{ color: B.navy }}>
           Nothing has moved on your page yet.
         </p>
@@ -43,10 +40,7 @@ export default function ActivityStream({ loading, error, events, accent, onAckno
 
   return (
     <div className="rounded-2xl px-5 py-4" style={{ background: B.navy }}>
-      <div className="flex items-center justify-between gap-3 mb-2.5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: accent }}>
-          Since you were last here
-        </p>
+      <div className="flex items-center justify-end gap-3 mb-2.5">
         {onAcknowledge && (
           <button
             onClick={onAcknowledge}
