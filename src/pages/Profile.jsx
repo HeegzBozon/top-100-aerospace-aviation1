@@ -3,7 +3,6 @@ import { base44 } from '@/api/base44Client';
 import { Loader2, Download } from 'lucide-react';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import { syncProfileActivity } from '@/functions/syncProfileActivity';
-import UnifiedProfileEditor from '@/components/dashboard/UnifiedProfileEditor';
 import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
@@ -287,7 +286,6 @@ export default function Profile() {
             {/* Positions 3+ — Fellow-configured order */}
             {order.map((key) => fellowModules[key])}
 
-            <UnifiedProfileEditor user={user} />
             <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
             {nominee && <NomineeNewsSection nomineeId={nominee.id} />}
           </div>
