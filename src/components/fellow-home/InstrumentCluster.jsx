@@ -19,16 +19,21 @@ function Tab({ active, onClick, icon: Icon, label, accent }) {
 }
 
 // The masthead's instrument cluster: My TOP 100 (default), Stories, In the News.
-export default function InstrumentCluster({ user, nominee, accent, groups = [], onOpen, onAdd, top100 = [] }) {
+export default function InstrumentCluster({ user, nominee, accent, groups = [], onOpen, onAdd, top100 = [], statusSlot }) {
   const hasNews = !!nominee?.id;
   const [tab, setTab] = useState('top100');
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-1 rounded-full p-1 w-fit" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
-        <Tab active={tab === 'top100'} onClick={() => setTab('top100')} icon={ListOrdered} label="My TOP 100" accent={accent} />
-        <Tab active={tab === 'stories'} onClick={() => setTab('stories')} icon={Clapperboard} label="Stories" accent={accent} />
-        {hasNews && <Tab active={tab === 'news'} onClick={() => setTab('news')} icon={Newspaper} label="In the News" accent={accent} />}
+      <div className="flex items-center gap-3 w-full">
+        <div className="flex items-center gap-1 rounded-full p-1 w-fit" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
+          <Tab active={tab === 'top100'} onClick={() => setTab('top100')} icon={ListOrdered} label="My TOP 100" accent={accent} />
+          <Tab active={tab === 'stories'} onClick={() => setTab('stories')} icon={Clapperboard} label="Stories" accent={accent} />
+          {hasNews && <Tab active={tab === 'news'} onClick={() => setTab('news')} icon={Newspaper} label="In the News" accent={accent} />}
+        </div>
+        {statusSlot && (
+          <div className="ml-auto w-[30%] max-w-[220px] flex justify-center">{statusSlot}</div>
+        )}
       </div>
       {tab === 'top100' && <Top100Rail rankings={top100} groups={groups} onOpen={onOpen} accent={accent} />}
       {tab === 'stories' && <StoriesBar user={user} accent={accent} groups={groups} onOpen={onOpen} onAdd={onAdd} />}

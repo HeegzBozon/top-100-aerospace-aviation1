@@ -13,6 +13,7 @@ import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
 import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
 import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
+import StatusPicker from '@/components/fellow-home/StatusPicker';
 import MastheadEditorial from '@/components/fellow-home/MastheadEditorial';
 import { useStoryExperience } from '@/components/fellow-home/useStoryExperience';
 import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
@@ -206,9 +207,6 @@ export default function Profile() {
           sixWordStory={settings?.six_word_story || user?.six_word_story}
           onEditIdentity={() => setWizardOpen(true)}
           publicPath={publicPath}
-          statusKey={settings?.status_key}
-          savingStatus={savingStatus}
-          onStatusChange={saveStatus}
           coverContent={
             <SeasonBand
               accent={accent}
@@ -235,6 +233,14 @@ export default function Profile() {
               onOpen={story.openViewer}
               onAdd={story.openCreate}
               top100={top100.rankings}
+              statusSlot={
+                <StatusPicker
+                  statusKey={settings?.status_key}
+                  accent={accent}
+                  saving={savingStatus}
+                  onChange={saveStatus}
+                />
+              }
             />
           }
           blurbsContent={<MastheadEditorial oneWord={user?.one_word} sixWordStory={settings?.six_word_story || user?.six_word_story} settings={settings} user={user} accent={accent} />}
