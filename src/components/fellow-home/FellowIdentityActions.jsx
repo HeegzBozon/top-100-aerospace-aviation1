@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Pencil, ExternalLink } from 'lucide-react';
+import { Sparkles, ExternalLink } from 'lucide-react';
 import { B } from './fellowHomeConfig';
 
 const ESSENTIALS = ['avatar_url', 'industry_role', 'one_word', 'six_word_story'];
@@ -40,10 +40,12 @@ export default function FellowIdentityActions({ user, publicPath, accent, onEdit
 
       <button
         onClick={onEdit}
-        className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full transition-opacity hover:opacity-80"
-        style={{ color: B.navy, border: `1px solid ${B.border}`, background: '#fff' }}
+        className="group flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full shadow-sm transition-all hover:shadow-md"
+        style={{ background: B.navy, color: '#fff' }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = B.gold; e.currentTarget.style.color = B.navy; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = B.navy; e.currentTarget.style.color = '#fff'; }}
       >
-        <Pencil className="w-3.5 h-3.5" /> Edit
+        <Sparkles className="w-4 h-4" /> Update
       </button>
     </div>
   );
