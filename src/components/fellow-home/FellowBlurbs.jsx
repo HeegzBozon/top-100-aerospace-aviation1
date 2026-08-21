@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 const MAX = 600;
 
-export default function FellowBlurbs({ settings, user, accent }) {
+export default function FellowBlurbs({ settings, user, accent, inline }) {
   const [about, setAbout] = useState(settings?.about_me || '');
   const [meet, setMeet] = useState(settings?.who_id_like_to_meet || '');
   const [editing, setEditing] = useState(false);
@@ -42,6 +42,49 @@ export default function FellowBlurbs({ settings, user, accent }) {
       setSaving(false);
     }
   };
+
+  // Inline with the name in the masthead — no card, editorial flow.
+  if (inline) {
+    const hasContent = Boolean(about || meet);
+    if (editing) {
+      return (
+        <div className="mt-4 max-w-2xl space-y-3">
+          <Textarea value={draftAbout} onChange={(e) => setDraftAbout(e.target.value)} maxLength={MAX} rows={3} placeholder="About me, in your own words…" className="text-sm bg-white" />
+          <Textarea value={draftMeet} onChange={(e) => setDraftMeet(e.target.value)} maxLength={MAX} rows={2} placeholder="Who I'd like to meet…" className="text-sm bg-white" />
+          <div className="flex items-center justify-end gap-2">
+            <button onClick={() => setEditing(false)} disabled={saving} className="text-xs font-semibold uppercase tracking-[0.14em] flex items-center gap-1 hover:opacity-70" style={{ color: B.muted }}>
+              <X className="w-3.5 h-3.5" /> Cancel
+            </button>
+            <button onClick={save} disabled={saving} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.14em] text-white disabled:opacity-60" style={{ background: B.navy }}>
+              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />} Save
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="mt-4 max-w-2xl space-y-2">
+        {about ? (
+          <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: B.navy }}>{about}</p>
+        ) : (
+          <button onClick={startEdit} className="text-xs italic hover:opacity-70" style={{ color: B.muted }}>
+            Write an "about me"…
+          </button>
+        )}
+        {meet && (
+          <p className="text-sm leading-relaxed" style={{ color: B.navy }}>
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: B.muted }}>Who I'd like to meet · </span>
+            {meet}
+          </p>
+        )}
+        {hasContent && (
+          <button onClick={startEdit} className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] hover:opacity-70" style={{ color: accent }}>
+            <Pencil className="w-3 h-3" /> Edit
+          </button>
+        )}
+      </div>
+    );
+  }
 
   return (
     <section className="rounded-2xl overflow-hidden" style={{ background: B.cream, border: `1px solid ${B.border}` }}>

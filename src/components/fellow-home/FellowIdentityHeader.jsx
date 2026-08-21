@@ -3,7 +3,7 @@ import { BadgeCheck, MapPin, ArrowRight, ListOrdered, Plus } from 'lucide-react'
 import { B, coverUrl } from './fellowHomeConfig';
 import FellowIdentityActions from './FellowIdentityActions';
 
-export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent, publicPath, hasStory, onAvatarTap, clusterContent }) {
+export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent, publicPath, hasStory, onAvatarTap, clusterContent, blurbsContent }) {
   const cover = coverUrl(coverKey !== undefined ? coverKey : user?.cover_key);
   const story = sixWordStory || user?.six_word_story;
   const avatar = user?.avatar_url || nominee?.avatar_url;
@@ -104,6 +104,8 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
             </div>
           </div>
         </div>
+
+        {blurbsContent}
 
         {story && (
           <p

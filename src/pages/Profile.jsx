@@ -220,6 +220,7 @@ export default function Profile() {
               onAdd={story.openCreate}
             />
           }
+          blurbsContent={<FellowBlurbs settings={settings} user={user} accent={accent} inline />}
         />
 
         {/* Retro two-column: rail left, working surface right */}
@@ -241,8 +242,6 @@ export default function Profile() {
           </aside>
 
           <div className="space-y-5 min-w-0">
-            <FellowBlurbs settings={settings} user={user} accent={accent} />
-
             <div className="flex items-start justify-end gap-3 flex-wrap">
               <PersonalizationBar
                 settings={settings}
