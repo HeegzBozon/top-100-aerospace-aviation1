@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Megaphone, Loader2, Send, X } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import { Textarea } from '@/components/ui/textarea';
+import { useMyConnections } from '@/components/fellow-home/useConnections';
 
 function timeAgo(iso) {
   if (!iso) return '';
@@ -16,7 +17,28 @@ function timeAgo(iso) {
   return `${d}d ago`;
 }
 
+function Avatar({ src, name }) {
+  return src ? (
+    <img src={src} alt={name} className="w-7 h-7 rounded-full object-cover shrink-0" />
+  ) : (
+    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold" style={{ background: `${B.navy}14`, color: B.navy }}>
+      {name?.charAt(0) || '?'}
+    </div>
+  );
+}
+
 export default function BulletinsModule({ user, accent }) {
+  const { accepted } = useMyConnections(user?.email);
+
+  // Network feed: the owner + everyone they're connected with.
+  const emails = useMemo(() => {
+    const set = new Set([user?.email].filter(Boolean));
+    (accepted || []).forEach((c) => {
+      set.add(c.requester_email === user.email ? c.recipient_email : c.requester_email);
+    });
+    return [...set];
+  }, [accepted, user?.email]);
+
   const [bulletins, setBulletins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -25,11 +47,14 @@ export default function BulletinsModule({ user, accent }) {
   const [body, setBody] = useState('');
   const [posting, setPosting] = useState(false);
 
+  const emailsKey = emails.join(',');
+
   const load = async () => {
+    if (!emails.length) return;
     setLoading(true);
     setError(false);
     try {
-      const res = await base44.entities.Bulletin.filter({ author_email: user.email }, '-created_date', 20);
+      const res = await base44.entities.Bulletin.filter({ author_email: { $in: emails } }, '-created_date', 30);
       setBulletins(res || []);
     } catch {
       setError(true);
@@ -38,16 +63,21 @@ export default function BulletinsModule({ user, accent }) {
     }
   };
 
-  useEffect(() => { if (user?.email) load(); }, [user?.email]);
+  useEffect(() => { load(); }, [emailsKey]);
 
   useEffect(() => {
-    if (!user?.email) return;
     const unsub = base44.entities.Bulletin.subscribe((event) => {
-      if (event.type === 'create') setBulletins((b) => [event.data, ...b].slice(0, 20));
-      if (event.type === 'delete') setBulletins((b) => b.filter((x) => x.id !== event.data?.id));
+      if (event.type === 'create') {
+        if (emails.includes(event.data?.author_email)) {
+          setBulletins((b) => [event.data, ...b].slice(0, 30));
+        }
+      }
+      if (event.type === 'delete') {
+        setBulletins((b) => b.filter((x) => x.id !== event.data?.id));
+      }
     });
     return unsub;
-  }, [user?.email]);
+  }, [emailsKey]);
 
   const post = async () => {
     if (!title.trim() && !body.trim()) return;
@@ -74,19 +104,15 @@ export default function BulletinsModule({ user, accent }) {
     await base44.entities.Bulletin.delete(id).catch(() => {});
   };
 
-  const name = (user?.full_name || 'Fellow').split(' ')[0];
+  const isOwn = (b) => b.author_email === user?.email;
 
   return (
     <section className="rounded-2xl overflow-hidden" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
       <div className="px-5 py-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${B.border}` }}>
         <h2 className="text-sm font-bold uppercase tracking-[0.16em] flex items-center gap-2" style={{ color: B.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
-          <Megaphone className="w-4 h-4" style={{ color: accent }} /> {name}'s Bulletins
+          <Megaphone className="w-4 h-4" style={{ color: accent }} /> Bulletins
         </h2>
-        {!composing && (
-          <button onClick={() => setComposing(true)} className="text-[11px] font-semibold uppercase tracking-[0.14em] hover:opacity-70" style={{ color: accent }}>
-            Post
-          </button>
-        )}
+        <span className="text-[11px]" style={{ color: B.muted }}>from your network</span>
       </div>
 
       <div className="px-5 py-4 space-y-3">
@@ -112,6 +138,12 @@ export default function BulletinsModule({ user, accent }) {
           </div>
         )}
 
+        {!composing && (
+          <button onClick={() => setComposing(true)} className="w-full text-left text-xs italic px-3 py-2 rounded-lg transition-colors hover:bg-black/[0.03]" style={{ color: B.muted, border: `1px dashed ${B.border}` }}>
+            Post a bulletin to your network…
+          </button>
+        )}
+
         {loading ? (
           <div className="flex justify-center py-4"><Loader2 className="w-4 h-4 animate-spin" style={{ color: B.muted }} /></div>
         ) : error ? (
@@ -120,19 +152,25 @@ export default function BulletinsModule({ user, accent }) {
           <div className="py-6 text-center">
             <Megaphone className="w-6 h-6 mx-auto mb-2 opacity-30" style={{ color: B.navy }} />
             <p className="text-xs" style={{ color: B.muted }}>No bulletins yet.</p>
-            <p className="text-[11px] mt-1" style={{ color: B.muted }}>Post a short broadcast to your community.</p>
+            <p className="text-[11px] mt-1" style={{ color: B.muted }}>Posts from you and your connections will appear here.</p>
           </div>
         ) : (
           bulletins.map((b) => (
-            <article key={b.id} className="group relative pb-3" style={{ borderBottom: `1px solid ${B.border}` }}>
-              <div className="flex items-baseline justify-between gap-3 mb-1">
-                <h3 className="text-sm font-bold" style={{ color: B.navy }}>{b.title || 'Untitled'}</h3>
-                <span className="text-[10px] uppercase tracking-wider shrink-0" style={{ color: B.muted }}>{timeAgo(b.created_date)}</span>
+            <article key={b.id} className="group flex gap-3 pb-3" style={{ borderBottom: `1px solid ${B.border}` }}>
+              <Avatar src={b.author_avatar_url} name={b.author_name} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                  <span className="text-xs font-semibold truncate" style={{ color: B.navy }}>{b.author_name || 'Fellow'}</span>
+                  <span className="text-[10px] uppercase tracking-wider shrink-0" style={{ color: B.muted }}>{timeAgo(b.created_date)}</span>
+                </div>
+                {b.title && <h3 className="text-sm font-bold mb-0.5" style={{ color: B.navy }}>{b.title}</h3>}
+                {b.body && <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: B.navy }}>{b.body}</p>}
               </div>
-              {b.body && <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: B.navy }}>{b.body}</p>}
-              <button onClick={() => remove(b.id)} className="absolute -top-1 right-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: B.muted }}>
-                <X className="w-3.5 h-3.5" />
-              </button>
+              {isOwn(b) && (
+                <button onClick={() => remove(b.id)} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 self-start" style={{ color: B.muted }}>
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </article>
           ))
         )}

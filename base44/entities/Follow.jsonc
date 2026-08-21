@@ -1,0 +1,60 @@
+{
+  "name": "Follow",
+  "type": "object",
+  "properties": {
+    "follower_email": {
+      "type": "string",
+      "description": "Email of the Fellow who follows"
+    },
+    "follower_name": {
+      "type": "string",
+      "description": "Display name of the follower, denormalized for display"
+    },
+    "follower_avatar_url": {
+      "type": "string",
+      "description": "Avatar URL of the follower, denormalized for display"
+    },
+    "following_email": {
+      "type": "string",
+      "description": "Email of the Fellow being followed"
+    },
+    "following_name": {
+      "type": "string",
+      "description": "Display name of the followed Fellow, denormalized for display"
+    },
+    "following_avatar_url": {
+      "type": "string",
+      "description": "Avatar URL of the followed Fellow, denormalized for display"
+    }
+  },
+  "required": [
+    "follower_email",
+    "following_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.follower_email": "{{user.email}}"
+        },
+        {
+          "data.following_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.follower_email": "{{user.email}}"
+    },
+    "update": {
+      "data.follower_email": "{{user.email}}"
+    },
+    "delete": {
+      "data.follower_email": "{{user.email}}"
+    }
+  }
+}

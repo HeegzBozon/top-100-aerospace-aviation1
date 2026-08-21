@@ -267,7 +267,6 @@ export default function Profile() {
 
           <div className="space-y-5 min-w-0">
             <FellowBlurbs settings={settings} user={user} accent={accent} />
-            <BulletinsModule user={user} accent={accent} />
             <ConnectionsModule user={user} accent={accent} />
             <ActivityStream
               loading={activityLoading}
@@ -290,6 +289,8 @@ export default function Profile() {
 
             {/* Positions 3+ — Fellow-configured order */}
             {order.map((key) => fellowModules[key])}
+
+            <BulletinsModule user={user} accent={accent} />
 
             <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
             {nominee && <NomineeNewsSection nomineeId={nominee.id} />}

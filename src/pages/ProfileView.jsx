@@ -20,6 +20,7 @@ import LaurelAvatar from '@/components/profile/LaurelAvatar';
 import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import ConnectButton from '@/components/fellow-home/ConnectButton';
+import FollowButton from '@/components/fellow-home/FollowButton';
 import { accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
 import { statusByKey } from '@/components/fellow-home/fellowStatuses';
 
@@ -229,6 +230,15 @@ export default function ProfileView({ userId: propUserId = null }) {
 
                             {wallEmail && (
                                 <ConnectButton
+                                    viewer={viewer}
+                                    targetEmail={wallEmail}
+                                    targetName={displayName}
+                                    targetAvatar={displayAvatar}
+                                    accent={ownerAccent}
+                                />
+                            )}
+                            {wallEmail && (
+                                <FollowButton
                                     viewer={viewer}
                                     targetEmail={wallEmail}
                                     targetName={displayName}
