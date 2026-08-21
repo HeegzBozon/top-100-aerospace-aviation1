@@ -253,7 +253,7 @@ export default function Profile() {
             </div>
 
             {/* Positions 3+ — Fellow-configured order */}
-            {order.map((key) => fellowModules[key])}
+            {order.filter((key) => key !== 'eight').map((key) => fellowModules[key])}
 
             <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
           </div>
