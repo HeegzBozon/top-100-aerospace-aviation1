@@ -15,6 +15,8 @@ import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
 import ActivityStream from '@/components/fellow-home/ActivityStream';
 import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
+import FellowBlurbs from '@/components/fellow-home/FellowBlurbs';
+import BulletinsModule from '@/components/fellow-home/BulletinsModule';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
@@ -263,6 +265,8 @@ export default function Profile() {
           </aside>
 
           <div className="space-y-5 min-w-0">
+            <FellowBlurbs settings={settings} user={user} accent={accent} />
+            <BulletinsModule user={user} accent={accent} />
             <ActivityStream
               loading={activityLoading}
               error={activityError}

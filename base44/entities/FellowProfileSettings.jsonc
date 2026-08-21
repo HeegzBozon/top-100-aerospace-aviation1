@@ -40,6 +40,14 @@
       "type": "string",
       "description": "Six word story, max 60 characters"
     },
+    "about_me": {
+      "type": "string",
+      "description": "Fellow's 'About me' blurb. Personal expression, max 600 characters."
+    },
+    "who_id_like_to_meet": {
+      "type": "string",
+      "description": "Fellow's 'Who I'd like to meet' blurb. Personal expression, max 600 characters."
+    },
     "status_key": {
       "type": "string",
       "description": "Key of a curated status from the approved status set. Never free text."

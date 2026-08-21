@@ -1,0 +1,29 @@
+{
+  "name": "Bulletin",
+  "type": "object",
+  "properties": {
+    "author_email": {
+      "type": "string",
+      "description": "Email of the Fellow who posted the bulletin"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of the author"
+    },
+    "author_avatar_url": {
+      "type": "string",
+      "description": "Author avatar URL"
+    },
+    "title": {
+      "type": "string",
+      "description": "Bulletin subject line, max 120 characters"
+    },
+    "body": {
+      "type": "string",
+      "description": "Bulletin body, max 1000 characters"
+    }
+  },
+  "required": [
+    "author_email"
+  ]
+}
