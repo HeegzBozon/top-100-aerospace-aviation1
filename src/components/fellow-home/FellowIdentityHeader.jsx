@@ -1,4 +1,5 @@
-import { BadgeCheck, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BadgeCheck, MapPin, ArrowRight, ListOrdered } from 'lucide-react';
 import { B, coverUrl } from './fellowHomeConfig';
 import FellowIdentityActions from './FellowIdentityActions';
 
@@ -10,13 +11,10 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
   const verified = nominee?.verified_status && nominee.verified_status !== 'unverified';
 
   return (
-    <header className="rounded-3xl overflow-hidden" style={{ background: '#fff', border: `1px solid ${B.border}` }}>
-      {/* Cover slot — season state takes the space when supplied */}
+    <header className="rounded-3xl overflow-hidden" style={{ background: B.sand, border: `1px solid ${B.border}` }}>
+      {/* Season state — the head of the masthead. Sand flows straight into the identity body. */}
       {coverContent ? (
-        <div className="relative pb-10 sm:pb-12" style={{ background: B.sand }}>
-          {coverContent}
-          <div className="absolute left-0 right-0 bottom-0 h-[3px]" style={{ background: accent }} />
-        </div>
+        coverContent
       ) : (
         <div
           className="h-32 sm:h-44 relative"
@@ -25,15 +23,18 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
           }}
         >
           <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(22,41,63,0.15), rgba(22,41,63,0.65))' }} />
-          <div className="absolute left-0 right-0 bottom-0 h-[3px]" style={{ background: accent }} />
         </div>
       )}
 
-      <div className="px-5 sm:px-8 pb-7">
+      {/* Hairline — the only seam between season state and identity */}
+      <div className="mx-5 sm:mx-8 h-px" style={{ background: `${B.navy}14` }} />
+
+      <div className="px-5 sm:px-8 pb-7 pt-2">
+        {/* Avatar bridges the hairline as a white inset portrait */}
         <div className="relative z-10 flex items-end gap-4 -mt-10 sm:-mt-12">
           <div
             className="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden shrink-0 flex items-center justify-center"
-            style={{ background: B.sand, border: `3px solid ${accent}`, boxShadow: '0 8px 26px rgba(22,41,63,0.18)' }}
+            style={{ background: '#fff', border: `3px solid ${accent}`, boxShadow: '0 8px 26px rgba(22,41,63,0.18)' }}
           >
             {avatar ? (
               <img src={avatar} alt={name} className="w-full h-full object-cover" />
@@ -43,15 +44,6 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
               </span>
             )}
           </div>
-
-          {isOwner && (
-            <FellowIdentityActions
-              user={user}
-              publicPath={publicPath}
-              accent={accent}
-              onEdit={onEditIdentity}
-            />
-          )}
         </div>
 
         <div className="mt-5">
@@ -98,6 +90,34 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
             )}
           </div>
         </div>
+
+        {/* One unified toolbar: season participation left, identity management right */}
+        {isOwner && (
+          <div className="mt-6 pt-4 flex items-center justify-between gap-4 flex-wrap border-t" style={{ borderColor: `${B.navy}14` }}>
+            <div className="flex items-center gap-5 flex-wrap">
+              <Link
+                to="/nominate"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70"
+                style={{ color: B.navy }}
+              >
+                Enter a nomination <ArrowRight className="w-3.5 h-3.5" style={{ color: accent }} />
+              </Link>
+              <Link
+                to="/nominate"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70"
+                style={{ color: B.navy }}
+              >
+                Refine my ballot <ListOrdered className="w-3.5 h-3.5" style={{ color: accent }} />
+              </Link>
+            </div>
+            <FellowIdentityActions
+              user={user}
+              publicPath={publicPath}
+              accent={accent}
+              onEdit={onEditIdentity}
+            />
+          </div>
+        )}
       </div>
     </header>
   );

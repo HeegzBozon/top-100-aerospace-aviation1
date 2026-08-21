@@ -13,7 +13,7 @@ export default function FellowIdentityActions({ user, publicPath, accent, onEdit
   const complete = filled === ESSENTIALS.length;
 
   return (
-    <div className="ml-auto mb-2 flex items-center gap-3 flex-wrap justify-end">
+    <div className="flex items-center gap-3 flex-wrap justify-end">
       {!complete && (
         <div className="flex items-center gap-2">
           <div className="h-1 rounded-full w-20" style={{ background: B.border }}>
