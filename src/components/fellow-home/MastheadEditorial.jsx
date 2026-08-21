@@ -36,7 +36,7 @@ export default function MastheadEditorial({ oneWord, sixWordStory, settings, use
   };
 
   return (
-    <div className="flex flex-col gap-4 md:items-end md:text-right">
+    <div className="flex flex-col gap-4 md:items-center md:text-center">
       {/* One word — the artistic anchor of the cluster */}
       {oneWord && (
         <span
@@ -59,7 +59,7 @@ export default function MastheadEditorial({ oneWord, sixWordStory, settings, use
 
       {/* About me */}
       {editing ? (
-        <div className="w-full md:w-72 space-y-2 md:ml-auto">
+        <div className="w-full md:w-72 space-y-2 md:mx-auto">
           <Textarea value={draft} onChange={(e) => setDraft(e.target.value)} maxLength={MAX} rows={3} placeholder="About me, in your own words…" className="text-sm bg-white text-left" />
           <div className="flex justify-end gap-2">
             <button onClick={() => setEditing(false)} disabled={saving} className="text-xs font-semibold uppercase tracking-[0.14em] flex items-center gap-1 hover:opacity-70" style={{ color: B.muted }}>
@@ -71,7 +71,7 @@ export default function MastheadEditorial({ oneWord, sixWordStory, settings, use
           </div>
         </div>
       ) : about ? (
-        <div className="md:max-w-xs">
+        <div className="md:max-w-xs md:mx-auto">
           <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: B.navy }}>{about}</p>
           <button onClick={startEdit} className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] hover:opacity-70" style={{ color: accent }}>
             <Pencil className="w-3 h-3" /> Edit

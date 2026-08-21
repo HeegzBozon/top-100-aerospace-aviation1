@@ -98,24 +98,27 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
             </div>
           </div>
           </div>
-
-          {(blurbsContent || isOwner) && (
-            <div className="md:ml-auto md:pb-1 md:max-w-sm w-full space-y-4">
-              {blurbsContent}
-              {isOwner && (
-                <FellowIdentityActions
-                  user={user}
-                  publicPath={publicPath}
-                  accent={accent}
-                  onEdit={onEditIdentity}
-                  statusKey={statusKey}
-                  savingStatus={savingStatus}
-                  onStatusChange={onStatusChange}
-                />
-              )}
-            </div>
-          )}
         </div>
+
+        {/* Action row — status + completeness (left) | editorial blurbs (center) | view + update (right) */}
+        {(blurbsContent || isOwner) && (
+          isOwner ? (
+            <FellowIdentityActions
+              user={user}
+              publicPath={publicPath}
+              accent={accent}
+              onEdit={onEditIdentity}
+              statusKey={statusKey}
+              savingStatus={savingStatus}
+              onStatusChange={onStatusChange}
+              blurbs={blurbsContent}
+            />
+          ) : (
+            <div className="mt-4 pt-4 border-t flex justify-center" style={{ borderColor: `${B.navy}14` }}>
+              {blurbsContent}
+            </div>
+          )
+        )}
 
         {/* Instrument cluster — stories and press live inside the masthead */}
         {clusterContent && (
