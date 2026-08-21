@@ -33,6 +33,7 @@ export default function Profile() {
   const [activityError, setActivityError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savingStatus, setSavingStatus] = useState(false);
+  const [savingEightVisibility, setSavingEightVisibility] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [wizardOpen, setWizardOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -135,6 +136,30 @@ export default function Profile() {
     }
   };
 
+  // Public visibility of the ranked positions. Expression only — never touches measurement.
+  const saveEightVisibility = async (next) => {
+    const previous = settings;
+    setSettings((s) => ({ ...s, eight_public: next }));
+    setSavingEightVisibility(true);
+    try {
+      if (settings?.id) {
+        await base44.entities.FellowProfileSettings.update(settings.id, { eight_public: next });
+      } else {
+        const created = await base44.entities.FellowProfileSettings.create({
+          fellow_email: user.email,
+          fellow_id: nominee?.id,
+          domain_accent: settings?.domain_accent,
+          eight_public: next,
+        });
+        setSettings(created);
+      }
+    } catch (error) {
+      setSettings(previous);
+    } finally {
+      setSavingEightVisibility(false);
+    }
+  };
+
   const handleExportData = async () => {
     setExporting(true);
     try {
@@ -170,7 +195,17 @@ export default function Profile() {
     : `/ProfileView?user=${encodeURIComponent(user?.email || '')}`;
 
   const fellowModules = {
-    eight: <TheEight key="eight" rankings={rankings} isOwner accent={accent} />,
+    eight: (
+      <TheEight
+        key="eight"
+        rankings={rankings}
+        isOwner
+        accent={accent}
+        isPublic={settings?.eight_public !== false}
+        savingVisibility={savingEightVisibility}
+        onVisibilityChange={saveEightVisibility}
+      />
+    ),
     wall: (
       <EndorsementWall
         key="wall"

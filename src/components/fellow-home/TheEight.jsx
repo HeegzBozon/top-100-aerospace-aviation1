@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Plus, ArrowRight } from 'lucide-react';
 import { B } from './fellowHomeConfig';
+import EightVisibilityToggle from './EightVisibilityToggle';
 
 // The Eight = the top eight positions of the Fellow's My TOP 100 ranked list.
 // Vacancy never collapses: eight positions always render.
-export default function TheEight({ rankings, isOwner, accent }) {
+export default function TheEight({ rankings, isOwner, accent, isPublic = true, savingVisibility, onVisibilityChange }) {
   const slots = Array.from({ length: 8 }, (_, i) => (rankings || [])[i] || null);
   const filled = slots.filter(Boolean).length;
 
@@ -17,6 +18,16 @@ export default function TheEight({ rankings, isOwner, accent }) {
         <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: accent }}>
           {filled} of 8 named
         </span>
+        {isOwner && onVisibilityChange && (
+          <div className="ml-auto">
+            <EightVisibilityToggle
+              isPublic={isPublic}
+              saving={savingVisibility}
+              onChange={onVisibilityChange}
+              accent={accent}
+            />
+          </div>
+        )}
       </div>
       <p className="text-sm mb-6" style={{ color: B.muted }}>
         {isOwner

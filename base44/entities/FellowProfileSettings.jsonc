@@ -49,6 +49,11 @@
       "format": "date-time",
       "description": "When the current status was set. Used to age out stale statuses."
     },
+    "eight_public": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the Fellow's My TOP 100 positions render on their public profile."
+    },
     "profile_view_count": {
       "type": "number",
       "default": 0,

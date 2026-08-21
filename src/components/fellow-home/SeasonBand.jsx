@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ListOrdered } from 'lucide-react';
 import SeasonCountdown from '@/components/fellow-home/season/SeasonCountdown';
 import NomineeTally from '@/components/fellow-home/season/NomineeTally';
 import YearProgressRule from '@/components/fellow-home/season/YearProgressRule';
@@ -28,13 +28,22 @@ export default function SeasonBand({ accent }) {
         </div>
       </div>
 
-      <Link
-        to="/nominate"
-        className="mt-6 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70"
-        style={{ color: B.navy }}
-      >
-        Enter a nomination <ArrowRight className="w-3.5 h-3.5" style={{ color: accent }} />
-      </Link>
+      <div className="mt-6 flex items-center gap-5 flex-wrap">
+        <Link
+          to="/nominate"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70"
+          style={{ color: B.navy }}
+        >
+          Enter a nomination <ArrowRight className="w-3.5 h-3.5" style={{ color: accent }} />
+        </Link>
+        <Link
+          to="/nominate"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70"
+          style={{ color: B.navy }}
+        >
+          Refine my ballot <ListOrdered className="w-3.5 h-3.5" style={{ color: accent }} />
+        </Link>
+      </div>
     </section>
   );
 }
