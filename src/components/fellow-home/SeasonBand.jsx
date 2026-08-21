@@ -8,8 +8,8 @@ import { B } from '@/components/fellow-home/fellowHomeConfig';
 // navy-glass treatment the home surface uses.
 export default function SeasonBand({ accent }) {
   return (
-    <section className="px-5 sm:px-8 pt-6 pb-7" style={{ background: B.sand }}>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0">
+    <section className="px-5 sm:px-8 pt-5 pb-5" style={{ background: B.sand }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-0">
         <div className="md:pr-7">
           <SeasonCountdown accent={accent} />
         </div>

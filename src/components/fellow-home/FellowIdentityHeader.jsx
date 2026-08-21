@@ -29,7 +29,7 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
       {/* Hairline — the only seam between season state and identity */}
       <div className="mx-5 sm:mx-8 h-px" style={{ background: `${B.navy}14` }} />
 
-      <div className="px-5 sm:px-8 pb-7 pt-2">
+      <div className="px-5 sm:px-8 pb-5 pt-1.5">
         {/* Avatar bridges the hairline as a white inset portrait */}
         <div className="relative z-10 flex items-end gap-4 -mt-10 sm:-mt-12">
           <div
@@ -46,7 +46,7 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
           </div>
         </div>
 
-        <div className="mt-5">
+        <div className="mt-4">
           <div className="flex items-center gap-2 flex-wrap">
             <h1
               className="text-3xl sm:text-5xl font-bold leading-none"
@@ -76,7 +76,7 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
             </p>
           )}
 
-          <div className="mt-4 flex items-center gap-4 flex-wrap text-xs" style={{ color: B.muted }}>
+          <div className="mt-3 flex items-center gap-4 flex-wrap text-xs" style={{ color: B.muted }}>
             {user?.one_word && (
               <span className="font-bold uppercase tracking-[0.22em]" style={{ color: accent }}>
                 {user.one_word}
@@ -93,7 +93,7 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
 
         {/* One unified toolbar: season participation left, identity management right */}
         {isOwner && (
-          <div className="mt-6 pt-4 flex items-center justify-between gap-4 flex-wrap border-t" style={{ borderColor: `${B.navy}14` }}>
+          <div className="mt-5 pt-3 flex items-center justify-between gap-4 flex-wrap border-t" style={{ borderColor: `${B.navy}14` }}>
             <div className="flex items-center gap-5 flex-wrap">
               <Link
                 to="/nominate"

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Mail, MessageSquare, Send, Inbox, Link2, Check, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import RailBlock from '@/components/fellow-home/RailBlock';
+import AnnouncementsRail from '@/components/fellow-home/AnnouncementsRail';
 import StatusPicker from '@/components/fellow-home/StatusPicker';
 import FellowStatsBox from '@/components/fellow-home/FellowStatsBox';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
@@ -47,6 +48,8 @@ export default function FellowLeftRail({
           onChange={onStatusChange}
         />
       </RailBlock>
+
+      <AnnouncementsRail accent={accent} />
 
       <RailBlock title="The record" accent={accent}>
         <FellowStatsBox
