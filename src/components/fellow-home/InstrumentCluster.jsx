@@ -9,7 +9,7 @@ function Tab({ active, onClick, icon: Icon, label, accent }) {
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.14em] transition-colors"
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.14em] transition-colors shrink-0 whitespace-nowrap"
       style={{ background: active ? B.navy : 'transparent', color: active ? '#fff' : B.muted }}
     >
       <Icon className="w-3.5 h-3.5" style={{ color: active ? '#fff' : accent }} />
@@ -25,7 +25,7 @@ export default function InstrumentCluster({ user, nominee, accent, groups = [], 
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-1 rounded-full p-1 w-fit" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
+      <div className="flex items-center gap-1 rounded-full p-1 w-fit max-w-full overflow-x-auto scrollbar-hide" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
         <Tab active={tab === 'top100'} onClick={() => setTab('top100')} icon={ListOrdered} label="My TOP 100" accent={accent} />
         <Tab active={tab === 'stories'} onClick={() => setTab('stories')} icon={Clapperboard} label="Stories" accent={accent} />
         {hasNews && <Tab active={tab === 'news'} onClick={() => setTab('news')} icon={Newspaper} label="In the News" accent={accent} />}
