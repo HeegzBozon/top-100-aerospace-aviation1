@@ -8,7 +8,6 @@ import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
 import FellowIdentityHeader from '@/components/fellow-home/FellowIdentityHeader';
-import VerificationBand from '@/components/fellow-home/VerificationBand';
 import TheEight from '@/components/fellow-home/TheEight';
 import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import FlightographyModule from '@/components/fellow-home/FlightographyModule';
@@ -245,7 +244,7 @@ export default function Profile() {
         />
 
         {/* Position 2 — locked. Present and quiet. */}
-        <VerificationBand nominee={nominee} accent={accent} />
+
 
         {/* Retro two-column: rail left, working surface right */}
         <div className="grid grid-cols-1 lg:grid-cols-[288px_1fr] gap-5 items-start">
