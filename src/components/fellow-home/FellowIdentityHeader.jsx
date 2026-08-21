@@ -5,7 +5,6 @@ import FellowIdentityActions from './FellowIdentityActions';
 
 export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent, publicPath, hasStory, onAvatarTap, clusterContent, blurbsContent }) {
   const cover = coverUrl(coverKey !== undefined ? coverKey : user?.cover_key);
-  const story = sixWordStory || user?.six_word_story;
   const avatar = user?.avatar_url || nominee?.avatar_url;
   const name = user?.full_name || nominee?.name || 'Unnamed Fellow';
   const verified = nominee?.verified_status && nominee.verified_status !== 'unverified';
@@ -31,7 +30,8 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
 
       <div className="px-5 sm:px-8 pb-5 pt-1.5">
         {/* Avatar + name inline — the portrait bridges the hairline, name sits beside it */}
-        <div className="relative z-10 flex items-end gap-4 sm:gap-5 -mt-10 sm:-mt-12">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-end gap-4 md:gap-6 -mt-10 sm:-mt-12">
+          <div className="flex items-end gap-4 md:gap-6">
           {onAvatarTap ? (
             <button
               type="button"
@@ -90,11 +90,6 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
             </div>
 
             <div className="mt-2 flex items-center gap-4 flex-wrap text-xs" style={{ color: B.muted }}>
-              {user?.one_word && (
-                <span className="font-bold uppercase tracking-[0.22em]" style={{ color: accent }}>
-                  {user.one_word}
-                </span>
-              )}
               {user?.headline && <span>{user.headline}</span>}
               {user?.location && (
                 <span className="flex items-center gap-1">
@@ -103,24 +98,14 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
               )}
             </div>
           </div>
+          </div>
+
+          {blurbsContent && (
+            <div className="md:ml-auto md:pb-1 md:max-w-sm w-full">
+              {blurbsContent}
+            </div>
+          )}
         </div>
-
-        {blurbsContent}
-
-        {story && (
-          <p
-            className="mt-4 max-w-2xl"
-            style={{
-              color: B.navy,
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontStyle: 'italic',
-              fontSize: 'clamp(17px, 3.4vw, 24px)',
-              lineHeight: 1.45,
-            }}
-          >
-            &ldquo;{story}&rdquo;
-          </p>
-        )}
 
         {/* One unified toolbar: season participation left, identity management right */}
         {isOwner && (

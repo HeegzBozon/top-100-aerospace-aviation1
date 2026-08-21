@@ -11,8 +11,8 @@ import FlightographyModule from '@/components/fellow-home/FlightographyModule';
 import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
 import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
-import FellowBlurbs from '@/components/fellow-home/FellowBlurbs';
 import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
+import MastheadEditorial from '@/components/fellow-home/MastheadEditorial';
 import { useStoryExperience } from '@/components/fellow-home/useStoryExperience';
 import StoryViewer from '@/components/fellow-home/StoryViewer';
 import StoryCreate from '@/components/fellow-home/StoryCreate';
@@ -220,7 +220,7 @@ export default function Profile() {
               onAdd={story.openCreate}
             />
           }
-          blurbsContent={<FellowBlurbs settings={settings} user={user} accent={accent} inline />}
+          blurbsContent={<MastheadEditorial oneWord={user?.one_word} sixWordStory={settings?.six_word_story || user?.six_word_story} settings={settings} user={user} accent={accent} />}
         />
 
         {/* Retro two-column: rail left, working surface right */}
