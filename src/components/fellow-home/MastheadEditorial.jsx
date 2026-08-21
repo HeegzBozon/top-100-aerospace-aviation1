@@ -77,11 +77,7 @@ export default function MastheadEditorial({ oneWord, sixWordStory, settings, use
             <Pencil className="w-3 h-3" /> Edit
           </button>
         </div>
-      ) : (
-        <button onClick={startEdit} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.14em] hover:opacity-80" style={{ color: B.navy, border: `1px solid ${B.border}`, background: 'transparent' }}>
-          <Pencil className="w-3 h-3" style={{ color: accent }} /> Update
-        </button>
-      )}
+      ) : null}
     </div>
   );
 }
