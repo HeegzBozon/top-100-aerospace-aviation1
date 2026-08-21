@@ -36,7 +36,7 @@ export default function NomineeTally({ accent }) {
             {state.count.toLocaleString()}
           </div>
           <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: accent }}>
-            In the pool
+            This season
           </p>
         </>
       )}

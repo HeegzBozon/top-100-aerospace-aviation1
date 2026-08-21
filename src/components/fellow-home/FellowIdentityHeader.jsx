@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { BadgeCheck, MapPin, ArrowRight, ListOrdered, Plus } from 'lucide-react';
+import { BadgeCheck, MapPin, Plus } from 'lucide-react';
 import { B, coverUrl } from './fellowHomeConfig';
 import FellowIdentityActions from './FellowIdentityActions';
 
@@ -100,40 +99,20 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
           </div>
           </div>
 
-          {blurbsContent && (
-            <div className="md:ml-auto md:pb-1 md:max-w-sm w-full">
+          {(blurbsContent || isOwner) && (
+            <div className="md:ml-auto md:pb-1 md:max-w-sm w-full space-y-4">
               {blurbsContent}
+              {isOwner && (
+                <FellowIdentityActions
+                  user={user}
+                  publicPath={publicPath}
+                  accent={accent}
+                  onEdit={onEditIdentity}
+                />
+              )}
             </div>
           )}
         </div>
-
-        {/* One unified toolbar: season participation left, identity management right */}
-        {isOwner && (
-          <div className="mt-5 pt-3 flex items-center justify-between gap-4 flex-wrap border-t" style={{ borderColor: `${B.navy}14` }}>
-            <div className="flex items-center gap-5 flex-wrap">
-              <Link
-                to="/nominate"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70"
-                style={{ color: B.navy }}
-              >
-                Enter a nomination <ArrowRight className="w-3.5 h-3.5" style={{ color: accent }} />
-              </Link>
-              <Link
-                to="/nominate"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70"
-                style={{ color: B.navy }}
-              >
-                Refine my ballot <ListOrdered className="w-3.5 h-3.5" style={{ color: accent }} />
-              </Link>
-            </div>
-            <FellowIdentityActions
-              user={user}
-              publicPath={publicPath}
-              accent={accent}
-              onEdit={onEditIdentity}
-            />
-          </div>
-        )}
 
         {/* Instrument cluster — stories and press live inside the masthead */}
         {clusterContent && (

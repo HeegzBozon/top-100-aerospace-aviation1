@@ -6,12 +6,13 @@ import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // Season state, staged as an editorial masthead band rather than the
 // navy-glass treatment the home surface uses.
-export default function SeasonBand({ accent }) {
+export default function SeasonBand({ accent, underCountdown }) {
   return (
     <section className="px-5 sm:px-8 pt-5 pb-5" style={{ background: B.sand }}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-0">
         <div className="md:pr-7">
           <SeasonCountdown accent={accent} />
+          {underCountdown}
         </div>
         <div
           className="md:px-7 md:border-l"
