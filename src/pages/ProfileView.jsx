@@ -19,6 +19,7 @@ import ProfileExpertiseTags from '@/components/profile/ProfileExpertiseTags';
 import LaurelAvatar from '@/components/profile/LaurelAvatar';
 import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
+import ConnectButton from '@/components/fellow-home/ConnectButton';
 import { accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
 import { statusByKey } from '@/components/fellow-home/fellowStatuses';
 
@@ -225,6 +226,16 @@ export default function ProfileView({ userId: propUserId = null }) {
                                 {startup && <Badge className="" variant="default" style={{ background: brandColors.skyBlue }}>Startup Founder</Badge>}
                                 {provider && provider.is_active && <Badge className="" variant="outline">Service Provider</Badge>}
                             </div>
+
+                            {wallEmail && (
+                                <ConnectButton
+                                    viewer={viewer}
+                                    targetEmail={wallEmail}
+                                    targetName={displayName}
+                                    targetAvatar={displayAvatar}
+                                    accent={ownerAccent}
+                                />
+                            )}
                         </motion.div>
 
 

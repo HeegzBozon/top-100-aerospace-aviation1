@@ -1,0 +1,89 @@
+{
+  "name": "Connection",
+  "type": "object",
+  "properties": {
+    "requester_email": {
+      "type": "string",
+      "description": "Email of the Fellow who sent the connection request"
+    },
+    "requester_name": {
+      "type": "string",
+      "description": "Display name of the requester, denormalized for display"
+    },
+    "requester_avatar_url": {
+      "type": "string",
+      "description": "Avatar URL of the requester, denormalized for display"
+    },
+    "recipient_email": {
+      "type": "string",
+      "description": "Email of the Fellow receiving the request"
+    },
+    "recipient_name": {
+      "type": "string",
+      "description": "Display name of the recipient, denormalized for display"
+    },
+    "recipient_avatar_url": {
+      "type": "string",
+      "description": "Avatar URL of the recipient, denormalized for display"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "declined"
+      ],
+      "default": "pending",
+      "description": "Lifecycle of the connection request"
+    },
+    "accepted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the connection was accepted"
+    }
+  },
+  "required": [
+    "requester_email",
+    "recipient_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "data.recipient_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.requester_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "data.recipient_email": "{{user.email}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "data.recipient_email": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

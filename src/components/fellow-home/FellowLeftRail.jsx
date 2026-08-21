@@ -3,6 +3,7 @@ import { Mail, MessageSquare, Send, Inbox, Link2, Check, ExternalLink } from 'lu
 import { useState } from 'react';
 import RailBlock from '@/components/fellow-home/RailBlock';
 import AnnouncementsRail from '@/components/fellow-home/AnnouncementsRail';
+import ConnectionsRail from '@/components/fellow-home/ConnectionsRail';
 import StatusPicker from '@/components/fellow-home/StatusPicker';
 import FellowStatsBox from '@/components/fellow-home/FellowStatsBox';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
@@ -50,6 +51,8 @@ export default function FellowLeftRail({
       </RailBlock>
 
       <AnnouncementsRail accent={accent} />
+
+      <ConnectionsRail user={user} accent={accent} />
 
       <RailBlock title="The record" accent={accent}>
         <FellowStatsBox
