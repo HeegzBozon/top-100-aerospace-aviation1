@@ -30,8 +30,8 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
       <div className="mx-5 sm:mx-8 h-px" style={{ background: `${B.navy}14` }} />
 
       <div className="px-5 sm:px-8 pb-5 pt-1.5">
-        {/* Avatar bridges the hairline as a white inset portrait */}
-        <div className="relative z-10 flex items-end gap-4 -mt-10 sm:-mt-12">
+        {/* Avatar + name inline — the portrait bridges the hairline, name sits beside it */}
+        <div className="relative z-10 flex items-end gap-4 sm:gap-5 -mt-10 sm:-mt-12">
           <div
             className="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden shrink-0 flex items-center justify-center"
             style={{ background: '#fff', border: `3px solid ${accent}`, boxShadow: '0 8px 26px rgba(22,41,63,0.18)' }}
@@ -44,52 +44,52 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
               </span>
             )}
           </div>
-        </div>
 
-        <div className="mt-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1
-              className="text-3xl sm:text-5xl font-bold leading-none"
-              style={{ color: B.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              {name}
-            </h1>
-            {verified && (
-              <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: B.muted }}>
-                <BadgeCheck className="w-3.5 h-3.5" /> Verified
-              </span>
-            )}
-          </div>
+          <div className="pb-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1
+                className="text-2xl sm:text-4xl font-bold leading-none"
+                style={{ color: B.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                {name}
+              </h1>
+              {verified && (
+                <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: B.muted }}>
+                  <BadgeCheck className="w-3.5 h-3.5" /> Verified
+                </span>
+              )}
+            </div>
 
-          {story && (
-            <p
-              className="mt-4 max-w-2xl"
-              style={{
-                color: B.navy,
-                fontFamily: "'Playfair Display', Georgia, serif",
-                fontStyle: 'italic',
-                fontSize: 'clamp(17px, 3.4vw, 24px)',
-                lineHeight: 1.45,
-              }}
-            >
-              &ldquo;{story}&rdquo;
-            </p>
-          )}
-
-          <div className="mt-3 flex items-center gap-4 flex-wrap text-xs" style={{ color: B.muted }}>
-            {user?.one_word && (
-              <span className="font-bold uppercase tracking-[0.22em]" style={{ color: accent }}>
-                {user.one_word}
-              </span>
-            )}
-            {user?.headline && <span>{user.headline}</span>}
-            {user?.location && (
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" /> {user.location}
-              </span>
-            )}
+            <div className="mt-2 flex items-center gap-4 flex-wrap text-xs" style={{ color: B.muted }}>
+              {user?.one_word && (
+                <span className="font-bold uppercase tracking-[0.22em]" style={{ color: accent }}>
+                  {user.one_word}
+                </span>
+              )}
+              {user?.headline && <span>{user.headline}</span>}
+              {user?.location && (
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3 h-3" /> {user.location}
+                </span>
+              )}
+            </div>
           </div>
         </div>
+
+        {story && (
+          <p
+            className="mt-4 max-w-2xl"
+            style={{
+              color: B.navy,
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontStyle: 'italic',
+              fontSize: 'clamp(17px, 3.4vw, 24px)',
+              lineHeight: 1.45,
+            }}
+          >
+            &ldquo;{story}&rdquo;
+          </p>
+        )}
 
         {/* One unified toolbar: season participation left, identity management right */}
         {isOwner && (
