@@ -13,7 +13,7 @@ import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
 import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
 import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
-import StatusPicker from '@/components/fellow-home/StatusPicker';
+import StatusComposer from '@/components/fellow-home/StatusComposer';
 import MastheadEditorial from '@/components/fellow-home/MastheadEditorial';
 import { useStoryExperience } from '@/components/fellow-home/useStoryExperience';
 import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
@@ -234,7 +234,7 @@ export default function Profile() {
               onAdd={story.openCreate}
               top100={top100.rankings}
               statusSlot={
-                <StatusPicker
+                <StatusComposer
                   statusKey={settings?.status_key}
                   accent={accent}
                   saving={savingStatus}
