@@ -1,14 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Download, ExternalLink } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Loader2, Download } from 'lucide-react';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import { syncProfileActivity } from '@/functions/syncProfileActivity';
 import UnifiedProfileEditor from '@/components/dashboard/UnifiedProfileEditor';
 import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
-import ProfileWizardLaunch from '@/components/profile/wizard/ProfileWizardLaunch';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
 import FellowIdentityHeader from '@/components/fellow-home/FellowIdentityHeader';
 import VerificationBand from '@/components/fellow-home/VerificationBand';
@@ -243,6 +241,7 @@ export default function Profile() {
           coverKey={settings?.cover_asset_id}
           sixWordStory={settings?.six_word_story || user?.six_word_story}
           onEditIdentity={() => setWizardOpen(true)}
+          publicPath={publicPath}
           coverContent={<SeasonBand accent={accent} />}
         />
 
@@ -274,15 +273,7 @@ export default function Profile() {
               onAcknowledge={events.length ? acknowledgeActivity : null}
             />
 
-            <div className="flex items-start justify-between gap-3 flex-wrap">
-              <Link
-                to={publicPath}
-                className="flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity mt-2"
-                style={{ color: B.navy }}
-              >
-                <ExternalLink className="w-4 h-4" />
-                View Public Profile
-              </Link>
+            <div className="flex items-start justify-end gap-3 flex-wrap">
               <PersonalizationBar
                 settings={settings}
                 order={order}
@@ -292,8 +283,6 @@ export default function Profile() {
                 onChange={savePersonalization}
               />
             </div>
-
-            <ProfileWizardLaunch user={user} nominee={nominee} onSaved={loadUser} />
 
             {/* Positions 3+ — Fellow-configured order */}
             {order.map((key) => fellowModules[key])}

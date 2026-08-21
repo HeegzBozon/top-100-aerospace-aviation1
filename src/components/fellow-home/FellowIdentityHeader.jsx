@@ -1,7 +1,8 @@
-import { BadgeCheck, MapPin, Pencil } from 'lucide-react';
+import { BadgeCheck, MapPin } from 'lucide-react';
 import { B, coverUrl } from './fellowHomeConfig';
+import FellowIdentityActions from './FellowIdentityActions';
 
-export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent }) {
+export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent, publicPath }) {
   const cover = coverUrl(coverKey !== undefined ? coverKey : user?.cover_key);
   const story = sixWordStory || user?.six_word_story;
   const avatar = user?.avatar_url || nominee?.avatar_url;
@@ -44,13 +45,12 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
           </div>
 
           {isOwner && (
-            <button
-              onClick={onEditIdentity}
-              className="ml-auto mb-2 flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full transition-opacity hover:opacity-80"
-              style={{ color: B.navy, border: `1px solid ${B.border}`, background: '#fff' }}
-            >
-              <Pencil className="w-3.5 h-3.5" /> Edit identity
-            </button>
+            <FellowIdentityActions
+              user={user}
+              publicPath={publicPath}
+              accent={accent}
+              onEdit={onEditIdentity}
+            />
           )}
         </div>
 
