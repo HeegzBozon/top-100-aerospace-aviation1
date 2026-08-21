@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Clapperboard, Newspaper } from 'lucide-react';
+import { Clapperboard, Newspaper, ListOrdered } from 'lucide-react';
 import StoriesBar from '@/components/fellow-home/StoriesBar';
 import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
+import Top100Rail from '@/components/fellow-home/Top100Rail';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 function Tab({ active, onClick, icon: Icon, label, accent }) {
@@ -17,21 +18,21 @@ function Tab({ active, onClick, icon: Icon, label, accent }) {
   );
 }
 
-// The masthead's instrument cluster: live signal (Stories) and press (In the News), toggled.
-export default function InstrumentCluster({ user, nominee, accent, groups = [], onOpen, onAdd }) {
+// The masthead's instrument cluster: Stories, In the News, and My TOP 100 — toggled.
+export default function InstrumentCluster({ user, nominee, accent, groups = [], onOpen, onAdd, top100 = [] }) {
   const hasNews = !!nominee?.id;
   const [tab, setTab] = useState('stories');
-
-  if (!hasNews) return <StoriesBar user={user} accent={accent} groups={groups} onOpen={onOpen} onAdd={onAdd} />;
 
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-1 rounded-full p-1 w-fit" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
         <Tab active={tab === 'stories'} onClick={() => setTab('stories')} icon={Clapperboard} label="Stories" accent={accent} />
-        <Tab active={tab === 'news'} onClick={() => setTab('news')} icon={Newspaper} label="In the News" accent={accent} />
+        {hasNews && <Tab active={tab === 'news'} onClick={() => setTab('news')} icon={Newspaper} label="In the News" accent={accent} />}
+        <Tab active={tab === 'top100'} onClick={() => setTab('top100')} icon={ListOrdered} label="My TOP 100" accent={accent} />
       </div>
       {tab === 'stories' && <StoriesBar user={user} accent={accent} groups={groups} onOpen={onOpen} onAdd={onAdd} />}
-      {tab === 'news' && <NomineeNewsSection nomineeId={nominee.id} />}
+      {tab === 'news' && hasNews && <NomineeNewsSection nomineeId={nominee.id} />}
+      {tab === 'top100' && <Top100Rail rankings={top100} groups={groups} onOpen={onOpen} accent={accent} />}
     </div>
   );
 }

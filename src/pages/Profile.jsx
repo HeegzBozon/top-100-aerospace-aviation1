@@ -14,6 +14,7 @@ import SeasonBand from '@/components/fellow-home/SeasonBand';
 import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
 import MastheadEditorial from '@/components/fellow-home/MastheadEditorial';
 import { useStoryExperience } from '@/components/fellow-home/useStoryExperience';
+import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
 import StoryViewer from '@/components/fellow-home/StoryViewer';
 import StoryCreate from '@/components/fellow-home/StoryCreate';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
@@ -24,7 +25,6 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [nominee, setNominee] = useState(null);
   const [settings, setSettings] = useState(null);
-  const [rankings, setRankings] = useState([]);
   const [saving, setSaving] = useState(false);
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingEightVisibility, setSavingEightVisibility] = useState(false);
@@ -35,6 +35,7 @@ export default function Profile() {
 
   const { entries, approve } = useEndorsementWall(user?.email, nominee?.id);
   const story = useStoryExperience(user);
+  const top100 = useMyTop100(user?.email);
 
   const loadUser = useCallback(async () => {
     try {
@@ -45,9 +46,6 @@ export default function Profile() {
       const nominees = await base44.entities.Nominee.filter({ nominee_email: currentUser.email }).catch(() => []);
       const nom = nominees?.[0] || null;
       setNominee(nom);
-
-      const lists = await base44.entities.UserTop100List.filter({ user_email: currentUser.email }, '-updated_date', 1).catch(() => []);
-      setRankings(lists?.[0]?.rankings || []);
 
       const found = await base44.entities.FellowProfileSettings.filter({ fellow_email: currentUser.email }).catch(() => []);
       if (found?.[0]) {
@@ -173,7 +171,7 @@ export default function Profile() {
     eight: (
       <TheEight
         key="eight"
-        rankings={rankings}
+        rankings={top100.rankings}
         isOwner
         accent={accent}
         isPublic={settings?.eight_public !== false}
@@ -218,6 +216,7 @@ export default function Profile() {
               groups={story.groups}
               onOpen={story.openViewer}
               onAdd={story.openCreate}
+              top100={top100.rankings}
             />
           }
           blurbsContent={<MastheadEditorial oneWord={user?.one_word} sixWordStory={settings?.six_word_story || user?.six_word_story} settings={settings} user={user} accent={accent} />}
