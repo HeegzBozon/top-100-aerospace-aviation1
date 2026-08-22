@@ -5,9 +5,8 @@ import StatusPicker from './StatusPicker';
 
 const ESSENTIALS = ['avatar_url', 'industry_role', 'one_word', 'six_word_story'];
 
-// Action row: status + completeness (left), editorial blurbs (center), view + update (right).
-// Stacks vertically on mobile; no overlap on any viewport.
-export default function FellowIdentityActions({ user, publicPath, accent, onEdit, statusKey, savingStatus, onStatusChange, blurbs }) {
+// Action row: status + completeness (left), view + update (right). Stacks on mobile.
+export default function FellowIdentityActions({ user, publicPath, accent, onEdit, statusKey, savingStatus, onStatusChange }) {
   const filled = ESSENTIALS.filter((f) => {
     const v = user?.[f];
     return typeof v === 'boolean' ? v === true : v && String(v).trim();
@@ -34,15 +33,8 @@ export default function FellowIdentityActions({ user, publicPath, accent, onEdit
         )}
       </div>
 
-      {/* Center — editorial blurbs (one word, six-word story, about me) */}
-      {blurbs && (
-        <div className="md:flex-1 md:flex md:justify-center md:min-w-0">
-          {blurbs}
-        </div>
-      )}
-
       {/* Right — view public + update */}
-      <div className="md:shrink-0 flex items-center gap-3 flex-wrap justify-end">
+      <div className="md:ml-auto md:shrink-0 flex items-center gap-3 flex-wrap justify-end">
         {publicPath && (
           <Link
             to={publicPath}
