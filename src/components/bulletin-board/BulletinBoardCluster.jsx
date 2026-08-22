@@ -13,6 +13,7 @@ import NextMove from './NextMove';
 import EightPointer from './EightPointer';
 import ShortcutsTile from './ShortcutsTile';
 import ModuleGrid from './ModuleGrid';
+import BoardSwitcher from '@/components/platform-board/BoardSwitcher';
 
 // Master instrument cluster — the Bulletin Board as one customizable grid.
 // Every module is an evenly distributed, drag-reorderable, toggleable tile.
@@ -98,6 +99,7 @@ export default function BulletinBoardCluster({
             Bulletin Board
           </span>
           <div className="h-px flex-1" style={{ background: `${B.navy}14` }} />
+          <BoardSwitcher active="fellow" accent={accent} />
         </div>
 
         <div className="px-4 sm:px-5 pb-5">

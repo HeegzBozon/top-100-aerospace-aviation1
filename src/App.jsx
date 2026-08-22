@@ -64,6 +64,7 @@ const Membership = lazy(() => import('@/pages/Membership'));
 const Subscribe = lazy(() => import('@/pages/Subscribe'));
 const Profile = lazy(() => import('@/pages/Profile'));
 const Rsvp = lazy(() => import('@/pages/Rsvp'));
+const PlatformDevelopmentBoard = lazy(() => import('@/pages/PlatformDevelopmentBoard'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -231,6 +232,7 @@ const AuthenticatedApp = () => {
       } />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:id" element={<ProfileView />} />
+       <Route path="/platform-board" element={<PlatformDevelopmentBoard />} />
 
       {/* /Profile is the profile editor — do not redirect */}
       <Route path="/PublicProfile" element={<Navigate to="/ProfileView" replace />} />
