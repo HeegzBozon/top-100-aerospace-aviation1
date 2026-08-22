@@ -4,15 +4,20 @@ import BulletinComposeRail from './BulletinComposeRail';
 import BulletinToolTabs from './BulletinToolTabs';
 import BulletinComposer from './BulletinComposer';
 import JourneyTabs from './JourneyTabs';
+import NextMove from './NextMove';
+import EightPointer from './EightPointer';
 
 // Master instrument cluster — the Bulletin Board. One cohesive framed unit
-// (sand container matching the masthead) housing everything below the masthead:
-// 30% compass rail = compose + left-rail modules;
-// 70% pane = journey spine: Compose → The Eight → Flightography → Card.
+// (sand container matching the masthead) housing the hero's journey:
+//  - 30% compass rail (Act I): compose + arrival-state modules
+//  - 70% pane (Act II): NextMove engine + journey spine
+//      Compose → The Eight → Flightography → Card
+//  - Return band (Act III): endorsements + community beneath the work
 export default function BulletinBoardCluster({
   user, settings, accent, isOwner,
   statusKey, savingStatus, onStatusChange,
-  leftRail, theEight, flightography, tradingCard, personalizationBar,
+  leftRail, flightography, tradingCard, personalizationBar,
+  nextMove, onJumpToEight, onEditIdentity, returnBand,
 }) {
   const [tab, setTab] = useState('compose');
   const [composerOpen, setComposerOpen] = useState(false);
@@ -54,7 +59,7 @@ export default function BulletinBoardCluster({
 
         <div className="px-4 sm:px-5 pb-5">
           <div className="flex flex-col md:flex-row gap-3 items-start">
-            {/* 30% compass rail: compose + navigation/info modules */}
+            {/* 30% compass rail: compose + arrival-state modules */}
             <div className="md:flex-[0_0_30%] shrink-0 min-w-0 w-full space-y-3">
               <BulletinComposeRail
                 tools={settings?.bulletin_tools}
@@ -67,8 +72,18 @@ export default function BulletinBoardCluster({
               {leftRail}
             </div>
 
-            {/* 70% pane — journey spine */}
+            {/* 70% pane — the work */}
             <div className="md:flex-1 min-w-0 flex flex-col gap-3">
+              <NextMove
+                data={nextMove}
+                user={user}
+                accent={accent}
+                onCompose={openComposer}
+                onSwitchTab={setTab}
+                onJumpToEight={onJumpToEight}
+                onEditIdentity={onEditIdentity}
+              />
+
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <JourneyTabs tab={tab} onChange={setTab} accent={accent} />
                 {personalizationBar}
@@ -83,11 +98,14 @@ export default function BulletinBoardCluster({
                   onEditPost={openEditor}
                 />
               )}
-              {tab === 'eight' && theEight}
+              {tab === 'eight' && <EightPointer accent={accent} onJump={onJumpToEight} />}
               {tab === 'flightography' && flightography}
               {tab === 'card' && tradingCard}
             </div>
           </div>
+
+          {/* Act III — the return */}
+          {returnBand}
         </div>
       </section>
 

@@ -10,7 +10,9 @@ import FellowIdentityHeader from '@/components/fellow-home/FellowIdentityHeader'
 import TheEight from '@/components/fellow-home/TheEight';
 import FlightographyModule from '@/components/fellow-home/FlightographyModule';
 import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
-import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
+import CompassRail from '@/components/bulletin-board/CompassRail';
+import ReturnBand from '@/components/bulletin-board/ReturnBand';
+import NextMove from '@/components/bulletin-board/NextMove';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
 import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
 import MastheadEditorial from '@/components/fellow-home/MastheadEditorial';
@@ -44,6 +46,12 @@ export default function Profile() {
       u.searchParams.set('tab', next);
       window.history.replaceState({}, '', u);
     } catch {}
+  };
+
+  // The Eight stays in the masthead — jumping there surfaces it and scrolls up.
+  const jumpToEight = () => {
+    handleTabChange('top100');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const { entries, approve } = useEndorsementWall(user?.email, nominee?.id);
@@ -278,21 +286,30 @@ export default function Profile() {
           savingStatus={savingStatus}
           onStatusChange={saveStatus}
           leftRail={
-            <FellowLeftRail
+            <CompassRail
               user={user}
               nominee={nominee}
               accent={accent}
-              statusKey={settings?.status_key}
-              savingStatus={savingStatus}
-              onStatusChange={saveStatus}
               viewCount={settings?.profile_view_count || 0}
               endorsementCount={entries.filter((e) => e.moderation_status === 'approved').length}
-              wallEntries={entries}
-              onApproveWall={approve}
               publicPath={publicPath}
             />
           }
-          theEight={fellowModules.eight}
+          nextMove={{
+            eightCount: top100.rankings.length,
+            hasFlightography: !!(nominee?.career_history?.length || nominee?.education?.length || nominee?.skills?.length || nominee?.bio),
+            hasSixWord: !!(settings?.six_word_story || user?.six_word_story),
+          }}
+          onJumpToEight={jumpToEight}
+          onEditIdentity={() => setWizardOpen(true)}
+          returnBand={
+            <ReturnBand
+              user={user}
+              accent={accent}
+              wallEntries={entries}
+              onApproveWall={approve}
+            />
+          }
           flightography={fellowModules.flightography}
           tradingCard={<ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />}
           personalizationBar={
