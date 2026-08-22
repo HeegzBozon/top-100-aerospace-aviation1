@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { BadgeCheck, MapPin, Plus, Link2, Copy, Share2, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BadgeCheck, MapPin, Plus, Link2, Copy, Share2, Check, Sparkles, ExternalLink } from 'lucide-react';
 import { B, coverUrl } from './fellowHomeConfig';
-import FellowIdentityActions from './FellowIdentityActions';
 
 export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent, publicPath, hasStory, onAvatarTap, clusterContent, blurbsContent, statusKey, savingStatus, onStatusChange }) {
   const cover = coverUrl(coverKey !== undefined ? coverKey : user?.cover_key);
@@ -146,21 +146,32 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
               </div>
             )}
           </div>
+
+          {/* View public profile + update — live with the name, location, and URL */}
+          {isOwner && (
+            <div className="md:ml-auto pb-1 flex items-center gap-3 shrink-0 flex-wrap">
+              {publicPath && (
+                <Link
+                  to={publicPath}
+                  className="flex items-center gap-1.5 text-xs font-semibold transition-opacity hover:opacity-70"
+                  style={{ color: B.navy }}
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> View public profile
+                </Link>
+              )}
+              <button
+                onClick={onEditIdentity}
+                className="group flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full shadow-sm transition-all hover:shadow-md"
+                style={{ background: B.navy, color: '#fff' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = B.gold; e.currentTarget.style.color = B.navy; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = B.navy; e.currentTarget.style.color = '#fff'; }}
+              >
+                <Sparkles className="w-4 h-4" /> Update
+              </button>
+            </div>
+          )}
           </div>
         </div>
-
-        {/* Action row — status + completeness (left) | view + update (right) */}
-        {isOwner && (
-          <FellowIdentityActions
-            user={user}
-            publicPath={publicPath}
-            accent={accent}
-            onEdit={onEditIdentity}
-            statusKey={statusKey}
-            savingStatus={savingStatus}
-            onStatusChange={onStatusChange}
-          />
-        )}
 
         {/* Instrument cluster — stories and press live inside the masthead */}
         {clusterContent && (

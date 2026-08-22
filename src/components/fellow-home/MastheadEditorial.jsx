@@ -35,7 +35,7 @@ export default function MastheadEditorial({ oneWord, sixWordStory, settings, use
   };
 
   return (
-    <div className="flex flex-row flex-wrap gap-3 md:justify-start md:items-center">
+    <div className="flex flex-row flex-wrap gap-3 md:justify-end md:items-center">
       {/* One word — the artistic anchor of the cluster */}
       <InlineBlurbField
         value={oneWord}
