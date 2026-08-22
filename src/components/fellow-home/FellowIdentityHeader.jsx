@@ -194,11 +194,22 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
         }}
       >
-        {/* Front — owner masthead. In flow to set the container height. */}
-        <div style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', pointerEvents: flipped ? 'none' : 'auto' }}>
+        {/* Front — owner masthead. In flow to set the container height.
+            visibility toggles at the edge-on moment (0.35s) so the flip animates
+            cleanly while guaranteeing the front never bleeds through when flipped. */}
+        <div
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(0deg)',
+            visibility: flipped ? 'hidden' : 'visible',
+            transition: `visibility 0s linear ${flipped ? '0.35s' : '0s'}`,
+            pointerEvents: flipped ? 'none' : 'auto',
+          }}
+        >
           {ownerMasthead}
         </div>
-        {/* Back — public canvas. Absolute over the front; pointer-dead when not flipped. */}
+        {/* Back — public canvas. Absolute over the front. */}
         <div
           style={{
             position: 'absolute',
@@ -206,6 +217,8 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)',
+            visibility: flipped ? 'visible' : 'hidden',
+            transition: `visibility 0s linear ${flipped ? '0s' : '0.35s'}`,
             pointerEvents: flipped ? 'auto' : 'none',
           }}
         >
