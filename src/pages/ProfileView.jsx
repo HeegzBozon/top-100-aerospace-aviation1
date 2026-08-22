@@ -1,10 +1,9 @@
-import { useEffect, useRef } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation, useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useProfileResolution } from '@/hooks/useProfileResolution';
-import { Loader2, Crown, Briefcase, Building, Linkedin, Trophy, Globe, Award, Quote, Mail, ExternalLink, Pencil } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Crown, Briefcase, Building, Linkedin, Trophy, Globe, Award, Quote, Pencil } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 
@@ -21,43 +20,61 @@ import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import ConnectButton from '@/components/fellow-home/ConnectButton';
 import FollowButton from '@/components/fellow-home/FollowButton';
+import HomeDock from '@/components/home-v3/HomeDock';
 import { accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
 import { statusByKey } from '@/components/fellow-home/fellowStatuses';
 
-const brandColors = {
-    navyDeep: '#1e3a5a',
+const B = {
+    navyDeep: '#16293f',
+    navy: '#1e3a5a',
     skyBlue: '#4a90b8',
-    goldPrestige: '#c9a87c',
+    gold: '#c9a87c',
     cream: '#faf8f5',
+    sand: '#efe7dc',
 };
 
 // Material-style info row
-const InfoRow = ({ icon: Icon, label, children }) => (
-    <div className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${brandColors.goldPrestige}15` }}>
-            <Icon className="w-4 h-4" style={{ color: brandColors.goldPrestige }} />
+function InfoRow({ icon: Icon, label, children }) {
+    return (
+        <div className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${B.gold}15` }}>
+                <Icon className="w-4 h-4" style={{ color: B.gold }} />
+            </div>
+            <div className="flex-1 min-w-0">
+                <div className="text-[10px] uppercase tracking-wider text-gray-400 mb-0.5">{label}</div>
+                <div className="text-sm md:text-base text-gray-800 sf-pro">{children}</div>
+            </div>
         </div>
-        <div className="flex-1 min-w-0">
-            <div className="text-[10px] uppercase tracking-wider text-gray-400 mb-0.5">{label}</div>
-            <div className="text-sm md:text-base text-gray-800 sf-pro">{children}</div>
-        </div>
-    </div>
-);
+    );
+}
 
-// Apple-style link button
-const LinkButton = ({ href, icon: Icon, children }) => (
-    <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-3 p-3 rounded-xl glass-card hover:bg-white/90 transition-all group sf-pro"
-    >
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${brandColors.skyBlue}15` }}>
-            <Icon className="w-4 h-4" style={{ color: brandColors.skyBlue }} />
+// Cinematic loading surface — navy, gold spinner, on-brand. Seamless under the entrance fade.
+function CinematicLoader() {
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: B.navyDeep }}>
+            <div className="relative w-14 h-14">
+                <div className="absolute inset-0 rounded-full border-2 border-white/10" />
+                <div className="absolute inset-0 rounded-full border-2 border-transparent animate-spin" style={{ borderTopColor: B.gold }} />
+            </div>
+            <span className="mt-5 text-[10px] font-semibold uppercase tracking-[0.3em]" style={{ color: `${B.gold}cc` }}>
+                Loading Profile
+            </span>
         </div>
-        <span className="flex-1 text-sm font-medium" style={{ color: brandColors.navyDeep }}>{children}</span>
-    </a>
-);
+    );
+}
+
+function NotFound() {
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ background: B.navyDeep }}>
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ border: `1px solid ${B.gold}33` }}>
+                <Trophy className="w-9 h-9" style={{ color: `${B.gold}99` }} />
+            </div>
+            <h1 className="text-2xl font-bold mb-2" style={{ color: '#fff', fontFamily: "'Playfair Display', serif" }}>Profile Not Found</h1>
+            <p className="mb-6 text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>We couldn't locate this footprint in the ecosystem.</p>
+            <Link to="/" className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: B.gold }}>Return Home</Link>
+        </div>
+    );
+}
 
 export default function ProfileView({ userId: propUserId = null }) {
     const { id: pathId } = useParams();
@@ -65,6 +82,13 @@ export default function ProfileView({ userId: propUserId = null }) {
     const params = new URLSearchParams(location.search);
     const targetId = propUserId || pathId || params.get('id');
     const targetEmail = params.get('user') || params.get('email');
+
+    // Cinematic entrance — fades the navy veil out on mount, bridging "See full profile" → page.
+    const [entered, setEntered] = useState(false);
+    useEffect(() => {
+        const r = requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true)));
+        return () => cancelAnimationFrame(r);
+    }, []);
 
     const { data: viewer } = useQuery({
         queryKey: ['me'],
@@ -97,30 +121,42 @@ export default function ProfileView({ userId: propUserId = null }) {
         }).catch(() => {});
     }, [viewer?.email, wallEmail, ownerSettings]);
 
-    if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center" style={{ background: brandColors.cream }}>
-                <Loader2 className="w-12 h-12 animate-spin" style={{ color: brandColors.goldPrestige }} />
-            </div>
-        );
-    }
+    return (
+        <div className="min-h-screen relative sf-pro" style={{ background: B.cream }}>
+            {/* Cinematic entrance veil — navy, fades out to reveal the page */}
+            <div
+                className="fixed inset-0 z-[300] pointer-events-none transition-opacity duration-[800ms] ease-in-out"
+                style={{ background: B.navyDeep, opacity: entered ? 0 : 1 }}
+            />
 
-    if (!profiles || (!profiles.user && !profiles.nominee && !profiles.startup && !profiles.provider)) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ background: brandColors.cream }}>
-                <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center mb-6">
-                    <Trophy className="w-10 h-10 text-slate-400" />
-                </div>
-                <h1 className="text-2xl font-bold mb-2 sf-pro" style={{ color: brandColors.navyDeep }}>Profile Not Found</h1>
-                <p className="text-slate-500 mb-6">We couldn't locate this footprint in the ecosystem.</p>
-            </div>
-        );
-    }
+            {isLoading ? (
+                <CinematicLoader />
+            ) : !profiles || (!profiles.user && !profiles.nominee && !profiles.startup && !profiles.provider) ? (
+                <NotFound />
+            ) : null}
 
+            {profiles && (profiles.user || profiles.nominee || profiles.startup || profiles.provider) && !isLoading && (
+                <ProfileBody
+                    profiles={profiles}
+                    viewer={viewer}
+                    wallEmail={wallEmail}
+                    wallEntries={wallEntries}
+                    submitWallEntry={submitWallEntry}
+                    approveWallEntry={approveWallEntry}
+                    ownerAccent={ownerAccent}
+                    ownerStatus={ownerStatus}
+                    entered={entered}
+                />
+            )}
+
+            <HomeDock />
+        </div>
+    );
+}
+
+function ProfileBody({ profiles, viewer, wallEmail, wallEntries, submitWallEntry, approveWallEntry, ownerAccent, ownerStatus, entered }) {
     const { user, nominee, startup, provider, employer } = profiles;
 
-    // Synthesize top-level attributes based on what's available
-    // Priority: User > Nominee > Provider > Startup
     const displayName = user?.full_name || nominee?.name || provider?.full_name || startup?.company_name || 'Anonymous';
     const displayAvatar = user?.avatar_url || nominee?.avatar_url || nominee?.photo_url || provider?.avatar_url || startup?.logo_url;
     const displayBio = user?.bio || user?.professional_bio || nominee?.bio || nominee?.description || provider?.biography;
@@ -130,133 +166,127 @@ export default function ProfileView({ userId: propUserId = null }) {
     const sixWordStory = nominee?.six_word_story;
     const displayCountry = user?.location || nominee?.country;
 
+    const rise = {
+        opacity: entered ? 1 : 0,
+        transform: entered ? 'translateY(0)' : 'translateY(16px)',
+        transition: 'opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1)',
+    };
+
     return (
-        <div className="min-h-screen sf-pro pb-20" style={{ background: brandColors.cream }}>
-            {/* Hero Section */}
+        <div className="pb-24" style={{ background: B.cream }}>
+            {/* Cinematic hero */}
             <div className="relative">
-                <div className="relative h-[30vh] md:h-[40vh] overflow-hidden bg-slate-900">
+                <div className="relative h-[42vh] md:h-[56vh] overflow-hidden" style={{ background: B.navyDeep }}>
                     {displayAvatar ? (
                         <>
-                            <img src={displayAvatar} alt={displayName} className="w-full h-full object-cover opacity-60 blur-sm scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#1e3a5a] to-transparent mix-blend-multiply" />
+                            <img src={displayAvatar} alt={displayName} className="w-full h-full object-cover opacity-40 scale-110" style={{ filter: 'blur(5px)' }} />
+                            <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${B.navyDeep}66 0%, ${B.navyDeep}99 45%, ${B.cream} 100%)` }} />
                         </>
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center opacity-80" style={{ background: `linear-gradient(135deg, ${brandColors.navyDeep} 0%, ${brandColors.skyBlue} 100%)` }} />
+                        <div className="w-full h-full" style={{ background: `linear-gradient(150deg, ${B.navyDeep}, #0c1830 70%, ${B.cream})` }} />
+                    )}
+
+                    <div className="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-[0.34em]" style={{ color: B.gold }}>
+                        TOP 100 · Public Profile
+                    </div>
+
+                    {nominee?.rank && (
+                        <div className="absolute top-6 right-6 z-10">
+                            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full backdrop-blur-md text-[11px] font-bold text-white shadow-lg" style={{ background: `${B.gold}ee` }}>
+                                <Crown className="w-3.5 h-3.5" />
+                                RANK #{nominee.rank}
+                            </div>
+                        </div>
                     )}
                 </div>
-
-                {/* Floating Rank Badge (If Nominee) */}
-                {nominee?.rank && (
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-                        <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full backdrop-blur-md text-xs font-bold text-white shadow-lg" style={{ background: `${brandColors.goldPrestige}ee` }}>
-                            <Crown className="w-4 h-4" />
-                            RANK #{nominee.rank}
-                        </div>
-                    </div>
-                )}
             </div>
 
-            <div className="max-w-5xl mx-auto px-4 -mt-20 relative z-10">
+            <div className="max-w-5xl mx-auto px-4 -mt-24 md:-mt-32 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                     {/* Left Column: Core Identity */}
                     <div className="lg:col-span-1 space-y-6">
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative glass-card rounded-3xl p-6 text-center material-shadow-lg bg-white/90 backdrop-blur-xl">
-                            {/* Edit button for profile owner */}
-                        {viewer && (
-                            nominee?.nominee_email === viewer.email ||
-                            nominee?.claimed_by_user_email === viewer.email ||
-                            user?.email === viewer.email
-                        ) && (
-                            <Link to="/Profile" className="absolute top-4 right-4">
-                                <button
-                                    aria-label="Edit your profile"
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/80 backdrop-blur-sm border border-slate-200 hover:bg-white transition-all shadow-sm"
-                                    style={{ color: brandColors.navyDeep }}
-                                >
-                                    <Pencil className="w-3 h-3" />
-                                    Edit Profile
-                                </button>
-                            </Link>
-                        )}
-                        <LaurelAvatar
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                            className="relative glass-card rounded-3xl p-6 text-center material-shadow-lg bg-white/90 backdrop-blur-xl"
+                        >
+                            {viewer && (
+                                nominee?.nominee_email === viewer.email ||
+                                nominee?.claimed_by_user_email === viewer.email ||
+                                user?.email === viewer.email
+                            ) && (
+                                <Link to="/Profile" className="absolute top-4 right-4">
+                                    <button
+                                        aria-label="Edit your profile"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/80 backdrop-blur-sm border border-slate-200 hover:bg-white transition-all shadow-sm"
+                                        style={{ color: B.navy }}
+                                    >
+                                        <Pencil className="w-3 h-3" />
+                                        Edit Profile
+                                    </button>
+                                </Link>
+                            )}
+                            <LaurelAvatar
                                 src={displayAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&size=128&background=random`}
                                 alt={displayName}
                                 size={128}
                                 designation={nominee ? (['winner', 'finalist'].includes(nominee.status) ? 'alumni' : 'nominee') : null}
                             />
-                            <h1 className="text-2xl font-bold mb-1" style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', serif" }}>{displayName}</h1>
+                            <h1 className="text-2xl font-bold mb-1 mt-3" style={{ color: B.navy, fontFamily: "'Playfair Display', serif" }}>{displayName}</h1>
                             {(user?.handle || nominee?.handle) && (
                                 <p className="text-sm font-medium mb-3 text-slate-500">@{user?.handle || nominee?.handle || 'user'}</p>
                             )}
 
                             {ownerStatus && (
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-3" style={{ background: `${ownerAccent}14`, color: brandColors.navyDeep }}>
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-3" style={{ background: `${ownerAccent}14`, color: B.navy }}>
                                     <span className="text-sm leading-none">{ownerStatus.glyph}</span>
                                     {ownerStatus.label}
                                 </div>
                             )}
 
                             {sixWordStory && (
-                                <p className="text-sm italic mb-3" style={{ color: brandColors.goldPrestige, fontFamily: "'Playfair Display', serif" }}>
-                                    "{sixWordStory}"
+                                <p className="text-base italic mb-3 leading-snug" style={{ color: B.gold, fontFamily: "'Playfair Display', serif" }}>
+                                    “{sixWordStory}”
                                 </p>
                             )}
 
                             <div className="flex flex-col gap-2 mb-4">
                                 {displayRole && (
-                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100" style={{ color: brandColors.navyDeep }}>
+                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100" style={{ color: B.navy }}>
                                         <Briefcase className="w-3 h-3" /> {displayRole}
                                     </span>
                                 )}
                                 {displayCompany && (
-                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: `${brandColors.skyBlue}15`, color: brandColors.skyBlue }}>
+                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: `${B.skyBlue}15`, color: B.skyBlue }}>
                                         <Building className="w-3 h-3" /> {displayCompany}
                                     </span>
                                 )}
                                 {displayCountry && (
-                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: `${brandColors.goldPrestige}12`, color: brandColors.goldPrestige }}>
+                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: `${B.gold}12`, color: B.gold }}>
                                         📍 {displayCountry}
                                     </span>
                                 )}
                             </div>
 
-                            {/* Badges mapped from entities */}
                             <div className="flex flex-wrap items-center justify-center gap-2 border-t pt-4">
-                                {nominee && <Badge className="" variant="default" style={{ background: brandColors.goldPrestige }}>Nominee</Badge>}
-                                {startup && <Badge className="" variant="default" style={{ background: brandColors.skyBlue }}>Startup Founder</Badge>}
-                                {provider && provider.is_active && <Badge className="" variant="outline">Service Provider</Badge>}
+                                {nominee && <Badge variant="default" style={{ background: B.gold }}>Nominee</Badge>}
+                                {startup && <Badge variant="default" style={{ background: B.skyBlue }}>Startup Founder</Badge>}
+                                {provider && provider.is_active && <Badge variant="outline">Service Provider</Badge>}
                             </div>
 
                             {wallEmail && (
-                                <ConnectButton
-                                    viewer={viewer}
-                                    targetEmail={wallEmail}
-                                    targetName={displayName}
-                                    targetAvatar={displayAvatar}
-                                    accent={ownerAccent}
-                                />
+                                <ConnectButton viewer={viewer} targetEmail={wallEmail} targetName={displayName} targetAvatar={displayAvatar} accent={ownerAccent} />
                             )}
                             {wallEmail && (
-                                <FollowButton
-                                    viewer={viewer}
-                                    targetEmail={wallEmail}
-                                    targetName={displayName}
-                                    targetAvatar={displayAvatar}
-                                    accent={ownerAccent}
-                                />
+                                <FollowButton viewer={viewer} targetEmail={wallEmail} targetName={displayName} targetAvatar={displayAvatar} accent={ownerAccent} />
                             )}
                         </motion.div>
 
-
-
-                        {/* Social Links */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={rise}>
                             <ProfileSocialLinks user={user} nominee={nominee} viewer={viewer} />
                         </motion.div>
 
-                        {/* Expertise Tags */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} style={rise}>
                             <ProfileExpertiseTags skills={nominee?.skills} expertise_tags={user?.expertise_tags} />
                         </motion.div>
                     </div>
@@ -265,8 +295,9 @@ export default function ProfileView({ userId: propUserId = null }) {
                     <div className="lg:col-span-2 space-y-6 mt-8 lg:mt-0 pt-16 lg:pt-0">
 
                         {(displayBio || displayBioExtended) && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl p-6 material-shadow bg-white">
-                                <h3 className="text-lg font-bold mb-3" style={{ color: brandColors.navyDeep, fontFamily: "'Playfair Display', serif" }}>Overview</h3>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl p-6 material-shadow bg-white" style={rise}>
+                                <h3 className="text-lg font-bold mb-3" style={{ color: B.navy, fontFamily: "'Playfair Display', serif" }}>Overview</h3>
+                                <div className="h-px w-12 mb-4" style={{ background: B.gold }} />
                                 <p className="text-slate-700 leading-relaxed whitespace-pre-wrap text-[15px]">{displayBio}</p>
                                 {displayBioExtended && displayBioExtended !== displayBio && (
                                     <div className="mt-4 pt-4 border-t border-slate-100">
@@ -276,10 +307,9 @@ export default function ProfileView({ userId: propUserId = null }) {
                             </motion.div>
                         )}
 
-                        {/* Nominee Extracted Details (If Nominee exists) */}
                         {nominee && (nominee.industry || nominee.achievements || nominee.linkedin_follow_reason || nominee.nomination_reason) && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card rounded-2xl p-6 material-shadow bg-white">
-                                <h3 className="text-lg font-bold mb-4" style={{ color: brandColors.navyDeep }}>Nominee Highlights</h3>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card rounded-2xl p-6 material-shadow bg-white" style={rise}>
+                                <h3 className="text-lg font-bold mb-4" style={{ color: B.navy, fontFamily: "'Playfair Display', serif" }}>Nominee Highlights</h3>
                                 <div className="space-y-2">
                                     {nominee.industry && <InfoRow icon={Globe} label="Industry">{nominee.industry}</InfoRow>}
                                     {nominee.achievements && <InfoRow icon={Award} label="Achievements">{nominee.achievements}</InfoRow>}
@@ -289,30 +319,26 @@ export default function ProfileView({ userId: propUserId = null }) {
                             </motion.div>
                         )}
 
-                        {/* Startup Sub-profile */}
                         {startup && (viewer?.is_investor || viewer?.is_admin || viewer?.tier === 'premium' || viewer?.email === startup.founder_email) && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={rise}>
                                 <StartupPitch startup={startup} user={viewer} mySignal={null} signals={[]} />
                             </motion.div>
                         )}
 
-                        {/* Service Provider Profile */}
                         {provider && provider.is_active && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={rise}>
                                 <ProviderServicesList providerEmail={provider.user_email} userName={displayName} />
                             </motion.div>
                         )}
 
-                        {/* Trading Card */}
                         {(nominee || (user?.custom_card_stats?.length > 0)) && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} style={rise}>
                                 <ShareableProfileCard user={user} nominee={nominee} readOnly />
                             </motion.div>
                         )}
 
-                        {/* Endorsement Wall — attributed peer endorsements */}
                         {wallEmail && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={rise}>
                                 <EndorsementWall
                                     entries={wallEntries}
                                     isOwner={!!viewer && viewer.email === wallEmail}
@@ -325,7 +351,6 @@ export default function ProfileView({ userId: propUserId = null }) {
                             </motion.div>
                         )}
 
-                        {/* Nominee Ecosystem Records */}
                         {nominee && (
                             <div className="space-y-6">
                                 <NomineeCareerHistorySection nominee={nominee} />
@@ -335,7 +360,7 @@ export default function ProfileView({ userId: propUserId = null }) {
                         )}
                     </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }
