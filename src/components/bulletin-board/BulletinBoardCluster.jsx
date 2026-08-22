@@ -62,9 +62,6 @@ export default function BulletinBoardCluster({
     { key: 'compose', label: 'Compose', icon: PenLine, frame: true, size: '2x2', node: (
       <BulletinToolTabs tools={settings?.bulletin_tools} authorEmail={user?.email} accent={accent} isOwner={isOwner} onEditPost={openEditor} />
     )},
-    { key: 'eight', label: 'The Eight', icon: ListOrdered, frame: true, size: '1x1', node: (
-      <EightPointer accent={accent} onJump={onJumpToEight} />
-    )},
     { key: 'flightography', label: 'Flightography', icon: Plane, frame: false, size: '1x2', node: flightography },
     { key: 'card', label: 'Card', icon: CreditCard, frame: false, size: '1x1', node: tradingCard },
     { key: 'record', label: 'The record', icon: BarChart3, frame: true, size: '1x1', node: (
