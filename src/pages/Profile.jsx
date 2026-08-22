@@ -268,7 +268,7 @@ export default function Profile() {
           }
         />
 
-        {/* Second instrument cluster — the Bulletin Board. Authored content lives here. */}
+        {/* Master instrument cluster — the Bulletin Board. Houses everything below the masthead. */}
         <BulletinBoardCluster
           user={user}
           settings={settings}
@@ -277,11 +277,7 @@ export default function Profile() {
           statusKey={settings?.status_key}
           savingStatus={savingStatus}
           onStatusChange={saveStatus}
-        />
-
-        {/* Retro two-column: rail left, working surface right */}
-        <div className="grid grid-cols-1 lg:grid-cols-[288px_1fr] gap-5 items-start">
-          <aside className="lg:sticky lg:top-4">
+          leftRail={
             <FellowLeftRail
               user={user}
               nominee={nominee}
@@ -295,26 +291,20 @@ export default function Profile() {
               onApproveWall={approve}
               publicPath={publicPath}
             />
-          </aside>
-
-          <div className="space-y-5 min-w-0">
-            <div className="flex items-start justify-end gap-3 flex-wrap">
-              <PersonalizationBar
-                settings={settings}
-                order={order}
-                accent={accent}
-                saving={saving}
-                error={saveError}
-                onChange={savePersonalization}
-              />
-            </div>
-
-            {/* Positions 3+ — Fellow-configured order */}
-            {order.filter((key) => key !== 'eight').map((key) => fellowModules[key])}
-
-            <ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />
-          </div>
-        </div>
+          }
+          flightography={fellowModules.flightography}
+          tradingCard={<ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />}
+          personalizationBar={
+            <PersonalizationBar
+              settings={settings}
+              order={order}
+              accent={accent}
+              saving={saving}
+              error={saveError}
+              onChange={savePersonalization}
+            />
+          }
+        />
 
         <div className="mt-8 flex justify-end">
           <button
