@@ -1,4 +1,4 @@
-import { BadgeCheck, MapPin, Plus } from 'lucide-react';
+import { BadgeCheck, MapPin, Plus, Link2 } from 'lucide-react';
 import { B, coverUrl } from './fellowHomeConfig';
 import FellowIdentityActions from './FellowIdentityActions';
 
@@ -7,6 +7,7 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
   const avatar = user?.avatar_url || nominee?.avatar_url;
   const name = user?.full_name || nominee?.name || 'Unnamed Fellow';
   const verified = nominee?.verified_status && nominee.verified_status !== 'unverified';
+  const publicUrl = publicPath ? `${window.location.origin}${publicPath}` : '';
 
   return (
     <header className="rounded-3xl overflow-hidden" style={{ background: B.sand, border: `1px solid ${B.border}` }}>
@@ -96,6 +97,19 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
                 </span>
               )}
             </div>
+
+            {publicPath && (
+              <a
+                href={publicPath}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium max-w-full hover:opacity-70"
+                style={{ color: B.muted }}
+              >
+                <Link2 className="w-3 h-3 shrink-0" />
+                <span className="truncate">{publicUrl}</span>
+              </a>
+            )}
           </div>
           </div>
 
