@@ -98,7 +98,7 @@ export default function BulletinBoardCluster({
         <div className="px-5 sm:px-8 pt-4 pb-2 flex items-center gap-2">
           <LayoutGrid className="w-4 h-4" style={{ color: accent }} />
           <span className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: B.muted }}>
-            Bulletin Board
+            {board === 'platform' ? 'Kanban Board' : 'Bulletin Board'}
           </span>
           <div className="h-px flex-1" style={{ background: `${B.navy}14` }} />
           <BoardSwitcher active={board} onSelect={setBoard} accent={accent} />

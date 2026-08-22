@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
-import { Layers, Users } from 'lucide-react';
+import { Layers, LayoutGrid } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // Switches boards. When embedded in the cluster, pass onSelect to toggle in place;
 // otherwise (standalone page) it links between routes.
 const BOARDS = [
-  { key: 'fellow', label: 'Fellow Board', to: '/', icon: Users },
-  { key: 'platform', label: 'Platform Board', to: '/platform-board', icon: Layers },
+  { key: 'fellow', label: 'Bulletin Board', to: '/', icon: LayoutGrid },
+  { key: 'platform', label: 'Kanban Board', to: '/platform-board', icon: Layers },
 ];
 
 export default function BoardSwitcher({ active, accent, onSelect }) {

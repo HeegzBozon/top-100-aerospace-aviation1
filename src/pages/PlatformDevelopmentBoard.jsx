@@ -18,7 +18,7 @@ export default function PlatformDevelopmentBoard() {
       <header className="sticky top-0 z-30 px-5 sm:px-8 py-4 flex items-center gap-3" style={{ background: B.cream, borderBottom: `1px solid ${B.border}` }}>
         <Layers className="w-5 h-5 shrink-0" style={{ color: ACCENT }} />
         <div className="min-w-0">
-          <h1 className="text-base font-bold leading-tight" style={{ color: B.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>Platform Development Board</h1>
+          <h1 className="text-base font-bold leading-tight" style={{ color: B.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>Kanban Board</h1>
           <p className="text-[11px]" style={{ color: B.muted }}>Strategic themes, OKRs, epics & side quests — a communal build ledger.</p>
         </div>
         <div className="ml-auto"><BoardSwitcher active="platform" accent={ACCENT} /></div>
