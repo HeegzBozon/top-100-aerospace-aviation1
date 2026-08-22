@@ -1,4 +1,5 @@
-import { BadgeCheck, MapPin, Plus, Link2 } from 'lucide-react';
+import { useState } from 'react';
+import { BadgeCheck, MapPin, Plus, Link2, Copy, Share2, Check } from 'lucide-react';
 import { B, coverUrl } from './fellowHomeConfig';
 import FellowIdentityActions from './FellowIdentityActions';
 
@@ -8,6 +9,20 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
   const name = user?.full_name || nominee?.name || 'Unnamed Fellow';
   const verified = nominee?.verified_status && nominee.verified_status !== 'unverified';
   const publicUrl = publicPath ? `${window.location.origin}${publicPath}` : '';
+  const [copied, setCopied] = useState(false);
+  const copyUrl = () => {
+    navigator.clipboard?.writeText(publicUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+  const shareUrl = () => {
+    if (navigator.share) {
+      navigator.share({ title: name, url: publicUrl }).catch(() => {});
+    } else {
+      copyUrl();
+    }
+  };
 
   return (
     <header className="rounded-3xl overflow-hidden" style={{ background: B.sand, border: `1px solid ${B.border}` }}>
@@ -99,16 +114,36 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
             </div>
 
             {publicPath && (
-              <a
-                href={publicPath}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium max-w-full hover:opacity-70"
-                style={{ color: B.muted }}
-              >
-                <Link2 className="w-3 h-3 shrink-0" />
-                <span className="truncate">{publicUrl}</span>
-              </a>
+              <div className="mt-1.5 flex items-center gap-2 max-w-full">
+                <a
+                  href={publicPath}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-medium min-w-0 hover:opacity-70"
+                  style={{ color: B.muted }}
+                >
+                  <Link2 className="w-3 h-3 shrink-0" />
+                  <span className="truncate">{publicUrl}</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={copyUrl}
+                  className="shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full transition-opacity hover:opacity-70"
+                  style={{ color: B.muted, background: `${B.navy}08` }}
+                  aria-label="Copy profile link"
+                >
+                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={shareUrl}
+                  className="shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full transition-opacity hover:opacity-70"
+                  style={{ color: B.muted, background: `${B.navy}08` }}
+                  aria-label="Share profile"
+                >
+                  <Share2 className="w-3 h-3" />
+                </button>
+              </div>
             )}
           </div>
           </div>
