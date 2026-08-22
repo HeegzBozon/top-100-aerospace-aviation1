@@ -292,6 +292,7 @@ export default function Profile() {
               publicPath={publicPath}
             />
           }
+          theEight={fellowModules.eight}
           flightography={fellowModules.flightography}
           tradingCard={<ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />}
           personalizationBar={

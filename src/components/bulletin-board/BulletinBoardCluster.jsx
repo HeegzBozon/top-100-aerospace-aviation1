@@ -3,19 +3,18 @@ import { B } from '@/components/fellow-home/fellowHomeConfig';
 import BulletinComposeRail from './BulletinComposeRail';
 import BulletinToolTabs from './BulletinToolTabs';
 import BulletinComposer from './BulletinComposer';
-import ClusterTierToggle from './ClusterTierToggle';
-import ProfileTierTabs from './ProfileTierTabs';
+import JourneyTabs from './JourneyTabs';
 
 // Master instrument cluster — the Bulletin Board. One cohesive framed unit
-// (matching the masthead's sand container) housing everything below the masthead:
-// 30% rail = compose + left-rail modules; 70% pane = two-tier tabs
-// (Author: Dispatch/Notes/Gallery | Profile: Flightography/Trading Card).
+// (sand container matching the masthead) housing everything below the masthead:
+// 30% compass rail = compose + left-rail modules;
+// 70% pane = journey spine: Compose → The Eight → Flightography → Card.
 export default function BulletinBoardCluster({
   user, settings, accent, isOwner,
   statusKey, savingStatus, onStatusChange,
-  leftRail, flightography, tradingCard, personalizationBar,
+  leftRail, theEight, flightography, tradingCard, personalizationBar,
 }) {
-  const [tier, setTier] = useState('author');
+  const [tab, setTab] = useState('compose');
   const [composerOpen, setComposerOpen] = useState(false);
   const [composeType, setComposeType] = useState('note');
   const [editingPost, setEditingPost] = useState(null);
@@ -55,7 +54,7 @@ export default function BulletinBoardCluster({
 
         <div className="px-4 sm:px-5 pb-5">
           <div className="flex flex-col md:flex-row gap-3 items-start">
-            {/* 30% instrument rail: compose + navigation/info modules */}
+            {/* 30% compass rail: compose + navigation/info modules */}
             <div className="md:flex-[0_0_30%] shrink-0 min-w-0 w-full space-y-3">
               <BulletinComposeRail
                 tools={settings?.bulletin_tools}
@@ -68,14 +67,14 @@ export default function BulletinBoardCluster({
               {leftRail}
             </div>
 
-            {/* 70% pane: two-tier tabs */}
+            {/* 70% pane — journey spine */}
             <div className="md:flex-1 min-w-0 flex flex-col gap-3">
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <ClusterTierToggle tier={tier} onChange={setTier} accent={accent} />
+                <JourneyTabs tab={tab} onChange={setTab} accent={accent} />
                 {personalizationBar}
               </div>
 
-              {tier === 'author' ? (
+              {tab === 'compose' && (
                 <BulletinToolTabs
                   tools={settings?.bulletin_tools}
                   authorEmail={user?.email}
@@ -83,13 +82,10 @@ export default function BulletinBoardCluster({
                   isOwner={isOwner}
                   onEditPost={openEditor}
                 />
-              ) : (
-                <ProfileTierTabs
-                  flightography={flightography}
-                  tradingCard={tradingCard}
-                  accent={accent}
-                />
               )}
+              {tab === 'eight' && theEight}
+              {tab === 'flightography' && flightography}
+              {tab === 'card' && tradingCard}
             </div>
           </div>
         </div>
