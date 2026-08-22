@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, PenLine, ListOrdered, Plane, CreditCard, BarChart3, Users, Megaphone, MessagesSquare, Link2 } from 'lucide-react';
+import { Sparkles, PenLine, ListOrdered, Plane, CreditCard, BarChart3, Users, Megaphone, MessagesSquare, Link2, LayoutGrid } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import StatusPicker from '@/components/fellow-home/StatusPicker';
 import FellowStatsBox from '@/components/fellow-home/FellowStatsBox';
@@ -23,7 +23,7 @@ export default function BulletinBoardCluster({
   nextMove, onJumpToEight, onEditIdentity,
   wallEntries, onApproveWall,
   publicPath,
-  flightography, tradingCard, personalizationBar,
+  flightography, tradingCard, personalize,
   clusterOrder, clusterHidden, onSaveLayout,
 }) {
   const [composerOpen, setComposerOpen] = useState(false);
@@ -72,7 +72,7 @@ export default function BulletinBoardCluster({
     { key: 'network', label: 'Your network', icon: Users, frame: true, size: '1x1', node: (
       <ConnectionsRail user={user} accent={accent} bare />
     )},
-    { key: 'newsletter', label: 'Newsletter', icon: Megaphone, frame: true, size: '1x1', node: (
+    { key: 'newsletter', label: 'Newsletter', icon: Megaphone, frame: true, size: '1x1', pinned: true, node: (
       <AnnouncementsRail accent={accent} bare />
     )},
     { key: 'community', label: 'Community', icon: MessagesSquare, frame: true, size: '1x2', node: (
@@ -93,12 +93,12 @@ export default function BulletinBoardCluster({
         className="rounded-3xl overflow-hidden"
         style={{ background: B.sand, border: `1px solid ${B.border}` }}
       >
-        <div className="px-5 sm:px-8 pt-4 pb-2 flex items-center gap-3">
+        <div className="px-5 sm:px-8 pt-4 pb-2 flex items-center gap-2">
+          <LayoutGrid className="w-4 h-4" style={{ color: accent }} />
           <span className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: B.muted }}>
             Bulletin Board
           </span>
           <div className="h-px flex-1" style={{ background: `${B.navy}14` }} />
-          {personalizationBar}
         </div>
 
         <div className="px-4 sm:px-5 pb-5">
@@ -108,6 +108,7 @@ export default function BulletinBoardCluster({
             hidden={clusterHidden}
             accent={accent}
             onSave={onSaveLayout}
+            editor={personalize}
           />
         </div>
       </section>

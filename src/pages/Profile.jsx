@@ -8,7 +8,7 @@ import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
 import FellowIdentityHeader from '@/components/fellow-home/FellowIdentityHeader';
 import FlightographyModule from '@/components/fellow-home/FlightographyModule';
-import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
+import AccentCoverPicker from '@/components/bulletin-board/AccentCoverPicker';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
 import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
 import MastheadEditorial from '@/components/fellow-home/MastheadEditorial';
@@ -308,10 +308,9 @@ export default function Profile() {
           publicPath={publicPath}
           flightography={fellowModules.flightography}
           tradingCard={<ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />}
-          personalizationBar={
-            <PersonalizationBar
+          personalize={
+            <AccentCoverPicker
               settings={settings}
-              order={order}
               accent={accent}
               saving={saving}
               error={saveError}
