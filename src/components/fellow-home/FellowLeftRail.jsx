@@ -47,7 +47,7 @@ export default function FellowLeftRail({
       <RailBlock title="Pinned" accent={accent}>
         <div className="space-y-0.5">
           <RailLink to="/Top100Women2025" icon={Trophy}>TOP 100 Women 2025</RailLink>
-          <RailLink to="/ArchiveLanding" icon={Archive}>Archive</RailLink>
+          <RailLink to="/Top100Women2025#volumes" icon={Archive}>Archive</RailLink>
         </div>
       </RailBlock>
 
