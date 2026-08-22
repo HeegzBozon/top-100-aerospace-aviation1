@@ -60,6 +60,11 @@
       "default": [],
       "description": "Tile keys the Fellow has hidden from their Bulletin Board grid. Expression only; never feeds measurement."
     },
+    "cluster_tile_sizes": {
+      "type": "object",
+      "default": {},
+      "description": "Per-tile size overrides for the Bulletin Board grid (e.g. {\"compose\":\"2x2\"}). Valid keys: 1x1, 1x2, 2x1, 2x2. Falls back to the registry default when a key is absent. Expression only; never feeds measurement."
+    },
     "six_word_story": {
       "type": "string",
       "description": "Six word story, max 60 characters"

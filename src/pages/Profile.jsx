@@ -175,6 +175,27 @@ export default function Profile() {
     }
   };
 
+  // Per-tile size overrides for the board grid. Expression only; never touches measurement.
+  const saveClusterSizes = async (sizes) => {
+    const previous = settings;
+    setSettings((s) => ({ ...s, cluster_tile_sizes: sizes }));
+    try {
+      if (settings?.id) {
+        await base44.entities.FellowProfileSettings.update(settings.id, { cluster_tile_sizes: sizes });
+      } else {
+        const created = await base44.entities.FellowProfileSettings.create({
+          fellow_email: user.email,
+          fellow_id: nominee?.id,
+          domain_accent: settings?.domain_accent,
+          cluster_tile_sizes: sizes,
+        });
+        setSettings(created);
+      }
+    } catch (error) {
+      setSettings(previous);
+    }
+  };
+
   const handleExportData = async () => {
     setExporting(true);
     try {
@@ -320,6 +341,8 @@ export default function Profile() {
           clusterOrder={settings?.cluster_module_order}
           clusterHidden={settings?.cluster_hidden_modules}
           onSaveLayout={saveClusterLayout}
+          clusterSizes={settings?.cluster_tile_sizes}
+          onSaveSizes={saveClusterSizes}
         />
 
         <div className="mt-8 flex justify-end">

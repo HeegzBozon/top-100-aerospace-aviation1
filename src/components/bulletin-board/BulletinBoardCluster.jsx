@@ -25,6 +25,7 @@ export default function BulletinBoardCluster({
   publicPath,
   flightography, tradingCard, personalize,
   clusterOrder, clusterHidden, onSaveLayout,
+  clusterSizes, onSaveSizes,
 }) {
   const [composerOpen, setComposerOpen] = useState(false);
   const [composeType, setComposeType] = useState('note');
@@ -109,6 +110,8 @@ export default function BulletinBoardCluster({
             accent={accent}
             onSave={onSaveLayout}
             editor={personalize}
+            sizes={clusterSizes}
+            onResize={onSaveSizes}
           />
         </div>
       </section>

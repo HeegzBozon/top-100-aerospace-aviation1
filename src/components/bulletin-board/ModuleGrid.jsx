@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Eye, EyeOff, GripVertical, Settings2, Check, Pin } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
+import TileResizeHandle from '@/components/bulletin-board/TileResizeHandle';
 
 // Tile sizes snap to whole grid cells — 1x1, 1x2 (wide), 2x1 (tall), 2x2 (large).
 // No fractional tiles; every tile fills at least one cell.
@@ -12,16 +13,23 @@ const SIZE_CLASS = {
 };
 
 // The customizable board grid. Every module is a tile, evenly distributed.
-// Drag to reorder; toggle the eye to show or hide. Pinned tiles lock to the
-// front (top-left) and stay visible. Order + visibility persist.
-export default function ModuleGrid({ tiles, order, hidden, accent, onSave, editor }) {
+// Drag to reorder; toggle the eye to show or hide; drag the corner to resize.
+// Pinned tiles lock to the front (top-left) and stay visible. Order, visibility,
+// and per-tile sizes all persist.
+export default function ModuleGrid({ tiles, order, hidden, accent, onSave, editor, sizes, onResize }) {
   const [editing, setEditing] = useState(false);
   const [dragKey, setDragKey] = useState(null);
   const [overKey, setOverKey] = useState(null);
+  const [liveSizes, setLiveSizes] = useState(sizes || {});
+  const tileRefs = useRef({});
+
+  useEffect(() => { setLiveSizes(sizes || {}); }, [sizes]);
 
   const validKeys = tiles.map((t) => t.key);
   const pinnedKeys = tiles.filter((t) => t.pinned).map((t) => t.key);
   const isPinned = (k) => pinnedKeys.includes(k);
+  const byKey = Object.fromEntries(tiles.map((t) => [t.key, t]));
+  const sizeFor = (key) => liveSizes[key] || byKey[key]?.size || '1x1';
 
   const baseOrder = order || [];
   const saved = baseOrder.filter((k) => validKeys.includes(k));
@@ -34,7 +42,6 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
   const isHidden = (k) => hiddenSet.has(k) && !isPinned(k);
   const visible = normOrder.filter((k) => !isHidden(k));
   const list = editing ? normOrder : visible;
-  const byKey = Object.fromEntries(tiles.map((t) => [t.key, t]));
 
   const handleDrop = (targetKey) => {
     if (!dragKey || dragKey === targetKey || isPinned(dragKey) || isPinned(targetKey)) {
@@ -58,6 +65,9 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
     onSave(normOrder, next);
   };
 
+  const handleSizeChange = (key, size) => setLiveSizes((s) => ({ ...s, [key]: size }));
+  const handleSizeCommit = (key) => onResize?.(liveSizes);
+
   return (
     <div>
       <div className="flex justify-end mb-3">
@@ -75,7 +85,7 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
         <>
           {editor}
           <p className="text-[11px] mb-3" style={{ color: B.muted }}>
-            Drag a tile to reorder. Toggle the eye to show or hide. Pinned tiles stay locked in place.
+            Drag a tile to reorder. Toggle the eye to show or hide. Drag the bottom-right corner to resize. Pinned tiles stay locked in place.
           </p>
         </>
       )}
@@ -88,7 +98,8 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
           const pinned = isPinned(key);
           const framed = tile.frame !== false;
           const Icon = tile.icon;
-          const sizeClass = SIZE_CLASS[tile.size] || '';
+          const sizeClass = SIZE_CLASS[sizeFor(key)] || '';
+          const resizable = editing && !pinned && !!onResize;
 
           const dragHandlers = editing && !pinned
             ? {
@@ -122,8 +133,9 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
               <div
                 key={key}
                 id={`tile-${key}`}
+                ref={(el) => { tileRefs.current[key] = el; }}
                 {...dragHandlers}
-                className={`rounded-2xl p-4 flex flex-col ${sizeClass}`}
+                className={`rounded-2xl p-4 flex flex-col relative ${sizeClass}`}
                 style={{
                   background: '#fff',
                   border: pinned ? `1px solid ${accent}` : (overKey === key ? `2px dashed ${accent}` : `1px solid ${B.border}`),
@@ -141,6 +153,15 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
                   {controls}
                 </div>
                 <div className="min-w-0 flex-1">{tile.node}</div>
+                {resizable && (
+                  <TileResizeHandle
+                    tileRef={{ current: tileRefs.current[key] }}
+                    size={sizeFor(key)}
+                    accent={accent}
+                    onChange={(s) => handleSizeChange(key, s)}
+                    onCommit={() => handleSizeCommit(key)}
+                  />
+                )}
               </div>
             );
           }
@@ -149,8 +170,9 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
             <div
               key={key}
               id={`tile-${key}`}
+              ref={(el) => { tileRefs.current[key] = el; }}
               {...dragHandlers}
-              className={`flex flex-col ${sizeClass}`}
+              className={`flex flex-col relative ${sizeClass}`}
               style={{
                 opacity: hidden ? 0.45 : 1,
                 outline: overKey === key ? `2px dashed ${accent}` : 'none',
@@ -161,6 +183,15 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
             >
               {editing && <div className="flex justify-end mb-1">{controls}</div>}
               {tile.node}
+              {resizable && (
+                <TileResizeHandle
+                  tileRef={{ current: tileRefs.current[key] }}
+                  size={sizeFor(key)}
+                  accent={accent}
+                  onChange={(s) => handleSizeChange(key, s)}
+                  onCommit={() => handleSizeCommit(key)}
+                />
+              )}
             </div>
           );
         })}
