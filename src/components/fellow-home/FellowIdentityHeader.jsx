@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { BadgeCheck, MapPin, Plus, Link2, Copy, Share2, Check, Sparkles, ExternalLink } from 'lucide-react';
 import { B, coverUrl } from './fellowHomeConfig';
+import PublicProfileCanvas from './PublicProfileCanvas';
 
-export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent, publicPath, hasStory, onAvatarTap, clusterContent, blurbsContent, statusKey, savingStatus, onStatusChange }) {
+export default function FellowIdentityHeader({ user, nominee, accent, isOwner, onEditIdentity, coverKey, sixWordStory, coverContent, publicPath, hasStory, onAvatarTap, clusterContent, statusKey, savingStatus, onStatusChange }) {
   const cover = coverUrl(coverKey !== undefined ? coverKey : user?.cover_key);
   const avatar = user?.avatar_url || nominee?.avatar_url;
   const name = user?.full_name || nominee?.name || 'Unnamed Fellow';
   const verified = nominee?.verified_status && nominee.verified_status !== 'unverified';
   const publicUrl = publicPath ? `${window.location.origin}${publicPath}` : '';
   const [copied, setCopied] = useState(false);
+  const [flipped, setFlipped] = useState(false);
   const copyUrl = () => {
     navigator.clipboard?.writeText(publicUrl).then(() => {
       setCopied(true);
@@ -24,8 +25,8 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
     }
   };
 
-  return (
-    <header className="rounded-3xl overflow-hidden" style={{ background: B.sand, border: `1px solid ${B.border}` }}>
+  const ownerMasthead = (
+    <header className="rounded-3xl overflow-hidden h-full" style={{ background: B.sand, border: `1px solid ${B.border}` }}>
       {/* Season state — the head of the masthead. Sand flows straight into the identity body. */}
       {coverContent ? (
         coverContent
@@ -147,17 +148,18 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
             )}
           </div>
 
-          {/* View public profile + update — live with the name, location, and URL */}
+          {/* View public profile flips the masthead to the public canvas; Update opens the editor */}
           {isOwner && (
             <div className="md:ml-auto pb-1 flex items-center gap-3 shrink-0 flex-wrap">
               {publicPath && (
-                <Link
-                  to={publicPath}
+                <button
+                  type="button"
+                  onClick={() => setFlipped(true)}
                   className="flex items-center gap-1.5 text-xs font-semibold transition-opacity hover:opacity-70"
                   style={{ color: B.navy }}
                 >
                   <ExternalLink className="w-3.5 h-3.5" /> View public profile
-                </Link>
+                </button>
               )}
               <button
                 onClick={onEditIdentity}
@@ -181,5 +183,34 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
         )}
       </div>
     </header>
+  );
+
+  return (
+    <div style={{ perspective: '1400px' }}>
+      <div
+        className="grid transition-transform duration-700 ease-in-out"
+        style={{
+          transformStyle: 'preserve-3d',
+          transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          gridTemplateAreas: "'stack'",
+          gridTemplateColumns: '1fr',
+          gridTemplateRows: '1fr',
+        }}
+      >
+        <div style={{ gridArea: 'stack', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
+          {ownerMasthead}
+        </div>
+        <div style={{ gridArea: 'stack', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+          <PublicProfileCanvas
+            user={user}
+            nominee={nominee}
+            accent={accent}
+            sixWordStory={sixWordStory}
+            publicPath={publicPath}
+            onBack={() => setFlipped(false)}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
