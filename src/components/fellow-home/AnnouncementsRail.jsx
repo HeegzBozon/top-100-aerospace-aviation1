@@ -31,11 +31,11 @@ export default function AnnouncementsRail({ accent }) {
   }, []);
 
   return (
-    <RailBlock title="Platform Bulletins" accent={accent}>
+    <RailBlock title="TOP 100 Newsletter" accent={accent}>
       {loading ? (
         <div className="flex justify-center py-2"><Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: B.muted }} /></div>
       ) : items.length === 0 ? (
-        <p className="text-[11px] leading-snug" style={{ color: B.muted }}>No platform bulletins right now.</p>
+        <p className="text-[11px] leading-snug" style={{ color: B.muted }}>No newsletter issues right now.</p>
       ) : (
         <div className="space-y-2.5">
           {items.map((b) => {

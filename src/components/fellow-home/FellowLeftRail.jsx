@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Mail, MessageSquare, Send, Inbox, Link2, Check, ExternalLink } from 'lucide-react';
+import { Mail, MessageSquare, Send, Inbox, Link2, Check, ExternalLink, Trophy, Archive } from 'lucide-react';
 import { useState } from 'react';
 import RailBlock from '@/components/fellow-home/RailBlock';
 import AnnouncementsRail from '@/components/fellow-home/AnnouncementsRail';
@@ -44,6 +44,13 @@ export default function FellowLeftRail({
 
   return (
     <div className="space-y-4">
+      <RailBlock title="Pinned" accent={accent}>
+        <div className="space-y-0.5">
+          <RailLink to="/Top100Women2025" icon={Trophy}>TOP 100 Women 2025</RailLink>
+          <RailLink to="/ArchiveLanding" icon={Archive}>Archive</RailLink>
+        </div>
+      </RailBlock>
+
       <AnnouncementsRail accent={accent} />
 
       <CommunityBulletinsRail user={user} accent={accent} />
