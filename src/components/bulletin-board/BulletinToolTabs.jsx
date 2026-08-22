@@ -21,7 +21,7 @@ function Tab({ active, onClick, icon: Icon, label, accent }) {
 // The 70% reading surface. Renders the Fellow's enabled tools as horizontal
 // pill tabs, each loading its own bulletins via useBulletins.
 export default function BulletinToolTabs({ tools, authorEmail, accent, isOwner, onEditPost }) {
-  const ordered = orderedBulletinTools(tools);
+  const ordered = orderedBulletinTools(tools).filter((k) => toolByKey(k).postType);
   const [active, setActive] = useState(ordered[0]);
   const tool = toolByKey(active);
   const { items, loading, remove } = useBulletins(authorEmail, tool.postType);

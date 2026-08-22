@@ -13,7 +13,7 @@ export default function BulletinPost({ post, accent, isOwner, onEdit, onDelete, 
     <article className="group rounded-xl p-4" style={{ background: '#fff', border: `1px solid ${B.border}` }}>
       <div className="flex items-center justify-between mb-2">
         <span className="text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: accent }}>
-          {post.post_type === 'dispatch' ? 'Dispatch' : 'Note'}
+          {({ dispatch: 'Dispatch', note: 'Note', photo: 'Photo', quote: 'Quote', link: 'Link', field_note: 'Field Note' })[post.post_type] || 'Bulletin'}
           {post.status === 'draft' && <span className="ml-1.5 italic" style={{ color: B.muted }}>· draft</span>}
         </span>
         <div className="flex items-center gap-2">
@@ -44,6 +44,16 @@ export default function BulletinPost({ post, accent, isOwner, onEdit, onDelete, 
       ) : post.body ? (
         <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: B.navy }}>{post.body}</p>
       ) : null}
+
+      {post.media_urls?.length > 0 && (
+        <div className="grid grid-cols-2 gap-1.5 mt-3">
+          {post.media_urls.map((url, i) => (
+            <div key={i} className="rounded-lg overflow-hidden aspect-square">
+              <img src={url} alt="" className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+      )}
 
       {post.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-3">

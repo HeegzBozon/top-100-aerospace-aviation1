@@ -1,7 +1,7 @@
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useState, useEffect } from 'react';
-import { X, Loader2, Send } from 'lucide-react';
+import { X, Loader2, Send, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import { POST_TYPES } from './bulletinConfig';
@@ -24,7 +24,26 @@ export default function BulletinComposer({ open, onClose, user, accent, postType
   const [body, setBody] = useState('');
   const [richBody, setRichBody] = useState('');
   const [tags, setTags] = useState('');
+  const [mediaUrls, setMediaUrls] = useState([]);
+  const [uploading, setUploading] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  const handleFiles = async (files) => {
+    if (!files?.length) return;
+    setUploading(true);
+    try {
+      const urls = [];
+      for (const file of files) {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        if (file_url) urls.push(file_url);
+      }
+      setMediaUrls((prev) => [...prev, ...urls]);
+    } catch (e) {
+      console.error('Upload failed', e);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   // Prefill when opening for edit; clear when opening fresh.
   useEffect(() => {
@@ -33,18 +52,20 @@ export default function BulletinComposer({ open, onClose, user, accent, postType
     setBody(editing?.body || '');
     setRichBody(editing?.rich_body || '');
     setTags(editing?.tags?.join(', ') || '');
+    setMediaUrls(editing?.media_urls || []);
   }, [open, editing]);
 
   if (!open) return null;
 
-  const reset = () => { setTitle(''); setBody(''); setRichBody(''); setTags(''); };
+  const reset = () => { setTitle(''); setBody(''); setRichBody(''); setTags(''); setMediaUrls([]); };
 
   const handleClose = () => { reset(); onClose?.(); };
 
   const submit = async (status) => {
-    if (cfg.hasTitle && !title.trim()) return;
+    if (cfg.hasTitle && !cfg.hasMedia && !title.trim()) return;
     if (!cfg.hasRichBody && !body.trim()) return;
     if (cfg.hasRichBody && !richBody.trim()) return;
+    if (cfg.hasMedia && mediaUrls.length === 0) return;
     setBusy(true);
     try {
       const base = {
@@ -53,9 +74,10 @@ export default function BulletinComposer({ open, onClose, user, accent, postType
         status,
         published_date: status === 'published' ? (editing?.published_date || new Date().toISOString()) : editing?.published_date,
         title: cfg.hasTitle ? title.trim().slice(0, 120) : undefined,
-        body: cfg.hasRichBody ? undefined : body.trim().slice(0, cfg.bodyMax || 1000),
+        body: cfg.hasRichBody || cfg.hasMedia ? undefined : body.trim().slice(0, cfg.bodyMax || 1000),
         rich_body: cfg.hasRichBody ? richBody : undefined,
         tags: cfg.hasTags ? tags.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 8) : undefined,
+        media_urls: cfg.hasMedia ? mediaUrls : undefined,
       };
       Object.keys(base).forEach((k) => base[k] === undefined && delete base[k]);
       if (editing) {
@@ -110,7 +132,7 @@ export default function BulletinComposer({ open, onClose, user, accent, postType
               style={{ background: '#fff' }}
             />
           </div>
-        ) : (
+        ) : !cfg.hasMedia ? (
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
@@ -120,7 +142,7 @@ export default function BulletinComposer({ open, onClose, user, accent, postType
             className="w-full text-sm px-3 py-2 rounded-lg mb-3 outline-none resize-y"
             style={{ border: `1px solid ${B.border}`, color: B.navy }}
           />
-        )}
+        ) : null}
 
         {cfg.hasTags && (
           <input
@@ -130,6 +152,30 @@ export default function BulletinComposer({ open, onClose, user, accent, postType
             className="w-full text-sm px-3 py-2 rounded-lg mb-3 outline-none"
             style={{ border: `1px solid ${B.border}`, color: B.navy }}
           />
+        )}
+
+        {cfg.hasMedia && (
+          <div className="mb-3">
+            <div className="flex flex-wrap gap-2 mb-2">
+              {mediaUrls.map((url, i) => (
+                <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden" style={{ border: `1px solid ${B.border}` }}>
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setMediaUrls((prev) => prev.filter((_, idx) => idx !== i))}
+                    className="absolute top-0.5 right-0.5 bg-black/60 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3 text-white" />
+                  </button>
+                </div>
+              ))}
+              <label className="w-16 h-16 rounded-lg flex items-center justify-center cursor-pointer hover:bg-black/[0.04]" style={{ border: `1px dashed ${B.border}` }}>
+                {uploading ? <Loader2 className="w-4 h-4 animate-spin" style={{ color: B.muted }} /> : <Plus className="w-4 h-4" style={{ color: B.muted }} />}
+                <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(Array.from(e.target.files))} />
+              </label>
+            </div>
+            <p className="text-[10px] italic" style={{ color: B.muted }}>Images publish with your photo post.</p>
+          </div>
         )}
 
         <div className="flex items-center gap-2">

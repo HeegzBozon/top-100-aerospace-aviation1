@@ -12,13 +12,13 @@ export const BULLETIN_TOOLS = [
   { key: 'threads', label: 'Threads', icon: MessagesSquare, postType: null, emptyState: 'No threads started.' },
 ];
 
-export const DEFAULT_BULLETIN_TOOLS = ['dispatch', 'notes'];
+export const DEFAULT_BULLETIN_TOOLS = ['dispatch', 'notes', 'gallery'];
 
 // Post type formatters for the composer.
 export const POST_TYPES = {
   dispatch: { label: 'Dispatch', hasRichBody: true, hasTitle: true, hasTags: true },
   note: { label: 'Note', hasRichBody: false, hasTitle: true, hasTags: false, bodyMax: 1000 },
-  photo: { label: 'Photo', hasRichBody: false, hasTitle: false, hasMedia: true },
+  photo: { label: 'Photo', hasRichBody: false, hasTitle: true, hasTags: true, hasMedia: true },
   quote: { label: 'Quote', hasRichBody: false, hasTitle: false },
   link: { label: 'Link', hasRichBody: false, hasTitle: false },
   field_note: { label: 'Field Note', hasRichBody: true, hasTitle: true, hasTags: true },
