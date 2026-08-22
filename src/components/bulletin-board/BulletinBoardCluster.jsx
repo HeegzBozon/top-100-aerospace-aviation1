@@ -67,7 +67,7 @@ export default function BulletinBoardCluster({
       <StatusPicker statusKey={statusKey} accent={accent} saving={savingStatus} onChange={onStatusChange} />
     )},
     { key: 'compose', label: 'Compose', icon: PenLine, frame: true, size: '2x2', node: (
-      <BulletinToolTabs tools={settings?.bulletin_tools} authorEmail={user?.email} accent={accent} isOwner={isOwner} onEditPost={openEditor} />
+      <BulletinToolTabs tools={settings?.bulletin_tools} authorEmail={user?.email} accent={accent} isOwner={isOwner} onEditPost={openEditor} onCompose={openComposer} />
     )},
     { key: 'flightography', label: 'Flightography', icon: Plane, frame: false, size: '1x2', node: flightography },
     { key: 'card', label: 'Card', icon: CreditCard, frame: false, size: '1x1', node: tradingCard },
