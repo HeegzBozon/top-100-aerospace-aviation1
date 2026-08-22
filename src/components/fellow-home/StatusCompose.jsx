@@ -17,13 +17,13 @@ export default function StatusCompose({ statusKey, accent, saving, onStatusChang
         </span>
         <StatusPicker statusKey={statusKey} accent={accent} saving={saving} onChange={onStatusChange} compact />
       </div>
-      <Link
-        to="/Publisher"
+      <a
+        href="#bulletin-board"
         className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors hover:bg-black/[0.04]"
         style={{ color: B.navy, border: `1px solid ${B.navy}14` }}
       >
-        <PenLine className="w-4 h-4" style={{ color: accent }} /> Write a blog post
-      </Link>
+        <PenLine className="w-4 h-4" style={{ color: accent }} /> Write a bulletin
+      </a>
     </div>
   );
 }

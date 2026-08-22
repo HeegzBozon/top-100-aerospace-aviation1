@@ -36,6 +36,14 @@
       "default": [],
       "description": "Ordered module keys. Validated server-side against the allowlist; positions 1 and 2 are locked."
     },
+    "bulletin_tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Ordered bulletin board tool keys enabled for this Fellow. Validated server-side against the tool allowlist (dispatch, notes, gallery, quotes, field_notes, reading_list, threads)."
+    },
     "six_word_story": {
       "type": "string",
       "description": "Six word story, max 60 characters"

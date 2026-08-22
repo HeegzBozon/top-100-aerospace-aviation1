@@ -15,6 +15,7 @@ import SeasonBand from '@/components/fellow-home/SeasonBand';
 import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
 import MastheadEditorial from '@/components/fellow-home/MastheadEditorial';
 import StatusCompose from '@/components/fellow-home/StatusCompose';
+import BulletinBoardCluster from '@/components/bulletin-board/BulletinBoardCluster';
 import { useStoryExperience } from '@/components/fellow-home/useStoryExperience';
 import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
 import StoryViewer from '@/components/fellow-home/StoryViewer';
@@ -270,6 +271,9 @@ export default function Profile() {
             />
           }
         />
+
+        {/* Second instrument cluster — the Bulletin Board. Authored content lives here. */}
+        <BulletinBoardCluster user={user} settings={settings} accent={accent} isOwner />
 
         {/* Retro two-column: rail left, working surface right */}
         <div className="grid grid-cols-1 lg:grid-cols-[288px_1fr] gap-5 items-start">

@@ -23,17 +23,80 @@
       "default": "network",
       "description": "'platform' = institutional announcement (admin-only). 'network' = Fellow-authored bulletin."
     },
+    "post_type": {
+      "type": "string",
+      "enum": [
+        "dispatch",
+        "note",
+        "photo",
+        "quote",
+        "link",
+        "field_note"
+      ],
+      "default": "note",
+      "description": "Format of the bulletin. 'dispatch' = long-form rich text; 'note' = short micro-post; 'photo' = image gallery; 'quote' = attributed quote; 'link' = outbound reading list entry; 'field_note' = dated entry with optional media."
+    },
     "title": {
       "type": "string",
       "description": "Bulletin subject line, max 120 characters"
     },
     "body": {
       "type": "string",
-      "description": "Bulletin body, max 1000 characters"
+      "description": "Plain-text body for note/quote/link posts, max 1000 characters"
+    },
+    "rich_body": {
+      "type": "string",
+      "description": "Rich HTML body for dispatch and field_note posts (Quill output)"
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Uploaded image URLs for photo and field_note posts"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Free expressive tags. Never governance-bearing; carry zero measurement weight."
     },
     "link": {
       "type": "string",
-      "description": "Optional CTA route for platform bulletins (e.g. /nominate)"
+      "description": "Optional CTA route for platform bulletins (e.g. /nominate), or outbound URL for 'link' post_type"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "published",
+      "description": "Lifecycle state of a Fellow-authored bulletin"
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the bulletin was first published"
+    },
+    "endorse_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Denormalized endorsement count. Display-only feedback; never feeds measurement or influence tier."
+    },
+    "comment_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Denormalized comment count"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Owner-visible only. Feedback signal, never ranking weight."
     }
   },
   "required": [
