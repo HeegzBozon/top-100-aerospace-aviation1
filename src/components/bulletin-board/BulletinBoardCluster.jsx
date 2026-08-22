@@ -50,38 +50,38 @@ export default function BulletinBoardCluster({
   const approvedEndorsements = (wallEntries || []).filter((e) => e.moderation_status === 'approved').length;
 
   const tiles = [
-    { key: 'next_move', label: 'Next move', icon: Sparkles, frame: true, node: (
+    { key: 'next_move', label: 'Next move', icon: Sparkles, frame: true, size: '1x2', node: (
       <NextMove data={nextMove} user={user} accent={accent}
         onCompose={openComposer} onJumpToTile={jumpToTile}
         onJumpToEight={onJumpToEight} onEditIdentity={onEditIdentity} />
     )},
-    { key: 'status', label: 'Status', icon: PenLine, frame: true, node: (
+    { key: 'status', label: 'Status', icon: PenLine, frame: true, size: '1x1', node: (
       <StatusPicker statusKey={statusKey} accent={accent} saving={savingStatus} onChange={onStatusChange} />
     )},
-    { key: 'compose', label: 'Compose', icon: PenLine, frame: true, node: (
+    { key: 'compose', label: 'Compose', icon: PenLine, frame: true, size: '2x2', node: (
       <BulletinToolTabs tools={settings?.bulletin_tools} authorEmail={user?.email} accent={accent} isOwner={isOwner} onEditPost={openEditor} />
     )},
-    { key: 'eight', label: 'The Eight', icon: ListOrdered, frame: true, node: (
+    { key: 'eight', label: 'The Eight', icon: ListOrdered, frame: true, size: '1x1', node: (
       <EightPointer accent={accent} onJump={onJumpToEight} />
     )},
-    { key: 'flightography', label: 'Flightography', icon: Plane, frame: false, node: flightography },
-    { key: 'card', label: 'Card', icon: CreditCard, frame: false, node: tradingCard },
-    { key: 'record', label: 'The record', icon: BarChart3, frame: true, node: (
+    { key: 'flightography', label: 'Flightography', icon: Plane, frame: false, size: '2x2', node: flightography },
+    { key: 'card', label: 'Card', icon: CreditCard, frame: false, size: '1x1', node: tradingCard },
+    { key: 'record', label: 'The record', icon: BarChart3, frame: true, size: '1x1', node: (
       <FellowStatsBox user={user} nominee={nominee} viewCount={settings?.profile_view_count || 0} endorsementCount={approvedEndorsements} accent={accent} />
     )},
-    { key: 'network', label: 'Your network', icon: Users, frame: true, node: (
+    { key: 'network', label: 'Your network', icon: Users, frame: true, size: '1x1', node: (
       <ConnectionsRail user={user} accent={accent} bare />
     )},
-    { key: 'newsletter', label: 'Newsletter', icon: Megaphone, frame: true, node: (
+    { key: 'newsletter', label: 'Newsletter', icon: Megaphone, frame: true, size: '1x1', node: (
       <AnnouncementsRail accent={accent} bare />
     )},
-    { key: 'community', label: 'Community', icon: MessagesSquare, frame: true, node: (
+    { key: 'community', label: 'Community', icon: MessagesSquare, frame: true, size: '1x2', node: (
       <CommunityBulletinsRail user={user} accent={accent} bare />
     )},
-    { key: 'endorsements', label: 'Endorsements', icon: Sparkles, frame: false, node: (
+    { key: 'endorsements', label: 'Endorsements', icon: Sparkles, frame: false, size: '2x2', node: (
       <EndorsementWall entries={wallEntries || []} isOwner canWrite={false} isAdmin={user?.role === 'admin'} accent={accent} onSubmit={() => {}} onApprove={onApproveWall} />
     )},
-    { key: 'shortcuts', label: 'Shortcuts', icon: Link2, frame: true, node: (
+    { key: 'shortcuts', label: 'Shortcuts', icon: Link2, frame: true, size: '1x1', node: (
       <ShortcutsTile accent={accent} publicPath={publicPath} />
     )},
   ];

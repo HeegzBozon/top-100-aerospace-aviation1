@@ -2,6 +2,15 @@ import { useState } from 'react';
 import { Eye, EyeOff, GripVertical, Settings2, Check, LayoutGrid } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
+// Tile sizes snap to whole grid cells — 1x1, 1x2 (wide), 2x1 (tall), 2x2 (large).
+// No fractional tiles; every tile fills at least one cell.
+const SIZE_CLASS = {
+  '1x1': '',
+  '1x2': 'sm:col-span-2',
+  '2x1': 'sm:row-span-2',
+  '2x2': 'sm:col-span-2 sm:row-span-2',
+};
+
 // The customizable board grid. Every module is a tile, evenly distributed.
 // Drag to reorder; toggle the eye to show or hide. Order + visibility persist.
 export default function ModuleGrid({ tiles, order, hidden, accent, onSave }) {
@@ -60,7 +69,7 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave }) {
         </p>
       )}
 
-      <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(280px,1fr))] auto-rows-min">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-3 auto-rows-[minmax(160px,auto)] grid-flow-row-dense">
         {list.map((key) => {
           const tile = byKey[key];
           if (!tile) return null;
@@ -92,7 +101,7 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave }) {
                 key={key}
                 id={`tile-${key}`}
                 {...dragHandlers}
-                className="rounded-2xl p-4 flex flex-col"
+                className={`rounded-2xl p-4 flex flex-col ${SIZE_CLASS[tile.size] || ''}`}
                 style={{
                   background: '#fff',
                   border: overKey === key ? `2px dashed ${accent}` : `1px solid ${B.border}`,
@@ -120,7 +129,7 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave }) {
               key={key}
               id={`tile-${key}`}
               {...dragHandlers}
-              className="flex flex-col"
+              className={`flex flex-col ${SIZE_CLASS[tile.size] || ''}`}
               style={{
                 opacity: isHidden ? 0.45 : 1,
                 outline: overKey === key ? `2px dashed ${accent}` : 'none',
