@@ -1,9 +1,10 @@
 import { B } from '@/components/fellow-home/fellowHomeConfig';
+import StatusPicker from '@/components/fellow-home/StatusPicker';
 import { orderedBulletinTools, toolByKey } from './bulletinConfig';
 
-// The 30% compose rail. Renders a compose button per enabled tool.
-// Clicking opens the composer seeded with that tool's post_type.
-export default function BulletinComposeRail({ tools, accent, onCompose }) {
+// The consolidated compose rail. Status + authored-content tools in one card.
+// Clicking a tool opens the composer seeded with that tool's post_type.
+export default function BulletinComposeRail({ tools, accent, onCompose, statusKey, saving, onStatusChange }) {
   const ordered = orderedBulletinTools(tools);
 
   return (
@@ -14,6 +15,8 @@ export default function BulletinComposeRail({ tools, accent, onCompose }) {
       <span className="text-[10px] font-semibold uppercase tracking-[0.16em] px-1" style={{ color: B.muted }}>
         Bulletin Board
       </span>
+      <StatusPicker statusKey={statusKey} accent={accent} saving={saving} onChange={onStatusChange} compact />
+      <div className="my-0.5 h-px" style={{ background: B.border }} />
       <div className="flex flex-col gap-1.5">
         {ordered.map((key) => {
           const tool = toolByKey(key);

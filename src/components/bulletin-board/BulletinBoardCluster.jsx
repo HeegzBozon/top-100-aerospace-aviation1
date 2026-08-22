@@ -6,7 +6,7 @@ import BulletinComposer from './BulletinComposer';
 // The second instrument cluster — the Bulletin Board. Mirrors the masthead
 // cluster's 30/70 split: compose rail left, Fellow-authored tools right.
 // Sits below identity + verification; never disturbs locked positions.
-export default function BulletinBoardCluster({ user, settings, accent, isOwner }) {
+export default function BulletinBoardCluster({ user, settings, accent, isOwner, statusKey, savingStatus, onStatusChange }) {
   const [composerOpen, setComposerOpen] = useState(false);
   const [composeType, setComposeType] = useState('note');
   const [editingPost, setEditingPost] = useState(null);
@@ -37,6 +37,9 @@ export default function BulletinBoardCluster({ user, settings, accent, isOwner }
             tools={settings?.bulletin_tools}
             accent={accent}
             onCompose={openComposer}
+            statusKey={statusKey}
+            saving={savingStatus}
+            onStatusChange={onStatusChange}
           />
         </div>
         <div className="md:flex-1 min-w-0">
