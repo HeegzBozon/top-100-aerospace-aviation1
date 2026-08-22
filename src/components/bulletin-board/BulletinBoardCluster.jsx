@@ -51,10 +51,17 @@ export default function BulletinBoardCluster({
   const approvedEndorsements = (wallEntries || []).filter((e) => e.moderation_status === 'approved').length;
 
   const tiles = [
-    { key: 'next_move', label: 'Next move', icon: Sparkles, frame: true, size: '1x2', node: (
+    // Platform row — locked to the top, three 1x1 tiles. Not Fellow-reorderable.
+    { key: 'newsletter', label: 'Newsletter', icon: Megaphone, frame: true, size: '1x1', pinned: true, node: (
+      <AnnouncementsRail accent={accent} bare />
+    )},
+    { key: 'next_move', label: 'Next move', icon: Sparkles, frame: true, size: '1x1', pinned: true, node: (
       <NextMove data={nextMove} user={user} accent={accent}
         onCompose={openComposer} onJumpToTile={jumpToTile}
         onJumpToEight={onJumpToEight} onEditIdentity={onEditIdentity} />
+    )},
+    { key: 'shortcuts', label: 'Shortcuts', icon: Link2, frame: true, size: '1x1', pinned: true, node: (
+      <ShortcutsTile accent={accent} publicPath={publicPath} />
     )},
     { key: 'status', label: 'Status', icon: PenLine, frame: true, size: '1x1', node: (
       <StatusPicker statusKey={statusKey} accent={accent} saving={savingStatus} onChange={onStatusChange} />
@@ -70,17 +77,11 @@ export default function BulletinBoardCluster({
     { key: 'network', label: 'Your network', icon: Users, frame: true, size: '1x1', node: (
       <ConnectionsRail user={user} accent={accent} bare />
     )},
-    { key: 'newsletter', label: 'Newsletter', icon: Megaphone, frame: true, size: '1x2', pinned: true, node: (
-      <AnnouncementsRail accent={accent} bare />
-    )},
     { key: 'community', label: 'Community', icon: MessagesSquare, frame: true, size: '1x2', node: (
       <CommunityBulletinsRail user={user} accent={accent} bare />
     )},
     { key: 'endorsements', label: 'Endorsements', icon: Sparkles, frame: false, size: '1x2', node: (
       <EndorsementWall entries={wallEntries || []} isOwner canWrite={false} isAdmin={user?.role === 'admin'} accent={accent} onSubmit={() => {}} onApprove={onApproveWall} />
-    )},
-    { key: 'shortcuts', label: 'Shortcuts', icon: Link2, frame: true, size: '1x1', node: (
-      <ShortcutsTile accent={accent} publicPath={publicPath} />
     )},
   ];
 
