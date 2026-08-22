@@ -9,11 +9,24 @@ import BulletinComposer from './BulletinComposer';
 export default function BulletinBoardCluster({ user, settings, accent, isOwner }) {
   const [composerOpen, setComposerOpen] = useState(false);
   const [composeType, setComposeType] = useState('note');
+  const [editingPost, setEditingPost] = useState(null);
 
   const openComposer = (postType) => {
     if (!postType) return; // tools with null postType (threads) are phase 2
+    setEditingPost(null);
     setComposeType(postType);
     setComposerOpen(true);
+  };
+
+  const openEditor = (post) => {
+    setEditingPost(post);
+    setComposeType(post.post_type || 'note');
+    setComposerOpen(true);
+  };
+
+  const closeComposer = () => {
+    setComposerOpen(false);
+    setEditingPost(null);
   };
 
   return (
@@ -32,16 +45,18 @@ export default function BulletinBoardCluster({ user, settings, accent, isOwner }
             authorEmail={user?.email}
             accent={accent}
             isOwner={isOwner}
+            onEditPost={openEditor}
           />
         </div>
       </div>
 
       <BulletinComposer
         open={composerOpen}
-        onClose={() => setComposerOpen(false)}
+        onClose={closeComposer}
         user={user}
         accent={accent}
         postType={composeType}
+        editing={editingPost}
       />
     </section>
   );
