@@ -147,13 +147,6 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
             )}
           </div>
           </div>
-
-          {/* Editorial blurbs share the name row, aligned to the right */}
-          {blurbsContent && (
-            <div className="md:ml-auto md:pb-1 w-full md:w-auto">
-              {blurbsContent}
-            </div>
-          )}
         </div>
 
         {/* Action row — status + completeness (left) | view + update (right) */}

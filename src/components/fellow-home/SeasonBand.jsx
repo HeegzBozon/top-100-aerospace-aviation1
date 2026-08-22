@@ -8,7 +8,7 @@ import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // Season state, staged as an editorial masthead band. On mobile the calendar and
 // year-rule collapse to keep the band light; countdown, tally, and links stay visible.
-export default function SeasonBand({ accent, underCountdown }) {
+export default function SeasonBand({ accent, underCountdown, underTally }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -20,6 +20,11 @@ export default function SeasonBand({ accent, underCountdown }) {
         </div>
         <div className="md:px-7 md:border-l" style={{ borderColor: `${B.navy}14` }}>
           <NomineeTally accent={accent} />
+          {underTally && (
+            <div className="mt-4 pt-4 border-t" style={{ borderColor: `${B.navy}14` }}>
+              {underTally}
+            </div>
+          )}
         </div>
         <div className="md:pl-7 md:border-l" style={{ borderColor: `${B.navy}14` }}>
           <button
