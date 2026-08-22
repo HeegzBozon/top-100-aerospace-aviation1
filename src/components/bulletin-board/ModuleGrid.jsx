@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, GripVertical, Settings2, Check, Lock } from 'lucide-react';
+import { Eye, EyeOff, GripVertical, Settings2, Check, Pin } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // Tile sizes snap to whole grid cells — 1x1, 1x2 (wide), 2x1 (tall), 2x2 (large).
@@ -103,7 +103,9 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
           const controls = editing && (
             <div className="flex items-center gap-1 shrink-0">
               {pinned ? (
-                <Lock className="w-3.5 h-3.5" style={{ color: B.muted }} />
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>
+                  <Pin className="w-3 h-3" /> Pinned
+                </span>
               ) : (
                 <>
                   <button onClick={() => toggleHidden(key)} title={hidden ? 'Show' : 'Hide'} style={{ color: hidden ? B.muted : accent }}>
@@ -124,7 +126,7 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
                 className={`rounded-2xl p-4 flex flex-col ${sizeClass}`}
                 style={{
                   background: '#fff',
-                  border: overKey === key ? `2px dashed ${accent}` : `1px solid ${B.border}`,
+                  border: pinned ? `1px solid ${accent}` : (overKey === key ? `2px dashed ${accent}` : `1px solid ${B.border}`),
                   opacity: hidden ? 0.45 : 1,
                   cursor: editing && !pinned ? (dragKey === key ? 'grabbing' : 'grab') : 'default',
                 }}

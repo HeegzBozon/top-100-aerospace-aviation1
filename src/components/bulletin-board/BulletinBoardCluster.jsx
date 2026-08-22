@@ -64,7 +64,7 @@ export default function BulletinBoardCluster({
     { key: 'eight', label: 'The Eight', icon: ListOrdered, frame: true, size: '1x1', node: (
       <EightPointer accent={accent} onJump={onJumpToEight} />
     )},
-    { key: 'flightography', label: 'Flightography', icon: Plane, frame: false, size: '2x2', node: flightography },
+    { key: 'flightography', label: 'Flightography', icon: Plane, frame: false, size: '1x2', node: flightography },
     { key: 'card', label: 'Card', icon: CreditCard, frame: false, size: '1x1', node: tradingCard },
     { key: 'record', label: 'The record', icon: BarChart3, frame: true, size: '1x1', node: (
       <FellowStatsBox user={user} nominee={nominee} viewCount={settings?.profile_view_count || 0} endorsementCount={approvedEndorsements} accent={accent} />
@@ -72,13 +72,13 @@ export default function BulletinBoardCluster({
     { key: 'network', label: 'Your network', icon: Users, frame: true, size: '1x1', node: (
       <ConnectionsRail user={user} accent={accent} bare />
     )},
-    { key: 'newsletter', label: 'Newsletter', icon: Megaphone, frame: true, size: '1x1', pinned: true, node: (
+    { key: 'newsletter', label: 'Newsletter', icon: Megaphone, frame: true, size: '1x2', pinned: true, node: (
       <AnnouncementsRail accent={accent} bare />
     )},
     { key: 'community', label: 'Community', icon: MessagesSquare, frame: true, size: '1x2', node: (
       <CommunityBulletinsRail user={user} accent={accent} bare />
     )},
-    { key: 'endorsements', label: 'Endorsements', icon: Sparkles, frame: false, size: '2x2', node: (
+    { key: 'endorsements', label: 'Endorsements', icon: Sparkles, frame: false, size: '1x2', node: (
       <EndorsementWall entries={wallEntries || []} isOwner canWrite={false} isAdmin={user?.role === 'admin'} accent={accent} onSubmit={() => {}} onApprove={onApproveWall} />
     )},
     { key: 'shortcuts', label: 'Shortcuts', icon: Link2, frame: true, size: '1x1', node: (
