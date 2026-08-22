@@ -186,21 +186,29 @@ export default function FellowIdentityHeader({ user, nominee, accent, isOwner, o
   );
 
   return (
-    <div style={{ perspective: '1400px' }}>
+    <div style={{ perspective: '1600px' }}>
       <div
-        className="grid transition-transform duration-700 ease-in-out"
+        className="relative transition-transform duration-700 ease-in-out"
         style={{
           transformStyle: 'preserve-3d',
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-          gridTemplateAreas: "'stack'",
-          gridTemplateColumns: '1fr',
-          gridTemplateRows: '1fr',
         }}
       >
-        <div style={{ gridArea: 'stack', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
+        {/* Front — owner masthead. In flow to set the container height. */}
+        <div style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', pointerEvents: flipped ? 'none' : 'auto' }}>
           {ownerMasthead}
         </div>
-        <div style={{ gridArea: 'stack', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+        {/* Back — public canvas. Absolute over the front; pointer-dead when not flipped. */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+            pointerEvents: flipped ? 'auto' : 'none',
+          }}
+        >
           <PublicProfileCanvas
             user={user}
             nominee={nominee}
