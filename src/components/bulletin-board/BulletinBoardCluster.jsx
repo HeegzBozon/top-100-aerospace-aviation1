@@ -14,6 +14,7 @@ import EightPointer from './EightPointer';
 import ShortcutsTile from './ShortcutsTile';
 import ModuleGrid from './ModuleGrid';
 import BoardSwitcher from '@/components/platform-board/BoardSwitcher';
+import PlatformBoardView from '@/components/platform-board/PlatformBoardView';
 
 // Master instrument cluster — the Bulletin Board as one customizable grid.
 // Every module is an evenly distributed, drag-reorderable, toggleable tile.
@@ -31,6 +32,7 @@ export default function BulletinBoardCluster({
   const [composerOpen, setComposerOpen] = useState(false);
   const [composeType, setComposeType] = useState('note');
   const [editingPost, setEditingPost] = useState(null);
+  const [board, setBoard] = useState('fellow');
 
   const openComposer = (postType) => {
     if (!postType) return;
@@ -99,23 +101,28 @@ export default function BulletinBoardCluster({
             Bulletin Board
           </span>
           <div className="h-px flex-1" style={{ background: `${B.navy}14` }} />
-          <BoardSwitcher active="fellow" accent={accent} />
+          <BoardSwitcher active={board} onSelect={setBoard} accent={accent} />
         </div>
 
         <div className="px-4 sm:px-5 pb-5">
-          <ModuleGrid
-            tiles={tiles}
-            order={clusterOrder}
-            hidden={clusterHidden}
-            accent={accent}
-            onSave={onSaveLayout}
-            editor={personalize}
-            sizes={clusterSizes}
-            onResize={onSaveSizes}
-          />
+          {board === 'platform' ? (
+            <PlatformBoardView user={user} accent={accent} />
+          ) : (
+            <ModuleGrid
+              tiles={tiles}
+              order={clusterOrder}
+              hidden={clusterHidden}
+              accent={accent}
+              onSave={onSaveLayout}
+              editor={personalize}
+              sizes={clusterSizes}
+              onResize={onSaveSizes}
+            />
+          )}
         </div>
       </section>
 
+      {board === 'fellow' && (
       <BulletinComposer
         open={composerOpen}
         onClose={closeComposer}
@@ -124,6 +131,7 @@ export default function BulletinBoardCluster({
         postType={composeType}
         editing={editingPost}
       />
+      )}
     </>
   );
 }
