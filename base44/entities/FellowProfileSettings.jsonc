@@ -44,6 +44,22 @@
       "default": [],
       "description": "Ordered bulletin board tool keys enabled for this Fellow. Validated server-side against the tool allowlist (dispatch, notes, gallery, quotes, field_notes, reading_list, threads)."
     },
+    "cluster_module_order": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Ordered Bulletin Board tile keys. Fellow-configured; defaults to the registry order when empty."
+    },
+    "cluster_hidden_modules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Tile keys the Fellow has hidden from their Bulletin Board grid. Expression only; never feeds measurement."
+    },
     "six_word_story": {
       "type": "string",
       "description": "Six word story, max 60 characters"

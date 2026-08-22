@@ -1,25 +1,31 @@
 import { useState } from 'react';
+import { Sparkles, PenLine, ListOrdered, Plane, CreditCard, BarChart3, Users, Megaphone, MessagesSquare, Link2 } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
-import BulletinComposeRail from './BulletinComposeRail';
+import StatusPicker from '@/components/fellow-home/StatusPicker';
+import FellowStatsBox from '@/components/fellow-home/FellowStatsBox';
+import ConnectionsRail from '@/components/fellow-home/ConnectionsRail';
+import AnnouncementsRail from '@/components/fellow-home/AnnouncementsRail';
+import CommunityBulletinsRail from '@/components/fellow-home/CommunityBulletinsRail';
+import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import BulletinToolTabs from './BulletinToolTabs';
 import BulletinComposer from './BulletinComposer';
-import JourneyTabs from './JourneyTabs';
 import NextMove from './NextMove';
 import EightPointer from './EightPointer';
+import ShortcutsTile from './ShortcutsTile';
+import ModuleGrid from './ModuleGrid';
 
-// Master instrument cluster — the Bulletin Board. One cohesive framed unit
-// (sand container matching the masthead) housing the hero's journey:
-//  - 30% compass rail (Act I): compose + arrival-state modules
-//  - 70% pane (Act II): NextMove engine + journey spine
-//      Compose → The Eight → Flightography → Card
-//  - Return band (Act III): endorsements + community beneath the work
+// Master instrument cluster — the Bulletin Board as one customizable grid.
+// Every module is an evenly distributed, drag-reorderable, toggleable tile.
+// Layout (order + visibility) persists to FellowProfileSettings.
 export default function BulletinBoardCluster({
-  user, settings, accent, isOwner,
+  user, nominee, settings, accent, isOwner,
   statusKey, savingStatus, onStatusChange,
-  leftRail, flightography, tradingCard, personalizationBar,
-  nextMove, onJumpToEight, onEditIdentity, returnBand,
+  nextMove, onJumpToEight, onEditIdentity,
+  wallEntries, onApproveWall,
+  publicPath,
+  flightography, tradingCard, personalizationBar,
+  clusterOrder, clusterHidden, onSaveLayout,
 }) {
-  const [tab, setTab] = useState('compose');
   const [composerOpen, setComposerOpen] = useState(false);
   const [composeType, setComposeType] = useState('note');
   const [editingPost, setEditingPost] = useState(null);
@@ -30,17 +36,55 @@ export default function BulletinBoardCluster({
     setComposeType(postType);
     setComposerOpen(true);
   };
-
   const openEditor = (post) => {
     setEditingPost(post);
     setComposeType(post.post_type || 'note');
     setComposerOpen(true);
   };
+  const closeComposer = () => { setComposerOpen(false); setEditingPost(null); };
 
-  const closeComposer = () => {
-    setComposerOpen(false);
-    setEditingPost(null);
+  const jumpToTile = (key) => {
+    document.getElementById(`tile-${key}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
+
+  const approvedEndorsements = (wallEntries || []).filter((e) => e.moderation_status === 'approved').length;
+
+  const tiles = [
+    { key: 'next_move', label: 'Next move', icon: Sparkles, frame: true, node: (
+      <NextMove data={nextMove} user={user} accent={accent}
+        onCompose={openComposer} onJumpToTile={jumpToTile}
+        onJumpToEight={onJumpToEight} onEditIdentity={onEditIdentity} />
+    )},
+    { key: 'status', label: 'Status', icon: PenLine, frame: true, node: (
+      <StatusPicker statusKey={statusKey} accent={accent} saving={savingStatus} onChange={onStatusChange} />
+    )},
+    { key: 'compose', label: 'Compose', icon: PenLine, frame: true, node: (
+      <BulletinToolTabs tools={settings?.bulletin_tools} authorEmail={user?.email} accent={accent} isOwner={isOwner} onEditPost={openEditor} />
+    )},
+    { key: 'eight', label: 'The Eight', icon: ListOrdered, frame: true, node: (
+      <EightPointer accent={accent} onJump={onJumpToEight} />
+    )},
+    { key: 'flightography', label: 'Flightography', icon: Plane, frame: false, node: flightography },
+    { key: 'card', label: 'Card', icon: CreditCard, frame: false, node: tradingCard },
+    { key: 'record', label: 'The record', icon: BarChart3, frame: true, node: (
+      <FellowStatsBox user={user} nominee={nominee} viewCount={settings?.profile_view_count || 0} endorsementCount={approvedEndorsements} accent={accent} />
+    )},
+    { key: 'network', label: 'Your network', icon: Users, frame: true, node: (
+      <ConnectionsRail user={user} accent={accent} bare />
+    )},
+    { key: 'newsletter', label: 'Newsletter', icon: Megaphone, frame: true, node: (
+      <AnnouncementsRail accent={accent} bare />
+    )},
+    { key: 'community', label: 'Community', icon: MessagesSquare, frame: true, node: (
+      <CommunityBulletinsRail user={user} accent={accent} bare />
+    )},
+    { key: 'endorsements', label: 'Endorsements', icon: Sparkles, frame: false, node: (
+      <EndorsementWall entries={wallEntries || []} isOwner canWrite={false} isAdmin={user?.role === 'admin'} accent={accent} onSubmit={() => {}} onApprove={onApproveWall} />
+    )},
+    { key: 'shortcuts', label: 'Shortcuts', icon: Link2, frame: true, node: (
+      <ShortcutsTile accent={accent} publicPath={publicPath} />
+    )},
+  ];
 
   return (
     <>
@@ -49,63 +93,22 @@ export default function BulletinBoardCluster({
         className="rounded-3xl overflow-hidden"
         style={{ background: B.sand, border: `1px solid ${B.border}` }}
       >
-        {/* Cluster kicker — editorial label, like the masthead's banding */}
         <div className="px-5 sm:px-8 pt-4 pb-2 flex items-center gap-3">
           <span className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: B.muted }}>
             Bulletin Board
           </span>
           <div className="h-px flex-1" style={{ background: `${B.navy}14` }} />
+          {personalizationBar}
         </div>
 
         <div className="px-4 sm:px-5 pb-5">
-          <div className="flex flex-col md:flex-row gap-3 items-start">
-            {/* 30% compass rail: compose + arrival-state modules */}
-            <div className="md:flex-[0_0_30%] shrink-0 min-w-0 w-full space-y-3">
-              <BulletinComposeRail
-                tools={settings?.bulletin_tools}
-                accent={accent}
-                onCompose={openComposer}
-                statusKey={statusKey}
-                saving={savingStatus}
-                onStatusChange={onStatusChange}
-              />
-              {leftRail}
-            </div>
-
-            {/* 70% pane — the work */}
-            <div className="md:flex-1 min-w-0 flex flex-col gap-3">
-              <NextMove
-                data={nextMove}
-                user={user}
-                accent={accent}
-                onCompose={openComposer}
-                onSwitchTab={setTab}
-                onJumpToEight={onJumpToEight}
-                onEditIdentity={onEditIdentity}
-              />
-
-              <div className="flex items-center justify-between gap-3 flex-wrap">
-                <JourneyTabs tab={tab} onChange={setTab} accent={accent} />
-                {personalizationBar}
-              </div>
-
-              {tab === 'compose' && (
-                <BulletinToolTabs
-                  tools={settings?.bulletin_tools}
-                  authorEmail={user?.email}
-                  accent={accent}
-                  isOwner={isOwner}
-                  onEditPost={openEditor}
-                />
-              )}
-              {tab === 'eight' && <EightPointer accent={accent} onJump={onJumpToEight} />}
-              {tab === 'flightography' && flightography}
-              {tab === 'card' && tradingCard}
-            </div>
-          </div>
-
-          {/* Act III — the return */}
-          {returnBand}
+          <ModuleGrid
+            tiles={tiles}
+            order={clusterOrder}
+            hidden={clusterHidden}
+            accent={accent}
+            onSave={onSaveLayout}
+          />
         </div>
       </section>
 

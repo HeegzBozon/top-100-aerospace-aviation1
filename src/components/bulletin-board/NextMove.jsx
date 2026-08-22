@@ -4,10 +4,9 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
-// The action-driving engine. Surfaces the highest-leverage unfinished step
-// and always advances the journey. Reads only completion booleans — never
-// transactional, payment, availability, or sponsorship fields.
-export default function NextMove({ data, user, accent, onCompose, onSwitchTab, onJumpToEight, onEditIdentity }) {
+// The action-driving engine. Surfaces the highest-leverage unfinished step.
+// Bare content — the ModuleGrid card frames it.
+export default function NextMove({ data, user, accent, onCompose, onJumpToTile, onJumpToEight, onEditIdentity }) {
   const { eightCount = 0, hasFlightography, hasSixWord } = data || {};
   const [dispatchCount, setDispatchCount] = useState(null);
 
@@ -21,7 +20,7 @@ export default function NextMove({ data, user, accent, onCompose, onSwitchTab, o
   const steps = [
     { ready: eightCount >= 8, label: `Fill position ${Math.min(eightCount + 1, 8)} of your Eight`, action: onJumpToEight },
     { ready: (dispatchCount ?? 0) > 0, label: 'File your first dispatch', action: () => onCompose('dispatch') },
-    { ready: hasFlightography, label: 'Add your career history', action: () => onSwitchTab('flightography') },
+    { ready: hasFlightography, label: 'Add your career history', action: () => onJumpToTile('flightography') },
     { ready: hasSixWord, label: 'Write your six-word story', action: onEditIdentity },
   ];
 
@@ -29,7 +28,7 @@ export default function NextMove({ data, user, accent, onCompose, onSwitchTab, o
 
   if (dispatchCount === null) {
     return (
-      <div className="rounded-xl p-4 flex items-center gap-2" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
+      <div className="flex items-center gap-2 py-1">
         <Sparkles className="w-4 h-4 animate-pulse" style={{ color: accent }} />
         <span className="text-xs" style={{ color: B.muted }}>Finding your next move…</span>
       </div>
@@ -38,20 +37,20 @@ export default function NextMove({ data, user, accent, onCompose, onSwitchTab, o
 
   if (!next) {
     return (
-      <div className="rounded-xl p-4 flex items-center justify-between gap-3" style={{ background: B.cream, border: `1px solid ${B.border}` }}>
+      <div className="flex items-center justify-between gap-3 py-1">
         <div className="flex items-center gap-2 min-w-0">
           <Sparkles className="w-4 h-4 shrink-0" style={{ color: accent }} />
           <span className="text-sm font-semibold truncate" style={{ color: B.navy }}>Your profile is complete</span>
         </div>
         <Link to="/Top100Women2025" className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] shrink-0" style={{ color: B.navy }}>
-          Explore the directory <ArrowRight className="w-3.5 h-3.5" style={{ color: accent }} />
+          Explore <ArrowRight className="w-3.5 h-3.5" style={{ color: accent }} />
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl p-4 flex items-center justify-between gap-3" style={{ background: B.cream, border: `1px solid ${B.border}`, borderLeft: `3px solid ${accent}` }}>
+    <div className="flex items-center justify-between gap-3 py-1">
       <div className="flex items-center gap-2 min-w-0">
         <Sparkles className="w-4 h-4 shrink-0" style={{ color: accent }} />
         <span className="text-sm font-semibold truncate" style={{ color: B.navy }}>{next.label}</span>

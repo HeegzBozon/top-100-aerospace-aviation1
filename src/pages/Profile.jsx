@@ -7,12 +7,8 @@ import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
 import FellowIdentityHeader from '@/components/fellow-home/FellowIdentityHeader';
-import TheEight from '@/components/fellow-home/TheEight';
 import FlightographyModule from '@/components/fellow-home/FlightographyModule';
 import PersonalizationBar from '@/components/fellow-home/PersonalizationBar';
-import CompassRail from '@/components/bulletin-board/CompassRail';
-import ReturnBand from '@/components/bulletin-board/ReturnBand';
-import NextMove from '@/components/bulletin-board/NextMove';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
 import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
 import MastheadEditorial from '@/components/fellow-home/MastheadEditorial';
@@ -154,6 +150,31 @@ export default function Profile() {
     }
   };
 
+  // Cluster grid layout — module order + visibility. Expression only; never touches measurement.
+  const saveClusterLayout = async (order, hidden) => {
+    const previous = settings;
+    setSettings((s) => ({ ...s, cluster_module_order: order, cluster_hidden_modules: hidden }));
+    try {
+      if (settings?.id) {
+        await base44.entities.FellowProfileSettings.update(settings.id, {
+          cluster_module_order: order,
+          cluster_hidden_modules: hidden,
+        });
+      } else {
+        const created = await base44.entities.FellowProfileSettings.create({
+          fellow_email: user.email,
+          fellow_id: nominee?.id,
+          domain_accent: settings?.domain_accent,
+          cluster_module_order: order,
+          cluster_hidden_modules: hidden,
+        });
+        setSettings(created);
+      }
+    } catch (error) {
+      setSettings(previous);
+    }
+  };
+
   const handleExportData = async () => {
     setExporting(true);
     try {
@@ -189,17 +210,6 @@ export default function Profile() {
     : `/ProfileView?user=${encodeURIComponent(user?.email || '')}`;
 
   const fellowModules = {
-    eight: (
-      <TheEight
-        key="eight"
-        rankings={top100.rankings}
-        isOwner
-        accent={accent}
-        isPublic={settings?.eight_public !== false}
-        savingVisibility={savingEightVisibility}
-        onVisibilityChange={saveEightVisibility}
-      />
-    ),
     flightography: (
       <FlightographyModule
         key="flightography"
@@ -279,22 +289,13 @@ export default function Profile() {
         {/* Master instrument cluster — the Bulletin Board. Houses everything below the masthead. */}
         <BulletinBoardCluster
           user={user}
+          nominee={nominee}
           settings={settings}
           accent={accent}
           isOwner
           statusKey={settings?.status_key}
           savingStatus={savingStatus}
           onStatusChange={saveStatus}
-          leftRail={
-            <CompassRail
-              user={user}
-              nominee={nominee}
-              accent={accent}
-              viewCount={settings?.profile_view_count || 0}
-              endorsementCount={entries.filter((e) => e.moderation_status === 'approved').length}
-              publicPath={publicPath}
-            />
-          }
           nextMove={{
             eightCount: top100.rankings.length,
             hasFlightography: !!(nominee?.career_history?.length || nominee?.education?.length || nominee?.skills?.length || nominee?.bio),
@@ -302,14 +303,9 @@ export default function Profile() {
           }}
           onJumpToEight={jumpToEight}
           onEditIdentity={() => setWizardOpen(true)}
-          returnBand={
-            <ReturnBand
-              user={user}
-              accent={accent}
-              wallEntries={entries}
-              onApproveWall={approve}
-            />
-          }
+          wallEntries={entries}
+          onApproveWall={approve}
+          publicPath={publicPath}
           flightography={fellowModules.flightography}
           tradingCard={<ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />}
           personalizationBar={
@@ -322,6 +318,9 @@ export default function Profile() {
               onChange={savePersonalization}
             />
           }
+          clusterOrder={settings?.cluster_module_order}
+          clusterHidden={settings?.cluster_hidden_modules}
+          onSaveLayout={saveClusterLayout}
         />
 
         <div className="mt-8 flex justify-end">
