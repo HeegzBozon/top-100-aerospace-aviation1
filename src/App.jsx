@@ -230,7 +230,6 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
       } />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
-       <Route path="/profiles/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:id" element={
         <LayoutWrapper currentPageName="ProfileView">
           <ProfileView />
