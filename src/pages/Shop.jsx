@@ -21,6 +21,9 @@ export default function Shop() {
       <ShopHero />
 
       <main>
+        {/* Featured partner */}
+        <PartnerSpotlight />
+
         {/* Flagship product */}
         <GroundControlFlagship />
 
@@ -29,9 +32,6 @@ export default function Shop() {
 
         {/* Comics & trading cards — coming soon */}
         <ComicCardDrop />
-
-        {/* Featured partner */}
-        <PartnerSpotlight />
       </main>
 
       {/* Spacer so the sticky dock never covers content */}
