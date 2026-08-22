@@ -1,7 +1,7 @@
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useState, useEffect } from 'react';
-import { X, Loader2, Send, Plus } from 'lucide-react';
+import { X, Loader2, Send, Plus, Clock } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import { POST_TYPES } from './bulletinConfig';
@@ -16,8 +16,16 @@ const QUILL_MODULES = {
   ],
 };
 
+// Convert an ISO timestamp to a value usable by <input type="datetime-local">.
+const toLocalInput = (iso) => {
+  const d = new Date(iso);
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+};
+
 // Format-aware composer. Builds the payload, creates the Bulletin, and closes.
 // The tool list refreshes via the useBulletins subscription on create.
+// Dispatches may be scheduled (queued) for a future go-live via published_date.
 export default function BulletinComposer({ open, onClose, user, accent, postType = 'note', editing = null, onSaved }) {
   const cfg = POST_TYPES[postType] || POST_TYPES.note;
   const [title, setTitle] = useState('');
@@ -27,6 +35,10 @@ export default function BulletinComposer({ open, onClose, user, accent, postType
   const [mediaUrls, setMediaUrls] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [scheduledAt, setScheduledAt] = useState('');
+  const [showSchedule, setShowSchedule] = useState(false);
+
+  const canSchedule = postType === 'dispatch';
 
   const handleFiles = async (files) => {
     if (!files?.length) return;
@@ -53,11 +65,13 @@ export default function BulletinComposer({ open, onClose, user, accent, postType
     setRichBody(editing?.rich_body || '');
     setTags(editing?.tags?.join(', ') || '');
     setMediaUrls(editing?.media_urls || []);
+    setScheduledAt(editing?.status === 'scheduled' && editing?.published_date ? toLocalInput(editing.published_date) : '');
+    setShowSchedule(editing?.status === 'scheduled');
   }, [open, editing]);
 
   if (!open) return null;
 
-  const reset = () => { setTitle(''); setBody(''); setRichBody(''); setTags(''); setMediaUrls([]); };
+  const reset = () => { setTitle(''); setBody(''); setRichBody(''); setTags(''); setMediaUrls([]); setScheduledAt(''); setShowSchedule(false); };
 
   const handleClose = () => { reset(); onClose?.(); };
 
@@ -66,13 +80,18 @@ export default function BulletinComposer({ open, onClose, user, accent, postType
     if (!cfg.hasRichBody && !body.trim()) return;
     if (cfg.hasRichBody && !richBody.trim()) return;
     if (cfg.hasMedia && mediaUrls.length === 0) return;
+    if (status === 'scheduled' && !scheduledAt) return;
     setBusy(true);
     try {
       const base = {
         scope: 'network',
         post_type: postType,
         status,
-        published_date: status === 'published' ? (editing?.published_date || new Date().toISOString()) : editing?.published_date,
+        published_date: status === 'published'
+          ? (editing?.published_date || new Date().toISOString())
+          : status === 'scheduled'
+            ? new Date(scheduledAt).toISOString()
+            : editing?.published_date,
         title: cfg.hasTitle ? title.trim().slice(0, 120) : undefined,
         body: cfg.hasRichBody || cfg.hasMedia ? undefined : body.trim().slice(0, cfg.bodyMax || 1000),
         rich_body: cfg.hasRichBody ? richBody : undefined,
@@ -196,6 +215,47 @@ export default function BulletinComposer({ open, onClose, user, accent, postType
             {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />} Publish
           </button>
         </div>
+
+        {canSchedule && (
+          <div className="mt-2">
+            {!showSchedule ? (
+              <button
+                type="button"
+                onClick={() => setShowSchedule(true)}
+                className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em]"
+                style={{ color: accent }}
+              >
+                <Clock className="w-3.5 h-3.5" /> Schedule for later
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <input
+                  type="datetime-local"
+                  value={scheduledAt}
+                  onChange={(e) => setScheduledAt(e.target.value)}
+                  className="text-xs px-2 py-1.5 rounded-lg outline-none flex-1"
+                  style={{ border: `1px solid ${B.border}`, color: B.navy }}
+                />
+                <button
+                  type="button"
+                  onClick={() => { setShowSchedule(false); setScheduledAt(''); }}
+                  className="text-[11px] font-semibold"
+                  style={{ color: B.muted }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => submit('scheduled')}
+                  disabled={busy || !scheduledAt}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.14em] text-white disabled:opacity-60"
+                  style={{ background: accent }}
+                >
+                  {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Clock className="w-3.5 h-3.5" />} Schedule
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

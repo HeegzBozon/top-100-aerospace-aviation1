@@ -72,16 +72,17 @@
       "type": "string",
       "enum": [
         "draft",
+        "scheduled",
         "published",
         "archived"
       ],
       "default": "published",
-      "description": "Lifecycle state of a Fellow-authored bulletin"
+      "description": "Lifecycle state. 'draft' = unpublished; 'scheduled' = queued, auto-publishes at published_date; 'published' = live; 'archived' = removed from surfaces."
     },
     "published_date": {
       "type": "string",
       "format": "date-time",
-      "description": "When the bulletin was first published"
+      "description": "When the bulletin was first published. For 'scheduled' posts, the go-live time."
     },
     "endorse_count": {
       "type": "number",

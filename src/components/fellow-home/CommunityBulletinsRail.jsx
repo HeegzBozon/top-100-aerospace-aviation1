@@ -17,7 +17,7 @@ export default function CommunityBulletinsRail({ user, accent, bare }) {
 
   const load = async () => {
     try {
-      const res = await base44.entities.Bulletin.filter({ scope: 'network' }, '-created_date', 8);
+      const res = await base44.entities.Bulletin.filter({ scope: 'network', status: 'published' }, '-created_date', 8);
       setItems(res || []);
     } catch {
     } finally {
