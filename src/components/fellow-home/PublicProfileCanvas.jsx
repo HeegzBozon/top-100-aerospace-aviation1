@@ -24,6 +24,10 @@ export default function PublicProfileCanvas({ user, nominee, accent, sixWordStor
   ].filter(Boolean);
 
   const publicUrl = publicPath ? `${window.location.origin}${publicPath}` : '';
+  // Navy-on-white QR for scannability; framed in gold to sit on the editorial card.
+  const qrSrc = publicUrl
+    ? `https://quickchart.io/qr?text=${encodeURIComponent(publicUrl)}&size=200&margin=2&dark=1e3a5a&light=ffffff`
+    : '';
 
   const copyUrl = () => {
     if (!publicUrl) return;
@@ -147,7 +151,7 @@ export default function PublicProfileCanvas({ user, nominee, accent, sixWordStor
             </a>
           ))}
           {publicUrl && (
-            <div className="flex items-center gap-1.5 ml-auto">
+            <div className="flex items-end gap-3 ml-auto">
               <button
                 onClick={copyUrl}
                 className="inline-flex items-center justify-center w-10 h-10 rounded-full transition-opacity hover:opacity-80"
@@ -164,6 +168,17 @@ export default function PublicProfileCanvas({ user, nominee, accent, sixWordStor
               >
                 <Share2 className="w-4 h-4" />
               </button>
+              <div className="flex flex-col items-center gap-1">
+                <div
+                  className="w-16 h-16 sm:w-[68px] sm:h-[68px] rounded-xl overflow-hidden p-1.5"
+                  style={{ background: '#fff', border: `1px solid ${B.gold}`, boxShadow: '0 8px 20px rgba(0,0,0,0.3)' }}
+                >
+                  <img src={qrSrc} alt="Scan to view profile" className="w-full h-full object-contain" />
+                </div>
+                <span className="text-[9px] font-semibold uppercase tracking-[0.2em]" style={{ color: B.gold }}>
+                  Scan
+                </span>
+              </div>
             </div>
           )}
         </div>
