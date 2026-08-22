@@ -28,7 +28,7 @@ export default function NextMove({ data, user, accent, onCompose, onJumpToTile, 
 
   if (dispatchCount === null) {
     return (
-      <div className="flex items-center gap-2 py-1">
+      <div className="flex items-center gap-2 py-2 h-full">
         <Sparkles className="w-4 h-4 animate-pulse" style={{ color: accent }} />
         <span className="text-xs" style={{ color: B.muted }}>Finding your next move…</span>
       </div>
@@ -37,26 +37,28 @@ export default function NextMove({ data, user, accent, onCompose, onJumpToTile, 
 
   if (!next) {
     return (
-      <div className="flex items-center justify-between gap-3 py-1">
-        <div className="flex items-center gap-2 min-w-0">
-          <Sparkles className="w-4 h-4 shrink-0" style={{ color: accent }} />
-          <span className="text-sm font-semibold truncate" style={{ color: B.navy }}>Your profile is complete</span>
-        </div>
-        <Link to="/Top100Women2025" className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] shrink-0" style={{ color: B.navy }}>
-          Explore <ArrowRight className="w-3.5 h-3.5" style={{ color: accent }} />
+      <div className="flex flex-col h-full justify-between gap-3 py-1">
+        <p className="text-sm font-semibold leading-snug" style={{ color: B.navy }}>Your profile is complete</p>
+        <Link
+          to="/Top100Women2025"
+          className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold uppercase tracking-[0.14em] text-white transition-opacity hover:opacity-90"
+          style={{ background: B.navy }}
+        >
+          Explore <ArrowRight className="w-4 h-4" style={{ color: accent }} />
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 py-1">
-      <div className="flex items-center gap-2 min-w-0">
-        <Sparkles className="w-4 h-4 shrink-0" style={{ color: accent }} />
-        <span className="text-sm font-semibold truncate" style={{ color: B.navy }}>{next.label}</span>
-      </div>
-      <button onClick={next.action} className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] shrink-0 px-3 py-1.5 rounded-full text-white transition-opacity hover:opacity-90" style={{ background: B.navy }}>
-        Begin <ArrowRight className="w-3.5 h-3.5" />
+    <div className="flex flex-col h-full justify-between gap-3 py-1">
+      <p className="text-sm font-semibold leading-snug" style={{ color: B.navy }}>{next.label}</p>
+      <button
+        onClick={next.action}
+        className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold uppercase tracking-[0.14em] text-white transition-opacity hover:opacity-90"
+        style={{ background: B.navy }}
+      >
+        Begin <ArrowRight className="w-4 h-4" style={{ color: accent }} />
       </button>
     </div>
   );
