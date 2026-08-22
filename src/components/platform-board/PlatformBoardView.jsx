@@ -88,7 +88,7 @@ export default function PlatformBoardView({ user, accent = B.navy }) {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors"
               style={{ background: composerOpen ? B.navy : `${accent}10`, color: composerOpen ? '#fff' : accent, border: `1px solid ${accent}33` }}
             >
-              <Plus className="w-3.5 h-3.5" /> Propose
+              <Plus className="w-3.5 h-3.5" /> Create New
             </button>
           </div>
 
