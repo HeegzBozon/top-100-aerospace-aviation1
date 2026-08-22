@@ -14,7 +14,7 @@ import FellowLeftRail from '@/components/fellow-home/FellowLeftRail';
 import SeasonBand from '@/components/fellow-home/SeasonBand';
 import InstrumentCluster from '@/components/fellow-home/InstrumentCluster';
 import MastheadEditorial from '@/components/fellow-home/MastheadEditorial';
-import StatusPicker from '@/components/fellow-home/StatusPicker';
+import StatusCompose from '@/components/fellow-home/StatusCompose';
 import { useStoryExperience } from '@/components/fellow-home/useStoryExperience';
 import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
 import StoryViewer from '@/components/fellow-home/StoryViewer';
@@ -264,8 +264,8 @@ export default function Profile() {
               onTabChange={handleTabChange}
               top100Loading={top100.loading}
               storiesLoading={story.loading}
-              statusPicker={
-                <StatusPicker statusKey={settings?.status_key} accent={accent} saving={savingStatus} onChange={saveStatus} compact />
+              composePanel={
+                <StatusCompose statusKey={settings?.status_key} accent={accent} saving={savingStatus} onStatusChange={saveStatus} />
               }
             />
           }
