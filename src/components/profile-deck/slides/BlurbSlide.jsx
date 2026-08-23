@@ -10,10 +10,42 @@ const SIX_WORD_MAX = 60;
 // Editorial slide — the Fellow's voice. One word, six-word story, and
 // about-me rendered as a full-bleed editorial spread. Each is inline
 // editable with a designed empty state.
-export default function BlurbSlide({ user, settings, accent, onUserUpdate, onSettingsUpdate }) {
+export default function BlurbSlide({ user, settings, accent, onUserUpdate, onSettingsUpdate, readOnly }) {
   const [about, setAbout] = useState(settings?.about_me || '');
   const oneWord = user?.one_word || '';
   const sixWord = settings?.six_word_story || user?.six_word_story || '';
+  const bio = user?.bio || user?.professional_bio || '';
+
+  // Public read-only mode — renders text without edit affordances.
+  if (readOnly) {
+    return (
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: B.cream }}>
+        <div className="text-center px-6 max-w-2xl w-full py-20">
+          {oneWord && (
+            <div className="mb-10">
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] mb-4" style={{ color: B.muted }}>One word</p>
+              <span className="block text-4xl sm:text-6xl font-bold uppercase tracking-[0.22em] leading-none" style={{ color: accent, fontFamily: "'Playfair Display', Georgia, serif" }}>{oneWord}</span>
+            </div>
+          )}
+          {sixWord && (
+            <div className="mb-10">
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] mb-4" style={{ color: B.muted }}>Six-word story</p>
+              <p className="italic leading-snug" style={{ color: B.navy, fontFamily: "'Playfair Display', Georgia, serif", fontSize: 'clamp(20px, 3vw, 28px)' }}>&ldquo;{sixWord}&rdquo;</p>
+            </div>
+          )}
+          {(about || bio) && (
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] mb-4" style={{ color: B.muted }}>About</p>
+              <p className="text-base leading-relaxed whitespace-pre-wrap max-w-lg mx-auto text-left" style={{ color: B.navy }}>{about || bio}</p>
+            </div>
+          )}
+          {!oneWord && !sixWord && !about && !bio && (
+            <p className="text-sm" style={{ color: B.muted }}>This Fellow hasn't shared their editorial yet.</p>
+          )}
+        </div>
+      </section>
+    );
+  }
 
   const saveUserField = async (field, value) => {
     await base44.auth.updateMe({ [field]: value });

@@ -23,6 +23,15 @@ import FollowButton from '@/components/fellow-home/FollowButton';
 import HomeDock from '@/components/home-v3/HomeDock';
 import { accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
 import { statusByKey } from '@/components/fellow-home/fellowStatuses';
+import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
+import ProfileDeck from '@/components/profile-deck/ProfileDeck';
+import IdentitySlide from '@/components/profile-deck/slides/IdentitySlide';
+import VerificationSlide from '@/components/profile-deck/slides/VerificationSlide';
+import BlurbSlide from '@/components/profile-deck/slides/BlurbSlide';
+import DocumentsSlide from '@/components/profile-deck/slides/DocumentsSlide';
+import EightSlide from '@/components/profile-deck/slides/EightSlide';
+import FlightographySlide from '@/components/profile-deck/slides/FlightographySlide';
+import { resolveSlideOrder } from '@/components/profile-deck/slideDeckConfig';
 
 const B = {
     navyDeep: '#16293f',
@@ -108,6 +117,7 @@ export default function ProfileView({ userId: propUserId = null }) {
     });
     const ownerAccent = accentValue(ownerSettings?.domain_accent || accentForDiscipline(profiles?.nominee?.discipline));
     const ownerStatus = statusByKey(ownerSettings?.status_key);
+    const top100 = useMyTop100(wallEmail);
 
     // Count a visit once per mount, and only from another member. Owner-visible only.
     const counted = useRef(false);
@@ -138,14 +148,9 @@ export default function ProfileView({ userId: propUserId = null }) {
             {profiles && (profiles.user || profiles.nominee || profiles.startup || profiles.provider) && !isLoading && (
                 <ProfileBody
                     profiles={profiles}
-                    viewer={viewer}
-                    wallEmail={wallEmail}
-                    wallEntries={wallEntries}
-                    submitWallEntry={submitWallEntry}
-                    approveWallEntry={approveWallEntry}
                     ownerAccent={ownerAccent}
-                    ownerStatus={ownerStatus}
-                    entered={entered}
+                    ownerSettings={ownerSettings}
+                    top100={top100}
                 />
             )}
 
@@ -154,213 +159,45 @@ export default function ProfileView({ userId: propUserId = null }) {
     );
 }
 
-function ProfileBody({ profiles, viewer, wallEmail, wallEntries, submitWallEntry, approveWallEntry, ownerAccent, ownerStatus, entered }) {
-    const { user, nominee, startup, provider, employer } = profiles;
+function ProfileBody({ profiles, ownerAccent, ownerSettings, top100 }) {
+    const { user, nominee } = profiles;
 
-    const displayName = user?.full_name || nominee?.name || provider?.full_name || startup?.company_name || 'Anonymous';
-    const displayAvatar = user?.avatar_url || nominee?.avatar_url || nominee?.photo_url || provider?.avatar_url || startup?.logo_url;
-    const displayBio = user?.bio || user?.professional_bio || nominee?.bio || nominee?.description || provider?.biography;
-    const displayBioExtended = nominee?.bio_extended;
-    const displayRole = user?.headline || user?.job_title || nominee?.title || nominee?.professional_role || provider?.headline;
-    const displayCompany = user?.company || nominee?.company || nominee?.organization || employer?.company_name;
-    const sixWordStory = nominee?.six_word_story;
-    const displayCountry = user?.location || nominee?.country;
+    // Resolve the Fellow's configured slide order. Locked positions 1 and 2
+    // (identity, verification) are always present; hidden slides are excluded.
+    const slideOrder = resolveSlideOrder(ownerSettings);
 
-    const rise = {
-        opacity: entered ? 1 : 0,
-        transform: entered ? 'translateY(0)' : 'translateY(16px)',
-        transition: 'opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1)',
-    };
+    const slides = slideOrder.map((key) => {
+        switch (key) {
+            case 'identity':
+                return { key, label: 'Identity', content: (
+                    <IdentitySlide user={user} nominee={nominee} accent={ownerAccent} coverKey={ownerSettings?.cover_asset_id} />
+                )};
+            case 'verification':
+                return { key, label: 'Credential', content: <VerificationSlide nominee={nominee} accent={ownerAccent} /> };
+            case 'blurb':
+                return { key, label: 'Editorial', content: (
+                    <BlurbSlide user={user} settings={ownerSettings} accent={ownerAccent} readOnly />
+                )};
+            case 'documents':
+                return { key, label: 'Documents', content: <DocumentsSlide user={user} accent={ownerAccent} /> };
+            case 'eight':
+                // Respect the Fellow's visibility toggle — hidden lists never render publicly.
+                if (ownerSettings?.eight_public === false) return null;
+                return { key, label: 'The Eight', content: (
+                    <EightSlide rankings={top100.rankings} isOwner={false} accent={ownerAccent} isPublic loading={top100.loading} />
+                )};
+            case 'flightography':
+                return { key, label: 'Flightography', content: (
+                    <FlightographySlide nominee={nominee} user={user} accent={ownerAccent} />
+                )};
+            default:
+                return null;
+        }
+    }).filter(Boolean);
 
     return (
-        <div className="pb-24" style={{ background: B.cream }}>
-            {/* Cinematic hero */}
-            <div className="relative">
-                <div className="relative h-[42vh] md:h-[56vh] overflow-hidden" style={{ background: B.navyDeep }}>
-                    {displayAvatar ? (
-                        <>
-                            <img src={displayAvatar} alt={displayName} className="w-full h-full object-cover opacity-40 scale-110" style={{ filter: 'blur(5px)' }} />
-                            <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${B.navyDeep}66 0%, ${B.navyDeep}99 45%, ${B.cream} 100%)` }} />
-                        </>
-                    ) : (
-                        <div className="w-full h-full" style={{ background: `linear-gradient(150deg, ${B.navyDeep}, #0c1830 70%, ${B.cream})` }} />
-                    )}
-
-                    <div className="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-[0.34em]" style={{ color: B.gold }}>
-                        TOP 100 · Public Profile
-                    </div>
-
-                    {nominee?.rank && (
-                        <div className="absolute top-6 right-6 z-10">
-                            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full backdrop-blur-md text-[11px] font-bold text-white shadow-lg" style={{ background: `${B.gold}ee` }}>
-                                <Crown className="w-3.5 h-3.5" />
-                                RANK #{nominee.rank}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="max-w-5xl mx-auto px-4 -mt-24 md:-mt-32 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                    {/* Left Column: Core Identity */}
-                    <div className="lg:col-span-1 space-y-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                            className="relative glass-card rounded-3xl p-6 text-center material-shadow-lg bg-white/90 backdrop-blur-xl"
-                        >
-                            {viewer && (
-                                nominee?.nominee_email === viewer.email ||
-                                nominee?.claimed_by_user_email === viewer.email ||
-                                user?.email === viewer.email
-                            ) && (
-                                <Link to="/Profile" className="absolute top-4 right-4">
-                                    <button
-                                        aria-label="Edit your profile"
-                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/80 backdrop-blur-sm border border-slate-200 hover:bg-white transition-all shadow-sm"
-                                        style={{ color: B.navy }}
-                                    >
-                                        <Pencil className="w-3 h-3" />
-                                        Edit Profile
-                                    </button>
-                                </Link>
-                            )}
-                            <LaurelAvatar
-                                src={displayAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&size=128&background=random`}
-                                alt={displayName}
-                                size={128}
-                                designation={nominee ? (['winner', 'finalist'].includes(nominee.status) ? 'alumni' : 'nominee') : null}
-                            />
-                            <h1 className="text-2xl font-bold mb-1 mt-3" style={{ color: B.navy, fontFamily: "'Playfair Display', serif" }}>{displayName}</h1>
-                            {(user?.handle || nominee?.handle) && (
-                                <p className="text-sm font-medium mb-3 text-slate-500">@{user?.handle || nominee?.handle || 'user'}</p>
-                            )}
-
-                            {ownerStatus && (
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-3" style={{ background: `${ownerAccent}14`, color: B.navy }}>
-                                    <span className="text-sm leading-none">{ownerStatus.glyph}</span>
-                                    {ownerStatus.label}
-                                </div>
-                            )}
-
-                            {sixWordStory && (
-                                <p className="text-base italic mb-3 leading-snug" style={{ color: B.gold, fontFamily: "'Playfair Display', serif" }}>
-                                    “{sixWordStory}”
-                                </p>
-                            )}
-
-                            <div className="flex flex-col gap-2 mb-4">
-                                {displayRole && (
-                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100" style={{ color: B.navy }}>
-                                        <Briefcase className="w-3 h-3" /> {displayRole}
-                                    </span>
-                                )}
-                                {displayCompany && (
-                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: `${B.skyBlue}15`, color: B.skyBlue }}>
-                                        <Building className="w-3 h-3" /> {displayCompany}
-                                    </span>
-                                )}
-                                {displayCountry && (
-                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: `${B.gold}12`, color: B.gold }}>
-                                        📍 {displayCountry}
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="flex flex-wrap items-center justify-center gap-2 border-t pt-4">
-                                {nominee && <Badge variant="default" style={{ background: B.gold }}>Nominee</Badge>}
-                                {startup && <Badge variant="default" style={{ background: B.skyBlue }}>Startup Founder</Badge>}
-                                {provider && provider.is_active && <Badge variant="outline">Service Provider</Badge>}
-                            </div>
-
-                            {wallEmail && (
-                                <ConnectButton viewer={viewer} targetEmail={wallEmail} targetName={displayName} targetAvatar={displayAvatar} accent={ownerAccent} />
-                            )}
-                            {wallEmail && (
-                                <FollowButton viewer={viewer} targetEmail={wallEmail} targetName={displayName} targetAvatar={displayAvatar} accent={ownerAccent} />
-                            )}
-                        </motion.div>
-
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={rise}>
-                            <ProfileSocialLinks user={user} nominee={nominee} viewer={viewer} />
-                        </motion.div>
-
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} style={rise}>
-                            <ProfileExpertiseTags skills={nominee?.skills} expertise_tags={user?.expertise_tags} />
-                        </motion.div>
-                    </div>
-
-                    {/* Right Column: Composite Detailed Content */}
-                    <div className="lg:col-span-2 space-y-6 mt-8 lg:mt-0 pt-16 lg:pt-0">
-
-                        {(displayBio || displayBioExtended) && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl p-6 material-shadow bg-white" style={rise}>
-                                <h3 className="text-lg font-bold mb-3" style={{ color: B.navy, fontFamily: "'Playfair Display', serif" }}>Overview</h3>
-                                <div className="h-px w-12 mb-4" style={{ background: B.gold }} />
-                                <p className="text-slate-700 leading-relaxed whitespace-pre-wrap text-[15px]">{displayBio}</p>
-                                {displayBioExtended && displayBioExtended !== displayBio && (
-                                    <div className="mt-4 pt-4 border-t border-slate-100">
-                                        <p className="text-slate-600 leading-relaxed whitespace-pre-wrap text-sm">{displayBioExtended}</p>
-                                    </div>
-                                )}
-                            </motion.div>
-                        )}
-
-                        {nominee && (nominee.industry || nominee.achievements || nominee.linkedin_follow_reason || nominee.nomination_reason) && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card rounded-2xl p-6 material-shadow bg-white" style={rise}>
-                                <h3 className="text-lg font-bold mb-4" style={{ color: B.navy, fontFamily: "'Playfair Display', serif" }}>Nominee Highlights</h3>
-                                <div className="space-y-2">
-                                    {nominee.industry && <InfoRow icon={Globe} label="Industry">{nominee.industry}</InfoRow>}
-                                    {nominee.achievements && <InfoRow icon={Award} label="Achievements">{nominee.achievements}</InfoRow>}
-                                    {nominee.linkedin_follow_reason && <InfoRow icon={Linkedin} label="Why Follow">{nominee.linkedin_follow_reason}</InfoRow>}
-                                    {nominee.nomination_reason && <InfoRow icon={Quote} label="Nominated For">{nominee.nomination_reason}</InfoRow>}
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {startup && (viewer?.is_investor || viewer?.is_admin || viewer?.tier === 'premium' || viewer?.email === startup.founder_email) && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={rise}>
-                                <StartupPitch startup={startup} user={viewer} mySignal={null} signals={[]} />
-                            </motion.div>
-                        )}
-
-                        {provider && provider.is_active && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={rise}>
-                                <ProviderServicesList providerEmail={provider.user_email} userName={displayName} />
-                            </motion.div>
-                        )}
-
-                        {(nominee || (user?.custom_card_stats?.length > 0)) && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} style={rise}>
-                                <ShareableProfileCard user={user} nominee={nominee} readOnly />
-                            </motion.div>
-                        )}
-
-                        {wallEmail && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={rise}>
-                                <EndorsementWall
-                                    entries={wallEntries}
-                                    isOwner={!!viewer && viewer.email === wallEmail}
-                                    canWrite={!!viewer && viewer.email !== wallEmail}
-                                    isAdmin={viewer?.role === 'admin'}
-                                    accent={ownerAccent}
-                                    onSubmit={(body) => submitWallEntry(body, viewer)}
-                                    onApprove={approveWallEntry}
-                                />
-                            </motion.div>
-                        )}
-
-                        {nominee && (
-                            <div className="space-y-6">
-                                <NomineeCareerHistorySection nominee={nominee} />
-                                <NomineeContributionsSection nomineeId={nominee.id} />
-                                <NomineeNewsSection nomineeId={nominee.id} />
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
+        <div className="min-h-screen" style={{ background: B.navyDeep }}>
+            <ProfileDeck slides={slides} settings={ownerSettings} accent={ownerAccent} />
         </div>
     );
 }
