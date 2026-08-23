@@ -53,9 +53,10 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
     );
   }, [rooms, user]);
 
-  const upcomingRooms = visibleRooms.filter((r) => ['draft', 'open'].includes(r.status));
-  const liveRooms = visibleRooms.filter((r) => r.status === 'live');
-  const doneRooms = visibleRooms.filter((r) => ['closed', 'archived'].includes(r.status));
+  const byDateAsc = (a, b) => new Date(a.start_date || 0) - new Date(b.start_date || 0);
+  const upcomingRooms = visibleRooms.filter((r) => ['draft', 'open'].includes(r.status)).sort(byDateAsc);
+  const liveRooms = visibleRooms.filter((r) => r.status === 'live').sort(byDateAsc);
+  const doneRooms = visibleRooms.filter((r) => ['closed', 'archived'].includes(r.status)).sort(byDateAsc);
 
   const isEmpty = !loading && !error && visibleRooms.length === 0;
   const isAdmin = user?.role === 'admin';
