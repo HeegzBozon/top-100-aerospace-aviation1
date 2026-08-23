@@ -1,0 +1,74 @@
+{
+  "name": "DomainNetwork",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name of the standing Community of Practice"
+    },
+    "domain_focus": {
+      "type": "string",
+      "enum": [
+        "space_rd",
+        "commercial_aviation",
+        "defense",
+        "manufacturing",
+        "operations",
+        "engineering",
+        "policy",
+        "entrepreneurship"
+      ],
+      "description": "Domain accent this network is scoped to. One network per domain."
+    },
+    "charter": {
+      "type": "string",
+      "description": "What this CoP distills from the convening corpus into transferable practice."
+    },
+    "facilitator_email": {
+      "type": "string",
+      "description": "Email of the named human owning facilitation. Coordination role only; confers zero selection weight and is never read by discovery, ranking, or scoring."
+    },
+    "facilitator_name": {
+      "type": "string",
+      "description": "Display name of the facilitator, denormalized"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused"
+      ],
+      "default": "active",
+      "description": "Paused networks do not fake liveliness; they render as paused. Thin beats many-and-quiet."
+    }
+  },
+  "required": [
+    "name",
+    "domain_focus"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.facilitator_email": "{{user.email}}"
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
