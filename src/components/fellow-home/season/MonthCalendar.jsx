@@ -173,19 +173,24 @@ export default function MonthCalendar({ accent }) {
       >
         {MONTH_ABBR.map((label, m) => {
           const active = m === cursor.getMonth();
+          const isCurrent = m === today.getMonth() && year === today.getFullYear();
           return (
             <button
               key={m}
               type="button"
               onClick={() => { setCursor(new Date(year, m, 1)); setSelectedKey(null); }}
-              className="shrink-0 px-2 py-0.5 rounded-full text-[9px] font-semibold transition-colors"
+              className="shrink-0 px-2 py-0.5 rounded-full text-[9px] font-semibold transition-colors flex flex-col items-center gap-[2px]"
               style={{
                 background: active ? `${accent}22` : '#fff',
                 color: active ? accent : B.navy,
-                border: `1px solid ${active ? accent : B.border}`,
+                border: `1px solid ${active ? accent : isCurrent ? B.navy : B.border}`,
               }}
             >
-              {label}
+              <span>{label}</span>
+              <span
+                className="w-1 h-1 rounded-full"
+                style={{ background: isCurrent ? B.navy : 'transparent' }}
+              />
             </button>
           );
         })}
