@@ -1,0 +1,70 @@
+{
+  "name": "CareerLogEntry",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow who earned this log entry. Owner key."
+    },
+    "activity_key": {
+      "type": "string",
+      "description": "Curated activity key from the logbook allowlist (e.g. profile_photo_set, credential_verified, first_dispatch)"
+    },
+    "xp_value": {
+      "type": "number",
+      "default": 0,
+      "description": "Fixed XP value from the allowlist, denormalized for fast client-side sum"
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Id of the originating record/event. Idempotency key \u2014 prevents duplicate awards on replay."
+    },
+    "source_entity": {
+      "type": "string",
+      "description": "Originating entity (e.g. Nominee, ConferenceAttendance, Bulletin)"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-line human description for the practice feed (e.g. 'Verified A&P license')"
+    },
+    "earned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the logged practice occurred"
+    }
+  },
+  "required": [
+    "fellow_email",
+    "activity_key",
+    "xp_value"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
