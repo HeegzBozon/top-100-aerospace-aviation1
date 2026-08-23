@@ -2,11 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { Loader2, AlertCircle, Radar, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
-import ConferenceRoomCard from './ConferenceRoomCard';
 import ConferenceRoomComposer from './ConferenceRoomComposer';
+import ConferenceDiscoveryPanel from './ConferenceDiscoveryPanel';
+import ConferenceAttendancePanel from './ConferenceAttendancePanel';
+import ConferencePostEventPanel from './ConferencePostEventPanel';
 
-// Conference Room cluster — coordination surfaces attached to named external
-// industry events. Rooms are admin-created (concierge); RSVPs are Fellow-owned.
+// Conference Room — a three-phase instrument cluster for attendees:
+// Discovery → Attendance → Post-Event. Not a flat event list.
 export default function ConferenceRoomView({ user, accent = B.navy }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -52,13 +54,47 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
     );
   }, [rooms, user]);
 
-  const upcoming = visibleRooms.filter((r) => ['draft', 'open', 'live'].includes(r.status));
-  const past = visibleRooms.filter((r) => ['closed', 'archived'].includes(r.status));
+  const discoveryRooms = visibleRooms.filter((r) => ['draft', 'open', 'live'].includes(r.status));
+  const pastRooms = visibleRooms.filter((r) => ['closed', 'archived'].includes(r.status));
+
+  const myRooms = useMemo(() => {
+    if (!user?.email) return [];
+    return visibleRooms
+      .map((room) => {
+        const attendees = rsvpsByRoom[room.id] || [];
+        const myRsvp = attendees.find((a) => a.fellow_email === user.email);
+        return myRsvp ? { room, myRsvp, attendees } : null;
+      })
+      .filter(Boolean);
+  }, [visibleRooms, rsvpsByRoom, user]);
+
   const isEmpty = !loading && !error && visibleRooms.length === 0;
   const isAdmin = user?.role === 'admin';
 
   return (
     <>
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-[11px] leading-relaxed max-w-md" style={{ color: B.muted }}>
+          Coordination rooms attached to named industry events. Declare attendance, self-organize by focus, and the record persists beyond the show.
+        </p>
+        {isAdmin && !isEmpty && (
+          <button
+            type="button"
+            onClick={() => setComposerOpen((v) => !v)}
+            className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors"
+            style={{ background: composerOpen ? B.navy : `${accent}10`, color: composerOpen ? '#fff' : accent, border: `1px solid ${accent}33` }}
+          >
+            <Plus className="w-3.5 h-3.5" /> Create Room
+          </button>
+        )}
+      </div>
+
+      {composerOpen && isAdmin && (
+        <div className="mb-5">
+          <ConferenceRoomComposer user={user} accent={accent} onSubmitted={() => { setComposerOpen(false); refresh(); }} />
+        </div>
+      )}
+
       {loading ? (
         <div className="flex flex-col items-center justify-center py-16 gap-3">
           <Loader2 className="w-6 h-6 animate-spin" style={{ color: B.muted }} />
@@ -94,48 +130,11 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
           )}
         </div>
       ) : (
-        <>
-          <div className="flex items-center justify-end mb-3">
-            {isAdmin && (
-              <button
-                type="button"
-                onClick={() => setComposerOpen((v) => !v)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors"
-                style={{ background: composerOpen ? B.navy : `${accent}10`, color: composerOpen ? '#fff' : accent, border: `1px solid ${accent}33` }}
-              >
-                <Plus className="w-3.5 h-3.5" /> Create Room
-              </button>
-            )}
-          </div>
-
-          {composerOpen && isAdmin && (
-            <div className="mb-4">
-              <ConferenceRoomComposer user={user} accent={accent} onSubmitted={() => { setComposerOpen(false); refresh(); }} />
-            </div>
-          )}
-
-          {upcoming.length > 0 && (
-            <div className="mb-5">
-              <span className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: B.muted }}>Upcoming & live</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-                {upcoming.map((r) => (
-                  <ConferenceRoomCard key={r.id} room={r} attendees={rsvpsByRoom[r.id] || []} user={user} accent={accent} onRsvpChanged={refresh} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {past.length > 0 && (
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: B.muted }}>Past</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 opacity-80">
-                {past.map((r) => (
-                  <ConferenceRoomCard key={r.id} room={r} attendees={rsvpsByRoom[r.id] || []} user={user} accent={accent} onRsvpChanged={refresh} />
-                ))}
-              </div>
-            </div>
-          )}
-        </>
+        <div className="space-y-6">
+          <ConferenceDiscoveryPanel rooms={discoveryRooms} rsvpsByRoom={rsvpsByRoom} user={user} accent={accent} onRsvpChanged={refresh} />
+          <ConferenceAttendancePanel myRooms={myRooms} user={user} accent={accent} onRsvpChanged={refresh} />
+          <ConferencePostEventPanel pastRooms={pastRooms} rsvpsByRoom={rsvpsByRoom} accent={accent} />
+        </div>
       )}
     </>
   );

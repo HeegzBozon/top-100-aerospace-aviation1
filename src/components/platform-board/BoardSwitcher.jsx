@@ -6,8 +6,8 @@ import { B } from '@/components/fellow-home/fellowHomeConfig';
 // otherwise (standalone page) it links between routes.
 const BOARDS = [
   { key: 'fellow', label: 'Bulletin Board', to: '/', icon: LayoutGrid },
-  { key: 'platform', label: 'Kanban Board', to: '/platform-board', icon: Layers },
   { key: 'conference', label: 'Conference Room', to: '/profile', icon: Radar },
+  { key: 'platform', label: 'Backlog', to: '/platform-board', icon: Layers },
 ];
 
 export default function BoardSwitcher({ active, accent, onSelect }) {
