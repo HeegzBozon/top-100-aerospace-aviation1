@@ -36,6 +36,37 @@
       "default": [],
       "description": "Ordered module keys. Validated server-side against the allowlist; positions 1 and 2 are locked."
     },
+    "slide_order": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Ordered slide region keys for the profile deck. Valid keys: identity, verification, blurb, documents, eight, flightography. Identity locks to position 1 and verification to position 2; client-side enforced via resolveSlideOrder. Expression only; never feeds measurement."
+    },
+    "slide_hidden": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Slide region keys the Fellow has toggled off their deck. Expression only; never feeds measurement."
+    },
+    "autoplay_mode": {
+      "type": "string",
+      "enum": [
+        "loop",
+        "stop_at_end",
+        "manual"
+      ],
+      "default": "manual",
+      "description": "How the profile deck auto-advances. loop = repeat indefinitely; stop_at_end = advance once then halt; manual = no autoplay."
+    },
+    "dwell_seconds": {
+      "type": "number",
+      "default": 6,
+      "description": "Seconds each slide is displayed during autoplay. Minimum 3."
+    },
     "bulletin_tools": {
       "type": "array",
       "items": {
@@ -104,5 +135,35 @@
   },
   "required": [
     "fellow_email"
-  ]
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

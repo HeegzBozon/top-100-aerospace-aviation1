@@ -20,6 +20,15 @@ import StoryCreate from '@/components/fellow-home/StoryCreate';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
+import ProfileDeck from '@/components/profile-deck/ProfileDeck';
+import PresentationSettings from '@/components/profile-deck/PresentationSettings';
+import IdentitySlide from '@/components/profile-deck/slides/IdentitySlide';
+import VerificationSlide from '@/components/profile-deck/slides/VerificationSlide';
+import BlurbSlide from '@/components/profile-deck/slides/BlurbSlide';
+import DocumentsSlide from '@/components/profile-deck/slides/DocumentsSlide';
+import EightSlide from '@/components/profile-deck/slides/EightSlide';
+import FlightographySlide from '@/components/profile-deck/slides/FlightographySlide';
+import { resolveSlideOrder } from '@/components/profile-deck/slideDeckConfig';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -32,6 +41,7 @@ export default function Profile() {
   const [wizardOpen, setWizardOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [presentationOpen, setPresentationOpen] = useState(false);
 
   // Instrument cluster tab persists in the URL so returning Fellows land where they left off.
   const [tab, setTab] = useState(() => new URLSearchParams(window.location.search).get('tab') || 'top100');
@@ -196,6 +206,28 @@ export default function Profile() {
     }
   };
 
+  // Slide deck configuration — slide order, hidden slides, autoplay behavior.
+  // Expression only; locked positions enforced client-side via resolveSlideOrder.
+  const saveSlideConfig = async (patch) => {
+    const previous = settings;
+    setSettings((s) => ({ ...s, ...patch }));
+    try {
+      if (settings?.id) {
+        await base44.entities.FellowProfileSettings.update(settings.id, patch);
+      } else {
+        const created = await base44.entities.FellowProfileSettings.create({
+          fellow_email: user.email,
+          fellow_id: nominee?.id,
+          domain_accent: settings?.domain_accent,
+          ...patch,
+        });
+        setSettings(created);
+      }
+    } catch (error) {
+      setSettings(previous);
+    }
+  };
+
   const handleExportData = async () => {
     setExporting(true);
     try {
@@ -255,109 +287,58 @@ export default function Profile() {
     />
   );
 
+  const slideOrder = resolveSlideOrder(settings);
+
+  const slides = slideOrder.map((key) => {
+    switch (key) {
+      case 'identity':
+        return {
+          key, label: 'Identity', content: (
+            <IdentitySlide
+              user={user} nominee={nominee} accent={accent} coverKey={settings?.cover_asset_id}
+              isOwner onEdit={() => setWizardOpen(true)} hasStory={story.hasStory} onAvatarTap={story.onAvatarTap}
+              publicPath={publicPath}
+            />
+          ),
+        };
+      case 'verification':
+        return { key, label: 'Credential', content: <VerificationSlide nominee={nominee} accent={accent} /> };
+      case 'blurb':
+        return {
+          key, label: 'Editorial', content: (
+            <BlurbSlide user={user} settings={settings} accent={accent} onUserUpdate={setUser} onSettingsUpdate={setSettings} />
+          ),
+        };
+      case 'documents':
+        return { key, label: 'Documents', content: <DocumentsSlide user={user} accent={accent} onUserUpdate={setUser} /> };
+      case 'eight':
+        return {
+          key, label: 'The Eight', content: (
+            <EightSlide rankings={top100.rankings} isOwner accent={accent} isPublic={settings?.eight_public}
+              savingVisibility={savingEightVisibility} onVisibilityChange={saveEightVisibility} loading={top100.loading} />
+          ),
+        };
+      case 'flightography':
+        return {
+          key, label: 'Flightography', content: (
+            <FlightographySlide nominee={nominee} user={user} accent={accent} onNomineeUpdate={setNominee} onUserUpdate={setUser} />
+          ),
+        };
+      default:
+        return null;
+    }
+  }).filter(Boolean);
+
   return (
-    <div className="min-h-screen overflow-x-hidden sf-pro" style={{ background: B.cream }}>
-      <AnnouncementBanner />
-      <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
-        {/* Position 1 — locked. Identity above credential. */}
-        <FellowIdentityHeader
-          user={user}
-          nominee={nominee}
-          accent={accent}
-          isOwner
-          coverKey={settings?.cover_asset_id}
-          sixWordStory={settings?.six_word_story || user?.six_word_story}
-          onEditIdentity={() => setWizardOpen(true)}
-          publicPath={publicPath}
-          statusKey={settings?.status_key}
-          savingStatus={savingStatus}
-          onStatusChange={saveStatus}
-          coverContent={
-            <SeasonBand
-              accent={accent}
-              underCountdown={
-                <div className="mt-4 flex items-center gap-5 flex-wrap">
-                  <Link to="/nominate" className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70" style={{ color: B.navy }}>
-                    Enter a nomination <ArrowRight className="w-3.5 h-3.5" style={{ color: accent }} />
-                  </Link>
-                  <Link to="/nominate" className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70" style={{ color: B.navy }}>
-                    Refine my ballot <ListOrdered className="w-3.5 h-3.5" style={{ color: accent }} />
-                  </Link>
-                </div>
-              }
-              underTally={blurbsContent}
-            />
-          }
-          hasStory={story.hasStory}
-          onAvatarTap={story.onAvatarTap}
-          clusterContent={
-            <InstrumentCluster
-              user={user}
-              nominee={nominee}
-              accent={accent}
-              groups={story.groups}
-              onOpen={story.openViewer}
-              onAdd={story.openCreate}
-              top100={top100.rankings}
-              activeTab={tab}
-              onTabChange={handleTabChange}
-              top100Loading={top100.loading}
-              storiesLoading={story.loading}
-            />
-          }
-        />
+    <div className="min-h-screen overflow-x-hidden" style={{ background: B.navyDeep }}>
+      <ProfileDeck
+        slides={slides}
+        settings={settings}
+        accent={accent}
+        isOwner
+        onOpenPresentation={() => setPresentationOpen(true)}
+      />
 
-        {/* Master instrument cluster — the Bulletin Board. Houses everything below the masthead. */}
-        <BulletinBoardCluster
-          user={user}
-          nominee={nominee}
-          settings={settings}
-          accent={accent}
-          isOwner
-          statusKey={settings?.status_key}
-          savingStatus={savingStatus}
-          onStatusChange={saveStatus}
-          nextMove={{
-            eightCount: top100.rankings.length,
-            hasFlightography: !!(nominee?.career_history?.length || nominee?.education?.length || nominee?.skills?.length || nominee?.bio),
-            hasSixWord: !!(settings?.six_word_story || user?.six_word_story),
-          }}
-          onJumpToEight={jumpToEight}
-          onEditIdentity={() => setWizardOpen(true)}
-          wallEntries={entries}
-          onApproveWall={approve}
-          publicPath={publicPath}
-          flightography={fellowModules.flightography}
-          tradingCard={<ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />}
-          personalize={
-            <AccentCoverPicker
-              settings={settings}
-              accent={accent}
-              saving={saving}
-              error={saveError}
-              onChange={savePersonalization}
-            />
-          }
-          clusterOrder={settings?.cluster_module_order}
-          clusterHidden={settings?.cluster_hidden_modules}
-          onSaveLayout={saveClusterLayout}
-          clusterSizes={settings?.cluster_tile_sizes}
-          onSaveSizes={saveClusterSizes}
-        />
-
-        <div className="mt-8 flex justify-end">
-          <button
-            onClick={handleExportData}
-            disabled={exporting}
-            className="text-xs text-[var(--muted)] hover:text-[var(--text)] transition-colors flex items-center gap-1.5"
-          >
-            {exporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
-            {exporting ? 'Exporting...' : 'Download my data'}
-          </button>
-        </div>
-      </div>
-
-      <div className="h-28" />
       <HomeDock />
 
       {wizardOpen && (
@@ -379,6 +360,15 @@ export default function Profile() {
       )}
       {story.creating && (
         <StoryCreate user={user} accent={accent} onCreate={story.create} onClose={story.closeCreate} />
+      )}
+
+      {presentationOpen && (
+        <PresentationSettings
+          settings={settings}
+          accent={accent}
+          onChange={saveSlideConfig}
+          onClose={() => setPresentationOpen(false)}
+        />
       )}
     </div>
   );
