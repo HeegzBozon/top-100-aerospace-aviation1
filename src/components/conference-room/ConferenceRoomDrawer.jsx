@@ -9,6 +9,8 @@ import { statusMeta, disciplineLabel, domainAccent, roomCountdown } from './conf
 import AvatarCluster from './AvatarCluster';
 import RsvpControl from './RsvpControl';
 import VolunteerHostButton from './VolunteerHostButton';
+import NowFacilitatingRibbon from './NowFacilitatingRibbon';
+import FocusAreaBoard from './FocusAreaBoard';
 import useConferenceNotes from './useConferenceNotes';
 import BookYourStay from '@/components/travel/BookYourStay';
 import LiveCountdownChip from '@/components/event-energy/LiveCountdownChip';
@@ -114,13 +116,9 @@ export default function ConferenceRoomDrawer({ room, attendees, user, accent, op
 
           {room.description && <p className="text-xs leading-relaxed" style={{ color: B.navy }}>{room.description}</p>}
 
-          {(room.focus_areas || []).length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {(room.focus_areas || []).map((f) => (
-                <span key={f.key} className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: `${domainColor}12`, color: domainColor }}>{f.label}</span>
-              ))}
-            </div>
-          )}
+          <NowFacilitatingRibbon room={room} accent={domainColor} />
+
+          <FocusAreaBoard room={room} attendees={list} myRsvp={myRsvp} user={user} accent={accent} onChanged={onRsvpChanged} />
 
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
