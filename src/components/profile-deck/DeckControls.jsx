@@ -1,66 +1,100 @@
-import { ChevronLeft, ChevronRight, Play, Pause, Settings2 } from 'lucide-react';
-import { B } from '@/components/fellow-home/fellowHomeConfig';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, Play, Pause, ArrowLeft, Settings2 } from 'lucide-react';
 
-// Minimal editorial control bar. Thin sand-toned strip with glyph controls
-// and a serif slide counter. Not a chunky media-player chrome.
+// Editorial glass pill that floats above the HomeDock. Houses exit, slide
+// navigation, play-pause, and a serif slide counter. Matches the dock's
+// material language — dark glass, gold accent — so the two pills read as
+// a coordinated pair rather than competing bars.
 export default function DeckControls({ current, total, playing, accent, label, onPrev, onNext, onTogglePlay, isOwner, onOpenPresentation }) {
+  const navigate = useNavigate();
+
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-40"
-      style={{ background: `linear-gradient(180deg, transparent 0%, ${B.navyDeep}E6 40%, ${B.navyDeep} 100%)` }}
-    >
-      <div className="max-w-2xl mx-auto px-6 pb-6 pt-10 flex items-center justify-center gap-5">
+    <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[110] px-4">
+      <div
+        className="flex items-center gap-1 rounded-full px-2 py-2 shadow-2xl"
+        style={{ background: 'rgba(7,17,31,0.92)', border: '1px solid rgba(201,168,124,0.28)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+      >
+        {/* Exit / Back */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex h-10 items-center gap-1.5 rounded-full px-3 text-[11px] font-bold uppercase tracking-[0.14em] transition-all hover:bg-white/10"
+          style={{ color: 'rgba(255,255,255,0.7)' }}
+          aria-label="Exit deck"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span className="hidden sm:inline">Exit</span>
+        </button>
+
+        <Divider />
+
+        {/* Previous */}
         <button
           onClick={onPrev}
           disabled={current === 0}
-          className="w-10 h-10 rounded-full flex items-center justify-center transition-opacity hover:opacity-70 disabled:opacity-30"
-          style={{ color: B.cream, border: `1px solid ${B.cream}22` }}
+          className="flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-white/10 disabled:opacity-25"
+          style={{ color: 'rgba(255,255,255,0.8)' }}
           aria-label="Previous slide"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="h-5 w-5" />
         </button>
 
+        {/* Play / Pause */}
         <button
           onClick={onTogglePlay}
-          className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105"
-          style={{ background: accent, color: B.navyDeep }}
-          aria-label={playing ? 'Pause' : 'Play'}
+          className="flex h-12 w-12 items-center justify-center rounded-full transition-all hover:scale-105"
+          style={{ background: accent, color: '#07111f' }}
+          aria-label={playing ? 'Pause autoplay' : 'Start autoplay'}
         >
-          {playing ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
+          {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
         </button>
 
+        {/* Next */}
         <button
           onClick={onNext}
           disabled={current >= total - 1}
-          className="w-10 h-10 rounded-full flex items-center justify-center transition-opacity hover:opacity-70 disabled:opacity-30"
-          style={{ color: B.cream, border: `1px solid ${B.cream}22` }}
+          className="flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-white/10 disabled:opacity-25"
+          style={{ color: 'rgba(255,255,255,0.8)' }}
           aria-label="Next slide"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="h-5 w-5" />
         </button>
 
-        <div className="flex items-center gap-3 ml-2">
+        <Divider />
+
+        {/* Counter + label */}
+        <div className="flex items-center gap-2.5 px-1.5">
           <span
             className="text-sm tabular-nums"
-            style={{ color: B.cream, fontFamily: "'Playfair Display', Georgia, serif" }}
+            style={{ color: '#fff', fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            {String(current + 1).padStart(2, '0')} <span style={{ color: `${B.cream}55` }}>/ {String(total).padStart(2, '0')}</span>
+            {String(current + 1).padStart(2, '0')}
+            <span style={{ color: 'rgba(255,255,255,0.35)' }}> / {String(total).padStart(2, '0')}</span>
           </span>
-          <span className="hidden sm:inline text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: `${B.cream}88` }}>
+          <span className="hidden md:inline text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(255,255,255,0.45)' }}>
             {label}
           </span>
         </div>
 
+        {/* Presentation settings — owner only */}
         {isOwner && onOpenPresentation && (
-          <button
-            onClick={onOpenPresentation}
-            className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.14em] transition-opacity hover:opacity-70"
-            style={{ color: B.cream, border: `1px solid ${B.cream}22` }}
-          >
-            <Settings2 className="w-3.5 h-3.5" /> Presentation
-          </button>
+          <>
+            <Divider />
+            <button
+              onClick={onOpenPresentation}
+              className="flex h-10 items-center gap-1.5 rounded-full px-3 text-[11px] font-bold uppercase tracking-[0.14em] transition-all hover:bg-white/10"
+              style={{ color: '#c9a87c' }}
+              aria-label="Presentation settings"
+            >
+              <Settings2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Presentation</span>
+            </button>
+          </>
         )}
       </div>
     </div>
   );
+}
+
+function Divider() {
+  return <div className="h-6 w-px bg-white/15" />;
 }
