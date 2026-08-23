@@ -7,6 +7,7 @@ import ConferenceKanbanColumn from './ConferenceKanbanColumn';
 import ConferenceKanbanCard from './ConferenceKanbanCard';
 import ConferenceViewSwitcher from './ConferenceViewSwitcher';
 import ConferenceSwimLane from './ConferenceSwimLane';
+import ConferenceRoomDrawer from './ConferenceRoomDrawer';
 import { DISCIPLINES, disciplineLabel, phaseForStatus, CONFERENCE_VIEWS } from './conferenceRoomConfig';
 import { getContinent } from '@/components/publication/countryToContinentMap';
 
@@ -25,6 +26,7 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
   const [composerOpen, setComposerOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [view, setView] = useState('lifecycle');
+  const [selectedRoomId, setSelectedRoomId] = useState(null);
 
   const refresh = () => setRefreshKey((k) => k + 1);
 
@@ -136,6 +138,7 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
       accent={accent}
       phase={phaseForStatus(r.status)}
       onRsvpChanged={refresh}
+      onOpen={() => setSelectedRoomId(r.id)}
     />
   );
 
@@ -229,6 +232,16 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
           ))}
         </div>
       )}
+
+      <ConferenceRoomDrawer
+        room={visibleRooms.find((r) => r.id === selectedRoomId) || null}
+        attendees={rsvpsByRoom[selectedRoomId] || []}
+        user={user}
+        accent={accent}
+        open={!!selectedRoomId}
+        onOpenChange={(o) => !o && setSelectedRoomId(null)}
+        onRsvpChanged={refresh}
+      />
     </>
   );
 }

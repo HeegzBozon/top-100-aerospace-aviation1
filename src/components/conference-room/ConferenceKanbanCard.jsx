@@ -1,5 +1,5 @@
 import { format, parseISO } from 'date-fns';
-import { MapPin, Calendar, Check, Clock, Radio } from 'lucide-react';
+import { MapPin, Calendar, Check, Clock, Radio, UserPlus } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import { statusMeta, domainAccent, roomCountdown } from './conferenceRoomConfig';
 import AvatarCluster from './AvatarCluster';
@@ -7,7 +7,7 @@ import RsvpControl from './RsvpControl';
 
 // Compact card for the Conference Room Kanban. phase tunes the footer:
 // upcoming/in-progress render the RSVP control; done renders the reconnect roster.
-export default function ConferenceKanbanCard({ room, attendees, user, accent, phase, onRsvpChanged }) {
+export default function ConferenceKanbanCard({ room, attendees, user, accent, phase, onRsvpChanged, onOpen }) {
   const list = attendees || [];
   const myRsvp = list.find((a) => a.fellow_email === user?.email);
   const meta = statusMeta(room.status);
@@ -19,10 +19,12 @@ export default function ConferenceKanbanCard({ room, attendees, user, accent, ph
   const city = [room.city, room.country].filter(Boolean).join(', ');
   const isLive = phase === 'live';
   const isDone = phase === 'done';
+  const volunteers = list.filter((a) => a.volunteer).length;
 
   return (
     <div
-      className="rounded-xl p-3 flex flex-col relative overflow-hidden"
+      onClick={() => onOpen?.()}
+      className="rounded-xl p-3 flex flex-col relative overflow-hidden cursor-pointer"
       style={{
         background: isDone ? B.cream : '#fff',
         border: `1px solid ${isLive ? `${domainColor}55` : B.border}`,
@@ -73,11 +75,18 @@ export default function ConferenceKanbanCard({ room, attendees, user, accent, ph
             {list.length}
           </span>
         </div>
-        {!isDone && myRsvp?.focus_area && (
-          <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: `${domainColor}12`, color: domainColor }}>
-            {myRsvp.focus_area}
-          </span>
-        )}
+        <div className="flex items-center gap-1">
+          {!isDone && myRsvp?.focus_area && (
+            <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: `${domainColor}12`, color: domainColor }}>
+              {myRsvp.focus_area}
+            </span>
+          )}
+          {volunteers > 0 && (
+            <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: `${accent}14`, color: accent }}>
+              <UserPlus className="w-2.5 h-2.5" />{volunteers}
+            </span>
+          )}
+        </div>
       </div>
 
       {isDone && (
@@ -90,7 +99,9 @@ export default function ConferenceKanbanCard({ room, attendees, user, accent, ph
       )}
 
       {!isDone && (
-        <RsvpControl room={room} myRsvp={myRsvp} user={user} accent={accent} onChanged={onRsvpChanged} />
+        <div onClick={(e) => e.stopPropagation()}>
+          <RsvpControl room={room} myRsvp={myRsvp} user={user} accent={accent} onChanged={onRsvpChanged} />
+        </div>
       )}
     </div>
   );

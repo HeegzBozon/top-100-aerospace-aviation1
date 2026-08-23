@@ -35,6 +35,11 @@
       "default": "attending",
       "description": "Confirmed attendance or waitlist"
     },
+    "volunteer": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the Fellow has volunteered to host or co-host this Mission Room. Coordination signal only; never measurement-bearing and never read by discovery, ranking, or scoring."
+    },
     "notes": {
       "type": "string",
       "description": "Optional coordination note"

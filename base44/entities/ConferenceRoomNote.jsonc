@@ -1,0 +1,73 @@
+{
+  "name": "ConferenceRoomNote",
+  "type": "object",
+  "properties": {
+    "room_id": {
+      "type": "string",
+      "description": "ID of the ConferenceRoom this note belongs to"
+    },
+    "conference_name": {
+      "type": "string",
+      "description": "Denormalized conference display name"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email of the Fellow who authored the note"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name, denormalized"
+    },
+    "author_avatar_url": {
+      "type": "string",
+      "description": "Avatar URL, denormalized"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "comment",
+        "attachment",
+        "note"
+      ],
+      "default": "comment",
+      "description": "comment = discussion entry; attachment = uploaded file; note = coordination note"
+    },
+    "content": {
+      "type": "string",
+      "description": "Text body for comment and note entries"
+    },
+    "attachment_url": {
+      "type": "string",
+      "description": "Uploaded file URL for attachment entries"
+    },
+    "attachment_name": {
+      "type": "string",
+      "description": "Filename of the attachment"
+    }
+  },
+  "required": [
+    "room_id",
+    "author_email"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "data.author_email": "{{user.email}}"
+    },
+    "update": {
+      "data.author_email": "{{user.email}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
