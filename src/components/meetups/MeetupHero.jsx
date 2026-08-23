@@ -2,6 +2,8 @@ import React from 'react';
 import { MapPin, Users, ShieldCheck } from 'lucide-react';
 import moment from 'moment';
 import { B, formatLabel, tierLabel, DEFAULT_COVER } from './meetupConfig';
+import LiveCountdownChip from '@/components/event-energy/LiveCountdownChip';
+import WhosGoing from '@/components/event-energy/WhosGoing';
 
 // Partiful-grade full-bleed invite hero. The page IS the invite.
 export default function MeetupHero({ event, attendees }) {
@@ -32,6 +34,7 @@ export default function MeetupHero({ event, attendees }) {
               <ShieldCheck size={12} className="mr-1" />
               {tierLabel(event.member_tier)}
             </span>
+            <LiveCountdownChip start={event.event_date} end={event.event_end_date} accent={B.gold} />
           </div>
           <h1 className="font-heading text-white text-3xl sm:text-5xl leading-tight tracking-tight">{event.title}</h1>
           {date && <p className="text-white/85 mt-2 text-sm sm:text-base">{date.format('dddd, MMMM D · h:mm A')}</p>}
@@ -41,9 +44,8 @@ export default function MeetupHero({ event, attendees }) {
               {event.location}
             </p>
           )}
-          <div className="flex items-center gap-1.5 mt-3 text-white/80 text-xs">
-            <Users size={13} />
-            <span>{count} attending</span>
+          <div className="mt-3">
+            <WhosGoing items={attendees} count={count} hostName={event.host_name} accent={B.gold} tone="light" borderColor={B.navyDeep} />
           </div>
         </div>
       </div>

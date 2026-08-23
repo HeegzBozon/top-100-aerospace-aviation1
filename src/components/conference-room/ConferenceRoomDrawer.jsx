@@ -11,6 +11,7 @@ import RsvpControl from './RsvpControl';
 import VolunteerHostButton from './VolunteerHostButton';
 import useConferenceNotes from './useConferenceNotes';
 import BookYourStay from '@/components/travel/BookYourStay';
+import LiveCountdownChip from '@/components/event-energy/LiveCountdownChip';
 
 const hostLabel = (url) => {
   if (!url) return null;
@@ -102,11 +103,7 @@ export default function ConferenceRoomDrawer({ room, attendees, user, accent, op
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]" style={{ color: B.muted }}>
             {dateRange && <span className="inline-flex items-center gap-1"><Calendar className="w-3 h-3" /> {dateRange}</span>}
-            {countdown && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: countdown.kind === 'live' ? `${B.gold}22` : `${domainColor}14`, color: countdown.kind === 'live' ? B.gold : domainColor }}>
-                {countdown.kind === 'live' ? <Radio className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />} {countdown.label}
-              </span>
-            )}
+            <LiveCountdownChip start={room.start_date} end={room.end_date} accent={domainColor} />
             {(room.city || room.country) && <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" /> {[room.city, room.country].filter(Boolean).join(', ')}</span>}
             {room.domain_focus && <span>· {disciplineLabel(room.domain_focus)}</span>}
           </div>
@@ -127,8 +124,8 @@ export default function ConferenceRoomDrawer({ room, attendees, user, accent, op
 
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <AvatarCluster items={list} accent={domainColor} size={24} />
-              <span className="text-[11px] font-semibold" style={{ color: B.navy }}>{list.length} attending</span>
+              <AvatarCluster items={list} accent={domainColor} size={30} />
+              <span className="text-sm font-bold" style={{ color: B.navy }}>{list.length} going</span>
             </div>
             {host && (
               <a href={room.official_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.1em]" style={{ color: B.muted }}>

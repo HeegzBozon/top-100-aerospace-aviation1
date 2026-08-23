@@ -17,6 +17,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import BookYourStay from '@/components/travel/BookYourStay';
+import LiveCountdownChip from '@/components/event-energy/LiveCountdownChip';
+import WhosGoing from '@/components/event-energy/WhosGoing';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -400,11 +402,11 @@ export default function EventPage() {
     <div className="min-h-screen" style={{ backgroundColor: brandColors.cream }}>
       {/* Cover Image / Hero */}
       <div 
-        className="relative h-32 md:h-40 bg-gradient-to-br from-slate-700 to-slate-900"
+        className="relative h-[40vh] min-h-[280px] bg-gradient-to-br from-slate-700 to-slate-900"
         style={event.cover_image_url ? { backgroundImage: `url(${event.cover_image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
       >
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute top-4 left-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/30" />
+        <div className="absolute top-4 left-4 z-10">
           <Link to={createPageUrl('Calendar')}>
             <Button variant="ghost" className="text-white hover:bg-white/20">
               <ChevronLeft className="w-4 h-4 mr-1" /> Back
@@ -413,7 +415,8 @@ export default function EventPage() {
         </div>
         
         {/* Event Badges */}
-        <div className="absolute top-4 right-4 flex gap-2">
+        <div className="absolute top-4 right-4 flex gap-2 z-10">
+          <LiveCountdownChip start={event.event_date} end={event.event_end_date} accent={brandColors.goldPrestige} />
           {event.is_official && (
             <Badge className="gap-1" style={{ backgroundColor: brandColors.goldPrestige }}>
               <Award className="w-3 h-3" /> Official
@@ -453,10 +456,12 @@ export default function EventPage() {
                       {event.location}
                     </div>
                   )}
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    {event.rsvp_count || event.attendees?.length || 0} people going
-                  </div>
+                  <WhosGoing
+                    items={event.attendees || []}
+                    count={event.rsvp_count || event.attendees?.length || 0}
+                    hostName={event.host_name}
+                    accent={brandColors.goldPrestige}
+                  />
                 </div>
               </div>
 
