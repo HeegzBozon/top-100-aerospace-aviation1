@@ -1,7 +1,7 @@
 import {
   LayoutGrid, Radar, Scissors, Send, Network, GraduationCap, Briefcase, Layers,
   Compass, Hammer, Crown, Building2, Users,
-  Wrench, Plane, ClipboardList, FlaskConical, Landmark, TrendingUp,
+  Wrench, Plane, ClipboardList, FlaskConical, TrendingUp,
 } from 'lucide-react';
 
 // Two parallel lenses — you flip between a Lifecycle view and a Role/Org view.
@@ -25,9 +25,7 @@ export const STAGES = {
     { key: 'flight_ops', label: 'Flight & Mission Ops', blurb: 'Pilots, test, astronauts, launch & range', icon: Plane, boards: ['fellow', 'career', 'networks', 'conference'] },
     { key: 'program', label: 'Program & Systems', blurb: 'PMs, IPT leads, chief engineers', icon: ClipboardList, boards: ['fellow', 'conference', 'networks', 'intros'] },
     { key: 'research', label: 'Research & Academia', blurb: 'Scientists, PhDs, faculty, lab directors', icon: FlaskConical, boards: ['fellow', 'networks', 'conference', 'career'] },
-    { key: 'policy', label: 'Policy & Acquisition', blurb: 'Government, regulatory, defense acquisition', icon: Landmark, boards: ['fellow', 'conference', 'networks', 'intros'] },
-    { key: 'investment', label: 'Investment & Growth', blurb: 'VC, corporate dev, BD, strategy', icon: TrendingUp, boards: ['fellow', 'ribbon', 'intros', 'networks', 'conference'] },
-    { key: 'executive', label: 'Executive & Founder', blurb: 'C-suite, founders, GMs', icon: Crown, boards: ['fellow', 'ribbon', 'intros', 'networks', 'conference', 'platform'] },
+    { key: 'strategy', label: 'Strategy & Capital', blurb: 'VC, BD, policy, acquisition, founders, execs', icon: TrendingUp, boards: ['fellow', 'ribbon', 'intros', 'networks', 'conference', 'platform'] },
   ],
 };
 
