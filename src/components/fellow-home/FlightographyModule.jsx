@@ -2,6 +2,7 @@ import { B } from './fellowHomeConfig';
 import NomineeCareerHistorySection from '@/components/profile/NomineeCareerHistorySection';
 import NomineeContributionsSection from '@/components/profile/NomineeContributionsSection';
 import ResearchStatsCard from '@/components/profile/ResearchStatsCard';
+import FlightographyAttendance from './FlightographyAttendance';
 
 // The credential. Foundation, not headline — renders below the fold.
 export default function FlightographyModule({ nominee, user, accent, onNomineeUpdate, onUserUpdate }) {
@@ -21,16 +22,19 @@ export default function FlightographyModule({ nominee, user, accent, onNomineeUp
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <NomineeCareerHistorySection nominee={nominee} />
-          <div className="space-y-4">
-            <ResearchStatsCard
-              nominee={nominee}
-              user={user}
-              onNomineeUpdate={onNomineeUpdate}
-              onUserUpdate={onUserUpdate}
-            />
-            <NomineeContributionsSection nomineeId={nominee.id} />
+        <div className="space-y-4">
+          <FlightographyAttendance fellowEmail={nominee?.nominee_email || user?.email} accent={accent} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <NomineeCareerHistorySection nominee={nominee} />
+            <div className="space-y-4">
+              <ResearchStatsCard
+                nominee={nominee}
+                user={user}
+                onNomineeUpdate={onNomineeUpdate}
+                onUserUpdate={onUserUpdate}
+              />
+              <NomineeContributionsSection nomineeId={nominee.id} />
+            </div>
           </div>
         </div>
       )}

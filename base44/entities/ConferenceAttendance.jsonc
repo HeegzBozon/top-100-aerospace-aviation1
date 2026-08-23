@@ -1,0 +1,104 @@
+{
+  "name": "ConferenceAttendance",
+  "type": "object",
+  "properties": {
+    "room_id": {
+      "type": "string",
+      "description": "ID of the ConferenceRoom this verified attendance belongs to"
+    },
+    "conference_name": {
+      "type": "string",
+      "description": "Denormalized conference display name"
+    },
+    "conference_series": {
+      "type": "string",
+      "description": "Denormalized recurring series key"
+    },
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow whose attendance was verified"
+    },
+    "fellow_name": {
+      "type": "string",
+      "description": "Display name, denormalized"
+    },
+    "fellow_avatar_url": {
+      "type": "string",
+      "description": "Avatar URL, denormalized"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Event start date, denormalized from the room"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Event end date, denormalized from the room"
+    },
+    "city": {
+      "type": "string",
+      "description": "Host city, denormalized"
+    },
+    "country": {
+      "type": "string",
+      "description": "Host country, denormalized"
+    },
+    "domain_focus": {
+      "type": "string",
+      "enum": [
+        "space_rd",
+        "commercial_aviation",
+        "defense",
+        "manufacturing",
+        "operations",
+        "engineering",
+        "policy",
+        "entrepreneurship"
+      ],
+      "description": "Primary domain the room was oriented around"
+    },
+    "focus_area": {
+      "type": "string",
+      "description": "Focus sub-room the Fellow led, if any"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When attendance was verified"
+    },
+    "verified_by_email": {
+      "type": "string",
+      "description": "Email of the facilitator or admin who verified"
+    },
+    "verified_by_name": {
+      "type": "string",
+      "description": "Display name of the verifier, denormalized"
+    }
+  },
+  "required": [
+    "room_id",
+    "fellow_email",
+    "conference_name",
+    "start_date",
+    "end_date"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

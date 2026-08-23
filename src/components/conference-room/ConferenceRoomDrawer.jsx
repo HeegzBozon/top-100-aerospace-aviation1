@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { format, parseISO } from 'date-fns';
-import { MapPin, Calendar, ExternalLink, Crown, Radio, Clock, Paperclip, MessageSquare, Send, Loader2, FileText, Download } from 'lucide-react';
+import { MapPin, Calendar, ExternalLink, Crown, Radio, Clock, Paperclip, MessageSquare, Send, Loader2, FileText, Download, ShieldCheck } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { base44 } from '@/api/base44Client';
@@ -11,6 +11,7 @@ import RsvpControl from './RsvpControl';
 import VolunteerHostButton from './VolunteerHostButton';
 import NowFacilitatingRibbon from './NowFacilitatingRibbon';
 import FocusAreaBoard from './FocusAreaBoard';
+import VerifyAttendanceButton from './VerifyAttendanceButton';
 import useConferenceNotes from './useConferenceNotes';
 import BookYourStay from '@/components/travel/BookYourStay';
 import LiveCountdownChip from '@/components/event-energy/LiveCountdownChip';
@@ -152,6 +153,16 @@ export default function ConferenceRoomDrawer({ room, attendees, user, accent, op
               <span className="text-[10px] font-semibold" style={{ color: B.gold }}>Patron of Record</span>
               <span className="text-[10px]" style={{ color: B.navy }}>{room.patron_of_record_name}</span>
             </div>
+          )}
+
+          {room.attendance_verified ? (
+            <div className="flex items-center gap-1.5 rounded-lg px-2 py-1.5" style={{ background: `${B.gold}12`, border: `1px solid ${B.gold}33` }}>
+              <ShieldCheck className="w-3 h-3" style={{ color: B.gold }} />
+              <span className="text-[10px] font-semibold" style={{ color: B.gold }}>Verified attendance</span>
+              <span className="text-[10px]" style={{ color: B.muted }}>· feeds Flightography</span>
+            </div>
+          ) : (
+            <VerifyAttendanceButton room={room} user={user} accent={accent} onChanged={onRsvpChanged} />
           )}
 
           <Tabs defaultValue="discussion" className="mt-1">
