@@ -1,0 +1,86 @@
+{
+  "name": "CareerResource",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the career resource"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Short card blurb, max ~250 chars"
+    },
+    "resource_type": {
+      "type": "string",
+      "enum": [
+        "guide",
+        "framework",
+        "pathway",
+        "playbook",
+        "article",
+        "credential"
+      ],
+      "default": "guide",
+      "description": "Kind of practice output the CoE curates"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "all",
+        "entry",
+        "mid",
+        "senior",
+        "executive"
+      ],
+      "default": "all",
+      "description": "Career stage this resource serves"
+    },
+    "domain_focus": {
+      "type": "string",
+      "enum": [
+        "space_rd",
+        "commercial_aviation",
+        "defense",
+        "manufacturing",
+        "operations",
+        "engineering",
+        "policy",
+        "entrepreneurship"
+      ],
+      "description": "Optional domain accent"
+    },
+    "link": {
+      "type": "string",
+      "description": "External or internal URL"
+    },
+    "source_name": {
+      "type": "string",
+      "description": "Attribution \u2014 author or organization"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

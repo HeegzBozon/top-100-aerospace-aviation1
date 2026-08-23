@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Layers, LayoutGrid, Radar, Scissors, Briefcase, Send, Network, Building2 } from 'lucide-react';
+import { Layers, LayoutGrid, Radar, Scissors, Briefcase, Send, Network, Building2, GraduationCap } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // Two-level switcher. Top level: Chamber of Commerce (convene — horizontal,
@@ -15,6 +15,7 @@ const FRAMES = [
   ]},
   { key: 'lace', label: 'Lean Agile Center of Excellence', short: 'LACE', boards: [
     { key: 'networks', label: 'Domain Networks', to: '/profile', icon: Network },
+    { key: 'career', label: 'Career Center', to: '/profile', icon: GraduationCap },
     { key: 'jobs', label: 'Job Board', to: '/profile', icon: Briefcase },
     { key: 'platform', label: 'Backlog', to: '/platform-board', icon: Layers },
   ]},
