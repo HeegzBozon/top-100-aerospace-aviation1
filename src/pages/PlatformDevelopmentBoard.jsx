@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Layers } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
-import BoardSwitcher from '@/components/platform-board/BoardSwitcher';
+import LensSwitcher from '@/components/lens-nav/LensSwitcher';
 import PlatformBoardView from '@/components/platform-board/PlatformBoardView';
 
 // Standalone deep-link to the platform board. Reuses the same view rendered
@@ -21,7 +21,7 @@ export default function PlatformDevelopmentBoard() {
           <h1 className="text-base font-bold leading-tight" style={{ color: B.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>Kanban Board</h1>
           <p className="text-[11px]" style={{ color: B.muted }}>Strategic themes, OKRs, epics & side quests — a communal build ledger.</p>
         </div>
-        <div className="ml-auto"><BoardSwitcher active="platform" accent={ACCENT} /></div>
+        <div className="ml-auto"><LensSwitcher lens="lifecycle" stage="steward" accent={ACCENT} /></div>
       </header>
       <main className="px-4 sm:px-8 py-6 max-w-6xl mx-auto">
         <PlatformBoardView user={user} accent={ACCENT} />

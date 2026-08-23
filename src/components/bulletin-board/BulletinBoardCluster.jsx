@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, PenLine, ListOrdered, Plane, CreditCard, BarChart3, Users, Megaphone, MessagesSquare, Link2, Building2 } from 'lucide-react';
+import { Sparkles, PenLine, ListOrdered, Plane, CreditCard, BarChart3, Users, Megaphone, MessagesSquare, Link2, Building2, ArrowLeft } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import StatusPicker from '@/components/fellow-home/StatusPicker';
 import FellowStatsBox from '@/components/fellow-home/FellowStatsBox';
@@ -13,7 +13,9 @@ import NextMove from './NextMove';
 import EightPointer from './EightPointer';
 import ShortcutsTile from './ShortcutsTile';
 import ModuleGrid from './ModuleGrid';
-import BoardSwitcher from '@/components/platform-board/BoardSwitcher';
+import LensSwitcher from '@/components/lens-nav/LensSwitcher';
+import LensLanding from '@/components/lens-nav/LensLanding';
+import { stagesFor, stageMeta } from '@/components/lens-nav/lensConfig';
 import PlatformBoardView from '@/components/platform-board/PlatformBoardView';
 import ConferenceRoomView from '@/components/conference-room/ConferenceRoomView';
 import RibbonCuttingsView from '@/components/ribbon-cuttings/RibbonCuttingsView';
@@ -38,7 +40,16 @@ export default function BulletinBoardCluster({
   const [composerOpen, setComposerOpen] = useState(false);
   const [composeType, setComposeType] = useState('note');
   const [editingPost, setEditingPost] = useState(null);
-  const [board, setBoard] = useState('fellow');
+  const [lens, setLens] = useState('lifecycle');
+  const [stage, setStage] = useState('aspiring');
+  const [board, setBoard] = useState(null);
+
+  const handleLensChange = (next) => {
+    setLens(next);
+    setStage(stagesFor(next)[0].key);
+    setBoard(null);
+  };
+  const handleSelectStage = (s) => { setStage(s); setBoard(null); };
 
   const openComposer = (postType) => {
     if (!postType) return;
@@ -102,11 +113,18 @@ export default function BulletinBoardCluster({
         style={{ background: B.sand, border: `1px solid ${B.border}` }}
       >
         <div className="px-5 sm:px-8 pt-4 pb-2">
-          <BoardSwitcher active={board} onSelect={setBoard} accent={accent} />
+          <LensSwitcher lens={lens} stage={stage} accent={accent} onLensChange={handleLensChange} onSelectStage={handleSelectStage} />
         </div>
 
         <div className="px-4 sm:px-5 pb-5">
-          {board === 'platform' ? (
+          {board !== null && (
+            <button type="button" onClick={() => setBoard(null)} className="mb-3 inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: B.muted }}>
+              <ArrowLeft className="w-3 h-3" /> Back to {stageMeta(lens, stage).label}
+            </button>
+          )}
+          {board === null ? (
+            <LensLanding lens={lens} stage={stage} accent={accent} onSelectBoard={setBoard} />
+          ) : board === 'platform' ? (
             <PlatformBoardView user={user} accent={accent} />
           ) : board === 'conference' ? (
             <ConferenceRoomView user={user} accent={accent} />
