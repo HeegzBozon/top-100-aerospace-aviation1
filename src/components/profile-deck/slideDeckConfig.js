@@ -25,6 +25,8 @@ export const AUTOPLAY_MODES = [
 ];
 
 export const DEFAULT_DWELL = 6;
+export const FIRST_PASS_DWELL = 4;
+export const SECOND_PASS_DWELL = 7;
 export const MIN_DWELL = 3;
 
 export const slideLabel = (key) =>
