@@ -4,7 +4,15 @@
   "properties": {
     "employer_id": {
       "type": "string",
-      "description": "Reference to the Employer entity"
+      "description": "Reference to the Employer entity. Optional for member-posted chamber roles."
+    },
+    "company_name": {
+      "type": "string",
+      "description": "Denormalized company name shown on the card. Used by member-posted chamber roles without an Employer record."
+    },
+    "poster_name": {
+      "type": "string",
+      "description": "Display name of the Fellow who posted the role, denormalized."
     },
     "title": {
       "type": "string",
@@ -217,7 +225,6 @@
     }
   },
   "required": [
-    "employer_id",
     "title",
     "description",
     "job_type",
