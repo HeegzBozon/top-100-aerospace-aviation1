@@ -16,6 +16,7 @@ import ModuleGrid from './ModuleGrid';
 import BoardSwitcher from '@/components/platform-board/BoardSwitcher';
 import PlatformBoardView from '@/components/platform-board/PlatformBoardView';
 import ConferenceRoomView from '@/components/conference-room/ConferenceRoomView';
+import RibbonCuttingsView from '@/components/ribbon-cuttings/RibbonCuttingsView';
 
 // Master instrument cluster — the Bulletin Board as one customizable grid.
 // Every module is an evenly distributed, drag-reorderable, toggleable tile.
@@ -110,6 +111,8 @@ export default function BulletinBoardCluster({
             <PlatformBoardView user={user} accent={accent} />
           ) : board === 'conference' ? (
             <ConferenceRoomView user={user} accent={accent} />
+          ) : board === 'ribbon' ? (
+            <RibbonCuttingsView user={user} accent={accent} />
           ) : (
             <ModuleGrid
               tiles={tiles}
