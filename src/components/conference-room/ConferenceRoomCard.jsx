@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { MapPin, Calendar, ExternalLink, Crown, Check, Clock, Radio } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
-import { statusMeta, disciplineLabel, domainAccent, roomCountdown, phaseForStatus } from './conferenceRoomConfig';
+import { statusMeta, disciplineLabel, domainAccent, roomCountdown, phaseForRoom } from './conferenceRoomConfig';
 import AvatarCluster from './AvatarCluster';
 import RsvpControl from './RsvpControl';
 
@@ -16,7 +16,7 @@ const hostLabel = (url) => {
 export default function ConferenceRoomCard({ room, attendees, user, accent, onRsvpChanged }) {
   const [expanded, setExpanded] = useState(false);
   const meta = statusMeta(room.status);
-  const phase = phaseForStatus(room.status);
+  const phase = phaseForRoom(room);
   const myRsvp = (attendees || []).find((a) => a.fellow_email === user?.email);
   const domainColor = domainAccent(room.domain_focus);
   const countdown = roomCountdown(room);

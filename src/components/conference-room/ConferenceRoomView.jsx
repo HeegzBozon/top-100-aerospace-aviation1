@@ -8,7 +8,7 @@ import ConferenceKanbanCard from './ConferenceKanbanCard';
 import ConferenceViewSwitcher from './ConferenceViewSwitcher';
 import ConferenceSwimLane from './ConferenceSwimLane';
 import ConferenceRoomDrawer from './ConferenceRoomDrawer';
-import { DISCIPLINES, disciplineLabel, phaseForStatus, CONFERENCE_VIEWS } from './conferenceRoomConfig';
+import { DISCIPLINES, disciplineLabel, phaseForRoom, CONFERENCE_VIEWS } from './conferenceRoomConfig';
 import { getContinent } from '@/components/publication/countryToContinentMap';
 
 const CONTINENT_ORDER = ['North America', 'Europe', 'Asia', 'South America', 'Oceania', 'Africa', 'Antarctica'];
@@ -27,8 +27,16 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [view, setView] = useState('lifecycle');
   const [selectedRoomId, setSelectedRoomId] = useState(null);
+  const [now, setNow] = useState(() => new Date());
 
   const refresh = () => setRefreshKey((k) => k + 1);
+
+  // Re-derive date-aware phases as dates advance, so the seasonal board
+  // auto-progresses rooms without a manual refresh.
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(t);
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -73,10 +81,11 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
     return s;
   }, [rsvps, user]);
 
-  // Lifecycle columns (default view).
-  const upcomingRooms = visibleRooms.filter((r) => ['draft', 'open'].includes(r.status)).sort(byDateAsc);
-  const liveRooms = visibleRooms.filter((r) => r.status === 'live').sort(byDateAsc);
-  const doneRooms = visibleRooms.filter((r) => ['closed', 'archived'].includes(r.status)).sort(byDateAsc);
+  // Seasonal columns (default view). Phase is derived by date for open/live
+  // rooms, so cards auto-progress Upcoming → In Progress → Done as dates pass.
+  const upcomingRooms = visibleRooms.filter((r) => phaseForRoom(r, now) === 'upcoming').sort(byDateAsc);
+  const liveRooms = visibleRooms.filter((r) => phaseForRoom(r, now) === 'live').sort(byDateAsc);
+  const doneRooms = visibleRooms.filter((r) => phaseForRoom(r, now) === 'done').sort(byDateAsc);
 
   // Swim-lane grouping for the selected view.
   const lanes = useMemo(() => {
@@ -136,7 +145,7 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
       attendees={rsvpsByRoom[r.id] || []}
       user={user}
       accent={accent}
-      phase={phaseForStatus(r.status)}
+      phase={phaseForRoom(r, now)}
       onRsvpChanged={refresh}
       onOpen={() => setSelectedRoomId(r.id)}
     />

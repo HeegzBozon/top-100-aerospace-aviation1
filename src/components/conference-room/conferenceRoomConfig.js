@@ -35,9 +35,30 @@ export const phaseForStatus = (status) => {
   return 'upcoming';
 };
 
+// Date-aware phase derivation. Rooms whose governance status is 'open' or
+// 'live' auto-progress through the board by date: upcoming before the start
+// date, live during the event window, done once it ends. 'draft' stays
+// upcoming (hidden from non-admins via RLS); 'closed'/'archived' are done.
+// This reorganizes the board without mutating the lifecycle status record.
+export const phaseForRoom = (room, now = new Date()) => {
+  const status = room?.status;
+  if (['closed', 'archived'].includes(status)) return 'done';
+  if (status === 'draft') return 'upcoming';
+  if (room?.start_date) {
+    const start = new Date(`${room.start_date}T00:00:00`);
+    const end = room.end_date ? new Date(`${room.end_date}T23:59:59`) : null;
+    if (!isNaN(start.getTime())) {
+      if (now < start) return 'upcoming';
+      if (end && now > end) return 'done';
+      return 'live';
+    }
+  }
+  return status === 'live' ? 'live' : 'upcoming';
+};
+
 // Board view dimensions. Each extractor returns a stable lane key for a room.
 export const CONFERENCE_VIEWS = [
-  { key: 'lifecycle', label: 'Lifecycle' },
+  { key: 'lifecycle', label: 'Seasonal' },
   { key: 'domain', label: 'Domain' },
   { key: 'series', label: 'Series' },
   { key: 'region', label: 'Region' },
