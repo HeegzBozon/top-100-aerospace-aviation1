@@ -10,6 +10,7 @@ import AvatarCluster from './AvatarCluster';
 import RsvpControl from './RsvpControl';
 import VolunteerHostButton from './VolunteerHostButton';
 import useConferenceNotes from './useConferenceNotes';
+import BookYourStay from '@/components/travel/BookYourStay';
 
 const hostLabel = (url) => {
   if (!url) return null;
@@ -108,6 +109,10 @@ export default function ConferenceRoomDrawer({ room, attendees, user, accent, op
             )}
             {(room.city || room.country) && <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" /> {[room.city, room.country].filter(Boolean).join(', ')}</span>}
             {room.domain_focus && <span>· {disciplineLabel(room.domain_focus)}</span>}
+          </div>
+
+          <div>
+            <BookYourStay accent={accent} />
           </div>
 
           {room.description && <p className="text-xs leading-relaxed" style={{ color: B.navy }}>{room.description}</p>}

@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import BookYourStay from '@/components/travel/BookYourStay';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -477,6 +478,7 @@ export default function EventPage() {
                 <Button variant="outline" onClick={handleShare}>
                   <Share2 className="w-4 h-4 mr-2" /> Share
                 </Button>
+                <BookYourStay accent={brandColors.goldPrestige} />
               </div>
             </div>
 

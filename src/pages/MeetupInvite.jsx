@@ -5,6 +5,7 @@ import { B } from '@/components/meetups/meetupConfig';
 import MeetupHero from '@/components/meetups/MeetupHero';
 import MeetupRsvpControl from '@/components/meetups/MeetupRsvpControl';
 import { ArrowLeft, Share2, Loader2, Check, MapPin } from 'lucide-react';
+import BookYourStay from '@/components/travel/BookYourStay';
 
 export default function MeetupInvite() {
   const { eventId } = useParams();
@@ -128,6 +129,10 @@ export default function MeetupInvite() {
             <span>{event.location}</span>
           </div>
         )}
+
+        <div className="mb-6">
+          <BookYourStay accent={B.navy} />
+        </div>
 
         {event.host_name && (
           <div className="flex items-center gap-3 mb-6 pb-6" style={{ borderBottom: `1px solid ${B.border}` }}>
