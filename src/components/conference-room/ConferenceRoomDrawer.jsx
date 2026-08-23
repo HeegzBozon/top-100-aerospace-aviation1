@@ -236,7 +236,7 @@ export default function ConferenceRoomDrawer({ room, attendees, user, accent, op
           </Tabs>
         </div>
 
-        <div className="p-3 border-t flex flex-wrap items-center gap-2" style={{ borderColor: B.border, background: B.cream }}>
+        <div className="p-3 pb-[88px] border-t flex flex-wrap items-center gap-2" style={{ borderColor: B.border, background: B.cream }}>
           <div onClick={(e) => e.stopPropagation()}>
             <RsvpControl room={room} myRsvp={myRsvp} user={user} accent={accent} onChanged={onRsvpChanged} />
           </div>
