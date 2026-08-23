@@ -26,3 +26,19 @@ export const disciplineLabel = (key) =>
   (DISCIPLINES.find((d) => d.key === key) || {}).label || key;
 
 export const statusMeta = (key) => ROOM_STATUS[key] || { label: key, color: B.muted };
+
+// Maps a room's lifecycle status to a kanban card phase.
+export const phaseForStatus = (status) => {
+  if (status === 'live') return 'live';
+  if (['closed', 'archived'].includes(status)) return 'done';
+  return 'upcoming';
+};
+
+// Board view dimensions. Each extractor returns a stable lane key for a room.
+export const CONFERENCE_VIEWS = [
+  { key: 'lifecycle', label: 'Lifecycle' },
+  { key: 'domain', label: 'Domain' },
+  { key: 'series', label: 'Series' },
+  { key: 'region', label: 'Region' },
+  { key: 'attending', label: 'Attending' },
+];
