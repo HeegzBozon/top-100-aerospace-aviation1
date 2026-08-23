@@ -6,8 +6,8 @@ import ConferenceRoomComposer from './ConferenceRoomComposer';
 import ConferenceKanbanColumn from './ConferenceKanbanColumn';
 import ConferenceKanbanCard from './ConferenceKanbanCard';
 
-// Conference Room — a 3-column Kanban: Discovery → Attending → Post-Event.
-// Rooms move across columns as your relationship to each event changes.
+// Conference Room — a 3-column Kanban: Upcoming → In Progress → Done.
+// Rooms move across columns as the event lifecycle advances.
 export default function ConferenceRoomView({ user, accent = B.navy }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -53,25 +53,9 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
     );
   }, [rooms, user]);
 
-  const myRsvpRoomIds = useMemo(
-    () => new Set((rsvps || []).filter((r) => r.fellow_email === user?.email).map((r) => r.room_id)),
-    [rsvps, user]
-  );
-
-  const myRooms = useMemo(() => {
-    if (!user?.email) return [];
-    return visibleRooms
-      .map((room) => {
-        const attendees = rsvpsByRoom[room.id] || [];
-        const myRsvp = attendees.find((a) => a.fellow_email === user.email);
-        return myRsvp ? { room, myRsvp, attendees } : null;
-      })
-      .filter(Boolean);
-  }, [visibleRooms, rsvpsByRoom, user]);
-
-  const discoveryRooms = visibleRooms.filter((r) => ['open', 'live'].includes(r.status) && !myRsvpRoomIds.has(r.id));
-  const attendingRooms = myRooms.filter((m) => ['open', 'live'].includes(m.room.status));
-  const postRooms = visibleRooms.filter((r) => ['closed', 'archived'].includes(r.status));
+  const upcomingRooms = visibleRooms.filter((r) => ['draft', 'open'].includes(r.status));
+  const liveRooms = visibleRooms.filter((r) => r.status === 'live');
+  const doneRooms = visibleRooms.filter((r) => ['closed', 'archived'].includes(r.status));
 
   const isEmpty = !loading && !error && visibleRooms.length === 0;
   const isAdmin = user?.role === 'admin';
@@ -80,7 +64,7 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
     <>
       <div className="flex items-center justify-between mb-4">
         <p className="text-[11px] leading-relaxed max-w-md" style={{ color: B.muted }}>
-          Coordination rooms attached to named industry events. Declare attendance and the room moves across the board — the record persists beyond the show.
+          Coordination rooms attached to named industry events. Rooms progress Upcoming → In Progress → Done as the event lifecycle advances.
         </p>
         {isAdmin && !isEmpty && (
           <button
@@ -136,21 +120,21 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <ConferenceKanbanColumn label="Discovery" dot={accent} count={discoveryRooms.length} emptyHint="No rooms to discover.">
-            {discoveryRooms.map((r) => (
-              <ConferenceKanbanCard key={r.id} room={r} attendees={rsvpsByRoom[r.id] || []} user={user} accent={accent} phase="discovery" onRsvpChanged={refresh} />
+          <ConferenceKanbanColumn label="Upcoming" dot={accent} count={upcomingRooms.length} emptyHint="No upcoming rooms.">
+            {upcomingRooms.map((r) => (
+              <ConferenceKanbanCard key={r.id} room={r} attendees={rsvpsByRoom[r.id] || []} user={user} accent={accent} phase="upcoming" onRsvpChanged={refresh} />
             ))}
           </ConferenceKanbanColumn>
 
-          <ConferenceKanbanColumn label="Attending" dot={B.gold} count={attendingRooms.length} emptyHint="Declare attendance from Discovery.">
-            {attendingRooms.map((m) => (
-              <ConferenceKanbanCard key={m.room.id} room={m.room} attendees={m.attendees} user={user} accent={accent} phase="attending" onRsvpChanged={refresh} />
+          <ConferenceKanbanColumn label="In Progress" dot={B.gold} count={liveRooms.length} emptyHint="No rooms in progress.">
+            {liveRooms.map((r) => (
+              <ConferenceKanbanCard key={r.id} room={r} attendees={rsvpsByRoom[r.id] || []} user={user} accent={accent} phase="live" onRsvpChanged={refresh} />
             ))}
           </ConferenceKanbanColumn>
 
-          <ConferenceKanbanColumn label="Post-Event" dot={B.muted} count={postRooms.length} emptyHint="No past rooms yet.">
-            {postRooms.map((r) => (
-              <ConferenceKanbanCard key={r.id} room={r} attendees={rsvpsByRoom[r.id] || []} user={user} accent={accent} phase="post" onRsvpChanged={refresh} />
+          <ConferenceKanbanColumn label="Done" dot={B.muted} count={doneRooms.length} emptyHint="No completed rooms yet.">
+            {doneRooms.map((r) => (
+              <ConferenceKanbanCard key={r.id} room={r} attendees={rsvpsByRoom[r.id] || []} user={user} accent={accent} phase="done" onRsvpChanged={refresh} />
             ))}
           </ConferenceKanbanColumn>
         </div>

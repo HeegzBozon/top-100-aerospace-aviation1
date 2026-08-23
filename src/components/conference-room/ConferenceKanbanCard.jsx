@@ -5,7 +5,7 @@ import { statusMeta } from './conferenceRoomConfig';
 import RsvpControl from './RsvpControl';
 
 // Compact card for the Conference Room Kanban. phase tunes the footer:
-// discovery/attending render the RSVP control; post renders the reconnect roster.
+// upcoming/in-progress render the RSVP control; done renders the reconnect roster.
 export default function ConferenceKanbanCard({ room, attendees, user, accent, phase, onRsvpChanged }) {
   const list = attendees || [];
   const myRsvp = list.find((a) => a.fellow_email === user?.email);
@@ -18,7 +18,7 @@ export default function ConferenceKanbanCard({ room, attendees, user, accent, ph
   return (
     <div
       className="rounded-xl p-3 flex flex-col"
-      style={{ background: '#fff', border: `1px solid ${phase === 'attending' ? `${accent}55` : B.border}` }}
+      style={{ background: '#fff', border: `1px solid ${phase === 'live' ? `${accent}55` : B.border}` }}
     >
       <div className="flex items-center gap-1.5 mb-1">
         <span className="shrink-0 text-[9px] font-bold uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full" style={{ background: `${meta.color}18`, color: meta.color }}>{meta.label}</span>
@@ -34,13 +34,13 @@ export default function ConferenceKanbanCard({ room, attendees, user, accent, ph
         <Users className="w-3 h-3" style={{ color: accent }} />{list.length} attending
       </div>
 
-      {phase === 'attending' && myRsvp?.focus_area && (
+      {phase !== 'done' && myRsvp?.focus_area && (
         <span className="inline-block self-start text-[10px] font-semibold px-2 py-0.5 rounded-full mb-1.5" style={{ background: `${accent}12`, color: accent }}>
           {myRsvp.focus_area}
         </span>
       )}
 
-      {phase === 'post' && (
+      {phase === 'done' && (
         <>
           <div className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.12em] mb-1.5" style={{ color: room.attendance_verified ? B.gold : B.muted }}>
             {room.attendance_verified ? <><CheckCircle2 className="w-3 h-3" />Verified</> : <><Clock className="w-3 h-3" />Pending</>}
@@ -56,7 +56,7 @@ export default function ConferenceKanbanCard({ room, attendees, user, accent, ph
         </>
       )}
 
-      {phase !== 'post' && (
+      {phase !== 'done' && (
         <RsvpControl room={room} myRsvp={myRsvp} user={user} accent={accent} onChanged={onRsvpChanged} />
       )}
     </div>
