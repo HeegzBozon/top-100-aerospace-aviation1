@@ -100,12 +100,7 @@ export default function BulletinBoardCluster({
         className="rounded-3xl overflow-hidden"
         style={{ background: B.sand, border: `1px solid ${B.border}` }}
       >
-        <div className="px-5 sm:px-8 pt-4 pb-2 flex items-center gap-2">
-          <Building2 className="w-4 h-4" style={{ color: accent }} />
-          <span className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: B.muted }}>
-            Chamber of Commerce
-          </span>
-          <div className="h-px flex-1" style={{ background: `${B.navy}14` }} />
+        <div className="px-5 sm:px-8 pt-4 pb-2">
           <BoardSwitcher active={board} onSelect={setBoard} accent={accent} />
         </div>
 
