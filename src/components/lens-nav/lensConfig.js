@@ -1,7 +1,7 @@
 import {
   LayoutGrid, Radar, Scissors, Send, Network, GraduationCap, Briefcase, Layers,
   Compass, Hammer, Crown, Building2, Users,
-  Wrench, Plane, ClipboardList, FlaskConical, TrendingUp,
+  Wrench, Plane, Palette, FlaskConical, TrendingUp,
 } from 'lucide-react';
 
 // Two parallel lenses — you flip between a Lifecycle view and a Role/Org view.
@@ -21,11 +21,11 @@ export const STAGES = {
     { key: 'steward', label: 'Steward', blurb: 'Legacy and institutional voice', icon: Building2, boards: ['fellow', 'ribbon', 'intros', 'networks', 'platform'] },
   ],
   org: [
-    { key: 'engineer', label: 'Engineer', blurb: 'Systems, avionics, propulsion, GNC, materials', icon: Wrench, boards: ['fellow', 'career', 'jobs', 'networks', 'conference'] },
-    { key: 'flight_ops', label: 'Flight & Mission Ops', blurb: 'Pilots, test, astronauts, launch & range', icon: Plane, boards: ['fellow', 'career', 'networks', 'conference'] },
-    { key: 'program', label: 'Program & Systems', blurb: 'PMs, IPT leads, chief engineers', icon: ClipboardList, boards: ['fellow', 'conference', 'networks', 'intros'] },
-    { key: 'research', label: 'Research & Academia', blurb: 'Scientists, PhDs, faculty, lab directors', icon: FlaskConical, boards: ['fellow', 'networks', 'conference', 'career'] },
-    { key: 'strategy', label: 'Strategy & Capital', blurb: 'VC, BD, policy, acquisition, founders, execs', icon: TrendingUp, boards: ['fellow', 'ribbon', 'intros', 'networks', 'conference', 'platform'] },
+    { key: 'design', label: 'Design & Create', blurb: 'Systems, industrial design, spacesuit & fashion, cabin interiors, human factors', icon: Palette, boards: ['fellow', 'career', 'networks', 'conference'] },
+    { key: 'build', label: 'Build & Maintain', blurb: 'Manufacturing, A&P mechanics, MRO, technicians, quality, ground ops', icon: Wrench, boards: ['fellow', 'jobs', 'career', 'networks', 'conference'] },
+    { key: 'fly', label: 'Fly & Serve', blurb: 'Pilots, cabin crew, flight attendants, dispatch, ATC, mission ops, flight medicine', icon: Plane, boards: ['fellow', 'career', 'networks', 'conference'] },
+    { key: 'research', label: 'Research & Teach', blurb: 'Scientists, faculty, labs, academia', icon: FlaskConical, boards: ['fellow', 'networks', 'conference', 'career'] },
+    { key: 'lead', label: 'Lead & Capital', blurb: 'Executives, founders, investors, policy, strategy, BD, legal', icon: TrendingUp, boards: ['fellow', 'ribbon', 'intros', 'networks', 'conference', 'platform'] },
   ],
 };
 
