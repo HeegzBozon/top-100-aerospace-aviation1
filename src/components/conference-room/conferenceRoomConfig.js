@@ -1,5 +1,6 @@
-import { B } from '@/components/fellow-home/fellowHomeConfig';
-export { B };
+import { parseISO } from 'date-fns';
+import { B, accentValue } from '@/components/fellow-home/fellowHomeConfig';
+export { B, accentValue };
 
 // Room lifecycle. 'draft' is hidden from non-admins via RLS.
 export const ROOM_STATUS = {
@@ -42,3 +43,26 @@ export const CONFERENCE_VIEWS = [
   { key: 'region', label: 'Region' },
   { key: 'attending', label: 'Attending' },
 ];
+
+// Resolves the governed accent color for a room's domain_focus.
+export const domainAccent = (key) => accentValue(key);
+
+// Countdown / day-of chip. Returns null when no useful chip applies.
+export const roomCountdown = (room, now = new Date()) => {
+  if (!room.start_date) return null;
+  let start; let end;
+  try {
+    start = parseISO(room.start_date);
+    end = room.end_date ? parseISO(room.end_date) : null;
+  } catch { return null; }
+  if (end && now >= start && now <= end) {
+    const dayIdx = Math.floor((now - start) / 86400000) + 1;
+    const total = Math.floor((end - start) / 86400000) + 1;
+    return { kind: 'live', label: `Day ${dayIdx} of ${total}` };
+  }
+  if (now < start) {
+    const days = Math.ceil((start - now) / 86400000);
+    if (days <= 30) return { kind: 'upcoming', label: `in ${days} day${days === 1 ? '' : 's'}` };
+  }
+  return null;
+};

@@ -1,7 +1,8 @@
 import { format, parseISO } from 'date-fns';
-import { MapPin, Calendar, Users, CheckCircle2, Clock } from 'lucide-react';
+import { MapPin, Calendar, Check, Clock, Radio } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
-import { statusMeta } from './conferenceRoomConfig';
+import { statusMeta, domainAccent, roomCountdown } from './conferenceRoomConfig';
+import AvatarCluster from './AvatarCluster';
 import RsvpControl from './RsvpControl';
 
 // Compact card for the Conference Room Kanban. phase tunes the footer:
@@ -10,53 +11,85 @@ export default function ConferenceKanbanCard({ room, attendees, user, accent, ph
   const list = attendees || [];
   const myRsvp = list.find((a) => a.fellow_email === user?.email);
   const meta = statusMeta(room.status);
+  const domainColor = domainAccent(room.domain_focus);
+  const countdown = roomCountdown(room);
   const dateRange = room.start_date
     ? `${format(parseISO(room.start_date), 'MMM d')}${room.end_date ? `–${format(parseISO(room.end_date), 'MMM d')}` : ''}`
     : '';
   const city = [room.city, room.country].filter(Boolean).join(', ');
+  const isLive = phase === 'live';
+  const isDone = phase === 'done';
 
   return (
     <div
-      className="rounded-xl p-3 flex flex-col"
-      style={{ background: '#fff', border: `1px solid ${phase === 'live' ? `${accent}55` : B.border}` }}
+      className="rounded-xl p-3 flex flex-col relative overflow-hidden"
+      style={{
+        background: isDone ? B.cream : '#fff',
+        border: `1px solid ${isLive ? `${domainColor}55` : B.border}`,
+        borderLeft: `3px solid ${domainColor}`,
+        opacity: isDone ? 0.85 : 1,
+      }}
     >
-      <div className="flex items-center gap-1.5 mb-1">
-        <span className="shrink-0 text-[9px] font-bold uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full" style={{ background: `${meta.color}18`, color: meta.color }}>{meta.label}</span>
+      {/* You're-in stamp */}
+      {myRsvp && !isDone && (
+        <span
+          className="absolute top-2 right-2 inline-flex items-center gap-0.5 text-[8px] font-bold uppercase tracking-[0.1em] px-1 py-0.5 rounded-full"
+          style={{ background: B.navy, color: '#fff' }}
+        >
+          <Check className="w-2 h-2" /> {myRsvp.status === 'waitlist' ? 'Waitlist' : 'In'}
+        </span>
+      )}
+
+      <div className="flex items-center gap-1.5 mb-1 pr-10">
+        <span
+          className="shrink-0 inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full"
+          style={{ background: `${meta.color}18`, color: meta.color }}
+        >
+          {isLive && <Radio className="w-2.5 h-2.5" />}{meta.label}
+        </span>
+        {room.conference_series && (
+          <span className="shrink-0 text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: domainColor }}>{room.conference_series}</span>
+        )}
         <h4 className="text-xs font-bold leading-tight truncate" style={{ color: B.navy }}>{room.conference_name}</h4>
       </div>
 
       <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-1.5 text-[10px]" style={{ color: B.muted }}>
         {dateRange && <span className="inline-flex items-center gap-0.5"><Calendar className="w-2.5 h-2.5" />{dateRange}</span>}
+        {countdown && (
+          <span
+            className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1 py-0.5 rounded-full"
+            style={{ background: countdown.kind === 'live' ? `${B.gold}22` : `${domainColor}14`, color: countdown.kind === 'live' ? B.gold : domainColor }}
+          >
+            {countdown.kind === 'live' ? <Radio className="w-2 h-2" /> : <Clock className="w-2 h-2" />}{countdown.label}
+          </span>
+        )}
         {city && <span className="inline-flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" />{city}</span>}
       </div>
 
-      <div className="inline-flex items-center gap-1 text-[10px] font-semibold mb-1" style={{ color: B.navy }}>
-        <Users className="w-3 h-3" style={{ color: accent }} />{list.length} attending
+      <div className="flex items-center justify-between gap-1 mb-1">
+        <div className="flex items-center gap-1.5">
+          <AvatarCluster items={list} accent={domainColor} size={18} max={4} />
+          <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold" style={{ color: B.navy }}>
+            {list.length}
+          </span>
+        </div>
+        {!isDone && myRsvp?.focus_area && (
+          <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: `${domainColor}12`, color: domainColor }}>
+            {myRsvp.focus_area}
+          </span>
+        )}
       </div>
 
-      {phase !== 'done' && myRsvp?.focus_area && (
-        <span className="inline-block self-start text-[10px] font-semibold px-2 py-0.5 rounded-full mb-1.5" style={{ background: `${accent}12`, color: accent }}>
-          {myRsvp.focus_area}
-        </span>
-      )}
-
-      {phase === 'done' && (
+      {isDone && (
         <>
           <div className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.12em] mb-1.5" style={{ color: room.attendance_verified ? B.gold : B.muted }}>
-            {room.attendance_verified ? <><CheckCircle2 className="w-3 h-3" />Verified</> : <><Clock className="w-3 h-3" />Pending</>}
+            {room.attendance_verified ? <><Check className="w-3 h-3" />Verified</> : <><Clock className="w-3 h-3" />Pending</>}
           </div>
-          {list.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {list.slice(0, 5).map((a) => (
-                <span key={a.id} className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: B.cream, color: B.navy }}>{a.fellow_name || a.fellow_email}</span>
-              ))}
-              {list.length > 5 && <span className="text-[9px] self-center" style={{ color: B.muted }}>+{list.length - 5}</span>}
-            </div>
-          )}
+          {list.length > 0 && <AvatarCluster items={list} accent={domainColor} size={20} max={6} />}
         </>
       )}
 
-      {phase !== 'done' && (
+      {!isDone && (
         <RsvpControl room={room} myRsvp={myRsvp} user={user} accent={accent} onChanged={onRsvpChanged} />
       )}
     </div>
