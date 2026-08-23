@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Check, Plus, X } from 'lucide-react';
 import { countWordsIn } from './profileWizardSteps';
 import WizardHeadshot from './WizardHeadshot';
+import WizardDocuments from './WizardDocuments';
 
 const B = {
   navy: '#1e3a5a',
@@ -36,6 +37,11 @@ const WizardField = forwardRef(function WizardField({ step, form, setForm, onCom
         onError={onError}
       />
     );
+  }
+
+  // ── Documents: resume, cover letter, portfolio, LinkedIn. Optional/skippable. ──
+  if (step.type === 'documents') {
+    return <WizardDocuments accent={B.gold} />;
   }
 
   // ── Consent: two large editorial choices ──

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import InlineBlurbField from '@/components/fellow-home/InlineBlurbField';
+import DocumentPill from '@/components/fellow-home/DocumentPill';
+import LinkedInPill from '@/components/fellow-home/LinkedInPill';
 
 const ABOUT_MAX = 600;
 const ONE_WORD_MAX = 24;
@@ -79,6 +81,14 @@ export default function MastheadEditorial({ oneWord, sixWordStory, settings, use
       >
         <p className="text-sm leading-relaxed whitespace-pre-wrap max-w-xs text-left" style={{ color: B.navy }}>{about}</p>
       </InlineBlurbField>
+
+      {/* Professional documents — CommonApp for aerospace. Optional, uploadable, reduces rework. */}
+      <div className="flex flex-row flex-wrap gap-3 md:justify-end md:items-center pt-2 border-t" style={{ borderColor: `${B.navy}10` }}>
+        <DocumentPill field="resume_url" label="Resume" user={user} accent={accent} onUserUpdate={onUserUpdate} />
+        <DocumentPill field="cover_letter_url" label="Cover Letter" user={user} accent={accent} onUserUpdate={onUserUpdate} />
+        <DocumentPill field="portfolio_url" label="Portfolio" user={user} accent={accent} onUserUpdate={onUserUpdate} accept=".pdf,.png,.jpg,.jpeg" />
+        <LinkedInPill user={user} accent={accent} onUserUpdate={onUserUpdate} />
+      </div>
     </div>
   );
 }

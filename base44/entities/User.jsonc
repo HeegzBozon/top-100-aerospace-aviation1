@@ -129,6 +129,22 @@
     "linkedin_url": {
       "type": "string"
     },
+    "resume_url": {
+      "type": "string",
+      "description": "Uploaded resume file URL. Fellow-provided; reduces rework across applications."
+    },
+    "cover_letter_url": {
+      "type": "string",
+      "description": "Uploaded cover letter file URL."
+    },
+    "portfolio_url": {
+      "type": "string",
+      "description": "Uploaded portfolio file URL."
+    },
+    "linkedin_pdf_url": {
+      "type": "string",
+      "description": "Uploaded LinkedIn profile PDF. Alternative to OAuth connect for members who prefer file upload."
+    },
     "twitter_url": {
       "type": "string"
     },

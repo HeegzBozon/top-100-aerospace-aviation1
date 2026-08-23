@@ -115,6 +115,14 @@ export const profileWizardSteps = [
     placeholder: 'linkedin.com/in/yourname',
   },
   {
+    key: 'documents',
+    sitting: 'biographer',
+    section: 'biographer',
+    type: 'documents',
+    question: 'Bring your documents.',
+    subtitle: 'Resume, cover letter, portfolio, or LinkedIn. Bring what you have, skip what you don\u2019t. We keep it on file so you never re-upload it again.',
+  },
+  {
     key: 'website_url',
     sitting: 'biographer',
     section: 'biographer',
