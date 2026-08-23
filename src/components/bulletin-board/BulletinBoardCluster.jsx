@@ -15,6 +15,7 @@ import ShortcutsTile from './ShortcutsTile';
 import ModuleGrid from './ModuleGrid';
 import BoardSwitcher from '@/components/platform-board/BoardSwitcher';
 import PlatformBoardView from '@/components/platform-board/PlatformBoardView';
+import ConferenceRoomView from '@/components/conference-room/ConferenceRoomView';
 
 // Master instrument cluster — the Bulletin Board as one customizable grid.
 // Every module is an evenly distributed, drag-reorderable, toggleable tile.
@@ -98,7 +99,7 @@ export default function BulletinBoardCluster({
         <div className="px-5 sm:px-8 pt-4 pb-2 flex items-center gap-2">
           <LayoutGrid className="w-4 h-4" style={{ color: accent }} />
           <span className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: B.muted }}>
-            {board === 'platform' ? 'Kanban Board' : 'Bulletin Board'}
+            {board === 'platform' ? 'Kanban Board' : board === 'conference' ? 'Conference Room' : 'Bulletin Board'}
           </span>
           <div className="h-px flex-1" style={{ background: `${B.navy}14` }} />
           <BoardSwitcher active={board} onSelect={setBoard} accent={accent} />
@@ -107,6 +108,8 @@ export default function BulletinBoardCluster({
         <div className="px-4 sm:px-5 pb-5">
           {board === 'platform' ? (
             <PlatformBoardView user={user} accent={accent} />
+          ) : board === 'conference' ? (
+            <ConferenceRoomView user={user} accent={accent} />
           ) : (
             <ModuleGrid
               tiles={tiles}

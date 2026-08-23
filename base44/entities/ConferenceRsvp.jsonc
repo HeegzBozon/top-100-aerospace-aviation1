@@ -1,0 +1,73 @@
+{
+  "name": "ConferenceRsvp",
+  "type": "object",
+  "properties": {
+    "room_id": {
+      "type": "string",
+      "description": "ID of the ConferenceRoom this attendance declaration belongs to"
+    },
+    "conference_name": {
+      "type": "string",
+      "description": "Denormalized conference display name"
+    },
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow declaring attendance"
+    },
+    "fellow_name": {
+      "type": "string",
+      "description": "Display name, denormalized"
+    },
+    "fellow_avatar_url": {
+      "type": "string",
+      "description": "Avatar URL, denormalized"
+    },
+    "focus_area": {
+      "type": "string",
+      "description": "Focus sub-room the Fellow is joining"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "attending",
+        "waitlist"
+      ],
+      "default": "attending",
+      "description": "Confirmed attendance or waitlist"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional coordination note"
+    },
+    "declared_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Fellow declared attendance"
+    }
+  },
+  "required": [
+    "room_id",
+    "fellow_email"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
