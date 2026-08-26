@@ -67,6 +67,7 @@ const Rsvp = lazy(() => import('@/pages/Rsvp'));
 const PlatformDevelopmentBoard = lazy(() => import('@/pages/PlatformDevelopmentBoard'));
 const Meetups = lazy(() => import('@/pages/Meetups'));
 const MeetupInvite = lazy(() => import('@/pages/MeetupInvite'));
+const FellowEdition = lazy(() => import('@/pages/FellowEdition'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -234,6 +235,7 @@ const AuthenticatedApp = () => {
       } />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:id" element={<ProfileView />} />
+       <Route path="/editions/:id" element={<FellowEdition />} />
        <Route path="/platform-board" element={<PlatformDevelopmentBoard />} />
       <Route path="/meetups" element={<Meetups />} />
       <Route path="/meetups/:eventId" element={<MeetupInvite />} />

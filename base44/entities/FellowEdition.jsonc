@@ -1,0 +1,143 @@
+{
+  "name": "FellowEdition",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow who owns this edition. Stable key across User and Nominee records."
+    },
+    "fellow_id": {
+      "type": "string",
+      "description": "Optional Nominee record id for the Fellow, when one exists"
+    },
+    "edition_title": {
+      "type": "string",
+      "description": "Display title, e.g. 'Season 4 Edition' or 'IAC 2026 Special'"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "Reference to the Season this edition belongs to, if any"
+    },
+    "issue_number": {
+      "type": "number",
+      "default": 1,
+      "description": "Sequential issue number per Fellow"
+    },
+    "cover_asset_id": {
+      "type": "string",
+      "description": "Key of a cover from the verified asset library. No user upload."
+    },
+    "domain_accent": {
+      "type": "string",
+      "enum": [
+        "space_rd",
+        "commercial_aviation",
+        "defense",
+        "manufacturing",
+        "operations",
+        "engineering",
+        "policy",
+        "entrepreneurship"
+      ],
+      "description": "Domain accent for the edition. Defaults to the Fellow's primary discipline."
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Optional cover line / tagline"
+    },
+    "spread_order": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Ordered spread keys. Validated server-side against the allowlist; cover locks to position 1 and colophon locks to last. Expression only; never feeds measurement."
+    },
+    "spread_hidden": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Spread keys the Fellow has toggled off their edition. Expression only; never feeds measurement."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Lifecycle state. 'draft' = hidden from public; 'published' = live; 'archived' = immutable, finalized per cycle."
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the edition was first published"
+    },
+    "is_special_issue": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a special issue (conference, milestone)"
+    },
+    "special_context": {
+      "type": "string",
+      "description": "Context label for special issues, e.g. 'IAC 2026'"
+    },
+    "embed_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the embed code is active for this edition"
+    }
+  },
+  "required": [
+    "fellow_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": {
+            "$ne": "draft"
+          }
+        },
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
