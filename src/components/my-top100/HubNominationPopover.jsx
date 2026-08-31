@@ -80,7 +80,7 @@ const STEP_META = {
   review: { q: 'Ready to submit?', hint: 'Take one last look.' },
 };
 
-export default function HubNominationPopover({ onClose, onSubmitted, nominees, nominator, initialNominee }) {
+export default function HubNominationPopover({ onClose, onSubmitted, nominees, nominator, initialNominee, initialName }) {
   const [form, setForm] = useState(emptyPersonNomination);
   const [nominationCategory, setNominationCategory] = useState('women');
   const [alsoAngels, setAlsoAngels] = useState('no');
@@ -96,7 +96,9 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
 
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
-  // Pre-fill from a browse-list nominee (skips the category/name/contact steps)
+  // Pre-fill from a browse-list nominee — now starts at slide 1 (category),
+  // with category auto-inferred and name/contact pre-filled so the user
+  // reviews each step and taps Continue through to submit.
   useEffect(() => {
     if (!initialNominee) return;
     setSelectedNominee(initialNominee);
@@ -111,8 +113,17 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
     const t = `${initialNominee.description || ''} ${initialNominee.industry || ''} ${initialNominee.category || ''}`.toLowerCase();
     if (t.includes('woman') || t.includes('female')) setNominationCategory('women');
     else setNominationCategory('men');
-    setStep(STEPS.indexOf('contribution'));
+    setStep(STEPS.indexOf('category'));
   }, [initialNominee]);
+
+  // Pre-fill from a brand-new name typed into the explorer search.
+  // Starts at slide 1 (category) like every other path; no selected nominee.
+  useEffect(() => {
+    if (!initialName) return;
+    setSelectedNominee(null);
+    setForm({ ...emptyPersonNomination(), name: initialName });
+    setStep(STEPS.indexOf('category'));
+  }, [initialName]);
 
   const matches =
     form.name && form.name.trim().length > 1
@@ -261,7 +272,7 @@ export default function HubNominationPopover({ onClose, onSubmitted, nominees, n
   return createPortal(
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center"
+        className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

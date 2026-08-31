@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Check, Filter, ArrowDownUp, BadgeCheck, Award, UserPlus, Loader2, ChevronRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
-import NomineeNominateSheet from '@/components/my-top100/NomineeNominateSheet';
-import InlineNominateNew from '@/components/my-top100/InlineNominateNew';
+import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import NomineeProfilePanel from '@/components/my-top100/NomineeProfilePanel';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
@@ -37,7 +36,7 @@ const CATEGORIES = [
 
 const PAGE_SIZE = 40;
 
-export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAdd, initialNominee }) {
+export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAdd, initialNominee, nominator }) {
   const [query, setQuery] = useState('');
   const [discipline, setDiscipline] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -334,46 +333,26 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                 )}
               </AnimatePresence>
 
-              {/* Nominate sheet overlay (inside popover) */}
-              <AnimatePresence>
-                {nominating && (
-                  <>
-                    <div className="absolute inset-0 z-40" style={{ background: 'rgba(10,18,30,0.4)' }} onClick={() => setNominating(null)} />
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.96, x: '-50%', y: '-50%' }}
-                      animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
-                      exit={{ opacity: 0, scale: 0.96, x: '-50%', y: '-50%' }}
-                      className="absolute left-1/2 top-1/2 z-50 w-[420px] max-w-[92%] max-h-[80%] rounded-3xl overflow-hidden flex flex-col"
-                      style={{ background: brand.cream, boxShadow: '0 20px 60px rgba(10,18,30,0.3)' }}
-                    >
-                      <NomineeNominateSheet
-                        nominee={nominating}
-                        onBack={() => setNominating(null)}
-                        onDone={() => setNominating(null)}
-                        onAddToList={onAdd}
-                      />
-                    </motion.div>
-                  </>
-                )}
-                {inlineNominate && (
-                  <>
-                    <div className="absolute inset-0 z-40" style={{ background: 'rgba(10,18,30,0.4)' }} onClick={() => setInlineNominate(false)} />
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.96, x: '-50%', y: '-50%' }}
-                      animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
-                      exit={{ opacity: 0, scale: 0.96, x: '-50%', y: '-50%' }}
-                      className="absolute left-1/2 top-1/2 z-50 w-[420px] max-w-[92%] max-h-[80%] rounded-3xl overflow-hidden flex flex-col"
-                      style={{ background: brand.cream, boxShadow: '0 20px 60px rgba(10,18,30,0.3)' }}
-                    >
-                      <InlineNominateNew
-                        initialName={query}
-                        onBack={() => setInlineNominate(false)}
-                        onDone={() => { setInlineNominate(false); setQuery(''); }}
-                      />
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
+              {/* Unified nomination wizard — same 9-step popover used by search.
+                   The explorer stays open behind it; closing returns here. */}
+              {(nominating || inlineNominate) && (
+                <HubNominationPopover
+                  nominees={nominees}
+                  nominator={nominator}
+                  initialNominee={nominating}
+                  initialName={inlineNominate ? query : null}
+                  onClose={() => { setNominating(null); setInlineNominate(false); }}
+                  onSubmitted={(result) => {
+                    setNominating(null);
+                    setInlineNominate(false);
+                    if (result.existing) {
+                      onAdd(result.nominee, { nomination_category: result.category, also_angels: result.also_angels });
+                    } else {
+                      setQuery('');
+                    }
+                  }}
+                />
+              )}
             </motion.div>
           </div>
         </>

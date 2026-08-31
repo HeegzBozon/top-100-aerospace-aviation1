@@ -140,6 +140,7 @@ export default function NominateIntakePanel({
             placeholder="Search name, role, company…"
             className="flex-1 text-sm lg:text-base bg-transparent outline-none"
             style={{ color: brand.navy }}
+            autoFocus
           />
           {hasQuery && (
             <button onClick={() => setQuery('')}>

@@ -424,6 +424,7 @@ export default function MyTop100() {
         addedIds={addedIds}
         onAdd={handleAdd}
         initialNominee={explorerProfile}
+        nominator={user}
       />
 
       <Top100OSModal isOpen={showOS} onClose={() => setShowOS(false)} />
