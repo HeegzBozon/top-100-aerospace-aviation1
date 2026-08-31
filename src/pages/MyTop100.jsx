@@ -4,8 +4,8 @@ import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import ListBuilderHeader from '@/components/my-top100/ListBuilderHeader';
 import ListCanvas from '@/components/my-top100/ListCanvas';
-import ShareCard from '@/components/my-top100/ShareCard';
 import BallotStatusBanner from '@/components/my-top100/BallotStatusBanner';
+import { useToast } from '@/components/ui/use-toast';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
 import NominateIntakePanel from '@/components/my-top100/NominateIntakePanel';
@@ -33,7 +33,6 @@ export default function MyTop100() {
   const [syncError, setSyncError] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [showShare, setShowShare] = useState(false);
   const [saveTimer, setSaveTimer] = useState(null);
   const [hubNominations, setHubNominations] = useState({ women: [], men: [], angels: [] });
   const [listCategory, setListCategory] = useState('all');
@@ -41,6 +40,7 @@ export default function MyTop100() {
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [explorerProfile, setExplorerProfile] = useState(null);
   const [showOS, setShowOS] = useState(false);
+  const { toast } = useToast();
 
   const openExplorer = () => { setExplorerProfile(null); setExplorerOpen(true); };
   const openProfileFromList = async (item) => {
@@ -133,6 +133,15 @@ export default function MyTop100() {
   const profileUrl = profileId
     ? `${window.location.origin}/profiles/${profileId}`
     : `${window.location.origin}/profiles?user=${encodeURIComponent(user?.email || '')}`;
+
+  const handleCopyProfileUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+      toast({ title: 'Profile link copied' });
+    } catch {
+      toast({ title: 'Copy failed', description: `Copy this link: ${profileUrl}` });
+    }
+  };
 
   // Auto-save + ballot auto-sync. No publish gate: the list persists on every
   // change and the ranked ballot upserts automatically while the voting window
@@ -323,7 +332,7 @@ export default function MyTop100() {
         count={rankings.length}
         isPublished={isPublished}
         saving={saving}
-        onShare={() => setShowShare(true)}
+        onShare={handleCopyProfileUrl}
       />
 
       <HubListTabs
@@ -377,7 +386,7 @@ export default function MyTop100() {
                 votingEndDate={season?.voting_end}
                 saving={saving}
                 syncError={syncError}
-                onShare={() => setShowShare(true)}
+                onShare={handleCopyProfileUrl}
               />
               <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
               <ListCanvas
@@ -416,7 +425,7 @@ export default function MyTop100() {
               votingEndDate={season?.voting_end}
               saving={saving}
               syncError={syncError}
-              onShare={() => setShowShare(true)}
+              onShare={handleCopyProfileUrl}
             />
             <div className="flex-1">
               <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
@@ -442,15 +451,6 @@ export default function MyTop100() {
           {user?.role === 'admin' ? <AnchorVoting user={user} /> : <VoteComingSoon />}
         </div>
       )}
-
-      <ShareCard
-        isOpen={showShare}
-        onClose={() => setShowShare(false)}
-        rankings={rankings}
-        userName={user?.full_name}
-        listName={listName}
-        profileUrl={profileUrl}
-      />
 
       <NomineeExplorerPopover
         isOpen={explorerOpen}
