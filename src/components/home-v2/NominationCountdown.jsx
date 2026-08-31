@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, UserCog } from 'lucide-react';
 
-const targetDate = new Date('2026-09-01T00:00:00');
+const targetDate = new Date('2026-09-22T00:00:00');
 
 function getTimeLeft() {
   const difference = Math.max(targetDate.getTime() - Date.now(), 0);
@@ -37,7 +37,7 @@ export default function NominationCountdown() {
           <span className="w-1.5 h-1.5 rounded-full bg-[#c9a87c] animate-pulse" />
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#c9a87c]">Nominations close</p>
         </div>
-        <p className="text-xs font-semibold text-white/50">September 1, 2026</p>
+        <p className="text-xs font-semibold text-white/50">September 22, 2026</p>
       </div>
 
       {/* Countdown + CTA side by side */}

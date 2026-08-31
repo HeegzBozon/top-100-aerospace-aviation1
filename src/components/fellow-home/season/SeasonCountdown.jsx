@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
-const target = new Date('2026-09-01T00:00:00');
+const target = new Date('2026-09-22T00:00:00');
 
 const read = () => {
   const d = Math.max(target.getTime() - Date.now(), 0);
@@ -27,7 +27,7 @@ export default function SeasonCountdown({ accent }) {
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: B.muted }}>
           Nominations close
         </p>
-        <p className="text-[11px] font-semibold" style={{ color: accent }}>September 1, 2026</p>
+        <p className="text-[11px] font-semibold" style={{ color: accent }}>September 22, 2026</p>
       </div>
 
       <div className="flex items-baseline gap-3">
