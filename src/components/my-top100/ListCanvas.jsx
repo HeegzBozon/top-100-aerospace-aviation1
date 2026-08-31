@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
-import { GripVertical, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { GripVertical, X, ChevronUp, ChevronDown, Lock } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 import ListEmptyState from '@/components/my-top100/ListEmptyState';
 
@@ -10,11 +10,31 @@ const RANK_COLORS = {
   3: { bg: '#cd7f32', text: '#fff' },
 };
 
-export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, onAdd, addedIds, onViewProfile, totalCount }) {
+export default function ListCanvas({
+  rankings,
+  onReorder,
+  onRemove,
+  onAddMore,
+  onAdd,
+  addedIds,
+  onViewProfile,
+  totalCount,
+  readOnly = false,
+}) {
   const [dragging, setDragging] = useState(null);
   const total = totalCount ?? rankings.length;
 
   if (rankings.length === 0) {
+    if (readOnly) {
+      return (
+        <div className="px-4 py-10 text-center">
+          <Lock className="w-5 h-5 mx-auto mb-2" style={{ color: `${brand.navy}40` }} />
+          <p className="text-sm" style={{ color: `${brand.navy}50` }}>
+            No nominees — voting has closed.
+          </p>
+        </div>
+      );
+    }
     return <ListEmptyState onAdd={onAdd} addedIds={addedIds} onBrowse={onAddMore} />;
   }
 
@@ -23,7 +43,7 @@ export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, o
       <Reorder.Group
         axis="y"
         values={rankings}
-        onReorder={onReorder}
+        onReorder={readOnly ? () => {} : onReorder}
         className="space-y-2"
       >
         <AnimatePresence>
@@ -35,21 +55,23 @@ export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, o
               <Reorder.Item
                 key={item.nominee_id}
                 value={item}
-                onDragStart={() => setDragging(item.nominee_id)}
-                onDragEnd={() => setDragging(null)}
+                onDragStart={readOnly ? undefined : () => setDragging(item.nominee_id)}
+                onDragEnd={readOnly ? undefined : () => setDragging(null)}
+                drag={readOnly ? false : true}
               >
                 <motion.div
                   layout
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20, height: 0 }}
-                  className="flex items-center gap-3 p-3 rounded-2xl border cursor-grab active:cursor-grabbing"
+                  className="flex items-center gap-3 p-3 rounded-2xl border"
                   style={{
                     background: dragging === item.nominee_id ? `${brand.navy}06` : 'white',
                     borderColor: dragging === item.nominee_id ? `${brand.gold}60` : `${brand.navy}08`,
                     boxShadow: dragging === item.nominee_id
                       ? '0 8px 24px rgba(10,18,30,0.12)'
                       : '0 1px 4px rgba(10,18,30,0.04)',
+                    cursor: readOnly ? 'default' : 'grab',
                   }}
                 >
                   {/* Rank number */}
@@ -94,47 +116,53 @@ export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, o
                   </button>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-1 shrink-0">
-                    {/* Move up/down on mobile (alternative to drag for accessibility) */}
-                    <div className="flex flex-col gap-0.5">
+                  {!readOnly && (
+                    <div className="flex items-center gap-1 shrink-0">
+                      {/* Move up/down on mobile (alternative to drag for accessibility) */}
+                      <div className="flex flex-col gap-0.5">
+                        <button
+                          onClick={() => {
+                            if (index > 0) {
+                              const next = [...rankings];
+                              [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                              onReorder(next);
+                            }
+                          }}
+                          className="h-4 w-4 flex items-center justify-center rounded opacity-40 hover:opacity-100"
+                          disabled={index === 0}
+                        >
+                          <ChevronUp className="w-3 h-3" style={{ color: brand.navy }} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (index < rankings.length - 1) {
+                              const next = [...rankings];
+                              [next[index + 1], next[index]] = [next[index], next[index + 1]];
+                              onReorder(next);
+                            }
+                          }}
+                          className="h-4 w-4 flex items-center justify-center rounded opacity-40 hover:opacity-100"
+                          disabled={index === rankings.length - 1}
+                        >
+                          <ChevronDown className="w-3 h-3" style={{ color: brand.navy }} />
+                        </button>
+                      </div>
+
+                      <GripVertical className="w-4 h-4 mx-1" style={{ color: `${brand.navy}30` }} />
+
                       <button
-                        onClick={() => {
-                          if (index > 0) {
-                            const next = [...rankings];
-                            [next[index - 1], next[index]] = [next[index], next[index - 1]];
-                            onReorder(next);
-                          }
-                        }}
-                        className="h-4 w-4 flex items-center justify-center rounded opacity-40 hover:opacity-100"
-                        disabled={index === 0}
+                        onClick={() => onRemove(item.nominee_id)}
+                        className="h-7 w-7 rounded-full flex items-center justify-center transition-all active:scale-90"
+                        style={{ background: `${brand.navy}08` }}
                       >
-                        <ChevronUp className="w-3 h-3" style={{ color: brand.navy }} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (index < rankings.length - 1) {
-                            const next = [...rankings];
-                            [next[index + 1], next[index]] = [next[index], next[index + 1]];
-                            onReorder(next);
-                          }
-                        }}
-                        className="h-4 w-4 flex items-center justify-center rounded opacity-40 hover:opacity-100"
-                        disabled={index === rankings.length - 1}
-                      >
-                        <ChevronDown className="w-3 h-3" style={{ color: brand.navy }} />
+                        <X className="w-3 h-3" style={{ color: `${brand.navy}60` }} />
                       </button>
                     </div>
+                  )}
 
-                    <GripVertical className="w-4 h-4 mx-1" style={{ color: `${brand.navy}30` }} />
-
-                    <button
-                      onClick={() => onRemove(item.nominee_id)}
-                      className="h-7 w-7 rounded-full flex items-center justify-center transition-all active:scale-90"
-                      style={{ background: `${brand.navy}08` }}
-                    >
-                      <X className="w-3 h-3" style={{ color: `${brand.navy}60` }} />
-                    </button>
-                  </div>
+                  {readOnly && (
+                    <Lock className="w-3.5 h-3.5 shrink-0" style={{ color: `${brand.navy}30` }} />
+                  )}
                 </motion.div>
               </Reorder.Item>
             );
@@ -143,7 +171,7 @@ export default function ListCanvas({ rankings, onReorder, onRemove, onAddMore, o
       </Reorder.Group>
 
       {/* Add more CTA at the bottom of list */}
-      {total < 100 && (
+      {!readOnly && total < 100 && (
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={onAddMore}

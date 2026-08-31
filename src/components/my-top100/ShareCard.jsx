@@ -1,26 +1,88 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Download, Link2, Linkedin, Instagram, Globe, Check } from 'lucide-react';
+import { X, Download, Link2, Linkedin, Mail, Check, Loader2 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { brand } from '@/components/nominate/NominateConfig';
-import { useState } from 'react';
 
-export default function ShareCard({ isOpen, onClose, rankings, userName, listName, shareCode }) {
-  const [copied, setCopied] = useState(false);
-  const shareUrl = `${window.location.origin}/top100-list/${shareCode}`;
+// Share surface for a Fellow's TOP 100. Link points to their public profile
+// (/profiles/:id). Email option is client-side copy/paste only — a pre-written
+// blurb + the profile URL copied to the clipboard for the Fellow's own email
+// client. PNG + PDF are rendered client-side from the card preview.
+export default function ShareCard({ isOpen, onClose, rankings, userName, listName, profileUrl }) {
+  const previewRef = useRef(null);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [exporting, setExporting] = useState('');
+  const [exportError, setExportError] = useState('');
+
+  const shareUrl = profileUrl || `${window.location.origin}/`;
   const top10 = rankings.slice(0, 10);
   const top3 = rankings.slice(0, 3);
 
+  const emailBody = `Hi,
+
+I've just published my TOP 100 Aerospace & Aviation list for 2026 — my personal ranking of the leaders I believe are moving our field forward. See my list and my full profile:
+
+${shareUrl}
+
+— ${userName || 'A TOP 100 Fellow'}`;
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(emailBody);
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2000);
   };
 
   const handleLinkedIn = () => {
     const text = encodeURIComponent(
-      `Here's my TOP 100 Aerospace & Aviation list for 2026! 🚀\n\nI've curated my picks for the most impactful leaders in our industry. See who made my list ↓\n\n${shareUrl}\n\n#TOP100Aerospace #Aviation #Space #WomenInAerospace`
+      `My TOP 100 Aerospace & Aviation list for 2026 — the leaders I believe are moving our field forward. See my list ↓`,
     );
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${text}`, '_blank');
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${text}`,
+      '_blank',
+    );
+  };
+
+  const handleExport = async (kind) => {
+    if (!previewRef.current) return;
+    setExporting(kind);
+    setExportError('');
+    try {
+      const canvas = await html2canvas(previewRef.current, {
+        backgroundColor: '#0e1f38',
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+        logging: false,
+      });
+      if (kind === 'png') {
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'my-top-100.png';
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      } else {
+        const img = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [canvas.width, canvas.height] });
+        pdf.addImage(img, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save('my-top-100.pdf');
+      }
+    } catch {
+      setExportError('Could not generate the image — please try again.');
+    } finally {
+      setExporting('');
+    }
   };
 
   return (
@@ -44,10 +106,10 @@ export default function ShareCard({ isOpen, onClose, rankings, userName, listNam
             exit={{ opacity: 0, y: 60, scale: 0.95 }}
             transition={{ type: 'spring', damping: 28, stiffness: 280 }}
           >
-            {/* Card content */}
             <div style={{ background: brand.cream }}>
-              {/* Preview card — this is the "shareable" visual */}
+              {/* Capturable preview card */}
               <div
+                ref={previewRef}
                 className="relative overflow-hidden"
                 style={{
                   background: `radial-gradient(circle at 70% 20%, ${brand.gold}30 0%, transparent 50%),
@@ -55,18 +117,17 @@ export default function ShareCard({ isOpen, onClose, rankings, userName, listNam
                   minHeight: 220,
                 }}
               >
-                {/* Stars bg decoration */}
                 {[...Array(20)].map((_, i) => (
                   <div
                     key={i}
                     className="absolute rounded-full"
                     style={{
-                      width: Math.random() > 0.7 ? 2 : 1,
-                      height: Math.random() > 0.7 ? 2 : 1,
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 100}%`,
+                      width: i % 3 === 0 ? 2 : 1,
+                      height: i % 3 === 0 ? 2 : 1,
+                      left: `${(i * 47) % 100}%`,
+                      top: `${(i * 31) % 100}%`,
                       background: 'white',
-                      opacity: Math.random() * 0.6 + 0.2,
+                      opacity: 0.35 + (i % 5) * 0.08,
                     }}
                   />
                 ))}
@@ -87,7 +148,7 @@ export default function ShareCard({ isOpen, onClose, rankings, userName, listNam
                     {top3.map((item, i) => {
                       const medalColors = ['#FFD700', '#C0C0C0', '#cd7f32'];
                       return (
-                        <div key={item.nominee_id} className="flex items-center gap-1.5 flex-1">
+                        <div key={item.nominee_id} className="flex items-center gap-1.5 flex-1 min-w-0">
                           <div
                             className="h-5 w-5 rounded-full shrink-0 flex items-center justify-center text-[10px] font-bold"
                             style={{ background: medalColors[i], color: i === 1 ? '#444' : '#5a3a00' }}
@@ -100,7 +161,9 @@ export default function ShareCard({ isOpen, onClose, rankings, userName, listNam
                           >
                             {item.nominee_avatar ? (
                               <img src={item.nominee_avatar} alt="" className="w-full h-full object-cover" />
-                            ) : item.nominee_name?.[0]}
+                            ) : (
+                              item.nominee_name?.[0]
+                            )}
                           </div>
                           <p className="text-white text-[10px] font-semibold truncate leading-tight">
                             {item.nominee_name}
@@ -110,7 +173,6 @@ export default function ShareCard({ isOpen, onClose, rankings, userName, listNam
                     })}
                   </div>
 
-                  {/* Mini list preview */}
                   <div className="flex flex-wrap gap-1">
                     {top10.slice(3).map((item, i) => (
                       <span
@@ -132,10 +194,9 @@ export default function ShareCard({ isOpen, onClose, rankings, userName, listNam
                   </div>
                 </div>
 
-                {/* Watermark */}
                 <div
                   className="absolute bottom-3 right-4 text-[9px] font-bold uppercase tracking-[0.2em]"
-                  style={{ color: `${brand.gold}50` }}
+                  style={{ color: `${brand.gold}55` }}
                 >
                   top100aerospace.com
                 </div>
@@ -143,7 +204,14 @@ export default function ShareCard({ isOpen, onClose, rankings, userName, listNam
 
               {/* Actions */}
               <div className="p-4 space-y-3">
-                <h4 className="text-sm font-bold" style={{ color: brand.navy }}>Share your list</h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold" style={{ color: brand.navy }}>
+                    Share your list
+                  </h4>
+                  <span className="text-[10px] font-mono truncate max-w-[150px]" style={{ color: `${brand.navy}40` }}>
+                    {shareUrl.replace('https://', '')}
+                  </span>
+                </div>
 
                 {/* Copy link */}
                 <button
@@ -151,12 +219,29 @@ export default function ShareCard({ isOpen, onClose, rankings, userName, listNam
                   className="w-full flex items-center gap-3 p-3 rounded-2xl border transition-all active:scale-98"
                   style={{ borderColor: `${brand.navy}15`, background: `${brand.navy}04` }}
                 >
-                  {copied ? <Check className="w-4 h-4 text-green-500" /> : <Link2 className="w-4 h-4" style={{ color: brand.navy }} />}
+                  {copiedLink ? (
+                    <Check className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <Link2 className="w-4 h-4" style={{ color: brand.navy }} />
+                  )}
                   <span className="text-sm font-medium flex-1 text-left" style={{ color: brand.navy }}>
-                    {copied ? 'Link copied!' : 'Copy shareable link'}
+                    {copiedLink ? 'Profile link copied!' : 'Copy profile link'}
                   </span>
-                  <span className="text-[10px] font-mono truncate max-w-[120px]" style={{ color: `${brand.navy}40` }}>
-                    {shareUrl.replace('https://', '')}
+                </button>
+
+                {/* Copy email message (paste into their own email client) */}
+                <button
+                  onClick={handleCopyEmail}
+                  className="w-full flex items-center gap-3 p-3 rounded-2xl border transition-all active:scale-98"
+                  style={{ borderColor: `${brand.navy}15`, background: `${brand.navy}04` }}
+                >
+                  {copiedEmail ? (
+                    <Check className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <Mail className="w-4 h-4" style={{ color: brand.navy }} />
+                  )}
+                  <span className="text-sm font-medium flex-1 text-left" style={{ color: brand.navy }}>
+                    {copiedEmail ? 'Email message copied!' : 'Copy email message + link'}
                   </span>
                 </button>
 
@@ -170,7 +255,42 @@ export default function ShareCard({ isOpen, onClose, rankings, userName, listNam
                   <span className="text-sm font-semibold">Share on LinkedIn</span>
                 </button>
 
-                {/* Close */}
+                {/* Downloadable image: PNG + PDF */}
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => handleExport('png')}
+                    disabled={!!exporting}
+                    className="flex items-center justify-center gap-2 p-3 rounded-2xl text-sm font-semibold transition-all active:scale-98 disabled:opacity-50"
+                    style={{ background: `${brand.gold}18`, color: brand.navy }}
+                  >
+                    {exporting === 'png' ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Download className="w-4 h-4" />
+                    )}
+                    PNG
+                  </button>
+                  <button
+                    onClick={() => handleExport('pdf')}
+                    disabled={!!exporting}
+                    className="flex items-center justify-center gap-2 p-3 rounded-2xl text-sm font-semibold transition-all active:scale-98 disabled:opacity-50"
+                    style={{ background: `${brand.gold}18`, color: brand.navy }}
+                  >
+                    {exporting === 'pdf' ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Download className="w-4 h-4" />
+                    )}
+                    PDF
+                  </button>
+                </div>
+
+                {exportError && (
+                  <p className="text-[11px] text-center" style={{ color: '#b5651d' }}>
+                    {exportError}
+                  </p>
+                )}
+
                 <button
                   onClick={onClose}
                   className="w-full py-2.5 text-sm font-medium rounded-2xl transition-all"

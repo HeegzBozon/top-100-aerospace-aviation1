@@ -5,7 +5,7 @@ import { brand } from '@/components/nominate/NominateConfig';
 import ListBuilderHeader from '@/components/my-top100/ListBuilderHeader';
 import ListCanvas from '@/components/my-top100/ListCanvas';
 import ShareCard from '@/components/my-top100/ShareCard';
-import PublishBanner from '@/components/my-top100/PublishBanner';
+import BallotStatusBanner from '@/components/my-top100/BallotStatusBanner';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
 import NominateIntakePanel from '@/components/my-top100/NominateIntakePanel';
@@ -27,8 +27,10 @@ export default function MyTop100() {
   const [rankings, setRankings] = useState([]);
   const [listName, setListName] = useState('My Top 100');
   const [isEditingName, setIsEditingName] = useState(false);
-  const [isPublished, setIsPublished] = useState(false);
   const [shareCode, setShareCode] = useState('');
+  const [season, setSeason] = useState(null);
+  const [profileId, setProfileId] = useState(null);
+  const [syncError, setSyncError] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showShare, setShowShare] = useState(false);
@@ -74,11 +76,20 @@ export default function MyTop100() {
             also_angels: !!r.also_angels,
           })));
           setListName(existing.list_name || 'My Top 100');
-          setIsPublished(existing.is_published || false);
           setShareCode(existing.share_code || generateShareCode());
         } else {
           setShareCode(generateShareCode());
         }
+
+        // Resolve active voting season (ballot auto-sync window) + the Fellow's public profile id.
+        try {
+          const activeSeasons = await base44.entities.Season.filter({ status: 'voting_open' });
+          setSeason(activeSeasons?.[0] || null);
+        } catch { /* season resolution optional */ }
+        try {
+          const myNominees = await base44.entities.Nominee.filter({ nominee_email: currentUser.email });
+          setProfileId(myNominees?.[0]?.id || null);
+        } catch { /* profile id optional */ }
       } catch {
         // Not logged in
         setUser(null);
@@ -107,41 +118,78 @@ export default function MyTop100() {
   const removeHubNomination = (category, idx) =>
     setHubNominations((p) => ({ ...p, [category]: p[category].filter((_, i) => i !== idx) }));
 
-  // Debounced auto-save
-  const scheduleSave = useCallback((updatedRankings, updatedName, updatedPublished) => {
-    if (saveTimer) clearTimeout(saveTimer);
-    const timer = setTimeout(() => {
-      persistList(updatedRankings, updatedName, updatedPublished, false);
-    }, 1500);
-    setSaveTimer(timer);
-  }, [saveTimer, myList, shareCode, user]);
+  // ── Ballot auto-sync window ──
+  const now = new Date();
+  const votingOpen = !!season && season.status === 'voting_open'
+    && (!season.voting_start || new Date(season.voting_start) <= now)
+    && (!season.voting_end || new Date(season.voting_end) >= now);
+  const votingClosed = !!season && (
+    ['review', 'completed', 'archived'].includes(season.status) ||
+    (season.voting_end && new Date(season.voting_end) < now)
+  );
+  const ballotLive = votingOpen && rankings.length >= 3;
+  // The personal list is public (shareable) once non-empty; decoupled from ballot measurement.
+  const isPublished = rankings.length > 0;
+  const profileUrl = profileId
+    ? `${window.location.origin}/profiles/${profileId}`
+    : `${window.location.origin}/profiles?user=${encodeURIComponent(user?.email || '')}`;
 
-  const persistList = async (updatedRankings, updatedName, updatedPublished, showSaving = true) => {
+  // Auto-save + ballot auto-sync. No publish gate: the list persists on every
+  // change and the ranked ballot upserts automatically while the voting window
+  // is open. The list is the public, shareable artifact; the ballot is the
+  // measurement input — they are decoupled.
+  const persistAndSync = useCallback(async (updatedRankings, updatedName) => {
     if (!user) return;
-    if (showSaving) setSaving(true);
+    setSaving(true);
 
+    const isLive = votingOpen && updatedRankings.length >= 3;
     const payload = {
       user_email: user.email,
       user_name: user.full_name,
       list_name: updatedName,
       rankings: updatedRankings.map((r, i) => ({ ...r, rank: i + 1 })),
-      is_published: updatedPublished,
+      is_published: updatedRankings.length > 0,
       share_code: shareCode,
-      ballot_submitted: updatedPublished,
-      ...(updatedPublished ? { ballot_submitted_at: new Date().toISOString() } : {}),
+      ballot_submitted: isLive,
+      ...(isLive ? { ballot_submitted_at: new Date().toISOString() } : {}),
     };
 
-    if (myList?.id) {
-      await base44.entities.UserTop100List.update(myList.id, payload);
-    } else {
-      const created = await base44.entities.UserTop100List.create(payload);
-      setMyList(created);
+    try {
+      if (myList?.id) {
+        await base44.entities.UserTop100List.update(myList.id, payload);
+      } else {
+        const created = await base44.entities.UserTop100List.create(payload);
+        setMyList(created);
+      }
+    } catch { /* persist error — surfaced via syncError if ballot also fails */ }
+
+    // Auto-sync the ranked ballot only while the season voting window is open.
+    // Below the 3-nominee threshold the ballot is cleared (not counted) rather
+    // than stored, so a sub-threshold list never registers as a live ballot.
+    if (votingOpen && season?.id) {
+      try {
+        const ballot = updatedRankings.length >= 3 ? updatedRankings.map((r) => r.nominee_id) : [];
+        await saveRankedVote({ season_id: season.id, ballot });
+        setSyncError('');
+      } catch {
+        setSyncError("Ballot sync failed — your list is saved. We'll retry on your next change.");
+      }
     }
 
-    if (showSaving) setSaving(false);
-  };
+    setSaving(false);
+  }, [user, myList, shareCode, season, votingOpen]);
+
+  // Debounced auto-save
+  const scheduleSave = useCallback((updatedRankings, updatedName) => {
+    if (saveTimer) clearTimeout(saveTimer);
+    const timer = setTimeout(() => {
+      persistAndSync(updatedRankings, updatedName);
+    }, 1500);
+    setSaveTimer(timer);
+  }, [saveTimer, persistAndSync]);
 
   const handleReorder = (newFilteredOrder) => {
+    if (votingClosed) return;
     let newOrder = newFilteredOrder;
     if (listCategory !== 'all') {
       const filteredIds = new Set(newFilteredOrder.map(r => r.nominee_id));
@@ -149,10 +197,11 @@ export default function MyTop100() {
       newOrder = rankings.map(item => filteredIds.has(item.nominee_id) ? newFilteredOrder[fi++] : item);
     }
     setRankings(newOrder);
-    scheduleSave(newOrder, listName, isPublished);
+    scheduleSave(newOrder, listName);
   };
 
   const handleAdd = (nominee, meta = {}) => {
+    if (votingClosed) return;
     if (rankings.length >= 100) return;
     if (rankings.find(r => r.nominee_id === nominee.id)) return;
 
@@ -169,39 +218,18 @@ export default function MyTop100() {
     };
     const newRankings = [...rankings, newItem];
     setRankings(newRankings);
-    scheduleSave(newRankings, listName, isPublished);
+    scheduleSave(newRankings, listName);
   };
 
   const handleRemove = (nomineeId) => {
+    if (votingClosed) return;
     const newRankings = rankings.filter(r => r.nominee_id !== nomineeId);
     setRankings(newRankings);
-    scheduleSave(newRankings, listName, isPublished);
+    scheduleSave(newRankings, listName);
   };
 
-  const handlePublish = async () => {
-    setSaving(true);
-    setIsPublished(true);
-    await persistList(rankings, listName, true, false);
-
-    // Submit as ranked choice ballot via the voting engine
-    try {
-      const activeSeason = await base44.entities.Season.filter({ status: 'voting_open' });
-      const seasonId = activeSeason?.[0]?.id;
-      if (seasonId) {
-        const ballot = rankings.map(r => r.nominee_id);
-        await saveRankedVote({ season_id: seasonId, ballot });
-      }
-    } catch (e) {
-      console.warn('Ballot submission skipped:', e.message);
-    }
-
-    setSaving(false);
-    setShowShare(true);
-  };
-
-  const handleSaveDraft = async () => {
-    await persistList(rankings, listName, false, true);
-  };
+  // Publish & Save Draft removed — the ballot auto-syncs via persistAndSync
+  // above, and the Share CTA on the status band replaces the publish button.
 
   const addedIds = new Set(rankings.map(r => r.nominee_id));
   const totalNominations = Object.values(hubNominations).reduce((sum, arr) => sum + arr.length, 0);
@@ -262,7 +290,7 @@ export default function MyTop100() {
             autoFocus
             value={listName}
             onChange={e => setListName(e.target.value)}
-            onBlur={() => { setIsEditingName(false); scheduleSave(rankings, listName, isPublished); }}
+            onBlur={() => { setIsEditingName(false); scheduleSave(rankings, listName); }}
             onKeyDown={e => e.key === 'Enter' && setIsEditingName(false)}
             className="flex-1 text-xl font-bold bg-transparent outline-none border-b-2 pb-0.5"
             style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif", borderColor: brand.gold }}
@@ -342,18 +370,21 @@ export default function MyTop100() {
             {/* Right: Top 100 ranked list */}
             <div className="flex-1 min-w-0 max-w-xl flex flex-col overflow-hidden">
               {ListNameEditor}
-              <PublishBanner
+              <BallotStatusBanner
                 rankings={rankings}
-                isPublished={isPublished}
+                ballotLive={ballotLive}
+                votingOpen={votingOpen}
+                votingEndDate={season?.voting_end}
                 saving={saving}
-                onPublish={handlePublish}
-                onSaveDraft={handleSaveDraft}
+                syncError={syncError}
+                onShare={() => setShowShare(true)}
               />
               <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
               <ListCanvas
                 rankings={visibleRankings}
                 totalCount={rankings.length}
                 onReorder={handleReorder}
+                readOnly={votingClosed}
                 onRemove={handleRemove}
                 onAddMore={openExplorer}
                 onAdd={handleAdd}
@@ -378,12 +409,14 @@ export default function MyTop100() {
               onOpenExplorer={openExplorer}
             />
             {ListNameEditor}
-            <PublishBanner
+            <BallotStatusBanner
               rankings={rankings}
-              isPublished={isPublished}
+              ballotLive={ballotLive}
+              votingOpen={votingOpen}
+              votingEndDate={season?.voting_end}
               saving={saving}
-              onPublish={handlePublish}
-              onSaveDraft={handleSaveDraft}
+              syncError={syncError}
+              onShare={() => setShowShare(true)}
             />
             <div className="flex-1">
               <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
@@ -391,6 +424,7 @@ export default function MyTop100() {
                 rankings={visibleRankings}
                 totalCount={rankings.length}
                 onReorder={handleReorder}
+                readOnly={votingClosed}
                 onRemove={handleRemove}
                 onAddMore={openExplorer}
                 onAdd={handleAdd}
@@ -415,7 +449,7 @@ export default function MyTop100() {
         rankings={rankings}
         userName={user?.full_name}
         listName={listName}
-        shareCode={shareCode}
+        profileUrl={profileUrl}
       />
 
       <NomineeExplorerPopover
