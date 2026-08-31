@@ -134,7 +134,20 @@ export default function MyTop100() {
     ? `${window.location.origin}/profiles/${profileId}`
     : `${window.location.origin}/profiles?user=${encodeURIComponent(user?.email || '')}`;
 
-  const handleCopyProfileUrl = async () => {
+  const handleShare = async () => {
+    const shareData = {
+      title: user?.full_name ? `${user.full_name} — TOP 100 Aerospace & Aviation` : 'TOP 100 Aerospace & Aviation',
+      text: `${user?.full_name ? `${user.full_name}'s ` : ''}Fellow profile on TOP 100 Aerospace & Aviation`,
+      url: profileUrl,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err) {
+        if (err.name === 'AbortError') return; // user dismissed the sheet
+      }
+    }
     try {
       await navigator.clipboard.writeText(profileUrl);
       toast({ title: 'Profile link copied' });
@@ -332,7 +345,7 @@ export default function MyTop100() {
         count={rankings.length}
         isPublished={isPublished}
         saving={saving}
-        onShare={handleCopyProfileUrl}
+        onShare={handleShare}
       />
 
       <HubListTabs
@@ -386,7 +399,7 @@ export default function MyTop100() {
                 votingEndDate={season?.voting_end}
                 saving={saving}
                 syncError={syncError}
-                onShare={handleCopyProfileUrl}
+                onShare={handleShare}
               />
               <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
               <ListCanvas
@@ -425,7 +438,7 @@ export default function MyTop100() {
               votingEndDate={season?.voting_end}
               saving={saving}
               syncError={syncError}
-              onShare={handleCopyProfileUrl}
+              onShare={handleShare}
             />
             <div className="flex-1">
               <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
