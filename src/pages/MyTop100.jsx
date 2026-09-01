@@ -43,7 +43,14 @@ export default function MyTop100() {
   const [saveTimer, setSaveTimer] = useState(null);
   const [hubNominations, setHubNominations] = useState({ women: [], men: [], angels: [] });
   const [listCategory, setListCategory] = useState('all');
-  const [activeTab, setActiveTab] = useState('start');
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      const c = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
+      return c >= 2 ? 'nominate' : 'start';
+    } catch {
+      return 'start';
+    }
+  });
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [explorerProfile, setExplorerProfile] = useState(null);
   const [showOS, setShowOS] = useState(false);
@@ -158,6 +165,16 @@ export default function MyTop100() {
       localStorage.setItem(`nominate_view_${user.email}`, nominateView);
     } catch { /* ignore */ }
   }, [nominateView, user]);
+
+  // Count hub sessions per device. After a Fellow has opened the hub a few
+  // times, the Nominate tab becomes the default landing — they've graduated
+  // past the Start Here orientation.
+  useEffect(() => {
+    try {
+      const c = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
+      localStorage.setItem('hub_visit_count', String(c + 1));
+    } catch { /* ignore */ }
+  }, []);
 
   // Mobile quick-add → opens the shared nomination sheet from anywhere.
   const openQuickAdd = () => setMobilePopoverOpen(true);
