@@ -45,8 +45,16 @@ export default function MyTop100() {
   const [listCategory, setListCategory] = useState('all');
   const [activeTab, setActiveTab] = useState(() => {
     try {
-      const c = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
-      return c >= 2 ? 'nominate' : 'start';
+      const priorVisits = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
+      // Engaged = already submitted at least one nomination on this device.
+      const draft = JSON.parse(localStorage.getItem('hub_nominations_draft') || '{}');
+      const hasSubmitted = Object.values(draft).some(
+        (v) => Array.isArray(v) && v.length > 0
+      );
+      // Graduate to Nominate once they've completed their first session
+      // (returning) or have already nominated — the orientation copy is only
+      // for true first-timers.
+      return priorVisits >= 1 || hasSubmitted ? 'nominate' : 'start';
     } catch {
       return 'start';
     }
