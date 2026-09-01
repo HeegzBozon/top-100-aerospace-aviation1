@@ -16,6 +16,13 @@ import { saveRankedVote } from '@/functions/saveRankedVote';
 import { Loader2, Pencil, Check, Rocket, LogIn } from 'lucide-react';
 import AnchorVoting from '@/components/voting/AnchorVoting';
 import VoteComingSoon from '@/components/my-top100/VoteComingSoon';
+import NominateViewToggle from '@/components/my-top100/NominateViewToggle';
+import QuickAddBar from '@/components/my-top100/QuickAddBar';
+import MobileNominateView from '@/components/my-top100/MobileNominateView';
+import ContextualTip from '@/components/my-top100/ContextualTip';
+import { loadNomineePool } from '@/components/my-top100/nomineeCategory';
+import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 function generateShareCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -40,6 +47,12 @@ export default function MyTop100() {
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [explorerProfile, setExplorerProfile] = useState(null);
   const [showOS, setShowOS] = useState(false);
+  const [nominateView, setNominateView] = useState('nominate');
+  const [mobilePopoverOpen, setMobilePopoverOpen] = useState(false);
+  const [pool, setPool] = useState([]);
+  const [poolTotal, setPoolTotal] = useState(0);
+  const [loadingPool, setLoadingPool] = useState(true);
+  const isMobile = useIsMobile();
   const { toast } = useToast();
 
   const openExplorer = () => { setExplorerProfile(null); setExplorerOpen(true); };
@@ -110,6 +123,61 @@ export default function MyTop100() {
   useEffect(() => {
     localStorage.setItem('hub_nominations_draft', JSON.stringify(hubNominations));
   }, [hubNominations]);
+
+  // Shared nominee pool — loaded once and shared by the desktop intake panel
+  // and the mobile quick-add sheet so the directory is never fetched twice.
+  useEffect(() => {
+    let active = true;
+    loadNomineePool()
+      .then(({ pool }) => {
+        if (!active) return;
+        setPool(pool);
+        setPoolTotal(pool.length);
+        setLoadingPool(false);
+      })
+      .catch(() => {
+        if (active) setLoadingPool(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Remember the last-used side of the in-tab toggle, per Fellow.
+  useEffect(() => {
+    if (!user) return;
+    try {
+      const v = localStorage.getItem(`nominate_view_${user.email}`);
+      if (v === 'nominate' || v === 'mylist') setNominateView(v);
+    } catch { /* ignore */ }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    try {
+      localStorage.setItem(`nominate_view_${user.email}`, nominateView);
+    } catch { /* ignore */ }
+  }, [nominateView, user]);
+
+  // Mobile quick-add → opens the shared nomination sheet from anywhere.
+  const openQuickAdd = () => setMobilePopoverOpen(true);
+
+  // Mobile submit handler — mirrors the desktop intake panel's wiring so the
+  // two surfaces stay consistent. Existing nominees land on the ranked list
+  // too; new ones join the review queue.
+  const handleMobileSubmitted = (result) => {
+    if (result.existing) {
+      addExistingToHub(result.category, result.nominee, result.also_angels);
+      handleAdd(result.nominee, {
+        nomination_category: result.category,
+        also_angels: result.also_angels,
+      });
+      setMobilePopoverOpen(false);
+      return;
+    }
+    addHubNomination(result.category, result.summary);
+    setMobilePopoverOpen(false);
+  };
 
   const addHubNomination = (category, summary) =>
     setHubNominations((p) => ({ ...p, [category]: [...p[category], summary] }));
@@ -387,6 +455,9 @@ export default function MyTop100() {
                 nominator={user}
                 addedIds={addedIds}
                 onOpenExplorer={openExplorer}
+                pool={pool}
+                poolTotal={poolTotal}
+                loadingPool={loadingPool}
               />
             </div>
             {/* Right: Top 100 ranked list */}
@@ -416,44 +487,56 @@ export default function MyTop100() {
             </div>
           </div>
 
-          {/* Mobile: stacked */}
+          {/* Mobile: in-tab toggle between Nominate and My List */}
           <div className="lg:hidden flex flex-col flex-1 overflow-y-auto">
-            <NominateIntakePanel
-              submittedNominations={hubNominations}
-              onAddNomination={addHubNomination}
-              onRemoveNomination={removeHubNomination}
-              onAddExisting={(nominee, meta) => {
-                addExistingToHub(meta.category, nominee, meta.also_angels);
-                handleAdd(nominee, { nomination_category: meta.category, also_angels: meta.also_angels });
-              }}
-              nominator={user}
-              addedIds={addedIds}
-              onOpenExplorer={openExplorer}
+            <NominateViewToggle
+              value={nominateView}
+              onChange={setNominateView}
+              nominateCount={totalNominations}
+              listCount={rankings.length}
             />
-            {ListNameEditor}
-            <BallotStatusBanner
-              rankings={rankings}
-              ballotLive={ballotLive}
-              votingOpen={votingOpen}
-              votingEndDate={season?.voting_end}
-              saving={saving}
-              syncError={syncError}
-              onShare={handleShare}
-            />
-            <div className="flex-1">
-              <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
-              <ListCanvas
-                rankings={visibleRankings}
-                totalCount={rankings.length}
-                onReorder={handleReorder}
-                readOnly={votingClosed}
-                onRemove={handleRemove}
-                onAddMore={openExplorer}
-                onAdd={handleAdd}
+
+            {nominateView === 'nominate' ? (
+              <MobileNominateView
+                user={user}
+                submittedNominations={hubNominations}
+                onRemoveNomination={removeHubNomination}
                 addedIds={addedIds}
-                onViewProfile={openProfileFromList}
+                onOpenExplorer={openExplorer}
               />
-            </div>
+            ) : (
+              <div className="px-4 pt-3 pb-28">
+                <div className="mb-3">
+                  <ContextualTip userEmail={user?.email} tipKey="nominate_hub_mylist">
+                    {votingOpen
+                      ? 'This is your ranked Top 100 — it doubles as your ballot while voting is open. Drag to reorder. You rank; the institution measures.'
+                      : 'This is your ranked Top 100 — your personal, shareable ranking. Nominations go to our review queue; ballot measurement opens with the voting window.'}
+                  </ContextualTip>
+                </div>
+                {ListNameEditor}
+                <BallotStatusBanner
+                  rankings={rankings}
+                  ballotLive={ballotLive}
+                  votingOpen={votingOpen}
+                  votingEndDate={season?.voting_end}
+                  saving={saving}
+                  syncError={syncError}
+                  onShare={handleShare}
+                />
+                <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
+                <ListCanvas
+                  rankings={visibleRankings}
+                  totalCount={rankings.length}
+                  onReorder={handleReorder}
+                  readOnly={votingClosed}
+                  onRemove={handleRemove}
+                  onAddMore={openExplorer}
+                  onAdd={handleAdd}
+                  addedIds={addedIds}
+                  onViewProfile={openProfileFromList}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -475,6 +558,20 @@ export default function MyTop100() {
       />
 
       <Top100OSModal isOpen={showOS} onClose={() => setShowOS(false)} />
+
+      <QuickAddBar
+        onClick={openQuickAdd}
+        hidden={!isMobile || activeTab !== 'nominate' || mobilePopoverOpen || explorerOpen}
+      />
+      {isMobile && mobilePopoverOpen && (
+        <HubNominationPopover
+          nominees={pool}
+          nominator={user}
+          initialNominee={null}
+          onClose={() => setMobilePopoverOpen(false)}
+          onSubmitted={handleMobileSubmitted}
+        />
+      )}
     </div>
   );
 }
