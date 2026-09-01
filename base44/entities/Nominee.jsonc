@@ -96,7 +96,7 @@
         "rejected"
       ],
       "default": "unclaimed",
-      "description": "Profile claim status for admin approval workflow"
+      "description": "Profile claim status. 'approved' = self-verified instant claim (email or LinkedIn match) or admin-approved; 'pending' = awaiting admin review for mismatched/contested claims."
     },
     "claim_requested_by": {
       "type": "string",
@@ -106,6 +106,15 @@
       "type": "string",
       "format": "date-time",
       "description": "When the claim was requested"
+    },
+    "claim_method": {
+      "type": "string",
+      "enum": [
+        "email_match",
+        "linkedin_match",
+        "admin_review"
+      ],
+      "description": "How the claim was resolved. 'email_match' = signup email matched nominee record; 'linkedin_match' = LinkedIn profile URL matched; 'admin_review' = admin approved a non-matching claim."
     },
     "season_id": {
       "type": "string",
@@ -394,9 +403,13 @@
       "default": false,
       "description": "High momentum indicator"
     },
+    "claimed_by_user_id": {
+      "type": "string",
+      "description": "Stable User account id of the Fellow who claimed this profile. Authoritative owner link; takes precedence over claimed_by_user_email."
+    },
     "claimed_by_user_email": {
       "type": "string",
-      "description": "Email of user who claimed this profile"
+      "description": "Email of user who claimed this profile. Legacy display-only link; the authoritative link is claimed_by_user_id."
     },
     "six_word_story": {
       "type": "string",

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useParams, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useProfileResolution } from '@/hooks/useProfileResolution';
 import { Crown, Briefcase, Building, Linkedin, Trophy, Globe, Award, Quote, Pencil } from 'lucide-react';
@@ -32,6 +32,7 @@ import DocumentsSlide from '@/components/profile-deck/slides/DocumentsSlide';
 import EightSlide from '@/components/profile-deck/slides/EightSlide';
 import FlightographySlide from '@/components/profile-deck/slides/FlightographySlide';
 import { resolveSlideOrder } from '@/components/profile-deck/slideDeckConfig';
+import NomineeClaimPanel from '@/components/claim/NomineeClaimPanel';
 
 const B = {
     navyDeep: '#16293f',
@@ -91,6 +92,8 @@ export default function ProfileView({ userId: propUserId = null }) {
     const params = new URLSearchParams(location.search);
     const targetId = propUserId || pathId || params.get('id');
     const targetEmail = params.get('user') || params.get('email');
+    const queryClient = useQueryClient();
+    const refetchProfile = () => queryClient.invalidateQueries({ queryKey: ['unified-profile'] });
 
     // Cinematic entrance — fades the navy veil out on mount, bridging "See full profile" → page.
     const [entered, setEntered] = useState(false);
@@ -151,6 +154,8 @@ export default function ProfileView({ userId: propUserId = null }) {
                     ownerAccent={ownerAccent}
                     ownerSettings={ownerSettings}
                     top100={top100}
+                    viewer={viewer}
+                    onResolved={refetchProfile}
                 />
             )}
 
@@ -159,7 +164,7 @@ export default function ProfileView({ userId: propUserId = null }) {
     );
 }
 
-function ProfileBody({ profiles, ownerAccent, ownerSettings, top100 }) {
+function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onResolved }) {
     const { user, nominee } = profiles;
 
     // Resolve the Fellow's configured slide order. Locked positions 1 and 2
@@ -197,6 +202,13 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100 }) {
 
     return (
         <div className="min-h-screen" style={{ background: B.navyDeep }}>
+            {nominee && (
+                <NomineeClaimPanel
+                    nominee={nominee}
+                    viewer={viewer}
+                    onResolved={onResolved}
+                />
+            )}
             <ProfileDeck slides={slides} settings={ownerSettings} accent={ownerAccent} />
         </div>
     );
