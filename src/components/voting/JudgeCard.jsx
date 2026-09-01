@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowUp, ArrowDown, Info, RotateCw, ChevronLeft,
@@ -24,9 +23,7 @@ function initials(name) {
   return (a + b).toUpperCase();
 }
 
-export default function JudgeCard({ nominee, token, isTop, isBottom, selectable, onInfo, onSelect }) {
-  const [flipped, setFlipped] = useState(false);
-  const [tab, setTab] = useState(null);
+export default function JudgeCard({ nominee, token, isTop, isBottom, selectable, onInfo, onSelect, flipped, onFlipToggle, activeTab, onTabChange }) {
 
   const name = nominee.name || 'Unnamed nominee';
   const photo = nominee.avatar_url || nominee.photo_url || '';
@@ -54,7 +51,7 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
   if (trajectory.length) tabs.push({ key: 'flight', label: 'Flight' });
   if (signals.length) tabs.push({ key: 'signals', label: 'Signals' });
 
-  const activeTab = tabs.find((t) => t.key === tab) ? tab : tabs[0]?.key;
+  const activeTabKey = (activeTab && tabs.find((t) => t.key === activeTab)) ? activeTab : tabs[0]?.key;
   const anchored = isTop || isBottom;
 
   const faceBase = {
@@ -149,11 +146,11 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
 
             {/* Flip affordance */}
             <button
-              onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
+              onClick={(e) => { e.stopPropagation(); onFlipToggle?.(true); }}
               className="mt-auto pt-2 border-t flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider self-start"
               style={{ color: `${brand.navy}50`, borderColor: `${brand.navy}10` }}
             >
-              <RotateCw className="w-3 h-3" /> Flip for evidence
+              <RotateCw className="w-3 h-3" /> Flip for more info
             </button>
           </div>
         </motion.div>
@@ -171,7 +168,7 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
             {/* Header */}
             <div className="flex items-center gap-2 px-4 py-3 border-b shrink-0" style={{ borderColor: `${brand.navy}10` }}>
               <button
-                onClick={() => setFlipped(false)}
+                onClick={() => onFlipToggle?.(false)}
                 className="h-7 w-7 rounded-full flex items-center justify-center shrink-0"
                 style={{ background: `${brand.navy}06` }}
                 aria-label="Back to front"
@@ -187,9 +184,9 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
                 {tabs.map((t) => (
                   <button
                     key={t.key}
-                    onClick={() => setTab(t.key)}
+                    onClick={() => onTabChange?.(t.key)}
                     className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider whitespace-nowrap"
-                    style={{ background: activeTab === t.key ? brand.navy : `${brand.navy}08`, color: activeTab === t.key ? 'white' : `${brand.navy}60` }}
+                    style={{ background: activeTabKey === t.key ? brand.navy : `${brand.navy}08`, color: activeTabKey === t.key ? 'white' : `${brand.navy}60` }}
                   >
                     {t.label}
                   </button>
@@ -199,18 +196,18 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto px-4 py-3 scrollbar-hide">
-              {activeTab === 'story' && (
+              {activeTabKey === 'story' && (
                 <p className="text-sm font-bold italic leading-relaxed" style={{ color: brand.navy }}>
                   <span style={{ color: brand.gold }}>&ldquo;</span>{story}<span style={{ color: brand.gold }}>&rdquo;</span>
                 </p>
               )}
-              {activeTab === 'bio' && (
+              {activeTabKey === 'bio' && (
                 <p className="text-xs lg:text-sm leading-relaxed" style={{ color: `${brand.navy}80` }}>{bio}</p>
               )}
-              {activeTab === 'impact' && (
+              {activeTabKey === 'impact' && (
                 <p className="text-xs lg:text-sm leading-relaxed" style={{ color: `${brand.navy}80` }}>{contribution}</p>
               )}
-              {activeTab === 'flight' && (
+              {activeTabKey === 'flight' && (
                 <div className="space-y-2.5">
                   {trajectory.map((c, i) => (
                     <div key={i}>
@@ -222,7 +219,7 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
                   ))}
                 </div>
               )}
-              {activeTab === 'signals' && (
+              {activeTabKey === 'signals' && (
                 <div className="grid grid-cols-2 gap-2">
                   {signals.map((s) => (
                     <div key={s.label} className="rounded-lg p-2.5" style={{ background: 'white', border: `1px solid ${brand.navy}10` }}>

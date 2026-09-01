@@ -6,7 +6,7 @@ import { awardStardust } from '@/functions/awardStardust';
 import { progressQuest } from '@/functions/progressQuest';
 import { brand } from '@/components/nominate/NominateConfig';
 import {
-  Loader2, Info, ArrowUp, ArrowDown, Check, Undo2, ArrowLeft,
+  Loader2, Info, ArrowUp, ArrowDown, Check, Undo2, ArrowLeft, Layers,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import JudgeCard from '@/components/voting/JudgeCard';
@@ -40,6 +40,8 @@ export default function AnchorVoting({ user }) {
   const [bottomId, setBottomId] = useState(null);
   const [panelNominee, setPanelNominee] = useState(null);
   const [panelToken, setPanelToken] = useState('A');
+  const [flippedIds, setFlippedIds] = useState({});
+  const [activeTab, setActiveTab] = useState(null);
   const [sessionCount, setSessionCount] = useState(0);
   const [history, setHistory] = useState([]); // completed sets for review/back
 
@@ -103,6 +105,8 @@ export default function AnchorVoting({ user }) {
     setTopId(null);
     setBottomId(null);
     setPhase('best');
+    setFlippedIds({});
+    setActiveTab(null);
     setSeenIds((prev) => {
       const next = [...prev, ...(currentSet.map((n) => n.id))];
       // keep only the last 10 seen to avoid starving the pool
@@ -127,6 +131,8 @@ export default function AnchorVoting({ user }) {
     setCurrentSet(last.set);
     setTopId(last.topId);
     setBottomId(last.bottomId);
+    setFlippedIds({});
+    setActiveTab(null);
     setPhase('review');
   }, [history]);
 
@@ -134,6 +140,8 @@ export default function AnchorVoting({ user }) {
     setTopId(null);
     setBottomId(null);
     setPhase('best');
+    setFlippedIds({});
+    setActiveTab(null);
     setCurrentSet(drawSet(pool, seenIds));
   }, [pool, seenIds]);
 
@@ -174,6 +182,17 @@ export default function AnchorVoting({ user }) {
         setBottomId(null);
         setPhase('worst');
       }
+    }
+  };
+
+  const flipAll = currentSet.length > 0 && currentSet.every((n) => flippedIds[n.id]);
+  const toggleFlipAll = () => {
+    if (flipAll) {
+      setFlippedIds({});
+    } else {
+      const next = {};
+      currentSet.forEach((n) => { next[n.id] = true; });
+      setFlippedIds(next);
     }
   };
 
@@ -261,6 +280,15 @@ export default function AnchorVoting({ user }) {
               Resume voting
             </button>
           )}
+          {currentSet.length > 0 && phase !== 'submitting' && phase !== 'success' && (
+            <button
+              onClick={toggleFlipAll}
+              className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5"
+              style={{ background: flipAll ? brand.gold : `${brand.navy}06`, color: flipAll ? 'white' : `${brand.navy}80` }}
+            >
+              <Layers className="w-3.5 h-3.5" /> {flipAll ? 'Back to front' : 'Flip all'}
+            </button>
+          )}
         </div>
 
         {/* Cards */}
@@ -281,6 +309,14 @@ export default function AnchorVoting({ user }) {
                 selectable={selectable && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
+                flipped={!!flippedIds[nominee.id]}
+                onFlipToggle={(val) => setFlippedIds((prev) => {
+                  const next = { ...prev };
+                  if (val) next[nominee.id] = true; else delete next[nominee.id];
+                  return next;
+                })}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
               />
             );
           })}
