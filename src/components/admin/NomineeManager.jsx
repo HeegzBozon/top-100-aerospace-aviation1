@@ -5,7 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Loader2, UserPlus, Search, Edit, Eye, ShieldCheck, ShieldOff, Trophy, Brain, Download, Medal, ContactRound, Database } from 'lucide-react';
+import { Loader2, UserPlus, Search, Edit, Eye, ShieldCheck, ShieldOff, Trophy, Brain, Download, Medal, ContactRound, Database, Send } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import { useToast } from "@/components/ui/use-toast";
 import NomineeForm from './NomineeForm';
 import NomineeViewModal from './NomineeViewModal';
@@ -25,6 +26,7 @@ export default function NomineeManager({ seasons }) {
   const [reviewingNominee, setReviewingNominee] = useState(null); // New state for review wizard
   const [processingId, setProcessingId] = useState(null);
   const [exportingFull, setExportingFull] = useState(false);
+  const [exportingOutreach, setExportingOutreach] = useState(false);
 
   const { toast } = useToast();
 
@@ -461,6 +463,40 @@ export default function NomineeManager({ seasons }) {
     }
   };
 
+  // Server-generated, one-row-per-person outreach list for the GHL bulk email
+  // campaign. Deduped by email across seasons, with claim readiness + deep links
+  // so each recipient lands on their claim surface. Run on the admin's machine.
+  const handleExportOutreach = async () => {
+    setExportingOutreach(true);
+    try {
+      const res = await base44.functions.invoke('exportOutreachList', {});
+      const data = res.data || res;
+      if (!data?.csv) {
+        toast({ variant: 'destructive', title: 'Export failed', description: data?.error || 'No CSV returned.' });
+        return;
+      }
+      const blob = new Blob([data.csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `top100_outreach_list_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      const b = data.readinessBreakdown || {};
+      toast({
+        title: 'Outreach list ready',
+        description: `${data.count} people · ${b['claimable-by-email'] || 0} emailable · ${b['claimable-by-linkedin'] || 0} LinkedIn DM · ${(b['claimed'] || 0)} already Fellows.`,
+      });
+    } catch (e) {
+      console.error('Outreach export failed:', e);
+      toast({ variant: 'destructive', title: 'Export failed', description: e?.response?.data?.error || e.message });
+    } finally {
+      setExportingOutreach(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
     let colorClass = '';
     switch (status) {
@@ -502,6 +538,10 @@ export default function NomineeManager({ seasons }) {
           <Button onClick={handleExportFullPool} disabled={exportingFull} className="ml-2 bg-indigo-600 hover:bg-indigo-700">
             {exportingFull ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Database className="w-4 h-4 mr-2" />}
             Export Full Pool (CSV)
+          </Button>
+          <Button onClick={handleExportOutreach} disabled={exportingOutreach} className="ml-2 bg-emerald-700 hover:bg-emerald-800">
+            {exportingOutreach ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+            Outreach Export (GHL)
           </Button>
         </div>
         {seasons && seasons.length > 0 && (
