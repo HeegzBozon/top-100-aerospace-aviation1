@@ -45,18 +45,39 @@ export async function fetchClaimerLinkedInUrl(accessToken: string): Promise<stri
   return data.publicProfileUrl || '';
 }
 
+// Strict RFC-ish email validity gate. Applied at the source so garbage like 'z'
+// or 'name@gmail' (missing TLD) never reaches claim-readiness, dedupe, or the
+// CSV. Requires a non-empty local part, '@', a domain with at least one dot,
+// and no whitespace anywhere.
+export function isValidEmail(e: string | null | undefined): boolean {
+  if (!e) return false;
+  const s = String(e).trim();
+  if (!s || s.length > 320) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
+// Canonical LinkedIn vanity slug ('/in/<vanity>'), lowercased with no query or
+// trailing slash. The merge key for cross-record dedupe when emails disagree.
+// Returns '' for non-LinkedIn or non-personal URLs.
+export function canonicalLinkedInSlug(input: string | null | undefined): string {
+  const url = normalizeLinkedInUrl(input);
+  if (!url) return '';
+  const m = url.match(/\/in\/([^/?#]+)/);
+  return m ? m[1] : '';
+}
+
 // Resolve whether the authenticated user's email matches this nominee record
-// (primary or any secondary email). Self-serve email-match claim gate.
+// (primary or any secondary email). Self-serve email-match claim gate, now
+// gated by isValidEmail so a stored garbage address can't auto-claim.
 export function emailMatchesNominee(
   userEmail: string | null | undefined,
   nominee: { nominee_email?: string | null; secondary_emails?: string[] | null }
 ): boolean {
-  if (!userEmail) return false;
-  const e = userEmail.toLowerCase().trim();
-  if (!e) return false;
-  if (nominee.nominee_email && nominee.nominee_email.toLowerCase().trim() === e) return true;
+  if (!isValidEmail(userEmail)) return false;
+  const e = emailKey(userEmail);
+  if (isValidEmail(nominee.nominee_email) && emailKey(nominee.nominee_email) === e) return true;
   if (Array.isArray(nominee.secondary_emails)) {
-    return nominee.secondary_emails.some((s) => s && s.toLowerCase().trim() === e);
+    return nominee.secondary_emails.some((s) => isValidEmail(s) && emailKey(s) === e);
   }
   return false;
 }
@@ -79,79 +100,100 @@ export type ClaimReadiness =
   | 'claimable-by-linkedin'
   | 'no-contact';
 
-// Reduce the full nominee pool to one row per person, collapsing cross-season
-// nominations of the same email and merging secondary emails. Reused by the
+// Reduce the full nominee pool to one row per person. Dedupe keys on BOTH the
+// strict-valid primary email AND the canonical LinkedIn slug (union-find), so
+// two records sharing a LinkedIn URL collapse even when their emails disagree
+// (one missing a TLD, say). Within a merged group the surviving primary email
+// is the strict-valid one; invalid emails are never emitted. Reused by the
 // claim resolver (conceptually) and the outreach export (concretely), so claim
 // and outreach logic never diverge.
 export function resolveOutreachPersons(
   nominees: any[],
   knownUserEmails: Set<string>
 ): any[] {
-  const byPerson = new Map<string, any>();
-
-  for (const n of nominees || []) {
-    const primary = emailKey(n.nominee_email);
-    if (!primary) continue;
-
-    const key = primary;
-    const existing = byPerson.get(key);
-
-    if (!existing) {
-      byPerson.set(key, {
-        name: n.name || '',
-        primaryEmail: n.nominee_email || '',
-        emails: new Set([primary, ...((n.secondary_emails || []).map(emailKey).filter(Boolean))]),
-        linkedinUrl: n.linkedin_profile_url || '',
-        claimStatus: n.claim_status || 'unclaimed',
-        claimedById: n.claimed_by_user_id || '',
-        countries: new Set([n.country].filter(Boolean)) as Set<string>,
-        industries: new Set([n.industry].filter(Boolean)) as Set<string>,
-        professionalRoles: new Set([n.professional_role].filter(Boolean)) as Set<string>,
-        companies: new Set([n.company].filter(Boolean)) as Set<string>,
-        seasonIds: new Set([n.season_id].filter(Boolean)) as Set<string>,
-        nomineeIds: [n.id].filter(Boolean) as string[],
-        latestCreated: n.created_date || '',
-        representativeId: n.id,
-      });
-      continue;
+  const list = nominees || [];
+  const parent = list.map((_, i) => i);
+  const find = (x: number): number => {
+    while (parent[x] !== x) {
+      parent[x] = parent[parent[x]];
+      x = parent[x];
     }
+    return x;
+  };
+  const union = (a: number, b: number) => {
+    const ra = find(a);
+    const rb = find(b);
+    if (ra !== rb) parent[ra] = rb;
+  };
 
-    // Merge into existing person.
-    existing.emails.add(primary);
-    for (const s of n.secondary_emails || []) {
-      const k = emailKey(s);
-      if (k) existing.emails.add(k);
+  const emailToIndex = new Map<string, number>();
+  const slugToIndex = new Map<string, number>();
+
+  for (let i = 0; i < list.length; i++) {
+    const n = list[i];
+    if (isValidEmail(n.nominee_email)) {
+      const e = emailKey(n.nominee_email);
+      if (emailToIndex.has(e)) union(i, emailToIndex.get(e)!);
+      else emailToIndex.set(e, i);
     }
-    if (n.linkedin_profile_url && !existing.linkedinUrl) existing.linkedinUrl = n.linkedin_profile_url;
-    if (n.country) existing.countries.add(n.country);
-    if (n.industry) existing.industries.add(n.industry);
-    if (n.professional_role) existing.professionalRoles.add(n.professional_role);
-    if (n.company) existing.companies.add(n.company);
-    if (n.season_id) existing.seasonIds.add(n.season_id);
-    if (n.id) existing.nomineeIds.push(n.id);
-    if (n.claim_status === 'approved' || n.claimed_by_user_id) {
-      existing.claimStatus = 'approved';
-      existing.claimedById = n.claimed_by_user_id || existing.claimedById;
-    }
-    if (n.created_date && n.created_date > existing.latestCreated) {
-      existing.latestCreated = n.created_date;
-      existing.representativeId = n.id || existing.representativeId;
-      existing.name = n.name || existing.name;
+    const slug = canonicalLinkedInSlug(n.linkedin_profile_url);
+    if (slug) {
+      if (slugToIndex.has(slug)) union(i, slugToIndex.get(slug)!);
+      else slugToIndex.set(slug, i);
     }
   }
 
+  const groups = new Map<number, number[]>();
+  for (let i = 0; i < list.length; i++) {
+    const r = find(i);
+    if (!groups.has(r)) groups.set(r, []);
+    groups.get(r)!.push(i);
+  }
+
+  const dedupe = (vals: any[]): string =>
+    [...new Set(vals.filter(Boolean))].join('; ');
+
   const persons: any[] = [];
-  for (const p of byPerson.values()) {
-    const emailSet = p.emails as Set<string>;
-    const primary = emailKey(p.primaryEmail);
-    const secondary = [...emailSet].filter((e) => e && e !== primary);
+  for (const indices of groups.values()) {
+    const groupNominees = indices.map((i) => list[i]);
+    const byRecency = [...groupNominees].sort((a, b) =>
+      String(b.created_date || '').localeCompare(String(a.created_date || ''))
+    );
+
+    const emailSet = new Set<string>();
+    for (const n of groupNominees) {
+      if (isValidEmail(n.nominee_email)) emailSet.add(emailKey(n.nominee_email));
+      for (const s of n.secondary_emails || []) {
+        if (isValidEmail(s)) emailSet.add(emailKey(s));
+      }
+    }
+    const repWithValidPrimary = byRecency.find((n) => isValidEmail(n.nominee_email));
+    const email = repWithValidPrimary
+      ? emailKey(repWithValidPrimary.nominee_email)
+      : ([...emailSet][0] || '');
+    const secondary = [...emailSet].filter((e) => e && e !== email);
+
+    const linkedinRaw =
+      byRecency.map((n) => n.linkedin_profile_url).find(Boolean) || '';
+    const normalizedLinkedin = normalizeLinkedInUrl(linkedinRaw);
+
+    let claimStatus = 'unclaimed';
+    let claimedById = '';
+    for (const n of groupNominees) {
+      if (n.claim_status === 'approved' || n.claimed_by_user_id) {
+        claimStatus = 'approved';
+        claimedById = n.claimed_by_user_id || claimedById;
+      }
+    }
+
+    const representativeId = byRecency[0]?.id || groupNominees[0]?.id || '';
+    const name = byRecency.find((n) => n.name)?.name || '';
     const hasAccount = [...emailSet].some((e) => knownUserEmails.has(e));
-    const normalizedLinkedin = normalizeLinkedInUrl(p.linkedinUrl);
 
     let readiness: ClaimReadiness;
-    if (p.claimStatus === 'approved' || p.claimedById) {
+    if (claimStatus === 'approved' || claimedById) {
       readiness = 'claimed';
-    } else if (primary) {
+    } else if (email) {
       readiness = 'claimable-by-email';
     } else if (normalizedLinkedin) {
       readiness = 'claimable-by-linkedin';
@@ -160,26 +202,20 @@ export function resolveOutreachPersons(
     }
 
     persons.push({
-      name: p.name,
-      email: p.primaryEmail,
+      name,
+      email,
       secondaryEmails: secondary.join('; '),
-      linkedinUrl: normalizedLinkedin || p.linkedinUrl,
+      linkedinUrl: normalizedLinkedin,
       claimReadiness: readiness,
       hasAccount,
-      deepLink: `${APP_ORIGIN}/profiles/${p.representativeId}?claim=1`,
-      country: [...(p.countries as Set<string>)]
-        .filter((c, i, arr) => arr.indexOf(c) === i)
-        .join('; ') || '',
-      industry: [...(p.industries as Set<string>)]
-        .filter((c, i, arr) => arr.indexOf(c) === i)
-        .join('; ') || '',
-      professionalRole: [...(p.professionalRoles as Set<string>)]
-        .filter((c, i, arr) => arr.indexOf(c) === i)
-        .join('; ') || '',
-      company: [...(p.companies as Set<string>)]
-        .filter((c, i, arr) => arr.indexOf(c) === i)
-        .join('; ') || '',
-      seasonCount: (p.seasonIds as Set<string>).size,
+      deepLink: `${APP_ORIGIN}/profiles/${representativeId}?claim=1`,
+      country: dedupe(groupNominees.map((n) => n.country)),
+      industry: dedupe(groupNominees.map((n) => n.industry)),
+      professionalRole: byRecency[0]?.professional_role || '',
+      company: dedupe(groupNominees.map((n) => n.company)),
+      seasonCount: new Set(
+        groupNominees.map((n) => n.season_id).filter(Boolean)
+      ).size,
     });
   }
 
@@ -188,7 +224,7 @@ export function resolveOutreachPersons(
     const ao = order.indexOf(a.claimReadiness);
     const bo = order.indexOf(b.claimReadiness);
     if (ao !== bo) return ao - bo;
-    return a.email.localeCompare(b.email);
+    return (a.email || '').localeCompare(b.email || '');
   });
 
   return persons;
@@ -205,7 +241,7 @@ export function personsToOutreachCsv(persons: any[]): string {
   const headers = [
     'Name', 'Email', 'Secondary Emails', 'LinkedIn URL',
     'Claim Readiness', 'Has Account', 'Deep Link',
-    'Country', 'Industry', 'Professional Role', 'Company', 'Season Count',
+    'Country', 'Industry', 'Role Notes (do not personalize)', 'Company', 'Season Count',
   ];
   const rows = [headers.map(csvEscape).join(',')];
   for (const p of persons) {
