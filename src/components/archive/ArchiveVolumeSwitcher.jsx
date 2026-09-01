@@ -13,7 +13,7 @@ export default function ArchiveVolumeSwitcher({ currentSeasonId }) {
         return (
           <Link
             key={v.seasonId}
-            to={`/archive/${v.seasonId}`}
+            to={v.livePath || `/archive/${v.seasonId}`}
             className="shrink-0 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] transition-colors"
             style={{
               background: active ? navy : `${navy}0A`,
@@ -22,7 +22,7 @@ export default function ArchiveVolumeSwitcher({ currentSeasonId }) {
             }}
           >
             <span style={{ color: active ? gold : gold }}>{v.year}</span>{' '}
-            {v.title.startsWith('TOP 100') ? 'Record' : v.title.split(' ')[0]}
+            {v.title.startsWith('TOP 100') ? 'Combined' : v.title.split(' ')[0]}
           </Link>
         );
       })}

@@ -1,4 +1,8 @@
 export const ARCHIVE_VOLUMES = [
+  // 2025 Women is the current live Volume (Season 3, status: rollover). Its order is
+  // computed at runtime, not stored as finalized ranks, so the switcher routes it
+  // to the live publication (livePath) rather than the immutable archive renderer.
+  { seasonId: '68a4e3ee564cf684ff502a06', year: '2025', volume: 'Volume III', title: 'Women in Aerospace & Aviation', note: 'Season 3 — Live', livePath: '/Top100Women2025' },
   { seasonId: '6a6b70136ccb7c358f77dd7f', year: '2021', volume: 'Volume I', title: 'TOP 100 Aviation & Aerospace Professionals', note: 'The Volume of Record', path: '/volume-one-top100' },
   { seasonId: '696aec2d99297cdbe96ee71e', year: '2021', volume: 'Volume I · Component', title: 'Women in Aerospace & Aviation', note: 'Season 1', path: '/volume-one' },
   { seasonId: '6a6b699d7b16a7017ce0c3c0', year: '2021', volume: 'Volume I · Component', title: 'Men in Aerospace & Aviation', note: 'Season 1', path: '/volume-one-men' },
