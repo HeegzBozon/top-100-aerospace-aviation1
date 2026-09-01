@@ -35,12 +35,16 @@ export default function EvidencePopover({ nominee, token, onClose }) {
         >
           {/* Header */}
           <div className="flex items-center gap-3 px-5 py-3.5 border-b shrink-0" style={{ borderColor: `${brand.navy}08`, background: 'white' }}>
-            <div className="h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: 'white' }}>
-              {token}
+            <div className="h-9 w-9 rounded-lg overflow-hidden flex items-center justify-center text-xs font-bold shrink-0" style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: 'white' }}>
+              {nominee.avatar_url || nominee.photo_url ? (
+                <img src={nominee.avatar_url || nominee.photo_url} alt={nominee.name} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                (nominee.name || token).trim().split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase()
+              )}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-bold truncate" style={{ color: brand.navy }}>Evidence of judgment</h3>
-              <p className="text-[11px] truncate" style={{ color: `${brand.navy}60` }}>Identity withheld · blind comparison</p>
+              <h3 className="text-sm font-bold truncate" style={{ color: brand.navy }}>{nominee.name || 'Evidence of judgment'}</h3>
+              <p className="text-[11px] truncate" style={{ color: `${brand.navy}60` }}>Evidence of judgment</p>
             </div>
             <button onClick={onClose} className="h-8 w-8 rounded-full flex items-center justify-center" style={{ background: `${brand.navy}06` }}>
               <X className="w-4 h-4" style={{ color: `${brand.navy}70` }} />
