@@ -66,7 +66,7 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
   if (!viewer) {
     return (
       <ClaimShell
-        icon={<UserCog />}
+        icon={UserCog}
         title="Is this your profile?"
         body="If this record belongs to you, claim it to take ownership, verify it, and make it yours. Sign in or create your account to begin."
         actionLabel="Sign in to claim"
@@ -82,7 +82,7 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
   if (owner) {
     return (
       <ClaimShell
-        icon={<CheckCircle2 />}
+        icon={CheckCircle2}
         title="You own this profile"
         body="This footprint is verified to you. Open your profile editor to keep it current."
         actionLabel="Open your profile"
@@ -96,7 +96,7 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
   if (taken) {
     return (
       <ClaimShell
-        icon={<ShieldCheck />}
+        icon={ShieldCheck}
         title="This profile is managed"
         body="This footprint has been claimed and is maintained by its owner."
         muted
@@ -108,7 +108,7 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
   if (result?.claim_state === 'pending' || (nominee?.claim_status === 'pending' && !submitting && !result)) {
     return (
       <ClaimShell
-        icon={<Clock />}
+        icon={Clock}
         title="Claim submitted for review"
         body={result?.error || "Neither your email nor LinkedIn matched the record, so your claim is queued for admin review. We'll be in touch."}
         muted
@@ -135,7 +135,7 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
   if (emailEligible) {
     return (
       <ClaimShell
-        icon={<ShieldCheck />}
+        icon={ShieldCheck}
         title="You're verified by email"
         body="Your account email matches this profile. Claim is instant — no review required."
         actionLabel={submitting ? 'Claiming…' : 'Claim this profile'}
@@ -169,7 +169,7 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
     };
     return (
       <ClaimShell
-        icon={<Linkedin />}
+        icon={Linkedin}
         title="Verify with LinkedIn to claim"
         body="Your account email doesn't match, but this profile lists a LinkedIn URL. Connect your LinkedIn so we can confirm it's the same person."
         actionLabel={linkedinPending ? 'Connecting…' : 'Connect LinkedIn to verify'}
@@ -186,7 +186,7 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
   // No email match, no LinkedIn URL — admin review fallback.
   return (
     <ClaimShell
-      icon={<Clock />}
+      icon={Clock}
       title="Submit claim for review"
       body="We can't auto-verify this one — there's no matching email or LinkedIn URL on record. Submit your claim and an admin will review it."
       actionLabel={submitting ? 'Submitting…' : 'Submit for review'}
