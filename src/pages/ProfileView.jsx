@@ -34,6 +34,7 @@ import FlightographySlide from '@/components/profile-deck/slides/FlightographySl
 import { resolveSlideOrder } from '@/components/profile-deck/slideDeckConfig';
 import SlideErrorBoundary from '@/components/profile-deck/SlideErrorBoundary';
 import NomineeClaimPanel from '@/components/claim/NomineeClaimPanel';
+import useProfileSeo from '@/components/profile/useProfileSeo';
 
 const B = {
     navyDeep: '#16293f',
@@ -109,6 +110,10 @@ export default function ProfileView({ userId: propUserId = null }) {
     });
 
     const { data: profiles, isLoading } = useProfileResolution(targetId, targetEmail);
+
+    // Inject dynamic <title>, meta, canonical, OG/Twitter, and Person +
+    // BreadcrumbList JSON-LD for the canonical public profile route.
+    useProfileSeo(profiles);
 
     const wallEmail = profiles?.user?.email || profiles?.nominee?.nominee_email;
     const { entries: wallEntries, submit: submitWallEntry, approve: approveWallEntry } = useEndorsementWall(wallEmail, profiles?.nominee?.id);

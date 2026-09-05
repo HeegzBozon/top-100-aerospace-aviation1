@@ -1,27 +1,24 @@
+# TOP 100 Aerospace & Aviation — robots.txt
+# Public surfaces are crawlable. Internal/operational routes are disallowed
+# to keep crawl budget focused on indexable profile and editorial content.
+
 User-agent: *
 Allow: /
-Allow: /Top100Women2025
 Allow: /profiles/
+Allow: /Top100Women2025
 Allow: /nominate
-Allow: /ClaimProfile
-Allow: /HowWePick
-Allow: /about
+Allow: /archive/
+Allow: /viralpost2022
+Allow: /artemis-2
+Allow: /rooms
+Allow: /events
 Allow: /solutions
-Allow: /sponsors
-Allow: /season4
-Allow: /hangouts
-Allow: /local-legends
-Allow: /artemis-mission-brief
-Allow: /community-round
-Allow: /star-summit
-Allow: /ground-control
-Allow: /governance
-Allow: /terms
-Allow: /PrivacyPolicy
 
-# Internal operations — not for indexing
+# Internal / operational — noindex in HTML is the primary guard; this is defense-in-depth.
 Disallow: /Admin
+Disallow: /admin
 Disallow: /AdminAction
+Disallow: /admin-action
 Disallow: /FactoryReset
 Disallow: /factory-reset
 Disallow: /ARTCommandCenter
@@ -39,30 +36,9 @@ Disallow: /email-preview
 Disallow: /OnboardingAdmin
 Disallow: /onboarding-admin
 Disallow: /session-portal
+Disallow: /SessionPortal
 Disallow: /SponsorPitch
 Disallow: /sponsor-pitch
-Disallow: /MissionControl
-Disallow: /AnalyticsDashboard
-Disallow: /analytics
-Disallow: /GlobalIntelligence
-Disallow: /global-intelligence
-Disallow: /Publisher
-Disallow: /Huddle
-Disallow: /IntelligenceDashboard
-Disallow: /BatchNominations
-Disallow: /Comms
-Disallow: /comms
-Disallow: /Calendar
-Disallow: /Passport
-Disallow: /PaymentSuccess
-Disallow: /PaymentCancel
-Disallow: /Demographics
-Disallow: /Profile
-Disallow: /EditProfile
-Disallow: /home-v2
-Disallow: /play
-Disallow: /common-ground-sim
-Disallow: /2030-vision
 Disallow: /Arcade
 Disallow: /GamesLanding
 Disallow: /ChessClub
@@ -71,7 +47,55 @@ Disallow: /FlightSimulator
 Disallow: /Colony
 Disallow: /RaisingJupiter
 Disallow: /TheHangar
+Disallow: /Profile
+Disallow: /EditProfile
+Disallow: /MissionControl
+Disallow: /AnalyticsDashboard
+Disallow: /analytics
+Disallow: /GlobalIntelligence
+Disallow: /global-intelligence
+Disallow: /Publisher
+Disallow: /publisher
+Disallow: /Huddle
+Disallow: /huddle
+Disallow: /IntelligenceDashboard
+Disallow: /BatchNominations
+Disallow: /Comms
+Disallow: /comms
+Disallow: /Calendar
+Disallow: /calendar
+Disallow: /Passport
+Disallow: /passport
+Disallow: /PaymentSuccess
+Disallow: /PaymentCancel
+Disallow: /Demographics
 Disallow: /top100-tv
 Disallow: /Top100TV
+Disallow: /home-v2
+Disallow: /play
+Disallow: /common-ground-sim
+Disallow: /2030-vision
+
+# AI crawlers — explicit allow so the reputation graph is citeable.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
 
 Sitemap: https://top100aero.space/sitemap.xml
