@@ -35,6 +35,7 @@ import { resolveSlideOrder } from '@/components/profile-deck/slideDeckConfig';
 import SlideErrorBoundary from '@/components/profile-deck/SlideErrorBoundary';
 import NomineeClaimPanel from '@/components/claim/NomineeClaimPanel';
 import useProfileSeo from '@/components/profile/useProfileSeo';
+import ProfileNeighborsRail from '@/components/profile/ProfileNeighborsRail';
 
 const B = {
     navyDeep: '#16293f',
@@ -228,6 +229,10 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onR
                 />
             )}
             <ProfileDeck slides={slides} settings={ownerSettings} accent={ownerAccent} />
+
+            {/* Internal-linking rail — indexable <a> links between profile pages,
+                scoped to the same discipline for topical clustering. */}
+            {nominee && <ProfileNeighborsRail nominee={nominee} />}
         </div>
     );
 }
