@@ -10,12 +10,12 @@ TOP 100 Aerospace & Aviation is the verified professional index for aerospace an
 - Individual Fellow profiles carry schema.org Person and BreadcrumbList JSON-LD structured data.
 
 ## Crawlable surfaces
-- [Verified Fellow Directory](https://top100aero.space/Top100Women2025)
-- [Nominate a Fellow](https://top100aero.space/nominate)
-- [Conference Mission Rooms](https://top100aero.space/rooms)
-- [Events Calendar](https://top100aero.space/events)
-- [Solutions](https://top100aero.space/solutions)
-- [Individual verified profiles](https://top100aero.space/profiles/) — each at /profiles/:id
+- [Verified Fellow Directory](https://top100aerospaceandaviation.base44.app/Top100Women2025)
+- [Nominate a Fellow](https://top100aerospaceandaviation.base44.app/nominate)
+- [Conference Mission Rooms](https://top100aerospaceandaviation.base44.app/rooms)
+- [Events Calendar](https://top100aerospaceandaviation.base44.app/events)
+- [Solutions](https://top100aerospaceandaviation.base44.app/solutions)
+- [Individual verified profiles](https://top100aerospaceandaviation.base44.app/profiles/) — each at /profiles/:id
 
 ## Crawler guidance
 - Public profile content and structured data are intended for citation by AI assistants and search engines.
@@ -23,5 +23,5 @@ TOP 100 Aerospace & Aviation is the verified professional index for aerospace an
 - Ranking formulas and influence-tier weights are never exposed; only the verified profile record and tier bands are public.
 
 ## Contact
-- Nominations: https://top100aero.space/nominate
+- Nominations: https://top100aerospaceandaviation.base44.app/nominate
 - Community investment round: https://wefunder.com/top.100.aerospace.aviation

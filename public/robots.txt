@@ -1,86 +1,30 @@
 # TOP 100 Aerospace & Aviation — robots.txt
-# Public surfaces are crawlable. Internal/operational routes are disallowed
-# to keep crawl budget focused on indexable profile and editorial content.
+# Public profile content is open to all crawlers, including AI assistants.
+# Internal/operational routes are disallowed here and noindex via meta tags.
 
 User-agent: *
 Allow: /
-Allow: /profiles/
-Allow: /Top100Women2025
-Allow: /nominate
-Allow: /archive/
-Allow: /viralpost2022
-Allow: /artemis-2
-Allow: /rooms
-Allow: /events
-Allow: /solutions
-
-# Internal / operational — noindex in HTML is the primary guard; this is defense-in-depth.
-Disallow: /Admin
 Disallow: /admin
-Disallow: /AdminAction
-Disallow: /admin-action
-Disallow: /FactoryReset
-Disallow: /factory-reset
-Disallow: /ARTCommandCenter
-Disallow: /art-command-center
-Disallow: /AgentSkillRegistry
-Disallow: /agent-skills
-Disallow: /TeamManager
-Disallow: /team-manager
-Disallow: /FeatureToTeamMapper
-Disallow: /feature-to-team-mapper
-Disallow: /LinkedInManager
-Disallow: /linkedin-manager
-Disallow: /EmailTemplatePreview
-Disallow: /email-preview
-Disallow: /OnboardingAdmin
-Disallow: /onboarding-admin
-Disallow: /session-portal
-Disallow: /SessionPortal
-Disallow: /SponsorPitch
-Disallow: /sponsor-pitch
-Disallow: /Arcade
-Disallow: /GamesLanding
-Disallow: /ChessClub
-Disallow: /ChessGame
-Disallow: /FlightSimulator
-Disallow: /Colony
-Disallow: /RaisingJupiter
-Disallow: /TheHangar
-Disallow: /Profile
-Disallow: /EditProfile
-Disallow: /MissionControl
+Disallow: /Admin
 Disallow: /AnalyticsDashboard
 Disallow: /analytics
 Disallow: /GlobalIntelligence
 Disallow: /global-intelligence
-Disallow: /Publisher
-Disallow: /publisher
-Disallow: /Huddle
-Disallow: /huddle
-Disallow: /IntelligenceDashboard
-Disallow: /BatchNominations
-Disallow: /Comms
-Disallow: /comms
-Disallow: /Calendar
-Disallow: /calendar
-Disallow: /Passport
-Disallow: /passport
-Disallow: /PaymentSuccess
-Disallow: /PaymentCancel
-Disallow: /Demographics
-Disallow: /top100-tv
-Disallow: /Top100TV
-Disallow: /home-v2
+Disallow: /art-command-center
+Disallow: /team-manager
+Disallow: /feature-to-team-mapper
+Disallow: /platform-board
+Disallow: /ground-control
+Disallow: /FactoryReset
+Disallow: /onboarding-admin
+Disallow: /Colony
+Disallow: /colony
 Disallow: /play
 Disallow: /common-ground-sim
-Disallow: /2030-vision
+Disallow: /session-portal
 
-# AI crawlers — explicit allow so the reputation graph is citeable.
+# AI crawlers — explicit allow
 User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
 Allow: /
 
 User-agent: ClaudeBot
@@ -92,10 +36,11 @@ Allow: /
 User-agent: Applebot
 Allow: /
 
-User-agent: Applebot-Extended
+User-agent: Googlebot
 Allow: /
 
-User-agent: Google-Extended
+User-agent: Bingbot
 Allow: /
 
-Sitemap: https://top100aero.space/sitemap.xml
+Sitemap: https://top100aerospaceandaviation.base44.app/sitemap.xml
+Sitemap: https://top100aerospaceandaviation.base44.app/functions/getProfileSitemap

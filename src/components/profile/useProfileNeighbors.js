@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { getAdjacentNomineeIds } from '@/functions/getAdjacentNomineeIds';
 
-// Resolves same-discipline sibling Fellows + prev/next within that discipline
-// for on-profile internal linking. Sorted alphabetically by name (stable, and
-// governance-safe — never reads score/payment/availability fields). Keeps the
-// fetch scoped to one discipline instead of loading the whole directory.
-const PUBLIC_STATUSES = ['active', 'approved', 'winner', 'finalist'];
-
+// Resolves same-discipline sibling Fellows + prev/next via a lightweight
+// backend endpoint (one tiny payload) instead of fetching 100 nominees to
+// the browser. Governance-safe: the endpoint only returns public fields and
+// never reads score/payment/availability data.
 export default function useProfileNeighbors(nominee) {
   const [data, setData] = useState({ siblings: [], prev: null, next: null, loading: true });
 
@@ -18,18 +16,15 @@ export default function useProfileNeighbors(nominee) {
     let cancelled = false;
     (async () => {
       try {
-        const list = await base44.entities.Nominee.filter(
-          { discipline: nominee.discipline },
-          'name',
-          100
-        );
+        const res = await getAdjacentNomineeIds({ nomineeId: nominee.id });
         if (cancelled) return;
-        const publicList = (list || []).filter((n) => PUBLIC_STATUSES.includes(n.status));
-        const idx = publicList.findIndex((n) => n.id === nominee.id);
-        const prev = idx > 0 ? publicList[idx - 1] : null;
-        const next = idx >= 0 && idx < publicList.length - 1 ? publicList[idx + 1] : null;
-        const siblings = publicList.filter((n) => n.id !== nominee.id).slice(0, 4);
-        setData({ siblings, prev, next, loading: false });
+        const d = res?.data || {};
+        setData({
+          siblings: Array.isArray(d.siblings) ? d.siblings : [],
+          prev: d.prev || null,
+          next: d.next || null,
+          loading: false,
+        });
       } catch {
         if (!cancelled) setData({ siblings: [], prev: null, next: null, loading: false });
       }
