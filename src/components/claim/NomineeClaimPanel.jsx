@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ShieldCheck, Linkedin, Clock, ArrowRight, Loader2, CheckCircle2, UserCog } from 'lucide-react';
+import { ShieldCheck, Linkedin, Clock, ArrowRight, Loader2, CheckCircle2, UserCog, X } from 'lucide-react';
 
 // Workspace-registered LinkedIn connector (APP_USER-capable). Each claimer
 // connects their own account; we never use a shared/builder token for identity.
@@ -197,8 +197,8 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
   );
 }
 
-// The shell keeps the on-brand editorial treatment: navy card, rose-gold accent,
-// a single primary CTA, optional secondary link.
+// Floating glass banner that overlays the top of the profile deck so the
+// slides remain full-bleed. Compact, dismissible, on-brand navy + rose gold.
 function ClaimShell({
   icon: Icon,
   title,
@@ -212,39 +212,44 @@ function ClaimShell({
   accent,
   error,
 }) {
+  const [dismissed, setDismissed] = useState(false);
+  if (dismissed) return null;
   const isGold = accent === 'gold';
   return (
-    <div className="mx-auto max-w-xl px-4 mt-4 mb-2 relative z-10">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[120] w-[calc(100%-1.5rem)] max-w-2xl px-2">
       <div
-        className="rounded-2xl overflow-hidden shadow-xl"
-        style={{ background: B.navy, border: `1px solid ${B.gold}33` }}
+        className="rounded-2xl overflow-hidden shadow-2xl ppc-rise"
+        style={{
+          background: 'rgba(22,41,63,0.92)',
+          border: `1px solid ${B.gold}40`,
+          backdropFilter: 'blur(20px) saturate(160%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+        }}
       >
-        <div className="flex items-start gap-4 p-5">
+        <div className="flex items-center gap-3 p-3.5">
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
             style={{ background: `${B.gold}18`, color: B.gold, border: `1px solid ${B.gold}40` }}
           >
             {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <Icon className="w-5 h-5" />}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-white text-base leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <h3 className="font-semibold text-white text-sm leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
               {title}
             </h3>
-            <p className="mt-1.5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.72)' }}>
+            <p className="mt-0.5 text-xs leading-relaxed line-clamp-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
               {body}
             </p>
             {error && (
-              <p className="mt-2 text-xs" style={{ color: '#f4b8b8' }}>{error}</p>
+              <p className="mt-1 text-[11px]" style={{ color: '#f4b8b8' }}>{error}</p>
             )}
           </div>
-        </div>
-        {(actionLabel || secondaryLabel) && (
-          <div className="px-5 pb-5 flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0">
             {actionLabel && (
               <button
                 onClick={onAction}
                 disabled={busy}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-transform active:scale-[0.98] disabled:opacity-50"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-transform active:scale-[0.98] disabled:opacity-50"
                 style={{
                   background: isGold ? B.gold : 'rgba(255,255,255,0.08)',
                   color: isGold ? B.navyDeep : '#fff',
@@ -252,14 +257,50 @@ function ClaimShell({
                 }}
               >
                 {actionLabel}
-                {!busy && <ArrowRight className="w-4 h-4" />}
+                {!busy && <ArrowRight className="w-3.5 h-3.5" />}
               </button>
             )}
             {secondaryLabel && (
               <button
                 onClick={onSecondary}
                 disabled={busy}
-                className="text-xs font-medium underline-offset-4 hover:underline"
+                className="hidden md:inline-flex text-[11px] font-medium underline-offset-4 hover:underline"
+                style={{ color: 'rgba(255,255,255,0.6)' }}
+              >
+                {secondaryLabel}
+              </button>
+            )}
+            <button
+              onClick={() => setDismissed(true)}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-white/10"
+              style={{ color: 'rgba(255,255,255,0.5)' }}
+              aria-label="Dismiss"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        {/* Mobile action row — keeps the CTA reachable on small screens */}
+        {actionLabel && (
+          <div className="flex items-center gap-2 px-3.5 pb-3.5 sm:hidden">
+            <button
+              onClick={onAction}
+              disabled={busy}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-semibold transition-transform active:scale-[0.98] disabled:opacity-50"
+              style={{
+                background: isGold ? B.gold : 'rgba(255,255,255,0.08)',
+                color: isGold ? B.navyDeep : '#fff',
+                border: isGold ? `1px solid ${B.gold}` : `1px solid ${B.gold}33`,
+              }}
+            >
+              {actionLabel}
+              {!busy && <ArrowRight className="w-3.5 h-3.5" />}
+            </button>
+            {secondaryLabel && (
+              <button
+                onClick={onSecondary}
+                disabled={busy}
+                className="text-[11px] font-medium underline-offset-4 hover:underline px-1"
                 style={{ color: 'rgba(255,255,255,0.6)' }}
               >
                 {secondaryLabel}
