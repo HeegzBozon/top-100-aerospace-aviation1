@@ -214,7 +214,7 @@ function ClaimShell({
 }) {
   const isGold = accent === 'gold';
   return (
-    <div className="mx-auto max-w-xl px-4 -mt-10 mb-2 relative z-10">
+    <div className="mx-auto max-w-xl px-4 mt-4 mb-2 relative z-10">
       <div
         className="rounded-2xl overflow-hidden shadow-xl"
         style={{ background: B.navy, border: `1px solid ${B.gold}33` }}

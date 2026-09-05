@@ -8,7 +8,7 @@ import { B } from '@/components/fellow-home/fellowHomeConfig';
 export default function FlightographySlide({ nominee, user, accent, onNomineeUpdate, onUserUpdate }) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-y-auto" style={{ background: B.cream }}>
-      <div className="w-full max-w-4xl px-6 py-20">
+      <div className="w-full max-w-4xl px-6 pt-20 pb-36">
         <div className="text-center mb-8">
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] mb-3" style={{ color: B.muted }}>
             Flightography
