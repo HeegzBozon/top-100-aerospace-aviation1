@@ -32,6 +32,7 @@ import DocumentsSlide from '@/components/profile-deck/slides/DocumentsSlide';
 import EightSlide from '@/components/profile-deck/slides/EightSlide';
 import FlightographySlide from '@/components/profile-deck/slides/FlightographySlide';
 import { resolveSlideOrder } from '@/components/profile-deck/slideDeckConfig';
+import SlideErrorBoundary from '@/components/profile-deck/SlideErrorBoundary';
 import NomineeClaimPanel from '@/components/claim/NomineeClaimPanel';
 
 const B = {
@@ -172,32 +173,44 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onR
     const slideOrder = resolveSlideOrder(ownerSettings);
 
     const slides = slideOrder.map((key) => {
+        let entry = null;
         switch (key) {
             case 'identity':
-                return { key, label: 'Identity', content: (
+                entry = { key, label: 'Identity', content: (
                     <IdentitySlide user={user} nominee={nominee} accent={ownerAccent} coverKey={ownerSettings?.cover_asset_id} />
                 )};
+                break;
             case 'verification':
-                return { key, label: 'Credential', content: <VerificationSlide nominee={nominee} accent={ownerAccent} /> };
+                entry = { key, label: 'Credential', content: <VerificationSlide nominee={nominee} accent={ownerAccent} /> };
+                break;
             case 'blurb':
-                return { key, label: 'Editorial', content: (
+                entry = { key, label: 'Editorial', content: (
                     <BlurbSlide user={user} settings={ownerSettings} accent={ownerAccent} readOnly />
                 )};
+                break;
             case 'documents':
-                return { key, label: 'Documents', content: <DocumentsSlide user={user} accent={ownerAccent} /> };
+                entry = { key, label: 'Documents', content: <DocumentsSlide user={user} accent={ownerAccent} /> };
+                break;
             case 'eight':
                 // Respect the Fellow's visibility toggle — hidden lists never render publicly.
-                if (ownerSettings?.eight_public === false) return null;
-                return { key, label: 'The Eight', content: (
-                    <EightSlide rankings={top100.rankings} isOwner={false} accent={ownerAccent} isPublic loading={top100.loading} />
-                )};
+                // Gate on ownerSettings having resolved so a hidden Eight never flashes
+                // during the settings-loading window (undefined === false is false).
+                if (ownerSettings && ownerSettings.eight_public !== false) {
+                    entry = { key, label: 'The Eight', content: (
+                        <EightSlide rankings={top100.rankings} isOwner={false} accent={ownerAccent} isPublic loading={top100.loading} />
+                    )};
+                }
+                break;
             case 'flightography':
-                return { key, label: 'Flightography', content: (
+                entry = { key, label: 'Flightography', content: (
                     <FlightographySlide nominee={nominee} user={user} accent={ownerAccent} />
                 )};
+                break;
             default:
-                return null;
+                break;
         }
+        if (!entry) return null;
+        return { ...entry, content: <SlideErrorBoundary label={entry.label}>{entry.content}</SlideErrorBoundary> };
     }).filter(Boolean);
 
     return (
