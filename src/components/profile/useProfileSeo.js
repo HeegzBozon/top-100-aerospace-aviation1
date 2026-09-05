@@ -48,6 +48,26 @@ function uniqueArray(arr) {
   return Array.from(new Set((arr || []).filter(Boolean)));
 }
 
+// Content-readiness + status gate. Non-public statuses and content-thin
+// profiles get noindex so they don't dilute index quality with near-empty or
+// duplicate pages. A profile is indexable when it is in a public status AND
+// carries at least one substantive content field.
+function isIndexable(profile) {
+  if (!profile) return false;
+  const PUBLIC_STATUSES = ['active', 'approved', 'winner', 'finalist'];
+  const status = profile.status || 'active';
+  if (!PUBLIC_STATUSES.includes(status)) return false;
+  const hasContent =
+    !!(profile.description && profile.description.trim()) ||
+    !!(profile.bio && profile.bio.trim()) ||
+    !!(profile.bio_extended && profile.bio_extended.trim()) ||
+    (Array.isArray(profile.career_history) && profile.career_history.length > 0) ||
+    (Array.isArray(profile.education) && profile.education.length > 0) ||
+    (Array.isArray(profile.skills) && profile.skills.length > 0) ||
+    (profile.editorial_article && profile.article_status === 'published');
+  return hasContent;
+}
+
 // Injects/updates <meta>, <title>, canonical, Open Graph, Twitter, and JSON-LD
 // (Person + BreadcrumbList) for a public profile. Corrected from the legacy
 // implementation: url is the canonical profile page (not personal site), sameAs
@@ -94,7 +114,13 @@ export default function useProfileSeo(profiles) {
     };
 
     setMeta('meta[name="description"]', 'content', metaDesc);
-    setMeta('meta[name="robots"]', 'content', 'index, follow, max-image-preview:large');
+    // Thin or non-public profiles are kept out of the index to protect quality.
+    const indexable = isIndexable(profile);
+    setMeta(
+      'meta[name="robots"]',
+      'content',
+      indexable ? 'index, follow, max-image-preview:large' : 'noindex, follow'
+    );
     setLink('link[rel="canonical"]', 'href', canonical);
 
     setMeta('meta[property="og:title"]', 'content', pageTitle);
@@ -210,7 +236,7 @@ export default function useProfileSeo(profiles) {
     return () => {
       document.title = HOME_TITLE;
       setMeta('meta[name="description"]', 'content', HOME_DESC);
-      setMeta('meta[name="robots"]', 'content', 'index, follow');
+      setMeta('meta[name="robots"]', 'content', 'index, follow, max-image-preview:large');
       setLink('link[rel="canonical"]', 'href', `${SITE}/`);
       setMeta('meta[property="og:type"]', 'content', 'website');
       const p = document.getElementById('profile-jsonld-person');

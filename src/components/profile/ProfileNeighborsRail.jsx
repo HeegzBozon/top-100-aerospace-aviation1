@@ -78,6 +78,21 @@ export default function ProfileNeighborsRail({ nominee }) {
       style={{ background: B.cream, borderTop: `1px solid ${B.gold}22` }}
     >
       <div className="max-w-4xl mx-auto">
+        {/* Visible breadcrumb — UX + indexable internal links (mirrors JSON-LD) */}
+        <nav className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] mb-6" aria-label="Breadcrumb">
+          <Link to="/" className="hover:underline" style={{ color: 'rgba(22,41,63,0.5)' }}>
+            Home
+          </Link>
+          <span style={{ color: 'rgba(22,41,63,0.3)' }}>/</span>
+          <Link to="/Top100Women2025" className="hover:underline" style={{ color: 'rgba(22,41,63,0.5)' }}>
+            Directory
+          </Link>
+          <span style={{ color: 'rgba(22,41,63,0.3)' }}>/</span>
+          <span className="truncate" style={{ color: B.navyDeep }}>
+            {nominee?.name}
+          </span>
+        </nav>
+
         <div className="flex items-baseline justify-between mb-5">
           <h2
             className="text-lg md:text-xl font-semibold"

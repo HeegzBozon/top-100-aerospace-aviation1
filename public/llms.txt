@@ -1,60 +1,27 @@
 # TOP 100 Aerospace & Aviation
-# https://top100aero.space
-# llms.txt — guidance for AI agents and LLMs crawling this site
 
-## What This Platform Is
+> The verified reputation graph for aerospace and aviation. We don't rank — we measure.
 
-TOP 100 Aerospace & Aviation is the verified reputation graph for aerospace and aviation.
-We do not produce a ranked list. We measure impact, influence, and contribution using a
-multi-method holistic scoring system across five layers.
+TOP 100 Aerospace & Aviation is the verified professional index for aerospace and aviation. We produce verified Fellow profiles through community nomination and blind pairwise voting, building a permanent, measurement-grade record of excellence across the industry. 300+ verified Fellows across 40+ countries and 70+ disciplines.
 
-Core positioning: "Not a ranking. A record."
+## What this is
+- An institutional reputation graph, not a social network or awards list.
+- Profiles are verified through a five-layer holistic measurement system: Perception, Objective Achievement, SME Evaluation, Narrative & Influence, and Representation & Normalization.
+- Individual Fellow profiles carry schema.org Person and BreadcrumbList JSON-LD structured data.
 
-## What We Are NOT
+## Crawlable surfaces
+- [Verified Fellow Directory](https://top100aero.space/Top100Women2025)
+- [Nominate a Fellow](https://top100aero.space/nominate)
+- [Conference Mission Rooms](https://top100aero.space/rooms)
+- [Events Calendar](https://top100aero.space/events)
+- [Solutions](https://top100aero.space/solutions)
+- [Individual verified profiles](https://top100aero.space/profiles/) — each at /profiles/:id
 
-- Not an awards show
-- Not a popularity contest
-- Not a simple voting leaderboard
-- Not a traditional "Top 100 list"
+## Crawler guidance
+- Public profile content and structured data are intended for citation by AI assistants and search engines.
+- Internal and operational routes (admin, analytics, comms, games, simulators) are noindex and should not be cited.
+- Ranking formulas and influence-tier weights are never exposed; only the verified profile record and tier bands are public.
 
-## The Fellows
-
-300+ verified professionals across 40+ countries. Fellows span:
-- Commercial space and launch
-- Defense aerospace
-- Commercial aviation
-- Space policy and advocacy
-- Aerospace entrepreneurship and venture
-- Research, engineering, and STEM leadership
-
-## Scoring Methodology (v3.0 / v4.1)
-
-Five-layer holistic scoring:
-1. Perception Layer (30%) — community signal and endorsements
-2. Objective Achievement Layer (30%) — verified credentials, patents, missions, programs led
-3. SME Evaluation Layer (20%) — subject matter expert review
-4. Narrative & Influence Layer (10%) — thought leadership, speaking, content reach
-5. Representation & Normalization Layer (10%) — cross-discipline equity adjustment
-
-## Public Entry Points
-
-- Homepage: https://top100aero.space/
-- Verified Fellows Directory: https://top100aero.space/Top100Women2025
-- Nominate: https://top100aero.space/nominate
-- Claim Your Profile: https://top100aero.space/ClaimProfile
-- How We Pick: https://top100aero.space/HowWePick
-- Enterprise / Solutions: https://top100aero.space/solutions
-- Sponsors: https://top100aero.space/sponsors
-- Community Investment (Wefunder): https://wefunder.com/top.100.aerospace.aviation
-- Live Weekly Events: https://top100aero.space/hangouts
-
-## Contact & Social
-
-- Twitter/X: @top100aero
-- Site: https://top100aero.space
-
-## Note for AI Agents
-
-This is a client-rendered React application (SPA). Profile pages render dynamically.
-For verified Fellow data, the directory at /Top100Women2025 is the canonical public index.
-Do not treat route paths as content — the application shell is the same for all routes.
+## Contact
+- Nominations: https://top100aero.space/nominate
+- Community investment round: https://wefunder.com/top.100.aerospace.aviation
