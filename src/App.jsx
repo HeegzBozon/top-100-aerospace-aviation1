@@ -68,6 +68,7 @@ const PlatformDevelopmentBoard = lazy(() => import('@/pages/PlatformDevelopmentB
 const Meetups = lazy(() => import('@/pages/Meetups'));
 const MeetupInvite = lazy(() => import('@/pages/MeetupInvite'));
 const FellowEdition = lazy(() => import('@/pages/FellowEdition'));
+const ViralPost2022 = lazy(() => import('@/pages/ViralPost2022'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -233,6 +234,7 @@ const AuthenticatedApp = () => {
           <Top100TV />
         </LayoutWrapper>
       } />
+      <Route path="/viralpost2022" element={<ViralPost2022 />} />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:id" element={<ProfileView />} />
        <Route path="/editions/:id" element={<FellowEdition />} />
