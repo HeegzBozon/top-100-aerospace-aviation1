@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import { Linkedin, Plus, Loader2, CheckCircle2, Upload, ExternalLink } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { base44 } from '@/api/base44Client';
-import { linkedinProfile } from '@/functions/linkedinProfile';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import { toast } from 'sonner';
 
@@ -23,7 +22,7 @@ export default function LinkedInPill({ user, accent, onUserUpdate }) {
   const connect = async () => {
     setConnecting(true);
     try {
-      const response = await linkedinProfile();
+      const response = await base44.functions.invoke('linkedinProfile', {});
       if (response.data?.profile) {
         const d = response.data.profile;
         await base44.auth.updateMe({
