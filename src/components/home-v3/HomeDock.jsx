@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { label: 'About', to: '/about' },
   { label: 'Community Round', href: 'https://wefunder.com/top.100.aerospace.aviation' },
   { label: 'Mission Theatre', to: '/LaunchParty' },
+  { label: 'Media Center', to: '/viralpost2022' },
 ];
 
 
