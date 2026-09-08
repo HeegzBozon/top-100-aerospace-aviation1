@@ -73,6 +73,26 @@
       "type": "string",
       "description": "The honoree's career told in exactly six words. Used in editorial layouts and shareable cards."
     },
+    "viral_post_email": {
+      "type": "string",
+      "description": "Verification email for the 'Most Liked Posts' editorial series. Pre-filled from the user's account email."
+    },
+    "viral_post_link": {
+      "type": "string",
+      "description": "URL of the nominee's top-performing LinkedIn post, submitted for the Most Liked Posts editorial series."
+    },
+    "viral_post_impressions": {
+      "type": "string",
+      "description": "Estimated lifetime impressions/views of the nominee's top LinkedIn post (e.g. '1.7M views')."
+    },
+    "viral_post_takeaway": {
+      "type": "string",
+      "description": "The key takeaway the nominee hopes others in aerospace & aviation gain from their top LinkedIn post."
+    },
+    "viral_post_wisdom": {
+      "type": "string",
+      "description": "The 'aha moment' or piece of wisdom the nominee wants readers to walk away with from their top LinkedIn post."
+    },
     "accent_color": {
       "type": "string",
       "enum": [

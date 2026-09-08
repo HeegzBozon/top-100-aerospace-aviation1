@@ -209,18 +209,27 @@ const WizardField = forwardRef(function WizardField({ step, form, setForm, onCom
 
   // ── Textarea ──
   if (step.type === 'textarea') {
+    const v = form[step.key] ?? '';
+    const max = step.maxLength || 600;
     return (
-      <Textarea
-        ref={ref}
-        {...noAutofill}
-        name={`pw-${step.key}`}
-        value={form[step.key] ?? ''}
-        onChange={(e) => set(e.target.value)}
-        placeholder={step.placeholder}
-        rows={5}
-        className="text-base border-0 border-b-2 rounded-none bg-transparent px-0 resize-none"
-        style={{ borderBottomColor: B.gold, color: B.navy }}
-      />
+      <div>
+        <Textarea
+          ref={ref}
+          {...noAutofill}
+          name={`pw-${step.key}`}
+          value={v}
+          onChange={(e) => set(e.target.value)}
+          placeholder={step.placeholder}
+          rows={5}
+          className="text-base border-0 border-b-2 rounded-none bg-transparent px-0 resize-none"
+          style={{ borderBottomColor: B.gold, color: B.navy }}
+        />
+        {step.showCount && (
+          <p className="text-[11px] mt-2 text-right uppercase tracking-[0.14em]" style={{ color: v.length > max ? B.rose : B.muted }}>
+            {v.length} / {max}
+          </p>
+        )}
+      </div>
     );
   }
 

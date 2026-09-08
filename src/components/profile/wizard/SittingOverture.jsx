@@ -1,7 +1,7 @@
-import { Camera, PenLine, ArrowRight } from 'lucide-react';
+import { Camera, PenLine, TrendingUp, ArrowRight } from 'lucide-react';
 import { WIZARD_COLORS as B } from './WizardField';
 
-const ICONS = { photographer: Camera, biographer: PenLine };
+const ICONS = { viral: TrendingUp, photographer: Camera, biographer: PenLine };
 
 // The arrival beat. The craftsperson speaks before the first question.
 export default function SittingOverture({ sitting, onEnter, onBack }) {
@@ -32,7 +32,7 @@ export default function SittingOverture({ sitting, onEnter, onBack }) {
 
       <p
         className="text-[15px] leading-[1.75] pl-4 mb-5"
-        style={{ color: B.navy, borderLeft: `2px solid ${B.gold}`, opacity: 0.88 }}
+        style={{ color: B.navy, borderLeft: `2px solid ${B.gold}`, opacity: 0.88, whiteSpace: 'pre-line' }}
       >
         {sitting.monologue}
       </p>
@@ -56,7 +56,7 @@ export default function SittingOverture({ sitting, onEnter, onBack }) {
           className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold transition-opacity hover:opacity-90"
           style={{ background: B.navy, color: '#fff' }}
         >
-          Begin the sitting <ArrowRight className="w-4 h-4" />
+          {sitting.enterLabel || 'Begin the sitting'} <ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </div>

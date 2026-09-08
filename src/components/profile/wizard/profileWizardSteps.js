@@ -3,13 +3,84 @@
 // that sitting. `sitting` assigns the step to The Photographer or The Biographer.
 
 export const WIZARD_SECTIONS = [
+  { id: 'viral', label: 'Top Viral Post' },
   { id: 'photographer', label: 'The Photographer' },
   { id: 'biographer', label: 'The Biographer' },
 ];
 
 const countWords = (v) => String(v || '').trim().split(/\s+/).filter(Boolean).length;
 
+const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim());
+
 export const profileWizardSteps = [
+  // ── SPECIAL EDITORIAL · TOP VIRAL POST ─────────────────────
+  {
+    key: 'viral_post_email',
+    sitting: 'viral',
+    section: 'viral',
+    type: 'text',
+    question: 'Email Address',
+    subtitle: 'We will only use this to send you a copy of your response or clarify details before publication.',
+    placeholder: 'e.g. pilot@top100aero.space',
+    required: true,
+    validate: (form) => {
+      const v = String(form.viral_post_email || '').trim();
+      if (!v) return 'We need an email to send you your response.';
+      if (!emailOk(v)) return 'That email does not look right.';
+      return null;
+    },
+  },
+  {
+    key: 'viral_post_link',
+    sitting: 'viral',
+    section: 'viral',
+    type: 'text',
+    question: 'Link to your \u201cMost Liked Post\u201d',
+    subtitle: 'Paste the URL of your top-performing LinkedIn post.',
+    placeholder: 'https://www.linkedin.com/posts/...',
+    required: true,
+    validate: (form) => {
+      const v = String(form.viral_post_link || '').trim();
+      if (!v) return 'Paste the LinkedIn post URL.';
+      if (!/^https?:\/\/(www\.)?linkedin\.com\//i.test(v)) return 'That does not look like a LinkedIn link.';
+      return null;
+    },
+  },
+  {
+    key: 'viral_post_impressions',
+    sitting: 'viral',
+    section: 'viral',
+    type: 'text',
+    question: 'Number of Impressions / Views',
+    subtitle: 'Estimated lifetime impressions or views (e.g., 500,000 or 1.7M).',
+    placeholder: 'e.g., 1.7M views',
+    required: true,
+  },
+  {
+    key: 'viral_post_takeaway',
+    sitting: 'viral',
+    section: 'viral',
+    type: 'textarea',
+    question: 'What is the key takeaway you hope others in aerospace & aviation gain from your post?',
+    subtitle: 'The industry message or personal lesson behind this post.',
+    placeholder: 'What is the industry message or personal lesson behind this post?',
+    showCount: true,
+    maxLength: 600,
+    required: true,
+  },
+  {
+    key: 'viral_post_wisdom',
+    sitting: 'viral',
+    section: 'viral',
+    type: 'textarea',
+    question: 'What \u201caha moment\u201d or piece of wisdom do you want readers to walk away with?',
+    subtitle: 'Share the specific spark or piece of advice that you want to stand the test of time.',
+    placeholder: 'Share the specific spark or piece of advice that you want to stand the test of time.',
+    showCount: true,
+    maxLength: 600,
+    required: true,
+  },
+
   // ── SITTING I · THE PHOTOGRAPHER ────────────────────────────
   {
     key: 'avatar_url',

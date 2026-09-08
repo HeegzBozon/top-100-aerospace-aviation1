@@ -11,7 +11,9 @@ import SittingSelect from './SittingSelect';
 import SittingOverture from './SittingOverture';
 import { getSitting } from './sittings';
 
-const FIELDS = ['avatar_url', 'publish_consent', 'industry_role', 'headline', 'location', 'one_word', 'six_word_story', 'bio', 'expertise_tags', 'linkedin_url', 'website_url'];
+const FIELDS = ['avatar_url', 'publish_consent', 'industry_role', 'headline', 'location', 'one_word', 'six_word_story', 'bio', 'expertise_tags', 'linkedin_url', 'website_url', 'viral_post_email', 'viral_post_link', 'viral_post_impressions', 'viral_post_takeaway', 'viral_post_wisdom'];
+
+const draftKey = (email) => `pw-draft-${email || 'anon'}`;
 
 export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
   // phase: lobby → overture → steps → review
@@ -33,8 +35,19 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
     if (!seed.bio && nominee?.bio) seed.bio = nominee.bio;
     if (!seed.industry_role && nominee?.title) seed.industry_role = nominee.title;
     if (!seed.avatar_url && nominee?.avatar_url) seed.avatar_url = nominee.avatar_url;
+    if (!seed.viral_post_email && user?.email) seed.viral_post_email = user.email;
+    // Restore any draft answers so progress survives a refresh or sitting toggle.
+    try {
+      const draft = localStorage.getItem(draftKey(user?.email));
+      if (draft) Object.assign(seed, JSON.parse(draft));
+    } catch {}
     return seed;
   });
+
+  // Persist the working draft locally so a refresh or sitting switch never loses answers.
+  useEffect(() => {
+    try { localStorage.setItem(draftKey(user?.email), JSON.stringify(form)); } catch {}
+  }, [form, user?.email]);
 
   const sitting = getSitting(queue[qIdx]);
   const sittingSteps = useMemo(
@@ -153,6 +166,9 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
           avatar_url: form.avatar_url,
         }).catch(() => {});
       }
+
+      // Published — clear the local draft so next visit starts clean.
+      try { localStorage.removeItem(draftKey(user?.email)); } catch {}
 
       setDone(true);
       const colors = [B.navy, B.gold, B.cream, B.copper, B.rose];
