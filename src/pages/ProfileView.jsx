@@ -31,6 +31,7 @@ import BlurbSlide from '@/components/profile-deck/slides/BlurbSlide';
 import DocumentsSlide from '@/components/profile-deck/slides/DocumentsSlide';
 import EightSlide from '@/components/profile-deck/slides/EightSlide';
 import FlightographySlide from '@/components/profile-deck/slides/FlightographySlide';
+import ViralPostSlide from '@/components/profile-deck/slides/ViralPostSlide';
 import { resolveSlideOrder } from '@/components/profile-deck/slideDeckConfig';
 import SlideErrorBoundary from '@/components/profile-deck/SlideErrorBoundary';
 import NomineeClaimPanel from '@/components/claim/NomineeClaimPanel';
@@ -204,6 +205,14 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onR
                 if (ownerSettings && ownerSettings.eight_public !== false) {
                     entry = { key, label: 'The Eight', content: (
                         <EightSlide rankings={top100.rankings} isOwner={false} accent={ownerAccent} isPublic loading={top100.loading} />
+                    )};
+                }
+                break;
+            case 'viral_post':
+                // Hero spread — only renders when the Fellow completed the Top Viral Post sitting.
+                if (user?.viral_post_link) {
+                    entry = { key, label: 'Top Viral Post', content: (
+                        <ViralPostSlide user={user} accent={ownerAccent} />
                     )};
                 }
                 break;

@@ -4,6 +4,7 @@ export const B = {
   navy: '#1e3a5a',
   navyDeep: '#16293f',
   gold: '#c9a87c',
+  copper: '#b87333',
   cream: '#faf8f5',
   sand: '#efe7dc',
   border: 'rgba(30,58,90,0.12)',

@@ -5,6 +5,7 @@ import { B } from '@/components/fellow-home/fellowHomeConfig';
 export const SLIDE_REGIONS = [
   { key: 'identity', label: 'Identity', locked: true },
   { key: 'verification', label: 'Credential', locked: true },
+  { key: 'viral_post', label: 'Top Viral Post', locked: false },
   { key: 'blurb', label: 'Editorial', locked: false },
   { key: 'documents', label: 'Documents', locked: false },
   { key: 'eight', label: 'The Eight', locked: false },
@@ -12,11 +13,12 @@ export const SLIDE_REGIONS = [
 ];
 
 export const LOCKED_SLIDES = ['identity', 'verification'];
-export const CONFIGURABLE_SLIDES = ['blurb', 'documents', 'eight', 'flightography'];
+export const CONFIGURABLE_SLIDES = ['viral_post', 'blurb', 'documents', 'eight', 'flightography'];
 export const ALL_SLIDE_KEYS = [...LOCKED_SLIDES, ...CONFIGURABLE_SLIDES];
 
 // Default roster surfaces all regions — the Fellow toggles off what they don't want.
-export const DEFAULT_SLIDE_ORDER = ['identity', 'verification', 'blurb', 'documents', 'eight', 'flightography'];
+// Top Viral Post leads the configurable slides as the hero spread after identity + credential.
+export const DEFAULT_SLIDE_ORDER = ['identity', 'verification', 'viral_post', 'blurb', 'documents', 'eight', 'flightography'];
 
 export const AUTOPLAY_MODES = [
   { key: 'loop', label: 'Loop', description: 'Advance through all slides and repeat', icon: 'Repeat' },
