@@ -87,6 +87,19 @@ export default function Profile() {
 
   useEffect(() => { loadUser(); }, [loadUser]);
 
+  // Deep-link from "Add my own Viral Post" and similar CTAs — open the Studio
+  // wizard on arrival, exactly as if the Fellow pressed the Update button.
+  useEffect(() => {
+    if (user && new URLSearchParams(window.location.search).get('studio') === 'open') {
+      setWizardOpen(true);
+      try {
+        const u = new URL(window.location.href);
+        u.searchParams.delete('studio');
+        window.history.replaceState({}, '', u);
+      } catch {}
+    }
+  }, [user]);
+
   const savePersonalization = async (patch) => {
     const previous = settings;
     setSettings((s) => ({ ...s, ...patch }));

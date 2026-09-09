@@ -253,7 +253,7 @@ export default function ViralPost2022() {
             That 2022 post proved there was an audience for serious, human aerospace storytelling. Today, TOP 100 Aerospace &amp; Aviation is a verified reputation graph — measuring contribution, verification, and reach across a global directory of Fellows. The post is history. The measurement continues.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/Profile">
+            <Link to="/Profile?studio=open">
               <Button className="rounded-full px-8 h-12 font-semibold" style={{ background: NAVY, color: CREAM }}>
                 Add my own Viral Post
               </Button>
