@@ -1,7 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, TrendingUp, Quote as QuoteIcon } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+
+const STUDIO_PATH = '/Profile?studio=open';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -181,6 +184,22 @@ const HonoreeCard = ({ h }) => (
 );
 
 export default function ViralPost2022() {
+  const navigate = useNavigate();
+
+  // Signed-in Fellows go straight to the Studio; visitors sign in first and
+  // land back on the Studio when they return.
+  const openStudio = async () => {
+    try {
+      const authed = await base44.auth.isAuthenticated();
+      if (authed) {
+        navigate(STUDIO_PATH);
+        return;
+      }
+    } catch {}
+    const returnUrl = `${window.location.origin}${STUDIO_PATH}`;
+    base44.auth.redirectToLogin(returnUrl);
+  };
+
   return (
     <div className="min-h-screen" style={{ background: CREAM, color: NAVY }}>
       {/* MASTHEAD */}
@@ -253,11 +272,13 @@ export default function ViralPost2022() {
             That 2022 post proved there was an audience for serious, human aerospace storytelling. Today, TOP 100 Aerospace &amp; Aviation is a verified reputation graph — measuring contribution, verification, and reach across a global directory of Fellows. The post is history. The measurement continues.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/Profile?studio=open">
-              <Button className="rounded-full px-8 h-12 font-semibold" style={{ background: NAVY, color: CREAM }}>
-                Add my own Viral Post
-              </Button>
-            </Link>
+            <Button
+              onClick={openStudio}
+              className="rounded-full px-8 h-12 font-semibold"
+              style={{ background: NAVY, color: CREAM }}
+            >
+              Add my own Viral Post
+            </Button>
             <a
               href="https://www.linkedin.com/pulse/top-10-aerospace-aviation-professionals-follow-linkedin-matt-higa/"
               target="_blank"
