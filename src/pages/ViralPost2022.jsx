@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, TrendingUp, Quote as QuoteIcon } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
-const STUDIO_PATH = '/Profile?studio=open';
+const STUDIO_PATH = '/Profile?studio=open&ref=viralpost2022';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -186,9 +186,15 @@ const HonoreeCard = ({ h }) => (
 export default function ViralPost2022() {
   const navigate = useNavigate();
 
+  // Page-view tracking for the viral-post acquisition funnel.
+  React.useEffect(() => {
+    base44.analytics.track({ eventName: 'viralpost2022_view' });
+  }, []);
+
   // Signed-in Fellows go straight to the Studio; visitors sign in first and
   // land back on the Studio when they return.
   const openStudio = async () => {
+    base44.analytics.track({ eventName: 'viralpost2022_add_clicked' });
     try {
       const authed = await base44.auth.isAuthenticated();
       if (authed) {

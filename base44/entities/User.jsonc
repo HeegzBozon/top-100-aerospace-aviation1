@@ -195,6 +195,10 @@
       "type": "string",
       "description": "Saved answer to 'Your connection to aerospace and aviation' from the Start Here screen, so it pre-fills on future visits"
     },
+    "signup_referrer": {
+      "type": "string",
+      "description": "Acquisition source that brought the Fellow to sign up (e.g. 'viralpost2022'). Stamped once on first authenticated return from the originating CTA; never overwritten."
+    },
     "nomination_accepted": {
       "type": "boolean",
       "default": false,

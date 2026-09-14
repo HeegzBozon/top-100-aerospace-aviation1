@@ -89,12 +89,19 @@ export default function Profile() {
 
   // Deep-link from "Add my own Viral Post" and similar CTAs — open the Studio
   // wizard on arrival, exactly as if the Fellow pressed the Update button.
+  // Also stamp signup_referrer for acquisition attribution (once, never overwritten).
   useEffect(() => {
     if (user && new URLSearchParams(window.location.search).get('studio') === 'open') {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get('ref');
       setWizardOpen(true);
+      if (ref && !user.signup_referrer) {
+        base44.auth.updateMe({ signup_referrer: ref }).catch(() => {});
+      }
       try {
         const u = new URL(window.location.href);
         u.searchParams.delete('studio');
+        u.searchParams.delete('ref');
         window.history.replaceState({}, '', u);
       } catch {}
     }
