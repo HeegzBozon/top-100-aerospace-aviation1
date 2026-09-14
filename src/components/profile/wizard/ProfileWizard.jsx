@@ -167,6 +167,51 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
         }).catch(() => {});
       }
 
+      // Send a copy of the Top Viral Post submission to the email address used in it.
+      if (form.viral_post_link && form.viral_post_email) {
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const row = (label, value) => `
+          <tr>
+            <td style="padding:14px 0 4px;font-family:'Montserrat',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#5E697C;">${esc(label)}</td>
+          </tr>
+          <tr>
+            <td style="padding:0 0 18px;font-family:'Montserrat',Arial,sans-serif;font-size:15px;line-height:1.55;color:#1E3A5A;border-bottom:1px solid rgba(184,115,51,0.18);">${value ? esc(value) : '<span style="color:#A8A0B0;">—</span>'}</td>
+          </tr>`;
+        const html = `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F8F6F2;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F6F2;padding:32px 0;">
+            <tr><td align="center">
+              <table width="560" cellpadding="0" cellspacing="0" style="background:#FAF8F5;border-radius:14px;overflow:hidden;box-shadow:0 4px 30px rgba(30,58,90,0.08);">
+                <tr><td style="background:#1E3A5A;padding:28px 36px;text-align:center;">
+                  <p style="margin:0;font-family:'Playfair Display',Georgia,serif;font-size:22px;color:#FAF8F5;letter-spacing:0.02em;">A copy of your Top Viral Post</p>
+                  <p style="margin:6px 0 0;font-family:'Montserrat',Arial,sans-serif;font-size:11px;color:#C9A87C;letter-spacing:0.22em;text-transform:uppercase;">TOP 100 Aerospace &amp; Aviation</p>
+                </td></tr>
+                <tr><td style="padding:30px 36px 8px;">
+                  <p style="margin:0 0 22px;font-family:'Montserrat',Arial,sans-serif;font-size:13px;line-height:1.65;color:#5E697C;">You're on the record. Below is a copy of the Top Viral Post submission you just confirmed in The Studio, sent to the email address you entered for the series.</p>
+                  ${form.six_word_story ? `<p style="margin:0 0 26px;padding:18px 20px;background:#1E3A5A;border-radius:10px;font-family:'Playfair Display',Georgia,serif;font-size:18px;line-height:1.4;color:#FAF8F5;text-align:center;font-style:italic;">&ldquo;${esc(form.six_word_story)}&rdquo;</p>` : ''}
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    ${row('Email address', form.viral_post_email)}
+                    ${row('Link to your “Most Liked Post”', form.viral_post_link ? `<a href="${esc(form.viral_post_link)}" style="color:#B87333;text-decoration:underline;word-break:break-all;">${esc(form.viral_post_link)}</a>` : '')}
+                    ${row('Number of impressions / views', form.viral_post_impressions)}
+                    ${row('Key takeaway for aerospace &amp; aviation', form.viral_post_takeaway)}
+                    ${row('The “aha moment” readers walk away with', form.viral_post_wisdom)}
+                  </table>
+                </td></tr>
+                <tr><td style="padding:8px 36px 30px;">
+                  <p style="margin:0;font-family:'Montserrat',Arial,sans-serif;font-size:11px;line-height:1.6;color:#A8A0B0;">This is a receipt of your submission. You can edit your Top Viral Post anytime in The Studio on your profile.</p>
+                </td></tr>
+              </table>
+            </td></tr>
+          </table>
+        </body></html>`;
+        const text = `A copy of your Top Viral Post — TOP 100 Aerospace & Aviation\n\nYou're on the record. Below is a copy of the Top Viral Post submission you just confirmed in The Studio.\n\n${form.six_word_story ? `"${form.six_word_story}"\n\n` : ''}EMAIL ADDRESS\n${form.viral_post_email}\n\nLINK TO YOUR "MOST LIKED POST"\n${form.viral_post_link}\n\nNUMBER OF IMPRESSIONS / VIEWS\n${form.viral_post_impressions || '—'}\n\nKEY TAKEAWAY FOR AEROSPACE & AVIATION\n${form.viral_post_takeaway || '—'}\n\nTHE "AHA MOMENT" READERS WALK AWAY WITH\n${form.viral_post_wisdom || '—'}\n\nThis is a receipt of your submission. You can edit your Top Viral Post anytime in The Studio on your profile.`;
+        base44.integrations.Core.SendEmail({
+          to: form.viral_post_email,
+          subject: 'A copy of your Top Viral Post',
+          html,
+          text,
+        }).catch(() => {});
+      }
+
       // Published — clear the local draft so next visit starts clean.
       try { localStorage.removeItem(draftKey(user?.email)); } catch {}
 
