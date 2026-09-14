@@ -170,12 +170,12 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
       // Send a copy of the Top Viral Post submission to the email address used in it.
       if (form.viral_post_link && form.viral_post_email) {
         const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        const row = (label, value) => `
+        const row = (label, textValue, rawHtml) => `
           <tr>
             <td style="padding:14px 0 4px;font-family:'Montserrat',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#5E697C;">${esc(label)}</td>
           </tr>
           <tr>
-            <td style="padding:0 0 18px;font-family:'Montserrat',Arial,sans-serif;font-size:15px;line-height:1.55;color:#1E3A5A;border-bottom:1px solid rgba(184,115,51,0.18);">${value ? esc(value) : '<span style="color:#A8A0B0;">—</span>'}</td>
+            <td style="padding:0 0 18px;font-family:'Montserrat',Arial,sans-serif;font-size:15px;line-height:1.55;color:#1E3A5A;border-bottom:1px solid rgba(184,115,51,0.18);">${rawHtml || (textValue ? esc(textValue) : '<span style="color:#A8A0B0;">—</span>')}</td>
           </tr>`;
         const html = `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F8F6F2;">
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F6F2;padding:32px 0;">
@@ -190,9 +190,9 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
                   ${form.six_word_story ? `<p style="margin:0 0 26px;padding:18px 20px;background:#1E3A5A;border-radius:10px;font-family:'Playfair Display',Georgia,serif;font-size:18px;line-height:1.4;color:#FAF8F5;text-align:center;font-style:italic;">&ldquo;${esc(form.six_word_story)}&rdquo;</p>` : ''}
                   <table width="100%" cellpadding="0" cellspacing="0">
                     ${row('Email address', form.viral_post_email)}
-                    ${row('Link to your “Most Liked Post”', form.viral_post_link ? `<a href="${esc(form.viral_post_link)}" style="color:#B87333;text-decoration:underline;word-break:break-all;">${esc(form.viral_post_link)}</a>` : '')}
+                    ${row('Link to your “Most Liked Post”', null, form.viral_post_link ? `<a href="${esc(form.viral_post_link)}" style="color:#B87333;text-decoration:underline;word-break:break-all;">${esc(form.viral_post_link)}</a>` : null)}
                     ${row('Number of impressions / views', form.viral_post_impressions)}
-                    ${row('Key takeaway for aerospace &amp; aviation', form.viral_post_takeaway)}
+                    ${row('Key takeaway for aerospace & aviation', form.viral_post_takeaway)}
                     ${row('The “aha moment” readers walk away with', form.viral_post_wisdom)}
                   </table>
                 </td></tr>
