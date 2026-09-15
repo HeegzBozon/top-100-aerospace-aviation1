@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Loader2, UserPlus, Search, Edit, Eye, ShieldCheck, ShieldOff, Trophy, Brain, Download, Medal, ContactRound, Database, Send } from 'lucide-react';
+import { Loader2, UserPlus, Search, Edit, Eye, ShieldCheck, ShieldOff, Trophy, Brain, Download, Medal, ContactRound, Database, Send, Users } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from "@/components/ui/use-toast";
 import NomineeForm from './NomineeForm';
@@ -27,6 +27,7 @@ export default function NomineeManager({ seasons }) {
   const [processingId, setProcessingId] = useState(null);
   const [exportingFull, setExportingFull] = useState(false);
   const [exportingOutreach, setExportingOutreach] = useState(false);
+  const [exportingNominators, setExportingNominators] = useState(false);
 
   const { toast } = useToast();
 
@@ -497,6 +498,39 @@ export default function NomineeManager({ seasons }) {
     }
   };
 
+  // Server-generated report: one row per nominator (the person who submitted),
+  // with the total number of nominations they've made. Sorted by count desc so
+  // the highest-yield "past nominators" segment surfaces first for outreach.
+  const handleExportNominators = async () => {
+    setExportingNominators(true);
+    try {
+      const res = await base44.functions.invoke('exportNominatorsList', {});
+      const data = res.data || res;
+      if (!data?.csv) {
+        toast({ variant: 'destructive', title: 'Export failed', description: data?.error || 'No CSV returned.' });
+        return;
+      }
+      const blob = new Blob([data.csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `top100_nominators_report_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast({
+        title: 'Nominators report ready',
+        description: `${data.count} nominators · ${data.totalNominations} total nominations across the pool.`,
+      });
+    } catch (e) {
+      console.error('Nominators export failed:', e);
+      toast({ variant: 'destructive', title: 'Export failed', description: e?.response?.data?.error || e.message });
+    } finally {
+      setExportingNominators(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
     let colorClass = '';
     switch (status) {
@@ -542,6 +576,10 @@ export default function NomineeManager({ seasons }) {
           <Button onClick={handleExportOutreach} disabled={exportingOutreach} className="ml-2 bg-emerald-700 hover:bg-emerald-800">
             {exportingOutreach ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
             Outreach Export (GHL)
+          </Button>
+          <Button onClick={handleExportNominators} disabled={exportingNominators} className="ml-2 bg-[#1E3A5A] hover:bg-[#16283f]">
+            {exportingNominators ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Users className="w-4 h-4 mr-2" />}
+            Nominators Report
           </Button>
         </div>
         {seasons && seasons.length > 0 && (
