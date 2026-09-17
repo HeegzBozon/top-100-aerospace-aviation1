@@ -72,6 +72,7 @@ export const ADMIN_SECTIONS = [
             { id: 'testimonials', label: 'Testimonials', icon: Sparkles, component: 'TestimonialModeration' },
             { id: 'community-notes', label: 'Community Notes', icon: MessageSquare, component: 'CommunityNotesModeration' },
             { id: 'discovery-responses', label: 'Discovery Responses', icon: ClipboardList, component: 'DiscoveryResponsesManager' },
+            { id: 'viral-posts', label: 'Top Viral Posts', icon: TrendingUp, component: 'TopViralPostsManager' },
         ],
     },
     {
