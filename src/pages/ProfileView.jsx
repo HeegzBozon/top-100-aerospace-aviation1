@@ -130,6 +130,23 @@ export default function ProfileView({ userId: propUserId = null }) {
     const ownerStatus = statusByKey(ownerSettings?.status_key);
     const top100 = useMyTop100(wallEmail);
 
+    // Featured Top Viral Post — public read via a backend function so signed-out
+    // visitors can see it. The User entity is admin-only for client reads, so
+    // the deck can't resolve `user` for unauthenticated viewers; this surfaces
+    // only the public viral-post fields, server-side.
+    const nomineeId = profiles?.nominee?.id;
+    const { data: publicViralPost } = useQuery({
+        queryKey: ['publicViralPost', nomineeId],
+        enabled: !!nomineeId,
+        queryFn: async () => {
+            try {
+                const r = await base44.functions.invoke('getPublicViralPost', { nominee_id: nomineeId });
+                return r && typeof r === 'object' && 'data' in r ? r.data : r;
+            } catch { return null; }
+        },
+    });
+    const featuredViral = publicViralPost?.featured ? publicViralPost : null;
+
     // Count a visit once per mount, and only from another member. Owner-visible only.
     const counted = useRef(false);
     useEffect(() => {
@@ -164,6 +181,7 @@ export default function ProfileView({ userId: propUserId = null }) {
                     top100={top100}
                     viewer={viewer}
                     onResolved={refetchProfile}
+                    featuredViral={featuredViral}
                 />
             )}
 
@@ -172,7 +190,7 @@ export default function ProfileView({ userId: propUserId = null }) {
     );
 }
 
-function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onResolved }) {
+function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onResolved, featuredViral }) {
     const { user, nominee } = profiles;
 
     // Resolve the Fellow's configured slide order. Locked positions 1 and 2
@@ -209,13 +227,9 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onR
                 }
                 break;
             case 'viral_post':
-                // Hero spread — only renders when the Fellow completed the Top Viral
-                // Post sitting AND an admin has featured it for public surfacing.
-                if (user?.viral_post_link && user?.viral_post_featured) {
-                    entry = { key, label: 'Top Viral Post', content: (
-                        <ViralPostSlide user={user} accent={ownerAccent} />
-                    )};
-                }
+                // Featured Top Viral Post now renders as a hero above the deck
+                // (see featuredViral), so it's visible to signed-out visitors
+                // without advancing the deck. Skip it here to avoid duplication.
                 break;
             case 'flightography':
                 entry = { key, label: 'Flightography', content: (
@@ -237,6 +251,9 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onR
                     viewer={viewer}
                     onResolved={onResolved}
                 />
+            )}
+            {featuredViral && (
+                <ViralPostSlide user={featuredViral} accent={ownerAccent} />
             )}
             <ProfileDeck slides={slides} settings={ownerSettings} accent={ownerAccent} />
 
