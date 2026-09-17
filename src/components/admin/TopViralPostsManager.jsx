@@ -149,7 +149,7 @@ export default function TopViralPostsManager() {
     let alive = true;
     (async () => {
       try {
-        const users = await base44.entities.User.list('-updated_date', 500);
+        const users = await base44.entities.User.list('-updated_date', 1000);
         if (!alive) return;
         const filled = (users || []).filter(
           (u) => u.viral_post_link && String(u.viral_post_link).trim() !== ''
