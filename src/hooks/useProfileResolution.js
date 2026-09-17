@@ -41,6 +41,19 @@ export function useProfileResolution(targetId, targetEmail) {
                         if (nomineeCheck.length > 0) {
                             resolvedUserEmail = nomineeCheck[0].nominee_email;
                             result.nominee = nomineeCheck[0];
+                            // Authoritative owner link — use it when the nominee's
+                            // contact email doesn't match a User account (e.g. an
+                            // admin-approved claim). Resolves the User record that
+                            // holds governed personalization and the viral-post
+                            // feature flag, without disturbing email-keyed lookups.
+                            if (nomineeCheck[0].claimed_by_user_id && !result.user) {
+                                try {
+                                    const claimedUser = await base44.entities.User.filter({ id: nomineeCheck[0].claimed_by_user_id });
+                                    if (claimedUser.length > 0) result.user = claimedUser[0];
+                                } catch (e) {
+                                    console.warn("Failed resolving claimed_by_user_id:", e);
+                                }
+                            }
                         }
                     } catch (e) {
                         console.warn("Failed resolving Nominee ID:", e);
