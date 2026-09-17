@@ -93,6 +93,10 @@
       "type": "string",
       "description": "The 'aha moment' or piece of wisdom the nominee wants readers to walk away with from their top LinkedIn post."
     },
+    "viral_post_screenshot_url": {
+      "type": "string",
+      "description": "Screenshot of the Fellow's top LinkedIn post, attached by an admin before the post is featured in the Most Liked Posts series. Stored as a public file URL; visibility-only, never feeds measurement."
+    },
     "viral_post_featured": {
       "type": "boolean",
       "default": false,

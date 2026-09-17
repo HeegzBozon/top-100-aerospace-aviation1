@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Loader2, TrendingUp, ExternalLink, Quote as QuoteIcon, AlertCircle, Inbox, Star, CheckCircle2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import ViralPostScreenshotEditor from '@/components/admin/ViralPostScreenshotEditor';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -36,7 +37,7 @@ const Monogram = ({ name }) => {
   );
 };
 
-const SubmissionCard = ({ user, onToggleFeature, featuringId }) => {
+const SubmissionCard = ({ user, onToggleFeature, featuringId, onScreenshotSaved }) => {
   const postUrl = user.viral_post_link;
   const featured = !!user.viral_post_featured;
   const featuring = featuringId === user.id;
@@ -142,6 +143,11 @@ const SubmissionCard = ({ user, onToggleFeature, featuringId }) => {
         })}
       </div>
 
+      {/* Post screenshot — attached by the admin before featuring */}
+      <div className="px-6 pb-5">
+        <ViralPostScreenshotEditor user={user} onSaved={onScreenshotSaved} />
+      </div>
+
       {/* Footer — receipt + Feature publicly toggle */}
       <div
         className="flex items-center justify-between gap-3 px-6 py-3 text-xs"
@@ -215,6 +221,14 @@ export default function TopViralPostsManager() {
     }
   };
 
+  const handleScreenshotSaved = (updatedUser) => {
+    setSubmissions((prev) =>
+      (prev || []).map((u) =>
+        u.id === updatedUser.id ? { ...u, viral_post_screenshot_url: updatedUser.viral_post_screenshot_url } : u
+      )
+    );
+  };
+
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
@@ -269,6 +283,7 @@ export default function TopViralPostsManager() {
             user={u}
             featuringId={featuringId}
             onToggleFeature={handleToggleFeature}
+            onScreenshotSaved={handleScreenshotSaved}
           />
         ))}
       </div>

@@ -7,6 +7,7 @@ import { B } from '@/components/fellow-home/fellowHomeConfig';
 // copper section label. Vogue meets NASA.
 export default function ViralPostSlide({ user, accent }) {
   const link = user?.viral_post_link || '';
+  const screenshot = user?.viral_post_screenshot_url || '';
   // The field is a free-text string (e.g. "1.7M views" or "2400000"); render as-is.
   const impressions = (user?.viral_post_impressions || '').trim();
   const takeaway = user?.viral_post_takeaway || '';
@@ -29,6 +30,18 @@ export default function ViralPostSlide({ user, accent }) {
           </span>
           <span className="h-px w-8" style={{ background: B.copper }} />
         </div>
+
+        {/* The post itself — screenshot of the original LinkedIn post */}
+        {screenshot && (
+          <div className="mb-10 flex justify-center">
+            <img
+              src={screenshot}
+              alt="Top LinkedIn post"
+              className="max-h-[58vh] max-w-full object-contain rounded-lg"
+              style={{ border: `1px solid ${accent}40`, boxShadow: '0 12px 40px rgba(0,0,0,0.35)' }}
+            />
+          </div>
+        )}
 
         {/* Impressions — the display figure */}
         {impressions && (
