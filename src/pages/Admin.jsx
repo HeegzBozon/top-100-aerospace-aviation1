@@ -51,6 +51,7 @@ const DiscoveryResponsesManager = lazy(() => import('@/components/admin/Discover
 const SurveyManager            = lazy(() => import('@/components/admin/SurveyManager'));
 const BioSubmissionManager     = lazy(() => import('@/components/admin/BioSubmissionManager'));
 const LocalLegendsManager      = lazy(() => import('@/components/admin/LocalLegendsManager'));
+const TopViralPostsManager     = lazy(() => import('@/components/admin/TopViralPostsManager'));
 const NominationIntakeManager  = lazy(() => import('@/components/admin/NominationIntakeManager'));
 const SeasonalPlanningDashboard = lazy(() => import('@/components/admin/SeasonalPlanningDashboard'));
 import { Award } from 'lucide-react';
@@ -297,6 +298,8 @@ export default function Admin() {
         return <LocalLegendsManager />;
       case 'bio-submissions':
         return <BioSubmissionManager />;
+      case 'viral-posts':
+        return <TopViralPostsManager />;
       default:
         return (
           <div className="py-16 text-center text-[var(--muted)]">
