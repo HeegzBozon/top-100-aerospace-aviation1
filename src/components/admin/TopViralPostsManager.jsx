@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Loader2, TrendingUp, ExternalLink, Quote as QuoteIcon, AlertCircle, Inbox, Star, CheckCircle2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ViralPostScreenshotEditor from '@/components/admin/ViralPostScreenshotEditor';
+import ViralPostSlugEditor, { slugifyName, uniqueSlugFor } from '@/components/admin/ViralPostSlugEditor';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -37,7 +38,7 @@ const Monogram = ({ name }) => {
   );
 };
 
-const SubmissionCard = ({ user, onToggleFeature, featuringId, onScreenshotSaved }) => {
+const SubmissionCard = ({ user, onToggleFeature, featuringId, onScreenshotSaved, otherSlugs, onSlugSaved }) => {
   const postUrl = user.viral_post_link;
   const featured = !!user.viral_post_featured;
   const featuring = featuringId === user.id;
@@ -144,8 +145,9 @@ const SubmissionCard = ({ user, onToggleFeature, featuringId, onScreenshotSaved 
       </div>
 
       {/* Post screenshot — attached by the admin before featuring */}
-      <div className="px-6 pb-5">
+      <div className="px-6 pb-5 space-y-5">
         <ViralPostScreenshotEditor user={user} onSaved={onScreenshotSaved} />
+        <ViralPostSlugEditor user={user} otherSlugs={otherSlugs} onSaved={onSlugSaved} />
       </div>
 
       {/* Footer — receipt + Feature publicly toggle */}
@@ -204,16 +206,35 @@ export default function TopViralPostsManager() {
   const handleToggleFeature = async (user) => {
     const next = !user.viral_post_featured;
     setFeaturingId(user.id);
-    // Optimistic update — flip the flag in the local list immediately.
+    // Featuring on: ensure a durable series URL exists. Auto-derive from the
+    // Fellow's name with a uniqueness check against every other submission's
+    // slug. Unfeaturing leaves the slug intact so the URL survives a re-feature.
+    let slugPatch = {};
+    if (next && !user.viral_post_slug) {
+      const base = slugifyName(user.full_name || user.email);
+      const existing = (submissions || [])
+        .filter((u) => u.id !== user.id)
+        .map((u) => u.viral_post_slug);
+      slugPatch = { viral_post_slug: uniqueSlugFor(base, existing) };
+    }
+    // Optimistic update — flip the flag (and slug) in the local list immediately.
     setSubmissions((prev) =>
-      (prev || []).map((u) => (u.id === user.id ? { ...u, viral_post_featured: next } : u))
+      (prev || []).map((u) =>
+        u.id === user.id
+          ? { ...u, viral_post_featured: next, ...(slugPatch.viral_post_slug ? { viral_post_slug: slugPatch.viral_post_slug } : {}) }
+          : u
+      )
     );
     try {
-      await base44.entities.User.update(user.id, { viral_post_featured: next });
+      await base44.entities.User.update(user.id, { viral_post_featured: next, ...slugPatch });
     } catch (e) {
       // Roll back on failure.
       setSubmissions((prev) =>
-        (prev || []).map((u) => (u.id === user.id ? { ...u, viral_post_featured: !next } : u))
+        (prev || []).map((u) =>
+          u.id === user.id
+            ? { ...u, viral_post_featured: !next, ...(slugPatch.viral_post_slug ? { viral_post_slug: user.viral_post_slug } : {}) }
+            : u
+        )
       );
       setError(e?.message || 'Could not update featured status.');
     } finally {
@@ -225,6 +246,14 @@ export default function TopViralPostsManager() {
     setSubmissions((prev) =>
       (prev || []).map((u) =>
         u.id === updatedUser.id ? { ...u, viral_post_screenshot_url: updatedUser.viral_post_screenshot_url } : u
+      )
+    );
+  };
+
+  const handleSlugSaved = (updatedUser) => {
+    setSubmissions((prev) =>
+      (prev || []).map((u) =>
+        u.id === updatedUser.id ? { ...u, viral_post_slug: updatedUser.viral_post_slug } : u
       )
     );
   };
@@ -284,6 +313,8 @@ export default function TopViralPostsManager() {
             featuringId={featuringId}
             onToggleFeature={handleToggleFeature}
             onScreenshotSaved={handleScreenshotSaved}
+            otherSlugs={submissions.filter((s) => s.id !== u.id).map((s) => s.viral_post_slug)}
+            onSlugSaved={handleSlugSaved}
           />
         ))}
       </div>
