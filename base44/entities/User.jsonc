@@ -102,6 +102,10 @@
       "default": false,
       "description": "Editorial opt-in that surfaces the Fellow's Top Viral Post on their public profile deck. Admin-set visibility flag only; never edits the self-serve submission and never feeds measurement or ranking."
     },
+    "viral_post_slug": {
+      "type": "string",
+      "description": "Durable, admin-set URL slug for the Fellow's featured Top Viral Post in the Most Liked Posts Series (e.g. 'martina_dimoska'). URL-stable across name changes; the canonical route is /viralpost2026/featured/:slug. Visibility-only; never feeds measurement or ranking."
+    },
     "accent_color": {
       "type": "string",
       "enum": [
