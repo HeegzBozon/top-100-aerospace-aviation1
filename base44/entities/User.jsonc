@@ -93,6 +93,11 @@
       "type": "string",
       "description": "The 'aha moment' or piece of wisdom the nominee wants readers to walk away with from their top LinkedIn post."
     },
+    "viral_post_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Editorial opt-in that surfaces the Fellow's Top Viral Post on their public profile deck. Admin-set visibility flag only; never edits the self-serve submission and never feeds measurement or ranking."
+    },
     "accent_color": {
       "type": "string",
       "enum": [

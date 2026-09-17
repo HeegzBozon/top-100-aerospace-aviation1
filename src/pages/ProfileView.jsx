@@ -209,8 +209,9 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onR
                 }
                 break;
             case 'viral_post':
-                // Hero spread — only renders when the Fellow completed the Top Viral Post sitting.
-                if (user?.viral_post_link) {
+                // Hero spread — only renders when the Fellow completed the Top Viral
+                // Post sitting AND an admin has featured it for public surfacing.
+                if (user?.viral_post_link && user?.viral_post_featured) {
                     entry = { key, label: 'Top Viral Post', content: (
                         <ViralPostSlide user={user} accent={ownerAccent} />
                     )};

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Loader2, TrendingUp, ExternalLink, Quote as QuoteIcon, AlertCircle, Inbox } from 'lucide-react';
+import { Loader2, TrendingUp, ExternalLink, Quote as QuoteIcon, AlertCircle, Inbox, Star, CheckCircle2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const NAVY = '#1e3a5a';
@@ -36,8 +36,10 @@ const Monogram = ({ name }) => {
   );
 };
 
-const SubmissionCard = ({ user }) => {
+const SubmissionCard = ({ user, onToggleFeature, featuringId }) => {
   const postUrl = user.viral_post_link;
+  const featured = !!user.viral_post_featured;
+  const featuring = featuringId === user.id;
   return (
     <article
       className="bg-white rounded-2xl overflow-hidden border flex flex-col"
@@ -61,13 +63,24 @@ const SubmissionCard = ({ user }) => {
           </h3>
           <p className="text-xs truncate mt-0.5" style={{ color: GOLD }}>{user.email}</p>
         </div>
-        <span
-          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em] shrink-0"
-          style={{ background: 'rgba(201,168,124,0.16)', color: GOLD, border: '1px solid rgba(201,168,124,0.3)' }}
-        >
-          <TrendingUp className="w-3 h-3" />
-          Most Liked Post
-        </span>
+        <div className="flex items-center gap-2 shrink-0">
+          {featured && (
+            <span
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em]"
+              style={{ background: `${COPPER}1a`, color: CREAM, border: `1px solid ${COPPER}` }}
+            >
+              <CheckCircle2 className="w-3 h-3" />
+              Featured
+            </span>
+          )}
+          <span
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em]"
+            style={{ background: 'rgba(201,168,124,0.16)', color: GOLD, border: '1px solid rgba(201,168,124,0.3)' }}
+          >
+            <TrendingUp className="w-3 h-3" />
+            Most Liked Post
+          </span>
+        </div>
       </div>
 
       {/* Six-word story, if present */}
@@ -129,13 +142,30 @@ const SubmissionCard = ({ user }) => {
         })}
       </div>
 
-      {/* Footer — contact email used for the receipt */}
+      {/* Footer — receipt + Feature publicly toggle */}
       <div
-        className="flex items-center justify-between px-6 py-3 text-xs"
+        className="flex items-center justify-between gap-3 px-6 py-3 text-xs"
         style={{ background: SAND, color: 'rgba(30,58,90,0.6)', borderTop: '1px solid rgba(30,58,90,0.08)' }}
       >
-        <span>Receipt sent to {user.viral_post_email || user.email}</span>
-        <span className="hidden sm:inline">Read-only · self-serve submission</span>
+        <span className="truncate">Receipt sent to {user.viral_post_email || user.email}</span>
+        <button
+          type="button"
+          disabled={featuring}
+          onClick={() => onToggleFeature(user)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.14em] transition-all disabled:opacity-50"
+          style={
+            featured
+              ? { background: 'transparent', color: 'rgba(30,58,90,0.55)', border: '1px solid rgba(30,58,90,0.18)' }
+              : { background: COPPER, color: CREAM, border: `1px solid ${COPPER}` }
+          }
+        >
+          {featuring ? (
+            <Loader2 className="w-3 h-3 animate-spin" />
+          ) : (
+            <Star className="w-3 h-3" style={{ fill: featured ? 'currentColor' : 'none' }} />
+          )}
+          {featured ? 'Unfeature' : 'Feature publicly'}
+        </button>
       </div>
     </article>
   );
@@ -144,6 +174,7 @@ const SubmissionCard = ({ user }) => {
 export default function TopViralPostsManager() {
   const [submissions, setSubmissions] = useState(null);
   const [error, setError] = useState(null);
+  const [featuringId, setFeaturingId] = useState(null);
 
   useEffect(() => {
     let alive = true;
@@ -163,6 +194,26 @@ export default function TopViralPostsManager() {
     })();
     return () => { alive = false; };
   }, []);
+
+  const handleToggleFeature = async (user) => {
+    const next = !user.viral_post_featured;
+    setFeaturingId(user.id);
+    // Optimistic update — flip the flag in the local list immediately.
+    setSubmissions((prev) =>
+      (prev || []).map((u) => (u.id === user.id ? { ...u, viral_post_featured: next } : u))
+    );
+    try {
+      await base44.entities.User.update(user.id, { viral_post_featured: next });
+    } catch (e) {
+      // Roll back on failure.
+      setSubmissions((prev) =>
+        (prev || []).map((u) => (u.id === user.id ? { ...u, viral_post_featured: !next } : u))
+      );
+      setError(e?.message || 'Could not update featured status.');
+    } finally {
+      setFeaturingId(null);
+    }
+  };
 
   if (error) {
     return (
@@ -207,13 +258,18 @@ export default function TopViralPostsManager() {
           Top Viral Posts
         </h1>
         <p className="text-sm max-w-2xl" style={{ color: 'rgba(30,58,90,0.65)' }}>
-          A read-only record of every Fellow’s “Most Liked Post” submission. These are self-serve personal expressions — no moderation queue, no approval gate. {submissions.length} {submissions.length === 1 ? 'submission' : 'submissions'} on record.
+          Every Fellow’s “Most Liked Post” submission, kept as a self-serve record — no moderation queue, no approval gate. Use <span style={{ color: COPPER }}>Feature publicly</span> to surface a post on its Fellow’s public profile deck. {submissions.length} {submissions.length === 1 ? 'submission' : 'submissions'} on record.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {submissions.map((u) => (
-          <SubmissionCard key={u.id} user={u} />
+          <SubmissionCard
+            key={u.id}
+            user={u}
+            featuringId={featuringId}
+            onToggleFeature={handleToggleFeature}
+          />
         ))}
       </div>
     </div>
