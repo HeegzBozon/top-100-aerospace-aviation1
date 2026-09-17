@@ -28,6 +28,7 @@ import {
     ClipboardList,
     ClipboardCheck,
     MapPin,
+    TrendingUp,
 } from 'lucide-react';
 
 /**
