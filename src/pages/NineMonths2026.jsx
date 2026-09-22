@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import NineMonthsArticleHero from '@/components/nine-months/NineMonthsArticleHero';
 import NineMonthsMilestones from '@/components/nine-months/NineMonthsMilestones';
+import NineMonthsAlumni from '@/components/nine-months/NineMonthsAlumni';
 import NineMonthsArticleClosing from '@/components/nine-months/NineMonthsArticleClosing';
 import HomeDock from '@/components/home-v3/HomeDock';
 
@@ -42,6 +43,7 @@ export default function NineMonths2026() {
             <p>Every award in this industry goes to an organization. Organizations do not torque fasteners, sequence arrivals, sign off on airworthiness, or sit in a cockpit at Mach 1.4 to find out what happens. People do. The org chart gets the trophy and the person gets a line item.</p>
             <p>We think that is backwards, and we have been running the correction for four seasons.</p>
           </section>
+          <NineMonthsAlumni />
           <NineMonthsArticleClosing />
         </div>
       </article>
