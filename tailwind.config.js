@@ -4,12 +4,23 @@ module.exports = {
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
+        fontFamily: {
+            heading: 'var(--font-heading)',
+            body: 'var(--font-body)',
+            display: 'var(--font-display)',
+        },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+            editorial: {
+                navy: 'var(--editorial-navy)',
+                cream: 'var(--editorial-cream)',
+                gold: 'var(--editorial-gold)',
+                copper: 'var(--editorial-copper)',
+            },
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
