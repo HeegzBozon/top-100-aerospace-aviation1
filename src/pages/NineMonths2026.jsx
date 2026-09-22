@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import NineMonthsArticleHero from '@/components/nine-months/NineMonthsArticleHero';
 import NineMonthsMilestones from '@/components/nine-months/NineMonthsMilestones';
-import NineMonthsAlumni from '@/components/nine-months/NineMonthsAlumni';
 import NineMonthsArticleClosing from '@/components/nine-months/NineMonthsArticleClosing';
 import HomeDock from '@/components/home-v3/HomeDock';
 
@@ -42,8 +42,8 @@ export default function NineMonths2026() {
             <p>Read those six items again and count the corporate logos. Now count the human beings.</p>
             <p>Every award in this industry goes to an organization. Organizations do not torque fasteners, sequence arrivals, sign off on airworthiness, or sit in a cockpit at Mach 1.4 to find out what happens. People do. The org chart gets the trophy and the person gets a line item.</p>
             <p>We think that is backwards, and we have been running the correction for four seasons.</p>
+            <p>The archive already holds some of these names. <Link to="/profiles/696ae40dd10deb4252b0dc18" className="font-semibold underline decoration-editorial-gold decoration-1 underline-offset-4 hover:decoration-2">Alice Pellegrino</Link> manages programmes at Redwire Space, inside the multi-year lunar supply chain these flights depend on. <Link to="/profiles/696ae3b2cfcc719ec21a0f9f" className="font-semibold underline decoration-editorial-gold decoration-1 underline-offset-4 hover:decoration-2">Melodie Yashar</Link> works on the construction technology for habitats on the surface we are flying toward, and <Link to="/profiles/696ae412e3d3a43cde7a4f61" className="font-semibold underline decoration-editorial-gold decoration-1 underline-offset-4 hover:decoration-2">Michaela Musilova, PhD</Link> has commanded more than thirty analog Moon and Mars missions testing how crews actually live there. None of them appeared in a headline this year. All of them are in the record.</p>
           </section>
-          <NineMonthsAlumni />
           <NineMonthsArticleClosing />
         </div>
       </article>
