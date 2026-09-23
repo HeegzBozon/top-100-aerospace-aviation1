@@ -16,10 +16,10 @@ module.exports = {
   		},
   		colors: {
             editorial: {
-                navy: 'var(--editorial-navy)',
-                cream: 'var(--editorial-cream)',
-                gold: 'var(--editorial-gold)',
-                copper: 'var(--editorial-copper)',
+                navy: 'rgb(var(--editorial-navy-rgb) / <alpha-value>)',
+                cream: 'rgb(var(--editorial-cream-rgb) / <alpha-value>)',
+                gold: 'rgb(var(--editorial-gold-rgb) / <alpha-value>)',
+                copper: 'rgb(var(--editorial-copper-rgb) / <alpha-value>)',
             },
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

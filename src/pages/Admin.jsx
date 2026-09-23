@@ -54,7 +54,6 @@ const LocalLegendsManager      = lazy(() => import('@/components/admin/LocalLege
 const TopViralPostsManager     = lazy(() => import('@/components/admin/TopViralPostsManager'));
 const NominationIntakeManager  = lazy(() => import('@/components/admin/NominationIntakeManager'));
 const SeasonalPlanningDashboard = lazy(() => import('@/components/admin/SeasonalPlanningDashboard'));
-const FinalizePoolWizard       = lazy(() => import('@/components/admin/FinalizePoolWizard'));
 import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
@@ -221,7 +220,7 @@ export default function Admin() {
       case 'providers':
         return <ProviderReviewManager />;
       case 'nominees':
-        return <NomineeManager seasons={seasons} />;
+        return <NomineeManager seasons={seasons.filter((s) => !s.is_group)} />;
       case 'claims':
         return <ClaimsReviewManager />;
       case 'assign-nominees':
@@ -247,15 +246,15 @@ export default function Admin() {
       case 'sme':
         return <SMEAssignmentPanel />;
       case 'seasons':
+      case 'finalize-pool':
         return (
           <SeasonManager
             seasons={seasons}
             onSeasonsUpdate={loadAllData}
             onViewSeason={(season) => setViewingSeason(season)}
+            onNavigate={setActiveTab}
           />
         );
-      case 'finalize-pool':
-        return <FinalizePoolWizard seasons={seasons} />;
       case 'scoring':
         return <RankedVoteManager />;
       case 'content':

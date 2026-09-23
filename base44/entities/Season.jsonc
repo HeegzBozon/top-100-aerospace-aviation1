@@ -14,6 +14,23 @@
       "type": "string",
       "description": "The visual or conceptual theme for the season"
     },
+    "is_group": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for a parent season (e.g. 'Season 4 \u2014 2026') that groups cohorts. Holds no nominees; nominees always point at a cohort season."
+    },
+    "parent_season_id": {
+      "type": "string",
+      "description": "ID of the parent (is_group) season this cohort belongs to. Set = this season is a cohort."
+    },
+    "cohort_key": {
+      "type": "string",
+      "description": "Stable machine key for the cohort, e.g. 'women', 'men', 'angels'. Matches NominationIntake.nomination_type where applicable."
+    },
+    "cohort_label": {
+      "type": "string",
+      "description": "Display label for the cohort, e.g. 'Women'"
+    },
     "start_date": {
       "type": "string",
       "format": "date",

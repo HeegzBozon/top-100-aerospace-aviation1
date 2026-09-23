@@ -176,6 +176,10 @@ button:focus-visible {
   --editorial-cream: #FAF8F5;
   --editorial-gold: #C9A87C;
   --editorial-copper: #B87333;
+  --editorial-navy-rgb: 30 58 90;
+  --editorial-cream-rgb: 250 248 245;
+  --editorial-gold-rgb: 201 168 124;
+  --editorial-copper-rgb: 184 115 51;
   --font-heading: var(--brand-font-serif);
   --font-body: var(--brand-font-sans);
   --font-display: var(--brand-font-serif);

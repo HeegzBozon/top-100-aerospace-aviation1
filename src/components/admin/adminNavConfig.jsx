@@ -83,7 +83,6 @@ export const ADMIN_SECTIONS = [
         tabs: [
             { id: 'season-command-center', label: 'Season Command Center', icon: Zap, component: 'SeasonCommandCenter' },
             { id: 'seasons', label: 'Season Manager', icon: Calendar, component: 'SeasonManager' },
-            { id: 'finalize-pool', label: 'Finalize Pool', icon: ClipboardCheck, component: 'FinalizePoolWizard' },
             { id: 'scoring', label: 'Scoring & RCV', icon: Calculator, component: 'RankedVoteManager' },
             { id: 'holistic', label: 'v3.0 Scoring', icon: Calculator, component: 'HolisticScoringPanel' },
             { id: 'analytics', label: 'Scoring Analytics', icon: BarChart3, component: 'ScoringAnalytics' },
