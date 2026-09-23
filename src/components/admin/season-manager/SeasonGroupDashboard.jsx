@@ -6,6 +6,8 @@ import SeasonChecklist from './SeasonChecklist';
 import CohortCard from './CohortCard';
 import AddCohortDialog from './AddCohortDialog';
 import FinalizePoolPanel from '../finalize-pool/FinalizePoolPanel';
+import SeasonPhaseControl from './SeasonPhaseControl';
+import SeasonDatesDialog from './SeasonDatesDialog';
 
 const fmt = (d) => (d ? format(new Date(d), 'MMM d, yyyy') : '—');
 
@@ -13,7 +15,9 @@ export default function SeasonGroupDashboard({ entry, handlers }) {
   const { group, cohorts } = entry;
   const [finalizingId, setFinalizingId] = useState(null);
   const [adding, setAdding] = useState(false);
+  const [editingDates, setEditingDates] = useState(false);
   const finalizing = cohorts.find((c) => c.id === finalizingId);
+  const edit = (s) => (s.is_group ? setEditingDates(true) : handlers.onEdit(s));
 
   const openFinalize = (c) => {
     setFinalizingId(c.id);
@@ -30,14 +34,16 @@ export default function SeasonGroupDashboard({ entry, handlers }) {
             <p className="text-sm text-white/60 mt-1">{fmt(group.start_date)} – {fmt(group.end_date)} · {cohorts.length} {cohorts.length === 1 ? 'cohort' : 'cohorts'}</p>
           </div>
           <div className="flex gap-2">
-            <Button size="sm" variant="ghost" onClick={() => handlers.onEdit(group)} className="text-white hover:bg-white/10"><Settings2 className="w-4 h-4 mr-1.5" />Edit season</Button>
+            <Button size="sm" variant="ghost" onClick={() => setEditingDates(true)} className="text-white hover:bg-white/10"><Settings2 className="w-4 h-4 mr-1.5" />Season dates</Button>
             <Button size="sm" onClick={() => setAdding(true)} className="bg-editorial-copper hover:bg-editorial-copper/90 text-white"><Plus className="w-4 h-4 mr-1.5" />Add cohort</Button>
           </div>
         </div>
       </header>
 
+      <SeasonPhaseControl cohorts={cohorts} onChanged={handlers.onChanged} />
+
       <SeasonChecklist group={group} cohorts={cohorts} backlog={handlers.backlog}
-        actions={{ onEdit: handlers.onEdit, onNavigate: handlers.onNavigate, onFinalize: openFinalize, onAddCohort: () => setAdding(true) }} />
+        actions={{ onEdit: edit, onNavigate: handlers.onNavigate, onFinalize: openFinalize, onAddCohort: () => setAdding(true) }} />
 
       {finalizing && (
         <div id="finalize-panel">
@@ -55,6 +61,11 @@ export default function SeasonGroupDashboard({ entry, handlers }) {
         <div className="grid md:grid-cols-2 2xl:grid-cols-3 gap-4">
           {cohorts.map((c) => <CohortCard key={c.id} cohort={c} handlers={handlers} onFinalize={openFinalize} active={c.id === finalizingId} />)}
         </div>
+      )}
+
+      {editingDates && (
+        <SeasonDatesDialog group={group} cohorts={cohorts} onClose={() => setEditingDates(false)}
+          onSaved={() => { setEditingDates(false); handlers.onChanged(); }} />
       )}
 
       {adding && (

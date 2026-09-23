@@ -7,6 +7,7 @@ import { statusOf } from './seasonStatusConfig';
 import { cohortName } from './seasonGrouping';
 import CohortLifecycleStrip from './CohortLifecycleStrip';
 import CohortLifecycleActions from './CohortLifecycleActions';
+import ArchiveSeasonButton from './ArchiveSeasonButton';
 
 const fmt = (d) => (d ? format(new Date(d), 'MMM d') : '—');
 
@@ -32,10 +33,13 @@ export default function CohortCard({ cohort, handlers, onFinalize, active }) {
           <div><dt className="text-editorial-navy/50">Voting</dt><dd className="text-editorial-navy font-medium">{fmt(cohort.voting_start)} – {fmt(cohort.voting_end)}</dd></div>
         </dl>
         <CohortLifecycleStrip season={cohort} backlogCount={handlers.backlog[cohort.cohort_key] || 0} />
-        <CohortLifecycleActions season={cohort} onChanged={handlers.onChanged} onRollover={handlers.onRollover} />
+        {cohort.parent_season_id
+          ? <p className="text-xs text-editorial-navy/50">Phase and dates are set at the season level.</p>
+          : <CohortLifecycleActions season={cohort} onChanged={handlers.onChanged} onRollover={handlers.onRollover} />}
         <div className="flex flex-wrap gap-1.5 pt-1">
           <Button size="sm" variant="ghost" onClick={() => handlers.onEdit(cohort)} className="text-editorial-navy"><Settings2 className="w-3.5 h-3.5 mr-1.5" />Configure</Button>
           {!archived && <Button size="sm" variant="ghost" onClick={() => onFinalize(cohort)} className="text-editorial-navy"><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Finalize pool</Button>}
+          {!archived && !cohort.parent_season_id && <ArchiveSeasonButton seasons={[cohort]} onArchived={handlers.onChanged} />}
           <Button size="sm" variant="ghost" onClick={() => handlers.onView(cohort)} className="text-editorial-navy"><Eye className="w-3.5 h-3.5 mr-1.5" />View</Button>
           <Button size="sm" variant="ghost" asChild className="text-editorial-navy">
             <Link to={createPageUrl('Arena') + `?season_id=${cohort.id}`} target="_blank"><ExternalLink className="w-3.5 h-3.5 mr-1.5" />Standings</Link>

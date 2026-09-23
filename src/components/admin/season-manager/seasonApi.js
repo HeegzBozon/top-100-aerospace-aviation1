@@ -19,6 +19,16 @@ export async function createSeasonWithCohorts({ name, theme, dates, cohorts }) {
   return group;
 }
 
+// Parent-level dates cascade to every non-archived cohort so the season stays aligned.
+export async function updateGroupDates(group, cohorts, dates, name) {
+  await Season.update(group.id, { ...dates, name: name || group.name });
+  await Promise.all(cohorts.filter((c) => c.status !== 'archived').map((c) => Season.update(c.id, dates)));
+}
+
+// Parent-level phase change applied to every non-archived cohort.
+export const setCohortsStatus = (cohorts, status) =>
+  Promise.all(cohorts.filter((c) => c.status !== 'archived').map((c) => Season.update(c.id, { status })));
+
 export const addCohort = (group, cohort) => Season.create(cohortRecord(group, cohort));
 
 // Groups existing seasons under a new parent. Nominee season_id values are untouched —

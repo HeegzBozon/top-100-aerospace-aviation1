@@ -50,4 +50,13 @@ export const STATUS_CONFIG = {
   archived: { label: 'Archived', icon: Archive, tone: 'bg-editorial-navy/10 text-editorial-navy/60', actions: [] },
 };
 
+// Phases an admin can move a whole season (all cohorts) into from the parent level.
+export const GROUP_PHASES = [
+  { status: 'planning', label: 'Planning' },
+  { status: 'nominations_open', label: 'Nominations' },
+  { status: 'voting_open', label: 'Voting' },
+  { status: 'review', label: 'Review' },
+  { status: 'completed', label: 'Completed' },
+];
+
 export const statusOf = (s) => STATUS_CONFIG[s?.status] || STATUS_CONFIG.planning;
