@@ -196,6 +196,15 @@
     "cloned_from_season_id": {
       "type": "string",
       "description": "ID of the season this was cloned from"
+    },
+    "pool_finalized_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Finalize Pool wizard activated this season's voting pool"
+    },
+    "pool_finalization_receipt": {
+      "type": "object",
+      "description": "Summary receipt emitted by the Finalize Pool wizard (counts, merges, orphans, final pool size)"
     }
   },
   "required": [

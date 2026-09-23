@@ -1,6 +1,7 @@
 import { X, Mail, Linkedin, Globe, User, Users, Calendar, Award, Star, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import NominationHistoryPanel from './NominationHistoryPanel';
 
 export default function NomineeViewModal({ nominee, onClose }) {
   if (!nominee) return null;
@@ -102,6 +103,8 @@ export default function NomineeViewModal({ nominee, onClose }) {
              </div>
           </section>
           
+          <NominationHistoryPanel nomineeId={nominee.id} />
+
           {/* Scores */}
           <section>
             <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Scoring & Stats</h3>

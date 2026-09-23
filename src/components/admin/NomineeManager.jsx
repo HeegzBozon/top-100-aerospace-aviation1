@@ -115,6 +115,19 @@ export default function NomineeManager({ seasons }) {
   const handleStatusChange = async (nominee, newStatus) => {
     setProcessingId(nominee.id);
     try {
+      if (newStatus === 'approved') {
+        // Pool-aware approval through the shared resolver (LinkedIn slug, then email).
+        let res = (await base44.functions.invoke('linkNominationToPool', { mode: 'nominee', nominee_id: nominee.id })).data;
+        if (res.status === 'conflict') {
+          const d = res.duplicate;
+          const ok = window.confirm(`"${nominee.name}" matches an existing pool record by ${res.matched_on}:\n${d.name} (${d.status}${d.season_id === selectedSeasonId ? ', this season' : ', another season'}).\n\nOK = approve anyway (merge later in Finalize Pool)\nCancel = abort`);
+          if (!ok) return;
+          res = (await base44.functions.invoke('linkNominationToPool', { mode: 'nominee', nominee_id: nominee.id, force: true })).data;
+        }
+        setNominees(cur => cur.map(n => n.id === nominee.id ? { ...n, status: 'approved', nomination_count: res.nomination_count } : n));
+        toast({ title: 'Nominee Approved', description: `${nominee.name} approved · ${res.nomination_count} linked nomination(s)${res.linked_intakes ? `, ${res.linked_intakes} newly linked` : ''}.` });
+        return;
+      }
       await Nominee.update(nominee.id, { status: newStatus });
       setNominees(currentNominees => currentNominees.map(n => n.id === nominee.id ? { ...n, status: newStatus } : n));
       toast({
@@ -687,7 +700,12 @@ export default function NomineeManager({ seasons }) {
                         />
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 truncate">{nominee.name}</div>
+                        <div className="text-sm font-medium text-gray-900 truncate flex items-center gap-2">
+                          {nominee.name}
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#FAF8F5] border border-[#C9A87C]/40 text-[#1E3A5A]" title="Linked nominations">
+                            {nominee.nomination_count || 0} nom.
+                          </span>
+                        </div>
                         <div className="text-sm text-gray-500 truncate">{nominee.nominee_email}</div>
                       </div>
                     </div>

@@ -76,7 +76,7 @@
     "source": {
       "type": "string",
       "default": "unified_nomination_hub",
-      "description": "Where this intake record came from"
+      "description": "Where this intake record came from ('legacy_nomination' for migrated records)"
     },
     "status": {
       "type": "string",
@@ -97,6 +97,10 @@
     "nominee_id": {
       "type": "string",
       "description": "Linked Nominee record ID after approval, if applicable"
+    },
+    "migrated_from_nomination_id": {
+      "type": "string",
+      "description": "Source legacy Nomination record ID when migrated. Migration flag and idempotency key."
     }
   },
   "required": [

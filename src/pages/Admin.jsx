@@ -54,6 +54,7 @@ const LocalLegendsManager      = lazy(() => import('@/components/admin/LocalLege
 const TopViralPostsManager     = lazy(() => import('@/components/admin/TopViralPostsManager'));
 const NominationIntakeManager  = lazy(() => import('@/components/admin/NominationIntakeManager'));
 const SeasonalPlanningDashboard = lazy(() => import('@/components/admin/SeasonalPlanningDashboard'));
+const FinalizePoolWizard       = lazy(() => import('@/components/admin/FinalizePoolWizard'));
 import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
@@ -253,6 +254,8 @@ export default function Admin() {
             onViewSeason={(season) => setViewingSeason(season)}
           />
         );
+      case 'finalize-pool':
+        return <FinalizePoolWizard seasons={seasons} />;
       case 'scoring':
         return <RankedVoteManager />;
       case 'content':

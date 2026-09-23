@@ -72,67 +72,19 @@ export default function NominationIntakeManager() {
       return;
     }
 
-    // Pool-aware: search the ENTIRE candidate pool (all seasons) for an existing
-    // master by normalized name or email. If found, link to it and append a
-    // season_participation entry instead of creating a duplicate record.
-    const email = (item.nominee_email || '').toLowerCase().trim();
-    const name = (item.nominee_name || '').toLowerCase().trim();
-    const norm = (s) => (s || '').toLowerCase().trim().replace(/\s+/g, ' ');
-    const pool = await base44.entities.Nominee.list('-created_date', 2000);
-    const matches = pool.filter(n =>
-      (email && (n.nominee_email || '').toLowerCase().trim() === email) ||
-      (name && norm(n.name) === norm(name))
-    );
-    const existing = matches.find(n => n.raw_nomination_data?.is_master) || matches[0];
-
-    if (existing) {
-      const sameSeason = existing.season_id === season.id;
-      const proceed = window.confirm(`"${existing.name}" already exists in the candidate pool${sameSeason ? ` (${season.name})` : ' (another season)'}, status: ${existing.status}.\n\nOK = link to this master & add them to ${season.name}\nCancel = abort`);
-      if (!proceed) { setApprovingId(null); return; }
-      const r = existing.raw_nomination_data || {};
-      const parts = Array.isArray(r.season_participation) ? r.season_participation : [];
-      const already = parts.some(p => p.season_id === season.id);
-      const updatedParts = already ? parts : [...parts, { nominee_id: existing.id, season_id: season.id, status: 'pending' }];
-      const fillGap = (cur, val) => (cur && cur.trim()) ? cur : (val || '');
-      await base44.entities.Nominee.update(existing.id, {
-        raw_nomination_data: { ...r, is_master: true, season_participation: updatedParts },
-        nominee_email: fillGap(existing.nominee_email, item.nominee_email),
-        linkedin_profile_url: fillGap(existing.linkedin_profile_url, item.link?.includes('linkedin.com') ? item.link : ''),
-        website_url: fillGap(existing.website_url, item.link && !item.link.includes('linkedin.com') ? item.link : ''),
-        title: fillGap(existing.title, item.role_org || item.firm),
-        country: fillGap(existing.country, item.location),
-      });
-      const patch = { status: 'approved', nominee_id: existing.id, admin_notes: `${item.admin_notes ? item.admin_notes + '\n' : ''}Linked to pool master & added to ${season.name}.` };
-      await base44.entities.NominationIntake.update(item.id, patch);
+    // Shared pool-aware resolver: canonical LinkedIn slug, then email, across all seasons.
+    try {
+      const { data } = await base44.functions.invoke('linkNominationToPool', { mode: 'intake', intake_id: item.id, season_id: season.id });
+      const patch = { status: 'approved', nominee_id: data.nominee_id };
       setItems(prev => prev.map(entry => entry.id === item.id ? { ...entry, ...patch } : entry));
+      toast(data.status === 'linked'
+        ? { title: 'Linked to pool master', description: `${item.nominee_name} → ${data.nominee_name} (${data.matched_on} match, ${season.name}).` }
+        : { title: 'Pool master created', description: `${item.nominee_name} added to ${season.name}.` });
+    } catch (e) {
+      toast({ variant: 'destructive', title: 'Approval failed', description: e?.response?.data?.error || e.message });
+    } finally {
       setApprovingId(null);
-      toast({ title: 'Linked to pool master', description: `${item.nominee_name} → ${existing.name} (added to ${season.name}).` });
-      return;
     }
-
-    // No existing master — create a new master seeded with participation
-    const nominee = await base44.entities.Nominee.create({
-      season_id: season.id,
-      name: item.nominee_name,
-      nominee_email: item.nominee_email || '',
-      linkedin_profile_url: item.link?.includes('linkedin.com') ? item.link : '',
-      website_url: item.link && !item.link.includes('linkedin.com') ? item.link : '',
-      title: item.role_org || item.firm || '',
-      company: item.firm || '',
-      country: item.location || '',
-      description: item.reason || `${item.nominee_name} was submitted through the unified nomination hub.`,
-      nomination_reason: item.reason,
-      nominated_by: item.nominator_email,
-      category: typeLabels[item.nomination_type] || item.nomination_type,
-      status: 'pending',
-      raw_nomination_data: { ...item, is_master: true, season_participation: [{ nominee_id: null, season_id: season.id, status: 'pending' }], merged_nominee_ids: [] },
-    });
-
-    const patch = { status: 'approved', nominee_id: nominee.id };
-    await base44.entities.NominationIntake.update(item.id, patch);
-    setItems(prev => prev.map(entry => entry.id === item.id ? { ...entry, ...patch } : entry));
-    setApprovingId(null);
-    toast({ title: 'Pool master created' });
   };
 
   const filtered = useMemo(() => items.filter(item => {
@@ -274,7 +226,7 @@ function IntakeCard({ item, onUpdate, onApprove, approving }) {
           <Button size="sm" className="w-full bg-[#1e3a5a] hover:bg-[#1e3a5a]/90 text-white" onClick={() => onUpdate(item, { admin_notes: notes })}>Save notes</Button>
           {item.nominee_id ? (
             <Button size="sm" variant="outline" disabled className="w-full gap-2">
-              <CheckCircle2 className="w-4 h-4" /> Nominee created
+              <CheckCircle2 className="w-4 h-4" /> Linked to pool
             </Button>
           ) : (
             <Button size="sm" onClick={() => onApprove(item)} disabled={approving} className="w-full gap-2 bg-[#c9a87c] hover:bg-[#c9a87c]/90 text-[#0a1526] font-bold">

@@ -1,5 +1,6 @@
 {
   "name": "Nomination",
+  "description": "DEPRECATED. Retired legacy entity; records were migrated into NominationIntake. Do not write new records.",
   "type": "object",
   "properties": {
     "nominee_email": {

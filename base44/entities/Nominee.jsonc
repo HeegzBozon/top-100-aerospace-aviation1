@@ -776,6 +776,19 @@
       ],
       "default": "draft",
       "description": "Publication status of the editorial article"
+    },
+    "nomination_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Denormalized count of linked NominationIntake records. Admin-only provenance; never read by discovery, ranking, or scoring."
+    },
+    "linked_nomination_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of every NominationIntake record linked to this nominee. Admin-only provenance."
     }
   },
   "required": [
