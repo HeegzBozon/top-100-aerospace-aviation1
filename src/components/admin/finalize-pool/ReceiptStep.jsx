@@ -10,6 +10,8 @@ const ROWS = [
   ['still_pending', 'Still pending (not in pool)'],
   ['merges_performed', 'Merges performed'],
   ['orphans_resolved', 'Orphans resolved'],
+  ['orphans_carried', 'Orphans carried over'],
+  ['orphan_nominations_linked', 'Orphan nominations linked'],
   ['returning_honorees', 'Returning honorees'],
   ['acknowledged_duplicate_groups', 'Duplicate groups acknowledged'],
   ['acknowledged_orphans', 'Orphans acknowledged'],

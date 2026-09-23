@@ -77,9 +77,11 @@ export default function NominationIntakeManager() {
       const { data } = await base44.functions.invoke('linkNominationToPool', { mode: 'intake', intake_id: item.id, season_id: season.id });
       const patch = { status: 'approved', nominee_id: data.nominee_id };
       setItems(prev => prev.map(entry => entry.id === item.id ? { ...entry, ...patch } : entry));
-      toast(data.status === 'linked'
-        ? { title: 'Linked to pool master', description: `${item.nominee_name} → ${data.nominee_name} (${data.matched_on} match, ${season.name}).` }
-        : { title: 'Pool master created', description: `${item.nominee_name} added to ${season.name}.` });
+      toast({
+        linked: { title: 'Linked to pool master', description: `${item.nominee_name} → ${data.nominee_name} (${data.matched_on} match, ${season.name}).` },
+        returning: { title: 'Returning honoree', description: `${item.nominee_name} matched a prior-season record by ${data.matched_on} and was carried into ${season.name}.` },
+        created: { title: 'Pool master created', description: `${item.nominee_name} added to ${season.name}.` },
+      }[data.status] || { title: 'Already linked' });
     } catch (e) {
       toast({ variant: 'destructive', title: 'Approval failed', description: e?.response?.data?.error || e.message });
     } finally {

@@ -13,7 +13,7 @@ export default function ActivateStep({ season, log, onActivated }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const dupOk = !log.open_duplicates || log.ack_duplicates;
-  const orphOk = !log.open_orphans || log.ack_orphans;
+  const orphOk = !log.open_orphans || log.carry_orphans || log.ack_orphans;
   const ready = !!log.backup_downloaded_at && dupOk && orphOk;
 
   const activate = async () => {
@@ -24,6 +24,7 @@ export default function ActivateStep({ season, log, onActivated }) {
         season_id: season.id,
         ack_duplicates: log.ack_duplicates,
         ack_orphans: log.ack_orphans,
+        carry_orphans: log.carry_orphans,
         merges_performed: log.merges_performed,
         orphans_resolved: log.orphans_resolved,
         backup_downloaded_at: log.backup_downloaded_at,
@@ -38,7 +39,7 @@ export default function ActivateStep({ season, log, onActivated }) {
       <ul className="space-y-2">
         <Check ok={!!log.backup_downloaded_at} label="Restore point downloaded" />
         <Check ok={dupOk} label={log.open_duplicates ? `${log.open_duplicates} duplicate group(s) acknowledged` : 'No open duplicates'} />
-        <Check ok={orphOk} label={log.open_orphans ? `${log.open_orphans} orphaned record(s) acknowledged` : 'No open orphans'} />
+        <Check ok={orphOk} label={!log.open_orphans ? 'No open orphans' : log.carry_orphans ? `${log.open_orphans} orphaned record(s) will carry into the pool` : `${log.open_orphans} orphaned record(s) left out`} />
       </ul>
       <p className="text-xs text-editorial-navy/50 mt-4">{log.merges_performed} merge(s) performed · {log.orphans_resolved} orphan(s) linked this session</p>
       <Button onClick={activate} disabled={!ready || busy} className="mt-6 bg-editorial-copper hover:bg-editorial-copper/90 text-white gap-2">

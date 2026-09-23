@@ -6,7 +6,7 @@ export default function DuplicateGroupCard({ group, merging, onMerge }) {
     <div className="rounded-xl border border-editorial-navy/10 p-4">
       <div className="flex items-center justify-between gap-3 mb-3">
         <span className="text-[10px] uppercase tracking-widest font-bold text-editorial-copper">
-          Matched on {group.matched_on === 'linkedin' ? 'LinkedIn slug' : 'email'} · {group.members.length} records
+          Matched on {{ linkedin: 'LinkedIn slug', email: 'email', name: 'name only · verify before merging' }[group.matched_on]} · {group.members.length} records
         </span>
         <Button size="sm" onClick={onMerge} disabled={merging} className="bg-editorial-navy hover:bg-editorial-navy/90 text-white gap-2">
           {merging ? <Loader2 className="w-4 h-4 animate-spin" /> : <GitMerge className="w-4 h-4" />} Merge into master

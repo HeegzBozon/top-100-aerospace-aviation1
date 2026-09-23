@@ -16,7 +16,7 @@ const STEPS = [
   { key: 'activate', label: 'Activate' },
   { key: 'receipt', label: 'Receipt' },
 ];
-const FRESH_LOG = { backup_downloaded_at: null, backup_counts: null, merges_performed: 0, orphans_resolved: 0, open_duplicates: 0, open_orphans: 0, ack_duplicates: false, ack_orphans: false };
+const FRESH_LOG = { backup_downloaded_at: null, backup_counts: null, merges_performed: 0, orphans_resolved: 0, open_duplicates: 0, open_orphans: 0, ack_duplicates: false, ack_orphans: false, carry_orphans: true };
 
 export default function FinalizePoolWizard({ seasons = [] }) {
   const candidates = seasons.filter((s) => s.status !== 'archived');

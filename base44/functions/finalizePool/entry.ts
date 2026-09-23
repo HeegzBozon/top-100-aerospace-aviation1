@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
 import {
   loadPool, scanSeasonDuplicates, findOrphans, mergeGroup, migrateLegacyNominations, isMerged,
+  seasonTrack, linkIntakeToPool,
 } from '../../shared/poolLink.ts';
 
 // Admin-only Finalize Pool wizard backend.
@@ -45,8 +46,11 @@ export default async function(req) {
 
     if (!season_id) return Response.json({ error: 'season_id is required' }, { status: 400 });
 
+    const season = await sr.entities.Season.get(season_id);
+    const track = seasonTrack(season?.name);
+
     if (action === 'scan') return Response.json(scanSeasonDuplicates(pool, season_id));
-    if (action === 'orphans') return Response.json(findOrphans(pool, intakes, season_id));
+    if (action === 'orphans') return Response.json(findOrphans(pool, intakes, season_id, track));
 
     if (action === 'merge') {
       const ids = body.nominee_ids || [];
@@ -57,17 +61,30 @@ export default async function(req) {
 
     if (action === 'activate') {
       const scan = scanSeasonDuplicates(pool, season_id);
-      const orphans = findOrphans(pool, intakes, season_id);
+      const orphans = findOrphans(pool, intakes, season_id, track);
       const openOrphans = orphans.unlinked_intakes.length + orphans.unbacked_nominees.length;
       if (scan.groups.length && !body.ack_duplicates) {
         return Response.json({ error: `${scan.groups.length} duplicate group(s) unresolved. Merge or acknowledge them first.` }, { status: 409 });
       }
-      if (openOrphans && !body.ack_orphans) {
-        return Response.json({ error: `${openOrphans} orphaned record(s) unresolved. Link or acknowledge them first.` }, { status: 409 });
+      if (openOrphans && !body.ack_orphans && !body.carry_orphans) {
+        return Response.json({ error: `${openOrphans} orphaned record(s) unresolved. Carry them over or acknowledge leaving them out.` }, { status: 409 });
+      }
+
+      // Carry-over: link approved-but-unlinked nominations, then bring every orphan into the pool.
+      const carryIds = new Set();
+      let orphanIntakesLinked = 0;
+      if (body.carry_orphans) {
+        for (const slim of orphans.unlinked_intakes) {
+          const full = intakes.find((i) => i.id === slim.id);
+          const r = await linkIntakeToPool(sr, full, season_id, pool);
+          carryIds.add(r.nominee_id);
+          orphanIntakesLinked++;
+        }
+        orphans.unbacked_nominees.forEach((n) => carryIds.add(n.id));
       }
 
       const seasonLive = pool.filter((n) => n.season_id === season_id && !isMerged(n));
-      const toActivate = seasonLive.filter((n) => n.status === 'approved');
+      const toActivate = seasonLive.filter((n) => n.status === 'approved' || (carryIds.has(n.id) && n.status === 'pending'));
       for (let i = 0; i < toActivate.length; i += 200) {
         await sr.entities.Nominee.bulkUpdate(toActivate.slice(i, i + 200).map((n) => ({ id: n.id, status: 'active' })));
       }
@@ -85,7 +102,9 @@ export default async function(req) {
         still_pending: seasonLive.filter((n) => n.status === 'pending').length,
         returning_honorees: scan.returning_count,
         acknowledged_duplicate_groups: body.ack_duplicates ? scan.groups.length : 0,
-        acknowledged_orphans: body.ack_orphans ? openOrphans : 0,
+        acknowledged_orphans: !body.carry_orphans && body.ack_orphans ? openOrphans : 0,
+        orphans_carried: carryIds.size,
+        orphan_nominations_linked: orphanIntakesLinked,
       };
       await sr.entities.Season.update(season_id, { pool_finalized_at: finalizedAt, pool_finalization_receipt: receipt });
       console.log('POOL_FINALIZED', season_id, JSON.stringify(receipt));

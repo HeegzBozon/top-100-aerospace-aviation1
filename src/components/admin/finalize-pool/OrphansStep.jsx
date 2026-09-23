@@ -53,7 +53,14 @@ export default function OrphansStep({ season, log, setLog }) {
               ))}
             </div>
           </div>
-          <AckBox checked={log.ack_orphans} onChange={(v) => setLog((l) => ({ ...l, ack_orphans: v }))} label={`I've reviewed the ${open} remaining record(s) and accept activating without further linking.`} />
+          <AckBox
+            checked={log.carry_orphans}
+            onChange={(v) => setLog((l) => ({ ...l, carry_orphans: v }))}
+            label={`Carry all ${open} record(s) into this season's voting pool on activation. Unlinked nominations are linked first (recommended for 2026).`}
+          />
+          {!log.carry_orphans && (
+            <AckBox checked={log.ack_orphans} onChange={(v) => setLog((l) => ({ ...l, ack_orphans: v }))} label={`Leave these ${open} record(s) out of the voting pool.`} />
+          )}
         </div>
       ))}
     </StepPanel>
