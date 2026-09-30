@@ -32,7 +32,7 @@ export default function NominationSplash() {
           className="text-4xl md:text-6xl font-bold text-white leading-tight"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
-          Opening the<br />Nomination Hub
+          The Selection<br />Committee
         </h1>
 
         <motion.div

@@ -36,7 +36,7 @@ export default function ListBuilderHeader({ listName, count, isPublished, onShar
         </div>
         <div className="min-w-0">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: `${brand.navy}60` }}>
-            TOP 100 · My List
+            Selection Committee · My List
           </p>
           <p className="text-xs font-semibold leading-none truncate max-w-[120px]" style={{ color: brand.navy }}>
             {listName || 'My Top 100'}

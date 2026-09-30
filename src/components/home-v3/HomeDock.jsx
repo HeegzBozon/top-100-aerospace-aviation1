@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 
 const NAV_LINKS = [
   { label: 'Operation: Moon Joy', to: '/moon-joy' },
-  { label: 'Nominate', to: '/nominate' },
+  { label: 'Selection Committee', to: '/selection-committee' },
   { label: 'Calendar', to: '/events' },
   { label: 'Shop', to: '/Shop' },
   { label: 'Local Legends', to: '/local-legends' },
@@ -92,7 +92,7 @@ export default function HomeDock() {
 
         <Divider />
 
-        <DockLink to="/nominate" icon={Users} label="Nominate" />
+        <DockLink to="/selection-committee" icon={Users} label="Committee" />
 
         <Link
           to="/rsvp"

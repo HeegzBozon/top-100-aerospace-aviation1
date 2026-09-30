@@ -18,18 +18,18 @@ Deno.serve(async (req) => {
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: ADMIN_EMAIL,
-      subject: `🏆 New Nomination — ${nomineeName}`,
-      body: `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto">
+      subject: `Selection Committee — ${nomineeName}`,
+      body: `<div style="font-family:Georgia,serif;max-width:600px;margin:0 auto">
         <div style="background:#1e3a5a;padding:24px;border-radius:12px 12px 0 0">
-          <h2 style="color:#c9a87c;margin:0;font-size:18px">New Nomination Received</h2>
-          <p style="color:#ffffff99;margin:4px 0 0;font-size:13px">TOP 100 Aerospace & Aviation</p>
+          <h2 style="color:#c9a87c;margin:0;font-size:18px;letter-spacing:0.04em">A Name Before the Committee</h2>
+          <p style="color:#faf8f5cc;margin:4px 0 0;font-size:13px;font-family:system-ui,sans-serif">TOP 100 Aerospace &amp; Aviation · Selection Committee</p>
         </div>
-        <div style="padding:24px;background:#fff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px">
-          <p style="margin:0 0 8px"><strong>Nominee:</strong> ${nomineeName}</p>
+        <div style="padding:24px;background:#faf8f5;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;font-family:system-ui,sans-serif">
+          <p style="margin:0 0 8px"><strong>Name:</strong> ${nomineeName}</p>
           <p style="margin:0 0 8px"><strong>Email:</strong> ${nomineeEmail}</p>
-          <p style="margin:0 0 8px"><strong>Nominated by:</strong> ${nominatedBy}</p>
+          <p style="margin:0 0 8px"><strong>Put forward by:</strong> ${nominatedBy}</p>
           ${reason ? `<p style="margin:0 0 16px"><strong>Reason:</strong> ${reason}</p>` : ''}
-          <p style="color:#94a3b8;font-size:12px;margin:16px 0 0">Review in Admin → Nominees</p>
+          <p style="color:#94a3b8;font-size:12px;margin:16px 0 0">Review in Admin → Selection Committee</p>
         </div>
       </div>`,
     });

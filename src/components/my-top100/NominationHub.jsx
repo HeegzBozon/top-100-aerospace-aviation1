@@ -68,16 +68,16 @@ export default function NominationHub({ submittedNominations, onAddNomination, o
           <Sparkles className="w-5 h-5" style={{ color: brand.gold }} />
         </div>
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: `${brand.navy}50` }}>
-          Nominate
+          Selection Committee
         </p>
         <h1
           className="text-xl sm:text-2xl font-bold leading-tight mb-2 max-w-xl mx-auto"
           style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
         >
-          Who deserves to be in the Top 100?
+          Put a name before the Committee
         </h1>
         <p className="text-xs leading-relaxed max-w-lg mx-auto" style={{ color: `${brand.navy}60` }}>
-          Nominate the women, men, and angel investors shaping aerospace &amp; aviation. Choose a category in the form — and check the box to also nominate someone as an angel.
+          The community, convened as the Selection Committee, fields names for the season. Put forward the women, men, and angel investors shaping aerospace &amp; aviation.
         </p>
       </div>
 

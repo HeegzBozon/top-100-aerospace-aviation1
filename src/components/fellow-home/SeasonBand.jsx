@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import SeasonCountdown from '@/components/fellow-home/season/SeasonCountdown';
+import CommitteePhasePanel from '@/components/fellow-home/season/CommitteePhasePanel';
 import NomineeTally from '@/components/fellow-home/season/NomineeTally';
 import YearProgressRule from '@/components/fellow-home/season/YearProgressRule';
 import MonthCalendar from '@/components/fellow-home/season/MonthCalendar';
@@ -8,15 +8,14 @@ import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // Season state, staged as an editorial masthead band. On mobile the calendar and
 // year-rule collapse to keep the band light; countdown, tally, and links stay visible.
-export default function SeasonBand({ accent, underCountdown, underTally }) {
+export default function SeasonBand({ accent, underTally }) {
   const [open, setOpen] = useState(false);
 
   return (
     <section className="px-5 sm:px-8 pt-5 pb-5" style={{ background: B.sand }}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-0">
         <div className="md:pr-7">
-          <SeasonCountdown accent={accent} />
-          {underCountdown}
+          <CommitteePhasePanel accent={accent} />
         </div>
         <div className="md:px-7 md:border-l" style={{ borderColor: `${B.navy}14` }}>
           <NomineeTally accent={accent} />

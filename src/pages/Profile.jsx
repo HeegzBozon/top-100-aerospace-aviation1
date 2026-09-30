@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Download, ArrowRight, ListOrdered, Settings2, BookMarked } from 'lucide-react';
+import { Loader2, Download, Settings2 } from 'lucide-react';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
@@ -319,19 +318,6 @@ export default function Profile() {
           coverContent={
             <SeasonBand
               accent={accent}
-              underCountdown={
-                <div className="mt-4 flex items-center gap-5 flex-wrap">
-                  <Link to="/nominate" className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70" style={{ color: B.navy }}>
-                    Enter a nomination <ArrowRight className="w-3.5 h-3.5" style={{ color: accent }} />
-                  </Link>
-                  <Link to="/nominate" className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70" style={{ color: B.navy }}>
-                    Refine my ballot <ListOrdered className="w-3.5 h-3.5" style={{ color: accent }} />
-                  </Link>
-                  <Link to="/archive/6a6b7954c924445e2599968d" className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70" style={{ color: B.navy }}>
-                    Browse the archive <BookMarked className="w-3.5 h-3.5" style={{ color: accent }} />
-                  </Link>
-                </div>
-              }
               underTally={blurbsContent}
             />
           }

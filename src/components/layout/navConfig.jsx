@@ -4,12 +4,12 @@ export { brandColors };
 
 export const CORE_NAV_ITEMS = [
     { icon: 'Home', label: "Home", pageName: "Home" },
-    { icon: 'Award', label: "Noms", pageName: "Nominations" },
+    { icon: 'Award', label: "Committee", pageName: "Nominations" },
     { icon: 'CircuitBoard', label: "Index", pageName: "Top100Women2025" },
 ];
 
 export const QUICK_ACTIONS = [
-    { label: 'Nominate Someone', pageName: 'Nominations', icon: 'Send', color: brandColors.goldPrestige },
+    { label: 'Join the Selection Committee', pageName: 'Nominations', icon: 'Send', color: brandColors.goldPrestige },
     { label: 'View TOP 100', pageName: 'Top100Women2025', icon: 'Trophy', color: brandColors.navyDeep },
     { label: 'Explore Arena', pageName: 'Arena', icon: 'Users', color: brandColors.skyBlue },
 ];

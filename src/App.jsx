@@ -205,7 +205,8 @@ const AuthenticatedApp = () => {
       <Route path="/local-legends" element={<LocalLegends />} />
       <Route path="/local-legends-pro" element={<LocalLegendsPro />} />
       <Route path="/local-legends/apply" element={<LocalLegendsApply />} />
-      <Route path="/nominate" element={<NominationForm />} />
+      <Route path="/selection-committee" element={<NominationForm />} />
+      <Route path="/nominate" element={<Navigate to="/selection-committee" replace />} />
       <Route path="/hangouts" element={<Hangouts />} />
       <Route path="/moon-joy" element={<Hangouts />} />
       <Route path="/2030-vision" element={<Vision2030 />} />
@@ -214,7 +215,7 @@ const AuthenticatedApp = () => {
       <Route path="/common-ground-sim" element={<CommonGroundSimulator />} />
       <Route path="/session-portal/*" element={<SessionPortal />} />
       <Route path="/session-portal/join/:code" element={<SessionJoin />} />
-      <Route path="/my-top100" element={<Navigate to="/nominate" replace />} />
+      <Route path="/my-top100" element={<Navigate to="/selection-committee" replace />} />
       <Route path="/top100-list/:shareCode" element={<PublicTop100List />} />
       <Route path="/archive/:seasonId" element={<SeasonArchive />} />
       <Route path="/events" element={<EventsCalendar />} />
@@ -230,8 +231,8 @@ const AuthenticatedApp = () => {
       <Route path="/volume-two-women" element={<Navigate to="/archive/6a6b756e5c6a4773130e2511" replace />} />
       <Route path="/volume-two-men" element={<Navigate to="/archive/6a6b77cb2f46f1f0cae76d75" replace />} />
       <Route path="/volume-two-top100" element={<Navigate to="/archive/6a6b7954c924445e2599968d" replace />} />
-      <Route path="/Nominations" element={<Navigate to="/nominate" replace />} />
-      <Route path="/nominations" element={<Navigate to="/nominate" replace />} />
+      <Route path="/Nominations" element={<Navigate to="/selection-committee" replace />} />
+      <Route path="/nominations" element={<Navigate to="/selection-committee" replace />} />
       <Route path="/top100-tv" element={
         <LayoutWrapper currentPageName="Top100TV">
           <Top100TV />

@@ -9,7 +9,7 @@ export const CORE_NAV_ITEMS = [
 ];
 
 export const QUICK_ACTIONS = [
-    { label: 'Nominate Someone', pageName: 'Nominations', icon: 'Send', color: brandColors.goldPrestige },
+    { label: 'Join the Selection Committee', pageName: 'Nominations', icon: 'Send', color: brandColors.goldPrestige },
     { label: 'View TOP 100', pageName: 'Top100Women2025', icon: 'Trophy', color: brandColors.navyDeep },
     { label: 'Explore Arena', pageName: 'Arena', icon: 'Users', color: brandColors.skyBlue },
     { label: 'Global Intelligence', pageName: 'GlobalIntelligence', icon: 'Globe2', color: brandColors.skyBlue },
