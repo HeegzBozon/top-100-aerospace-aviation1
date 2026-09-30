@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { Search, Trophy, ExternalLink, RefreshCw, UserPlus, CheckCircle2, Loader2, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Search, Trophy, ExternalLink, RefreshCw, UserPlus, CheckCircle2, Loader2, Plus, Pencil, Trash2, Mail } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import IntakeBulkBar from '@/components/admin/intake/IntakeBulkBar';
 import IntakeFormDialog from '@/components/admin/intake/IntakeFormDialog';
@@ -264,6 +264,21 @@ function Stat({ label, value }) {
 function IntakeCard({ item, onUpdate, onApprove, approving, selected, onSelect, onEdit, onDelete }) {
   const [notes, setNotes] = useState(item.admin_notes || '');
 
+  const emailNominator = () => {
+    if (!item.nominator_email) return;
+    const track = typeLabels[item.nomination_type] || item.nomination_type;
+    const subject = `Quick question about your ${track} nomination${item.nominee_name ? ` for ${item.nominee_name}` : ''}`;
+    const body = [
+      `Hi ${item.nominator_name || ''},`,
+      '',
+      `Thanks for nominating${item.nominee_name ? ` ${item.nominee_name}` : ''}${track ? ` to the ${track}` : ''}. We're reviewing the submission and had a quick clarification:`,
+      '',
+      '',
+      '— The TOP 100 Aerospace & Aviation team',
+    ].join('\n');
+    window.location.href = `mailto:${encodeURIComponent(item.nominator_email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
   return (
     <div className={`rounded-2xl border bg-[var(--card)] p-5 shadow-sm ${selected ? 'border-editorial-copper ring-1 ring-editorial-copper' : 'border-[var(--border)]'}`}>
       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
@@ -274,6 +289,7 @@ function IntakeCard({ item, onUpdate, onApprove, approving, selected, onSelect, 
             <Badge className={statusStyles[item.status] || statusStyles.new}>{item.status || 'new'}</Badge>
             <Badge variant="outline">{typeLabels[item.nomination_type] || item.nomination_type}</Badge>
             <div className="ml-auto flex gap-1">
+              <Button size="icon" variant="ghost" onClick={emailNominator} disabled={!item.nominator_email} className="h-8 w-8" title={item.nominator_email ? 'Email nominator' : 'No nominator email'}><Mail className="w-4 h-4" /></Button>
               <Button size="icon" variant="ghost" onClick={onEdit} className="h-8 w-8" title="Edit"><Pencil className="w-4 h-4" /></Button>
               <Button size="icon" variant="ghost" onClick={onDelete} className="h-8 w-8 text-destructive" title="Delete"><Trash2 className="w-4 h-4" /></Button>
             </div>
