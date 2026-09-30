@@ -6,7 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { Search, Trophy, ExternalLink, RefreshCw, UserPlus, CheckCircle2, Loader2 } from 'lucide-react';
+import { Search, Trophy, ExternalLink, RefreshCw, UserPlus, CheckCircle2, Loader2, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import IntakeBulkBar from '@/components/admin/intake/IntakeBulkBar';
+import IntakeFormDialog from '@/components/admin/intake/IntakeFormDialog';
 
 const statusStyles = {
   new: 'bg-blue-100 text-blue-800',
@@ -40,6 +43,9 @@ export default function NominationIntakeManager() {
   const [status, setStatus] = useState('all');
   const [type, setType] = useState('all');
   const [approvingId, setApprovingId] = useState(null);
+  const [selected, setSelected] = useState(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [editing, setEditing] = useState(null); // null | 'new' | item
   const { toast } = useToast();
 
   useEffect(() => {
@@ -88,6 +94,36 @@ export default function NominationIntakeManager() {
       setApprovingId(null);
     }
   };
+
+  const deleteItems = async (ids) => {
+    const linked = items.filter(i => ids.includes(i.id) && i.nominee_id).length;
+    const warn = linked ? `\n\n${linked} of these are linked to a pool nominee. The nominee record stays; only the intake record is removed.` : '';
+    if (!confirm(`Permanently delete ${ids.length} nomination${ids.length === 1 ? '' : 's'}?${warn}`)) return;
+    setBulkBusy(true);
+    await base44.entities.NominationIntake.deleteMany({ id: { $in: ids } });
+    setItems(prev => prev.filter(i => !ids.includes(i.id)));
+    setSelected(new Set());
+    setBulkBusy(false);
+    toast({ title: `Deleted ${ids.length} nomination${ids.length === 1 ? '' : 's'}` });
+  };
+
+  const bulkStatus = async (value) => {
+    const ids = [...selected];
+    setBulkBusy(true);
+    await base44.entities.NominationIntake.updateMany({ id: { $in: ids } }, { $set: { status: value } });
+    setItems(prev => prev.map(i => selected.has(i.id) ? { ...i, status: value } : i));
+    setBulkBusy(false);
+    toast({ title: `${ids.length} marked ${value}` });
+  };
+
+  const bulkApprove = async () => {
+    setBulkBusy(true);
+    for (const item of items.filter(i => selected.has(i.id) && !i.nominee_id)) await approveToNominee(item);
+    setSelected(new Set());
+    setBulkBusy(false);
+  };
+
+  const toggle = (id) => setSelected(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
 
   const filtered = useMemo(() => items.filter(item => {
     const q = search.toLowerCase();
@@ -156,7 +192,36 @@ export default function NominationIntakeManager() {
         <Button variant="outline" onClick={loadItems} className="gap-2">
           <RefreshCw className="w-4 h-4" /> Refresh
         </Button>
+        <Button onClick={() => setEditing('new')} className="gap-2 bg-editorial-copper hover:bg-editorial-copper/90 text-white">
+          <Plus className="w-4 h-4" /> New
+        </Button>
       </div>
+
+      {!loading && filtered.length > 0 && (
+        <IntakeBulkBar
+          visibleCount={filtered.length}
+          selectedCount={selected.size}
+          allSelected={filtered.every(i => selected.has(i.id))}
+          onToggleAll={() => setSelected(filtered.every(i => selected.has(i.id)) ? new Set() : new Set(filtered.map(i => i.id)))}
+          onClear={() => setSelected(new Set())}
+          onStatus={bulkStatus}
+          onApprove={bulkApprove}
+          onDelete={() => deleteItems([...selected])}
+          busy={bulkBusy}
+        />
+      )}
+
+      {editing && (
+        <IntakeFormDialog
+          item={editing === 'new' ? null : editing}
+          onClose={() => setEditing(null)}
+          onSaved={(saved) => {
+            setItems(prev => editing === 'new' ? [saved, ...prev] : prev.map(i => i.id === saved.id ? saved : i));
+            setEditing(null);
+            toast({ title: editing === 'new' ? 'Nomination created' : 'Nomination saved' });
+          }}
+        />
+      )}
 
       {loading ? (
         <div className="h-40 flex items-center justify-center"><div className="w-8 h-8 rounded-full border-2 border-[#c9a87c] border-t-transparent animate-spin" /></div>
@@ -171,6 +236,10 @@ export default function NominationIntakeManager() {
               onUpdate={updateItem}
               onApprove={approveToNominee}
               approving={approvingId === item.id}
+              selected={selected.has(item.id)}
+              onSelect={() => toggle(item.id)}
+              onEdit={() => setEditing(item)}
+              onDelete={() => deleteItems([item.id])}
             />
           ))}
         </div>
@@ -188,17 +257,22 @@ function Stat({ label, value }) {
   );
 }
 
-function IntakeCard({ item, onUpdate, onApprove, approving }) {
+function IntakeCard({ item, onUpdate, onApprove, approving, selected, onSelect, onEdit, onDelete }) {
   const [notes, setNotes] = useState(item.admin_notes || '');
 
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
+    <div className={`rounded-2xl border bg-[var(--card)] p-5 shadow-sm ${selected ? 'border-editorial-copper ring-1 ring-editorial-copper' : 'border-[var(--border)]'}`}>
       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+        <Checkbox checked={selected} onCheckedChange={onSelect} className="mt-1.5" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <h3 className="text-lg font-bold text-[var(--text)]">{item.nominee_name}</h3>
             <Badge className={statusStyles[item.status] || statusStyles.new}>{item.status || 'new'}</Badge>
             <Badge variant="outline">{typeLabels[item.nomination_type] || item.nomination_type}</Badge>
+            <div className="ml-auto flex gap-1">
+              <Button size="icon" variant="ghost" onClick={onEdit} className="h-8 w-8" title="Edit"><Pencil className="w-4 h-4" /></Button>
+              <Button size="icon" variant="ghost" onClick={onDelete} className="h-8 w-8 text-destructive" title="Delete"><Trash2 className="w-4 h-4" /></Button>
+            </div>
           </div>
           <div className="text-sm text-[var(--muted)] flex flex-wrap gap-x-4 gap-y-1 mb-3">
             {item.role_org && <span>{item.role_org}</span>}
