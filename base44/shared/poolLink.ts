@@ -136,6 +136,13 @@ export async function linkIntakeToPool(sr, intake, seasonId, pool) {
       country: fill(match.country, intake.location),
       nomination_reason: fill(match.nomination_reason, intake.reason),
     };
+    // An intake approval is a review decision — bump a pending master to approved.
+    if (match.status === 'pending') {
+      patch.status = 'approved';
+      const ss = { ...(match.season_scores || {}) };
+      ss[seasonId] = seedSeasonScores('approved');
+      patch.season_scores = ss;
+    }
     await sr.entities.Nominee.update(match.id, patch);
     Object.assign(match, patch);
     nomineeId = match.id;
@@ -158,11 +165,11 @@ export async function linkIntakeToPool(sr, intake, seasonId, pool) {
       ...carried,
       season_id: seasonId,
       season_ids: [seasonId],
-      season_scores: { [seasonId]: seedSeasonScores('pending') },
+      season_scores: { [seasonId]: seedSeasonScores('approved') },
       nomination_reason: intake.reason || '',
       nominated_by: intake.nominator_email,
       category: TRACK_LABELS[intake.nomination_type] || intake.nomination_type,
-      status: 'pending',
+      status: 'approved',
       linked_nomination_ids: [intake.id],
       nomination_count: 1,
       raw_nomination_data: {

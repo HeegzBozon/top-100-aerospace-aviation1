@@ -102,13 +102,14 @@ export default function NomineeManager({ seasons }) {
   }, [searchTerm]);
 
   const buildQuery = useCallback(() => {
-    const query = { $or: [{ season_ids: selectedSeasonId }, { season_id: selectedSeasonId }] };
-    if (statusFilter !== 'all') query.status = statusFilter;
+    // Cohort scope is always required — search must narrow it, never replace it.
+    const and = [{ $or: [{ season_ids: selectedSeasonId }, { season_id: selectedSeasonId }] }];
+    if (statusFilter !== 'all') and.push({ status: statusFilter });
     if (debouncedSearch) {
       const rx = { $regex: debouncedSearch, $options: 'i' };
-      query.$or = [{ name: rx }, { nominee_email: rx }];
+      and.push({ $or: [{ name: rx }, { nominee_email: rx }] });
     }
-    return query;
+    return and.length === 1 ? and[0] : { $and: and };
   }, [selectedSeasonId, statusFilter, debouncedSearch]);
 
   const fetchPage = useCallback(async (reset) => {
