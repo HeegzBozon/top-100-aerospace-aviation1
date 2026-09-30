@@ -12,7 +12,7 @@ import LooseSeasonsSection from './season-manager/LooseSeasonsSection';
 import NewSeasonDialog from './season-manager/NewSeasonDialog';
 import NestSeasonsDialog from './season-manager/NestSeasonsDialog';
 
-export default function SeasonManager({ seasons, onSeasonsUpdate, onViewSeason, onNavigate }) {
+export default function SeasonManager({ seasons, onSeasonsUpdate, onViewSeason, onNavigate, onOpenWorkspace }) {
   const { currentGroups, pastGroups, looseCurrent, loosePast } = useMemo(() => groupSeasons(seasons), [seasons]);
   const [tab, setTab] = useState('current');
   const [selectedId, setSelectedId] = useState(null);
@@ -26,7 +26,7 @@ export default function SeasonManager({ seasons, onSeasonsUpdate, onViewSeason, 
   const selected = groups.find((g) => g.group.id === selectedId) || groups[0];
   const previousSeasons = seasons.filter((s) => !s.is_group && ['completed', 'archived'].includes(s.status));
   const refresh = () => onSeasonsUpdate?.();
-  const handlers = { onEdit: setEditing, onRollover: setRollover, onView: onViewSeason, onNavigate, onChanged: refresh, backlog };
+  const handlers = { onEdit: setEditing, onRollover: setRollover, onView: onViewSeason, onNavigate, onOpenWorkspace, onChanged: refresh, backlog };
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 bg-editorial-cream -m-4 md:-m-6 lg:-m-8 p-4 md:p-6 lg:p-8 min-h-full">

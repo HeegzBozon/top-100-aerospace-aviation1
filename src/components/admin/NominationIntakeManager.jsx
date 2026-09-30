@@ -37,13 +37,13 @@ function findSeasonForTrack(seasons, track) {
   return open.find(s => re.test(s.name || '')) || null;
 }
 
-export default function NominationIntakeManager() {
+export default function NominationIntakeManager({ lockedSeason }) {
   const [items, setItems] = useState([]);
   const [seasons, setSeasons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
-  const [type, setType] = useState('all');
+  const [type, setType] = useState(lockedSeason?.cohort_key || 'all');
   const [approvingId, setApprovingId] = useState(null);
   const [selected, setSelected] = useState(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
@@ -72,8 +72,8 @@ export default function NominationIntakeManager() {
     if (item.nominee_id) return;
     setApprovingId(item.id);
 
-    // Resolve target season from nomination track
-    const season = findSeasonForTrack(seasons, item.nomination_type);
+    // Resolve target season — locked cohort takes precedence, otherwise match by track
+    const season = lockedSeason || findSeasonForTrack(seasons, item.nomination_type);
     if (!season) {
       setApprovingId(null);
       toast({ variant: 'destructive', title: 'No open season found', description: `No open season matches the "${typeLabels[item.nomination_type] || item.nomination_type}" track.` });
@@ -171,15 +171,17 @@ export default function NominationIntakeManager() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted)]" />
           <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search nominees, roles, firms, nominators..." className="pl-9" />
         </div>
-        <Select value={type} onValueChange={setType}>
-          <SelectTrigger className="w-full xl:w-48"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All tracks</SelectItem>
-            <SelectItem value="women">TOP 100 Women</SelectItem>
-            <SelectItem value="men">TOP 100 Men</SelectItem>
-            <SelectItem value="angels">TOP 100 Angels</SelectItem>
-          </SelectContent>
-        </Select>
+        {!lockedSeason && (
+          <Select value={type} onValueChange={setType}>
+            <SelectTrigger className="w-full xl:w-48"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All tracks</SelectItem>
+              <SelectItem value="women">TOP 100 Women</SelectItem>
+              <SelectItem value="men">TOP 100 Men</SelectItem>
+              <SelectItem value="angels">TOP 100 Angels</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
         <Select value={status} onValueChange={setStatus}>
           <SelectTrigger className="w-full xl:w-44"><SelectValue /></SelectTrigger>
           <SelectContent>

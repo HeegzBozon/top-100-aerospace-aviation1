@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Settings2, ClipboardCheck, ExternalLink, Eye } from 'lucide-react';
+import { Settings2, ClipboardCheck, ExternalLink, Eye, LayoutDashboard } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { statusOf } from './seasonStatusConfig';
 import { cohortName } from './seasonGrouping';
@@ -37,6 +37,11 @@ export default function CohortCard({ cohort, handlers, onFinalize, active }) {
           ? <p className="text-xs text-editorial-navy/50">Phase and dates are set at the season level.</p>
           : <CohortLifecycleActions season={cohort} onChanged={handlers.onChanged} onRollover={handlers.onRollover} />}
         <div className="flex flex-wrap gap-1.5 pt-1">
+          {handlers.onOpenWorkspace && (
+            <Button size="sm" onClick={() => handlers.onOpenWorkspace(cohort)} className="bg-editorial-copper hover:bg-editorial-copper/90 text-white">
+              <LayoutDashboard className="w-3.5 h-3.5 mr-1.5" />Open workspace
+            </Button>
+          )}
           <Button size="sm" variant="ghost" onClick={() => handlers.onEdit(cohort)} className="text-editorial-navy"><Settings2 className="w-3.5 h-3.5 mr-1.5" />Configure</Button>
           {!archived && <Button size="sm" variant="ghost" onClick={() => onFinalize(cohort)} className="text-editorial-navy"><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Finalize pool</Button>}
           {!archived && !cohort.parent_season_id && <ArchiveSeasonButton seasons={[cohort]} onArchived={handlers.onChanged} />}

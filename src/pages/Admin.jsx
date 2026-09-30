@@ -9,50 +9,40 @@ import { Settings, X, Menu } from 'lucide-react';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import AdminCommandPalette, { addRecentTab } from '@/components/admin/AdminCommandPalette';
-import { findTabById } from '@/components/admin/adminNavConfig';
+import { findTabById, resolveTabId } from '@/components/admin/adminNavConfig';
 
 // Admin content components — lazy-loaded per tab (only the active tab downloads its chunk)
-const AdminCommandCenter       = lazy(() => import('@/components/admin/AdminCommandCenter'));
-const SeasonCommandCenter      = lazy(() => import('@/components/admin/SeasonCommandCenter'));
-const SeasonManager            = lazy(() => import('@/components/admin/SeasonManager'));
-const SeasonViewModal          = lazy(() => import('@/components/admin/SeasonViewModal'));
-const ProviderReviewManager    = lazy(() => import('@/components/admin/ProviderReviewManager'));
-const ServiceManager           = lazy(() => import('@/components/admin/ServiceManager'));
-const NomineeManager           = lazy(() => import('@/components/admin/NomineeManager'));
-const KBArticleManager         = lazy(() => import('@/components/admin/KBArticleManager'));
-const PlatformSettings         = lazy(() => import('@/components/admin/PlatformSettings'));
-const UserViewModal            = lazy(() => import('@/components/admin/UserViewModal'));
-const RankedVoteManager        = lazy(() => import('@/components/admin/RankedVoteManager'));
-const UniversalDataWizard      = lazy(() => import('@/components/admin/UniversalDataWizard'));
-const ProfilePhotoDiagnostics  = lazy(() => import('@/components/admin/ProfilePhotoDiagnostics'));
-const NomineePhotoUploadWizard = lazy(() => import('@/components/admin/NomineePhotoUploadWizard'));
-const HeadshotUploadWizard     = lazy(() => import('@/components/admin/HeadshotUploadWizard'));
-const AssetManager             = lazy(() => import('@/components/admin/AssetManager'));
-const EventManagement          = lazy(() => import('@/components/admin/EventManagement'));
-const SponsorManagement        = lazy(() => import('@/components/admin/SponsorManagement'));
-const AvailabilityManager      = lazy(() => import('@/components/admin/AvailabilityManager'));
-const ClaimsReviewManager      = lazy(() => import('@/components/admin/ClaimsReviewManager'));
-const UserMergeManager         = lazy(() => import('@/components/admin/UserMergeManager'));
-const NomineeAssignmentManager = lazy(() => import('@/components/admin/NomineeAssignmentManager'));
-const HolisticScoringPanel     = lazy(() => import('@/components/admin/HolisticScoringPanel'));
-const VerificationDashboard    = lazy(() => import('@/components/admin/VerificationDashboard'));
-const ScoringAnalytics         = lazy(() => import('@/components/admin/ScoringAnalytics'));
-const SalesAnalytics           = lazy(() => import('@/components/admin/SalesAnalytics'));
-const SMEAssignmentPanel       = lazy(() => import('@/components/admin/SMEAssignmentPanel'));
-const StartupReviewPanel       = lazy(() => import('@/components/admin/StartupReviewPanel'));
-const AcceleratorManagement    = lazy(() => import('@/components/admin/AcceleratorManagement'));
-const EnrollmentManagement     = lazy(() => import('@/components/admin/EnrollmentManagement'));
-const MilestoneReview          = lazy(() => import('@/components/admin/MilestoneReview'));
-const CommunityNotesModeration = lazy(() => import('@/components/admin/CommunityNotesModeration'));
-const TestimonialModeration    = lazy(() => import('@/components/admin/TestimonialModeration'));
-const UserManagement           = lazy(() => import('@/components/admin/UserManagement'));
-const RailItemManager          = lazy(() => import('@/components/admin/RailItemManager'));
+const AdminCommandCenter        = lazy(() => import('@/components/admin/AdminCommandCenter'));
+const SeasonManager             = lazy(() => import('@/components/admin/SeasonManager'));
+const SeasonViewModal           = lazy(() => import('@/components/admin/SeasonViewModal'));
+const CohortWorkspace           = lazy(() => import('@/components/admin/cohort-workspace/CohortWorkspace'));
+const MediaSurface              = lazy(() => import('@/components/admin/editorial/MediaSurface'));
+const ProviderReviewManager     = lazy(() => import('@/components/admin/ProviderReviewManager'));
+const ServiceManager            = lazy(() => import('@/components/admin/ServiceManager'));
+const KBArticleManager          = lazy(() => import('@/components/admin/KBArticleManager'));
+const PlatformSettings          = lazy(() => import('@/components/admin/PlatformSettings'));
+const UserViewModal             = lazy(() => import('@/components/admin/UserViewModal'));
+const UniversalDataWizard       = lazy(() => import('@/components/admin/UniversalDataWizard'));
+const EventManagement           = lazy(() => import('@/components/admin/EventManagement'));
+const SponsorManagement         = lazy(() => import('@/components/admin/SponsorManagement'));
+const AvailabilityManager       = lazy(() => import('@/components/admin/AvailabilityManager'));
+const ClaimsReviewManager       = lazy(() => import('@/components/admin/ClaimsReviewManager'));
+const UserMergeManager          = lazy(() => import('@/components/admin/UserMergeManager'));
+const SalesAnalytics            = lazy(() => import('@/components/admin/SalesAnalytics'));
+const SMEAssignmentPanel        = lazy(() => import('@/components/admin/SMEAssignmentPanel'));
+const StartupReviewPanel        = lazy(() => import('@/components/admin/StartupReviewPanel'));
+const AcceleratorManagement     = lazy(() => import('@/components/admin/AcceleratorManagement'));
+const EnrollmentManagement      = lazy(() => import('@/components/admin/EnrollmentManagement'));
+const MilestoneReview           = lazy(() => import('@/components/admin/MilestoneReview'));
+const CommunityNotesModeration  = lazy(() => import('@/components/admin/CommunityNotesModeration'));
+const TestimonialModeration     = lazy(() => import('@/components/admin/TestimonialModeration'));
+const UserManagement            = lazy(() => import('@/components/admin/UserManagement'));
+const RailItemManager           = lazy(() => import('@/components/admin/RailItemManager'));
 const DiscoveryResponsesManager = lazy(() => import('@/components/admin/DiscoveryResponsesManager'));
-const SurveyManager            = lazy(() => import('@/components/admin/SurveyManager'));
-const BioSubmissionManager     = lazy(() => import('@/components/admin/BioSubmissionManager'));
-const LocalLegendsManager      = lazy(() => import('@/components/admin/LocalLegendsManager'));
-const TopViralPostsManager     = lazy(() => import('@/components/admin/TopViralPostsManager'));
-const NominationIntakeManager  = lazy(() => import('@/components/admin/NominationIntakeManager'));
+const SurveyManager             = lazy(() => import('@/components/admin/SurveyManager'));
+const BioSubmissionManager      = lazy(() => import('@/components/admin/BioSubmissionManager'));
+const LocalLegendsManager       = lazy(() => import('@/components/admin/LocalLegendsManager'));
+const TopViralPostsManager      = lazy(() => import('@/components/admin/TopViralPostsManager'));
 const SeasonalPlanningDashboard = lazy(() => import('@/components/admin/SeasonalPlanningDashboard'));
 import { Award } from 'lucide-react';
 
@@ -62,13 +52,17 @@ export default function Admin() {
   // ── State ──
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window !== 'undefined') {
-      // Support URL params: ?tab=nominees
+      // Support URL params: ?tab=nominees — and resolve any legacy tab id to its canonical target
       const params = new URLSearchParams(window.location.search);
       const urlTab = params.get('tab');
-      if (urlTab) return urlTab;
-      return localStorage.getItem('adminActiveTab') || 'dashboard';
+      const stored = localStorage.getItem('adminActiveTab') || 'dashboard';
+      return resolveTabId(urlTab || stored);
     }
     return 'dashboard';
+  });
+
+  const [workspaceSeasonId, setWorkspaceSeasonId] = useState(() => {
+    try { return localStorage.getItem('adminWorkspaceSeasonId') || ''; } catch { return ''; }
   });
 
   const [currentUser, setCurrentUser] = useState(null);
@@ -87,6 +81,12 @@ export default function Admin() {
   const { toast } = useToast();
 
   // ── Persist state ──
+  // Redirect legacy tab ids to their canonical workspace/media target
+  useEffect(() => {
+    const resolved = resolveTabId(activeTab);
+    if (resolved !== activeTab) setActiveTab(resolved);
+  }, [activeTab]);
+
   useEffect(() => {
     localStorage.setItem('adminActiveTab', activeTab);
     // Update URL without reloading
@@ -95,6 +95,10 @@ export default function Admin() {
     window.history.replaceState({}, '', url);
     addRecentTab(activeTab);
   }, [activeTab]);
+
+  useEffect(() => {
+    localStorage.setItem('adminWorkspaceSeasonId', workspaceSeasonId || '');
+  }, [workspaceSeasonId]);
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_COLLAPSED_KEY, JSON.stringify(sidebarCollapsed));
@@ -156,6 +160,20 @@ export default function Admin() {
     setMobileSidebarOpen(false);
   }, []);
 
+  // Resolve the cohort selected for the workspace, and the "open workspace" entry point
+  // used by Season Manager's cohort cards.
+  const workspaceSeason = seasons.find((s) => s.id === workspaceSeasonId) || null;
+  const openWorkspace = useCallback((season) => {
+    setWorkspaceSeasonId(season.id);
+    const phase = ({
+      planning: 'nominate', rollover: 'nominate', nominations_open: 'nominate',
+      voting_open: 'selection', review: 'selection',
+      completed: 'editorial', archived: 'editorial',
+    })[season.status] || 'nominate';
+    setActiveTab('workspace-' + phase);
+    setMobileSidebarOpen(false);
+  }, []);
+
   // ── Loading state ──
   if (loading) {
     return (
@@ -191,60 +209,12 @@ export default function Admin() {
   // ── Content renderer ──
   const renderContent = () => {
     switch (activeTab) {
+      // ── Platform ──
       case 'dashboard':
         return <AdminCommandCenter onNavigate={setActiveTab} currentUser={currentUser} />;
       case 'seasonal-planning':
         return <SeasonalPlanningDashboard />;
-      case 'season-command-center':
-        return <SeasonCommandCenter onNavigate={setActiveTab} />;
-      case 'testimonials':
-        return <TestimonialModeration />;
-      case 'community-notes':
-        return <CommunityNotesModeration />;
-      case 'photo-diagnostics':
-        return <ProfilePhotoDiagnostics />;
-      case 'photo-upload':
-        return <NomineePhotoUploadWizard />;
-      case 'headshot-wizard':
-        return <HeadshotUploadWizard />;
-      case 'startups':
-        return <StartupReviewPanel />;
-      case 'cohorts':
-        return <AcceleratorManagement />;
-      case 'enrollments':
-        return <EnrollmentManagement />;
-      case 'milestone-review':
-        return <MilestoneReview />;
-      case 'services':
-        return <ServiceManager />;
-      case 'providers':
-        return <ProviderReviewManager />;
-      case 'nominees':
-        return <NomineeManager seasons={seasons} />;
-      case 'claims':
-        return <ClaimsReviewManager />;
-      case 'assign-nominees':
-        return <NomineeAssignmentManager />;
-      case 'user-management':
-        return <UserManagement />;
-      case 'merge-users':
-        return <UserMergeManager />;
-      case 'events':
-        return <EventManagement />;
-      case 'sponsors':
-        return <SponsorManagement />;
-      case 'availability':
-        return <AvailabilityManager />;
-      case 'holistic':
-        return <HolisticScoringPanel />;
-      case 'verification':
-        return <VerificationDashboard />;
-      case 'analytics':
-        return <ScoringAnalytics />;
-      case 'sales':
-        return <SalesAnalytics />;
-      case 'sme':
-        return <SMEAssignmentPanel />;
+      // ── Nominations phase ──
       case 'seasons':
       case 'finalize-pool':
         return (
@@ -253,14 +223,20 @@ export default function Admin() {
             onSeasonsUpdate={loadAllData}
             onViewSeason={(season) => setViewingSeason(season)}
             onNavigate={setActiveTab}
+            onOpenWorkspace={openWorkspace}
           />
         );
-      case 'scoring':
-        return <RankedVoteManager />;
-      case 'content':
-        return <KBArticleManager articles={kbArticles} onArticlesUpdate={loadAllData} />;
-      case 'assets':
-        return <AssetManager />;
+      case 'workspace-nominate':
+        return <CohortWorkspace phase="nominate" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
+      case 'workspace-selection':
+        return <CohortWorkspace phase="selection" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
+      case 'workspace-editorial':
+        return <CohortWorkspace phase="editorial" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
+      case 'surveys':
+        return <SurveyManager />;
+      case 'local-legends':
+        return <LocalLegendsManager />;
+      // ── Editorial section ──
       case 'publications':
         return (
           <div className="space-y-4">
@@ -270,6 +246,7 @@ export default function Admin() {
               <a
                 href="/Top100Women2025"
                 target="_blank"
+                rel="noopener noreferrer"
                 className="block p-6 rounded-xl border border-[var(--border)] bg-gradient-to-br from-[#1e3a5a]/5 to-[#c9a87c]/10 hover:shadow-lg transition-all hover:scale-[1.02]"
               >
                 <div className="flex items-center gap-3 mb-3">
@@ -286,22 +263,55 @@ export default function Admin() {
             </div>
           </div>
         );
+      case 'content':
+        return <KBArticleManager articles={kbArticles} onArticlesUpdate={loadAllData} />;
+      case 'viral-posts':
+        return <TopViralPostsManager />;
+      case 'testimonials':
+        return <TestimonialModeration />;
+      case 'community-notes':
+        return <CommunityNotesModeration />;
+      case 'discovery-responses':
+        return <DiscoveryResponsesManager />;
+      case 'media':
+        return <MediaSurface />;
+      // ── People ──
+      case 'user-management':
+        return <UserManagement />;
+      case 'merge-users':
+        return <UserMergeManager />;
+      case 'claims':
+        return <ClaimsReviewManager />;
+      case 'sme':
+        return <SMEAssignmentPanel />;
+      case 'bio-submissions':
+        return <BioSubmissionManager />;
+      // ── Programs ──
+      case 'startups':
+        return <StartupReviewPanel />;
+      case 'cohorts':
+        return <AcceleratorManagement />;
+      case 'enrollments':
+        return <EnrollmentManagement />;
+      case 'milestone-review':
+        return <MilestoneReview />;
+      case 'services':
+        return <ServiceManager />;
+      case 'providers':
+        return <ProviderReviewManager />;
+      case 'availability':
+        return <AvailabilityManager />;
+      case 'events':
+        return <EventManagement />;
+      case 'sponsors':
+        return <SponsorManagement />;
+      // ── Platform tools ──
       case 'settings':
         return <PlatformSettings />;
       case 'rail-items':
         return <RailItemManager />;
-      case 'discovery-responses':
-        return <DiscoveryResponsesManager />;
-      case 'surveys':
-        return <SurveyManager />;
-      case 'nomination-intake':
-        return <NominationIntakeManager />;
-      case 'local-legends':
-        return <LocalLegendsManager />;
-      case 'bio-submissions':
-        return <BioSubmissionManager />;
-      case 'viral-posts':
-        return <TopViralPostsManager />;
+      case 'sales':
+        return <SalesAnalytics />;
       default:
         return (
           <div className="py-16 text-center text-[var(--muted)]">
