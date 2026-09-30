@@ -1,0 +1,42 @@
+{
+  "name": "Auto Rollover Nominees",
+  "description": "When a new cohort season is created or advances to nominations_open, links every non-rejected nominee from all prior seasons of the same cohort_key into the new season (link model, deduped by LinkedIn slug then email). No copies; decay is a later phase.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "Season",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.cohort_key != null and .trigger.data.cohort_key != \"\" and .trigger.data.is_group != true and (.trigger.event_type == \"create\" or (.trigger.event_type == \"update\" and .trigger.data.status == \"nominations_open\" and (.trigger.old_data.status // \"\") != \"nominations_open\")) }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_rollover_nominees",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "rollover": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "rolloverNominees",
+            "args": {
+              "target_season_id": "${ .trigger.entity_id }",
+              "__source": "workflow"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Rollover prior cohort nominees",
+            "description": "Link same-cohort nominees into the new season"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
 
     try {
       if (seasonId && seasonId !== 'all') {
-        totalNominees = await base44.asServiceRole.entities.Nominee.filter({ season_id: seasonId }, '-created_date', 5000);
+        totalNominees = await base44.asServiceRole.entities.Nominee.filter({ $or: [{ season_ids: seasonId }, { season_id: seasonId }] }, '-created_date', 5000);
       } else {
         totalNominees = await base44.asServiceRole.entities.Nominee.list('-created_date', 5000);
       }

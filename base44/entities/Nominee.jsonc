@@ -118,7 +118,36 @@
     },
     "season_id": {
       "type": "string",
-      "description": "ID of the season this nominee belongs to"
+      "description": "Denormalized primary/current season pointer. In the link model a nominee is a member of every season in season_ids; this field points at the most relevant one for backward-compatible reads."
+    },
+    "season_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Every season this person is a member of. Link-model membership: rollover and backfill add a season here instead of copying the record. Reads resolve a season's pool via season_ids contains (with season_id as a compat fallback)."
+    },
+    "season_scores": {
+      "type": "object",
+      "description": "Per-season score snapshots keyed by season id. Each value mirrors the flat score fields (elo_rating, borda_score, aura_score, status, etc.) so one person carries independent scores per season without duplicate records.",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "elo_rating": {
+          "type": "number"
+        },
+        "borda_score": {
+          "type": "number"
+        },
+        "aura_score": {
+          "type": "number"
+        },
+        "holistic_score": {
+          "type": "number"
+        }
+      }
     },
     "title": {
       "type": "string",

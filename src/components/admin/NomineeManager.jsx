@@ -102,7 +102,7 @@ export default function NomineeManager({ seasons }) {
   }, [searchTerm]);
 
   const buildQuery = useCallback(() => {
-    const query = { season_id: selectedSeasonId };
+    const query = { $or: [{ season_ids: selectedSeasonId }, { season_id: selectedSeasonId }] };
     if (statusFilter !== 'all') query.status = statusFilter;
     if (debouncedSearch) {
       const rx = { $regex: debouncedSearch, $options: 'i' };

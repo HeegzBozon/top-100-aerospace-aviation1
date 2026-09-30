@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ error: 'Season ID is required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const nominees = await serviceRole.entities.Nominee.filter({ season_id, status: 'active' });
+    const nominees = await serviceRole.entities.Nominee.filter({ $or: [{ season_ids: season_id }, { season_id: season_id }], status: 'active' });
     const count = nominees ? nominees.length : 0;
     
     return new Response(JSON.stringify({ count }), { 

@@ -8,7 +8,7 @@ export async function runProcessBatch(serviceRole, seasonId, batchIndex) {
   console.log(`[BATCH ${batchIndex}] Processing... Offset: ${offset}, Limit: ${BATCH_SIZE}`);
 
   const nominees = await serviceRole.entities.Nominee.filter(
-    { season_id: seasonId },
+    { $or: [{ season_ids: seasonId }, { season_id: seasonId }] },
     '-created_date',
     BATCH_SIZE,
     offset

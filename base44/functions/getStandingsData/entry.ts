@@ -56,8 +56,8 @@ Deno.serve(async (req) => {
         // Fetch nominees with retry logic
         console.log(`[STANDINGS] Fetching nominees for season ${season}...`);
         const nominees = await safeEntityOperation(async () => {
-            return await base44.asServiceRole.entities.Nominee.filter({ 
-                season_id: season,
+            return await base44.asServiceRole.entities.Nominee.filter({
+                $or: [{ season_ids: season }, { season_id: season }],
                 status: 'active'
             }, '-updated_date', Math.min(limit, 1000));
         });

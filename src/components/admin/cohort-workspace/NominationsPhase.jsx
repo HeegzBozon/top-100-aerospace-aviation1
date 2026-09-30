@@ -6,16 +6,17 @@ import { Trophy, ClipboardCheck, Users, Loader2 } from 'lucide-react';
 import NomineeManager from '@/components/admin/NomineeManager';
 import NominationIntakeManager from '@/components/admin/NominationIntakeManager';
 import FinalizePoolPanel from '@/components/admin/finalize-pool/FinalizePoolPanel';
+import RolloverPanel from '@/components/admin/cohort-workspace/RolloverPanel';
 
 // Nominations phase — cohort-scoped triage, pool health, and Finalize Pool in one surface.
-export default function NominationsPhase({ season, onSeasonsUpdate }) {
+export default function NominationsPhase({ season, onSeasonsUpdate, seasons }) {
   const [count, setCount] = useState(null);
   const [showFinalize, setShowFinalize] = useState(false);
 
   useEffect(() => {
     setCount(null);
     base44.entities.Nominee
-      .count({ season_id: season.id })
+      .count({ $or: [{ season_ids: season.id }, { season_id: season.id }] })
       .then(setCount)
       .catch(() => setCount(null));
   }, [season.id]);
@@ -50,6 +51,9 @@ export default function NominationsPhase({ season, onSeasonsUpdate }) {
       {showFinalize && (
         <FinalizePoolPanel season={season} onClose={() => setShowFinalize(false)} onFinalized={onSeasonsUpdate} />
       )}
+
+      {/* Link-model rollover + backfill + one-time migration */}
+      <RolloverPanel season={season} seasons={seasons || []} onSeasonsUpdate={onSeasonsUpdate} />
 
       {/* Nominee pool triage — scoped to this single cohort */}
       <section>
