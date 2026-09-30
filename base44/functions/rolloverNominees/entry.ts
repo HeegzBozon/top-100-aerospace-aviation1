@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import {
-  seasonPoolQuery, linkToSeason, groupByPerson, personKeys,
+  seasonPoolQuery, linkToSeasonPatch, groupByPerson, personKeys,
 } from '../../shared/seasonMembership.ts';
 
 // Link-based nominee rollover + backfill. One function backs three flows:
@@ -79,7 +79,14 @@ export default async function (req: Request): Promise<Response> {
     // Dedupe across all sources by slug then email. Within each group, pick a
     // representative: prefer a target-native record, else the most complete
     // source record; tiebreak by oldest.
-    const all = [...sourcePool, ...targetPool];
+    // Dedupe by id: a record linked to both a source season and the target
+    // (season_ids contains target) appears in both fetches. Keep one copy so
+    // union-find grouping and bulkUpdate never operate on the same id twice.
+    const all: any[] = [];
+    const seenIds = new Set<string>();
+    for (const n of [...sourcePool, ...targetPool]) {
+      if (n && n.id && !seenIds.has(n.id)) { seenIds.add(n.id); all.push(n); }
+    }
     const groups = groupByPerson(all);
     const completeness = (n: any) =>
       [n.name, n.nominee_email, n.linkedin_profile_url, n.title, n.company, n.country, n.bio, n.avatar_url]
@@ -92,6 +99,9 @@ export default async function (req: Request): Promise<Response> {
     let mergedTargetDups = 0;
     let returningHonorees = 0;
     const sourceIds = new Set(sourceSeasonIds);
+    const bulkUpdates: any[] = [];
+    const dupRetire: any[] = [];
+    const mergedAt = new Date().toISOString();
 
     for (const group of groups) {
       const members = group.map((i) => all[i]);
@@ -111,33 +121,38 @@ export default async function (req: Request): Promise<Response> {
       // returning honoree being linked into the target season.
       const isReturning = !targetNatives.length;
 
-      // Idempotently link the representative into the target season.
+      // Idempotently link the representative into the target season (batched).
       const alreadyMember = Array.isArray(rep.season_ids) ? rep.season_ids.includes(targetSeasonId) : false;
       if (alreadyMember && rep.season_scores?.[targetSeasonId]) {
         skippedAlready++;
       } else {
-        await linkToSeason(sr, rep, targetSeasonId, 'active');
-        linked++;
-        if (isReturning) returningHonorees++;
+        const patch = linkToSeasonPatch(rep, targetSeasonId, 'active');
+        if (patch) { bulkUpdates.push(patch); linked++; if (isReturning) returningHonorees++; }
       }
 
       // Retire target-native duplicates of this person so the cohort shows
       // them once. Only target-native dups are merged; source records are never
       // mutated (they keep their archival season_id).
-      const dupsToRetire = targetNatives.filter((n) => n.id !== rep.id);
-      for (const d of dupsToRetire) {
-        await sr.entities.Nominee.update(d.id, {
+      for (const d of targetNatives.filter((n) => n.id !== rep.id)) {
+        dupRetire.push({
+          id: d.id,
           status: 'rejected',
           raw_nomination_data: {
             ...(d.raw_nomination_data || {}),
             merged_into: rep.id,
-            merged_at: new Date().toISOString(),
+            merged_at: mergedAt,
             pre_merge_status: d.status,
             merged_reason: 'rollover_target_dedup',
           },
         });
         mergedTargetDups++;
       }
+    }
+
+    // Flush all writes in 500-record batches instead of one DB call per record.
+    const allUpdates = [...bulkUpdates, ...dupRetire];
+    for (let i = 0; i < allUpdates.length; i += 500) {
+      await sr.entities.Nominee.bulkUpdate(allUpdates.slice(i, i + 500));
     }
 
     // Write receipt to the target season.

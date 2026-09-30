@@ -64,20 +64,25 @@ export default async function (req: Request): Promise<Response> {
       });
     }
 
-    // action === 'migrate'
+    // action === 'migrate' — batch updates (bulkUpdate, up to 500 per call).
+    const updates: any[] = [];
     for (const n of records) {
       const sid = n.season_id;
       const ids = Array.isArray(n.season_ids) ? [...n.season_ids] : [];
       const scores: Record<string, any> = { ...(n.season_scores || {}) };
-      const patch: any = {};
-      if (sid && !ids.includes(sid)) { ids.push(sid); patch.season_ids = ids; }
-      else if (!Array.isArray(n.season_ids) && sid) { patch.season_ids = [sid]; }
-      if (sid && !scores[sid]) { scores[sid] = snapshotFlatScores(n, sid); patch.season_scores = scores; }
-      if (Object.keys(patch).length) {
-        await sr.entities.Nominee.update(n.id, patch);
+      const patch: any = { id: n.id };
+      let changed = false;
+      if (sid && !ids.includes(sid)) { ids.push(sid); patch.season_ids = ids; changed = true; }
+      else if (!Array.isArray(n.season_ids) && sid) { patch.season_ids = [sid]; changed = true; }
+      if (sid && !scores[sid]) { scores[sid] = snapshotFlatScores(n, sid); patch.season_scores = scores; changed = true; }
+      if (changed) {
+        updates.push(patch);
         if (patch.season_ids) migrated++;
         if (patch.season_scores) scored++;
       }
+    }
+    for (let i = 0; i < updates.length; i += 500) {
+      await sr.entities.Nominee.bulkUpdate(updates.slice(i, i + 500));
     }
 
     const receipt = {

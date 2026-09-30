@@ -63,6 +63,21 @@ export async function linkToSeason(sr: any, nominee: any, seasonId: string, stat
   return patch;
 }
 
+// Pure (no DB) variant of linkToSeason: returns {id, ...patch} for bulkUpdate, or
+// null if already a member with scores. Used by batched rollover/backfill so one
+// bulkUpdate call replaces hundreds of sequential updates.
+export function linkToSeasonPatch(nominee: any, seasonId: string, status: string = 'active') {
+  const ids = Array.isArray(nominee.season_ids) ? [...nominee.season_ids] : [];
+  const scores: Record<string, any> = { ...(nominee.season_scores || {}) };
+  let changed = false;
+  if (!ids.includes(seasonId)) { ids.push(seasonId); changed = true; }
+  if (!scores[seasonId]) { scores[seasonId] = seedSeasonScores(status); changed = true; }
+  if (!changed) return null;
+  const patch = { season_ids: ids, season_scores: scores };
+  Object.assign(nominee, patch);
+  return { id: nominee.id, ...patch };
+}
+
 // Snapshot a nominee's current flat scores into season_scores[seasonId]. Used by
 // the one-time migration to seed per-season snapshots from existing flat fields.
 export function snapshotFlatScores(n: any, seasonId: string, status?: string) {
