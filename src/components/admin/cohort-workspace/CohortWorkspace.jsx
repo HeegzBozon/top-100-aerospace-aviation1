@@ -59,7 +59,7 @@ export default function CohortWorkspace({ phase, season, seasons, onNavigate, on
         <div className="h-px bg-gradient-to-r from-transparent via-editorial-copper/40 to-transparent my-1" />
 
         <TabsContent value="nominate" className="mt-6">
-          <NominationsPhase season={season} onSeasonsUpdate={onSeasonsUpdate} />
+          <NominationsPhase season={season} seasons={seasons} onSeasonsUpdate={onSeasonsUpdate} />
         </TabsContent>
         <TabsContent value="selection" className="mt-6">
           <SelectionPhase season={season} onNavigate={onNavigate} />

@@ -2,6 +2,7 @@
 // (Nomination Intake, Nominee Manager, Finalize Pool wizard) so they never diverge.
 // Identity is resolved by canonical LinkedIn slug first, then strict-valid email.
 import { canonicalLinkedInSlug, isValidEmail } from './nomineeResolve.ts';
+import { seedSeasonScores } from './seasonMembership.ts';
 
 export const TRACK_LABELS = { women: 'TOP 100 Women', men: 'TOP 100 Men', angels: 'TOP 100 Angels' };
 
@@ -156,6 +157,8 @@ export async function linkIntakeToPool(sr, intake, seasonId, pool) {
       ...fresh,
       ...carried,
       season_id: seasonId,
+      season_ids: [seasonId],
+      season_scores: { [seasonId]: seedSeasonScores('pending') },
       nomination_reason: intake.reason || '',
       nominated_by: intake.nominator_email,
       category: TRACK_LABELS[intake.nomination_type] || intake.nomination_type,
@@ -204,7 +207,14 @@ export async function approveNomineeInPool(sr, nominee, pool, intakes, force) {
   for (const i of hits) {
     await sr.entities.NominationIntake.update(i.id, { status: 'approved', nominee_id: nominee.id });
   }
-  await sr.entities.Nominee.update(nominee.id, { status: 'approved', linked_nomination_ids: ids, nomination_count: ids.length });
+  const seasonIds = Array.isArray(nominee.season_ids) ? [...nominee.season_ids] : [];
+  if (!seasonIds.includes(nominee.season_id)) seasonIds.push(nominee.season_id);
+  const seasonScores = { ...(nominee.season_scores || {}) };
+  if (nominee.season_id && !seasonScores[nominee.season_id]) seasonScores[nominee.season_id] = seedSeasonScores('approved');
+  await sr.entities.Nominee.update(nominee.id, {
+    status: 'approved', linked_nomination_ids: ids, nomination_count: ids.length,
+    season_ids: seasonIds, season_scores: seasonScores,
+  });
   return { status: 'approved', linked_intakes: hits.length, nomination_count: ids.length, duplicate: match ? slimNominee(match) : null };
 }
 
