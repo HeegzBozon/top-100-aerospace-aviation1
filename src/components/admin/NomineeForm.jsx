@@ -7,7 +7,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from "@/components/ui/use-toast";
 import { X, Loader2, Camera } from 'lucide-react';
 
-export default function NomineeForm({ nominee, seasonId, onClose, onSuccess }) {
+const TRACK_KEYWORDS = { women: 'women', men: 'men', angels: 'angels' };
+// Infer the cohort track from the season so a manual add can be expressed as an
+// intake and approved through the pool resolver (dedup + provenance), never an orphan.
+function inferTrack(season) {
+  if (season?.cohort_key && TRACK_KEYWORDS[season.cohort_key]) return season.cohort_key;
+  const name = season?.name || '';
+  for (const [track, kw] of Object.entries(TRACK_KEYWORDS)) {
+    if (new RegExp(`\\b${kw}\\b`, 'i').test(name)) return track;
+  }
+  return null;
+}
+
+export default function NomineeForm({ nominee, seasonId, season, adminEmail, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
     name: nominee?.name || '',
     nominee_email: nominee?.nominee_email || '',
@@ -77,11 +89,38 @@ export default function NomineeForm({ nominee, seasonId, onClose, onSuccess }) {
       if (nominee) {
         await Nominee.update(nominee.id, payload);
         toast({ title: "Nominee Updated", description: `${payload.name} has been successfully updated.` });
+        onSuccess();
       } else {
-        await Nominee.create(payload);
-        toast({ title: "Nominee Created", description: `${payload.name} has been added to the season.` });
+        // Intake-first: create a NominationIntake, then approve through the pool
+        // resolver so the new nominee dedups by LinkedIn slug/email and carries
+        // linked-intake provenance — never an orphan record.
+        const track = inferTrack(season);
+        if (!track) {
+          toast({ variant: "destructive", title: "Cannot create nominee", description: "This cohort has no recognizable track (women / men / angels). Use the Nomination Intake manager to add it." });
+          return;
+        }
+        const intake = await base44.entities.NominationIntake.create({
+          nomination_type: track,
+          nominee_name: payload.name,
+          nominee_email: payload.nominee_email || '',
+          link: payload.linkedin_profile_url || '',
+          role_org: [payload.title, payload.company].filter(Boolean).join(', '),
+          reason: payload.description || '',
+          nominator_name: 'Admin',
+          nominator_email: adminEmail || 'admin@top100aerospaceandaviation.com',
+          source: 'admin_nominee_manager',
+          status: 'new',
+        });
+        let res = (await base44.functions.invoke('linkNominationToPool', { mode: 'intake', intake_id: intake.id, season_id: seasonId })).data;
+        if (res.status === 'conflict') {
+          const d = res.duplicate;
+          const ok = window.confirm(`"${payload.name}" matches an existing pool record by ${res.matched_on}:\n${d.name} (${d.status}).\n\nOK = approve anyway (merge later in Finalize Pool)\nCancel = abort`);
+          if (!ok) return;
+          res = (await base44.functions.invoke('linkNominationToPool', { mode: 'intake', intake_id: intake.id, season_id: seasonId, force: true })).data;
+        }
+        toast({ title: "Nominee Added", description: `${payload.name} added to the ${season?.cohort_label || season?.name || 'pool'} via the intake resolver.` });
+        onSuccess();
       }
-      onSuccess();
     } catch (error) {
       console.error("Error saving nominee:", error);
       toast({

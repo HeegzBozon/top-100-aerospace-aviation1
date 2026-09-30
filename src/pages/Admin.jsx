@@ -220,7 +220,7 @@ export default function Admin() {
       case 'providers':
         return <ProviderReviewManager />;
       case 'nominees':
-        return <NomineeManager seasons={seasons.filter((s) => !s.is_group)} />;
+        return <NomineeManager seasons={seasons} />;
       case 'claims':
         return <ClaimsReviewManager />;
       case 'assign-nominees':
