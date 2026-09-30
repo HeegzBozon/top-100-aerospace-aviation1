@@ -32,7 +32,9 @@ function findSeasonForTrack(seasons, track) {
   const keyword = TRACK_KEYWORDS[track];
   if (!keyword) return null;
   const open = seasons.filter(s => s.status === 'nominations_open' || s.status === 'voting_open');
-  return open.find(s => s.name?.toLowerCase().includes(keyword)) || null;
+  // Word-boundary match so "men" never matches the "women" season.
+  const re = new RegExp(`\\b${keyword}\\b`, 'i');
+  return open.find(s => re.test(s.name || '')) || null;
 }
 
 export default function NominationIntakeManager() {
