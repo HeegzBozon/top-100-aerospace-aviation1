@@ -456,6 +456,7 @@ export default function NomineeManager({ seasons }) {
           <NomineeBulkBar
             visibleCount={items.length}
             selectedCount={selected.size}
+            pendingSelectedCount={items.filter(n => selected.has(n.id) && n.status === 'pending').length}
             allSelected={allSelected}
             onToggleAll={toggleAll}
             onClear={clearSelection}
