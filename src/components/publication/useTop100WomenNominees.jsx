@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { getStandingsData } from '@/functions/getStandingsData';
 
 export default function useTop100WomenNominees() {
   const [nominees, setNominees] = useState([]);
@@ -20,7 +19,7 @@ export default function useTop100WomenNominees() {
         }
 
         const [standingsResponse, rankedVotes] = await Promise.all([
-          getStandingsData({ season: selectedSeasonId, sort: 'aura', dir: 'desc', page: 1, limit: 1000 }),
+          base44.functions.invoke('getStandingsData', { season: selectedSeasonId, sort: 'aura', dir: 'desc', page: 1, limit: 1000 }),
           base44.entities.RankedVote.filter({ season_id: selectedSeasonId }, '-created_date', 10000),
         ]);
 
