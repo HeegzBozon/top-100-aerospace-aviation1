@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { X, Linkedin, Mail, MapPin, Users, ArrowUpRight } from 'lucide-react';
+import { buildHonoreeSlug } from '@/components/archive/archiveVolumes';
 
 const navy = '#1e3a5a';
 const gold = '#c9a87c';
@@ -96,7 +97,7 @@ export default function ArchiveHonoreeDetail({ nominee, onClose }) {
               {nominee.raw_nomination_data?.volume === 'TOP 100 Aviation & Aerospace Professionals 2021' && nominee.id && (
                 <div className="pt-2 border-t" style={{ borderColor: `${navy}12` }}>
                   <Link
-                    to={`/honoree/2021/${nominee.id}`}
+                    to={`/honoree/2021/${buildHonoreeSlug(nominee)}`}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em]"

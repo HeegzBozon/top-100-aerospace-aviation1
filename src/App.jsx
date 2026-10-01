@@ -243,7 +243,7 @@ const AuthenticatedApp = () => {
       <Route path="/viralpost2022" element={<ViralPost2022 />} />
       <Route path="/viralpost2026" element={<ViralPost2026 />} />
       <Route path="/viralpost2026/featured/:slug" element={<ViralPost2026Featured />} />
-      <Route path="/honoree/2021/:nomineeId" element={<HonoreePublication />} />
+      <Route path="/honoree/2021/:slugId" element={<HonoreePublication />} />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:id" element={<ProfileView />} />
        <Route path="/editions/:id" element={<FellowEdition />} />

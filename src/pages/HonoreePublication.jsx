@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Linkedin, MapPin, Users, Mail, Quote, ArrowRight, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { ARCHIVE_VOLUMES, getArchiveAppearance } from '@/components/archive/archiveVolumes';
+import { ARCHIVE_VOLUMES, getArchiveAppearance, buildHonoreeSlug, parseHonoreeParam } from '@/components/archive/archiveVolumes';
 import ShareBar from '@/components/viral-post/ShareBar';
 
 const NAVY = '#1e3a5a';
@@ -46,7 +46,9 @@ function Block({ label, children }) {
 }
 
 export default function HonoreePublication() {
-  const { nomineeId } = useParams();
+  const { slugId } = useParams();
+  const navigate = useNavigate();
+  const nomineeId = parseHonoreeParam(slugId).id;
   const [nominee, setNominee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -71,6 +73,15 @@ export default function HonoreePublication() {
     return () => { active = false; };
   }, [nomineeId]);
 
+  // Canonicalize: bare-ID or stale-slug requests replace to the slug+ID URL.
+  useEffect(() => {
+    if (loading || notFound || !nominee) return;
+    const canonicalSlug = buildHonoreeSlug(nominee);
+    if (slugId !== canonicalSlug) {
+      navigate(`/honoree/2021/${canonicalSlug}`, { replace: true });
+    }
+  }, [loading, notFound, nominee, slugId, navigate]);
+
   const seasonId = EDITION_2021?.seasonId;
   const editionLabel = EDITION_2021?.volume || 'TOP 100 Aviation & Aerospace Professionals 2021';
   const appearance = nominee ? getArchiveAppearance(nominee, seasonId) : null;
@@ -80,7 +91,7 @@ export default function HonoreePublication() {
   const company = nominee?.company || nominee?.organization || '';
   const description = nominee?.description || nominee?.bio || '';
   const ogImage = nominee?.linkedin_proudest_screenshot_url || nominee?.avatar_url || '';
-  const canonical = `${SITE}/honoree/2021/${nomineeId}`;
+  const canonical = `${SITE}/honoree/2021/${nominee ? buildHonoreeSlug(nominee) : nomineeId}`;
   const pageTitle = `${name} — Rank #${rank}${rank ? '' : '—'} · ${editionLabel}`;
   const shareTitle = `${name} — Rank #${rank} of the ${editionLabel}`;
   const shareSummary = description.slice(0, 140);

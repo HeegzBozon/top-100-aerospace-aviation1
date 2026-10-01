@@ -34,3 +34,33 @@ export function getArchiveAppearance(nominee, seasonId) {
 
 export const isArchiveNominee = (nominee) =>
   ARCHIVE_SEASON_IDS.includes(nominee?.season_id);
+
+// ── Honoree publication slugs ──
+// Canonical honoree URL is /honoree/<year>/<name-slug>-<id>. The trailing 24-hex
+// id guarantees a deterministic Nominee.get(id) lookup (no scan, no collision);
+// the slug prefix is what crawlers and humans read. Bare-ID or stale-slug
+// requests are canonicalized client-side to the slug+ID form.
+export function slugifyName(name) {
+  return (name || '')
+    .toLowerCase()
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+}
+
+export function buildHonoreeSlug(nominee) {
+  const s = slugifyName(nominee?.name);
+  const id = nominee?.id || '';
+  return s ? `${s}-${id}` : id;
+}
+
+export function parseHonoreeParam(param) {
+  const str = String(param || '');
+  const m = str.match(/([a-f0-9]{24})$/i);
+  if (!m) return { id: str, slug: '' };
+  return { id: m[1], slug: str.slice(0, m.index).replace(/-+$/, '') };
+}
