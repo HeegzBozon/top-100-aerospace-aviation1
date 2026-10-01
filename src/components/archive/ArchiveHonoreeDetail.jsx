@@ -35,13 +35,23 @@ export default function ArchiveHonoreeDetail({ nominee, onClose }) {
           >
             <div className="sticky top-0 flex items-start justify-between gap-4 px-5 py-4 backdrop-blur-md border-b"
               style={{ background: 'rgba(250,248,245,0.94)', borderColor: `${navy}12` }}>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: gold }}>
-                  Rank #{nominee.raw_nomination_data?.rank} · Volume {nominee.raw_nomination_data?.volume || 'I'}
-                </p>
-                <h2 className="text-xl font-semibold truncate" style={{ color: navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
-                  {nominee.name}
-                </h2>
+              <div className="flex items-center gap-3 min-w-0">
+                {nominee.avatar_url && (
+                  <img
+                    src={nominee.avatar_url}
+                    alt={nominee.name}
+                    className="h-12 w-12 shrink-0 rounded-full object-cover"
+                    style={{ border: `2px solid ${gold}55` }}
+                  />
+                )}
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: gold }}>
+                    Rank #{nominee.raw_nomination_data?.rank} · Volume {nominee.raw_nomination_data?.volume || 'I'}
+                  </p>
+                  <h2 className="text-xl font-semibold truncate" style={{ color: navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
+                    {nominee.name}
+                  </h2>
+                </div>
               </div>
               <button onClick={onClose} className="shrink-0 h-8 w-8 rounded-full flex items-center justify-center" style={{ background: `${navy}0D`, color: navy }}>
                 <X className="w-4 h-4" />
