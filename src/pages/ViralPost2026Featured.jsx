@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, TrendingUp, Quote as QuoteIcon, ExternalLink, ChevronRight, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import ShareBar from '@/components/viral-post/ShareBar';
 
 const STUDIO_PATH = '/Profile?studio=open&ref=viralpost2026';
 const NAVY = '#1e3a5a';
@@ -130,14 +131,20 @@ export default function ViralPost2026Featured() {
       <header className="relative overflow-hidden">
         <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${NAVY_DEEP} 0%, ${NAVY} 60%, transparent 100%)` }} />
         <div className="relative max-w-4xl mx-auto px-6 md:px-10 pt-12 pb-20 text-center">
-          {/* Breadcrumbs */}
-          <nav className="flex items-center justify-center gap-1.5 mb-8 text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(250,248,245,0.6)' }}>
-            <Link to="/" className="hover:text-white transition-colors">Home</Link>
-            <ChevronRight className="w-3 h-3" style={{ color: GOLD }} />
-            <span>Most Liked Posts · 2026</span>
-            <ChevronRight className="w-3 h-3" style={{ color: GOLD }} />
-            <span style={{ color: GOLD }}>{name}</span>
-          </nav>
+          {/* Breadcrumbs + Share */}
+          <div className="flex flex-col items-center gap-4 mb-8">
+            <nav className="flex items-center justify-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(250,248,245,0.6)' }}>
+              <Link to="/" className="hover:text-white transition-colors">Home</Link>
+              <ChevronRight className="w-3 h-3" style={{ color: GOLD }} />
+              <span>Most Liked Posts · 2026</span>
+              <ChevronRight className="w-3 h-3" style={{ color: GOLD }} />
+              <span style={{ color: GOLD }}>{name}</span>
+            </nav>
+            <ShareBar
+              title={`${name}'s Top Viral Post — TOP 100 Aerospace & Aviation`}
+              summary={`${name}'s featured post in the Most Liked Posts Series`}
+            />
+          </div>
 
           <Link to="/" className="inline-flex items-center mb-8">
             <span className="inline-flex items-center px-4 py-1.5 rounded-full border text-xs font-semibold uppercase tracking-[0.2em]"
