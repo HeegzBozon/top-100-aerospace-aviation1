@@ -70,6 +70,10 @@
       "type": "string",
       "description": "What post or achievement they are most proud of on LinkedIn"
     },
+    "linkedin_proudest_screenshot_url": {
+      "type": "string",
+      "description": "URL of the screenshot of the nominee's proudest LinkedIn post. Rendered above the proudest achievement text on the profile/archive surfaces. Display-only; never read by discovery, ranking, or scoring."
+    },
     "nominated_by": {
       "type": "string",
       "description": "Email of the person who nominated them"
@@ -128,7 +132,7 @@
       "default": [],
       "description": "Every season this person is a member of. Link-model membership: rollover and backfill add a season here instead of copying the record. Reads resolve a season's pool via season_ids contains (with season_id as a compat fallback)."
     },
-    "season_scores": {
+    "seasonScores": {
       "type": "object",
       "description": "Per-season score snapshots keyed by season id. Each value mirrors the flat score fields (elo_rating, borda_score, aura_score, status, etc.) so one person carries independent scores per season without duplicate records.",
       "properties": {

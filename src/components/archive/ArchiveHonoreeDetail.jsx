@@ -78,7 +78,18 @@ export default function ArchiveHonoreeDetail({ nominee, onClose }) {
               <Block label="Who I Am">{nominee.bio}</Block>
               <Block label="What I Do">{nominee.professional_role}</Block>
               <Block label="Why Follow">{nominee.linkedin_follow_reason}</Block>
-              <Block label="Proudest Post">{nominee.linkedin_proudest_achievement}</Block>
+              {nominee.linkedin_proudest_screenshot_url && (
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: gold }}>Proudest Post</p>
+                  <img
+                    src={nominee.linkedin_proudest_screenshot_url}
+                    alt={`${nominee.name}'s proudest LinkedIn post`}
+                    className="w-full rounded-lg border object-contain"
+                    style={{ borderColor: `${navy}14`, maxHeight: 420 }}
+                  />
+                </div>
+              )}
+              <Block label={nominee.linkedin_proudest_screenshot_url ? 'The Story' : 'Proudest Post'}>{nominee.linkedin_proudest_achievement}</Block>
               <Block label="Who I Follow">{nominee.raw_nomination_data?.who_i_follow}</Block>
             </div>
           </motion.div>
