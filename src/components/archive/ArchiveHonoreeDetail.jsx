@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Linkedin, Mail, MapPin, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { X, Linkedin, Mail, MapPin, Users, ArrowUpRight } from 'lucide-react';
 
 const navy = '#1e3a5a';
 const gold = '#c9a87c';
@@ -91,6 +92,20 @@ export default function ArchiveHonoreeDetail({ nominee, onClose }) {
               )}
               <Block label={nominee.linkedin_proudest_screenshot_url ? 'The Story' : 'Proudest Post'}>{nominee.linkedin_proudest_achievement}</Block>
               <Block label="Who I Follow">{nominee.raw_nomination_data?.who_i_follow}</Block>
+
+              {nominee.raw_nomination_data?.volume === 'TOP 100 Aviation & Aerospace Professionals 2021' && nominee.id && (
+                <div className="pt-2 border-t" style={{ borderColor: `${navy}12` }}>
+                  <Link
+                    to={`/honoree/2021/${nominee.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em]"
+                    style={{ color: gold }}
+                  >
+                    Open shareable publication <ArrowUpRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              )}
             </div>
           </motion.div>
         </motion.div>
