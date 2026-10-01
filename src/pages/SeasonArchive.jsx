@@ -7,7 +7,7 @@ import ArchiveHonoreeDetail from '@/components/archive/ArchiveHonoreeDetail';
 import ArchiveVolumeSwitcher from '@/components/archive/ArchiveVolumeSwitcher';
 import ArchiveContinueNav from '@/components/archive/ArchiveContinueNav';
 import NominateCTA from '@/components/archive/NominateCTA';
-import { getArchiveAppearance } from '@/components/archive/archiveVolumes';
+import { ARCHIVE_VOLUMES, getArchiveAppearance } from '@/components/archive/archiveVolumes';
 
 const navy = '#1e3a5a';
 const gold = '#c9a87c';
@@ -30,12 +30,13 @@ export default function SeasonArchive() {
       ]);
       if (!active) return;
       setSeason(s?.[0] || null);
+      const volLabel = ARCHIVE_VOLUMES.find((v) => v.seasonId === seasonId)?.volume;
       const list = all
         .filter((n) => n.season_id === seasonId || getArchiveAppearance(n, seasonId))
         .map((n) => {
           const app = getArchiveAppearance(n, seasonId);
           const rank = app?.rank ?? n.raw_nomination_data?.rank ?? 9999;
-          return { ...n, _archiveRank: rank, _archiveVolume: app?.volume ?? n.raw_nomination_data?.volume };
+          return { ...n, _archiveRank: rank, _archiveVolume: volLabel ?? app?.volume ?? n.raw_nomination_data?.volume };
         })
         .sort((a, b) => (a._archiveRank ?? 9999) - (b._archiveRank ?? 9999));
       setNominees(list);
