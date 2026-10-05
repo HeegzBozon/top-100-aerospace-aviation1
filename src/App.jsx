@@ -73,6 +73,7 @@ const ViralPost2026Featured = lazy(() => import('@/pages/ViralPost2026Featured')
 const ViralPost2026 = lazy(() => import('@/pages/ViralPost2026'));
 const NineMonths2026 = lazy(() => import('@/pages/NineMonths2026'));
 const HonoreePublication = lazy(() => import('@/pages/HonoreePublication'));
+const IntelligenceGlobe = lazy(() => import('@/pages/IntelligenceGlobe'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -244,6 +245,7 @@ const AuthenticatedApp = () => {
       <Route path="/viralpost2026" element={<ViralPost2026 />} />
       <Route path="/viralpost2026/featured/:slug" element={<ViralPost2026Featured />} />
       <Route path="/honoree/2021/:slugId" element={<HonoreePublication />} />
+      <Route path="/intelligence-globe" element={<IntelligenceGlobe />} />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:id" element={<ProfileView />} />
        <Route path="/editions/:id" element={<FellowEdition />} />
