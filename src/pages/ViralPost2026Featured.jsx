@@ -143,7 +143,7 @@ export default function ViralPost2026Featured() {
             <nav className="flex items-center justify-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(250,248,245,0.6)' }}>
               <Link to="/" className="hover:text-white transition-colors">Home</Link>
               <ChevronRight className="w-3 h-3" style={{ color: GOLD }} />
-              <span>Most Liked Posts · 2026</span>
+              <Link to="/viralpost2026" className="hover:text-white transition-colors">Most Liked Posts · 2026</Link>
               <ChevronRight className="w-3 h-3" style={{ color: GOLD }} />
               <span style={{ color: GOLD }}>{name}</span>
             </nav>
