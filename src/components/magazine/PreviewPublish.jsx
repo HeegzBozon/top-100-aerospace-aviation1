@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { Check, AlertCircle, Eye, Send, ArrowUpRight, RotateCcw } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, ARTICLE_STATUSES, articleStatusLabel, articleStatusColor } from '@/components/magazine/magazineConfig';
 
@@ -82,16 +83,14 @@ export default function PreviewPublish({ issue, articles, pages, onPublish, onUn
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <a
-          href={readerUrl}
-          target="_blank"
-          rel="noreferrer"
+        <Link
+          to={readerUrl}
           className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-sm font-medium transition-all hover:opacity-90"
           style={{ background: 'transparent', color: P.navy, border: `1px solid ${P.navy}30` }}
         >
           <Eye className="w-4 h-4" /> Preview Reader
           <ArrowUpRight className="w-3.5 h-3.5" />
-        </a>
+        </Link>
         {isPublished ? (
           <button
             onClick={onUnpublish}

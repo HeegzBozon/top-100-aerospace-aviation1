@@ -28,14 +28,19 @@ export default function MagazineReader() {
       try {
         const issueData = await base44.entities.MagazineIssue.get(issueId);
         setIssue(issueData);
+        // For published issues, show only published pages/articles.
+        // For draft/preview issues, load all (RLS lets admins see drafts; non-admins see only published).
+        const isLive = issueData.status === 'published';
+        const pageQuery = isLive ? { issue_id: issueId, status: 'published' } : { issue_id: issueId };
         const pageRes = await base44.entities.MagazinePage.filter(
-          { issue_id: issueId, status: 'published' },
+          pageQuery,
           { sort: 'page_number', limit: 200 }
         );
         setPages(pageRes.items || []);
 
+        const articleQuery = isLive ? { issue_id: issueId, status: 'published' } : { issue_id: issueId };
         const articleRes = await base44.entities.MagazineArticle.filter(
-          { issue_id: issueId, status: 'published' },
+          articleQuery,
           { sort: 'order', limit: 200 }
         );
         setArticles(articleRes.items || []);
