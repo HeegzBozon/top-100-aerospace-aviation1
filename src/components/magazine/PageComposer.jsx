@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, ChevronUp, ChevronDown, Type, Heading, AlignLeft, Image, Quote, Minus, MoveVertical, User } from 'lucide-react';
+import { Plus, Trash2, ChevronUp, ChevronDown, Type, Heading, AlignLeft, Image, Quote, Minus, MoveVertical, User, Sparkles } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, PAGE_LAYOUTS, CONTENT_BLOCK_TYPES, layoutLabel } from '@/components/magazine/magazineConfig';
 
 const BLOCK_ICONS = { Type, Heading, AlignLeft, Image, Quote, Minus, MoveVertical, User };
 
-export default function PageComposer({ issue, pages, articles, onCreate, onUpdate, onDelete }) {
+export default function PageComposer({ issue, pages, articles, onCreate, onUpdate, onDelete, onGenerate }) {
   const [selectedPageId, setSelectedPageId] = useState(pages[0]?.id || null);
   const selectedPage = pages.find((p) => p.id === selectedPageId);
   const sections = issue.sections || [];
@@ -53,8 +53,17 @@ export default function PageComposer({ issue, pages, articles, onCreate, onUpdat
       {/* Page List */}
       <div className="lg:col-span-1">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-serif" style={{ color: P.navy }}>Pages ({pages.length})</h3>
-          <button onClick={handleCreate} className="mag-btn-primary text-xs px-3 py-1.5"><Plus className="w-3.5 h-3.5 inline mr-1" /> Add</button>
+          <div>
+            <h3 className="text-sm font-serif mb-2" style={{ color: P.navy }}>Pages ({pages.length})</h3>
+            <div className="flex gap-1.5">
+              <button onClick={onGenerate} className="mag-btn-primary text-xs px-3 py-1.5" title="Auto-generate cover, TOC, article pages, and colophon from the issue blueprint and articles">
+                <Sparkles className="w-3.5 h-3.5 inline mr-1" /> Generate
+              </button>
+              <button onClick={handleCreate} className="text-xs px-3 py-1.5 rounded-full transition-all hover:opacity-80" style={{ border: `1px solid ${P.navy}30`, color: P.navy }}>
+                <Plus className="w-3.5 h-3.5 inline mr-1" /> Add
+              </button>
+            </div>
+          </div>
         </div>
         <div className="space-y-1.5 max-h-[70vh] overflow-y-auto">
           {pages.map((page) => (

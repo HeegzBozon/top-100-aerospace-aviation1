@@ -197,6 +197,128 @@ export default function MagazineStudio() {
     }
   };
 
+  // Auto-generate editorial pages from the issue blueprint + articles
+  const generatePages = async () => {
+    if (!selectedIssue) return;
+    try {
+      // Clear existing pages first
+      if (pages.length > 0) {
+        await base44.entities.MagazinePage.deleteMany({ issue_id: selectedIssue.id });
+        setPages([]);
+      }
+
+      const newPages = [];
+      let pageNum = 1;
+
+      // 1. Cover page
+      newPages.push({
+        issue_id: selectedIssue.id,
+        page_number: pageNum++,
+        layout_type: 'cover',
+        status: 'draft',
+        content_blocks: [],
+        background_image_url: selectedIssue.cover_image_url || '',
+      });
+
+      // 2. Masthead / contributors page
+      newPages.push({
+        issue_id: selectedIssue.id,
+        page_number: pageNum++,
+        layout_type: 'masthead',
+        status: 'draft',
+        content_blocks: [
+          { type: 'heading', text: selectedIssue.title || '', level: 1 },
+          { type: 'byline', text: selectedIssue.cover_kicker || '' },
+        ],
+      });
+
+      // 3. Table of contents
+      newPages.push({
+        issue_id: selectedIssue.id,
+        page_number: pageNum++,
+        layout_type: 'toc',
+        status: 'draft',
+        content_blocks: [
+          { type: 'heading', text: 'Contents', level: 1 },
+        ],
+      });
+
+      // 4. Editor's letter / preface (if present)
+      if (selectedIssue.preface) {
+        newPages.push({
+          issue_id: selectedIssue.id,
+          page_number: pageNum++,
+          layout_type: 'article',
+          status: 'draft',
+          content_blocks: [
+            { type: 'kicker', text: 'Editor\'s Letter' },
+            { type: 'heading', text: 'A Word from the Editor', level: 1 },
+            { type: 'body', text: selectedIssue.preface },
+          ],
+        });
+      }
+
+      // 5. One page per article, ordered by section then article.order
+      const sections = selectedIssue.sections || [];
+      const sortedArticles = [...articles].sort((a, b) => {
+        const sa = sections.findIndex((s) => s.id === a.section_id);
+        const sb = sections.findIndex((s) => s.id === b.section_id);
+        if (sa !== sb) return sa - sb;
+        return (a.order || 0) - (b.order || 0);
+      });
+
+      sortedArticles.forEach((art) => {
+        const section = sections.find((s) => s.id === art.section_id);
+        const blocks = [
+          { type: 'kicker', text: section?.name || '' },
+          { type: 'heading', text: art.title || '', level: 1 },
+        ];
+        if (art.subtitle) blocks.push({ type: 'body', text: art.subtitle });
+        if (art.writer_credit) blocks.push({ type: 'byline', text: art.writer_credit });
+        if (art.body) blocks.push({ type: 'body', text: art.body });
+        if (art.pull_quote) {
+          newPages.push({
+            issue_id: selectedIssue.id,
+            page_number: pageNum++,
+            layout_type: 'pull_quote',
+            status: 'draft',
+            content_blocks: [
+              { type: 'pull_quote', text: art.pull_quote, attribution: art.pull_quote_attribution || '' },
+            ],
+          });
+        }
+        newPages.push({
+          issue_id: selectedIssue.id,
+          page_number: pageNum++,
+          layout_type: 'article',
+          article_id: art.id,
+          section_id: art.section_id || '',
+          status: 'draft',
+          content_blocks: blocks,
+          background_image_url: art.hero_image_url || '',
+        });
+      });
+
+      // 6. Colophon
+      newPages.push({
+        issue_id: selectedIssue.id,
+        page_number: pageNum++,
+        layout_type: 'colophon',
+        status: 'draft',
+        content_blocks: [
+          { type: 'heading', text: 'Colophon', level: 1 },
+          { type: 'body', text: selectedIssue.colophon || '' },
+        ],
+      });
+
+      const created = await base44.entities.MagazinePage.bulkCreate(newPages);
+      setPages((created.records || []).sort((a, b) => a.page_number - b.page_number));
+      toast({ title: 'Pages generated', description: `${newPages.length} pages created from the issue blueprint.` });
+    } catch (e) {
+      toast({ title: 'Error generating pages', variant: 'destructive' });
+    }
+  };
+
   // Publish flow
   const publishIssue = async () => {
     try {
@@ -330,6 +452,7 @@ export default function MagazineStudio() {
             onCreate={createPage}
             onUpdate={updatePage}
             onDelete={deletePage}
+            onGenerate={generatePages}
           />
         ) : (
           <PreviewPublish
