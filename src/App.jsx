@@ -69,6 +69,7 @@ const Meetups = lazy(() => import('@/pages/Meetups'));
 const MeetupInvite = lazy(() => import('@/pages/MeetupInvite'));
 const FellowEdition = lazy(() => import('@/pages/FellowEdition'));
 const ViralPost2022 = lazy(() => import('@/pages/ViralPost2022'));
+const ViralPost2022Featured = lazy(() => import('@/pages/ViralPost2022Featured'));
 const ViralPost2026Featured = lazy(() => import('@/pages/ViralPost2026Featured'));
 const ViralPost2026 = lazy(() => import('@/pages/ViralPost2026'));
 const NineMonths2026 = lazy(() => import('@/pages/NineMonths2026'));
@@ -244,6 +245,7 @@ const AuthenticatedApp = () => {
       } />
       <Route path="/articles/nine-months-of-2026" element={<NineMonths2026 />} />
       <Route path="/viralpost2022" element={<ViralPost2022 />} />
+      <Route path="/viralpost2022/featured/:slug" element={<ViralPost2022Featured />} />
       <Route path="/viralpost2026" element={<ViralPost2026 />} />
       <Route path="/viralpost2026/featured/:slug" element={<ViralPost2026Featured />} />
       <Route path="/honoree/2021/:slugId" element={<HonoreePublication />} />
