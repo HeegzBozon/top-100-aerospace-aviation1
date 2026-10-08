@@ -63,7 +63,14 @@ export default function ViralPost2026Featured() {
     upsert('meta', { property: 'og:description', content: desc });
     upsert('meta', { property: 'og:type', content: 'article' });
     upsert('meta', { property: 'og:url', content: canonical });
-    if (img) upsert('meta', { property: 'og:image', content: img });
+    if (img) {
+      upsert('meta', { property: 'og:image', content: img });
+      upsert('meta', { property: 'og:image:alt', content: `${name}'s top viral LinkedIn post` });
+      // Remove the static 1200×630 dimensions — the screenshot has a different
+      // aspect ratio, and stale dimensions can make crawlers reject the image.
+      document.head.querySelectorAll('meta[property="og:image:width"], meta[property="og:image:height"]').forEach((el) => el.parentNode && el.parentNode.removeChild(el));
+      upsert('meta', { name: 'twitter:image', content: img });
+    }
     upsert('meta', { name: 'twitter:card', content: 'summary_large_image' });
 
     const ld = document.createElement('script');
