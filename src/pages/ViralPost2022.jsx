@@ -185,9 +185,8 @@ const HonoreeCard = ({ h }) => (
         </p>
       </div>
 
-      {/* Read the original — matches 2026 card affordance */}
       <div className="mt-5 flex items-center gap-1.5 text-sm font-semibold" style={{ color: NAVY }}>
-        View original post
+        Read the feature
         <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" style={{ color: COPPER }} />
       </div>
     </div>
