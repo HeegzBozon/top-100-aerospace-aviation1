@@ -312,8 +312,9 @@ export default function MagazineStudio() {
       });
 
       const created = await base44.entities.MagazinePage.bulkCreate(newPages);
-      setPages((created.records || []).sort((a, b) => a.page_number - b.page_number));
-      toast({ title: 'Pages generated', description: `${newPages.length} pages created from the issue blueprint.` });
+      const createdPages = Array.isArray(created) ? created : (created.records || []);
+      setPages(createdPages.sort((a, b) => a.page_number - b.page_number));
+      toast({ title: 'Pages generated', description: `${createdPages.length} pages created from the issue blueprint.` });
     } catch (e) {
       toast({ title: 'Error generating pages', variant: 'destructive' });
     }
