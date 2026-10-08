@@ -5,6 +5,9 @@ import { MAGAZINE_PALETTE as P, ARTICLE_TYPES, ARTICLE_STATUSES, SECTION_TYPES }
 export default function ArticleEditor({ article, issue, onSave, onClose, onDelete }) {
   const [title, setTitle] = useState(article.title || '');
   const [subtitle, setSubtitle] = useState(article.subtitle || '');
+  const [teaser, setTeaser] = useState(article.teaser || '');
+  const [writerCredit, setWriterCredit] = useState(article.writer_credit || '');
+  const [photographerCredit, setPhotographerCredit] = useState(article.photographer_credit || '');
   const [body, setBody] = useState(article.body || '');
   const [articleType, setArticleType] = useState(article.article_type || 'evergreen');
   const [status, setStatus] = useState(article.status || 'reserved');
@@ -33,7 +36,8 @@ export default function ArticleEditor({ article, issue, onSave, onClose, onDelet
     setSaving(true);
     try {
       await onSave({
-        title, subtitle, body, article_type: articleType, status,
+        title, subtitle, teaser, writer_credit: writerCredit, photographer_credit: photographerCredit,
+        body, article_type: articleType, status,
         section_id: sectionId, pull_quote: pullQuote, pull_quote_attribution: pullQuoteAttribution,
         hero_image_url: heroImage, page_number: pageNumber ? Number(pageNumber) : undefined,
         placeholder_text: placeholderText, nominee_id: nomineeId, sources,
@@ -68,6 +72,19 @@ export default function ArticleEditor({ article, issue, onSave, onClose, onDelet
           <Field label="Deck / Subtitle">
             <input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} className="mag-input" placeholder="Article deck..." />
           </Field>
+
+          <Field label="TOC Teaser">
+            <input value={teaser} onChange={(e) => setTeaser(e.target.value)} className="mag-input" placeholder="One-line teaser for the table of contents..." />
+          </Field>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Writer Credit">
+              <input value={writerCredit} onChange={(e) => setWriterCredit(e.target.value)} className="mag-input" placeholder="By Jane Doe" />
+            </Field>
+            <Field label="Photographer Credit">
+              <input value={photographerCredit} onChange={(e) => setPhotographerCredit(e.target.value)} className="mag-input" placeholder="Photographed by..." />
+            </Field>
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <Field label="Type">

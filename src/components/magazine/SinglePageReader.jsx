@@ -8,7 +8,7 @@ import { PlayPauseButton, SpeedSelector, PlaybackProgress } from '@/components/m
 // Responsive single-page reading mode. Shows one page at a time in a
 // scrollable, article-style view with chapter navigation. Doubles as a
 // passive film: narrated autoplay paces itself by page density.
-export default function SinglePageReader({ pages, issue, isPlaying, setIsPlaying, speed, setSpeed }) {
+export default function SinglePageReader({ pages, articles = [], issue, isPlaying, setIsPlaying, speed, setSpeed }) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showContents, setShowContents] = useState(false);
   const totalPages = pages.length;
@@ -82,7 +82,7 @@ export default function SinglePageReader({ pages, issue, isPlaying, setIsPlaying
           }}
           key={currentIdx}
         >
-          <PageRenderer page={page} issue={issue} pageNumber={currentIdx + 1} totalPages={totalPages} />
+          <PageRenderer page={page} issue={issue} articles={articles} pageNumber={currentIdx + 1} totalPages={totalPages} />
         </div>
 
         {/* Page navigation */}

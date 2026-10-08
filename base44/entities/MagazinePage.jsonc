@@ -19,6 +19,7 @@
       "enum": [
         "cover",
         "masthead",
+        "toc",
         "article",
         "feature_spread",
         "profile",

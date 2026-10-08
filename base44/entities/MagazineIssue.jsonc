@@ -52,6 +52,41 @@
       "default": 0,
       "description": "Number of pages in the uploaded PDF, for reader navigation."
     },
+    "cover_credits": {
+      "type": "object",
+      "description": "Cover credits in the Vogue format: who is on the cover and who made it.",
+      "properties": {
+        "subject": {
+          "type": "string",
+          "description": "The person or subject on the cover."
+        },
+        "photographer": {
+          "type": "string",
+          "description": "Photographer or visual artist credit."
+        },
+        "writer": {
+          "type": "string",
+          "description": "Writer credit for the cover line."
+        }
+      }
+    },
+    "contributors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "description": "Writer, Photographer, Editor, Featured Nominator, etc."
+          }
+        }
+      },
+      "default": [],
+      "description": "Contributor credits for the front-of-book contributors page."
+    },
     "sections": {
       "type": "array",
       "items": {
@@ -73,6 +108,15 @@
               "colophon"
             ],
             "description": "Editorial section type"
+          },
+          "section_group": {
+            "type": "string",
+            "enum": [
+              "front_of_book",
+              "well",
+              "back_of_book"
+            ],
+            "description": "Structural position in the issue: front of book, the well, or back of book."
           },
           "order": {
             "type": "number"

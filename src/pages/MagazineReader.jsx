@@ -12,6 +12,7 @@ export default function MagazineReader() {
   const { issueId } = useParams();
   const [issue, setIssue] = useState(null);
   const [pages, setPages] = useState([]);
+  const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [opened, setOpened] = useState(false);
@@ -32,6 +33,12 @@ export default function MagazineReader() {
           { sort: 'page_number', limit: 200 }
         );
         setPages(pageRes.items || []);
+
+        const articleRes = await base44.entities.MagazineArticle.filter(
+          { issue_id: issueId, status: 'published' },
+          { sort: 'order', limit: 200 }
+        );
+        setArticles(articleRes.items || []);
 
         // If PDF mode, get signed URL
         if (issueData.assembly_mode === 'pdf' && issueData.cover_pdf_uri) {
@@ -140,6 +147,7 @@ export default function MagazineReader() {
       ) : mode === 'flipbook' ? (
         <CinematicFlipbook
           pages={pages}
+          articles={articles}
           issue={issue}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
@@ -149,6 +157,7 @@ export default function MagazineReader() {
       ) : (
         <SinglePageReader
           pages={pages}
+          articles={articles}
           issue={issue}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}

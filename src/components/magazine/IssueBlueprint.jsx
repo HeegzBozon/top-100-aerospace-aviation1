@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, GripVertical, FileText, FileUp } from 'lucide-react';
-import { MAGAZINE_PALETTE as P, SECTION_TYPES, ASSEMBLY_MODES, THEME_ACCENTS, DEFAULT_SECTIONS } from '@/components/magazine/magazineConfig';
+import { Plus, Trash2, FileText, FileUp, Crown } from 'lucide-react';
+import { MAGAZINE_PALETTE as P, SECTION_TYPES, SECTION_GROUPS, ASSEMBLY_MODES, THEME_ACCENTS, DEFAULT_SECTIONS, VOLUME_IV_BLUEPRINT, sectionGroupLabel } from '@/components/magazine/magazineConfig';
 import PdfUploadPanel from '@/components/magazine/PdfUploadPanel';
 
 let sectionIdCounter = 0;
@@ -10,6 +10,7 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate }) {
   const [subtitle, setSubtitle] = useState(issue.subtitle || '');
   const [coverKicker, setCoverKicker] = useState(issue.cover_kicker || '');
   const [coverUrl, setCoverUrl] = useState(issue.cover_image_url || '');
+  const [coverCredits, setCoverCredits] = useState(issue.cover_credits || {});
   const [preface, setPreface] = useState(issue.preface || '');
   const [colophon, setColophon] = useState(issue.colophon || '');
   const [sections, setSections] = useState(issue.sections || []);
@@ -22,7 +23,8 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate }) {
     try {
       await onUpdate(issue.id, {
         title, subtitle, cover_kicker: coverKicker, cover_image_url: coverUrl,
-        preface, colophon, sections, assembly_mode: assemblyMode, theme_accent: themeAccent,
+        cover_credits: coverCredits, preface, colophon, sections,
+        assembly_mode: assemblyMode, theme_accent: themeAccent,
       });
     } finally {
       setSaving(false);
@@ -31,7 +33,7 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate }) {
 
   const addSection = () => {
     const id = `sec-${Date.now()}-${sectionIdCounter++}`;
-    setSections([...sections, { id, name: 'New Section', section_type: 'evergreen', order: sections.length }]);
+    setSections([...sections, { id, name: 'New Section', section_type: 'evergreen', section_group: 'well', order: sections.length }]);
   };
 
   const updateSection = (id, field, value) => {
@@ -54,8 +56,45 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate }) {
     setSections(DEFAULT_SECTIONS.map((s, i) => ({ ...s, order: i, id: `${s.id}-${Date.now()}` })));
   };
 
+  const loadVolumeIVBlueprint = () => {
+    setTitle(VOLUME_IV_BLUEPRINT.title);
+    setSubtitle(VOLUME_IV_BLUEPRINT.subtitle);
+    setCoverKicker(VOLUME_IV_BLUEPRINT.cover_kicker);
+    setColophon(VOLUME_IV_BLUEPRINT.colophon);
+    setSections(VOLUME_IV_BLUEPRINT.sections.map((s, i) => ({ ...s, order: i, id: `${s.id}-${Date.now()}` })));
+  };
+
+  // Group sections by section_group for visual display
+  const groupedSections = SECTION_GROUPS.map((group) => ({
+    ...group,
+    items: sections.filter((s) => (s.section_group || 'well') === group.key),
+  }));
+
+  const updateCoverCredit = (field, value) => {
+    setCoverCredits({ ...coverCredits, [field]: value });
+  };
+
   return (
     <div className="space-y-6">
+      {/* Volume IV Quick Start */}
+      {sections.length === 0 && (
+        <div className="rounded-2xl p-5" style={{ background: 'rgba(184,115,51,0.05)', border: `1px solid ${P.copper}30` }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Crown className="w-4 h-4" style={{ color: P.copper }} />
+            <h3 className="text-sm font-serif" style={{ color: P.navy }}>Volume IV Flagship Blueprint</h3>
+          </div>
+          <p className="text-xs mb-4" style={{ color: 'rgba(30,58,90,0.6)' }}>
+            Load the September-issue structure: Front of Book, an expanded honoree Well with themed packages, and Back of Book.
+          </p>
+          <div className="flex gap-2">
+            <button onClick={loadVolumeIVBlueprint} className="mag-btn-primary">
+              <Crown className="w-4 h-4 inline mr-1.5" /> Load Volume IV Blueprint
+            </button>
+            <button onClick={loadDefaultSections} className="mag-btn-secondary">Basic Skeleton</button>
+          </div>
+        </div>
+      )}
+
       {/* Issue Identity */}
       <Section title="Issue Identity">
         <Field label="Title">
@@ -84,47 +123,85 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate }) {
         </div>
       </Section>
 
+      {/* Cover Credits */}
+      <Section title="Cover Credits" subtitle="Subject, photographer, and writer — in the Vogue format">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Field label="Cover Subject">
+            <input value={coverCredits.subject || ''} onChange={(e) => updateCoverCredit('subject', e.target.value)} className="mag-input" placeholder="Honoree name" />
+          </Field>
+          <Field label="Photographer / Artist">
+            <input value={coverCredits.photographer || ''} onChange={(e) => updateCoverCredit('photographer', e.target.value)} className="mag-input" placeholder="Photographer credit" />
+          </Field>
+          <Field label="Writer">
+            <input value={coverCredits.writer || ''} onChange={(e) => updateCoverCredit('writer', e.target.value)} className="mag-input" placeholder="Writer credit" />
+          </Field>
+        </div>
+      </Section>
+
       {/* Assembly Mode Panel */}
       {assemblyMode === 'pdf' && (
         <PdfUploadPanel issue={issue} onUpdate={onUpdate} />
       )}
 
-      {/* Editorial Blueprint — Sections */}
-      <Section title="Editorial Blueprint" subtitle="Define the section order and page plan">
+      {/* Editorial Blueprint — Sections grouped by position */}
+      <Section title="Editorial Blueprint" subtitle="Front of Book → The Well → Back of Book">
         {sections.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-sm mb-4" style={{ color: 'rgba(30,58,90,0.5)' }}>No sections defined yet.</p>
             <div className="flex gap-2 justify-center">
-              <button onClick={loadDefaultSections} className="mag-btn-secondary">Load Default Blueprint</button>
-              <button onClick={addSection} className="mag-btn-primary"><Plus className="w-4 h-4 inline mr-1" /> Add Section</button>
+              <button onClick={loadVolumeIVBlueprint} className="mag-btn-primary"><Crown className="w-4 h-4 inline mr-1" /> Volume IV Blueprint</button>
+              <button onClick={loadDefaultSections} className="mag-btn-secondary">Basic Skeleton</button>
+              <button onClick={addSection} className="mag-btn-secondary"><Plus className="w-4 h-4 inline mr-1" /> Add Section</button>
             </div>
           </div>
         ) : (
-          <div className="space-y-2">
-            {sections.map((sec, idx) => (
-              <div key={sec.id} className="flex items-center gap-2 p-2.5 rounded-xl" style={{ background: 'rgba(30,58,90,0.03)' }}>
-                <div className="flex flex-col">
-                  <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="text-[10px] disabled:opacity-20" style={{ color: P.navy }}>▲</button>
-                  <button onClick={() => moveSection(idx, 1)} disabled={idx === sections.length - 1} className="text-[10px] disabled:opacity-20" style={{ color: P.navy }}>▼</button>
+          <div className="space-y-4">
+            {groupedSections.map((group) => (
+              <div key={group.key}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: P.copper }}>{group.label}</span>
+                  <div className="flex-1 h-px" style={{ background: 'rgba(30,58,90,0.1)' }} />
+                  <span className="text-[10px]" style={{ color: 'rgba(30,58,90,0.4)' }}>{group.items.length}</span>
                 </div>
-                <span className="text-xs font-mono w-6 text-center" style={{ color: P.gold }}>{String(idx + 1).padStart(2, '0')}</span>
-                <input
-                  value={sec.name}
-                  onChange={(e) => updateSection(sec.id, 'name', e.target.value)}
-                  className="flex-1 px-2 py-1.5 text-sm rounded-lg border-0 bg-white"
-                  style={{ outline: '1px solid rgba(30,58,90,0.15)' }}
-                />
-                <select
-                  value={sec.section_type}
-                  onChange={(e) => updateSection(sec.id, 'section_type', e.target.value)}
-                  className="px-2 py-1.5 text-xs rounded-lg border-0 bg-white"
-                  style={{ outline: '1px solid rgba(30,58,90,0.15)' }}
-                >
-                  {SECTION_TYPES.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
-                </select>
-                <button onClick={() => removeSection(sec.id)} className="p-1 rounded-full hover:bg-red-50">
-                  <Trash2 className="w-3.5 h-3.5" style={{ color: 'rgba(30,58,90,0.4)' }} />
-                </button>
+                <div className="space-y-2">
+                  {group.items.map((sec) => {
+                    const idx = sections.findIndex((s) => s.id === sec.id);
+                    return (
+                      <div key={sec.id} className="flex items-center gap-2 p-2.5 rounded-xl" style={{ background: 'rgba(30,58,90,0.03)' }}>
+                        <div className="flex flex-col">
+                          <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="text-[10px] disabled:opacity-20" style={{ color: P.navy }}>▲</button>
+                          <button onClick={() => moveSection(idx, 1)} disabled={idx === sections.length - 1} className="text-[10px] disabled:opacity-20" style={{ color: P.navy }}>▼</button>
+                        </div>
+                        <span className="text-xs font-mono w-6 text-center" style={{ color: P.gold }}>{String(idx + 1).padStart(2, '0')}</span>
+                        <input
+                          value={sec.name}
+                          onChange={(e) => updateSection(sec.id, 'name', e.target.value)}
+                          className="flex-1 px-2 py-1.5 text-sm rounded-lg border-0 bg-white min-w-0"
+                          style={{ outline: '1px solid rgba(30,58,90,0.15)' }}
+                        />
+                        <select
+                          value={sec.section_type}
+                          onChange={(e) => updateSection(sec.id, 'section_type', e.target.value)}
+                          className="px-2 py-1.5 text-xs rounded-lg border-0 bg-white"
+                          style={{ outline: '1px solid rgba(30,58,90,0.15)' }}
+                        >
+                          {SECTION_TYPES.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
+                        </select>
+                        <select
+                          value={sec.section_group || 'well'}
+                          onChange={(e) => updateSection(sec.id, 'section_group', e.target.value)}
+                          className="px-2 py-1.5 text-xs rounded-lg border-0 bg-white"
+                          style={{ outline: '1px solid rgba(30,58,90,0.15)' }}
+                        >
+                          {SECTION_GROUPS.map((g) => <option key={g.key} value={g.key}>{g.label}</option>)}
+                        </select>
+                        <button onClick={() => removeSection(sec.id)} className="p-1 rounded-full hover:bg-red-50">
+                          <Trash2 className="w-3.5 h-3.5" style={{ color: 'rgba(30,58,90,0.4)' }} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             ))}
             <button onClick={addSection} className="mag-btn-secondary mt-2"><Plus className="w-4 h-4 inline mr-1" /> Add Section</button>

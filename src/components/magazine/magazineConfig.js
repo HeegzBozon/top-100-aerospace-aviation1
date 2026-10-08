@@ -21,6 +21,15 @@ export const SECTION_TYPES = [
   { key: 'colophon', label: 'Colophon', description: 'Closing institutional matter' },
 ];
 
+export const SECTION_GROUPS = [
+  { key: 'front_of_book', label: 'Front of Book', description: 'Editor\'s letter, contributors, opening essays' },
+  { key: 'well', label: 'The Well', description: 'The heart of the issue — cover story, honorees, portfolios' },
+  { key: 'back_of_book', label: 'Back of Book', description: 'Index, methodology, closing matter' },
+];
+
+export const sectionGroupLabel = (key) =>
+  SECTION_GROUPS.find((g) => g.key === key)?.label || key;
+
 export const ARTICLE_TYPES = [
   { key: 'evergreen', label: 'Evergreen', color: '#1e3a5a', description: 'Can proceed before measurements' },
   { key: 'profile', label: 'Profile', color: '#c9a87c', description: 'Fellow or Nominee profile' },
@@ -40,6 +49,7 @@ export const ARTICLE_STATUSES = [
 export const PAGE_LAYOUTS = [
   { key: 'cover', label: 'Cover', description: 'Full-bleed issue cover' },
   { key: 'masthead', label: 'Masthead', description: 'Institutional masthead spread' },
+  { key: 'toc', label: 'Table of Contents', description: 'Issue contents with page numbers and credits' },
   { key: 'article', label: 'Article', description: 'Standard article page' },
   { key: 'feature_spread', label: 'Feature Spread', description: 'Full-bleed feature with image' },
   { key: 'profile', label: 'Profile', description: 'Profile portrait page' },
@@ -96,6 +106,37 @@ export const DEFAULT_SECTIONS = [
   { id: 'sec-results', name: 'The Measurement', section_type: 'results', order: 4 },
   { id: 'sec-colophon', name: 'Colophon', section_type: 'colophon', order: 5 },
 ];
+
+// Volume IV flagship blueprint — the September-issue model.
+// Front of Book → expanded honoree Well → Back of Book.
+// Themed packages within the well give the 100 honorees editorial rhythm.
+export const VOLUME_IV_BLUEPRINT = {
+  title: 'TOP 100 Aerospace & Aviation — Volume IV',
+  subtitle: 'The 2026 Edition',
+  cover_kicker: 'Volume IV · The 2026 Edition',
+  preface: '',
+  colophon: 'TOP 100 Aerospace & Aviation is an institutional publication of the TOP 100 Aerospace & Aviation community. Volume IV measures the professional aerospace and aviation community across one cycle of nomination, peer evaluation, and editorial review.',
+  sections: [
+    // ── Front of Book ──
+    { id: 'sec-fob-founders-letter', name: "Founder's Letter", section_type: 'evergreen', section_group: 'front_of_book', order: 0 },
+    { id: 'sec-fob-contributors', name: 'Contributors', section_type: 'evergreen', section_group: 'front_of_book', order: 1 },
+    { id: 'sec-fob-the-vote', name: 'Up Front: The Vote', section_type: 'evergreen', section_group: 'front_of_book', order: 2 },
+    { id: 'sec-fob-by-the-numbers', name: 'By the Numbers', section_type: 'evergreen', section_group: 'front_of_book', order: 3 },
+    // ── Departments ──
+    { id: 'sec-dept-signals', name: 'Signals', section_type: 'evergreen', section_group: 'front_of_book', order: 4 },
+    { id: 'sec-dept-alumni', name: 'Alumni', section_type: 'evergreen', section_group: 'front_of_book', order: 5 },
+    { id: 'sec-dept-patrons', name: 'Patron of Record', section_type: 'evergreen', section_group: 'front_of_book', order: 6 },
+    // ── The Well ──
+    { id: 'sec-well-cover-story', name: 'Cover Story', section_type: 'feature', section_group: 'well', order: 7 },
+    { id: 'sec-well-the-100', name: 'The 100', section_type: 'profile', section_group: 'well', order: 8 },
+    { id: 'sec-well-portfolios', name: 'Portfolios', section_type: 'feature', section_group: 'well', order: 9 },
+    // ── Back of Book ──
+    { id: 'sec-bob-index', name: 'Index', section_type: 'evergreen', section_group: 'back_of_book', order: 10 },
+    { id: 'sec-bob-methodology', name: 'Methodology & Governance', section_type: 'evergreen', section_group: 'back_of_book', order: 11 },
+    { id: 'sec-bob-get-involved', name: 'Get Involved', section_type: 'evergreen', section_group: 'back_of_book', order: 12 },
+    { id: 'sec-bob-last-look', name: 'Last Look', section_type: 'colophon', section_group: 'back_of_book', order: 13 },
+  ],
+};
 
 // Brand palette shared across the studio and reader.
 export const MAGAZINE_PALETTE = {

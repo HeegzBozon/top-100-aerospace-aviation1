@@ -18,6 +18,18 @@
       "type": "string",
       "description": "Article deck / subtitle."
     },
+    "teaser": {
+      "type": "string",
+      "description": "Short one-line teaser for the table of contents. Displayed on TOC pages only when present."
+    },
+    "writer_credit": {
+      "type": "string",
+      "description": "Writer credit shown on the TOC and article spread, e.g. 'By Jane Doe'."
+    },
+    "photographer_credit": {
+      "type": "string",
+      "description": "Photographer or visual artist credit shown on the TOC and article spread."
+    },
     "body": {
       "type": "string",
       "description": "Full article body as rich text (HTML). Drafted before final measurements; results_reserved articles use placeholder_text until measurements are finalized."

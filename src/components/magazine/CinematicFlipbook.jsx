@@ -9,7 +9,7 @@ import { PlayPauseButton, SpeedSelector, PlaybackProgress } from '@/components/m
 // Cinematic flipbook using react-pageflip. Renders native composition pages
 // with tactile page turns, chapter dividers, and pull quote breakaway pages.
 // Doubles as a passive film: narrated autoplay paces itself by page density.
-export default function CinematicFlipbook({ pages, issue, isPlaying, setIsPlaying, speed, setSpeed }) {
+export default function CinematicFlipbook({ pages, articles = [], issue, isPlaying, setIsPlaying, speed, setSpeed }) {
   const bookRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(pages.length);
@@ -119,7 +119,7 @@ export default function CinematicFlipbook({ pages, issue, isPlaying, setIsPlayin
         >
           {pages.map((page, i) => (
             <div key={page.id || i} style={{ height: '100%', overflow: 'hidden' }}>
-              <PageRenderer page={page} issue={issue} pageNumber={i + 1} totalPages={totalPages} />
+              <PageRenderer page={page} issue={issue} articles={articles} pageNumber={i + 1} totalPages={totalPages} />
             </div>
           ))}
         </HTMLFlipBook>

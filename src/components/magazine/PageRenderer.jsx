@@ -3,9 +3,10 @@ import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 
 // Renders a single magazine page's content based on its layout type and blocks.
 // Used by both the flipbook and single-page reader.
-export default function PageRenderer({ page, issue, pageNumber, totalPages }) {
+export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages }) {
   const blocks = page.content_blocks || [];
   const bg = page.background_image_url;
+  const credits = issue.cover_credits || {};
 
   // Cover page
   if (page.layout_type === 'cover') {
@@ -25,6 +26,75 @@ export default function PageRenderer({ page, issue, pageNumber, totalPages }) {
             <p className="text-sm mt-3 ppc-rise" style={{ color: 'rgba(250,248,245,0.7)', animationDelay: '0.6s' }}>{issue.subtitle}</p>
           )}
           <div className="w-12 h-px mt-6 ppc-rise" style={{ background: P.gold, animationDelay: '0.8s' }} />
+          {/* Cover credits */}
+          {(credits.subject || credits.photographer || credits.writer) && (
+            <div className="mt-8 ppc-rise" style={{ animationDelay: '1s' }}>
+              <p className="text-[9px] font-bold uppercase tracking-[0.3em] mb-2" style={{ color: 'rgba(201,168,124,0.6)' }}>On the Cover</p>
+              {credits.subject && <p className="text-xs" style={{ color: 'rgba(250,248,245,0.8)' }}>{credits.subject}</p>}
+              {credits.photographer && <p className="text-[10px] mt-1" style={{ color: 'rgba(250,248,245,0.5)' }}>Photography by {credits.photographer}</p>}
+              {credits.writer && <p className="text-[10px]" style={{ color: 'rgba(250,248,245,0.5)' }}>Written by {credits.writer}</p>}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Table of Contents
+  if (page.layout_type === 'toc') {
+    const sections = issue.sections || [];
+    const tocArticles = articles.filter((a) => a.page_number || a.teaser || a.title);
+    // Group articles by section
+    const sectionsWithArticles = sections
+      .map((sec) => ({
+        ...sec,
+        items: tocArticles.filter((a) => a.section_id === sec.id),
+      }))
+      .filter((sec) => sec.items.length > 0);
+
+    return (
+      <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8">
+          <p className="text-[10px] font-bold uppercase tracking-[0.4em] mb-2" style={{ color: P.gold }}>Contents</p>
+          <h2 className="font-serif text-xl sm:text-2xl mb-6" style={{ color: P.navy }}>{issue.title}</h2>
+          <div className="space-y-5">
+            {sectionsWithArticles.map((sec) => (
+              <div key={sec.id}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: P.copper }}>{sec.name}</span>
+                  <div className="flex-1 h-px" style={{ background: 'rgba(30,58,90,0.1)' }} />
+                </div>
+                {sec.items.map((art, i) => (
+                  <div key={art.id || i} className="flex items-baseline gap-2 py-1.5">
+                    <span className="text-[10px] font-mono flex-shrink-0 w-6 text-right" style={{ color: P.gold }}>
+                      {art.page_number ? String(art.page_number).padStart(2, '0') : '—'}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium leading-tight" style={{ color: P.navy }}>{art.title}</p>
+                      {art.teaser && <p className="text-[10px] mt-0.5 leading-tight" style={{ color: 'rgba(30,58,90,0.5)' }}>{art.teaser}</p>}
+                      {(art.writer_credit || art.photographer_credit) && (
+                        <p className="text-[9px] mt-0.5" style={{ color: 'rgba(184,115,51,0.7)' }}>
+                          {art.writer_credit && <span>{art.writer_credit}</span>}
+                          {art.writer_credit && art.photographer_credit && <span> · </span>}
+                          {art.photographer_credit && <span>{art.photographer_credit}</span>}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+            {sectionsWithArticles.length === 0 && (
+              <p className="text-xs text-center py-8" style={{ color: 'rgba(30,58,90,0.4)' }}>
+                Assign articles with page numbers to populate the contents.
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="flex-shrink-0 px-6 py-2 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
+          <span className="text-[10px] font-mono" style={{ color: 'rgba(30,58,90,0.3)' }}>
+            {String(pageNumber).padStart(2, '0')} <span style={{ opacity: 0.5 }}>/ {String(totalPages).padStart(2, '0')}</span>
+          </span>
         </div>
       </div>
     );
