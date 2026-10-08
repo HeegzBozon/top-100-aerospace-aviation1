@@ -123,9 +123,14 @@ const Monogram = ({ name }) => {
   );
 };
 
+const LINKEDIN_PULSE_URL = 'https://www.linkedin.com/pulse/top-10-aerospace-aviation-professionals-follow-linkedin-matt-higa/';
+
 const HonoreeCard = ({ h }) => (
-  <article
-    className="relative bg-white border rounded-2xl overflow-hidden transition-shadow duration-300 hover:shadow-xl flex flex-col"
+  <a
+    href={LINKEDIN_PULSE_URL}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="group relative bg-white border rounded-2xl overflow-hidden transition-shadow duration-300 hover:shadow-xl flex flex-col"
     style={{ borderColor: 'rgba(30,58,90,0.14)' }}
   >
     {/* Rank ribbon */}
@@ -179,8 +184,14 @@ const HonoreeCard = ({ h }) => (
           {h.quote}
         </p>
       </div>
+
+      {/* Read the original — matches 2026 card affordance */}
+      <div className="mt-5 flex items-center gap-1.5 text-sm font-semibold" style={{ color: NAVY }}>
+        View original post
+        <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" style={{ color: COPPER }} />
+      </div>
     </div>
-  </article>
+  </a>
 );
 
 export default function ViralPost2022() {
