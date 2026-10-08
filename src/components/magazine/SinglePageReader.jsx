@@ -1,14 +1,36 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, List, X, Share2 } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
+import { useCinematicPlayback } from '@/components/magazine/useCinematicPlayback';
+import { PlayPauseButton, SpeedSelector, PlaybackProgress } from '@/components/magazine/PlaybackControls';
 
 // Responsive single-page reading mode. Shows one page at a time in a
-// scrollable, article-style view with chapter navigation.
-export default function SinglePageReader({ pages, issue }) {
+// scrollable, article-style view with chapter navigation. Doubles as a
+// passive film: narrated autoplay paces itself by page density.
+export default function SinglePageReader({ pages, issue, isPlaying, setIsPlaying, speed, setSpeed }) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showContents, setShowContents] = useState(false);
   const totalPages = pages.length;
+
+  const goNext = useCallback(() => setCurrentIdx(i => Math.min(i + 1, totalPages - 1)), [totalPages]);
+  const goPrev = useCallback(() => setCurrentIdx(i => Math.max(i - 1, 0)), []);
+
+  // Stop at the end of the publication
+  useEffect(() => {
+    if (isPlaying && currentIdx >= totalPages - 1) {
+      setIsPlaying(false);
+    }
+  }, [isPlaying, currentIdx, totalPages, setIsPlaying]);
+
+  const { progress } = useCinematicPlayback({
+    currentPageIndex: currentIdx,
+    totalPages,
+    goNext,
+    pages,
+    isPlaying,
+    speed,
+  });
 
   const chapterIndex = useMemo(() => {
     return pages
@@ -25,9 +47,6 @@ export default function SinglePageReader({ pages, issue }) {
   }
 
   const page = pages[currentIdx];
-
-  const goNext = () => setCurrentIdx((i) => Math.min(i + 1, totalPages - 1));
-  const goPrev = () => setCurrentIdx((i) => Math.max(i - 1, 0));
 
   const share = () => {
     if (navigator.share) navigator.share({ title: issue.title, url: window.location.href });
@@ -67,7 +86,7 @@ export default function SinglePageReader({ pages, issue }) {
         </div>
 
         {/* Page navigation */}
-        <div className="flex items-center justify-center gap-3 mt-6">
+        <div className="flex items-center justify-center gap-2 mt-6">
           <button
             onClick={goPrev}
             disabled={currentIdx === 0}
@@ -76,9 +95,16 @@ export default function SinglePageReader({ pages, issue }) {
           >
             <ChevronLeft className="w-4 h-4" /> Previous
           </button>
-          <span className="text-sm font-mono" style={{ color: 'rgba(30,58,90,0.5)', fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <PlayPauseButton
+            isPlaying={isPlaying}
+            onToggle={() => setIsPlaying(!isPlaying)}
+            disabled={currentIdx >= totalPages - 1}
+            theme="light"
+          />
+          <span className="text-sm font-mono px-1" style={{ color: 'rgba(30,58,90,0.5)', fontFamily: "'Playfair Display', Georgia, serif" }}>
             {String(currentIdx + 1).padStart(2, '0')} / {String(totalPages).padStart(2, '0')}
           </span>
+          <SpeedSelector speed={speed} onChange={setSpeed} theme="light" />
           <button
             onClick={goNext}
             disabled={currentIdx === totalPages - 1}
@@ -89,6 +115,9 @@ export default function SinglePageReader({ pages, issue }) {
           </button>
         </div>
       </div>
+
+      {/* Cinematic progress bar */}
+      <PlaybackProgress progress={progress} active={isPlaying} />
 
       {/* Contents panel */}
       {showContents && (

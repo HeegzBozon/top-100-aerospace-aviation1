@@ -1,12 +1,15 @@
-import React, { useRef, useState, useCallback, useMemo } from 'react';
+import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import HTMLFlipBook from 'react-pageflip';
 import { ChevronLeft, ChevronRight, Share2, List, X } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
+import { useCinematicPlayback } from '@/components/magazine/useCinematicPlayback';
+import { PlayPauseButton, SpeedSelector, PlaybackProgress } from '@/components/magazine/PlaybackControls';
 
 // Cinematic flipbook using react-pageflip. Renders native composition pages
 // with tactile page turns, chapter dividers, and pull quote breakaway pages.
-export default function CinematicFlipbook({ pages, issue }) {
+// Doubles as a passive film: narrated autoplay paces itself by page density.
+export default function CinematicFlipbook({ pages, issue, isPlaying, setIsPlaying, speed, setSpeed }) {
   const bookRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(pages.length);
@@ -19,6 +22,22 @@ export default function CinematicFlipbook({ pages, issue }) {
 
   const flipPrev = useCallback(() => bookRef.current?.pageFlip()?.flipPrev(), []);
   const flipNext = useCallback(() => bookRef.current?.pageFlip()?.flipNext(), []);
+
+  // Stop at the end of the publication
+  useEffect(() => {
+    if (isPlaying && currentPage >= totalPages - 1) {
+      setIsPlaying(false);
+    }
+  }, [isPlaying, currentPage, totalPages, setIsPlaying]);
+
+  const { progress } = useCinematicPlayback({
+    currentPageIndex: currentPage,
+    totalPages,
+    goNext: flipNext,
+    pages,
+    isPlaying,
+    speed,
+  });
 
   const goToPage = useCallback((idx) => {
     bookRef.current?.pageFlip()?.flip(idx, 'top');
@@ -109,7 +128,7 @@ export default function CinematicFlipbook({ pages, issue }) {
       {/* Bottom nav */}
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-20">
         <div
-          className="flex items-center gap-2 rounded-full px-3 py-2 shadow-2xl"
+          className="flex items-center gap-1 rounded-full px-3 py-2 shadow-2xl"
           style={{ background: 'rgba(7,15,31,0.92)', border: '1px solid rgba(201,168,124,0.28)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
         >
           <button
@@ -121,10 +140,16 @@ export default function CinematicFlipbook({ pages, issue }) {
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <span className="text-sm tabular-nums px-2" style={{ color: P.cream, fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <PlayPauseButton
+            isPlaying={isPlaying}
+            onToggle={() => setIsPlaying(!isPlaying)}
+            disabled={currentPage >= totalPages - 1}
+          />
+          <span className="text-sm tabular-nums px-1" style={{ color: P.cream, fontFamily: "'Playfair Display', Georgia, serif" }}>
             {String(currentPage + 1).padStart(2, '0')}
             <span style={{ color: 'rgba(250,248,245,0.35)' }}> / {String(totalPages).padStart(2, '0')}</span>
           </span>
+          <SpeedSelector speed={speed} onChange={setSpeed} />
           <button
             onClick={flipNext}
             disabled={currentPage >= totalPages - 1}
@@ -136,6 +161,9 @@ export default function CinematicFlipbook({ pages, issue }) {
           </button>
         </div>
       </div>
+
+      {/* Cinematic progress bar */}
+      <PlaybackProgress progress={progress} active={isPlaying} />
 
       {/* Contents panel */}
       {showContents && (

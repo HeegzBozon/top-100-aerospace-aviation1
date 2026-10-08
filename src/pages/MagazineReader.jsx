@@ -17,6 +17,8 @@ export default function MagazineReader() {
   const [opened, setOpened] = useState(false);
   const [mode, setMode] = useState('flipbook'); // flipbook | single
   const [pdfSignedUrl, setPdfSignedUrl] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
   // Load issue and pages
   useEffect(() => {
@@ -88,7 +90,13 @@ export default function MagazineReader() {
 
   // Cinematic opening
   if (!opened) {
-    return <IssueOpening issue={issue} onBegin={() => setOpened(true)} />;
+    return (
+      <IssueOpening
+        issue={issue}
+        onBegin={() => setOpened(true)}
+        onAutoPlay={() => { setOpened(true); setIsPlaying(true); }}
+      />
+    );
   }
 
   const isPdf = issue.assembly_mode === 'pdf';
@@ -130,9 +138,23 @@ export default function MagazineReader() {
       {isPdf ? (
         <PdfViewer issue={issue} signedUrl={pdfSignedUrl} mode={mode} />
       ) : mode === 'flipbook' ? (
-        <CinematicFlipbook pages={pages} issue={issue} />
+        <CinematicFlipbook
+          pages={pages}
+          issue={issue}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          speed={playbackSpeed}
+          setSpeed={setPlaybackSpeed}
+        />
       ) : (
-        <SinglePageReader pages={pages} issue={issue} />
+        <SinglePageReader
+          pages={pages}
+          issue={issue}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          speed={playbackSpeed}
+          setSpeed={setPlaybackSpeed}
+        />
       )}
     </div>
   );

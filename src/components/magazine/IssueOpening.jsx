@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Play } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 
 // Cinematic opening sequence. Dark void → title reveal → cover image → "Begin Reading".
-export default function IssueOpening({ issue, onBegin }) {
+// Offers a passive "Play" path that starts narrated autoplay from the first page.
+export default function IssueOpening({ issue, onBegin, onAutoPlay }) {
   const [stage, setStage] = useState(0); // 0=void, 1=kicker, 2=title, 3=cover, 4=button
 
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function IssueOpening({ issue, onBegin }) {
       className="fixed inset-0 z-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden"
       style={{ background: P.navyVoid }}
       onClick={stage >= 4 ? onBegin : undefined}
+      data-stage={stage}
     >
       {/* Ambient glow */}
       <div
@@ -105,12 +107,26 @@ export default function IssueOpening({ issue, onBegin }) {
             transform: stage >= 4 ? 'translateY(0)' : 'translateY(10px)',
           }}
         >
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2 text-xs font-medium" style={{ color: P.gold }}>
               <BookOpen className="w-4 h-4" />
               <span className="uppercase tracking-[0.2em]">Begin Reading</span>
             </div>
-            <p className="text-[10px]" style={{ color: 'rgba(250,248,245,0.3)' }}>Tap to open</p>
+            {onAutoPlay && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onAutoPlay(); }}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-medium transition-all hover:scale-105"
+                style={{
+                  background: `linear-gradient(135deg, ${P.gold}, ${P.copper})`,
+                  color: P.navyVoid,
+                  boxShadow: '0 4px 20px rgba(201,168,124,0.3)',
+                }}
+              >
+                <Play className="w-3.5 h-3.5" />
+                <span className="uppercase tracking-[0.15em]">Play as Film</span>
+              </button>
+            )}
+            <p className="text-[10px]" style={{ color: 'rgba(250,248,245,0.3)' }}>Tap anywhere to open</p>
           </div>
         </div>
       </div>
