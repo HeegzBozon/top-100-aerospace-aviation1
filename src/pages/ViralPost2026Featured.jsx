@@ -234,13 +234,15 @@ export default function ViralPost2026Featured() {
           </div>
         </article>
 
-        {/* Profile link */}
-        <div className="mt-6 text-center">
-          <Link to={profileUrl} className="inline-flex items-center gap-1.5 text-sm font-semibold" style={{ color: NAVY }}>
-            View {name}'s full profile
-            <ChevronRight className="w-4 h-4" style={{ color: COPPER }} />
-          </Link>
-        </div>
+        {/* Original post link */}
+        {data.viral_post_link && (
+          <div className="mt-6 text-center">
+            <a href={data.viral_post_link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold" style={{ color: NAVY }}>
+              View Original post on LinkedIn
+              <ExternalLink className="w-3.5 h-3.5" style={{ color: COPPER }} />
+            </a>
+          </div>
+        )}
       </section>
 
       {/* CLOSING CTAs — mirror /viralpost2022 */}
