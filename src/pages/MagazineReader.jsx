@@ -164,10 +164,6 @@ export default function MagazineReader() {
           pages={pages}
           articles={articles}
           issue={issue}
-          isPlaying={isPlaying}
-          setIsPlaying={setIsPlaying}
-          speed={playbackSpeed}
-          setSpeed={setPlaybackSpeed}
         />
       )}
     </div>

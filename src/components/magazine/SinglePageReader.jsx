@@ -1,42 +1,36 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, List, X, Share2 } from 'lucide-react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
+import { List, X, Share2 } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
-import { useCinematicPlayback } from '@/components/magazine/useCinematicPlayback';
-import { PlayPauseButton, SpeedSelector, PlaybackProgress } from '@/components/magazine/PlaybackControls';
 
-// Responsive single-page reading mode. Shows one page at a time in a
-// scrollable, article-style view with chapter navigation. Doubles as a
-// passive film: narrated autoplay paces itself by page density.
-export default function SinglePageReader({ pages, articles = [], issue, isPlaying, setIsPlaying, speed, setSpeed }) {
-  const [currentIdx, setCurrentIdx] = useState(0);
+// Single-page reading mode: all pages stacked in one long editorial
+// scroll, like the Top100Women2025 publication. Contents panel jumps
+// to sections via smooth scroll.
+export default function SinglePageReader({ pages, articles = [], issue }) {
   const [showContents, setShowContents] = useState(false);
+  const sectionRefs = useRef([]);
   const totalPages = pages.length;
-
-  const goNext = useCallback(() => setCurrentIdx(i => Math.min(i + 1, totalPages - 1)), [totalPages]);
-  const goPrev = useCallback(() => setCurrentIdx(i => Math.max(i - 1, 0)), []);
-
-  // Stop at the end of the publication
-  useEffect(() => {
-    if (isPlaying && currentIdx >= totalPages - 1) {
-      setIsPlaying(false);
-    }
-  }, [isPlaying, currentIdx, totalPages, setIsPlaying]);
-
-  const { progress } = useCinematicPlayback({
-    currentPageIndex: currentIdx,
-    totalPages,
-    goNext,
-    pages,
-    isPlaying,
-    speed,
-  });
 
   const chapterIndex = useMemo(() => {
     return pages
       .map((p, i) => ({ page: p, index: i }))
-      .filter(({ page }) => page.layout_type === 'chapter_divider' || page.layout_type === 'cover');
+      .filter(({ page }) =>
+        page.layout_type === 'chapter_divider' ||
+        page.layout_type === 'cover' ||
+        page.layout_type === 'toc'
+      );
   }, [pages]);
+
+  const scrollToPage = useCallback((idx) => {
+    const el = sectionRefs.current[idx];
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setShowContents(false);
+  }, []);
+
+  const share = () => {
+    if (navigator.share) navigator.share({ title: issue.title, url: window.location.href });
+    else navigator.clipboard?.writeText(window.location.href);
+  };
 
   if (!pages.length) {
     return (
@@ -45,13 +39,6 @@ export default function SinglePageReader({ pages, articles = [], issue, isPlayin
       </div>
     );
   }
-
-  const page = pages[currentIdx];
-
-  const share = () => {
-    if (navigator.share) navigator.share({ title: issue.title, url: window.location.href });
-    else navigator.clipboard?.writeText(window.location.href);
-  };
 
   return (
     <div className="min-h-screen w-full" style={{ background: P.cream }}>
@@ -70,54 +57,36 @@ export default function SinglePageReader({ pages, articles = [], issue, isPlayin
         </div>
       </div>
 
-      {/* Page content */}
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <div
-          className="rounded-2xl overflow-hidden shadow-xl mx-auto transition-all duration-500"
-          style={{
-            aspectRatio: '3/4',
-            maxWidth: '480px',
-            background: P.cream,
-            border: '1px solid rgba(30,58,90,0.1)',
-          }}
-          key={currentIdx}
-        >
-          <PageRenderer page={page} issue={issue} articles={articles} pageNumber={currentIdx + 1} totalPages={totalPages} />
-        </div>
-
-        {/* Page navigation */}
-        <div className="flex items-center justify-center gap-2 mt-6">
-          <button
-            onClick={goPrev}
-            disabled={currentIdx === 0}
-            className="flex items-center gap-1 px-4 py-2 rounded-full text-xs font-medium transition-all disabled:opacity-30"
-            style={{ border: `1px solid rgba(30,58,90,0.15)`, color: P.navy }}
+      {/* Long scroll: all pages stacked vertically */}
+      <div className="max-w-2xl mx-auto px-4 py-8 space-y-12">
+        {pages.map((page, idx) => (
+          <section
+            key={page.id || idx}
+            ref={(el) => (sectionRefs.current[idx] = el)}
+            className="scroll-mt-16"
           >
-            <ChevronLeft className="w-4 h-4" /> Previous
-          </button>
-          <PlayPauseButton
-            isPlaying={isPlaying}
-            onToggle={() => setIsPlaying(!isPlaying)}
-            disabled={currentIdx >= totalPages - 1}
-            theme="light"
-          />
-          <span className="text-sm font-mono px-1" style={{ color: 'rgba(30,58,90,0.5)', fontFamily: "'Playfair Display', Georgia, serif" }}>
-            {String(currentIdx + 1).padStart(2, '0')} / {String(totalPages).padStart(2, '0')}
-          </span>
-          <SpeedSelector speed={speed} onChange={setSpeed} theme="light" />
-          <button
-            onClick={goNext}
-            disabled={currentIdx === totalPages - 1}
-            className="flex items-center gap-1 px-4 py-2 rounded-full text-xs font-medium transition-all disabled:opacity-30"
-            style={{ border: `1px solid rgba(30,58,90,0.15)`, color: P.navy }}
-          >
-            Next <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
+            <div
+              className="rounded-2xl overflow-hidden shadow-lg"
+              style={{
+                background: P.cream,
+                border: '1px solid rgba(30,58,90,0.1)',
+              }}
+            >
+              <PageRenderer
+                page={page}
+                issue={issue}
+                articles={articles}
+                pageNumber={idx + 1}
+                totalPages={totalPages}
+              />
+            </div>
+            {/* Page number label between sections */}
+            <p className="text-center text-[10px] mt-3 tracking-[0.3em] uppercase" style={{ color: 'rgba(30,58,90,0.3)' }}>
+              {String(idx + 1).padStart(2, '0')} / {String(totalPages).padStart(2, '0')}
+            </p>
+          </section>
+        ))}
       </div>
-
-      {/* Cinematic progress bar */}
-      <PlaybackProgress progress={progress} active={isPlaying} />
 
       {/* Contents panel */}
       {showContents && (
@@ -131,7 +100,7 @@ export default function SinglePageReader({ pages, articles = [], issue, isPlayin
               {chapterIndex.map(({ page, index }) => (
                 <button
                   key={page.id || index}
-                  onClick={() => { setCurrentIdx(index); setShowContents(false); }}
+                  onClick={() => scrollToPage(index)}
                   className="w-full text-left px-3 py-2.5 rounded-lg transition-colors hover:bg-black/5"
                 >
                   <p className="text-sm" style={{ color: P.navy }}>
