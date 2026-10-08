@@ -150,8 +150,8 @@ export default function ViralPost2026() {
                 >
                   {/* Screenshot or masthead */}
                   {p.screenshot_url ? (
-                    <div className="relative h-44 overflow-hidden" style={{ background: NAVY }}>
-                      <img src={p.screenshot_url} alt={`${p.nominee_name} — top LinkedIn post`} className="w-full h-full object-cover object-top opacity-90 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative aspect-square overflow-hidden" style={{ background: NAVY }}>
+                      <img src={p.screenshot_url} alt={`${p.nominee_name} — top LinkedIn post`} className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
                       <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, transparent 55%, rgba(22,41,63,0.85) 100%)' }} />
                       <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-3">
                         <div className="min-w-0">
