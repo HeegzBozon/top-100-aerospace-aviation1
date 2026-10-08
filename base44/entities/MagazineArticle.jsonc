@@ -1,0 +1,143 @@
+{
+  "name": "MagazineArticle",
+  "type": "object",
+  "properties": {
+    "issue_id": {
+      "type": "string",
+      "description": "ID of the MagazineIssue this article belongs to."
+    },
+    "section_id": {
+      "type": "string",
+      "description": "Section within the issue this article is assigned to."
+    },
+    "title": {
+      "type": "string",
+      "description": "Article headline."
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Article deck / subtitle."
+    },
+    "body": {
+      "type": "string",
+      "description": "Full article body as rich text (HTML). Drafted before final measurements; results_reserved articles use placeholder_text until measurements are finalized."
+    },
+    "article_type": {
+      "type": "string",
+      "enum": [
+        "evergreen",
+        "profile",
+        "feature",
+        "results_reserved"
+      ],
+      "default": "evergreen",
+      "description": "Editorial type. evergreen = timeless story; profile = Fellow/Nominee profile; feature = major feature; results_reserved = held for official measurements."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "reserved",
+        "gathering",
+        "drafting",
+        "ready",
+        "laid_out",
+        "published"
+      ],
+      "default": "reserved",
+      "description": "Editorial production status. Tracked separately from official measurement data."
+    },
+    "nominee_id": {
+      "type": "string",
+      "description": "Linked Nominee record for profile articles."
+    },
+    "pull_quote": {
+      "type": "string",
+      "description": "A single pull quote rendered as a full-bleed breakaway page."
+    },
+    "pull_quote_attribution": {
+      "type": "string",
+      "description": "Attribution for the pull quote."
+    },
+    "hero_image_url": {
+      "type": "string",
+      "description": "Hero image URL for the article spread."
+    },
+    "page_number": {
+      "type": "number",
+      "description": "Intended page number in the issue layout."
+    },
+    "placeholder_text": {
+      "type": "string",
+      "description": "Explicit reserved placeholder shown until official measurements replace it. Never reads from or alters official records."
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "attribution": {
+            "type": "string",
+            "description": "Who said it or where it came from"
+          },
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "quote",
+              "document",
+              "link",
+              "interview",
+              "data"
+            ]
+          },
+          "url": {
+            "type": "string"
+          },
+          "quote": {
+            "type": "string",
+            "description": "The quoted text or summary"
+          }
+        }
+      },
+      "default": [],
+      "description": "Attributed source material gathered for this article."
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Sort order within the issue/section."
+    }
+  },
+  "required": [
+    "issue_id",
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "published"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

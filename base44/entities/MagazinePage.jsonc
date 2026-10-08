@@ -1,0 +1,134 @@
+{
+  "name": "MagazinePage",
+  "type": "object",
+  "properties": {
+    "issue_id": {
+      "type": "string",
+      "description": "ID of the MagazineIssue this page belongs to."
+    },
+    "page_number": {
+      "type": "number",
+      "description": "Sequential page number in the issue."
+    },
+    "section_id": {
+      "type": "string",
+      "description": "Section this page belongs to."
+    },
+    "layout_type": {
+      "type": "string",
+      "enum": [
+        "cover",
+        "masthead",
+        "article",
+        "feature_spread",
+        "profile",
+        "chapter_divider",
+        "pull_quote",
+        "colophon",
+        "pdf_page"
+      ],
+      "default": "article",
+      "description": "Page layout template."
+    },
+    "content_blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "heading",
+              "body",
+              "image",
+              "pull_quote",
+              "divider",
+              "spacer",
+              "kicker",
+              "byline"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "level": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "attribution": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Ordered content blocks for native composition. Each block is a laid-out editorial element."
+    },
+    "background_image_url": {
+      "type": "string",
+      "description": "Full-bleed background image for the page."
+    },
+    "article_id": {
+      "type": "string",
+      "description": "Linked MagazineArticle when this page renders an article."
+    },
+    "pdf_page_image_url": {
+      "type": "string",
+      "description": "Rendered page image for PDF assembly mode (if pre-rendered)."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "draft",
+      "description": "Mirrors the parent issue status for read access control."
+    },
+    "chapter_label": {
+      "type": "string",
+      "description": "Label shown on chapter divider pages, e.g. 'Profiles'."
+    },
+    "chapter_number": {
+      "type": "number",
+      "description": "Chapter sequence number for story-driven pacing."
+    }
+  },
+  "required": [
+    "issue_id",
+    "page_number"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "published"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

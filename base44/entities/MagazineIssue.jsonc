@@ -1,0 +1,165 @@
+{
+  "name": "MagazineIssue",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Issue title, e.g. 'TOP 100 Aerospace & Aviation 2026'"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Issue tagline or subtitle"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "Optional reference to the Season this issue covers"
+    },
+    "issue_number": {
+      "type": "number",
+      "default": 1,
+      "description": "Sequential issue number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "preview",
+        "published",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Lifecycle state. draft = editor workspace; preview = shared preview; published = live to readers; archived = immutable."
+    },
+    "assembly_mode": {
+      "type": "string",
+      "enum": [
+        "native",
+        "pdf"
+      ],
+      "default": "native",
+      "description": "How the issue is assembled. native = composed from content blocks; pdf = finished PDF upload."
+    },
+    "cover_image_url": {
+      "type": "string",
+      "description": "Cover image URL (public). Used for the cinematic opening and cover page."
+    },
+    "cover_pdf_uri": {
+      "type": "string",
+      "description": "Private file URI for an uploaded finished issue PDF (pdf assembly mode)."
+    },
+    "cover_pdf_page_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of pages in the uploaded PDF, for reader navigation."
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "section_type": {
+            "type": "string",
+            "enum": [
+              "evergreen",
+              "profile",
+              "feature",
+              "results",
+              "colophon"
+            ],
+            "description": "Editorial section type"
+          },
+          "order": {
+            "type": "number"
+          }
+        }
+      },
+      "default": [],
+      "description": "Ordered editorial sections. The editorial blueprint."
+    },
+    "opening_config": {
+      "type": "object",
+      "description": "Cinematic opening sequence configuration (tone, pacing, reveal style).",
+      "properties": {
+        "tone": {
+          "type": "string"
+        },
+        "reveal_style": {
+          "type": "string"
+        },
+        "kicker": {
+          "type": "string"
+        }
+      }
+    },
+    "preface": {
+      "type": "string",
+      "description": "Editor's letter / opening text rendered as the first editorial spread."
+    },
+    "colophon": {
+      "type": "string",
+      "description": "Closing colophon text rendered as the final spread."
+    },
+    "theme_accent": {
+      "type": "string",
+      "enum": [
+        "navy",
+        "copper",
+        "rose_gold"
+      ],
+      "default": "navy",
+      "description": "Visual accent for the issue presentation."
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the issue was first published."
+    },
+    "cover_kicker": {
+      "type": "string",
+      "description": "Small kicker line above the title on the cover, e.g. 'The 2026 Edition'."
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": {
+            "$in": [
+              "published",
+              "archived"
+            ]
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
