@@ -34,8 +34,9 @@ export default function IssueOpening({ issue, onBegin }) {
       {/* Cover image background */}
       {issue.cover_image_url && (
         <div
-          className="absolute inset-0 transition-all duration-[2000ms] ease-out"
+          className="absolute inset-0 transition-all ease-out"
           style={{
+            transitionDuration: '2000ms',
             opacity: stage >= 3 ? 0.35 : 0,
             transform: stage >= 3 ? 'scale(1.05)' : 'scale(1.15)',
           }}
