@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, TrendingUp, Quote as QuoteIcon } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Quote as QuoteIcon, ChevronRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const STUDIO_PATH = '/Profile?studio=open&ref=viralpost2022';
@@ -216,6 +216,12 @@ export default function ViralPost2022() {
           style={{ backgroundImage: 'radial-gradient(circle at 20% 30%, #fff 1px, transparent 1px), radial-gradient(circle at 70% 60%, #fff 1px, transparent 1px)', backgroundSize: '48px 48px' }}
         />
         <div className="relative max-w-4xl mx-auto px-6 md:px-10 pt-14 pb-20 text-center">
+          <nav className="flex items-center justify-center gap-1.5 mb-8 text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(250,248,245,0.6)' }}>
+            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+            <ChevronRight className="w-3 h-3" style={{ color: GOLD }} />
+            <span style={{ color: GOLD }}>Media Center</span>
+          </nav>
+
           <Link to="/" className="inline-flex items-center mb-10">
             <span className="inline-flex items-center px-4 py-1.5 rounded-full border text-xs font-semibold uppercase tracking-[0.2em]"
               style={{ borderColor: 'rgba(201,168,124,0.5)', color: GOLD, background: 'rgba(201,168,124,0.08)' }}>
