@@ -36,10 +36,10 @@ export default function ViralPost2026Featured() {
   useEffect(() => {
     if (!data?.featured) return;
     const name = data.nominee_name || 'Featured Fellow';
-    const title = `${name}'s Top Viral Post — Most Liked Posts Series`;
+    const title = `${name}'s Top Viral Post — Top Viral Posts Series`;
     const desc = data.viral_post_takeaway
       ? data.viral_post_takeaway.replace(/\s+/g, ' ').trim().slice(0, 155)
-      : `The featured top viral post of ${name} in the Most Liked Posts Series, TOP 100 Aerospace & Aviation.`;
+      : `The featured top viral post of ${name} in the Top Viral Posts Series, TOP 100 Aerospace & Aviation.`;
     const canonical = `${window.location.origin}/viralpost2026/featured/${slug}`;
     const img = data.viral_post_screenshot_url || '';
     const created = [];
@@ -119,7 +119,7 @@ export default function ViralPost2026Featured() {
         </div>
         <h1 className="font-serif text-3xl font-bold mb-3">No Featured Post at This Address</h1>
         <p className="mb-8 text-sm max-w-md" style={{ color: 'rgba(250,248,245,0.65)' }}>
-          This Most Liked Posts Series entry isn't published yet, or the link has moved.
+          This Top Viral Posts Series entry isn't published yet, or the link has moved.
         </p>
         <Link to="/" className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: GOLD }}>Return Home</Link>
       </div>
@@ -143,13 +143,13 @@ export default function ViralPost2026Featured() {
             <nav className="flex items-center justify-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(250,248,245,0.6)' }}>
               <Link to="/" className="hover:text-white transition-colors">Home</Link>
               <ChevronRight className="w-3 h-3" style={{ color: GOLD }} />
-              <Link to="/viralpost2026" className="hover:text-white transition-colors">Most Liked Posts · 2026</Link>
+              <Link to="/viralpost2026" className="hover:text-white transition-colors">Top Viral Posts · 2026</Link>
               <ChevronRight className="w-3 h-3" style={{ color: GOLD }} />
               <span style={{ color: GOLD }}>{name}</span>
             </nav>
             <ShareBar
               title={`${name}'s Top Viral Post — TOP 100 Aerospace & Aviation`}
-              summary={`${name}'s featured post in the Most Liked Posts Series`}
+              summary={`${name}'s featured post in the Top Viral Posts Series`}
             />
           </div>
 
@@ -163,7 +163,7 @@ export default function ViralPost2026Featured() {
 
           <div className="inline-flex items-center gap-2 mb-6 text-xs font-semibold uppercase tracking-[0.25em]" style={{ color: GOLD }}>
             <TrendingUp className="w-4 h-4" />
-            Most Liked Posts Series · 2026
+            Top Viral Posts Series · 2026
           </div>
 
           <h1 className="font-serif text-4xl md:text-6xl font-bold leading-[1.05] mb-6" style={{ color: CREAM }}>
@@ -178,7 +178,7 @@ export default function ViralPost2026Featured() {
           <div className="mt-5 flex items-center justify-center gap-3 text-sm" style={{ color: 'rgba(250,248,245,0.7)' }}>
             <span>Originally published on LinkedIn</span>
             <span>·</span>
-            <span style={{ color: GOLD }}>Featured in the Most Liked Posts Series</span>
+            <span style={{ color: GOLD }}>Featured in the Top Viral Posts Series</span>
           </div>
         </div>
       </header>

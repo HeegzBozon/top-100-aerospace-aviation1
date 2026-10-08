@@ -31,8 +31,8 @@ export default function ViralPost2026() {
 
   // SEO — indexable CollectionPage.
   useEffect(() => {
-    const title = 'Most Liked Posts Series · 2026 | TOP 100 Aerospace & Aviation';
-    const desc = 'The featured top viral LinkedIn posts of TOP 100 Aerospace & Aviation Fellows — the Most Liked Posts Series, 2026 volume.';
+    const title = 'Top Viral Posts Series · 2026 | TOP 100 Aerospace & Aviation';
+    const desc = 'The featured top viral LinkedIn posts of TOP 100 Aerospace & Aviation Fellows — the Top Viral Posts Series, 2026 volume.';
     const canonical = `${window.location.origin}/viralpost2026`;
     const created = [];
     const upsert = (tag, attrs) => {
@@ -95,7 +95,7 @@ export default function ViralPost2026() {
           <nav className="flex items-center justify-center gap-1.5 mb-8 text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(250,248,245,0.6)' }}>
             <Link to="/" className="hover:text-white transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" style={{ color: GOLD }} />
-            <span style={{ color: GOLD }}>Media Center</span>
+            <span style={{ color: GOLD }}>Top Viral Posts</span>
           </nav>
 
           <Link to="/" className="inline-flex items-center mb-8">
@@ -108,7 +108,7 @@ export default function ViralPost2026() {
 
           <div className="inline-flex items-center gap-2 mb-6 text-xs font-semibold uppercase tracking-[0.25em]" style={{ color: GOLD }}>
             <TrendingUp className="w-4 h-4" />
-            Most Liked Posts Series
+            Top Viral Posts Series
           </div>
 
           <h1 className="font-serif text-4xl md:text-6xl font-bold leading-[1.05] mb-5" style={{ color: CREAM }}>
