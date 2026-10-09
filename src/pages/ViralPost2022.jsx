@@ -168,6 +168,14 @@ export default function ViralPost2022() {
             <HonoreeCard key={h.rank} h={h} />
           ))}
         </div>
+
+        {/* Next volume link — the 2026 edition */}
+        <div className="mt-10 text-center">
+          <Link to="/viralpost2026" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:underline" style={{ color: 'rgba(30,58,90,0.7)' }}>
+            View the 2026 Volume
+            <ChevronRight className="w-4 h-4" style={{ color: COPPER }} />
+          </Link>
+        </div>
       </section>
 
       {/* CLOSING */}
