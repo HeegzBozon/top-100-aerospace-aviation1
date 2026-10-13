@@ -51,13 +51,30 @@ export function prepareNomineePool(rawList) {
 
 // Fetch nominees + seasons together and return the active, deduped pool plus
 // the season→category map needed for Women/Men/Angels filtering.
+//
+// The pool is the combined voting pool: Women, Men, and Angels in one set.
+// Rejected nominees are excluded at the server so they never appear in the
+// ballot browser. Only the fields the list builder and category resolver need
+// are requested — score/metrics objects are not transferred.
 export async function loadNomineePool() {
-  const [raw, seasons] = await Promise.all([
-    base44.entities.Nominee.list('-created_date', 2000),
+  const [page, seasons] = await Promise.all([
+    base44.entities.Nominee.filter(
+      { status: { $ne: 'rejected' } },
+      {
+        sort: '-created_date',
+        limit: 2000,
+        fields: [
+          'id', 'name', 'title', 'professional_role', 'company', 'organization',
+          'avatar_url', 'photo_url', 'discipline', 'description', 'industry',
+          'category', 'country', 'season_id', 'season_ids', 'status',
+          'linkedin_profile_url',
+        ],
+      }
+    ),
     base44.entities.Season.list('name', 100),
   ]);
   return {
-    pool: prepareNomineePool(raw),
+    pool: prepareNomineePool(page.items || []),
     seasonCategory: buildSeasonCategoryMap(seasons),
   };
 }

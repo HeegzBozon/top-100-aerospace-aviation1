@@ -43,9 +43,11 @@ export default function SeasonCommandCenter({ onNavigate }) {
 
       let targetSeasonId = selectedSeasonId;
       if (!targetSeasonId && allSeasons.length > 0) {
-        const s4 = allSeasons.find(s => s.name?.includes('Season 4') && s.status !== 'completed' && s.status !== 'archived');
+        // Prefer the voting-open season so the admin lands on the live ballot
+        // context — the same season the Fellow ballot resolves to.
+        const votingOpen = allSeasons.find(s => s.status === 'voting_open');
         const active = allSeasons.find(s => s.status === 'nominations_open' || s.status === 'voting_open');
-        const target = s4 || active || allSeasons[0];
+        const target = votingOpen || active || allSeasons[0];
         targetSeasonId = target.id;
         setSelectedSeasonId(targetSeasonId);
       }
@@ -54,9 +56,25 @@ export default function SeasonCommandCenter({ onNavigate }) {
       setSeason(activeSeason || null);
 
       if (activeSeason) {
-        const allNominees = await base44.entities.Nominee.list('-created_date', 5000);
-        const seasonNominees = allNominees.filter(n => n.season_id === activeSeason.id || !n.season_id);
-        setNominees(seasonNominees);
+        // Resolve the combined pool: if the selected season is a group, gather
+        // all its cohort season ids so the nominee list spans Women, Men, and
+        // Angels in one set — matching the Fellow-facing combined pool.
+        let seasonIds = [activeSeason.id];
+        if (activeSeason.is_group) {
+          const cohorts = await base44.entities.Season.filter({ parent_season_id: activeSeason.id });
+          if (cohorts?.length) seasonIds = cohorts.map(c => c.id);
+        }
+        // Server-side filter using the link-model membership query (season_ids
+        // contains OR legacy season_id equals), rejected excluded. Avoids
+        // loading 5000 full records and filtering client-side.
+        const seasonNominees = await base44.entities.Nominee.filter({
+          $or: [
+            { season_ids: { $in: seasonIds } },
+            { season_id: { $in: seasonIds } },
+          ],
+          status: { $ne: 'rejected' },
+        });
+        setNominees(seasonNominees || []);
       }
     } catch (err) {
       console.error('Error loading season data:', err);

@@ -110,9 +110,13 @@ export default function MyTop100() {
         }
 
         // Resolve active voting season (ballot auto-sync window) + the Fellow's public profile id.
+        // Prefer the parent group season so the ballot is recorded against the
+        // combined pool (Women + Men + Angels), not a single cohort. If no group
+        // is voting-open, fall back to the first voting-open season found.
         try {
           const activeSeasons = await base44.entities.Season.filter({ status: 'voting_open' });
-          setSeason(activeSeasons?.[0] || null);
+          const group = activeSeasons.find(s => s.is_group);
+          setSeason(group || activeSeasons?.[0] || null);
         } catch { /* season resolution optional */ }
         try {
           const myNominees = await base44.entities.Nominee.filter({ nominee_email: currentUser.email });
