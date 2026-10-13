@@ -36,6 +36,7 @@ export default function MyTop100() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [shareCode, setShareCode] = useState('');
   const [season, setSeason] = useState(null);
+  const [votingActive, setVotingActive] = useState(false);
   const [profileId, setProfileId] = useState(null);
   const [syncError, setSyncError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -111,12 +112,22 @@ export default function MyTop100() {
 
         // Resolve active voting season (ballot auto-sync window) + the Fellow's public profile id.
         // Prefer the parent group season so the ballot is recorded against the
-        // combined pool (Women + Men + Angels), not a single cohort. If no group
-        // is voting-open, fall back to the first voting-open season found.
+        // combined pool (Women + Men + Angels), not a single cohort. The group
+        // may still be in 'planning' while its cohorts are voting-open; in that
+        // case resolve the parent from any voting-open cohort and treat voting
+        // as active.
         try {
           const activeSeasons = await base44.entities.Season.filter({ status: 'voting_open' });
-          const group = activeSeasons.find(s => s.is_group);
-          setSeason(group || activeSeasons?.[0] || null);
+          let resolved = activeSeasons.find(s => s.is_group);
+          if (!resolved) {
+            const cohort = activeSeasons.find(s => s.parent_season_id);
+            if (cohort) {
+              const allSeasons = await base44.entities.Season.list('-created_date', 50);
+              resolved = allSeasons.find(s => s.id === cohort.parent_season_id);
+            }
+          }
+          setSeason(resolved || activeSeasons?.[0] || null);
+          setVotingActive(activeSeasons.length > 0);
         } catch { /* season resolution optional */ }
         try {
           const myNominees = await base44.entities.Nominee.filter({ nominee_email: currentUser.email });
@@ -217,7 +228,7 @@ export default function MyTop100() {
 
   // ── Ballot auto-sync window ──
   const now = new Date();
-  const votingOpen = !!season && season.status === 'voting_open'
+  const votingOpen = votingActive && !!season
     && (!season.voting_start || new Date(season.voting_start) <= now)
     && (!season.voting_end || new Date(season.voting_end) >= now);
   const votingClosed = !!season && (

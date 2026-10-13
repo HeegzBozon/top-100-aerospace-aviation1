@@ -43,11 +43,16 @@ export default function SeasonCommandCenter({ onNavigate }) {
 
       let targetSeasonId = selectedSeasonId;
       if (!targetSeasonId && allSeasons.length > 0) {
-        // Prefer the voting-open season so the admin lands on the live ballot
-        // context — the same season the Fellow ballot resolves to.
-        const votingOpen = allSeasons.find(s => s.status === 'voting_open');
+        // Prefer the parent group of any voting-open cohort so the admin lands
+        // on the combined pool (Women + Men + Angels) — the same season the
+        // Fellow ballot resolves to. The group may still be in 'planning'
+        // while its cohorts are voting-open.
+        const votingOpenCohort = allSeasons.find(s => s.status === 'voting_open' && s.parent_season_id);
+        const votingOpenGroup = allSeasons.find(s => s.status === 'voting_open' && s.is_group);
+        const group = votingOpenGroup
+          || (votingOpenCohort ? allSeasons.find(s => s.id === votingOpenCohort.parent_season_id) : null);
         const active = allSeasons.find(s => s.status === 'nominations_open' || s.status === 'voting_open');
-        const target = votingOpen || active || allSeasons[0];
+        const target = group || votingOpenGroup || active || allSeasons[0];
         targetSeasonId = target.id;
         setSelectedSeasonId(targetSeasonId);
       }
