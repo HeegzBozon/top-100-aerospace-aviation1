@@ -25,20 +25,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { page = 1, limit = 25 } = await req.json();
+    const { page = 1, limit = 25, season_ids } = await req.json();
     const offset = (page - 1) * limit;
 
-    // Step 1: Fetch the paginated votes
-    const votes = await serviceRoleClient.entities.PairwiseVote.filter({}, '-created_date', limit, offset);
+    // Filter by season when provided (cohort or group-resolved IDs)
+    const query = season_ids && season_ids.length > 0
+      ? { season_id: { $in: season_ids } }
+      : {};
 
-    // Step 1b: Get accurate total count by paginating through all records
+    // Step 1: Fetch the paginated votes
+    const votes = await serviceRoleClient.entities.PairwiseVote.filter(query, '-created_date', limit, offset);
+
+    // Step 1b: Get accurate total count (count() not available in this SDK version)
     let totalCount = 0;
     let currentBatch = 0;
     const batchSize = 5000;
     let hasMoreBatches = true;
-    
     while (hasMoreBatches) {
-      const batch = await serviceRoleClient.entities.PairwiseVote.filter({}, '', batchSize, currentBatch * batchSize);
+      const batch = await serviceRoleClient.entities.PairwiseVote.filter(query, '', batchSize, currentBatch * batchSize);
       totalCount += batch.length;
       hasMoreBatches = batch.length === batchSize;
       currentBatch++;

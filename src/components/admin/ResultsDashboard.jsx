@@ -17,7 +17,7 @@ const brandColors = {
   skyBlue: '#4a90b8',
 };
 
-export default function ResultsDashboard() {
+export default function ResultsDashboard({ season }) {
   const [loading, setLoading] = useState(true);
   const [standings, setStandings] = useState([]);
   const [rcvResults, setRcvResults] = useState([]);
@@ -46,9 +46,13 @@ export default function ResultsDashboard() {
       const allSeasons = await base44.entities.Season.list('-created_date', 50);
       setSeasons(allSeasons);
       
-      const season3 = allSeasons.find(s => s.name?.includes('Season 3'));
+      // Default to the cohort season passed from the workspace
+      if (season?.id) {
+        setSelectedSeasonId(season.id);
+        return;
+      }
       const activeSeason = allSeasons.find(s => s.status === 'voting_open' || s.status === 'active');
-      setSelectedSeasonId(season3?.id || activeSeason?.id || allSeasons[0]?.id);
+      setSelectedSeasonId(activeSeason?.id || allSeasons[0]?.id);
     } catch (error) {
       console.error('Failed to load seasons:', error);
     }

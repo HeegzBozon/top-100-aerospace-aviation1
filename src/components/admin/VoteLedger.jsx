@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Loader2, Database, RefreshCw, ChevronLeft, ChevronRight, Vote, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
 
-export default function VoteLedger() {
+export default function VoteLedger({ season }) {
   const [activeTab, setActiveTab] = useState('pairwise');
   const [rcvSubTab, setRcvSubTab] = useState('votes');
   const [ledgerData, setLedgerData] = useState([]);
@@ -20,11 +20,31 @@ export default function VoteLedger() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [totalPairwiseVotes, setTotalPairwiseVotes] = useState(0);
+  const [seasonIds, setSeasonIds] = useState(null);
+
+  // Resolve the season filter: if the selected season is a group, expand to
+  // its cohort IDs; otherwise use the single cohort id. Null = no filter (all).
+  useEffect(() => {
+    let cancelled = false;
+    const resolve = async () => {
+      if (!season) { setSeasonIds(null); return; }
+      if (season.is_group) {
+        try {
+          const cohorts = await base44.entities.Season.filter({ parent_season_id: season.id });
+          if (!cancelled) setSeasonIds(cohorts.map(c => c.id));
+        } catch { if (!cancelled) setSeasonIds([season.id]); }
+      } else {
+        setSeasonIds([season.id]);
+      }
+    };
+    resolve();
+    return () => { cancelled = true; };
+  }, [season]);
 
   const loadLedgerData = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const { data } = await getVoteLedgerData({ page, limit: 25 });
+      const { data } = await getVoteLedgerData({ page, limit: 25, season_ids: seasonIds });
       
       if (data.success) {
         setLedgerData(data.data);
@@ -44,8 +64,9 @@ export default function VoteLedger() {
   const loadRcvData = useCallback(async () => {
     setLoading(true);
     try {
-      const votes = await base44.entities.RankedVote.list('-created_date', 50);
-      setRcvData(votes || []);
+      const query = seasonIds && seasonIds.length > 0 ? { season_id: { $in: seasonIds } } : {};
+      const page = await base44.entities.RankedVote.filter(query, { sort: '-created_date', limit: 50 });
+      setRcvData(page.items || []);
     } catch (error) {
       console.error('Error loading RCV ledger:', error);
       toast.error("Could not load ranked choice vote data.");
@@ -58,7 +79,9 @@ export default function VoteLedger() {
     setLoading(true);
     try {
       const nominees = await base44.entities.Nominee.list('', 1000);
-      const votes = await base44.entities.RankedVote.list('-created_date', 1000);
+      const query = seasonIds && seasonIds.length > 0 ? { season_id: { $in: seasonIds } } : {};
+      const votePage = await base44.entities.RankedVote.filter(query, { sort: '-created_date', limit: 1000 });
+      const votes = votePage.items || [];
       
       // Calculate Borda scores from ballots
       const scoreMap = {};
@@ -125,6 +148,7 @@ export default function VoteLedger() {
   }, []);
 
   useEffect(() => {
+    if (seasonIds === null && season) return; // still resolving
     if (activeTab === 'pairwise') {
       loadLedgerData(currentPage);
     } else if (activeTab === 'rcv') {
@@ -134,7 +158,7 @@ export default function VoteLedger() {
         loadRcvResults();
       }
     }
-  }, [currentPage, activeTab, rcvSubTab, loadLedgerData, loadRcvData, loadRcvResults]);
+  }, [currentPage, activeTab, rcvSubTab, seasonIds, loadLedgerData, loadRcvData, loadRcvResults]);
 
   const handleRefresh = () => {
     if (activeTab === 'pairwise') {
