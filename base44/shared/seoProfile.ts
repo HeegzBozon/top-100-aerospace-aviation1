@@ -5,7 +5,7 @@
 // Canonical public origin. req.url origin resolves to the internal worker URL
 // behind the proxy, so hardcode the published domain. Swap this when a custom
 // domain is connected.
-export const SITE_ORIGIN = "https://top100aerospaceandaviation.base44.app";
+export const SITE_ORIGIN = "https://top100aero.space";
 
 export const PUBLIC_STATUSES = ["active", "approved", "winner", "finalist"];
 
