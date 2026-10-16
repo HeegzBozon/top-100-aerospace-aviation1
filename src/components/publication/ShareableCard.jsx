@@ -243,7 +243,9 @@ export default function ShareableCard({ nominee, rank, onClose }) {
     toDataUrl(WREATH_URL, setWreathDataUrl);
   }, [nominee.avatar_url, nominee.photo_url]);
 
-  const shareUrl  = `${window.location.origin}/Top100Women2025?nominee=${nominee.id}`;
+  const shareUrl  = nominee.public_slug
+    ? `${window.location.origin}/Top100Women2025/2025/12/${nominee.public_slug}`
+    : `${window.location.origin}/Top100Women2025?nominee=${nominee.id}`;
   const shareText = [
     `Congratulations to ${nominee.name}${rank ? ` (#${rank})` : ''} — named to the TOP 100 Women in Aerospace & Aviation 2025!`,
     nominee.six_word_story ? `"${nominee.six_word_story}"` : null,

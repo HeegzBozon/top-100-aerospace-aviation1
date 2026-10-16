@@ -13,9 +13,9 @@ import PublicationBody from '@/components/publication/PublicationBody';
 // the deep link never cannibalizes the indexable profile page.
 export default function Top100Women2025DeepLink() {
   const { slug } = useParams();
-  const [canonicalId, setCanonicalId] = useState(null);
+  const [nominee, setNominee] = useState(null);
 
-  // Resolve slug → nominee id for the canonical URL (lightweight single query)
+  // Resolve slug → nominee for canonical URL + OG meta tags
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
@@ -23,9 +23,9 @@ export default function Top100Women2025DeepLink() {
       try {
         const res = await base44.entities.Nominee.filter(
           { public_slug: slug },
-          { limit: 1, fields: ['id'] }
+          { limit: 1, fields: ['id', 'name', 'description', 'og_card_url', 'avatar_url', 'title', 'company', 'country'] }
         );
-        if (!cancelled && res?.items?.[0]?.id) setCanonicalId(res.items[0].id);
+        if (!cancelled && res?.items?.[0]) setNominee(res.items[0]);
       } catch {
         // PublicationBody will still open the panel from its own loaded data
       }
@@ -45,14 +45,46 @@ export default function Top100Women2025DeepLink() {
 
   // canonical → /profiles/:id — set once the nominee is resolved
   useEffect(() => {
-    if (!canonicalId) return;
+    if (!nominee?.id) return;
     const canonical = document.createElement('link');
     canonical.setAttribute('rel', 'canonical');
     canonical.setAttribute('data-deep-link', 'true');
-    canonical.setAttribute('href', `${window.location.origin}/profiles/${canonicalId}`);
+    canonical.setAttribute('href', `${window.location.origin}/profiles/${nominee.id}`);
     document.head.appendChild(canonical);
     return () => canonical.remove();
-  }, [canonicalId]);
+  }, [nominee?.id]);
+
+  // OG + Twitter meta tags — nominee-specific, for social share previews
+  useEffect(() => {
+    if (!nominee) return;
+    const ogTitle = `${nominee.name} — TOP 100 Women in Aerospace & Aviation 2025`;
+    const ogDesc = nominee.description || `Verified honoree on the TOP 100 Aerospace & Aviation. We don't rank. We measure.`;
+    const ogImage = nominee.og_card_url || nominee.avatar_url;
+    const ogUrl = `${window.location.origin}/Top100Women2025/2025/12/${slug}`;
+
+    const tags = [
+      ['property', 'og:title', ogTitle],
+      ['property', 'og:description', ogDesc],
+      ['property', 'og:url', ogUrl],
+      ['property', 'og:image', ogImage],
+      ['property', 'og:type', 'profile'],
+      ['name', 'twitter:card', 'summary_large_image'],
+      ['name', 'twitter:title', ogTitle],
+      ['name', 'twitter:description', ogDesc],
+      ['name', 'twitter:image', ogImage],
+    ];
+
+    const els = tags.map(([attr, key, content]) => {
+      const el = document.createElement('meta');
+      el.setAttribute(attr, key);
+      el.setAttribute('data-deep-link', 'true');
+      el.setAttribute('content', content);
+      document.head.appendChild(el);
+      return el;
+    });
+
+    return () => els.forEach(el => el.remove());
+  }, [nominee, slug]);
 
   return <PublicationBody initialSlug={slug} />;
 }
