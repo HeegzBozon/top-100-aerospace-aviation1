@@ -79,6 +79,7 @@ const MagazineStudio = lazy(() => import('@/pages/MagazineStudio'));
 const MagazineReader = lazy(() => import('@/pages/MagazineReader'));
 const OgCardTest = lazy(() => import('@/pages/OgCardTest'));
 const OgCardGenerator = lazy(() => import('@/pages/OgCardGenerator'));
+const Top100Women2025DeepLink = lazy(() => import('@/pages/Top100Women2025DeepLink'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -256,6 +257,7 @@ const AuthenticatedApp = () => {
       <Route path="/magazine/:issueId" element={<MagazineReader />} />
       <Route path="/og-card-test" element={<OgCardTest />} />
       <Route path="/og-card-generator" element={<OgCardGenerator />} />
+       <Route path="/Top100Women2025/:year/:month/:slug" element={<Top100Women2025DeepLink />} />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:id" element={<ProfileView />} />
        <Route path="/editions/:id" element={<FellowEdition />} />

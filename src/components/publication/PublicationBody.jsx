@@ -29,7 +29,7 @@ import { publicationBrand as brandColors, top100Women2025Config } from '@/compon
 // Shared, stateful publication body. Rendered by both the standalone
 // /Top100Women2025 route and the HomeV3 composed front door so the two
 // views never drift apart.
-export default function PublicationBody({ suppressFloatingActions = false }) {
+export default function PublicationBody({ suppressFloatingActions = false, initialSlug }) {
   const { nominees, loading } = useTop100WomenNominees();
   const [selectedNominee, setSelectedNominee] = useState(null);
   const [autoPlaying, setAutoPlaying] = useState(false);
@@ -64,12 +64,15 @@ export default function PublicationBody({ suppressFloatingActions = false }) {
     window.history.replaceState({}, '', url);
   }, [selectedNominee]);
 
-  // Open profile from ?nominee= deep link once data loads
+  // Open profile from ?nominee= deep link or slug prop once data loads
   useEffect(() => {
     if (loading || nominees.length === 0) return;
     const nomineeId = new URLSearchParams(window.location.search).get('nominee');
     if (nomineeId) {
       const target = nominees.find(n => n.id === nomineeId);
+      if (target) setSelectedNominee(target);
+    } else if (initialSlug) {
+      const target = nominees.find(n => n.public_slug === initialSlug);
       if (target) setSelectedNominee(target);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
