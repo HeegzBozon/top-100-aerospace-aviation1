@@ -515,8 +515,13 @@ export default function ShareableCard({ nominee, rank, onClose }) {
     }
   };
 
+  // LinkedIn's crawler does not execute JS reliably, so point it at the prerender
+  // function which returns full HTML with nominee-specific OG tags baked in.
+  const linkedInUrl = nominee.public_slug
+    ? `${window.location.origin}/functions/getDeepLinkPrerender?slug=${encodeURIComponent(nominee.public_slug)}`
+    : shareUrl;
   const handleLinkedIn = () =>
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(linkedInUrl)}`, '_blank');
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(shareUrl);
