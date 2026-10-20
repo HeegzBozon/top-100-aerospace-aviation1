@@ -35,7 +35,7 @@ export const profileWizardSteps = [
     sitting: 'viral',
     section: 'viral',
     type: 'text',
-    question: 'Link to your \u201cMost Liked Post\u201d',
+    question: 'Link to your \u201cTop Viral Post\u201d',
     subtitle: 'Paste the URL of your top-performing LinkedIn post.',
     placeholder: 'https://www.linkedin.com/posts/...',
     required: true,

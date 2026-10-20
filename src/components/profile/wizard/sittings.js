@@ -6,7 +6,7 @@ export const SITTINGS = [
     id: 'viral',
     name: 'Top Viral Post',
     chapter: 'Special Editorial',
-    craft: 'Most Liked Posts',
+    craft: 'Top Viral Posts',
     // Lobby card
     pitch:
       'Share the LinkedIn post that resonated most deeply with your audience\u2014the story, metrics, and insights that shape our field.',
@@ -15,7 +15,7 @@ export const SITTINGS = [
     // Overture — editorial introduction
     greeting: 'Recognition is the beginning.',
     monologue:
-      'We are recreating the famous LinkedIn showcase of high-impact industry voices to document the stories, insights, and milestones that shape our field. In the \u201cMost Liked Posts\u201d series, we want to feature the LinkedIn posts of yours that resonated most deeply with your audience.\n\nPlease take 3\u20135 minutes to share one LinkedIn post that you are proud of\u2014whether it was a viral hit, a deeply personal story of resilience, or a celebration of an industry milestone. Your responses will be documented and shared to inspire the next generation of leaders.',
+      'We are recreating the famous LinkedIn showcase of high-impact industry voices to document the stories, insights, and milestones that shape our field. In the \u201cTop Viral Posts\u201d series, we want to feature the LinkedIn posts of yours that resonated most deeply with your audience.\n\nPlease take 3\u20135 minutes to share one LinkedIn post that you are proud of\u2014whether it was a viral hit, a deeply personal story of resilience, or a celebration of an industry milestone. Your responses will be documented and shared to inspire the next generation of leaders.',
     signoff:
       'Let\u2019s continue pushing the boundaries of what aerospace can achieve together.',
     enterLabel: 'Begin Section',

@@ -830,6 +830,31 @@
     "public_slug": {
       "type": "string",
       "description": "URL-safe slug for shareable deep links (e.g. 'miraslava-kazlouskaya'). Generated from name; unique across honorees. Used by the /Top100Women2025/:year/:month/:slug route to pre-open the honoree panel. Display-only; never read by discovery, ranking, or scoring."
+    },
+    "viral_post_link": {
+      "type": "string",
+      "description": "Editorial fallback: URL of the honoree's top-performing LinkedIn post staged for the Top Viral Posts Series when the Fellow has not claimed their profile. The claimed account submission stays canonical. Display-only; never read by discovery, ranking, or scoring."
+    },
+    "viral_post_impressions": {
+      "type": "string",
+      "description": "Editorial fallback: estimated lifetime impressions/views of the staged post (e.g. '1.2M views'). Drives the series index sort order only; never read by discovery, ranking, or scoring."
+    },
+    "viral_post_takeaway": {
+      "type": "string",
+      "description": "Editorial fallback: the key takeaway for aerospace & aviation from the staged post. Display-only; never read by discovery, ranking, or scoring."
+    },
+    "viral_post_screenshot_url": {
+      "type": "string",
+      "description": "Editorial fallback: public URL of the staged post's screenshot. Display-only; never read by discovery, ranking, or scoring."
+    },
+    "viral_post_slug": {
+      "type": "string",
+      "description": "Editorial fallback: durable URL slug for the staged post; the canonical route is /viralpost2026/featured/:slug. Display-only; never read by discovery, ranking, or scoring."
+    },
+    "viral_post_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Editorial fallback: admin-set visibility flag that stages this record's post into the Top Viral Posts Series before a profile claim. Never feeds measurement or ranking."
     }
   },
   "required": [

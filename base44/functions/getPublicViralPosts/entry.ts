@@ -3,7 +3,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 // Public endpoint — enumerates every Fellow whose Top Viral Post has been
 // featured (viral_post_featured === true), for the /viralpost2026 series index.
 // Returns only public fields + a byline joined from the claimed Nominee.
-// Sorted by impressions, descending (most-liked first).
+// Sorted by impressions, descending (highest reach first).
 function parseImpressions(s) {
   if (!s) return 0;
   const m = String(s).toLowerCase().match(/([\d.,]+)\s*([km])?/);
@@ -43,6 +43,29 @@ export default async function(req) {
         takeaway: u.viral_post_takeaway || '',
         screenshot_url: u.viral_post_screenshot_url || '',
         viral_post_link: u.viral_post_link
+      });
+    }
+
+    // Editorial fallback — a series entry staged directly on an honoree record,
+    // for a Fellow who hasn't claimed their profile. The claimed account
+    // submission stays canonical: a record entry is skipped whenever the same
+    // post is already present from an account.
+    const staged = await base44.asServiceRole.entities.Nominee.filter({ viral_post_featured: true });
+    for (const n of staged || []) {
+      if (!n.viral_post_link || !n.viral_post_slug) continue;
+      if (posts.some((p) => p.slug === n.viral_post_slug || p.viral_post_link === n.viral_post_link)) continue;
+      posts.push({
+        slug: n.viral_post_slug,
+        nominee_id: n.id,
+        nominee_name: n.name || '',
+        nominee_title: n.title || n.professional_role || '',
+        nominee_company: n.company || n.organization || '',
+        nominee_avatar_url: n.avatar_url || '',
+        impressions: n.viral_post_impressions || '',
+        impressions_value: parseImpressions(n.viral_post_impressions),
+        takeaway: n.viral_post_takeaway || '',
+        screenshot_url: n.viral_post_screenshot_url || '',
+        viral_post_link: n.viral_post_link
       });
     }
 

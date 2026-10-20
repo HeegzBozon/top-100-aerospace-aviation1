@@ -252,7 +252,7 @@ export default function ViralPost2026Featured() {
             From a Post to a Platform
           </h2>
           <p className="font-serif text-lg leading-relaxed mb-8" style={{ color: 'rgba(30,58,90,0.8)' }}>
-            TOP 100 Aerospace &amp; Aviation is a verified reputation graph — measuring contribution, verification, and reach across a global directory of Fellows. Share your own most-liked post and join the record.
+            TOP 100 Aerospace &amp; Aviation is a verified reputation graph — measuring contribution, verification, and reach across a global directory of Fellows. Share your own top viral post and join the record.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button

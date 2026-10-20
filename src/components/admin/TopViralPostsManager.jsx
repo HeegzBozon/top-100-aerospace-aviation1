@@ -80,7 +80,7 @@ const SubmissionCard = ({ user, onToggleFeature, featuringId, onScreenshotSaved,
             style={{ background: 'rgba(201,168,124,0.16)', color: GOLD, border: '1px solid rgba(201,168,124,0.3)' }}
           >
             <TrendingUp className="w-3 h-3" />
-            Most Liked Post
+            Top Viral Post
           </span>
         </div>
       </div>
@@ -301,7 +301,7 @@ export default function TopViralPostsManager() {
           Top Viral Posts
         </h1>
         <p className="text-sm max-w-2xl" style={{ color: 'rgba(30,58,90,0.65)' }}>
-          Every Fellow’s “Most Liked Post” submission, kept as a self-serve record — no moderation queue, no approval gate. Use <span style={{ color: COPPER }}>Feature publicly</span> to surface a post on its Fellow’s public profile deck. {submissions.length} {submissions.length === 1 ? 'submission' : 'submissions'} on record.
+          Every Fellow’s “Top Viral Post” submission, kept as a self-serve record — no moderation queue, no approval gate. Use <span style={{ color: COPPER }}>Feature publicly</span> to surface a post on its Fellow’s public profile deck. {submissions.length} {submissions.length === 1 ? 'submission' : 'submissions'} on record.
         </p>
       </div>
 

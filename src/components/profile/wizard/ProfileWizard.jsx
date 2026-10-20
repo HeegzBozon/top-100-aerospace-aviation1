@@ -190,7 +190,7 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
                   ${form.six_word_story ? `<p style="margin:0 0 26px;padding:18px 20px;background:#1E3A5A;border-radius:10px;font-family:'Playfair Display',Georgia,serif;font-size:18px;line-height:1.4;color:#FAF8F5;text-align:center;font-style:italic;">&ldquo;${esc(form.six_word_story)}&rdquo;</p>` : ''}
                   <table width="100%" cellpadding="0" cellspacing="0">
                     ${row('Email address', form.viral_post_email)}
-                    ${row('Link to your “Most Liked Post”', null, form.viral_post_link ? `<a href="${esc(form.viral_post_link)}" style="color:#B87333;text-decoration:underline;word-break:break-all;">${esc(form.viral_post_link)}</a>` : null)}
+                    ${row('Link to your “Top Viral Post”', null, form.viral_post_link ? `<a href="${esc(form.viral_post_link)}" style="color:#B87333;text-decoration:underline;word-break:break-all;">${esc(form.viral_post_link)}</a>` : null)}
                     ${row('Number of impressions / views', form.viral_post_impressions)}
                     ${row('Key takeaway for aerospace & aviation', form.viral_post_takeaway)}
                     ${row('The “aha moment” readers walk away with', form.viral_post_wisdom)}
@@ -203,7 +203,7 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
             </td></tr>
           </table>
         </body></html>`;
-        const text = `A copy of your Top Viral Post — TOP 100 Aerospace & Aviation\n\nYou're on the record. Below is a copy of the Top Viral Post submission you just confirmed in The Studio.\n\n${form.six_word_story ? `"${form.six_word_story}"\n\n` : ''}EMAIL ADDRESS\n${form.viral_post_email}\n\nLINK TO YOUR "MOST LIKED POST"\n${form.viral_post_link}\n\nNUMBER OF IMPRESSIONS / VIEWS\n${form.viral_post_impressions || '—'}\n\nKEY TAKEAWAY FOR AEROSPACE & AVIATION\n${form.viral_post_takeaway || '—'}\n\nTHE "AHA MOMENT" READERS WALK AWAY WITH\n${form.viral_post_wisdom || '—'}\n\nThis is a receipt of your submission. You can edit your Top Viral Post anytime in The Studio on your profile.`;
+        const text = `A copy of your Top Viral Post — TOP 100 Aerospace & Aviation\n\nYou're on the record. Below is a copy of the Top Viral Post submission you just confirmed in The Studio.\n\n${form.six_word_story ? `"${form.six_word_story}"\n\n` : ''}EMAIL ADDRESS\n${form.viral_post_email}\n\nLINK TO YOUR "TOP VIRAL POST"\n${form.viral_post_link}\n\nNUMBER OF IMPRESSIONS / VIEWS\n${form.viral_post_impressions || '—'}\n\nKEY TAKEAWAY FOR AEROSPACE & AVIATION\n${form.viral_post_takeaway || '—'}\n\nTHE "AHA MOMENT" READERS WALK AWAY WITH\n${form.viral_post_wisdom || '—'}\n\nThis is a receipt of your submission. You can edit your Top Viral Post anytime in The Studio on your profile.`;
         base44.integrations.Core.SendEmail({
           to: form.viral_post_email,
           subject: 'A copy of your Top Viral Post',

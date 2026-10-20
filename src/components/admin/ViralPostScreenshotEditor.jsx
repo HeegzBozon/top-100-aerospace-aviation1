@@ -8,7 +8,7 @@ const SAND = '#f0e9df';
 
 // Inline editor that uploads a screenshot of the Fellow's top LinkedIn post
 // and stores the public URL on their User record. Admin-only; used to attach
-// the post image before featuring it in the Most Liked Posts series.
+// the post image before featuring it in the Top Viral Posts series.
 export default function ViralPostScreenshotEditor({ user, onSaved }) {
   const inputRef = useRef(null);
   const [uploading, setUploading] = useState(false);

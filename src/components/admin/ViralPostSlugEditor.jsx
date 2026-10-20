@@ -37,7 +37,7 @@ const sanitizeDraft = (s) =>
     .replace(/_{2,}/g, '_')
     .replace(/^_|_$/g, '');
 
-// Inline editor for the Fellow's durable Most Liked Posts Series URL.
+// Inline editor for the Fellow's durable Top Viral Posts Series URL.
 // Visible/editable independent of the feature toggle, so the admin can
 // prepare the URL before the post goes live.
 export default function ViralPostSlugEditor({ user, otherSlugs, onSaved }) {

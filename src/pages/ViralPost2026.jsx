@@ -127,7 +127,7 @@ export default function ViralPost2026() {
             <Inbox className="w-10 h-10 mb-4" style={{ color: GOLD }} />
             <h2 className="font-serif text-2xl font-bold mb-3" style={{ color: NAVY }}>The 2026 Series Opens Soon</h2>
             <p className="text-sm max-w-md mb-8" style={{ color: 'rgba(30,58,90,0.6)' }}>
-              No Fellow posts have been featured in this volume yet. When the first “Most Liked Post” is featured, it appears here.
+              No Fellow posts have been featured in this volume yet. When the first “Top Viral Post” is featured, it appears here.
             </p>
             <Button onClick={openStudio} className="rounded-full px-7 h-11 font-semibold" style={{ background: NAVY, color: CREAM }}>
               Add my own Viral Post
@@ -219,7 +219,7 @@ export default function ViralPost2026() {
         <div className="max-w-3xl mx-auto px-6 md:px-10 py-16 md:py-20 text-center">
           <h2 className="font-serif text-2xl md:text-3xl font-bold mb-5" style={{ color: NAVY }}>Have a post that moved the community?</h2>
           <p className="font-serif text-lg leading-relaxed mb-8" style={{ color: 'rgba(30,58,90,0.8)' }}>
-            TOP 100 Aerospace &amp; Aviation is a verified reputation graph — measuring contribution, verification, and reach across a global directory of Fellows. Submit your most-liked post and join the record.
+            TOP 100 Aerospace &amp; Aviation is a verified reputation graph — measuring contribution, verification, and reach across a global directory of Fellows. Submit your top viral post and join the record.
           </p>
           <Button onClick={openStudio} className="rounded-full px-8 h-12 font-semibold" style={{ background: NAVY, color: CREAM }}>
             Add my own Viral Post

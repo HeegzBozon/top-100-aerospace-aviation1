@@ -1,7 +1,7 @@
 import { ExternalLink, TrendingUp } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
-// "Most Liked Posts Series" — a cinematic editorial hero spread featuring the
+// "Top Viral Posts Series" — a cinematic editorial hero spread featuring the
 // Fellow's top viral post. Renders only when the sitting has been completed
 // (viral_post_link present). Navy ground, Playfair display type, gold rule,
 // copper section label. Vogue meets NASA.
@@ -26,7 +26,7 @@ export default function ViralPostSlide({ user, accent }) {
         <div className="flex items-center justify-center gap-2 mb-10">
           <span className="h-px w-8" style={{ background: B.copper }} />
           <span className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-            Most Liked Posts Series
+            Top Viral Posts Series
           </span>
           <span className="h-px w-8" style={{ background: B.copper }} />
         </div>
