@@ -13,7 +13,7 @@ export default function OgCardGenerator() {
   const [currentName, setCurrentName] = useState('');
   const [done, setDone] = useState([]);
   const [errors, setErrors] = useState([]);
-  const [skipExisting, setSkipExisting] = useState(true);
+  const [skipExisting, setSkipExisting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const previewCanvasRef = useRef(null);
   const wreathImgRef = useRef(null);
@@ -51,7 +51,17 @@ export default function OgCardGenerator() {
 
         const photoSrc = nominee.avatar_url || nominee.photo_url;
         const file = await renderCardToFile(
-          { photoSrc, name: nominee.name, rank: nominee.finalRank, year: YEAR },
+          {
+            photoSrc,
+            name: nominee.name,
+            rank: nominee.finalRank,
+            year: YEAR,
+            title: nominee.title || nominee.professional_role,
+            company: nominee.company || nominee.organization,
+            country: nominee.country,
+            sixWordStory: nominee.six_word_story,
+            bio: nominee.description || nominee.bio,
+          },
           wreathImgRef.current
         );
 
@@ -90,7 +100,7 @@ export default function OgCardGenerator() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-1">OG Card Generator — Top 100 Women {YEAR}</h1>
         <p className="text-sm text-slate-400 mb-6">
-          Deterministically composes each honoree's real photo into the portrait template,
+          Deterministically composes each honoree's real photo into the 1200×630 social card,
           uploads the PNG (stored publicly — anyone with the link can open them),
           and stores the URL on each nominee record as <code className="text-slate-300">og_card_url</code>.
         </p>

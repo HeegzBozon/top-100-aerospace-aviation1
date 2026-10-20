@@ -15,53 +15,100 @@ export const b = {
 
 export const WREATH_URL = 'https://media.base44.com/images/public/68996845be6727838fdb822e/fa0298ddb_Gemini_Generated_Image_s3pahzs3pahzs3pa-removebg-preview.png';
 
-// ─── Deterministic canvas composition (portrait 1080×1350, 4:5) ───────────────
-export function composeCard(canvas, { photoImg, wreathImg, name, rank, year, label }) {
-  const W = 1080, H = 1350;
+// ─── Deterministic canvas composition (landscape 1200×630, the social ratio) ──
+// Single source of truth for the shareable card. The Download PNG, native share,
+// and every honoree's Open Graph image all render this one composition at this
+// one size, so a shared link previews exactly what the card file contains.
+export function composeCard(canvas, {
+  photoImg,
+  wreathImg,
+  name = '',
+  rank,
+  year = 2025,
+  label,
+  title,
+  company,
+  country,
+  sixWordStory,
+  bio,
+}) {
+  const W = 1200, H = 630;
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d');
 
-  // ── Background: deep navy gradient ──
+  const roundRect = (x, y, w, h, rad) => {
+    ctx.beginPath();
+    ctx.moveTo(x + rad, y);
+    ctx.lineTo(x + w - rad, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + rad);
+    ctx.lineTo(x + w, y + h - rad);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - rad, y + h);
+    ctx.lineTo(x + rad, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - rad);
+    ctx.lineTo(x, y + rad);
+    ctx.quadraticCurveTo(x, y, x + rad, y);
+    ctx.closePath();
+  };
+
+  // Truncate to the column width with a clean ellipsis
+  const fit = (text, maxW) => {
+    let t = String(text ?? '');
+    if (ctx.measureText(t).width <= maxW) return t;
+    while (t.length > 1 && ctx.measureText(t).width > maxW) t = t.slice(0, -1);
+    return t.replace(/[,;:.\s]+$/, '') + '…';
+  };
+
+  // ── Background gradient ──
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#0f172a');
-  bg.addColorStop(0.5, '#13263d');
-  bg.addColorStop(1, '#0f1f35');
+  bg.addColorStop(0, b.navyDark);
+  bg.addColorStop(0.45, '#162840');
+  bg.addColorStop(1, '#1d3d68');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
+  // ── Ambient glow spots ──
+  const glow = (gx, gy, gr, colour) => {
+    const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, gr);
+    g.addColorStop(0, colour);
+    g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g;
+    ctx.fillRect(gx - gr, gy - gr, gr * 2, gr * 2);
+  };
+  glow(-103, -103, 549, b.gold + '18');
+  glow(1131, 767, 617, b.sky + '15');
+
   // ── Dot-grid texture ──
-  ctx.fillStyle = 'rgba(255,255,255,0.06)';
-  for (let x = 0; x < W; x += 22) {
-    for (let y = 0; y < H; y += 22) {
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  for (let x = 0; x < W; x += 31) {
+    for (let y = 0; y < H; y += 31) {
       ctx.beginPath();
-      ctx.arc(x, y, 1, 0, Math.PI * 2);
+      ctx.arc(x, y, 1.7, 0, Math.PI * 2);
       ctx.fill();
     }
   }
 
-  // ── Rank numeral (top-left, large serif) ──
-  ctx.font = '300 140px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
-  ctx.fillText(String(rank), 60, 40);
+  // ── Top gold accent bar ──
+  const bar = ctx.createLinearGradient(0, 0, W, 0);
+  bar.addColorStop(0, 'transparent');
+  bar.addColorStop(0.2, b.gold + 'e6');
+  bar.addColorStop(0.5, b.goldLight);
+  bar.addColorStop(0.8, b.gold + 'e6');
+  bar.addColorStop(1, 'transparent');
+  ctx.fillStyle = bar;
+  ctx.fillRect(0, 0, W, 5);
 
-  // ── Close × (top-right circle) ──
-  ctx.strokeStyle = 'rgba(255,255,255,0.7)';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(W - 60, 80, 26, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(W - 74, 66); ctx.lineTo(W - 46, 94);
-  ctx.moveTo(W - 46, 66); ctx.lineTo(W - 74, 94);
-  ctx.stroke();
+  // ── Vertical gold rule between the two columns ──
+  const rule = ctx.createLinearGradient(0, 65, 0, H - 65);
+  rule.addColorStop(0, 'transparent');
+  rule.addColorStop(0.3, b.gold + '80');
+  rule.addColorStop(0.7, b.gold + 'b3');
+  rule.addColorStop(1, 'transparent');
+  ctx.fillStyle = rule;
+  ctx.fillRect(377, 65, 2, H - 130);
 
-  // ── Portrait photo centered in laurel wreath ──
-  const cx = W / 2;
-  const cy = 560;
-  const r = 200;
+  // ── LEFT: photo medallion inside the laurel wreath ──
+  const cx = 188, cy = 299, r = 117;
 
   ctx.save();
   ctx.beginPath();
@@ -77,85 +124,165 @@ export function composeCard(canvas, { photoImg, wreathImg, name, rank, year, lab
   } else {
     ctx.fillStyle = b.navyMid;
     ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+    ctx.fillStyle = b.goldLight;
+    ctx.font = 'bold 90px Georgia, "Times New Roman", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText((name || '?').charAt(0), cx, cy);
   }
   ctx.restore();
 
-  // Copper ring around photo
-  const ringGrad = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
-  ringGrad.addColorStop(0, b.copper);
-  ringGrad.addColorStop(0.5, b.copperLight);
-  ringGrad.addColorStop(1, b.copper);
-  ctx.strokeStyle = ringGrad;
-  ctx.lineWidth = 6;
+  // Photo ring
+  ctx.strokeStyle = b.gold + 'b3';
+  ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.stroke();
 
-  // Laurel wreath overlay
+  // Wreath overlay
   if (wreathImg) {
-    const wr = r + 40;
+    const wr = r + 27;
     ctx.drawImage(wreathImg, cx - wr, cy - wr, wr * 2, wr * 2);
   }
 
-  // ── Label between two thin lines ──
-  const labelY = 880;
-  const labelText = label || `TOP 100 WOMEN IN AEROSPACE • ${year}`;
-  ctx.font = '600 26px system-ui, -apple-system, sans-serif';
-  ctx.fillStyle = b.cream;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const letterSpacing = 4;
-  const chars = labelText.split('');
-  const charWidths = chars.map(c => ctx.measureText(c).width);
-  const totalW = charWidths.reduce((s, w) => s + w, 0) + letterSpacing * (chars.length - 1);
-  let drawX = cx - totalW / 2;
-  for (let i = 0; i < chars.length; i++) {
-    ctx.fillText(chars[i], drawX + charWidths[i] / 2, labelY);
-    drawX += charWidths[i] + letterSpacing;
+  // ── Country chip ──
+  if (country) {
+    ctx.font = '600 18px system-ui, -apple-system, sans-serif';
+    const chipText = `📍 ${country}`;
+    const chipH = 36;
+    const chipW = ctx.measureText(chipText).width + 36;
+    const chipX = cx - chipW / 2;
+    const chipY = cy + r + 26;
+    ctx.fillStyle = b.sky + '33';
+    ctx.strokeStyle = b.sky + '59';
+    ctx.lineWidth = 1.6;
+    roundRect(chipX, chipY, chipW, chipH, chipH / 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = b.sky;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(chipText, cx, chipY + chipH / 2);
   }
 
-  // Thin lines flanking the label
-  const lineEndL = cx - totalW / 2 - 24;
-  const lineStartR = cx + totalW / 2 + 24;
-  ctx.strokeStyle = b.gold;
-  ctx.lineWidth = 1.5;
+  // ── RIGHT: content column ──
+  const rx = 411, ry = 96, maxW = W - rx - 34;
+
+  // Recognition badge
+  ctx.font = '900 16px system-ui, -apple-system, sans-serif';
+  ctx.letterSpacing = '0';
+  const badgeText = `${rank ? `#${rank} · ` : ''}${label || `TOP 100 WOMEN IN AEROSPACE ${year}`}`;
+  const badgeW = ctx.measureText(badgeText).width + badgeText.length * 2.9 + 48;
+  const badgeGrad = ctx.createLinearGradient(rx, 0, rx + badgeW, 0);
+  badgeGrad.addColorStop(0, b.goldDeep);
+  badgeGrad.addColorStop(0.6, b.gold);
+  badgeGrad.addColorStop(1, b.goldLight);
+  ctx.fillStyle = badgeGrad;
+  roundRect(rx, ry, badgeW, 36, 18);
+  ctx.fill();
+  ctx.fillStyle = b.navyDark;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.letterSpacing = '0.18em';
+  ctx.fillText(badgeText, rx + 24, ry + 18);
+  ctx.letterSpacing = '0';
+
+  // Name
+  ctx.font = 'bold 52px Georgia, "Times New Roman", serif';
+  ctx.fillStyle = b.cream;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  let textY = ry + 55;
+  ctx.fillText(fit(name, maxW), rx, textY);
+  textY += 65;
+
+  // Title · Company
+  const titleStr = [title, company].filter(Boolean).join(' · ');
+  if (titleStr) {
+    ctx.font = '600 19px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle = b.goldLight;
+    ctx.fillText(fit(titleStr, maxW), rx, textY);
+    textY += 29;
+  }
+
+  // Gold rule
+  ctx.fillStyle = b.gold + 'e6';
+  ctx.fillRect(rx, textY + 10, 82, 2);
+  textY += 32;
+
+  // Six-word story — the headline
+  if (sixWordStory) {
+    ctx.font = 'italic 600 24px Georgia, "Times New Roman", serif';
+    ctx.fillStyle = b.goldLight;
+    const words = `“${sixWordStory}”`.split(' ');
+    let line = '';
+    for (const word of words) {
+      const test = line ? `${line} ${word}` : word;
+      if (line && ctx.measureText(test).width > maxW) {
+        ctx.fillText(line, rx, textY);
+        textY += 36;
+        line = word;
+      } else {
+        line = test;
+      }
+    }
+    if (line) {
+      ctx.fillText(line, rx, textY);
+      textY += 36;
+    }
+    textY += 7;
+  }
+
+  // Bio — two lines maximum
+  if (bio) {
+    ctx.font = '19px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle = b.cream + 'd9';
+    const words = String(bio).split(' ');
+    let line = '';
+    let lines = 0;
+    let truncated = false;
+    for (const word of words) {
+      const test = line ? `${line} ${word}` : word;
+      if (line && ctx.measureText(test).width > maxW) {
+        if (lines >= 1) {
+          ctx.fillText(line.replace(/[,;:.]?$/, '') + '…', rx, textY);
+          truncated = true;
+          break;
+        }
+        ctx.fillText(line, rx, textY);
+        textY += 29;
+        lines++;
+        line = word;
+      } else {
+        line = test;
+      }
+    }
+    if (!truncated && line) ctx.fillText(line, rx, textY);
+  }
+
+  // ── Footer bar ──
+  const footerH = 55;
+  const footerGrad = ctx.createLinearGradient(0, 0, W, 0);
+  footerGrad.addColorStop(0, b.navyDark + 'f0');
+  footerGrad.addColorStop(1, b.navyDark + 'cc');
+  ctx.fillStyle = footerGrad;
+  ctx.fillRect(0, H - footerH, W, footerH);
+  ctx.strokeStyle = b.gold + '4d';
+  ctx.lineWidth = 1.6;
   ctx.beginPath();
-  ctx.moveTo(120, labelY); ctx.lineTo(lineEndL, labelY);
-  ctx.moveTo(lineStartR, labelY); ctx.lineTo(W - 120, labelY);
+  ctx.moveTo(0, H - footerH);
+  ctx.lineTo(W, H - footerH);
   ctx.stroke();
 
-  // ── Name on faint grey box ──
-  ctx.font = '600 72px Georgia, "Times New Roman", serif';
-  const nameMetrics = ctx.measureText(name);
-  const nameH = 110;
-  const nameBoxY = 960;
-  const nameBoxW = Math.min(W - 160, nameMetrics.width + 80);
-  const nameBoxX = (W - nameBoxW) / 2;
-
-  ctx.fillStyle = 'rgba(226, 232, 240, 0.08)';
-  const rad = 8;
-  ctx.beginPath();
-  ctx.moveTo(nameBoxX + rad, nameBoxY);
-  ctx.lineTo(nameBoxX + nameBoxW - rad, nameBoxY);
-  ctx.quadraticCurveTo(nameBoxX + nameBoxW, nameBoxY, nameBoxX + nameBoxW, nameBoxY + rad);
-  ctx.lineTo(nameBoxX + nameBoxW, nameBoxY + nameH - rad);
-  ctx.quadraticCurveTo(nameBoxX + nameBoxW, nameBoxY + nameH, nameBoxX + nameBoxW - rad, nameBoxY + nameH);
-  ctx.lineTo(nameBoxX + rad, nameBoxY + nameH);
-  ctx.quadraticCurveTo(nameBoxX, nameBoxY + nameH, nameBoxX, nameBoxY + nameH - rad);
-  ctx.lineTo(nameBoxX, nameBoxY + rad);
-  ctx.quadraticCurveTo(nameBoxX, nameBoxY, nameBoxX + rad, nameBoxY);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'center';
+  ctx.font = '900 14px system-ui, -apple-system, sans-serif';
+  ctx.fillStyle = b.gold;
   ctx.textBaseline = 'middle';
-  ctx.fillText(name, cx, nameBoxY + nameH / 2);
-
-  // ── Bottom tagline ──
-  ctx.font = '400 24px system-ui, sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.55)';
-  ctx.fillText('Aerospace & Aviation', cx, nameBoxY + nameH + 50);
+  ctx.textAlign = 'left';
+  ctx.fillText('TOP 100 AEROSPACE & AVIATION', 39, H - footerH / 2);
+  ctx.font = '14px system-ui, -apple-system, sans-serif';
+  ctx.fillStyle = b.cream + '73';
+  ctx.textAlign = 'right';
+  ctx.fillText(`The Orbital Edition · ${year}`, W - 39, H - footerH / 2);
 }
 
 // ─── Helper: load an image with crossOrigin ──────────────────────────────────
@@ -169,12 +296,12 @@ export function loadImage(src) {
   });
 }
 
-// ─── Render a card to a PNG File (for upload) ────────────────────────────────
-export async function renderCardToFile({ photoSrc, name, rank, year, label }, wreathImg) {
+// ─── Render the card to a PNG File (for upload) ──────────────────────────────
+export async function renderCardToFile(card, wreathImg) {
   const canvas = document.createElement('canvas');
-  const photoImg = photoSrc ? await loadImage(photoSrc).catch(() => null) : null;
-  composeCard(canvas, { photoImg, wreathImg, name, rank, year, label });
+  const photoImg = card.photoSrc ? await loadImage(card.photoSrc).catch(() => null) : null;
+  composeCard(canvas, { ...card, photoImg, wreathImg });
   const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-  const safeName = name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  return new File([blob], `og-${rank}-${safeName}.png`, { type: 'image/png' });
+  const safeName = String(card.name || 'honoree').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return new File([blob], `og-${card.rank ?? ''}-${safeName}.png`.replace(/--+/g, '-'), { type: 'image/png' });
 }

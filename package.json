@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/generate-honoree-pages.mjs",
     "build": "vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
