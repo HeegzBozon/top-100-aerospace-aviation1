@@ -60,7 +60,7 @@ export default function Top100Women2025DeepLink() {
     const ogTitle = `${nominee.name} — TOP 100 Women in Aerospace & Aviation 2025`;
     const ogDesc = nominee.description || `Verified honoree on the TOP 100 Aerospace & Aviation. We don't rank. We measure.`;
     const ogImage = nominee.og_card_url || nominee.avatar_url;
-    const ogUrl = `${window.location.origin}/Top100Women2025/2025/12/${slug}`;
+    const ogUrl = `${window.location.origin}/Top100Women2025/2025/12/${slug}/index.html`;
 
     const tags = [
       ['property', 'og:title', ogTitle],

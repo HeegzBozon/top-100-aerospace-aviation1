@@ -33,7 +33,7 @@ export default async function (req: Request): Promise<Response> {
     }
 
     const origin = SITE_ORIGIN;
-    const deepLinkUrl = `${origin}/Top100Women2025/2025/12/${encodeURIComponent(slug)}`;
+    const deepLinkUrl = `${origin}/Top100Women2025/2025/12/${encodeURIComponent(slug)}/index.html`;
     const canonical = `${origin}/profiles/${n.id}`;
     const name = escapeHtml(n.name);
     const headline = [n.title || n.professional_role, n.company || n.organization]

@@ -60,7 +60,7 @@ export default function ShareableCard({ nominee, rank, onClose }) {
   const [copied, setCopied] = useState(false);
 
   const shareUrl = nominee.public_slug
-    ? `${window.location.origin}/Top100Women2025/2025/12/${nominee.public_slug}`
+    ? `${window.location.origin}/Top100Women2025/2025/12/${nominee.public_slug}/index.html`
     : `${window.location.origin}/Top100Women2025?nominee=${nominee.id}`;
   const shareText = [
     `Congratulations to ${nominee.name}${rank ? ` (#${rank})` : ''} — named to the TOP 100 Women in Aerospace & Aviation 2025!`,

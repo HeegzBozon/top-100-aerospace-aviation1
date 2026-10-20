@@ -36,7 +36,7 @@ function renderPage(h) {
     160
   );
   const headline = [h.title, h.company].filter(Boolean).join(" · ");
-  const deepLink = `${ORIGIN}/Top100Women2025/${YEAR}/12/${h.slug}`;
+  const deepLink = `${ORIGIN}/Top100Women2025/${YEAR}/12/${h.slug}/index.html`;
   const canonical = `${ORIGIN}/profiles/${h.id}`;
   const image = h.card || h.photo;
 
