@@ -1,0 +1,44 @@
+{
+  "name": "Claim Approved Welcome",
+  "description": "Sends the branded welcome and activation email the moment a profile claim is approved, whether the Fellow self-verified by email or an admin approved the claim",
+  "trigger": {
+    "condition": "${ .trigger.data.claim_status == \"approved\" and .trigger.old_data.claim_status != \"approved\" }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "Nominee"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "claim_approved_welcome",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_welcome": {
+          "call": "send_email",
+          "with": {
+            "template_name": "ClaimApproved",
+            "to": "${ .trigger.data.claim_requested_by }",
+            "description": "Confirms the approved claim and links the Fellow into their Studio editor, their social card and their public profile",
+            "variables": {
+              "name": "${ .trigger.data.name }",
+              "studio_url": "https://top100aero.space/Profile",
+              "profile_url": "https://top100aero.space/profiles/${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send welcome email",
+            "description": "Branded claim approval"
+          }
+        }
+      }
+    ]
+  }
+}
