@@ -171,7 +171,7 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
       <ClaimShell
         icon={Linkedin}
         title="Verify with LinkedIn to claim"
-        body="Your account email doesn't match, but this profile lists a LinkedIn URL. Connect your LinkedIn so we can confirm it's the same person."
+        body="Your account email doesn't match, but this profile lists a LinkedIn profile. Connect LinkedIn so we can confirm it's you — if we can't confirm it automatically, your claim goes to our team for review."
         actionLabel={linkedinPending ? 'Connecting…' : 'Connect LinkedIn to verify'}
         busy={linkedinPending || submitting}
         onAction={handleConnect}

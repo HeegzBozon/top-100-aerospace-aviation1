@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import {
   emailMatchesNominee,
   linkedinUrlsMatch,
-  fetchClaimerLinkedInUrl,
+  fetchClaimerLinkedInIdentity,
 } from '../../shared/nomineeResolve.ts';
 
 // Workspace-registered LinkedIn connector (APP_USER-capable). Each claimer
@@ -75,8 +75,12 @@ export default async function(req: Request): Promise<Response> {
       });
     }
 
-    // PATH 2 — LinkedIn URL match. Only when the claimer explicitly requests it
-    // AND the nominee record has a LinkedIn URL to match against.
+    // PATH 2 — LinkedIn confirmation. Only when the claimer explicitly requests it
+    // AND the record carries a LinkedIn URL. LinkedIn no longer returns a member's
+    // public profile URL to standard apps, so identity is confirmed two ways and
+    // this path never throws: (1) a vanity-URL match where LinkedIn still grants
+    // it, (2) the LinkedIn account's own verified email. Anything else is recorded
+    // for admin review rather than erroring on the user.
     if (linked_in_match) {
       if (!nominee.linkedin_profile_url) {
         return Response.json({
@@ -85,18 +89,31 @@ export default async function(req: Request): Promise<Response> {
           claim_state: 'unclaimed',
         }, { status: 409 });
       }
-      const { accessToken } = await base44.asServiceRole.connectors.getCurrentAppUserConnection(
-        LINKEDIN_CONNECTOR_ID
-      );
-      const claimerUrl = await fetchClaimerLinkedInUrl(accessToken as string);
-      if (!claimerUrl) {
+
+      let identity = { vanityUrl: '', name: '', email: '' };
+      try {
+        const { accessToken } = await base44.asServiceRole.connectors.getCurrentAppUserConnection(
+          LINKEDIN_CONNECTOR_ID
+        );
+        identity = await fetchClaimerLinkedInIdentity(accessToken as string);
+      } catch (connError) {
+        console.error(`LinkedIn connection unavailable: ${connError.message}`);
         return Response.json({
           success: false,
-          error: 'Could not read your LinkedIn profile URL. Please reconnect LinkedIn and try again.',
+          resolved: false,
           claim_state: 'unclaimed',
+          error: 'We could not read your LinkedIn account. Please reconnect LinkedIn and try again.',
         }, { status: 409 });
       }
-      if (linkedinUrlsMatch(nominee.linkedin_profile_url, claimerUrl)) {
+
+      const vanityMatch =
+        !!identity.vanityUrl &&
+        linkedinUrlsMatch(nominee.linkedin_profile_url, identity.vanityUrl);
+      // The LinkedIn account's verified email carries the same weight as signing in
+      // with that address.
+      const emailMatch = emailMatchesNominee(identity.email, nominee);
+
+      if (vanityMatch || emailMatch) {
         const updated = await base44.entities.Nominee.update(nominee_id, {
           claim_status: 'approved',
           claim_method: 'linkedin_match',
@@ -112,12 +129,14 @@ export default async function(req: Request): Promise<Response> {
           claim_state: 'approved',
           method: 'linkedin_match',
           nominee: updated,
-          message: 'Profile claimed and self-verified by LinkedIn URL match.',
+          message: 'Profile claimed and self-verified through LinkedIn.',
         });
       }
-      // Mismatch → admin review. Record the request.
+
+      // Not confirmable automatically → record the request for admin review.
       const updated = await base44.entities.Nominee.update(nominee_id, {
         claim_status: 'pending',
+        claim_method: 'admin_review',
         claim_requested_by: user.email,
         claim_requested_date: new Date().toISOString(),
       });
@@ -125,7 +144,7 @@ export default async function(req: Request): Promise<Response> {
         success: false,
         resolved: false,
         claim_state: 'pending',
-        error: 'Your LinkedIn profile does not match the URL on this record. Your claim has been submitted for admin review.',
+        error: 'We could not confirm this profile from LinkedIn automatically. Your claim has been submitted for admin review.',
         nominee: updated,
       }, { status: 409 });
     }
@@ -142,6 +161,7 @@ export default async function(req: Request): Promise<Response> {
     }
     const updated = await base44.entities.Nominee.update(nominee_id, {
       claim_status: 'pending',
+      claim_method: 'admin_review',
       claim_requested_by: user.email,
       claim_requested_date: new Date().toISOString(),
     });

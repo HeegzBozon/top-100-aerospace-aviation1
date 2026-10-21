@@ -30,19 +30,56 @@ export function linkedinUrlsMatch(nomineeUrl: string, claimerUrl: string): boole
   return !!a && !!b && a === b;
 }
 
-// Fetch the claiming user's own public LinkedIn profile URL using their app-user token.
-// Uses /v2/me with publicProfileUrl projection (r_basicprofile).
-export async function fetchClaimerLinkedInUrl(accessToken: string): Promise<string> {
-  const res = await fetch(
-    'https://api.linkedin.com/v2/me?projection=(id,publicProfileUrl,vanityName)',
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  );
-  if (!res.ok) {
-    const t = await res.text().catch(() => '');
-    throw new Error(`LinkedIn profile fetch failed (${res.status}): ${t}`);
+// Read the claiming member's LinkedIn identity.
+// LinkedIn no longer hands a member's public profile URL (/in/<vanity>) to
+// standard apps: vanityName and publicProfileUrl belonged to the legacy
+// r_basicprofile product. So the legacy projection is attempted best-effort and
+// a miss is NOT an error; the supported OpenID Connect endpoint then supplies the
+// member's name and verified email, which lets the claim resolver still confirm
+// who they are. This never throws — a claim that can't be confirmed
+// automatically falls back to admin review rather than erroring on the user.
+export type ClaimerLinkedInIdentity = {
+  vanityUrl: string;
+  name: string;
+  email: string;
+};
+
+export async function fetchClaimerLinkedInIdentity(
+  accessToken: string
+): Promise<ClaimerLinkedInIdentity> {
+  const identity: ClaimerLinkedInIdentity = { vanityUrl: '', name: '', email: '' };
+
+  // Best effort: legacy projection, where the app still has that product access.
+  try {
+    const legacy = await fetch(
+      'https://api.linkedin.com/v2/me?projection=(id,publicProfileUrl,vanityName)',
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    if (legacy.ok) {
+      const d = await legacy.json();
+      identity.vanityUrl =
+        d?.publicProfileUrl ||
+        (d?.vanityName ? `https://www.linkedin.com/in/${d.vanityName}` : '');
+    }
+  } catch {
+    // Not available in this app tier — carry on to the supported read.
   }
-  const data = await res.json();
-  return data.publicProfileUrl || '';
+
+  // Supported read: OpenID Connect userinfo (openid + profile + email scopes).
+  try {
+    const res = await fetch('https://api.linkedin.com/v2/userinfo', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (res.ok) {
+      const d = await res.json();
+      identity.name = d?.name || '';
+      identity.email = d?.email || '';
+    }
+  } catch {
+    // Nothing readable — the resolver routes the claim to admin review.
+  }
+
+  return identity;
 }
 
 // Strict RFC-ish email validity gate. Applied at the source so garbage like 'z'
