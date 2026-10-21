@@ -104,18 +104,6 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
     );
   }
 
-  // Resolved-pending state from a prior call (admin review queue).
-  if (result?.claim_state === 'pending' || (nominee?.claim_status === 'pending' && !submitting && !result)) {
-    return (
-      <ClaimShell
-        icon={Clock}
-        title="Claim submitted for review"
-        body={result?.error || "Neither your email nor LinkedIn matched the record, so your claim is queued for admin review. We'll be in touch."}
-        muted
-      />
-    );
-  }
-
   const startClaim = async (payload) => {
     setSubmitting(true);
     setError('');
@@ -131,7 +119,10 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
     }
   };
 
-  // Email match → instant self-verified claim.
+  // Identity match is tested BEFORE any record-level review state: an exact email
+  // match self-verifies instantly, even when an earlier claim on this record is
+  // still queued. A stale pending request must never hide the instant path — that
+  // is what queued 33 matching claimers behind 'we'll be in touch'.
   if (emailEligible) {
     return (
       <ClaimShell
@@ -143,6 +134,19 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved }) {
         onAction={() => startClaim({ nominee_id: nominee.id })}
         accent="gold"
         error={error}
+      />
+    );
+  }
+
+  // Resolved-pending state from a prior call (admin review queue). Only reaches
+  // here when the viewer's identity could not be matched to the record.
+  if (result?.claim_state === 'pending' || (nominee?.claim_status === 'pending' && !submitting && !result)) {
+    return (
+      <ClaimShell
+        icon={Clock}
+        title="Claim submitted for review"
+        body={result?.error || "Neither your email nor LinkedIn matched the record, so your claim is queued for admin review. We'll be in touch."}
+        muted
       />
     );
   }
