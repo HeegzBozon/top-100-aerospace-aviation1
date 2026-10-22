@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Loader2, UploadCloud, CheckCircle2, AlertTriangle, RotateCcw } from 'lucide-react';
 import { renderCardToFile, loadImage, WREATH_URL } from '@/components/og-card/ogCardComposer';
 import useTop100WomenNominees from '@/components/publication/useTop100WomenNominees';
+import SingleCardPreview from '@/components/og-card/SingleCardPreview';
 
 const YEAR = 2025;
 
@@ -111,6 +112,8 @@ export default function OgCardGenerator() {
           </div>
         ) : (
           <>
+            <SingleCardPreview nominees={nominees} />
+
             {/* Controls */}
             <div className="flex flex-wrap items-center gap-4 mb-6">
               <button
