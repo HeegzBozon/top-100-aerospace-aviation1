@@ -17,6 +17,7 @@ const SeasonManager             = lazy(() => import('@/components/admin/SeasonMa
 const SeasonViewModal           = lazy(() => import('@/components/admin/SeasonViewModal'));
 const CohortWorkspace           = lazy(() => import('@/components/admin/cohort-workspace/CohortWorkspace'));
 const MediaSurface              = lazy(() => import('@/components/admin/editorial/MediaSurface'));
+const SocialCardsPanel          = lazy(() => import('@/components/admin/editorial/SocialCardsPanel'));
 const ProviderReviewManager     = lazy(() => import('@/components/admin/ProviderReviewManager'));
 const ServiceManager            = lazy(() => import('@/components/admin/ServiceManager'));
 const KBArticleManager          = lazy(() => import('@/components/admin/KBArticleManager'));
@@ -275,6 +276,8 @@ export default function Admin() {
         return <DiscoveryResponsesManager />;
       case 'media':
         return <MediaSurface />;
+      case 'social-cards':
+        return <SocialCardsPanel />;
       // ── People ──
       case 'user-management':
         return <UserManagement />;

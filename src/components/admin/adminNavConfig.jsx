@@ -69,6 +69,7 @@ export const ADMIN_SECTIONS = [
             { id: 'community-notes', label: 'Community Notes', icon: MessageSquare, component: 'CommunityNotesModeration' },
             { id: 'discovery-responses', label: 'Discovery Responses', icon: ClipboardList, component: 'DiscoveryResponsesManager' },
             { id: 'media', label: 'Media & Photos', icon: Camera, component: 'MediaSurface' },
+            { id: 'social-cards', label: 'Social Cards', icon: Camera, component: 'SocialCardsPanel' },
         ],
     },
     {
