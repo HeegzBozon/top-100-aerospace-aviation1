@@ -74,3 +74,18 @@ export function getCountryColors(countryCode) {
   if (!countryCode) return null;
   return COUNTRY_COLORS[countryCode.toUpperCase()] || null;
 }
+
+// Canonical display label for a location string — null when the value is not a country.
+// Longest alias wins, so 'united states' beats 'usa' and 'south korea' beats 'korea'.
+// The badge composer uses this to omit the country line entirely rather than print a
+// city or region on a member's public-facing avatar.
+const COUNTRY_LABELS = Object.entries(COUNTRY_CODES).reduce((acc, [alias, code]) => {
+  const label = alias.replace(/\b\w/g, (c) => c.toUpperCase());
+  if (!acc[code] || label.length > acc[code].length) acc[code] = label;
+  return acc;
+}, {});
+
+export function getCountryLabel(location) {
+  const code = getCountryCode(location);
+  return code ? COUNTRY_LABELS[code] || null : null;
+}
