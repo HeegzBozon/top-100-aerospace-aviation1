@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.44";
 import { isIndexable, escapeXml, SITE_ORIGIN } from "../../shared/seoProfile.ts";
+import { mergedIntoId } from "../../shared/nomineeMerge.ts";
 
 // Public crawler endpoint. Emits a sitemap of all indexable public profile
 // URLs with lastmod. No auth — served to Googlebot and AI crawlers.
@@ -8,8 +9,9 @@ export default async function (req: Request): Promise<Response> {
     const base44 = createClientFromRequest(req);
     const origin = SITE_ORIGIN;
     const nominees = await base44.asServiceRole.entities.Nominee.filter({}, "name", 1000);
+    // One URL per person: superseded duplicate rows never enter the sitemap.
     const rows = (nominees || [])
-      .filter(isIndexable)
+      .filter((n) => isIndexable(n) && !mergedIntoId(n))
       .map((n) => {
         const lastmod = n.updated_date
           ? new Date(n.updated_date).toISOString().split("T")[0]

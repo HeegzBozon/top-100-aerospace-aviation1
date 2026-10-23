@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.52";
 import { escapeHtml, SITE_ORIGIN, PUBLIC_STATUSES } from "../../shared/seoProfile.ts";
+import { resolveCanonical } from "../../shared/nomineeMerge.ts";
 
 // Public prerender endpoint for the /Top100Women2025/:year/:month/:slug deep-link
 // route. Returns a full static HTML page with nominee-specific Open Graph and
@@ -24,10 +25,13 @@ export default async function (req: Request): Promise<Response> {
 
     const { items } = await base44.asServiceRole.entities.Nominee.filter(
       { public_slug: slug },
-      { limit: 1, fields: ["id", "name", "description", "og_card_url", "avatar_url", "title", "professional_role", "company", "organization", "country", "status"] }
+      { limit: 1, fields: ["id", "name", "description", "og_card_url", "avatar_url", "title", "professional_role", "company", "organization", "country", "status", "raw_nomination_data"] }
     );
-    const n = items?.[0];
-    if (!n) return new Response("Not found", { status: 404 });
+    const found = items?.[0];
+    if (!found) return new Response("Not found", { status: 404 });
+    // A superseded row resolves to its canonical master: the share preview and the
+    // canonical link must describe the current record, never a retired duplicate.
+    const n = await resolveCanonical(base44.asServiceRole.entities, found);
     if (!PUBLIC_STATUSES.includes(n.status || "active")) {
       return new Response("Not found", { status: 404 });
     }

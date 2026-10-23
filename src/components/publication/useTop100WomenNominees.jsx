@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { mergeMap, canonicalId } from '@/lib/nomineeMerge';
 
 export default function useTop100WomenNominees() {
   const [nominees, setNominees] = useState([]);
@@ -77,15 +78,24 @@ export default function useTop100WomenNominees() {
 
         combined.forEach((nominee, index) => { nominee.finalRank = index + 1; });
 
-        const top100Ids = new Set(combined.slice(0, 100).map(nominee => nominee.id));
         const allNominees = await base44.entities.Nominee.list('-created_date', 1000);
-        const nomineeMap = new Map(allNominees.filter(nominee => top100Ids.has(nominee.id)).map(nominee => [nominee.id, nominee]));
+        // A superseded duplicate row resolves to its canonical master, so the edition
+        // renders each honoree's current verified profile. Position, order and season
+        // scores still come from that season's standings row, so the published ranking
+        // never shifts — only duplicate identity is collapsed.
+        const merged = mergeMap(allNominees);
+        const nomineeMap = new Map(allNominees.map(nominee => [nominee.id, nominee]));
+        const seenCanonical = new Set();
 
         setNominees(combined.slice(0, 100).map(result => {
-          const fullNominee = nomineeMap.get(result.id) || {};
+          const canonical = canonicalId(result.id, merged) || result.id;
+          if (seenCanonical.has(canonical)) return null;
+          seenCanonical.add(canonical);
+          const fullNominee = nomineeMap.get(canonical) || nomineeMap.get(result.id) || {};
           return {
             ...result,
             ...fullNominee,
+            id: canonical,
             aura_score: result.aura_score,
             elo_rating: result.elo_rating,
             borda_score: result.borda_score,
@@ -97,7 +107,7 @@ export default function useTop100WomenNominees() {
             industry: fullNominee.industry || result.industry,
             avatar_url: fullNominee.avatar_url || fullNominee.photo_url || result.avatar_url,
           };
-        }));
+        }).filter(Boolean));
       } finally {
         setLoading(false);
       }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PublicationBody from '@/components/publication/PublicationBody';
+import { mergedIntoId } from '@/lib/nomineeMerge';
 
 // Deep-link entry: /Top100Women2025/:year/:month/:slug
 // Pre-opens the honoree profile panel on mount. The :year and :month segments
@@ -23,9 +24,14 @@ export default function Top100Women2025DeepLink() {
       try {
         const res = await base44.entities.Nominee.filter(
           { public_slug: slug },
-          { limit: 1, fields: ['id', 'name', 'description', 'og_card_url', 'avatar_url', 'title', 'company', 'country'] }
+          { limit: 1, fields: ['id', 'name', 'description', 'og_card_url', 'avatar_url', 'title', 'company', 'country', 'raw_nomination_data'] }
         );
-        if (!cancelled && res?.items?.[0]) setNominee(res.items[0]);
+        // A superseded row resolves to its canonical master so a cached or legacy
+        // share link never renders the retired duplicate's content.
+        let found = res?.items?.[0] || null;
+        const masterId = mergedIntoId(found);
+        if (masterId) found = await base44.entities.Nominee.get(masterId).catch(() => found);
+        if (!cancelled && found) setNominee(found);
       } catch {
         // PublicationBody will still open the panel from its own loaded data
       }

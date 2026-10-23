@@ -1,5 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { mergedIntoId } from '@/lib/nomineeMerge';
+
+// A superseded duplicate row resolves to its canonical master, so a legacy id or
+// a cached share link always lands on the current verified profile.
+async function resolveCanonicalNominee(nominee) {
+    const masterId = mergedIntoId(nominee);
+    if (!masterId) return nominee;
+    try {
+        const master = await base44.entities.Nominee.get(masterId);
+        return master || nominee;
+    } catch {
+        return nominee;
+    }
+}
 
 export function useProfileResolution(targetId, targetEmail) {
     return useQuery({
@@ -39,16 +53,17 @@ export function useProfileResolution(targetId, targetEmail) {
                     try {
                         const nomineeCheck = await base44.entities.Nominee.filter({ id: targetId });
                         if (nomineeCheck.length > 0) {
-                            resolvedUserEmail = nomineeCheck[0].nominee_email;
-                            result.nominee = nomineeCheck[0];
+                            const canonicalNominee = await resolveCanonicalNominee(nomineeCheck[0]);
+                            resolvedUserEmail = canonicalNominee.nominee_email;
+                            result.nominee = canonicalNominee;
                             // Authoritative owner link — use it when the nominee's
                             // contact email doesn't match a User account (e.g. an
                             // admin-approved claim). Resolves the User record that
                             // holds governed personalization and the viral-post
                             // feature flag, without disturbing email-keyed lookups.
-                            if (nomineeCheck[0].claimed_by_user_id && !result.user) {
+                            if (canonicalNominee.claimed_by_user_id && !result.user) {
                                 try {
-                                    const claimedUser = await base44.entities.User.filter({ id: nomineeCheck[0].claimed_by_user_id });
+                                    const claimedUser = await base44.entities.User.filter({ id: canonicalNominee.claimed_by_user_id });
                                     if (claimedUser.length > 0) result.user = claimedUser[0];
                                 } catch (e) {
                                     console.warn("Failed resolving claimed_by_user_id:", e);
@@ -92,7 +107,7 @@ export function useProfileResolution(targetId, targetEmail) {
                 ]);
 
                 result.user = users[0] || result.user;
-                result.nominee = nominees[0] || result.nominee;
+                result.nominee = result.nominee || (nominees[0] ? await resolveCanonicalNominee(nominees[0]) : null);
                 result.provider = providers[0] || null;
                 result.employer = employers[0] || null;
                 result.startup = startups[0] || result.startup;

@@ -5,6 +5,7 @@ import {
   escapeHtml,
   SITE_ORIGIN,
 } from "../../shared/seoProfile.ts";
+import { resolveCanonical } from "../../shared/nomineeMerge.ts";
 
 // Public prerender endpoint. Returns a full, static HTML page for a single
 // verified Fellow profile with embedded Person + BreadcrumbList JSON-LD and
@@ -21,8 +22,12 @@ export default async function (req: Request): Promise<Response> {
       nomineeId = body?.id;
     }
     if (!nomineeId) return new Response("Not found", { status: 404 });
-    const n = await base44.asServiceRole.entities.Nominee.get(nomineeId);
-    if (!n || !isIndexable(n)) return new Response("Not found", { status: 404 });
+    const record = await base44.asServiceRole.entities.Nominee.get(nomineeId);
+    if (!record) return new Response("Not found", { status: 404 });
+    // A superseded duplicate id (a cached or legacy /profiles/:id link) resolves to
+    // its canonical master, so the page states the one canonical URL.
+    const n = await resolveCanonical(base44.asServiceRole.entities, record);
+    if (!isIndexable(n)) return new Response("Not found", { status: 404 });
 
     const origin = SITE_ORIGIN;
     const canonical = `${origin}/profiles/${n.id}`;
