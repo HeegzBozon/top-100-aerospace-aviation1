@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Shield, CalendarCheck, Users, ShoppingBag, Mail, Home } from 'lucide-react';
+import { Menu, X, Shield, CalendarCheck, Users, ShoppingBag, Mail, Home, LogIn, User } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const NAV_LINKS = [
@@ -22,13 +22,18 @@ const NAV_LINKS = [
 // top-right menu toggle, and the floating RSVP button into one glass bar.
 export default function HomeDock() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authState, setAuthState] = useState('checking');
 
   useEffect(() => {
     base44.auth.me()
-      .then((u) => setIsAdmin(u?.role === 'admin'))
-      .catch(() => {});
+      .then((u) => { setUser(u); setAuthState('signedin'); })
+      .catch(() => setAuthState('signedout'));
   }, []);
+
+  // Visitors arrive here first, so the account entry point is stated plainly and
+  // returns them to the page they were reading.
+  const signIn = () => base44.auth.redirectToLogin(window.location.href);
 
   return (
     <div className="fixed bottom-4 left-1/2 z-[100] -translate-x-1/2 px-4">
@@ -38,6 +43,25 @@ export default function HomeDock() {
           className="absolute bottom-16 left-2 max-h-[70vh] w-64 overflow-y-auto rounded-2xl shadow-2xl"
           style={{ background: 'rgba(7,17,31,0.97)', border: '1px solid rgba(201,168,124,0.2)', backdropFilter: 'blur(20px)' }}
         >
+          {authState === 'signedin' && (
+            <Link
+              to="/Profile"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-2 border-b border-[#c9a87c]/20 px-5 py-3.5 text-sm font-semibold text-[#c9a87c] transition-all hover:bg-white/5"
+            >
+              <User className="h-4 w-4" /> My Profile
+            </Link>
+          )}
+
+          {authState === 'signedout' && (
+            <button
+              onClick={() => { setMenuOpen(false); signIn(); }}
+              className="flex w-full items-center gap-2 border-b border-[#c9a87c]/20 px-5 py-3.5 text-left text-sm font-semibold text-[#c9a87c] transition-all hover:bg-white/5"
+            >
+              <LogIn className="h-4 w-4" /> Sign in · Create your account
+            </button>
+          )}
+
           {NAV_LINKS.map(({ label, to, href }) =>
             href ? (
               <a
@@ -61,7 +85,7 @@ export default function HomeDock() {
               </Link>
             ),
           )}
-          {isAdmin && (
+          {user?.role === 'admin' && (
             <Link
               to="/Admin"
               onClick={() => setMenuOpen(false)}
@@ -88,6 +112,22 @@ export default function HomeDock() {
 
         <Divider />
 
+        {/* Account entry point — the dock's first action for a signed-out visitor */}
+        {authState === 'signedout' && (
+          <>
+            <button
+              onClick={signIn}
+              aria-label="Sign in"
+              className="flex h-11 items-center gap-1.5 rounded-full px-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#c9a87c] transition-all hover:bg-white/10"
+            >
+              <LogIn className="h-4 w-4" />
+              <span className="hidden sm:inline">Sign in</span>
+            </button>
+
+            <Divider />
+          </>
+        )}
+
         <DockLink to="/" icon={Home} label="Home" />
 
         <Divider />
@@ -96,11 +136,12 @@ export default function HomeDock() {
 
         <Link
           to="/rsvp"
+          aria-label="RSVP"
           className="flex h-11 items-center gap-1.5 rounded-full px-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[#07111f] transition-all hover:brightness-105 active:scale-95"
           style={{ background: 'linear-gradient(135deg, #c9a87c, #e0c79a)' }}
         >
           <CalendarCheck className="h-4 w-4" />
-          <span>RSVP</span>
+          <span className="hidden sm:inline">RSVP</span>
         </Link>
 
         <DockLink to="/subscribe" icon={Mail} label="Subscribe" />

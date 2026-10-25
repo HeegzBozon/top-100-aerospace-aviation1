@@ -24,7 +24,7 @@ function isLive(event) {
   return now >= start - 5 * 60 * 1000 && now <= end;
 }
 
-export default function ExperienceHero() {
+export default function ExperienceHero({ stats = null }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -68,7 +68,7 @@ export default function ExperienceHero() {
 
   return (
     <>
-    <section className="relative flex min-h-[100svh] flex-col items-center justify-start overflow-hidden bg-[#07111f] px-4 pt-6 pb-20 text-center sm:px-8 sm:pt-10">
+    <section className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-[#07111f] px-4 pb-20 pt-10 text-center sm:px-8 sm:pt-12">
       <div className="absolute inset-0 pointer-events-none">
         {stars.map((s) => (
           <span key={s.id} className={`absolute rounded-full bg-white/70 ${s.size} animate-pulse`} style={{ top: s.top, left: s.left, animationDelay: s.delay }} />
@@ -77,14 +77,96 @@ export default function ExperienceHero() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(201,168,124,0.20),transparent_44%),radial-gradient(circle_at_82%_78%,rgba(74,144,184,0.14),transparent_30%)]" />
 
       <div className="relative z-10 mx-auto w-full max-w-5xl">
-        {/* Year progress hourglass + nominations countdown — above the fold */}
+        {/* Identity first — who this is, what it is, and the single action */}
         <motion.div
-          key="hero-stack"
+          key="hero-identity"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mx-auto flex max-w-2xl flex-col gap-4"
+          className="mx-auto flex max-w-3xl flex-col items-center gap-5"
         >
+          <img
+            src="https://media.base44.com/images/public/68996845be6727838fdb822e/9066c527f_TOP100AerospaceAviationlogo.png"
+            alt="TOP 100 Aerospace & Aviation"
+            className="h-16 w-auto object-contain opacity-95 sm:h-20"
+          />
+
+          <p className="inline-flex items-center gap-2 rounded-full border border-[#c9a87c]/35 bg-[#c9a87c]/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[#c9a87c] backdrop-blur-md">
+            Not a ranking. A record.
+          </p>
+
+          <h1
+            className="text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-4xl md:text-5xl"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            The verified record of the people moving aerospace &amp; aviation forward.
+          </h1>
+
+          <p className="max-w-xl text-sm leading-7 text-slate-300 sm:text-base">
+            Nominated by their peers. Measured, never ranked. Published as a permanent profile for
+            engineers, operators, founders, and the people who back them.
+          </p>
+
+          <Link
+            to="/nominate"
+            className="inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-[#07111f] shadow-[0_0_32px_rgba(201,168,124,0.35)] transition-all hover:scale-[1.03]"
+            style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}
+          >
+            Nominate a leader <ArrowRight className="h-4 w-4" />
+          </Link>
+
+          {/* The one number — drawn from the edition the page actually loads */}
+          {stats ? (
+            <div className="mt-1 flex items-center gap-6">
+              <div>
+                <div
+                  className="text-2xl font-bold text-white sm:text-3xl"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                >
+                  {stats.honorees}
+                </div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
+                  Honorees published
+                </div>
+              </div>
+              <div className="h-9 w-px bg-white/15" />
+              <div>
+                <div
+                  className="text-2xl font-bold text-white sm:text-3xl"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                >
+                  {stats.countries}
+                </div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
+                  Countries
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-1 flex items-center gap-5" aria-hidden="true">
+              <div className="h-9 w-20 animate-pulse rounded bg-white/10" />
+              <div className="h-9 w-20 animate-pulse rounded bg-white/10" />
+            </div>
+          )}
+        </motion.div>
+      </div>
+    </section>
+
+    {/* Below the fold — chamber framing, instrumentation, calendar and explore rail */}
+    <section className="relative overflow-hidden bg-[#07111f] px-4 py-16 text-center sm:px-8">
+      <div className="relative z-10 mx-auto w-full max-w-5xl">
+        {/* Chamber framing */}
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8 flex flex-col items-center gap-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a87c]/35 bg-[#c9a87c]/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-[#c9a87c] backdrop-blur-md">
+            <CalendarDays className="h-3.5 w-3.5" /> Chamber New.0 · Aerospace Experience Calendar
+          </div>
+          <p className="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+            The modern aerospace chamber — a media, events & ecosystem company. <span className="text-white">Explore</span> the signal, <span className="text-[#c9a87c]">participate</span> in the ritual, <span className="text-white">accelerate</span> the work, <span className="text-[#c9a87c]">consult</span> the expertise.
+          </p>
+        </motion.div>
+
+        {/* Instrumentation — year progress, nominee pool, and the nomination window */}
+        <div className="mx-auto flex max-w-2xl flex-col gap-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
             <div className="w-full sm:w-[65%]">
               <YearProgressHourglass />
@@ -94,34 +176,7 @@ export default function ExperienceHero() {
             </div>
           </div>
           <NominationCountdown />
-          {/* Brand mark — below the nominations countdown */}
-          <div className="mt-3 flex items-center justify-center">
-            <img
-              src="https://media.base44.com/images/public/68996845be6727838fdb822e/9066c527f_TOP100AerospaceAviationlogo.png"
-              alt="TOP 100 Aerospace & Aviation"
-              className="h-14 w-auto object-contain opacity-95 sm:h-20"
-            />
-          </div>
-        </motion.div>
-      </div>
-    </section>
-
-    {/* Below the fold — masthead, chamber calendar, and explore rail */}
-    <section className="relative overflow-hidden bg-[#07111f] px-4 py-16 text-center sm:px-8">
-      <div className="relative z-10 mx-auto w-full max-w-5xl">
-        {/* Masthead */}
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-5 flex flex-col items-center gap-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a87c]/35 bg-[#c9a87c]/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-[#c9a87c] backdrop-blur-md">
-            <CalendarDays className="h-3.5 w-3.5" /> Chamber New.0 · Aerospace Experience Calendar
-          </div>
-          <h1 className="leading-[0.95] tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-            <span className="block text-4xl font-bold text-white sm:text-5xl md:text-6xl">Not a ranking.</span>
-            <span className="block text-4xl font-bold text-[#c9a87c] sm:text-5xl md:text-6xl">A record.</span>
-          </h1>
-          <p className="max-w-xl text-sm leading-7 text-slate-300 sm:text-base">
-            The modern aerospace chamber — a media, events & ecosystem company. <span className="text-white">Explore</span> the signal, <span className="text-[#c9a87c]">participate</span> in the ritual, <span className="text-white">accelerate</span> the work, <span className="text-[#c9a87c]">consult</span> the expertise.
-          </p>
-        </motion.div>
+        </div>
 
         {/* Chamber calendar — next event, RSVP, and month view */}
         <ChamberCalendarSection events={events} loading={loading} liveNow={liveNow} featured={featured} />
