@@ -31,6 +31,7 @@ import BlurbSlide from '@/components/profile-deck/slides/BlurbSlide';
 import DocumentsSlide from '@/components/profile-deck/slides/DocumentsSlide';
 import EightSlide from '@/components/profile-deck/slides/EightSlide';
 import FlightographySlide from '@/components/profile-deck/slides/FlightographySlide';
+import ConferencesSlide from '@/components/profile-deck/slides/ConferencesSlide';
 import ViralPostSlide from '@/components/profile-deck/slides/ViralPostSlide';
 import { resolveSlideOrder } from '@/components/profile-deck/slideDeckConfig';
 import SlideErrorBoundary from '@/components/profile-deck/SlideErrorBoundary';
@@ -192,6 +193,7 @@ export default function ProfileView({ userId: propUserId = null }) {
 
 function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onResolved, featuredViral }) {
     const { user, nominee } = profiles;
+    const fellowEmail = user?.email || nominee?.nominee_email;
 
     // Resolve the Fellow's configured slide order. Locked positions 1 and 2
     // (identity, verification) are always present; hidden slides are excluded.
@@ -234,6 +236,11 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onR
             case 'flightography':
                 entry = { key, label: 'Flightography', content: (
                     <FlightographySlide nominee={nominee} user={user} accent={ownerAccent} />
+                )};
+                break;
+            case 'conferences':
+                entry = { key, label: 'Mission Rooms', content: (
+                    <ConferencesSlide user={user} nominee={nominee} viewer={viewer} accent={ownerAccent} />
                 )};
                 break;
             default:

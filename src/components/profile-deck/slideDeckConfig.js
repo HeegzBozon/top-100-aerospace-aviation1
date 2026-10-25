@@ -1,7 +1,8 @@
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
 // Slide region registry. Identity and verification are locked to positions 1 and 2.
-// Configurable slides: blurb, documents, eight, flightography — Fellow reorders and toggles.
+// Configurable slides: blurb, documents, eight, flightography, conferences —
+// Fellow reorders and toggles.
 export const SLIDE_REGIONS = [
   { key: 'identity', label: 'Identity', locked: true },
   { key: 'verification', label: 'Credential', locked: true },
@@ -10,15 +11,16 @@ export const SLIDE_REGIONS = [
   { key: 'documents', label: 'Documents', locked: false },
   { key: 'eight', label: 'The Eight', locked: false },
   { key: 'flightography', label: 'Flightography', locked: false },
+  { key: 'conferences', label: 'Mission Rooms', locked: false },
 ];
 
 export const LOCKED_SLIDES = ['identity', 'verification'];
-export const CONFIGURABLE_SLIDES = ['viral_post', 'blurb', 'documents', 'eight', 'flightography'];
+export const CONFIGURABLE_SLIDES = ['viral_post', 'blurb', 'documents', 'eight', 'flightography', 'conferences'];
 export const ALL_SLIDE_KEYS = [...LOCKED_SLIDES, ...CONFIGURABLE_SLIDES];
 
 // Default roster surfaces all regions — the Fellow toggles off what they don't want.
 // Top Viral Post leads the configurable slides as the hero spread after identity + credential.
-export const DEFAULT_SLIDE_ORDER = ['identity', 'verification', 'viral_post', 'blurb', 'documents', 'eight', 'flightography'];
+export const DEFAULT_SLIDE_ORDER = ['identity', 'verification', 'viral_post', 'blurb', 'documents', 'eight', 'flightography', 'conferences'];
 
 export const AUTOPLAY_MODES = [
   { key: 'loop', label: 'Loop', description: 'Advance through all slides and repeat', icon: 'Repeat' },

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2, AlertCircle, Radar, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
@@ -18,7 +18,7 @@ const byDateAsc = (a, b) => new Date(a.start_date || 0) - new Date(b.start_date 
 // Conference Room — a board that can be viewed by lifecycle (default 3-column
 // Kanban) or regrouped into horizontal swim lanes by Domain, Series, Region,
 // or Attendance.
-export default function ConferenceRoomView({ user, accent = B.navy }) {
+export default function ConferenceRoomView({ user, accent = B.navy, initialRoomId = null }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [rooms, setRooms] = useState([]);
@@ -72,6 +72,17 @@ export default function ConferenceRoomView({ user, accent = B.navy }) {
       (r) => r.status !== 'draft' || isAdmin || r.facilitator_email === user?.email
     );
   }, [rooms, user]);
+
+  // Deep link from a Fellow's profile: open the referenced room once, as soon
+  // as it is known to be readable.
+  const openedInitial = useRef(false);
+  useEffect(() => {
+    if (openedInitial.current || !initialRoomId || loading) return;
+    if (visibleRooms.some((r) => r.id === initialRoomId)) {
+      openedInitial.current = true;
+      setSelectedRoomId(initialRoomId);
+    }
+  }, [initialRoomId, loading, visibleRooms]);
 
   const myRoomIds = useMemo(() => {
     const s = new Set();
