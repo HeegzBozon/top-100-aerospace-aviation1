@@ -10,9 +10,9 @@ import {
   BookOpen,
   Award,
   Star,
-  Heart
+  Heart,
+  LogOut
 } from "lucide-react";
-import * as LucideIcons from "lucide-react";
 import { brandColors, CORE_NAV_ITEMS } from "@/components/layout/navConfig";
 import { getMobileTheme } from "@/components/core/commsUtils";
 import { base44 } from "@/api/base44Client";
@@ -24,13 +24,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const ICON_MAP = LucideIcons;
-
 export default function MobileDock({ onSearchOpen, isDarkMode = false, currentPageName }) {
   const navigate = useNavigate();
   const theme = getMobileTheme(isDarkMode, brandColors);
   const [railItems, setRailItems] = useState([]);
   const [moreItems, setMoreItems] = useState([]);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me()
+      .then(() => setIsSignedIn(true))
+      .catch(() => {});
+  }, []);
+
+  // Signing out returns to the public front door, so the visitor experience is
+  // always one tap away.
+  const handleLogout = () => base44.auth.logout(`${window.location.origin}/`);
 
   useEffect(() => {
     base44.entities.RailItem.list()
@@ -77,7 +86,7 @@ export default function MobileDock({ onSearchOpen, isDarkMode = false, currentPa
       >
         {(railItems.length ? railItems : CORE_NAV_ITEMS).map((item) => {
           const itemPage = item.page || item.pageName;
-          const Icon = iconMap[item.icon] || ICON_MAP[item.icon] || DefaultIcon;
+          const Icon = iconMap[item.icon] || DefaultIcon;
           const isActive = currentPageName === itemPage;
           const url = item.query ? `${itemPage}?${item.query}` : itemPage;
 
@@ -160,7 +169,7 @@ export default function MobileDock({ onSearchOpen, isDarkMode = false, currentPa
             }}
           >
             {(moreItems.length ? moreItems : menuItems).map((menuItem) => {
-              const Icon = iconMap[menuItem.icon] || ICON_MAP[menuItem.icon] || DefaultIcon;
+              const Icon = iconMap[menuItem.icon] || DefaultIcon;
               const menuPage = menuItem.page || menuItem.pageName;
               return (
                 <DropdownMenuItem
@@ -173,6 +182,16 @@ export default function MobileDock({ onSearchOpen, isDarkMode = false, currentPa
                 </DropdownMenuItem>
               );
             })}
+
+            {isSignedIn && (
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="mt-1 flex items-center gap-3 border-t border-white/10 p-3 rounded-xl focus:bg-white/10 cursor-pointer transition-colors"
+              >
+                <LogOut className="w-5 h-5" style={{ color: brandColors.goldPrestige }} />
+                <span className="font-semibold text-sm">Log out</span>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </motion.nav>
