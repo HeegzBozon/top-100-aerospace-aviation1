@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Shield, CalendarCheck, Users, ShoppingBag, Mail, Home, LogIn, User } from 'lucide-react';
+import { Menu, X, Shield, CalendarCheck, Users, ShoppingBag, Mail, Home, LogIn, LogOut, User } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const NAV_LINKS = [
@@ -35,6 +35,10 @@ export default function HomeDock() {
   // returns them to the page they were reading.
   const signIn = () => base44.auth.redirectToLogin(window.location.href);
 
+  // Signing out returns to the public front door, so the visitor experience is
+  // always one tap away.
+  const signOut = () => base44.auth.logout(`${window.location.origin}/`);
+
   return (
     <div className="fixed bottom-4 left-1/2 z-[100] -translate-x-1/2 px-4">
       {/* Menu flyout — opens upward from the dock's left edge */}
@@ -44,13 +48,21 @@ export default function HomeDock() {
           style={{ background: 'rgba(7,17,31,0.97)', border: '1px solid rgba(201,168,124,0.2)', backdropFilter: 'blur(20px)' }}
         >
           {authState === 'signedin' && (
-            <Link
-              to="/Profile"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-2 border-b border-[#c9a87c]/20 px-5 py-3.5 text-sm font-semibold text-[#c9a87c] transition-all hover:bg-white/5"
-            >
-              <User className="h-4 w-4" /> My Profile
-            </Link>
+            <>
+              <Link
+                to="/Profile"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 border-b border-[#c9a87c]/20 px-5 py-3.5 text-sm font-semibold text-[#c9a87c] transition-all hover:bg-white/5"
+              >
+                <User className="h-4 w-4" /> My Profile
+              </Link>
+              <button
+                onClick={() => { setMenuOpen(false); signOut(); }}
+                className="flex w-full items-center gap-2 border-b border-white/5 px-5 py-3.5 text-left text-sm font-semibold text-white/60 transition-all hover:bg-white/5 hover:text-[#c9a87c]"
+              >
+                <LogOut className="h-4 w-4" /> Log out
+              </button>
+            </>
           )}
 
           {authState === 'signedout' && (
