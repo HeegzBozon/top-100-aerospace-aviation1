@@ -45,8 +45,14 @@ export default async function (req: Request): Promise<Response> {
       return Response.json({ error: 'Admin only' }, { status: 403 });
     }
 
+    const body = await req.json().catch(() => ({}));
+    const nominationType = typeof body?.nomination_type === 'string' ? body.nomination_type : null;
+
     // Single bounded service-role read, consistent with the other admin exports.
-    const all = await base44.asServiceRole.entities.NominationIntake.list('-created_date', 5000);
+    // An optional track filter lets a caller export one roster's submissions.
+    const all = nominationType
+      ? await base44.asServiceRole.entities.NominationIntake.filter({ nomination_type: nominationType }, '-created_date', 5000)
+      : await base44.asServiceRole.entities.NominationIntake.list('-created_date', 5000);
     if (!all || all.length === 0) {
       return Response.json({ error: 'No nomination submissions found' }, { status: 404 });
     }

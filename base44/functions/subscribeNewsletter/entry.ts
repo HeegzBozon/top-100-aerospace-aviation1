@@ -25,6 +25,7 @@ const SOURCE_TAGS = {
   'moon_joy': ['Newsletter', 'Moon Joy', 'Operation Moon Joy', 'Community Interest'],
   'common_ground': ['Newsletter', 'CommonGround', 'CommonGround 5.0', 'Civic Interest'],
   'vision_2030': ['Newsletter', '2030 Vision', 'Institutional Interest'],
+  'top100_women': ['Newsletter', 'Top 100 Women', 'Orbital Index Waitlist', 'Publication Waitlist'],
   'general': ['Newsletter', 'General Subscribe'],
 };
 
@@ -33,6 +34,7 @@ const SMART_LIST_TAGS = {
   'moon_joy': 'SmartList: Moon Joy Subscribers',
   'common_ground': 'SmartList: CommonGround Subscribers',
   'vision_2030': 'SmartList: 2030 Vision Subscribers',
+  'top100_women': 'SmartList: Top 100 Women Publication',
   'general': 'SmartList: General Newsletter',
 };
 

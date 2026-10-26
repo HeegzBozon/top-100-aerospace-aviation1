@@ -15,5 +15,5 @@ export default function Top100Women2025() {
 
   if (loading) return <PublicationLoading />;
   if (error || nominees.length === 0) return <PublicationUnavailable onRetry={reloadEdition} />;
-  return <PublicationBody />;
+  return <PublicationBody showExports />;
 }
