@@ -104,15 +104,27 @@ export default function ModuleSlideDeck({ slides = [] }) {
       const room = stage.getBoundingClientRect().bottom - strip.getBoundingClientRect().top;
       strip.style.height = `${Math.round(Math.max(240, room))}px`;
     };
+    // Coalesced to a frame: the strip sets its own height and the observer watches
+    // the surface around it, so measuring and writing inside the notification is how
+    // a resize loop starts. The write lands after the browser has finished telling
+    // observers about the last one.
+    let frame = 0;
+    const schedule = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        fit();
+      });
+    };
     fit();
-    const frame = requestAnimationFrame(fit);
-    const observer = new ResizeObserver(fit);
+    schedule();
+    const observer = new ResizeObserver(schedule);
     if (strip.parentElement) observer.observe(strip.parentElement);
-    window.addEventListener("resize", fit);
+    window.addEventListener("resize", schedule);
     return () => {
-      cancelAnimationFrame(frame);
+      if (frame) cancelAnimationFrame(frame);
       observer.disconnect();
-      window.removeEventListener("resize", fit);
+      window.removeEventListener("resize", schedule);
     };
   }, [glass, signature]);
 

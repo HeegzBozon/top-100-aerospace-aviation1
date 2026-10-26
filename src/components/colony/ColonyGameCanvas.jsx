@@ -263,10 +263,24 @@ export default function ColonyGameCanvas({ sprites = [], localSessionId = null }
       canvas.width  = parent.clientWidth;
       canvas.height = parent.clientHeight;
     };
+    // Sized on the next frame rather than inside the notification itself: writing
+    // the canvas while the browser is still delivering resize notifications is what
+    // raises the "undelivered notifications" loop.
+    let frame = 0;
+    const schedule = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        setSize();
+      });
+    };
     setSize();
-    const observer = new ResizeObserver(setSize);
+    const observer = new ResizeObserver(schedule);
     observer.observe(canvas.parentElement);
-    return () => observer.disconnect();
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, []);
 
   // ── Keyboard ──────────────────────────────────────────────────────────────
