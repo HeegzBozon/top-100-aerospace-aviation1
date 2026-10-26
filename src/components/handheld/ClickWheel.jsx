@@ -81,14 +81,28 @@ export default function ClickWheel({ size = 132, onRotate, onSelect }) {
             "inset 0 2px 3px rgba(255,255,255,0.95), inset 0 -3px 8px rgba(30,58,90,0.26), 0 6px 14px rgba(7,17,31,0.34)",
         }}
       >
-        {/* Engraved detent ring — spins with the finger */}
+        {/* Engraved tick band — a fine machined ring that spins with the finger */}
         <div
-          className="absolute inset-[11px] rounded-full"
+          className="absolute inset-[9px] rounded-full"
           style={{
             background:
-              "repeating-conic-gradient(from 0deg, rgba(30,58,90,0.20) 0deg 2.5deg, rgba(30,58,90,0) 2.5deg 11deg)",
+              "repeating-conic-gradient(from 0deg, rgba(30,58,90,0.26) 0deg 1.4deg, rgba(30,58,90,0) 1.4deg 7.5deg)",
+            WebkitMaskImage:
+              "radial-gradient(closest-side, transparent 71%, #000 72%, #000 96%, transparent 97%)",
+            maskImage:
+              "radial-gradient(closest-side, transparent 71%, #000 72%, #000 96%, transparent 97%)",
             transform: `rotate(${spin}deg)`,
             transition: drag.current.active ? "none" : "transform 220ms cubic-bezier(0.22,1,0.36,1)",
+          }}
+        />
+
+        {/* Hub — a smooth recessed well, so the middle reads as a machined dial */}
+        <div
+          className="absolute inset-[25px] rounded-full"
+          style={{
+            background: "linear-gradient(180deg, #F6F1E8 0%, #E7DDCC 100%)",
+            boxShadow:
+              "inset 0 2px 4px rgba(30,58,90,0.22), 0 1px 0 rgba(255,255,255,0.7)",
           }}
         />
       </div>
@@ -98,14 +112,17 @@ export default function ClickWheel({ size = 132, onRotate, onSelect }) {
         type="button"
         onClick={onSelect}
         aria-label="Confirm"
-        className="absolute left-1/2 top-1/2 flex h-[48px] w-[48px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-transform active:scale-90"
+        className="absolute left-1/2 top-1/2 flex h-[50px] w-[50px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-transform active:scale-90"
         style={{
-          background: "linear-gradient(180deg, #DCA46A 0%, #B87333 100%)",
+          background: "radial-gradient(circle at 50% 28%, #E9BC85 0%, #C98A45 58%, #A9611F 100%)",
           boxShadow:
-            "inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -2px 5px rgba(90,50,10,0.45), 0 2px 6px rgba(7,17,31,0.35)",
+            "inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -2px 6px rgba(90,50,10,0.45), 0 2px 7px rgba(7,17,31,0.35)",
         }}
       >
-        <span className="h-[7px] w-[7px] rounded-full bg-[#1E3A5A]/55" />
+        <span
+          className="h-[26px] w-[26px] rounded-full"
+          style={{ boxShadow: "inset 0 1px 3px rgba(90,50,10,0.5), inset 0 -1px 0 rgba(255,255,255,0.3)" }}
+        />
       </button>
     </div>
   );

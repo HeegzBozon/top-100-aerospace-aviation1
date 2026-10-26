@@ -232,7 +232,7 @@ export default function HandheldDeck() {
           {/* Speaker grille — the left block balances the buttons, so the wheel
               sits dead centre in the body */}
           <div
-            className="h-[72px] w-[72px] shrink-0 rounded-[12px]"
+            className="h-[84px] w-[84px] shrink-0 rounded-[12px]"
             style={{
               background:
                 "repeating-linear-gradient(112deg, rgba(184,115,51,0.5) 0 3px, rgba(184,115,51,0.08) 3px 10px)",
