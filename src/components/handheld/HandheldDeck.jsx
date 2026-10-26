@@ -5,6 +5,7 @@ import { Palette } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
 import HandheldMasthead from "./HandheldMasthead";
+import ScreenTopBar from "./ScreenTopBar";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldBody from "./HandheldBody";
 import HandheldMenu from "./HandheldMenu";
@@ -27,8 +28,12 @@ import { openingPlaysNow } from "@/components/core/appOpening";
 // lives inside the glass, and the control chin below. index.css consumes these
 // to inset every surface, so nothing is ever hidden behind the hardware.
 export const HANDHELD_TOP_CLEARANCE = 7;
-export const HANDHELD_BAR_CLEARANCE = 42;
+export const HANDHELD_BAR_CLEARANCE = 30;
 export const HANDHELD_DECK_CLEARANCE = 132;
+
+// The bar inside the glass — the stadium carrying you, what has come in, and the
+// sound latch — plus the air it floats in and the room it leaves under itself.
+export const HANDHELD_NAV_CLEARANCE = 60;
 
 // The desk margin: how much surface shows around the shell, on every side. The
 // device sits inside the viewport instead of filling it, so it reads as an
@@ -151,6 +156,7 @@ export default function HandheldDeck() {
         HANDHELD_BEZEL_WIDTH}px`,
     );
     root.setProperty("--hh-bar", `${HANDHELD_BAR_CLEARANCE}px`);
+    root.setProperty("--hh-nav", `${HANDHELD_NAV_CLEARANCE}px`);
     root.setProperty(
       "--hh-bottom",
       `${HANDHELD_DECK_CLEARANCE + HANDHELD_FRAME_GUTTER + HANDHELD_BEZEL_WIDTH}px`,
@@ -161,6 +167,7 @@ export default function HandheldDeck() {
       document.body.classList.remove("hh-shell");
       root.setProperty("--hh-top", "0px");
       root.setProperty("--hh-bar", "0px");
+      root.setProperty("--hh-nav", "0px");
       root.setProperty("--hh-shell-top", "0px");
       root.setProperty("--hh-bottom", "0px");
       root.setProperty("--hh-frame", "0px");
@@ -569,17 +576,21 @@ export default function HandheldDeck() {
           all set into the same body. */}
       <HandheldBody />
 
-      <HandheldMasthead
+      {/* The case's own line: branding, and nothing else. */}
+      <HandheldMasthead />
+
+      <HandheldScreenFrame />
+
+      {/* The bar inside the glass: the controls, where the surfaces are. */}
+      <ScreenTopBar
         surface={surface}
         module={modules[moduleIndex]?.label}
         soundOn={soundOn}
-        onToggleSound={toggleSound}
+        onHome={goHome}
         onProfile={openProfile}
         onNotifications={openNotifications}
-        onHome={goHome}
+        onToggleSound={toggleSound}
       />
-
-      <HandheldScreenFrame />
 
       <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
 

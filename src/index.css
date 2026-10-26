@@ -273,8 +273,8 @@ button:focus-visible {
    reclaim the whole viewport when the console is put away (the message composer,
    for one). */
 :root {
-  --hh-top: 81px;
-  --hh-bar: 42px;
+  --hh-top: 69px;
+  --hh-bar: 30px;
   --hh-shell-top: 21px;
   --hh-bottom: 164px;
 
@@ -283,6 +283,10 @@ button:focus-visible {
   --hh-frame: 14px;
   --hh-bezel-w: 18px;
   --hh-glass-inset: calc(var(--hh-frame, 0px) + var(--hh-bezel-w, 0px));
+
+  /* The bar inside the glass: the stadium itself, the air it floats in, and the
+     room every surface leaves under it. Content begins below --hh-top + --hh-nav. */
+  --hh-nav: 60px;
 
   /* Finish tokens — the house finish, until a Fellow changes it (see
      handheldFinishes.js, which overwrites every one of these). */
@@ -327,7 +331,7 @@ button:focus-visible {
    window the layout shell renders inside. */
 @media (max-width: 767px) {
   body.hh-shell #root {
-    padding-top: calc(var(--hh-top) + env(safe-area-inset-top));
+    padding-top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top));
     padding-bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
     padding-left: var(--hh-glass-inset);
     padding-right: var(--hh-glass-inset);
@@ -356,7 +360,8 @@ button:focus-visible {
   body.hh-shell .min-h-screen,
   body.hh-shell .h-screen {
     min-height: calc(
-      100dvh - var(--hh-top) - var(--hh-bottom) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+      100dvh - var(--hh-top) - var(--hh-nav) - var(--hh-bottom) - env(safe-area-inset-top) -
+        env(safe-area-inset-bottom)
     );
     height: auto;
   }
@@ -385,7 +390,7 @@ button:focus-visible {
   position: fixed;
   left: var(--hh-glass-inset);
   right: var(--hh-glass-inset);
-  top: calc(var(--hh-top) + env(safe-area-inset-top));
+  top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top));
   bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
   overflow-y: auto;
   overflow-x: hidden;
@@ -396,7 +401,8 @@ button:focus-visible {
    itself, the strip between them moving sideways. */
 .hh-slide-window {
   height: calc(
-    100dvh - var(--hh-top) - var(--hh-bottom) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    100dvh - var(--hh-top) - var(--hh-nav) - var(--hh-bottom) - env(safe-area-inset-top) -
+      env(safe-area-inset-bottom)
   );
 }
 .hh-slide {
@@ -625,6 +631,23 @@ button:focus-visible {
   box-shadow:
     inset 0 1px 0 var(--hh-shell-spec),
     inset 0 2px 4px -3px rgba(3, 6, 13, 0.45);
+}
+
+/* ===== THE BAR INSIDE THE GLASS =====
+   The one control surface that belongs to the picture rather than the case: a dark
+   stadium floating at the head of the glass, with the mark at its left and the
+   three keys at its right. It reads as the same device as the hardware because it
+   is cut from the finish's own recess tone and trimmed in the same metal. */
+.hh-screenbar {
+  border-radius: 9999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 46%),
+    var(--hh-recess);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.34),
+    0 6px 16px rgba(3, 6, 13, 0.32),
+    0 1px 2px rgba(3, 6, 13, 0.26);
 }
 
 /* The keypad: matte rubberised keys with light legends, the way a thumb knows
