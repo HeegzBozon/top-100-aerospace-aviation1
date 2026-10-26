@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Circle, Flame, Loader2, RotateCcw } from 'lucide-react';
 import { BRAND } from './boardConfig';
+import ProfileStrip from './ProfileStrip';
 import { dayLabel } from './checkInConfig';
 
 const SOURCE_LABEL = {
@@ -97,7 +98,9 @@ export default function CheckInColumn({ column, checkIn, user }) {
         </div>
       ) : (
         <>
-          <div className="rounded-[10px] px-3 py-3" style={card}>
+          <ProfileStrip profile={checkIn.profile} />
+
+          <div className="mt-2.5 rounded-[10px] px-3 py-3" style={card}>
             <div className="flex items-baseline justify-between gap-2">
               <span
                 className="text-[9px] font-bold uppercase tracking-[0.2em]"

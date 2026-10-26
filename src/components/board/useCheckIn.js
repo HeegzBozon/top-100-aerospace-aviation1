@@ -10,6 +10,13 @@ const EMPTY = {
   verified: false,
   discipline: '',
   logs: [],
+  profile: null,
+};
+
+const VERIFIED_LABEL = {
+  self_verified: 'Self-verified',
+  partially_verified: 'Partly verified',
+  fully_verified: 'Verified',
 };
 
 // The check-in column's state: what the other columns are asking for today, what
@@ -43,6 +50,7 @@ export function useCheckIn(user, { placed = 0, phase = null, openRoles = 0, room
         base44.entities.Connection.count({ recipient_email: email, status: 'pending' }),
         base44.entities.ConferenceRsvp.filter({ fellow_email: email }, { limit: 60 }),
         base44.entities.Nominee.filter({ nominee_email: email }, { limit: 1 }),
+        base44.entities.FellowProfileSettings.filter({ fellow_email: email }, { limit: 1 }),
       ]);
       if (!alive) return;
 
@@ -60,6 +68,7 @@ export function useCheckIn(user, { placed = 0, phase = null, openRoles = 0, room
         return result?.items || [];
       };
       const nominee = rows(5)[0] || null;
+      const settings = rows(6)[0] || null;
       const logs = rows(0);
 
       setData({
@@ -70,6 +79,19 @@ export function useCheckIn(user, { placed = 0, phase = null, openRoles = 0, room
         roomRsvps: rows(4).length,
         verified: Boolean(nominee && nominee.verified_status && nominee.verified_status !== 'unverified'),
         discipline: nominee?.discipline || '',
+        // The Fellow's own record, in the shape the check-in column reads it.
+        profile: {
+          name: user?.full_name || nominee?.name || '',
+          avatarUrl: nominee?.avatar_url || nominee?.photo_url || user?.avatar_url || '',
+          role: nominee?.professional_role || nominee?.title || '',
+          org: nominee?.organization || nominee?.company || '',
+          discipline: nominee?.discipline || '',
+          story: settings?.six_word_story || nominee?.six_word_story || '',
+          verified: Boolean(nominee && nominee.verified_status && nominee.verified_status !== 'unverified'),
+          verifiedLabel: VERIFIED_LABEL[nominee?.verified_status] || 'Unverified',
+          claimed: nominee?.claim_status === 'approved',
+          profileId: nominee?.id || null,
+        },
       });
       setState({ loading: false, failed: false });
     })();
@@ -149,6 +171,7 @@ export function useCheckIn(user, { placed = 0, phase = null, openRoles = 0, room
     retry: () => setAttempt((n) => n + 1),
     tasks,
     onboarding,
+    profile: data.profile,
     handled,
     total: tasks.length,
     streak: streakFrom(data.logs, today),

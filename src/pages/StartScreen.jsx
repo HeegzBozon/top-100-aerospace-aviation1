@@ -79,7 +79,7 @@ export default function StartScreen() {
           </span>
         </div>
 
-        <div className="mt-6 md:mt-10">
+        <div className="mt-5 md:mt-10">
           <p className="text-[8.5px] font-bold uppercase tracking-[0.3em] text-editorial-copper md:text-[9.5px]">
             {phase.kicker}
           </p>
@@ -115,7 +115,7 @@ export default function StartScreen() {
           </div>
         </div>
 
-        <div className="mt-5 flex-1 md:mt-8">
+        <div className="mt-4 flex-1 md:mt-8">
           <p className="mb-1 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/40">
             Select a surface
           </p>

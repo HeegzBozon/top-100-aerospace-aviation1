@@ -1,6 +1,6 @@
-import { Award, BadgeCheck, Compass, Home, LayoutGrid, Trophy } from "lucide-react";
+import { Award, BadgeCheck, BookOpen, Compass, LayoutGrid, Trophy, Users } from "lucide-react";
 
-// The start screen: the platform as a title screen, six surfaces deep, in the
+// The start screen: the platform as a title screen, seven surfaces deep, in the
 // order a Fellow meets them. The dashboard is the map; everything else is one
 // step off it. Every row routes to a surface that already exists — the start
 // screen holds the menu, the surfaces hold the work.
@@ -10,7 +10,7 @@ export const START_MENU = [
     label: "Dashboard",
     to: "/board",
     icon: LayoutGrid,
-    blurb: "Check in, then four directions across.",
+    blurb: "Your record and your loop, then four directions across.",
   },
   {
     index: "02",
@@ -21,27 +21,34 @@ export const START_MENU = [
   },
   {
     index: "03",
-    label: "My Profile",
-    to: "/Profile",
-    icon: Home,
-    blurb: "Credentials, flightography and the deck that carries them.",
+    label: "Mission Briefing",
+    to: "/Top100OS",
+    icon: BookOpen,
+    blurb: "What the platform is, and how the measurement works.",
   },
   {
     index: "04",
+    label: "Networking",
+    to: "/networking",
+    icon: Users,
+    blurb: "The rooms at the shows ahead, and who is standing in them.",
+  },
+  {
+    index: "05",
     label: "The Publication",
     to: "/Top100Women2025",
     icon: Trophy,
     blurb: "The editorial record of who was measured, and how.",
   },
   {
-    index: "05",
+    index: "06",
     label: "Global Intelligence",
     to: "/GlobalIntelligence",
     icon: Compass,
     blurb: "The live picture: launches, traffic and watch.",
   },
   {
-    index: "06",
+    index: "07",
     label: "Membership",
     to: "/Membership",
     icon: BadgeCheck,

@@ -85,6 +85,7 @@ const WomenCollageGenerator = lazy(() => import('@/pages/WomenCollageGenerator')
 const Top100Women2025DeepLink = lazy(() => import('@/pages/Top100Women2025DeepLink'));
 const TheBoard = lazy(() => import('@/pages/TheBoard'));
 const StartScreen = lazy(() => import('@/pages/StartScreen'));
+const Networking = lazy(() => import('@/pages/Networking'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -215,6 +216,8 @@ const AuthenticatedApp = () => {
       {/* The member's map of the platform: four columns across, depth inside each */}
       <Route path="/board" element={<TheBoard />} />
       <Route path="/dashboard" element={<TheBoard />} />
+      {/* The conferencing layer: rooms ahead, and who is standing in them */}
+      <Route path="/networking" element={<Networking />} />
       <Route path="/the-board" element={<TheBoard />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />

@@ -169,8 +169,8 @@ export default function TheBoard() {
       </header>
 
       <div
-        className="flex items-center justify-between gap-2 px-3 py-2 md:hidden"
-        style={{ borderBottom: '1px solid rgba(30,58,90,0.10)' }}
+        className="mx-3 mt-2 flex items-center justify-between gap-2 rounded-[10px] px-3 py-2 md:hidden"
+        style={{ background: '#FFFFFF', border: '1px solid rgba(30,58,90,0.12)' }}
       >
         <span
           className="text-[7.5px] font-bold uppercase tracking-[0.26em]"

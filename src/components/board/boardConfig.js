@@ -20,7 +20,7 @@ export const BOARD_COLUMNS = [
     kind: "check-in",
     index: "Now",
     label: "Check-in",
-    tagline: "Your loop: what the rest of the board is asking of you today.",
+    tagline: "Your record, and the loop the rest of the board is asking of you.",
     icon: CheckCircle2,
     cards: [],
   },
