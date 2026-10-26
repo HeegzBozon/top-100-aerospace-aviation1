@@ -11,6 +11,14 @@ import { Bell, CircleUser, Volume2, VolumeX } from "lucide-react";
 // than as a second toolbar, and the surfaces below it keep the room.
 const STRIP_HEIGHT = 28;
 
+// The seat the strip is set into: the rest of the head band, from the top of the
+// glass down to the picture. It is cut square and painted the strip's own tone, so
+// the head reads as one continuous rail rather than a bar floating in a gap — and
+// it fills the strip's rounded top corners out past the glass's curve, so nothing
+// behind the rail (a surface's paper, a fixed bar) can ever show through them, and
+// no seam of bare chassis is left between the rail and the content.
+const HEAD_BAND = "var(--hh-nav, 34px)";
+
 function StripKey({ label, onClick, lit = false, children }) {
   return (
     <button
@@ -41,10 +49,11 @@ export default function ScreenTopBar({
         left: "var(--hh-glass-inset, 32px)",
         right: "var(--hh-glass-inset, 32px)",
         top: "calc(var(--hh-top, 73px) + env(safe-area-inset-top))",
-        height: STRIP_HEIGHT,
+        height: HEAD_BAND,
+        background: "var(--hh-recess)",
       }}
     >
-      <div className="hh-strip flex h-full items-stretch overflow-hidden">
+      <div className="hh-strip flex items-stretch overflow-hidden" style={{ height: STRIP_HEIGHT }}>
         {/* The printed way home. */}
         <button
           type="button"

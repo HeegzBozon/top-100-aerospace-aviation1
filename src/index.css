@@ -518,9 +518,14 @@ button:focus-visible {
 /* The step down to the pane: the finish's dark tone for the ring itself, then the
    shadow the top lip casts into the well and the light the bottom lip catches —
    which is what makes a ring read as a hole rather than a frame. */
+/* The step down to the pane. The band itself is drawn from the pane's edge
+   outwards (see HandheldScreenFrame), so this element is the rounded opening that
+   clips it: all that belongs here is the shadow the top lip casts into the well
+   and the light the bottom lip catches, which is what makes a ring read as a hole
+   rather than a frame. Nothing solid is painted from it, so the picture keeps the
+   whole of its own rounded corners. */
 .hh-well {
   box-shadow:
-    inset 0 0 0 9px var(--hh-recess),
     inset 0 5px 9px -9px rgba(3, 6, 13, 0.60),
     inset 0 -4px 8px -10px rgba(255, 255, 255, 0.10);
 }

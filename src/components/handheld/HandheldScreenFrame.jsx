@@ -40,8 +40,19 @@ export default function HandheldScreenFrame() {
       {/* The rim — a ring, so the picture shows straight through its middle */}
       <div className="hh-rim absolute rounded-[16px]" style={{ inset: MOULDING }} />
 
-      {/* The step down to the pane */}
-      <div className="hh-well absolute rounded-[13px]" style={{ inset: MOULDING + RIM }} />
+      {/* The step down to the pane. The band is laid from the pane's own edge
+          outwards and clipped by the moulding, so its inner curve IS the pane's
+          curve: the three radii nest (16, 13, 11), the rail's rounded corners sit
+          inside it, and no part of the recess can ever paint over the picture. */}
+      <div
+        className="hh-well absolute overflow-hidden rounded-[13px]"
+        style={{ inset: MOULDING + RIM }}
+      >
+        <div
+          className="absolute rounded-[11px]"
+          style={{ inset: RECESS, boxShadow: "0 0 0 9px var(--hh-recess)" }}
+        />
+      </div>
 
       {/* The pane over the picture: the rim is 16, the recess 13 and the pane 11,
           so the three radii nest the way one moulding does */}
