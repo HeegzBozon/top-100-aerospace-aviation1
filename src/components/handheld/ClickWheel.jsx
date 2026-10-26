@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Home, Share2, SkipBack, SkipForward } from "lucide-react";
+import { Home, Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import { blip } from "./handheldSound";
 
 // Degrees of travel per detent. One detent = one menu row or one scroll notch.
@@ -32,16 +32,16 @@ const shortestDelta = (from, to) => {
 const zoneAt = (deg) => {
   const a = Math.abs(deg);
   if (a <= 45) return "menu";
-  if (a >= 135) return "share";
+  if (a >= 135) return "play";
   return deg > 0 ? "next" : "prev";
 };
 
 const ink = (active) => (active ? "var(--hh-metal)" : "var(--hh-key-ink-soft)");
 
 // The click wheel, as the hardware really is: a fixed ivory ring with four
-// actions printed on it — MENU, back, forward, share — a pressable centre, and
+// actions printed on it — MENU, back, forward, play — a pressable centre, and
 // rotation for scrolling. Nothing decorative sits on the surface.
-export default function ClickWheel({ size = 132, onRotate, onMenu, onPrev, onNext, onShare, onHome }) {
+export default function ClickWheel({ size = 132, playing, onRotate, onMenu, onPrev, onNext, onPlay, onHome }) {
   const ringRef = useRef(null);
   const dotRef = useRef(null);
   const drag = useRef({ active: false, last: 0, travel: 0, moved: 0, started: 0 });
@@ -65,7 +65,7 @@ export default function ClickWheel({ size = 132, onRotate, onMenu, onPrev, onNex
     if (zone === "menu") onMenu?.();
     else if (zone === "prev") onPrev?.();
     else if (zone === "next") onNext?.();
-    else onShare?.();
+    else onPlay?.();
   };
 
   const endDrag = (event) => {
@@ -118,7 +118,7 @@ export default function ClickWheel({ size = 132, onRotate, onMenu, onPrev, onNex
     if (key === "ArrowUp") fire("menu");
     else if (key === "ArrowLeft") fire("prev");
     else if (key === "ArrowRight") fire("next");
-    else if (key === "ArrowDown" || key === " ") fire("share");
+    else if (key === "ArrowDown" || key === " ") fire("play");
     else if (key === "Home" || key === "Enter") onHome?.();
     else return;
     event.preventDefault();
@@ -130,7 +130,7 @@ export default function ClickWheel({ size = 132, onRotate, onMenu, onPrev, onNex
         ref={ringRef}
         role="group"
         tabIndex={0}
-        aria-label="Click wheel. Rotate to scroll, top opens the menu, left and right step sections, bottom shares, centre goes home."
+        aria-label="Click wheel. Rotate to scroll, top opens the menu, left and right step sections, bottom plays, centre goes home."
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={endDrag}
@@ -156,9 +156,9 @@ export default function ClickWheel({ size = 132, onRotate, onMenu, onPrev, onNex
 
         <span
           className="absolute bottom-[8px] left-1/2 flex -translate-x-1/2 items-center transition-transform"
-          style={{ color: ink(pressed === "share"), transform: pressed === "share" ? "translateX(-50%) scale(0.9)" : undefined }}
+          style={{ color: ink(pressed === "play"), transform: pressed === "play" ? "translateX(-50%) scale(0.9)" : undefined }}
         >
-          <Share2 className="h-[13px] w-[13px]" />
+          {playing ? <Pause className="h-[12px] w-[12px]" /> : <Play className="h-[13px] w-[13px]" />}
         </span>
 
         {/* The finger, while the ring is being turned */}

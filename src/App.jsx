@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HandheldShell from '@/components/handheld/HandheldShell';
+import AppSplash from '@/components/core/AppSplash';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
@@ -310,6 +311,8 @@ function App() {
         <QueryClientProvider client={queryClientInstance}>
           <Router>
             <NavigationTracker />
+            {/* The title card plays once per session, over everything */}
+            <AppSplash />
             <AuthenticatedApp />
           </Router>
           <Toaster />

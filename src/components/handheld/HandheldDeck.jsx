@@ -11,11 +11,12 @@ import HandheldBoot from "./HandheldBoot";
 import ModuleRail from "./ModuleRail";
 import useHandheldDestinations from "./useHandheldDestinations";
 import useModuleNavigation, { getStage } from "./useModuleNavigation";
-import { useHandheldDeck } from "./handheldDeck";
+import { useHandheldDeck, getDeck } from "./handheldDeck";
 import HandheldNotifications from "./HandheldNotifications";
 import { surfaceLabel } from "./handheldDestinations";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
+import { openingPlaysNow } from "@/components/core/appOpening";
 
 // Chrome the device occupies: the shell lip above the glass, the brand bar that
 // lives inside the glass, and the control chin below. index.css consumes these
@@ -29,8 +30,8 @@ const BOOT_KEY = "top100-handheld-booted";
 // The handheld. One body: a masthead bezel, a viewer the content renders in,
 // and a chin carrying the click wheel, the face-button diamond and the grille.
 // The wheel does it all — rotation scrolls the picture or walks the cartridge
-// menu, MENU opens it, back and forward step the page's modules, share hands the
-// surface to the device's own share drawer, and the centre goes home.
+// menu, MENU opens it, back and forward step the page's modules, the bottom key
+// plays the page down the glass, and the centre goes home. Sharing sits on Y.
 export default function HandheldDeck() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,8 +42,12 @@ export default function HandheldDeck() {
   const [cursor, setCursor] = useState(0);
   const menuOpen = menuMode !== null;
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const [flash, setFlash] = useState("");
   const [booting, setBooting] = useState(() => {
+    // The app-wide title card is the power-on when it plays; the console's own
+    // sequence only runs on a load that has already had its opening.
+    if (openingPlaysNow()) return false;
     try {
       return sessionStorage.getItem(BOOT_KEY) !== "1";
     } catch {
@@ -112,6 +117,42 @@ export default function HandheldDeck() {
   }, []);
 
   useEffect(() => () => clearTimeout(flashTimer.current), []);
+
+  // The read-along: the wheel's play zone walks the page down the glass until
+  // the bottom arrives or the reader takes over.
+  useEffect(() => {
+    if (!playing) return undefined;
+    let frame = 0;
+    const advance = () => {
+      const deckApi = getDeck();
+      if (deckApi) {
+        if (deckApi.atEnd()) {
+          if (deckApi.index() >= deckApi.count() - 1) {
+            setPlaying(false);
+            return;
+          }
+          deckApi.next();
+        } else {
+          deckApi.scrollBy(1);
+        }
+        frame = requestAnimationFrame(advance);
+        return;
+      }
+      const stage = getStage();
+      if (!stage) {
+        setPlaying(false);
+        return;
+      }
+      if (stage.scrollTop >= stage.scrollHeight - stage.clientHeight - 1) {
+        setPlaying(false);
+        return;
+      }
+      stage.scrollTop += 1;
+      frame = requestAnimationFrame(advance);
+    };
+    frame = requestAnimationFrame(advance);
+    return () => cancelAnimationFrame(frame);
+  }, [playing]);
 
   const announce = useCallback((label) => {
     if (!label) return;
@@ -291,8 +332,18 @@ export default function HandheldDeck() {
     [deck, nav, announce],
   );
 
-  // The share key: hands whatever the glass is holding to the device's own share
-  // drawer, so a profile or a cartridge leaves the console as a link.
+  // The bottom of the ring: the page reads itself down the glass, and the same
+  // key stops it.
+  const togglePlay = useCallback(() => {
+    if (menuOpen || booting) return;
+    blip("toggle");
+    buzz();
+    setPlaying((prev) => !prev);
+    announce(playing ? "Paused" : "Reading");
+  }, [menuOpen, booting, playing, announce]);
+
+  // Y: hands whatever the glass is holding to the device's own share drawer, so
+  // a profile or a cartridge leaves the console as a link.
   const share = useCallback(async () => {
     if (menuOpen || booting) return;
     blip("toggle");
@@ -464,7 +515,8 @@ export default function HandheldDeck() {
               onMenu={toggleMenu}
               onPrev={() => stepSection(-1)}
               onNext={() => stepSection(1)}
-              onShare={menuOpen ? null : share}
+              playing={playing}
+              onPlay={menuOpen ? null : togglePlay}
               onHome={goHome}
             />
           </div>
@@ -472,8 +524,8 @@ export default function HandheldDeck() {
           <FaceButtons
             onConfirm={select}
             onBack={back}
-            onPrev={openSections}
-            onNext={openMenu}
+            onSections={openSections}
+            onShare={share}
           />
         </div>
 
