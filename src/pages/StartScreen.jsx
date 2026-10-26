@@ -89,7 +89,7 @@ export default function StartScreen() {
             className="mt-3 h-px w-32 md:w-56"
             style={{ background: 'linear-gradient(90deg, #B87333, #C9A87C 58%, transparent)' }}
           />
-          <h1 className="mt-3 font-heading text-[2.05rem] leading-[1.02] text-editorial-cream md:text-7xl">
+          <h1 className="mt-2.5 font-heading text-[2.35rem] leading-[1.0] text-editorial-cream md:mt-3 md:text-7xl">
             TOP 100
           </h1>
           <p className="mt-1.5 text-[9px] font-bold uppercase tracking-[0.34em] text-editorial-cream/60 md:text-[11px]">
@@ -98,7 +98,7 @@ export default function StartScreen() {
 
           {/* The cycle, read once: the countdown to voting close, straight off the
               season record, so it matches the board and the masthead */}
-          <div className="mt-3 flex items-center gap-2 text-[9px] tracking-[0.06em] text-editorial-cream/55 md:text-[11px]">
+          <div className="mt-2.5 flex items-center gap-2 text-[9px] tracking-[0.06em] text-editorial-cream/55 md:mt-3 md:text-[11px]">
             {status.loading ? (
               <span className="text-editorial-cream/45">Reading the season…</span>
             ) : status.failed ? (
@@ -120,11 +120,13 @@ export default function StartScreen() {
           </div>
         </div>
 
-        <div className="mt-4 flex min-h-0 flex-1 flex-col md:mt-8">
+        {/* The keys take everything left over: two across, three down on a phone,
+            so the glass is worked end to end instead of trailing into dead space */}
+        <div className="mt-3 flex min-h-0 flex-1 flex-col md:mt-8">
           <p className="mb-1 shrink-0 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/40">
             Select a surface
           </p>
-          <div className="grid min-h-0 flex-1 auto-rows-min grid-cols-3 gap-2 overflow-y-auto">
+          <div className="grid min-h-0 flex-1 grid-cols-2 grid-rows-3 auto-rows-min gap-2 overflow-y-auto md:grid-cols-3 md:grid-rows-none">
             {START_MENU.map((item) => (
               <StartMenuItem key={item.label} item={item} />
             ))}

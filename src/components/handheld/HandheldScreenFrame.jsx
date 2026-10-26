@@ -33,9 +33,10 @@ export default function HandheldScreenFrame() {
       <span className="hh-screw rounded-full" style={{ ...SCREW, bottom: 4, left: 4 }} />
       <span className="hh-screw rounded-full" style={{ ...SCREW, bottom: 4, right: 4 }} />
 
-      {/* The pane, over the bar and the picture alike */}
+      {/* The pane, over the picture — the rim is 20, the recess 17 and the pane
+          14, so the three steps nest the way one moulding does */}
       <div
-        className="hh-glass absolute overflow-hidden rounded-[12px]"
+        className="hh-glass absolute overflow-hidden rounded-[14px]"
         style={{ inset: "var(--hh-bezel-w, 18px)" }}
       />
     </div>
