@@ -1,17 +1,16 @@
-import { Award, BadgeCheck, BookOpen, Compass, LayoutGrid, Trophy, Users } from "lucide-react";
+import { Award, BadgeCheck, BookOpen, LayoutGrid, Trophy, Users } from "lucide-react";
 
-// The start screen: the platform as a title screen, seven surfaces deep, in the
-// order a Fellow meets them. The dashboard is the map; everything else is one
-// step off it. Every row routes to a surface that already exists — the start
-// screen holds the menu, the surfaces hold the work.
+// The start screen: the platform as a title screen, six surfaces, in the order a
+// Fellow meets them. The dashboard is the map; everything else is one step off
+// it. Every tile routes to a surface that already exists — the start screen
+// holds the menu, the surfaces hold the work.
 export const START_MENU = [
   { index: "01", label: "Dashboard", to: "/board", icon: LayoutGrid },
   { index: "02", label: "Selection Committee", to: "/selection-committee", icon: Award },
   { index: "03", label: "Mission Briefing", to: "/mission-briefing", icon: BookOpen },
   { index: "04", label: "Networking", to: "/networking", icon: Users },
   { index: "05", label: "The Publication", to: "/Top100Women2025", icon: Trophy },
-  { index: "06", label: "Global Intelligence", to: "/GlobalIntelligence", icon: Compass },
-  { index: "07", label: "Membership", to: "/Membership", icon: BadgeCheck },
+  { index: "06", label: "Membership", to: "/Membership", icon: BadgeCheck },
 ];
 
 export const START_LOGO =

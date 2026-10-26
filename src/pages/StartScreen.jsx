@@ -49,10 +49,13 @@ export default function StartScreen() {
   const stamp = moment().format('ddd D MMM · HH:mm');
 
   return (
-    <div
-      className="hh-slide-window relative flex flex-col overflow-hidden px-5 pb-10 pt-5 md:h-auto md:min-h-screen md:px-16 md:pb-14 md:pt-14"
-      style={{ background: phase.sky }}
-    >
+    <div className="hh-slide-window relative flex flex-col p-1.5 md:block md:h-auto md:min-h-screen md:p-0">
+      {/* The picture plane sits inside the glass with its own corner radius and a
+          hair of clearance, so no edge of it can run under the moulding. */}
+      <div
+        className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[14px] px-5 pb-7 pt-5 md:min-h-screen md:rounded-none md:px-16 md:pb-14 md:pt-14"
+        style={{ background: phase.sky }}
+      >
       {/* The hour's weather, the same sky the title card opened on */}
       <div className="pointer-events-none absolute inset-0" style={{ background: phase.glow }} />
       <div
@@ -119,7 +122,7 @@ export default function StartScreen() {
           <p className="mb-1 shrink-0 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/40">
             Select a surface
           </p>
-          <div className="-mr-2 min-h-0 flex-1 overflow-y-auto pr-2 md:overflow-visible">
+          <div className="grid min-h-0 flex-1 auto-rows-min grid-cols-2 gap-2 overflow-y-auto md:grid-cols-3">
             {START_MENU.map((item) => (
               <StartMenuItem key={item.label} item={item} />
             ))}
@@ -133,10 +136,11 @@ export default function StartScreen() {
         </div>
       </div>
 
-      {/* Desktop navigation under the title screen. */}
-      <div className="hidden md:block">
-        <div className="h-20" />
-        <HomeDock />
+        {/* Desktop navigation under the title screen. */}
+        <div className="hidden md:block">
+          <div className="h-20" />
+          <HomeDock />
+        </div>
       </div>
     </div>
   );
