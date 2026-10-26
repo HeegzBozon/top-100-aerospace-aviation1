@@ -1,40 +1,55 @@
 import { Volume2, VolumeX } from "lucide-react";
 
-// The mobile masthead, rebuilt as the console's top bezel: brand lockup, the
-// surface you are currently holding, and the sound latch. Every other control
-// lives on the wheel below.
+// The brand bar. It is not a website header — it is the top strip of the glass:
+// the lockup, the surface you are holding (and the module inside it), and the
+// sound latch, all drawn behind the same pane as the picture. Every tone comes
+// from the active finish, so it changes with the hardware.
 export const HANDHELD_LOGO =
   "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png";
 
-export default function HandheldMasthead({ surface, soundOn, onToggleSound }) {
+export default function HandheldMasthead({ surface, module, soundOn, onToggleSound }) {
   return (
     <header
-      className="fixed left-0 right-0 top-0 z-40 select-none md:hidden"
+      className="hh-bar fixed z-[44] select-none md:hidden"
       style={{
-        paddingTop: "env(safe-area-inset-top)",
-        background: "linear-gradient(180deg, #FBF9F5 0%, #F1EADE 100%)",
-        borderBottom: "1px solid rgba(184,115,51,0.42)",
-        boxShadow: "0 2px 8px rgba(30,58,90,0.10)",
+        left: 7,
+        right: 7,
+        top: "calc(var(--hh-top, 12px) + env(safe-area-inset-top))",
+        height: "var(--hh-bar, 52px)",
       }}
     >
-      <div className="flex h-[54px] items-center gap-2.5 px-3.5">
-        <img src={HANDHELD_LOGO} alt="" className="h-[26px] w-[26px] shrink-0 object-contain" />
+      <div className="flex h-full items-center gap-2.5 px-3">
+        <img
+          src={HANDHELD_LOGO}
+          alt=""
+          className="h-[26px] w-[26px] shrink-0 object-contain"
+        />
 
         <div className="min-w-0 flex-1 leading-none">
-          <p className="truncate text-[9.5px] font-bold uppercase tracking-[0.2em] text-[#1E3A5A]">
+          <p
+            className="hh-engrave truncate text-[9.5px] font-bold uppercase tracking-[0.2em]"
+            style={{ color: "var(--hh-ink)" }}
+          >
             TOP 100 Aerospace &amp; Aviation
           </p>
-          <p className="mt-[5px] flex items-center gap-1.5 truncate text-[7px] font-bold uppercase tracking-[0.24em] text-[#B87333]">
-            <span className="hh-led h-[5px] w-[5px] shrink-0 rounded-full bg-[#2ED573]" />
-            {surface}
+          <p
+            className="mt-[5px] flex items-center gap-1.5 truncate text-[7px] font-bold uppercase tracking-[0.24em]"
+            style={{ color: "var(--hh-metal)" }}
+          >
+            <span className="hh-led h-[5px] w-[5px] shrink-0 rounded-full" style={{ background: "var(--hh-led)" }} />
+            <span className="truncate">
+              {surface}
+              {module ? ` · ${module}` : ""}
+            </span>
           </p>
         </div>
 
         <button
           type="button"
           onClick={onToggleSound}
-          aria-label={soundOn ? "Turn sound off" : "Turn sound on"}
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#1E3A5A]/60 transition-colors active:bg-[#1E3A5A]/10"
+          aria-label={soundOn ? "Sound off" : "Sound on"}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors active:bg-[rgb(var(--hh-ink-rgb)/0.10)]"
+          style={{ color: "var(--hh-ink-soft)" }}
         >
           {soundOn ? <Volume2 className="h-[15px] w-[15px]" /> : <VolumeX className="h-[15px] w-[15px]" />}
         </button>

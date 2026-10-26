@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { Palette } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
 import HandheldMasthead from "./HandheldMasthead";
@@ -12,12 +13,14 @@ import useHandheldDestinations from "./useHandheldDestinations";
 import useModuleNavigation, { getStage } from "./useModuleNavigation";
 import { useHandheldDeck, getDeck } from "./handheldDeck";
 import { surfaceLabel } from "./handheldDestinations";
+import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
 
-// Chrome the device occupies: the masthead plus the viewer's status line above,
-// and the control chin below. index.css consumes these to inset every surface,
-// so nothing is ever hidden behind the hardware.
-export const HANDHELD_TOP_CLEARANCE = 82;
+// Chrome the device occupies: the shell lip above the glass, the brand bar that
+// lives inside the glass, and the control chin below. index.css consumes these
+// to inset every surface, so nothing is ever hidden behind the hardware.
+export const HANDHELD_TOP_CLEARANCE = 12;
+export const HANDHELD_BAR_CLEARANCE = 52;
 export const HANDHELD_DECK_CLEARANCE = 176;
 
 const BOOT_KEY = "top100-handheld-booted";
@@ -46,7 +49,28 @@ export default function HandheldDeck() {
     }
   });
 
-  const flat = useMemo(() => groups.flatMap((group) => group.items), [groups]);
+  const { finishKey, finish, finishes, chooseFinish } = useHandheldFinish();
+
+  // The finish is hardware, so it lives on the menu beside the cartridges —
+  // a drawer of mouldings, not a preference buried in a page.
+  const finishItems = useMemo(
+    () => finishes.map((option) => ({ label: option.label, finishKey: option.key, swatch: option.swatch })),
+    [finishes],
+  );
+
+  const menuGroups = useMemo(
+    () => [
+      ...groups,
+      {
+        key: "hardware",
+        label: "Hardware",
+        items: [{ label: `Finish · ${finish.label}`, action: "finish", icon: Palette }],
+      },
+    ],
+    [groups, finish.label],
+  );
+
+  const flat = useMemo(() => menuGroups.flatMap((group) => group.items), [menuGroups]);
   const locationKey = `${location.pathname}${location.search}`;
   const surface = useMemo(() => surfaceLabel(location, groups), [location, groups]);
 
@@ -65,15 +89,23 @@ export default function HandheldDeck() {
     to: i === moduleIndex ? locationKey : undefined,
   }));
 
+  // What the wheel walks, per drawer it happens to be in.
+  const listFor = useCallback(
+    (mode) => (mode === "sections" ? sectionItems : mode === "finish" ? finishItems : flat),
+    [sectionItems, finishItems, flat],
+  );
+
   // Reserve the hardware's space, and hand it back when the console is put away.
   useEffect(() => {
     document.body.classList.add("hh-shell");
     const root = document.documentElement.style;
     root.setProperty("--hh-top", `${HANDHELD_TOP_CLEARANCE}px`);
+    root.setProperty("--hh-bar", `${HANDHELD_BAR_CLEARANCE}px`);
     root.setProperty("--hh-bottom", `${HANDHELD_DECK_CLEARANCE}px`);
     return () => {
       document.body.classList.remove("hh-shell");
       root.setProperty("--hh-top", "0px");
+      root.setProperty("--hh-bar", "0px");
       root.setProperty("--hh-bottom", "0px");
     };
   }, []);
@@ -140,6 +172,12 @@ export default function HandheldDeck() {
       setMenuMode(null);
       setPlaying(false);
 
+      // Not a cartridge: the hardware drawer opens where you stand.
+      if (destination.action === "finish") {
+        setCursor(Math.max(0, finishItems.findIndex((item) => item.finishKey === finishKey)));
+        setMenuMode("finish");
+        return;
+      }
       if (destination.action === "signin") return base44.auth.redirectToLogin(window.location.href);
       if (destination.action === "logout") return base44.auth.logout(`${window.location.origin}/`);
       if (destination.href) {
@@ -148,7 +186,7 @@ export default function HandheldDeck() {
       }
       if (destination.to) navigate(destination.to);
     },
-    [navigate],
+    [navigate, finishItems, finishKey],
   );
 
   const openMenu = useCallback(() => {
@@ -201,7 +239,7 @@ export default function HandheldDeck() {
       finishBoot();
       setPlaying(false);
       if (menuOpen) {
-        const list = menuMode === "sections" ? sectionItems : flat;
+        const list = listFor(menuMode);
         if (!list.length) return;
         setCursor((prev) => (prev + step + list.length) % list.length);
         return;
@@ -215,14 +253,14 @@ export default function HandheldDeck() {
       if (stage && stage.scrollHeight > stage.clientHeight + 4) stage.scrollTop += delta;
       else window.scrollBy(0, delta);
     },
-    [menuOpen, menuMode, sectionItems, flat, deck, finishBoot],
+    [menuOpen, menuMode, listFor, deck, finishBoot],
   );
 
   const jumpGroup = useCallback(
     (step) => {
       const starts = [];
       let running = 0;
-      groups.forEach((group) => {
+      menuGroups.forEach((group) => {
         starts.push(running);
         running += group.items.length;
       });
@@ -232,7 +270,7 @@ export default function HandheldDeck() {
       setCursor(starts[nextGroup]);
       blip("move");
     },
-    [groups, cursor],
+    [menuGroups, cursor],
   );
 
   // Back and forward on the ring: step a module where the surface declares any,
@@ -242,8 +280,9 @@ export default function HandheldDeck() {
       finishBoot();
       setPlaying(false);
       if (menuOpen) {
-        if (menuMode === "sections") {
-          setCursor((prev) => Math.max(0, Math.min(sectionItems.length - 1, prev + direction)));
+        if (menuMode === "sections" || menuMode === "finish") {
+          const list = listFor(menuMode);
+          setCursor((prev) => Math.max(0, Math.min(list.length - 1, prev + direction)));
           return;
         }
         return jumpGroup(direction);
@@ -273,7 +312,7 @@ export default function HandheldDeck() {
       }
       blip("back");
     },
-    [menuOpen, menuMode, sectionItems.length, jumpGroup, deck, nav, finishBoot, announce],
+    [menuOpen, menuMode, listFor, jumpGroup, deck, nav, finishBoot, announce],
   );
 
   const jumpToModule = useCallback(
@@ -306,11 +345,21 @@ export default function HandheldDeck() {
       if (item) jumpToModule(item.sectionIndex);
       return;
     }
+    if (menuMode === "finish") {
+      const item = finishItems[cursor];
+      if (item) {
+        chooseFinish(item.finishKey);
+        blip("toggle");
+        buzz();
+        announce(`Finish · ${item.label}`);
+      }
+      return;
+    }
     if (!menuOpen) return openMenu();
     const item = flat[cursor];
     if (item) go(item);
     else closeMenu();
-  }, [finishBoot, menuMode, sectionItems, cursor, jumpToModule, menuOpen, openMenu, flat, go, closeMenu]);
+  }, [finishBoot, menuMode, sectionItems, finishItems, cursor, jumpToModule, chooseFinish, announce, menuOpen, openMenu, flat, go, closeMenu]);
 
   const back = useCallback(() => {
     blip("back");
@@ -331,9 +380,14 @@ export default function HandheldDeck() {
 
   return (
     <>
-      <HandheldMasthead surface={surface} soundOn={soundOn} onToggleSound={toggleSound} />
+      <HandheldMasthead
+        surface={surface}
+        module={modules[moduleIndex]?.label}
+        soundOn={soundOn}
+        onToggleSound={toggleSound}
+      />
 
-      <HandheldScreenFrame surface={surface} module={modules[moduleIndex]?.label} />
+      <HandheldScreenFrame />
 
       <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
 
@@ -360,45 +414,40 @@ export default function HandheldDeck() {
           groups={
             menuMode === "sections"
               ? [{ key: "sections", label: "On this surface", items: sectionItems }]
-              : groups
+              : menuMode === "finish"
+                ? [{ key: "finish", label: "Hardware finish", items: finishItems }]
+                : menuGroups
           }
           cursor={cursor}
           locationKey={locationKey}
-          unit={menuMode === "sections" ? "sections" : "cartridges"}
-          hint={menuMode === "sections" ? "◀▶ Move · ● Go · B Back" : undefined}
+          unit={menuMode === "sections" ? "sections" : menuMode === "finish" ? "finishes" : "cartridges"}
+          hint={
+            menuMode === "sections"
+              ? "◀▶ Move · ● Go · B Back"
+              : menuMode === "finish"
+                ? "◀▶ Move · ● Apply · B Back"
+                : undefined
+          }
           onActivate={(item) => {
+            if (menuMode === "finish") return select();
             if (menuMode !== "sections") return go(item);
             setMenuMode(null);
             jumpToModule(item.sectionIndex);
           }}
-          onJump={() => jumpGroup(1)}
+          onJump={menuMode === "cartridges" ? () => jumpGroup(1) : null}
           onClose={closeMenu}
         />
       )}
 
       <nav
         aria-label="Handheld console controls"
-        className="fixed bottom-0 left-0 right-0 z-40 select-none md:hidden"
-        style={{
-          paddingBottom: "env(safe-area-inset-bottom)",
-          background: "linear-gradient(180deg, #F7F1E7 0%, #EDE4D6 58%, #DCD0BA 100%)",
-          borderTop: "1px solid rgba(184,115,51,0.5)",
-          boxShadow: "0 -12px 28px rgba(30,58,90,0.22), inset 0 1px 0 rgba(255,255,255,0.9)",
-        }}
+        className="hh-body hh-grain fixed bottom-0 left-0 right-0 z-40 select-none md:hidden"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="flex items-center gap-3 px-4 pt-3">
           {/* Speaker grille — a punched dot matrix, and the left block that
               balances the face buttons so the wheel sits dead centre */}
-          <div
-            className="h-[76px] w-[76px] shrink-0 rounded-[14px]"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 50% 50%, rgba(184,115,51,0.55) 1px, rgba(184,115,51,0) 1.7px)",
-              backgroundSize: "9px 9px",
-              backgroundPosition: "4px 4px",
-              boxShadow: "inset 0 1px 1px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(30,58,90,0.12)",
-            }}
-          />
+          <div className="hh-grille h-[76px] w-[76px] shrink-0 rounded-[14px]" />
 
           <div className="flex min-w-0 flex-1 justify-center">
             <ClickWheel
@@ -421,19 +470,37 @@ export default function HandheldDeck() {
           />
         </div>
 
-        {/* The chin seam and the model strip */}
+        {/* The chin seam, the case screws and the model strip */}
         <div
-          className="mt-1.5 flex items-center justify-between px-4 pb-1 pt-1.5"
-          style={{ borderTop: "1px solid rgba(30,58,90,0.10)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.7)" }}
+          className="hh-engrave mt-1.5 flex items-center justify-between gap-2 px-4 pb-1 pt-1.5"
+          style={{
+            borderTop: "1px solid rgb(var(--hh-ink-rgb) / 0.12)",
+            boxShadow: "inset 0 1px 0 var(--hh-shell-spec)",
+          }}
         >
-          <span className="text-[7px] font-bold uppercase tracking-[0.3em] text-[#1E3A5A]/35">HW-88</span>
-          <span className="flex items-center gap-[4px]">
-            <span className="h-[3px] w-[3px] rounded-full bg-[#B87333]/35" />
-            <span className="h-[3px] w-[3px] rounded-full bg-[#B87333]/35" />
-            <span className="h-[3px] w-[3px] rounded-full bg-[#B87333]/35" />
+          <span
+            className="flex items-center gap-1.5 text-[7px] font-bold uppercase tracking-[0.26em]"
+            style={{ color: "var(--hh-ink-soft)" }}
+          >
+            <span className="hh-screw h-[7px] w-[7px] rounded-full" />
+            HW-88
           </span>
-          <span className="text-[7px] font-bold uppercase tracking-[0.3em] text-[#1E3A5A]/35">
+
+          <span
+            className="flex min-w-0 items-center gap-1.5 text-[7px] font-bold uppercase tracking-[0.26em]"
+            style={{ color: "var(--hh-metal)" }}
+          >
+            <span className="h-[3px] w-[3px] shrink-0 rounded-full" style={{ background: "rgb(var(--hh-metal-rgb) / 0.5)" }} />
+            <span className="truncate">{finish.label}</span>
+            <span className="h-[3px] w-[3px] shrink-0 rounded-full" style={{ background: "rgb(var(--hh-metal-rgb) / 0.5)" }} />
+          </span>
+
+          <span
+            className="flex items-center gap-1.5 text-[7px] font-bold uppercase tracking-[0.26em]"
+            style={{ color: "var(--hh-ink-soft)" }}
+          >
             {isSignedIn ? "Fellow" : "Visitor"}
+            <span className="hh-screw h-[7px] w-[7px] rounded-full" />
           </span>
         </div>
       </nav>

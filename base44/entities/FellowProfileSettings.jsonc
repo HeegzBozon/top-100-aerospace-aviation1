@@ -28,6 +28,10 @@
       "type": "string",
       "description": "Key of a cover from the verified asset library. No user upload."
     },
+    "hardware_finish": {
+      "type": "string",
+      "description": "Key of the curated hardware finish the Fellow has put on their handheld console (one of the approved finish set). Curated choice, never a free-form colour. Display only; never read by discovery, ranking, or scoring."
+    },
     "module_order": {
       "type": "array",
       "items": {

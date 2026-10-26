@@ -36,7 +36,7 @@ const zoneAt = (deg) => {
   return deg > 0 ? "next" : "prev";
 };
 
-const ink = (active) => (active ? "#B87333" : "rgba(30,58,90,0.52)");
+const ink = (active) => (active ? "var(--hh-metal)" : "var(--hh-key-ink-soft)");
 
 // The click wheel, as the hardware really is: a fixed ivory ring with four
 // actions printed on it — MENU, back, forward, play — a pressable centre, and
@@ -136,12 +136,7 @@ export default function ClickWheel({ size = 132, playing, onRotate, onMenu, onPr
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
         onKeyDown={handleKey}
-        className="absolute inset-0 rounded-full outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-[#B87333]/70"
-        style={{
-          background: "linear-gradient(180deg, #FDFCFA 0%, #F5F0E7 55%, #E7DECE 100%)",
-          boxShadow:
-            "inset 0 1px 1px rgba(255,255,255,1), inset 0 -2px 7px rgba(30,58,90,0.16), 0 5px 12px rgba(7,17,31,0.30)",
-        }}
+        className="hh-key absolute inset-0 rounded-full outline-none ring-offset-2"
       >
         <span
           className="absolute left-1/2 top-[8px] -translate-x-1/2 text-[8px] font-extrabold uppercase tracking-[0.16em] transition-transform"
@@ -170,7 +165,10 @@ export default function ClickWheel({ size = 132, playing, onRotate, onMenu, onPr
         <span
           ref={dotRef}
           className="pointer-events-none absolute h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 transition-opacity duration-150"
-          style={{ background: "#B87333", boxShadow: "0 0 6px rgba(184,115,51,0.8)" }}
+          style={{
+            background: "var(--hh-metal)",
+            boxShadow: "0 0 6px rgb(var(--hh-metal-rgb) / 0.8)",
+          }}
         />
       </div>
 
@@ -179,14 +177,9 @@ export default function ClickWheel({ size = 132, playing, onRotate, onMenu, onPr
         type="button"
         onClick={onHome}
         aria-label="Home"
-        className="absolute left-1/2 top-1/2 flex h-[52px] w-[52px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-transform active:scale-95"
-        style={{
-          background: "radial-gradient(circle at 50% 30%, #FFFFFF 0%, #F4EFE6 62%, #E3D9C8 100%)",
-          boxShadow:
-            "0 0 0 1px rgba(30,58,90,0.13), 0 2px 6px rgba(30,58,90,0.22), inset 0 -2px 4px rgba(30,58,90,0.08), inset 0 1px 0 rgba(255,255,255,0.95)",
-        }}
+        className="hh-key-center absolute left-1/2 top-1/2 flex h-[52px] w-[52px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-transform active:scale-95"
       >
-        <Home className="h-[15px] w-[15px]" style={{ color: "rgba(184,115,51,0.55)" }} />
+        <Home className="h-[15px] w-[15px]" style={{ color: "var(--hh-key-ink)" }} />
       </button>
     </div>
   );

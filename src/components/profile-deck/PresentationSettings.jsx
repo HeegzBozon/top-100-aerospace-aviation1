@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ChevronUp, ChevronDown, Eye, EyeOff, X, Repeat, Square, Hand, Clock } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
+import useHandheldFinish from '@/components/handheld/useHandheldFinish';
 import {
   CONFIGURABLE_SLIDES,
   AUTOPLAY_MODES,
@@ -31,6 +32,7 @@ export default function PresentationSettings({ settings, accent, onChange, onClo
   });
 
   const [hidden, setHidden] = useState(() => new Set(settings?.slide_hidden || []));
+  const { finishKey, finishes, chooseFinish } = useHandheldFinish();
   const [mode, setMode] = useState(settings?.autoplay_mode || 'manual');
   const [dwell, setDwell] = useState(settings?.dwell_seconds || DEFAULT_DWELL);
 
@@ -135,6 +137,39 @@ export default function PresentationSettings({ settings, accent, onChange, onClo
                 );
               })}
             </div>
+          </div>
+
+          {/* Handheld finish — the hardware a Fellow carries */}
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: B.muted }}>Handheld finish</p>
+            <div className="grid grid-cols-2 gap-2">
+              {finishes.map((option) => {
+                const selected = option.key === finishKey;
+                return (
+                  <button
+                    key={option.key}
+                    onClick={() => chooseFinish(option.key)}
+                    className="flex items-center gap-2.5 p-3 rounded-xl text-left transition-all border-2"
+                    style={{ background: selected ? `${accent}08` : '#fff', borderColor: selected ? accent : B.border }}
+                  >
+                    <span className="flex shrink-0 gap-[3px]">
+                      {option.swatch.map((tone) => (
+                        <span
+                          key={tone}
+                          className="w-3.5 h-3.5 rounded-full"
+                          style={{ background: tone, boxShadow: 'inset 0 0 0 1px rgba(7,17,31,0.22)' }}
+                        />
+                      ))}
+                    </span>
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-[12px] font-semibold leading-tight" style={{ color: B.navy }}>{option.label}</span>
+                      <span className="block text-[10px] leading-tight" style={{ color: B.muted }}>{option.note}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[10px] mt-2" style={{ color: B.muted }}>Sets the console you carry. Saved to your account, and remembered on this device.</p>
           </div>
 
           {/* Dwell time */}

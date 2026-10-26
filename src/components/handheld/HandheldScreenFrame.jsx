@@ -1,43 +1,22 @@
-// The viewer. A recessed LCD well drawn exactly around the picture window: the
-// bezel ring sits in the margin outside the content, a status line caps the top,
-// and the glass (scanlines, vignette, sheen) lies over the content alone.
-export default function HandheldScreenFrame({ surface, module }) {
+// The viewer. A recessed LCD well drawn exactly around the glass: the moulded
+// bezel ring sits in the margin, the brand bar caps the top strip of the glass,
+// and the pane — scanlines, vignette, sheen — lies over everything inside it,
+// the bar included. That is what makes the whole screen read as one display.
+export default function HandheldScreenFrame() {
   return (
     <div
-      className="pointer-events-none fixed left-0 right-0 z-30 md:hidden"
+      className="pointer-events-none fixed left-0 right-0 z-[47] md:hidden"
       style={{
-        top: "calc(54px + env(safe-area-inset-top))",
+        top: "calc(var(--hh-top, 12px) + env(safe-area-inset-top))",
         bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom))",
       }}
       aria-hidden="true"
     >
-      {/* Bezel ring — outside the picture, so nothing crosses it */}
-      <div
-        className="absolute inset-0 rounded-[16px]"
-        style={{
-          boxShadow:
-            "inset 0 0 0 2px rgba(30,58,90,0.62), inset 0 0 0 3px rgba(250,248,245,0.35), inset 0 5px 18px rgba(7,17,31,0.32)",
-        }}
-      />
+      {/* The moulding: a recessed well with a lit inner lip */}
+      <div className="hh-well absolute inset-0 rounded-[16px]" />
 
-      {/* Status line — caps the well, above the picture */}
-      <div
-        className="absolute left-[7px] right-[7px] top-[5px] flex h-[22px] items-center justify-between gap-3 rounded-t-[12px] px-2.5"
-        style={{
-          background: "linear-gradient(180deg, rgba(7,17,31,0.90), rgba(7,17,31,0.62))",
-        }}
-      >
-        <span className="flex min-w-0 items-center gap-1.5 text-[7px] font-bold uppercase tracking-[0.24em] text-[#C9A87C]">
-          <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-[#2ED573]" />
-          <span className="truncate">{surface}</span>
-        </span>
-        <span className="shrink-0 truncate text-[7px] font-bold uppercase tracking-[0.24em] text-[#FAF8F5]/55">
-          {module || "Wheel · A"}
-        </span>
-      </div>
-
-      {/* Glass — over the picture only */}
-      <div className="hh-glass absolute bottom-[5px] left-[7px] right-[7px] top-[27px] overflow-hidden rounded-b-[12px]" />
+      {/* The pane, over the bar and the picture alike */}
+      <div className="hh-glass absolute bottom-[5px] left-[7px] right-[7px] top-[5px] overflow-hidden rounded-[12px]" />
     </div>
   );
 }

@@ -8,7 +8,7 @@ export default function ModuleRail({ modules, index, onJump }) {
     <div
       className="pointer-events-none fixed right-[9px] z-30 flex w-[16px] flex-col items-center justify-center gap-[3px] md:hidden"
       style={{
-        top: "calc(var(--hh-top, 82px) + env(safe-area-inset-top) + 32px)",
+        top: "calc(var(--hh-top, 12px) + var(--hh-bar, 52px) + env(safe-area-inset-top) + 10px)",
         bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 10px)",
       }}
       aria-hidden="false"
@@ -28,8 +28,13 @@ export default function ModuleRail({ modules, index, onJump }) {
               className="rounded-full transition-all duration-200"
               style={
                 active
-                  ? { width: 5, height: 13, background: "#B87333", boxShadow: "0 0 7px rgba(184,115,51,0.65)" }
-                  : { width: 3, height: 4, background: "rgba(30,58,90,0.30)" }
+                  ? {
+                      width: 5,
+                      height: 13,
+                      background: "var(--hh-metal)",
+                      boxShadow: "0 0 7px rgb(var(--hh-metal-rgb) / 0.65)",
+                    }
+                  : { width: 3, height: 4, background: "var(--hh-ink-soft)" }
               }
             />
           </button>
