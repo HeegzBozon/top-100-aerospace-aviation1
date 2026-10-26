@@ -181,7 +181,7 @@ export default function CheckInColumn({ column, checkIn, user }) {
                         className="mt-1 flex items-center gap-1 text-[7.5px] font-bold uppercase tracking-[0.2em]"
                         style={{ color: BRAND.copper }}
                       >
-                        {SOURCE_LABEL[task.column] || 'Board'}
+                        {SOURCE_LABEL[task.column] || 'Dashboard'}
                         <ArrowRight className="h-[9px] w-[9px] transition-transform group-hover:translate-x-0.5" />
                       </span>
                     </Link>
@@ -205,7 +205,7 @@ export default function CheckInColumn({ column, checkIn, user }) {
             {openSteps.length === 0 ? (
               <div className="rounded-[10px] p-3" style={card}>
                 <p className="text-[11px] leading-snug" style={{ color: BRAND.navy }}>
-                  Onboarding is complete. The board is yours.
+                  Onboarding is complete. The dashboard is yours.
                 </p>
               </div>
             ) : (

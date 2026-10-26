@@ -84,6 +84,7 @@ const OgCardGenerator = lazy(() => import('@/pages/OgCardGenerator'));
 const WomenCollageGenerator = lazy(() => import('@/pages/WomenCollageGenerator'));
 const Top100Women2025DeepLink = lazy(() => import('@/pages/Top100Women2025DeepLink'));
 const TheBoard = lazy(() => import('@/pages/TheBoard'));
+const StartScreen = lazy(() => import('@/pages/StartScreen'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -128,8 +129,9 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* Everything renders inside the device on phones; desktop is untouched. */}
       <Route element={<HandheldShell />}>
-      {/* Logged-in Fellows land on the Board; visitors get the editorial home */}
-      <Route path="/" element={isAuthenticated ? <TheBoard /> : <HomeV3 />} />
+      {/* Fellows open on the start screen; visitors get the editorial home */}
+      <Route path="/" element={isAuthenticated ? <StartScreen /> : <HomeV3 />} />
+      <Route path="/start" element={<StartScreen />} />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />
       <Route path="/onboarding-admin" element={<OnboardingAdmin />} />
@@ -212,6 +214,7 @@ const AuthenticatedApp = () => {
       <Route path="/home-v3" element={<HomeV3 />} />
       {/* The member's map of the platform: four columns across, depth inside each */}
       <Route path="/board" element={<TheBoard />} />
+      <Route path="/dashboard" element={<TheBoard />} />
       <Route path="/the-board" element={<TheBoard />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />

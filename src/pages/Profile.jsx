@@ -398,7 +398,7 @@ export default function Profile() {
 
         <div data-hh-module="Presentation" className="mt-8 flex justify-end gap-4">
           <Link to="/board" className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
-            <LayoutGrid className="w-3 h-3" /> The Board
+            <LayoutGrid className="w-3 h-3" /> Dashboard
           </Link>
           <button onClick={() => setPresentationOpen(true)} className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
             <Settings2 className="w-3 h-3" /> Presentation

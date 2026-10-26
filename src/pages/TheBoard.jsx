@@ -18,7 +18,7 @@ const countOf = (result) =>
 
 const statLine = (value, suffix) => (value === null ? null : `${value} ${suffix}`);
 
-// The Board — the member's map of the platform, laid out as the T: a check-in
+// The Dashboard — the member's map of the platform, laid out as the T: a check-in
 // column for the Fellow's own loop, then four directions across for breadth,
 // each scrollable all the way down for depth. The console's ring crosses the
 // columns; rotation moves inside one.
@@ -114,7 +114,7 @@ export default function TheBoard() {
           className="text-[8px] font-bold uppercase tracking-[0.3em]"
           style={{ color: 'rgba(30,58,90,0.5)' }}
         >
-          Reading the board
+          Reading the dashboard
         </span>
       </div>
     );
@@ -130,10 +130,10 @@ export default function TheBoard() {
           className="text-[8px] font-bold uppercase tracking-[0.3em]"
           style={{ color: BRAND.copper }}
         >
-          The Board
+          Dashboard
         </span>
         <p className="max-w-xs font-heading text-lg" style={{ color: BRAND.navy }}>
-          The board could not be read. Nothing is lost — it will read again.
+          The dashboard could not be read. Nothing is lost — it will read again.
         </p>
         <button
           type="button"
@@ -157,7 +157,7 @@ export default function TheBoard() {
           className="text-[9px] font-bold uppercase tracking-[0.3em]"
           style={{ color: BRAND.copper }}
         >
-          The Board
+          Dashboard
         </p>
         <h1 className="mt-2 font-heading text-3xl" style={{ color: BRAND.navy }}>
           Check in, then four directions across.
