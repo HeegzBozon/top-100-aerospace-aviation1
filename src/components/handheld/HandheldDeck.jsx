@@ -26,6 +26,12 @@ export const HANDHELD_TOP_CLEARANCE = 12;
 export const HANDHELD_BAR_CLEARANCE = 52;
 export const HANDHELD_DECK_CLEARANCE = 176;
 
+// The desk margin: how much surface shows around the shell, on every side. The
+// device sits inside the viewport instead of filling it, so it reads as an
+// object; index.css consumes this for every inset, and the chin is lifted by the
+// same amount so the glass still meets it exactly.
+export const HANDHELD_FRAME_GUTTER = 14;
+
 const BOOT_KEY = "top100-handheld-booted";
 
 // The handheld. One body: a masthead bezel, a viewer the content renders in,
@@ -107,14 +113,16 @@ export default function HandheldDeck() {
   useEffect(() => {
     document.body.classList.add("hh-shell");
     const root = document.documentElement.style;
-    root.setProperty("--hh-top", `${HANDHELD_TOP_CLEARANCE}px`);
+    root.setProperty("--hh-top", `${HANDHELD_TOP_CLEARANCE + HANDHELD_FRAME_GUTTER}px`);
     root.setProperty("--hh-bar", `${HANDHELD_BAR_CLEARANCE}px`);
-    root.setProperty("--hh-bottom", `${HANDHELD_DECK_CLEARANCE}px`);
+    root.setProperty("--hh-bottom", `${HANDHELD_DECK_CLEARANCE + HANDHELD_FRAME_GUTTER}px`);
+    root.setProperty("--hh-frame", `${HANDHELD_FRAME_GUTTER}px`);
     return () => {
       document.body.classList.remove("hh-shell");
       root.setProperty("--hh-top", "0px");
       root.setProperty("--hh-bar", "0px");
       root.setProperty("--hh-bottom", "0px");
+      root.setProperty("--hh-frame", "0px");
     };
   }, []);
 
@@ -500,8 +508,14 @@ export default function HandheldDeck() {
 
       <nav
         aria-label="Handheld console controls"
-        className="hh-body hh-grain fixed bottom-0 left-0 right-0 z-40 select-none md:hidden"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        className="hh-body hh-grain fixed z-40 select-none md:hidden"
+        style={{
+          left: "var(--hh-frame, 0px)",
+          right: "var(--hh-frame, 0px)",
+          bottom: "var(--hh-frame, 0px)",
+          borderRadius: "0 0 20px 20px",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
       >
         <div className="flex items-center gap-3 px-4 pt-3">
           {/* Speaker grille — a punched dot matrix, and the left block that

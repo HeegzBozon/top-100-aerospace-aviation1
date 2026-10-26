@@ -274,6 +274,12 @@ button:focus-visible {
   --hh-bar: 52px;
   --hh-bottom: 176px;
 
+  /* The desk margin. The shell floats inside the viewport with this much
+     surface showing around it, so the device reads as an object; every inset
+     below is measured from it. */
+  --hh-frame: 14px;
+  --hh-glass-inset: calc(var(--hh-frame, 0px) + 7px);
+
   /* Finish tokens — the house finish, until a Fellow changes it (see
      handheldFinishes.js, which overwrites every one of these). */
   --hh-shell-1: #F9F4EA;
@@ -313,8 +319,18 @@ button:focus-visible {
   body.hh-shell #root {
     padding-top: calc(var(--hh-top) + var(--hh-bar) + env(safe-area-inset-top));
     padding-bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
-    padding-left: 7px;
-    padding-right: 7px;
+    padding-left: var(--hh-glass-inset);
+    padding-right: var(--hh-glass-inset);
+  }
+
+  /* The desk. The device is inset inside the viewport, so there is a surface
+     around it: a lamplit navy field the cream shell sits on, which is what makes
+     the shell read as a device rather than a page filling the glass. */
+  body.hh-shell {
+    background:
+      radial-gradient(126% 58% at 50% 0%, rgba(201, 168, 124, 0.20) 0%, rgba(30, 58, 90, 0) 60%),
+      radial-gradient(120% 80% at 50% 104%, #060B16 0%, #0C1526 48%, #16233A 100%),
+      #0C1526;
   }
 }
 
@@ -333,8 +349,8 @@ button:focus-visible {
 /* Bars that ride the bottom of the screen clear the chin instead of covering it. */
 @media (max-width: 767px) {
   body.hh-shell .hh-lift {
-    left: 7px;
-    right: 7px;
+    left: var(--hh-glass-inset);
+    right: var(--hh-glass-inset);
     bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
   }
 }
@@ -351,8 +367,8 @@ button:focus-visible {
 
 .hh-stage {
   position: fixed;
-  left: 7px;
-  right: 7px;
+  left: var(--hh-glass-inset);
+  right: var(--hh-glass-inset);
   top: calc(var(--hh-top) + var(--hh-bar) + env(safe-area-inset-top));
   bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
   overflow-y: auto;
@@ -453,6 +469,7 @@ button:focus-visible {
   border-top: 1px solid var(--hh-shell-edge);
   box-shadow:
     0 -14px 30px rgba(7, 17, 31, 0.24),
+    0 22px 44px rgba(4, 9, 18, 0.52),
     inset 0 1px 0 var(--hh-shell-spec),
     inset 0 -1px 0 rgba(7, 17, 31, 0.18);
 }
@@ -478,6 +495,7 @@ button:focus-visible {
 /* The recessed well the picture sits in. */
 .hh-well {
   box-shadow:
+    0 0 34px rgba(4, 9, 18, 0.42),
     inset 0 0 0 2px var(--hh-bezel),
     inset 0 0 0 3px var(--hh-shell-spec),
     inset 0 6px 20px rgba(7, 17, 31, 0.34),
@@ -544,8 +562,8 @@ button:focus-visible {
 .as-frame {
   position: fixed;
   z-index: 46;
-  left: 7px;
-  right: 7px;
+  left: var(--hh-glass-inset, 7px);
+  right: var(--hh-glass-inset, 7px);
   top: calc(var(--hh-top, 12px) + var(--hh-bar, 52px) + env(safe-area-inset-top) + 5px);
   bottom: calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 5px);
   border-radius: 15px;
@@ -623,12 +641,16 @@ button:focus-visible {
 }
 
 /* Departure: the card gives the frame back to the app. */
+/* The cover lifts. The card does not dissolve away — it turns on its own edge
+   like the front page of a magazine, handing the glass to the surface beneath. */
 .as-depart {
-  animation: as-depart 0.56s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: left center;
+  animation: as-depart 0.72s cubic-bezier(0.34, 0.01, 0.16, 1) forwards;
 }
 @keyframes as-depart {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(1.03); }
+  0% { opacity: 1; transform: perspective(1500px) rotateY(0deg) translateX(0); }
+  55% { opacity: 1; }
+  100% { opacity: 0; transform: perspective(1500px) rotateY(-96deg) translateX(-6%); }
 }
 
 /* The dissolve through the app's own cream, like a projector changing reels. */
@@ -646,6 +668,46 @@ button:focus-visible {
 }
 @keyframes as-out {
   to { opacity: 0; }
+}
+
+/* ===== THE PAGE TURN =====
+   A leaf of paper crosses the picture on every surface change: it whips in over
+   the old page, holds for a beat to hide the swap, then peels off along its own
+   left edge. It is clipped to the glass, so the turn reads as the screen being
+   turned — never the hardware. */
+.page-turn-clip {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  overflow: hidden;
+  pointer-events: none;
+}
+.page-leaf {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform-origin: left center;
+  background: linear-gradient(
+    96deg,
+    rgba(250, 248, 245, 0.99) 0%,
+    rgba(250, 248, 245, 0.94) 46%,
+    rgba(214, 186, 148, 0.72) 72%,
+    rgba(30, 58, 90, 0.34) 100%
+  );
+  box-shadow: -26px 0 50px rgba(7, 17, 31, 0.44), inset 1px 0 0 rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 767px) {
+  .page-turn-clip {
+    left: var(--hh-glass-inset, 7px);
+    right: var(--hh-glass-inset, 7px);
+    top: calc(var(--hh-top, 12px) + var(--hh-bar, 52px) + env(safe-area-inset-top) + 5px);
+    bottom: calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 5px);
+    border-radius: 12px;
+  }
+  .page-leaf {
+    border-radius: 12px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

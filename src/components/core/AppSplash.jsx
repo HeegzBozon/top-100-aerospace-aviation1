@@ -10,7 +10,7 @@ import { hourPhase, isReturningVisitor, markVisit, pickHint, pickLine } from "./
 const LOGO =
   "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png";
 const SEQUENCE_MS = 4400;
-const DEPART_MS = 560;
+const DEPART_MS = 740;
 
 export default function AppSplash() {
   const [phase] = useState(() => hourPhase());

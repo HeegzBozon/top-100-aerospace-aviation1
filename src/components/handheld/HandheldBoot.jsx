@@ -15,8 +15,8 @@ export default function HandheldBoot({ onDone }) {
       aria-label="Skip power-on sequence"
       className="hh-boot fixed z-[46] flex flex-col items-center justify-center gap-3 overflow-hidden rounded-b-[12px] md:hidden"
       style={{
-        left: 7,
-        right: 7,
+        left: "var(--hh-glass-inset, 7px)",
+        right: "var(--hh-glass-inset, 7px)",
         top: "calc(var(--hh-top, 12px) + var(--hh-bar, 52px) + env(safe-area-inset-top))",
         bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom))",
         background: "radial-gradient(120% 100% at 50% 0%, var(--hh-well-1) 0%, var(--hh-well-2) 60%, var(--hh-well-3) 100%)",

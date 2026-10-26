@@ -5,8 +5,10 @@
 export default function HandheldScreenFrame() {
   return (
     <div
-      className="pointer-events-none fixed left-0 right-0 z-[47] md:hidden"
+      className="pointer-events-none fixed z-[47] md:hidden"
       style={{
+        left: "var(--hh-frame, 0px)",
+        right: "var(--hh-frame, 0px)",
         top: "calc(var(--hh-top, 12px) + env(safe-area-inset-top))",
         bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom))",
       }}

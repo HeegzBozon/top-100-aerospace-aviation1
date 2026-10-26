@@ -27,8 +27,8 @@ export default function HandheldMenu({
       style={{
         top: "calc(var(--hh-top, 12px) + var(--hh-bar, 52px) + env(safe-area-inset-top) + 5px)",
         bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 5px)",
-        left: 7,
-        right: 7,
+        left: "var(--hh-glass-inset, 7px)",
+        right: "var(--hh-glass-inset, 7px)",
         borderRadius: 15,
         overflow: "hidden",
         background:

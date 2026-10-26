@@ -35,8 +35,8 @@ export default function HandheldMasthead({
     <header
       className="hh-bar fixed z-[44] select-none md:hidden"
       style={{
-        left: 7,
-        right: 7,
+        left: "var(--hh-glass-inset, 7px)",
+        right: "var(--hh-glass-inset, 7px)",
         top: "calc(var(--hh-top, 12px) + env(safe-area-inset-top))",
         height: "var(--hh-bar, 52px)",
       }}
