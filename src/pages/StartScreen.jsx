@@ -110,11 +110,13 @@ export default function StartScreen() {
   }, [cursorKey, options.length]);
 
   return (
-    <div className="hh-slide-window relative flex flex-col p-1.5 md:block md:h-auto md:min-h-screen md:p-0">
-      {/* The picture plane: the hour's sky, seated a hair inside the glass so no
-          edge of it can run under the moulding. */}
+    <div className="hh-slide-window relative flex flex-col md:block md:h-auto md:min-h-screen">
+      {/* The picture plane: the hour's sky, edge to edge in the glass. The pane's
+          own radius is the only thing that rounds it — nothing is inset, so no
+          strip of the page behind the device shows at the picture's edges and the
+          star field runs the full height of the display. */}
       <div
-        className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[14px] md:min-h-screen md:rounded-none"
+        className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[11px] md:min-h-screen md:rounded-none"
         style={{ background: phase.sky }}
       >
         <StartSky phase={phase} />

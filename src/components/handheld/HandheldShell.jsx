@@ -34,7 +34,9 @@ export default function HandheldShell() {
         <div
           data-handheld-screen="true"
           className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col"
-          style={{ background: "var(--bg, #faf8f5)" }}
+          /* The glass base: the screen's own well tone, so a picture that does not
+             reach an edge reads as the device's depth rather than as paper. */
+          style={{ background: "var(--hh-well-2, #0A1220)" }}
         >
           <div className="flex-1">
             <Outlet />
