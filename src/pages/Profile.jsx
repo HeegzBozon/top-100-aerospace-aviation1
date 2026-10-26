@@ -343,6 +343,7 @@ export default function Profile() {
         </div>
 
         {/* Master instrument cluster — the Bulletin Board. Houses everything below the masthead. */}
+        <div data-hh-module="Bulletin Board">
         <BulletinBoardCluster
           user={user}
           nominee={nominee}
@@ -379,8 +380,9 @@ export default function Profile() {
           clusterSizes={settings?.cluster_tile_sizes}
           onSaveSizes={saveClusterSizes}
         />
+        </div>
 
-        <div className="mt-8 flex justify-end gap-4">
+        <div data-hh-module="Presentation" className="mt-8 flex justify-end gap-4">
           <button onClick={() => setPresentationOpen(true)} className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
             <Settings2 className="w-3 h-3" /> Presentation
           </button>

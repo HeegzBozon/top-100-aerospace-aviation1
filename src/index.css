@@ -305,6 +305,16 @@ button:focus-visible {
   }
 }
 
+/* The same clearance for bars that anchor themselves sideways — a centered
+   reader control, a right-hand action — leaving left/right and any transform
+   exactly as the surface set them. */
+@media (max-width: 767px) {
+  body.hh-shell .hh-lift-center,
+  body.hh-shell .hh-lift-right {
+    bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
+  }
+}
+
 .hh-stage {
   position: fixed;
   left: 7px;

@@ -11,6 +11,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ErrorBoundary from '@/components/core/ErrorBoundary';
+import HandheldShell from '@/components/handheld/HandheldShell';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
@@ -123,6 +124,8 @@ const AuthenticatedApp = () => {
       </div>
     }>
     <Routes>
+      {/* Everything renders inside the device on phones; desktop is untouched. */}
+      <Route element={<HandheldShell />}>
       {/* Logged-in Fellows land on their own profile; visitors get the editorial home */}
       <Route path="/" element={isAuthenticated ? <Profile /> : <HomeV3 />} />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
@@ -284,6 +287,7 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="*" element={<PageNotFound />} />
+      </Route>
     </Routes>
     </Suspense>
   );
