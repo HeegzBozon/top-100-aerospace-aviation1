@@ -261,3 +261,97 @@ button:focus-visible {
 .deck-slide-enter {
   animation: deck-slide-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+
+/* ===== HANDHELD SHELL — THE DEVICE BODY =====
+   --hh-top / --hh-bottom are the hardware's height. HandheldDeck sets them on
+   mount and resets them to 0 when it unmounts, so surfaces inset themselves
+   under the masthead and above the chin, and reclaim the whole viewport when
+   the console is put away (the message composer, for one). */
+:root {
+  --hh-top: 90px;
+  --hh-bottom: 188px;
+}
+
+@media (max-width: 767px) {
+  body.hh-shell #root {
+    padding-top: calc(var(--hh-top) + env(safe-area-inset-top));
+    padding-bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
+  }
+}
+
+/* Bars that ride the bottom of the screen clear the chin instead of covering it. */
+@media (max-width: 767px) {
+  body.hh-shell .hh-lift {
+    bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
+  }
+}
+
+/* Viewport minus the hardware — the picture window, exactly. */
+.hh-stage {
+  height: calc(
+    100dvh - var(--hh-top) - var(--hh-bottom) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+  );
+}
+
+/* LCD glass over the content: scanlines and a soft vignette, then a slow sheen. */
+.hh-glass {
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(7, 17, 31, 0.05) 0px,
+    rgba(7, 17, 31, 0.05) 1px,
+    rgba(7, 17, 31, 0) 1px,
+    rgba(7, 17, 31, 0) 3px
+  );
+  box-shadow: inset 0 0 54px rgba(7, 17, 31, 0.24), inset 0 1px 0 rgba(250, 248, 245, 0.45);
+}
+.hh-glass::after {
+  content: "";
+  position: absolute;
+  inset: -30% -70%;
+  background: linear-gradient(90deg, transparent, rgba(250, 248, 245, 0.22), transparent);
+  animation: hh-sheen 9s ease-in-out infinite;
+}
+@keyframes hh-sheen {
+  0%, 100% { transform: translateX(-45%) rotate(12deg); opacity: 0; }
+  45% { opacity: 0.9; }
+  60% { transform: translateX(45%) rotate(12deg); opacity: 0; }
+}
+
+/* Power-on sequence. */
+.hh-boot {
+  animation: hh-boot-in 240ms ease both;
+}
+@keyframes hh-boot-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.hh-boot-bar {
+  transform-origin: left center;
+  animation: hh-boot-load 1.75s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes hh-boot-load {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.hh-flicker {
+  animation: hh-flicker 1.9s steps(1) both;
+}
+@keyframes hh-flicker {
+  0%, 7% { opacity: 0; }
+  8%, 11% { opacity: 1; }
+  12% { opacity: 0.3; }
+  13%, 100% { opacity: 1; }
+}
+.hh-blink {
+  animation: hh-blink 1.1s steps(1) infinite;
+}
+@keyframes hh-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.15; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hh-glass::after, .hh-boot-bar, .hh-flicker, .hh-blink {
+    animation: none;
+  }
+}

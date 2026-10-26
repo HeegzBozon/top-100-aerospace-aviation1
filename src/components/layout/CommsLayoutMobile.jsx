@@ -4,7 +4,7 @@ import MobileHomeView from "@/components/comms/MobileHomeView";
 import MobileCommsView from "@/components/comms/MobileCommsView";
 import Season3ReOnboarding from "@/components/onboarding/Season3ReOnboarding";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
-import HandheldDeck, { HANDHELD_DECK_CLEARANCE } from "@/components/handheld/HandheldDeck";
+import HandheldDeck from "@/components/handheld/HandheldDeck";
 
 function MobileCommsContent({
   children,
@@ -42,7 +42,7 @@ function MobileCommsContent({
         <div
           data-handheld-screen="true"
           className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col"
-          style={{ background: 'var(--bg, #faf8f5)', paddingBottom: HANDHELD_DECK_CLEARANCE }}
+          style={{ background: 'var(--bg, #faf8f5)' }}
         >
           <div className="flex-1">{children}</div>
         </div>
@@ -67,7 +67,7 @@ export default function CommsLayoutMobile({
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   return (
-    <div className="md:hidden flex flex-col overflow-hidden" style={{ height: '100dvh' }}>
+    <div className="hh-stage md:hidden flex flex-col overflow-hidden">
       <MobileCommsContent
         currentPageName={currentPageName}
         user={user}

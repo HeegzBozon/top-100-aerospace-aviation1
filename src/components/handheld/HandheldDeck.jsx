@@ -1,47 +1,89 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Menu, Play, Volume2, VolumeX } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import HandheldDpad from "./HandheldDpad";
-import HandheldNavigator from "./HandheldNavigator";
+import ClickWheel from "./ClickWheel";
+import HandheldMasthead from "./HandheldMasthead";
+import HandheldScreenFrame from "./HandheldScreenFrame";
+import HandheldMenu from "./HandheldMenu";
+import HandheldBoot from "./HandheldBoot";
 import useHandheldDestinations from "./useHandheldDestinations";
 import { surfaceLabel } from "./handheldDestinations";
 import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
 
-// Space the console's controls occupy, so scroll containers can clear them.
-export const HANDHELD_DECK_CLEARANCE = 122;
+// Chrome the device occupies: the masthead plus the viewer's status line above,
+// and the control chin below. index.css consumes these to inset every surface,
+// so nothing is ever hidden behind the hardware.
+export const HANDHELD_TOP_CLEARANCE = 90;
+export const HANDHELD_DECK_CLEARANCE = 188;
+
+const BOOT_KEY = "top100-handheld-booted";
 
 const faceStyle = (from, to, shadow) => ({
   background: `linear-gradient(180deg, ${from}, ${to})`,
   boxShadow: shadow,
 });
 
+const pillStyle = {
+  background: "linear-gradient(180deg, #2A4E76, #1E3A5A)",
+  boxShadow: "inset 0 1px 0 rgba(250,248,245,0.24), 0 2px 5px rgba(30,58,90,0.30)",
+};
+
+// The handheld. One body: a masthead bezel, a viewer the content renders in, and
+// a chin carrying a click wheel, A/B, SELECT/START and the speaker. The wheel is
+// the navigation instrument — rotating it scrolls the picture, or walks the
+// cartridge menu when one is loaded.
 export default function HandheldDeck() {
   const navigate = useNavigate();
   const location = useLocation();
   const { groups, isSignedIn } = useHandheldDestinations();
 
-  const [soundOn, setSoundOn] = useState(isSoundOn);
-  const [navigatorOpen, setNavigatorOpen] = useState(false);
-  const [highlight, setHighlight] = useState(0);
+  const [soundOn, setSoundOn] = useState(() => isSoundOn());
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [cursor, setCursor] = useState(0);
+  const [booting, setBooting] = useState(() => {
+    try {
+      return sessionStorage.getItem(BOOT_KEY) !== "1";
+    } catch {
+      return false;
+    }
+  });
 
-  const flat = useMemo(() => groups.flatMap((g) => g.items), [groups]);
+  const flat = useMemo(() => groups.flatMap((group) => group.items), [groups]);
   const locationKey = `${location.pathname}${location.search}`;
   const surface = useMemo(() => surfaceLabel(location, groups), [location, groups]);
-  const railItems = useMemo(() => groups.find((g) => g.key === "rail")?.items || [], [groups]);
+  const railItems = useMemo(() => groups.find((group) => group.key === "rail")?.items || [], [groups]);
 
-  const signIn = () => base44.auth.redirectToLogin(window.location.href);
-  const signOut = () => base44.auth.logout(`${window.location.origin}/`);
+  // Reserve the hardware's space, and hand it back when the console is put away.
+  useEffect(() => {
+    document.body.classList.add("hh-shell");
+    const root = document.documentElement.style;
+    root.setProperty("--hh-top", `${HANDHELD_TOP_CLEARANCE}px`);
+    root.setProperty("--hh-bottom", `${HANDHELD_DECK_CLEARANCE}px`);
+    return () => {
+      document.body.classList.remove("hh-shell");
+      root.setProperty("--hh-top", "0px");
+      root.setProperty("--hh-bottom", "0px");
+    };
+  }, []);
+
+  const finishBoot = useCallback(() => {
+    setBooting(false);
+    try {
+      sessionStorage.setItem(BOOT_KEY, "1");
+    } catch {
+      // Storage unavailable — the sequence simply plays again next visit.
+    }
+  }, []);
 
   const go = useCallback(
     (destination, tone = "select") => {
       if (!destination) return;
       blip(tone);
       buzz();
-      setNavigatorOpen(false);
+      setMenuOpen(false);
 
-      if (destination.action === "signin") return signIn();
-      if (destination.action === "logout") return signOut();
+      if (destination.action === "signin") return base44.auth.redirectToLogin(window.location.href);
+      if (destination.action === "logout") return base44.auth.logout(`${window.location.origin}/`);
       if (destination.href) {
         window.open(destination.href, "_blank", "noopener");
         return;
@@ -51,18 +93,69 @@ export default function HandheldDeck() {
     [navigate],
   );
 
-  const openNavigator = useCallback(() => {
+  const openMenu = useCallback(() => {
     const current = flat.findIndex((item) => item.to && item.to === locationKey);
-    setHighlight(current >= 0 ? current : 0);
-    setNavigatorOpen(true);
+    setCursor(current >= 0 ? current : 0);
+    setMenuOpen(true);
+    finishBoot();
     blip("open");
     buzz();
-  }, [flat, locationKey]);
+  }, [flat, locationKey, finishBoot]);
 
-  const closeNavigator = useCallback(() => {
-    setNavigatorOpen(false);
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
     blip("back");
   }, []);
+
+  const toggleMenu = useCallback(() => {
+    if (booting) finishBoot();
+    if (menuOpen) closeMenu();
+    else openMenu();
+  }, [booting, finishBoot, menuOpen, closeMenu, openMenu]);
+
+  const goHome = useCallback(() => {
+    blip("start");
+    buzz();
+    setMenuOpen(false);
+    navigate("/");
+  }, [navigate]);
+
+  // Rotating the wheel: walk the menu, or scroll the picture like a scroll wheel.
+  const rotate = useCallback(
+    (step) => {
+      finishBoot();
+      if (menuOpen) {
+        if (!flat.length) return;
+        setCursor((prev) => (prev + step + flat.length) % flat.length);
+        return;
+      }
+      const viewer = document.querySelector("[data-handheld-screen]");
+      const delta = step * 54;
+      if (viewer && viewer.scrollHeight > viewer.clientHeight + 4) {
+        viewer.scrollTop += delta;
+      } else {
+        window.scrollBy(0, delta);
+      }
+    },
+    [menuOpen, flat.length, finishBoot],
+  );
+
+  const jumpGroup = useCallback(
+    (step) => {
+      const starts = [];
+      let running = 0;
+      groups.forEach((group) => {
+        starts.push(running);
+        running += group.items.length;
+      });
+      if (!starts.length) return;
+      const currentGroup = starts.filter((start) => start <= cursor).length - 1;
+      const nextGroup = Math.min(Math.max(currentGroup + step, 0), starts.length - 1);
+      setCursor(starts[nextGroup]);
+      blip("move");
+    },
+    [groups, cursor],
+  );
 
   const cycleRail = useCallback(
     (step) => {
@@ -79,12 +172,21 @@ export default function HandheldDeck() {
     [railItems, location.pathname, go],
   );
 
-  const scrollScreenTop = useCallback(() => {
-    blip("move");
-    const screen = document.querySelector("[data-handheld-screen]");
-    if (screen) screen.scrollTo({ top: 0, behavior: "smooth" });
-    else window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  const select = useCallback(() => {
+    finishBoot();
+    if (!menuOpen) return openMenu();
+    const item = flat[cursor];
+    if (item) go(item);
+    else closeMenu();
+  }, [finishBoot, menuOpen, openMenu, flat, cursor, go, closeMenu]);
+
+  const back = useCallback(() => {
+    blip("back");
+    buzz();
+    if (booting) return finishBoot();
+    if (menuOpen) return closeMenu();
+    navigate(-1);
+  }, [booting, finishBoot, menuOpen, closeMenu, navigate]);
 
   const toggleSound = useCallback(() => {
     setSoundOn((prev) => {
@@ -95,153 +197,111 @@ export default function HandheldDeck() {
     buzz();
   }, []);
 
-  // Pad semantics differ while the navigator is up: the pad walks the menu.
-  const moveHighlight = (step) =>
-    setHighlight((prev) => {
-      if (!flat.length) return 0;
-      const next = (prev + step + flat.length) % flat.length;
-      blip("move");
-      return next;
-    });
-
-  const jumpGroup = (step) => {
-    const boundaries = [];
-    let running = 0;
-    groups.forEach((g) => {
-      boundaries.push(running);
-      running += g.items.length;
-    });
-    const currentGroup = boundaries.filter((b) => b <= highlight).length - 1;
-    const nextGroup = Math.min(Math.max(currentGroup + step, 0), boundaries.length - 1);
-    setHighlight(boundaries[nextGroup]);
-    blip("move");
-  };
-
-  const pad = navigatorOpen
-    ? {
-        onUp: () => moveHighlight(-1),
-        onDown: () => moveHighlight(1),
-        onLeft: () => jumpGroup(-1),
-        onRight: () => jumpGroup(1),
-        labels: { up: "Move up in navigator", down: "Move down in navigator", left: "Previous group", right: "Next group" },
-      }
-    : {
-        onUp: scrollScreenTop,
-        onDown: openNavigator,
-        onLeft: () => cycleRail(-1),
-        onRight: () => cycleRail(1),
-        labels: { up: "Top of screen", down: "Open navigator", left: "Previous surface", right: "Next surface" },
-      };
-
   return (
     <>
-      {navigatorOpen && (
-        <HandheldNavigator
+      <HandheldMasthead
+        surface={surface}
+        soundOn={soundOn}
+        onToggleSound={toggleSound}
+        onOpenMenu={toggleMenu}
+      />
+
+      <HandheldScreenFrame surface={surface} />
+
+      {booting && <HandheldBoot onDone={finishBoot} />}
+
+      {menuOpen && !booting && (
+        <HandheldMenu
           groups={groups}
-          highlight={highlight}
+          cursor={cursor}
           locationKey={locationKey}
-          soundOn={soundOn}
-          onToggleSound={toggleSound}
-          onSelect={(item) => go(item)}
-          onClose={closeNavigator}
+          onActivate={(item) => go(item)}
+          onJump={() => jumpGroup(1)}
+          onClose={closeMenu}
         />
       )}
 
       <nav
         aria-label="Handheld console controls"
-        className="hh-deck fixed bottom-0 left-0 right-0 z-40 select-none md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 select-none md:hidden"
         style={{
-          background: "linear-gradient(180deg, #16304E 0%, #12283F 52%, #0B1929 100%)",
-          borderTop: "1px solid rgba(201,168,124,0.34)",
-          boxShadow: "0 -14px 34px rgba(7,17,31,0.45), inset 0 1px 0 rgba(250,248,245,0.08)",
           paddingBottom: "env(safe-area-inset-bottom)",
+          background: "linear-gradient(180deg, #F5EFE4 0%, #E9E0D0 55%, #D9CEBA 100%)",
+          borderTop: "1px solid rgba(184,115,51,0.45)",
+          boxShadow: "0 -10px 26px rgba(30,58,90,0.22), inset 0 1px 0 rgba(255,255,255,0.85)",
         }}
       >
-        {/* Branding strip — the engraved band below the screen */}
-        <div className="flex items-center justify-between px-3.5 pt-1.5">
-          <span className="flex items-center gap-1.5">
-            <span className="hh-led h-1.5 w-1.5 rounded-full bg-[#2ED573]" />
-            <span className="text-[7.5px] font-bold uppercase tracking-[0.24em] text-[#FAF8F5]/45">
-              {isSignedIn ? "Online" : "Visitor"}
-            </span>
-          </span>
+        <div className="flex items-start gap-3 px-4 pt-3">
+          <ClickWheel
+            size={132}
+            onRotate={rotate}
+            onMenu={toggleMenu}
+            onPrev={() => (menuOpen ? jumpGroup(-1) : cycleRail(-1))}
+            onNext={() => (menuOpen ? jumpGroup(1) : cycleRail(1))}
+            onHome={goHome}
+            onSelect={select}
+          />
 
-          <span className="truncate px-2 text-[7.5px] font-bold uppercase tracking-[0.24em] text-[#C9A87C]/80">
-            {surface}
-          </span>
+          <div className="flex flex-1 flex-col items-end gap-2 pt-0.5">
+            <div className="relative h-[72px] w-[106px]">
+              <button
+                type="button"
+                onClick={select}
+                aria-label="A — select"
+                className="absolute right-0 top-0 flex h-[46px] w-[46px] items-center justify-center rounded-full text-[12px] font-bold text-[#0B1929] transition-transform active:scale-90"
+                style={faceStyle("#E0AC73", "#B87333", "inset 0 1px 1px rgba(255,255,255,0.5), 0 4px 10px rgba(7,17,31,0.35)")}
+              >
+                A
+              </button>
 
-          <button
-            type="button"
-            onClick={toggleSound}
-            aria-label={soundOn ? "Turn sound off" : "Turn sound on"}
-            className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[#FAF8F5]/55 transition-colors active:bg-white/10"
-          >
-            {soundOn ? <Volume2 className="h-3 w-3" /> : <VolumeX className="h-3 w-3" />}
-            <span className="text-[7.5px] font-bold uppercase tracking-[0.24em]">Sound</span>
-          </button>
+              <button
+                type="button"
+                onClick={back}
+                aria-label="B — back"
+                className="absolute bottom-0 left-0 flex h-[42px] w-[42px] items-center justify-center rounded-full text-[11px] font-bold text-[#FAF8F5]/85 transition-transform active:scale-90"
+                style={faceStyle("#33495F", "#1B2E44", "inset 0 1px 1px rgba(250,248,245,0.24), 0 4px 10px rgba(7,17,31,0.35)")}
+              >
+                B
+              </button>
+            </div>
+
+            {/* Speaker grille */}
+            <div
+              className="h-[30px] w-[106px] rounded-[9px]"
+              style={{
+                background:
+                  "repeating-linear-gradient(112deg, rgba(184,115,51,0.55) 0 3px, rgba(184,115,51,0.08) 3px 10px)",
+                boxShadow: "inset 0 1px 1px rgba(255,255,255,0.75)",
+              }}
+            />
+          </div>
         </div>
 
-        {/* Control deck */}
-        <div className="flex items-center justify-between gap-3 px-4 pb-2 pt-1.5">
-          <div className="flex w-[60px] shrink-0 flex-col items-center gap-1">
-            <div className="flex flex-col items-center">
-              <button
-                type="button"
-                onClick={navigatorOpen ? closeNavigator : openNavigator}
-                aria-label="Open navigator menu"
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-full text-[#FAF8F5]/85 transition-transform active:scale-90"
-                style={faceStyle("#33495F", "#1B2E44", "inset 0 1px 1px rgba(250,248,245,0.22), 0 3px 7px rgba(0,0,0,0.45)")}
-              >
-                <Menu className="h-3.5 w-3.5" />
-              </button>
-              <span className="mt-0.5 text-[7px] font-bold uppercase tracking-[0.2em] text-[#FAF8F5]/40">
-                Menu
-              </span>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <button
-                type="button"
-                onClick={() => go({ to: "/" }, "start")}
-                aria-label="Go to home"
-                className="flex h-[34px] w-[34px] items-center justify-center rounded-full text-[#0B1929] transition-transform active:scale-90"
-                style={faceStyle("#E3CBA2", "#C9A87C", "inset 0 1px 1px rgba(255,255,255,0.55), 0 3px 8px rgba(0,0,0,0.45)")}
-              >
-                <Play className="h-3.5 w-3.5" fill="currentColor" />
-              </button>
-              <span className="mt-0.5 text-[7px] font-bold uppercase tracking-[0.2em] text-[#C9A87C]/70">
-                Start
-              </span>
-            </div>
-          </div>
-
-          <HandheldDpad {...pad} />
-
-          <div className="relative h-[70px] w-[78px] shrink-0">
+        <div className="flex items-center justify-between px-5 pb-2 pt-2.5">
+          <div className="flex gap-2">
             <button
               type="button"
-              onClick={openNavigator}
-              aria-label="Select — open navigator"
-              className="absolute right-0 top-0 flex h-[40px] w-[40px] items-center justify-center rounded-full text-[11px] font-bold text-[#0B1929] transition-transform active:scale-90"
-              style={faceStyle("#D89A5E", "#B87333", "inset 0 1px 1px rgba(255,255,255,0.45), 0 4px 10px rgba(0,0,0,0.45)")}
+              onClick={toggleMenu}
+              aria-label="Select — cartridge menu"
+              className="rounded-full px-3 py-[6px] text-[7px] font-bold uppercase tracking-[0.22em] text-[#FAF8F5] transition-transform active:scale-95"
+              style={pillStyle}
             >
-              A
+              Select
             </button>
             <button
               type="button"
-              onClick={() => {
-                blip("back");
-                buzz();
-                if (navigatorOpen) closeNavigator();
-                else navigate(-1);
-              }}
-              aria-label="Back"
-              className="absolute bottom-0 left-0 flex h-[36px] w-[36px] items-center justify-center rounded-full text-[10px] font-bold text-[#FAF8F5]/80 transition-transform active:scale-90"
-              style={faceStyle("#33495F", "#1B2E44", "inset 0 1px 1px rgba(250,248,245,0.2), 0 4px 10px rgba(0,0,0,0.45)")}
+              onClick={goHome}
+              aria-label="Start — home"
+              className="rounded-full px-3 py-[6px] text-[7px] font-bold uppercase tracking-[0.22em] text-[#FAF8F5] transition-transform active:scale-95"
+              style={pillStyle}
             >
-              B
+              Start
             </button>
           </div>
+
+          <span className="text-[7px] font-bold uppercase tracking-[0.3em] text-[#1E3A5A]/40">
+            {isSignedIn ? "TOP 100 OS · HW-88" : "VISITOR MODE"}
+          </span>
         </div>
       </nav>
     </>

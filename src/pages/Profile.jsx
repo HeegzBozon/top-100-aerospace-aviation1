@@ -393,7 +393,8 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="h-28" />
+      {/* Desktop dock spacing only — the handheld body reserves its own room. */}
+      <div className="hidden h-28 md:block" />
       <HomeDock />
 
       {wizardOpen && (
