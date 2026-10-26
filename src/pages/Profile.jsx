@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Download, Settings2 } from 'lucide-react';
+import { Loader2, Download, Settings2, LayoutGrid } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
@@ -396,6 +397,9 @@ export default function Profile() {
         </div>
 
         <div data-hh-module="Presentation" className="mt-8 flex justify-end gap-4">
+          <Link to="/board" className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
+            <LayoutGrid className="w-3 h-3" /> The Board
+          </Link>
           <button onClick={() => setPresentationOpen(true)} className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
             <Settings2 className="w-3 h-3" /> Presentation
           </button>

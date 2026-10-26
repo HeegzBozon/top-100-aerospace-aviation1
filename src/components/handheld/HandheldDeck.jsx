@@ -259,12 +259,11 @@ export default function HandheldDeck() {
         deck.scrollBy(step * 54);
         return;
       }
-      const stage = getStage();
-      const delta = step * 54;
-      if (stage && stage.scrollHeight > stage.clientHeight + 4) stage.scrollTop += delta;
-      else window.scrollBy(0, delta);
+      // Depth first: a surface that scrolls inside its own section — a Board
+      // column — gets the ring before the glass or the window does.
+      nav.scrollBy(step * 54);
     },
-    [menuOpen, menuMode, listFor, deck, finishBoot],
+    [menuOpen, menuMode, listFor, deck, finishBoot, nav],
   );
 
   const jumpGroup = useCallback(

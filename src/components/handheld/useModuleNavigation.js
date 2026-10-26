@@ -6,12 +6,49 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export const getStage = () =>
   document.querySelector("[data-handheld-screen]") || document.querySelector(".hh-stage");
 
-const offsetIn = (stage, element) =>
-  element.getBoundingClientRect().top - stage.getBoundingClientRect().top + stage.scrollTop;
+// How a surface lays its sections out. Most surfaces stack them down the glass,
+// so back and forward on the ring step between them. A surface that pages
+// sideways — the Board and its columns — marks the strip with data-hh-track, and
+// back and forward cross it instead: breadth sideways, depth down.
+const axisOf = () => {
+  const stage = getStage();
+  if (!stage) return null;
+  const track = stage.querySelector("[data-hh-track]");
+  return { stage, track, across: !!track };
+};
 
-// Modules are whatever the surface marks with data-hh-module. The wheel's back
-// and forward zones step between them; the rail shows where you stand. Any
-// surface that marks nothing simply has no modules.
+const offsetIn = (element, axis) => {
+  if (!axis.across) {
+    return (
+      element.getBoundingClientRect().top - axis.stage.getBoundingClientRect().top + axis.stage.scrollTop
+    );
+  }
+  return (
+    element.getBoundingClientRect().left - axis.track.getBoundingClientRect().left + axis.track.scrollLeft
+  );
+};
+
+const markAt = (axis) =>
+  axis.across
+    ? axis.track.scrollLeft + Math.min(axis.track.clientWidth * 0.32, 200)
+    : axis.stage.scrollTop + Math.min(axis.stage.clientHeight * 0.32, 200);
+
+// The section you are actually reading, when a surface scrolls inside one of its
+// sections rather than inside the glass — a Board column, say.
+const innerScrollerAt = (stage) => {
+  const spots = Array.from(stage.querySelectorAll("[data-hh-scroll]"));
+  if (!spots.length) return null;
+  const centre = stage.getBoundingClientRect().left + stage.clientWidth / 2;
+  return (
+    spots.find((el) => {
+      const rect = el.getBoundingClientRect();
+      return rect.left <= centre && rect.right >= centre;
+    }) || null
+  );
+};
+
+// Modules are whatever the surface marks with data-hh-module. Any surface that
+// marks nothing simply has no modules.
 export default function useModuleNavigation(locationKey) {
   const elsRef = useRef([]);
   const sigRef = useRef("");
@@ -19,9 +56,12 @@ export default function useModuleNavigation(locationKey) {
   const [index, setIndex] = useState(0);
 
   const collect = useCallback(() => {
-    const stage = getStage();
-    if (!stage) return [];
-    const found = Array.from(stage.querySelectorAll("[data-hh-module]")).filter((el) => el.offsetHeight > 4);
+    const axis = axisOf();
+    if (!axis) return [];
+    const scope = axis.across ? axis.track : axis.stage;
+    const found = Array.from(scope.querySelectorAll("[data-hh-module]")).filter((el) =>
+      axis.across ? el.offsetWidth > 4 : el.offsetHeight > 4,
+    );
     elsRef.current = found;
     // Only report a change when the set of modules actually changed, so the
     // console's own chrome never bounces a re-render back through the observer.
@@ -33,38 +73,41 @@ export default function useModuleNavigation(locationKey) {
     return found;
   }, []);
 
-  const markerIn = (stage) => stage.scrollTop + Math.min(stage.clientHeight * 0.32, 200);
-
   const sync = useCallback(() => {
-    const stage = getStage();
-    if (!stage || !elsRef.current.length) return;
-    const mark = markerIn(stage);
+    const axis = axisOf();
+    if (!axis || !elsRef.current.length) return;
+    const mark = markAt(axis);
     let next = 0;
     elsRef.current.forEach((el, i) => {
-      if (offsetIn(stage, el) <= mark) next = i;
+      if (offsetIn(el, axis) <= mark) next = i;
     });
     setIndex(next);
   }, []);
 
-  const goTo = useCallback((target) => {
-    const stage = getStage();
-    const els = elsRef.current.length ? elsRef.current : collect();
-    const el = els[target];
-    if (!stage || !el) return null;
-    stage.scrollTo({ top: Math.max(0, offsetIn(stage, el) - 8), behavior: "smooth" });
-    setIndex(target);
-    return target;
-  }, [collect]);
+  const goTo = useCallback(
+    (target) => {
+      const axis = axisOf();
+      const els = elsRef.current.length ? elsRef.current : collect();
+      const el = els[target];
+      if (!axis || !el) return null;
+      const offset = Math.max(0, offsetIn(el, axis) - 8);
+      if (axis.across) axis.track.scrollTo({ left: offset, behavior: "smooth" });
+      else axis.stage.scrollTo({ top: offset, behavior: "smooth" });
+      setIndex(target);
+      return target;
+    },
+    [collect],
+  );
 
   const step = useCallback(
     (direction) => {
+      const axis = axisOf();
       const els = collect();
-      const stage = getStage();
-      if (!els.length || !stage) return null;
-      const mark = markerIn(stage);
+      if (!axis || !els.length) return null;
+      const mark = markAt(axis);
       let current = 0;
       els.forEach((el, i) => {
-        if (offsetIn(stage, el) <= mark) current = i;
+        if (offsetIn(el, axis) <= mark) current = i;
       });
       const target = current + direction;
       if (target < 0 || target >= els.length) return null;
@@ -73,14 +116,32 @@ export default function useModuleNavigation(locationKey) {
     [collect, goTo],
   );
 
-  const jump = useCallback(
-    (direction) => {
-      const stage = getStage();
-      if (!stage) return;
-      stage.scrollBy({ top: direction * stage.clientHeight * 0.78, behavior: "smooth" });
-    },
-    [],
-  );
+  // Depth: one section's own scroll where it has one, the glass next, the window
+  // last — so the ring always moves whatever is actually in front of you.
+  const scrollBy = useCallback((delta) => {
+    const axis = axisOf();
+    if (!axis) return;
+    const inner = innerScrollerAt(axis.stage);
+    if (inner && inner.scrollHeight > inner.clientHeight + 4) {
+      inner.scrollTop += delta;
+      return;
+    }
+    if (!axis.across && axis.stage.scrollHeight > axis.stage.clientHeight + 4) {
+      axis.stage.scrollTop += delta;
+      return;
+    }
+    window.scrollBy(0, delta);
+  }, []);
+
+  const jump = useCallback((direction) => {
+    const axis = axisOf();
+    if (!axis) return;
+    if (axis.across) {
+      axis.track.scrollBy({ left: direction * axis.track.clientWidth * 0.86, behavior: "smooth" });
+      return;
+    }
+    axis.stage.scrollBy({ top: direction * axis.stage.clientHeight * 0.78, behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
     collect();
@@ -95,7 +156,10 @@ export default function useModuleNavigation(locationKey) {
     // sees every nested scroller — so the wrong glass never goes stale.
     let frame = 0;
     const onScroll = (event) => {
-      if (event.target !== getStage()) return;
+      const axis = axisOf();
+      if (!axis) return;
+      const scroller = axis.across ? axis.track : axis.stage;
+      if (event.target !== scroller) return;
       if (frame) return;
       frame = requestAnimationFrame(() => {
         frame = 0;
@@ -123,5 +187,5 @@ export default function useModuleNavigation(locationKey) {
     };
   }, [collect, sync, locationKey]);
 
-  return { modules, index, step, goTo, jump };
+  return { modules, index, step, goTo, scrollBy, jump };
 }

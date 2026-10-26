@@ -16,6 +16,7 @@ export const NAVIGATOR_GROUPS = [
     key: "identity",
     label: "Identity",
     items: [
+      { label: "The Board", to: "/board", icon: LayoutGrid },
       { label: "My Profile", to: "/Profile", icon: Home },
       { label: "The Bulletin", to: "/Profile?board=fellow", icon: LayoutGrid },
       { label: "Mission Rooms", to: "/Profile?board=conference", icon: Radar },

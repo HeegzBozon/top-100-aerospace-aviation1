@@ -1,0 +1,175 @@
+import { Briefcase, GraduationCap, Send, Trophy } from "lucide-react";
+
+// The house tones, straight from the brand sheet.
+export const BRAND = {
+  navy: "#1E3A5A",
+  gold: "#C9A87C",
+  copper: "#B87333",
+  cream: "#FAF8F5",
+  ink: "#1A1A1A",
+};
+
+// The Board. Four directions across; the depth lives inside each one. Sideways is
+// the breadth of the platform, down a column is a single topic in full — the T.
+// Every card is a way into a surface that already exists: the board holds the
+// map, the surfaces hold the work.
+export const BOARD_COLUMNS = [
+  {
+    key: "season",
+    index: "01",
+    label: "Season",
+    tagline: "The measurement, this cycle and every cycle before it.",
+    icon: Trophy,
+    cards: [
+      {
+        key: "current",
+        title: "The current season",
+        blurb: "The pool, the phases, and where the cycle stands today.",
+        to: "/season4",
+        action: "Open the season",
+      },
+      {
+        key: "ballot",
+        title: "My TOP 100",
+        blurb: "Your eight, in order. Position 1 reads as position 1.",
+        stat: "ballotSlots",
+        to: "/selection-committee",
+        action: "Open the ballot",
+      },
+      {
+        key: "archive",
+        title: "Previous seasons",
+        blurb: "Finalised cycles are immutable. The archive keeps them that way.",
+        stat: "seasonsPast",
+        to: "/ArchiveLanding",
+        action: "Open the archive",
+      },
+      {
+        key: "publication",
+        title: "The publication",
+        blurb: "The editorial record of who was measured, and how.",
+        to: "/Top100Women2025",
+        action: "Read the record",
+      },
+    ],
+  },
+  {
+    key: "development",
+    index: "02",
+    label: "Professional development",
+    tagline: "Depth in your own discipline, and the people in it.",
+    icon: GraduationCap,
+    cards: [
+      {
+        key: "career",
+        title: "Career Center",
+        blurb: "Guides, frameworks and pathways distilled into transferable practice.",
+        stat: "careerResources",
+        to: "/Profile?board=career",
+        action: "Open the Career Center",
+      },
+      {
+        key: "networks",
+        title: "Communities of Practice",
+        blurb: "The standing domain networks. One per discipline, facilitated.",
+        stat: "networks",
+        to: "/Profile?board=networks",
+        action: "Open the networks",
+      },
+      {
+        key: "rooms",
+        title: "Mission Rooms",
+        blurb: "The rooms running at the shows you will be standing in.",
+        stat: "roomsOpen",
+        to: "/Profile?board=conference",
+        action: "Open the rooms",
+      },
+      {
+        key: "record",
+        title: "Your record",
+        blurb: "Credentials, flightography and the deck that carries them.",
+        to: "/Profile",
+        action: "Open your profile",
+      },
+    ],
+  },
+  {
+    key: "business",
+    index: "03",
+    label: "Business development",
+    tagline: "Growing the work you already do, and the work you want next.",
+    icon: Send,
+    cards: [
+      {
+        key: "intros",
+        title: "Introductions",
+        blurb: "The expert network: who has made themselves available, and for what.",
+        stat: "availability",
+        to: "/Profile?board=intros",
+        action: "See who is available",
+      },
+      {
+        key: "ribbon",
+        title: "Ribbon Cuttings",
+        blurb: "The milestones worth standing next to this cycle.",
+        to: "/Profile?board=ribbon",
+        action: "Open the milestones",
+      },
+      {
+        key: "patrons",
+        title: "Patrons of Record",
+        blurb: "The institutions standing behind the platform.",
+        to: "/Sponsors",
+        action: "Meet the patrons",
+      },
+      {
+        key: "membership",
+        title: "Membership",
+        blurb: "What standing on the platform gives you, tier by tier.",
+        to: "/Membership",
+        action: "Open membership",
+      },
+    ],
+  },
+  {
+    key: "recruiting",
+    index: "04",
+    label: "Enterprise recruiting",
+    tagline: "Building the team that flies it.",
+    icon: Briefcase,
+    cards: [
+      {
+        key: "jobs",
+        title: "Job Board",
+        blurb: "Open roles posted to the chamber, by Fellows and by employers.",
+        stat: "openRoles",
+        to: "/Profile?board=jobs",
+        action: "Open the board",
+      },
+      {
+        key: "groundcontrol",
+        title: "Ground Control",
+        blurb: "The enterprise recruiting engagement, built for flight departments.",
+        to: "/ground-control",
+        action: "Open Ground Control",
+      },
+      {
+        key: "talent",
+        title: "The measured population",
+        blurb: "Searchable by discipline, market and career stage.",
+        to: "/Top100Women2025",
+        action: "Open the index",
+      },
+      {
+        key: "calendar",
+        title: "The chamber calendar",
+        blurb: "Hiring rooms and receptions at the shows this season.",
+        to: "/events",
+        action: "Open the calendar",
+      },
+    ],
+  },
+];
+
+// Every column label, in order — for surfaces that only need the sequence.
+export const BOARD_LABELS = BOARD_COLUMNS.map((column) => column.label);

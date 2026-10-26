@@ -83,6 +83,7 @@ const OgCardTest = lazy(() => import('@/pages/OgCardTest'));
 const OgCardGenerator = lazy(() => import('@/pages/OgCardGenerator'));
 const WomenCollageGenerator = lazy(() => import('@/pages/WomenCollageGenerator'));
 const Top100Women2025DeepLink = lazy(() => import('@/pages/Top100Women2025DeepLink'));
+const TheBoard = lazy(() => import('@/pages/TheBoard'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -209,6 +210,9 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
       } />
       <Route path="/home-v3" element={<HomeV3 />} />
+      {/* The member's map of the platform: four columns across, depth inside each */}
+      <Route path="/board" element={<TheBoard />} />
+      <Route path="/the-board" element={<TheBoard />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />
       <Route path="/Home" element={<Navigate to="/" replace />} />
