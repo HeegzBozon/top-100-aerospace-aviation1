@@ -1,0 +1,122 @@
+{
+  "name": "AeroFrontierSave",
+  "type": "object",
+  "properties": {
+    "player_email": {
+      "type": "string",
+      "description": "Email of the Fellow who keeps this field. One save per player; the stable key for reads and writes."
+    },
+    "act": {
+      "type": "number",
+      "default": 1,
+      "description": "Act of Aero-Frontier the player has reached. Act I is the only one built."
+    },
+    "day": {
+      "type": "number",
+      "default": 1,
+      "description": "Working day count on the field. Turning the day banks the next block of hours."
+    },
+    "hours": {
+      "type": "number",
+      "default": 8,
+      "description": "Hours of daylight left to spend. Spent on the ground and on the airframe."
+    },
+    "parts": {
+      "type": "number",
+      "default": 0,
+      "description": "Salvage the field has given up, spent once on fitting out each aircraft system."
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Field task keys the player has finished."
+    },
+    "system_steps": {
+      "type": "object",
+      "default": {},
+      "description": "Aircraft systems opened and worked: key -> number of steps completed. A key with 0 means the parts are paid and the system is open."
+    },
+    "flights": {
+      "type": "number",
+      "default": 0,
+      "description": "Circuits flown from the strip."
+    },
+    "best_circuit": {
+      "type": "number",
+      "default": 0,
+      "description": "Best circuit score, 0-100."
+    },
+    "log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "day": {
+            "type": "number"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "The field log: newest first when rendered, capped at the last 40 entries. Play state only; never read by discovery, ranking, or scoring."
+    },
+    "last_played": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the field was last worked"
+    }
+  },
+  "required": [
+    "player_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.player_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.player_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.player_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.player_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

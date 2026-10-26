@@ -2,12 +2,11 @@ import { useEffect } from "react";
 import StartMenuItem from "./StartMenuItem";
 import { START_MENU } from "./startMenuConfig";
 
-// The six surfaces, as keys. Two rows of three, on the phone and on the desk —
-// the same panel either way, so the menu is one shape to learn. The rows are
-// capped as well as floored on the phone: a key is a key, so the grid keeps its
-// own height and the sky below it stays open, instead of the tiles stretching
-// down the glass until the labels sit on the control rail. A short glass scrolls
-// the grid rather than squashing the rows together.
+// The surfaces, as keys. Three to a row, on the phone and on the desk — the same
+// panel either way, so the menu is one shape to learn. A key is a key: on the
+// phone each row is floored so the sky below the grid stays open and the tile
+// labels never reach the control rail, and a short glass scrolls the grid rather
+// than squashing the rows together.
 //
 // The wheel walks these keys: the console holds the cursor as a key, and the key
 // it is on carries the selection. Anything below the fold is brought up so the
@@ -24,7 +23,7 @@ export default function StartSurfaceKeys({ cursorKey }) {
         Select a surface
       </p>
 
-      <div className="grid grid-cols-3 auto-rows-min grid-rows-[repeat(2,minmax(66px,84px))] gap-2 overflow-y-auto overscroll-contain md:flex-1 md:gap-3 md:grid-rows-[repeat(2,minmax(112px,1fr))]">
+      <div className="grid grid-cols-3 auto-rows-[minmax(66px,auto)] gap-2 overflow-y-auto overscroll-contain md:auto-rows-[minmax(104px,auto)] md:gap-3">
         {START_MENU.map((item) => (
           <StartMenuItem key={item.label} item={item} selected={item.key === cursorKey} />
         ))}

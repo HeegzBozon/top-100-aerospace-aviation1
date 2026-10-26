@@ -54,6 +54,7 @@ const NominationForm = lazy(() => import('@/pages/NominationForm'));
 const Hangouts = lazy(() => import('@/pages/Hangouts'));
 const Vision2030 = lazy(() => import('@/pages/Vision2030'));
 const FlightSimulator = lazy(() => import('@/pages/FlightSimulator'));
+const AeroFrontier = lazy(() => import('@/pages/AeroFrontier'));
 const CommonGround = lazy(() => import('@/pages/CommonGround'));
 const CommonGroundSimulator = lazy(() => import('@/pages/CommonGroundSimulator'));
 const SessionPortal = lazy(() => import('@/pages/SessionPortal'));
@@ -233,6 +234,8 @@ const AuthenticatedApp = () => {
       <Route path="/moon-joy" element={<Hangouts />} />
       <Route path="/2030-vision" element={<Vision2030 />} />
       <Route path="/play" element={<FlightSimulator />} />
+      {/* Aero-Frontier: the inherited airfield, the airframe, and the first circuit */}
+      <Route path="/aero-frontier" element={<AeroFrontier />} />
       <Route path="/common-ground" element={<CommonGround />} />
       <Route path="/common-ground-sim" element={<CommonGroundSimulator />} />
       <Route path="/session-portal/*" element={<SessionPortal />} />

@@ -1,9 +1,12 @@
-import { Award, BadgeCheck, BookOpen, LayoutGrid, Trophy, Users } from "lucide-react";
+import { Award, BadgeCheck, BookOpen, LayoutGrid, Plane, Trophy, Users } from "lucide-react";
 
-// The start screen: the platform as a title screen, six surfaces, in the order a
-// Fellow meets them. The dashboard is the map; everything else is one step off
-// it. Every tile routes to a surface that already exists — the start screen
-// holds the menu, the surfaces hold the work.
+// The start screen: the platform as a title screen, the surfaces a Fellow meets,
+// in order. The dashboard is the map; everything else is one step off it. Every
+// tile routes to a surface that already exists — the start screen holds the menu,
+// the surfaces hold the work.
+//
+// The game stands at the end of the row on purpose: it is the one surface built
+// for play, and it belongs beside the institution's work rather than inside it.
 export const START_MENU = [
   { key: "dashboard", index: "01", label: "Dashboard", to: "/board", icon: LayoutGrid },
   { key: "committee", index: "02", label: "Selection Committee", to: "/selection-committee", icon: Award },
@@ -11,6 +14,7 @@ export const START_MENU = [
   { key: "networking", index: "04", label: "Networking", to: "/networking", icon: Users },
   { key: "publication", index: "05", label: "The Publication", to: "/Top100Women2025", icon: Trophy },
   { key: "membership", index: "06", label: "Membership", to: "/Membership", icon: BadgeCheck },
+  { key: "frontier", index: "07", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
 ];
 
 // The ballot: the one action the cycle is asking for, offered beside the

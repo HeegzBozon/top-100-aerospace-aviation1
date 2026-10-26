@@ -899,3 +899,57 @@ button:focus-visible {
     opacity: 0;
   }
 }
+
+/* ===== AERO-FRONTIER — THE FIELD'S OWN INSTRUMENTS =====
+   The game is the one surface in the building that does not use the institution's
+   chrome. It reads as warm working equipment: painted plates seated in a well, an
+   amber instrument readout, and gauges that fill like fuel. Every tone is set by
+   the field's palette in aeroConfig, so nothing here borrows a brand token. */
+.af-plate {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(242, 232, 213, 0.22);
+  box-shadow:
+    inset 0 0 0 1px rgba(8, 18, 26, 0.45),
+    0 10px 24px -14px rgba(8, 18, 26, 0.75);
+}
+.af-plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(8, 18, 26, 0.30) 0%, rgba(8, 18, 26, 0) 32%, rgba(8, 18, 26, 0.52) 100%),
+    repeating-linear-gradient(0deg, rgba(8, 18, 26, 0.14) 0 1px, transparent 1px 3px);
+}
+
+.af-readout {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.af-gauge {
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes af-tick {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.af-tick {
+  animation: af-tick 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes af-roll {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.af-roll {
+  animation: af-roll 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .af-tick, .af-roll { animation: none; }
+  .af-gauge { transition: none; }
+}
