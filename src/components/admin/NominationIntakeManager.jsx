@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { Search, Trophy, ExternalLink, RefreshCw, UserPlus, CheckCircle2, Loader2, Plus, Pencil, Trash2, Mail } from 'lucide-react';
+import { Search, Trophy, ExternalLink, RefreshCw, UserPlus, CheckCircle2, Loader2, Plus, Pencil, Trash2, Mail, Download } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import IntakeBulkBar from '@/components/admin/intake/IntakeBulkBar';
 import IntakeFormDialog from '@/components/admin/intake/IntakeFormDialog';
@@ -47,6 +47,7 @@ export default function NominationIntakeManager({ lockedSeason }) {
   const [approvingId, setApprovingId] = useState(null);
   const [selected, setSelected] = useState(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [editing, setEditing] = useState(null); // null | 'new' | item
   const { toast } = useToast();
 
@@ -60,6 +61,33 @@ export default function NominationIntakeManager({ lockedSeason }) {
     const data = await base44.entities.NominationIntake.list('-created_date');
     setItems(data);
     setLoading(false);
+  };
+
+  // One row per submission, generated server-side so the export is not limited
+  // by what the current filters happen to have loaded on screen.
+  const handleExportSubmissions = async () => {
+    setExporting(true);
+    try {
+      const data = (await base44.functions.invoke('exportNominationSubmissions', {})).data;
+      if (!data?.csv) {
+        toast({ variant: 'destructive', title: 'Export failed', description: data?.error || 'No CSV returned.' });
+        return;
+      }
+      const blob = new Blob([data.csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `nomination_submissions_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast({ title: 'Submissions exported', description: `${data.count} submission${data.count === 1 ? '' : 's'} written to CSV.` });
+    } catch (e) {
+      toast({ variant: 'destructive', title: 'Export failed', description: e?.response?.data?.error || e.message });
+    } finally {
+      setExporting(false);
+    }
   };
 
   const updateItem = async (item, patch) => {
@@ -195,6 +223,9 @@ export default function NominationIntakeManager({ lockedSeason }) {
         </Select>
         <Button variant="outline" onClick={loadItems} className="gap-2">
           <RefreshCw className="w-4 h-4" /> Refresh
+        </Button>
+        <Button variant="outline" onClick={handleExportSubmissions} disabled={exporting} className="gap-2">
+          {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} Export CSV
         </Button>
         <Button onClick={() => setEditing('new')} className="gap-2 bg-editorial-copper hover:bg-editorial-copper/90 text-white">
           <Plus className="w-4 h-4" /> New
