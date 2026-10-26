@@ -232,6 +232,27 @@ button:focus-visible {
   animation: ppc-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+/* ===== HANDHELD CONSOLE CHROME ===== */
+@keyframes hh-deck-rise {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.hh-deck {
+  animation: hh-deck-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes hh-led-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(46, 213, 115, 0.9); }
+  50% { opacity: 0.5; box-shadow: 0 0 2px rgba(46, 213, 115, 0.45); }
+}
+.hh-led {
+  animation: hh-led-pulse 3.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hh-deck, .hh-led {
+    animation: none;
+  }
+}
+
 /* ===== PROFILE DECK — SLIDE TRANSITIONS ===== */
 @keyframes deck-slide-enter {
   from { opacity: 0; transform: translateY(24px) scale(0.985); }

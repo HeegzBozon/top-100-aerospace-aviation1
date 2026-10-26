@@ -4,7 +4,7 @@ import MobileHomeView from "@/components/comms/MobileHomeView";
 import MobileCommsView from "@/components/comms/MobileCommsView";
 import Season3ReOnboarding from "@/components/onboarding/Season3ReOnboarding";
 import NewYearCountdownBar from "@/components/NewYearCountdownBar";
-import MobileDock from "@/components/comms/MobileDock";
+import HandheldDeck, { HANDHELD_DECK_CLEARANCE } from "@/components/handheld/HandheldDeck";
 
 function MobileCommsContent({
   children,
@@ -39,19 +39,18 @@ function MobileCommsContent({
           setIsDarkMode={setIsDarkMode}
         />
       ) : (
-        <div className="flex-1 overflow-y-auto scrollbar-hide flex flex-col" style={{ background: 'var(--bg, #faf8f5)' }}>
+        <div
+          data-handheld-screen="true"
+          className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col"
+          style={{ background: 'var(--bg, #faf8f5)', paddingBottom: HANDHELD_DECK_CLEARANCE }}
+        >
           <div className="flex-1">{children}</div>
         </div>
       )}
 
       {!isBare && <NewYearCountdownBar />}
 
-      {showDock && (
-        <MobileDock
-          isDarkMode={isDarkMode}
-          currentPageName={currentPageName}
-        />
-      )}
+      {showDock && <HandheldDeck />}
     </>
   );
 }
