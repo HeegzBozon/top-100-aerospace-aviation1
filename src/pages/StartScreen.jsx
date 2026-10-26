@@ -15,7 +15,7 @@ import { START_MENU, VOTE_OPTION } from '@/components/start/startMenuConfig';
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 
 // The title screen. The app opens like a game: the hour's sky, the mark, the
-// cycle's countdown, and the six surfaces one step off the dashboard.
+// cycle's countdown, and the surfaces one step off the dashboard.
 //
 // It is a menu, so the console treats it as one: the surfaces are handed to the
 // ring as a picker, and the cursor it walks is the selection drawn on the keys.
@@ -57,7 +57,7 @@ export default function StartScreen() {
   const voteLive = !status.loading && !status.failed && !!status.votingEnd && !vote.done;
 
   // What the ring walks, top to bottom: the ballot first when it is live, then
-  // the six surfaces in the order the grid draws them.
+  // the surfaces in the order the grid draws them.
   const options = useMemo(() => (voteLive ? [VOTE_OPTION, ...START_MENU] : START_MENU), [voteLive]);
 
   const optionsRef = useRef(options);
