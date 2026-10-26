@@ -43,14 +43,18 @@ export default function HandheldScreenFrame() {
       {/* The step down to the pane. The band is laid from the pane's own edge
           outwards and clipped by the moulding, so its inner curve IS the pane's
           curve: the three radii nest (16, 13, 11), the rail's rounded corners sit
-          inside it, and no part of the recess can ever paint over the picture. */}
+          inside it, and no part of the recess can ever paint over the picture.
+          The band is laid wider than it reads (12px) because the clip, not the
+          spread, is what shapes its outer curve — at 9px the spread's own corner
+          would fall short of the clip's and leave a gap at each of the four
+          corners for the surface behind the frame to show through as white. */}
       <div
         className="hh-well absolute overflow-hidden rounded-[13px]"
         style={{ inset: MOULDING + RIM }}
       >
         <div
           className="absolute rounded-[11px]"
-          style={{ inset: RECESS, boxShadow: "0 0 0 9px var(--hh-recess)" }}
+          style={{ inset: RECESS, boxShadow: "0 0 0 12px var(--hh-recess)" }}
         />
       </div>
 
