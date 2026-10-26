@@ -669,16 +669,25 @@ button:focus-visible {
 }
 
 /* Departure: the card gives the frame back to the app. */
-/* The cover lifts. The card does not dissolve away — it turns on its own edge
-   like the front page of a magazine, handing the glass to the surface beneath. */
+/* The cover peels. The card does not dissolve away and does not swing off its
+   edge: it rolls back off the corner the way the whole app turns a page, handing
+   the glass to the surface beneath it. */
 .as-depart {
-  transform-origin: left center;
-  animation: as-depart 0.72s cubic-bezier(0.34, 0.01, 0.16, 1) forwards;
+  animation: as-depart 0.78s cubic-bezier(0.36, 0, 0.18, 1) forwards;
 }
 @keyframes as-depart {
-  0% { opacity: 1; transform: perspective(1500px) rotateY(0deg) translateX(0); }
-  55% { opacity: 1; }
-  100% { opacity: 0; transform: perspective(1500px) rotateY(-96deg) translateX(-6%); }
+  0% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 100% 100%, 0% 100%);
+    opacity: 1;
+  }
+  14% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 100% 100%, 0% 100%);
+    opacity: 1;
+  }
+  100% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%, 0% 100%);
+    opacity: 0;
+  }
 }
 
 /* The dissolve through the app's own cream, like a projector changing reels. */
@@ -698,11 +707,13 @@ button:focus-visible {
   to { opacity: 0; }
 }
 
-/* ===== THE PAGE TURN =====
-   A leaf of paper crosses the picture on every surface change: it whips in over
-   the old page, holds for a beat to hide the swap, then peels off along its own
-   left edge. It is clipped to the glass, so the turn reads as the screen being
-   turned — never the hardware. */
+/* ===== THE PAGE TURN — A SHEET ROLLING OFF THE CORNER =====
+   A sheet of paper crosses the picture on every surface change: it lies over the
+   old surface for a beat, then peels back from the bottom-right corner and takes
+   itself away. Three parts of one sheet — the shadow it throws on the page
+   beneath, the stock itself, and the lit roll where it lifts — all riding the
+   same clip-path, driven from pagePeel.js. Clipped to the glass, so the turn
+   reads as the screen being turned, never the hardware. */
 .page-turn-clip {
   position: fixed;
   inset: 0;
@@ -710,19 +721,38 @@ button:focus-visible {
   overflow: hidden;
   pointer-events: none;
 }
-.page-leaf {
+.page-cast,
+.page-sheet,
+.page-curl {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transform-origin: left center;
+  will-change: clip-path, opacity;
+}
+/* The shadow the lip throws past itself, onto the page already turned */
+.page-cast {
   background: linear-gradient(
-    96deg,
-    rgba(250, 248, 245, 0.99) 0%,
-    rgba(250, 248, 245, 0.94) 46%,
-    rgba(214, 186, 148, 0.72) 72%,
-    rgba(30, 58, 90, 0.34) 100%
+    135deg,
+    rgba(7, 17, 31, 0.34) 0%,
+    rgba(7, 17, 31, 0.12) 52%,
+    rgba(7, 17, 31, 0) 100%
   );
-  box-shadow: -26px 0 50px rgba(7, 17, 31, 0.44), inset 1px 0 0 rgba(255, 255, 255, 0.72);
+}
+/* The stock: warm cream, lit down the side it is rolling towards */
+.page-sheet {
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.88) 0%, rgba(250, 248, 245, 0) 36%),
+    linear-gradient(140deg, #fbf7f0 0%, #faf8f5 46%, #efe4d3 100%);
+}
+/* The roll: white paper turning over into rose gold, then copper in the bend */
+.page-curl {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(240, 226, 202, 0.96) 40%,
+    rgba(201, 168, 124, 0.92) 74%,
+    rgba(184, 115, 51, 0.74) 100%
+  );
 }
 
 @media (max-width: 767px) {
@@ -733,7 +763,9 @@ button:focus-visible {
     bottom: calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 5px);
     border-radius: 12px;
   }
-  .page-leaf {
+  .page-cast,
+  .page-sheet,
+  .page-curl {
     border-radius: 12px;
   }
 }

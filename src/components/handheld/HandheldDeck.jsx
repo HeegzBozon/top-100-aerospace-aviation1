@@ -25,7 +25,7 @@ import { openingPlaysNow } from "@/components/core/appOpening";
 // to inset every surface, so nothing is ever hidden behind the hardware.
 export const HANDHELD_TOP_CLEARANCE = 12;
 export const HANDHELD_BAR_CLEARANCE = 52;
-export const HANDHELD_DECK_CLEARANCE = 176;
+export const HANDHELD_DECK_CLEARANCE = 168;
 
 // The desk margin: how much surface shows around the shell, on every side. The
 // device sits inside the viewport instead of filling it, so it reads as an
@@ -70,13 +70,6 @@ export default function HandheldDeck() {
 
   const { finishKey, finish, finishes, chooseFinish } = useHandheldFinish();
 
-  // The finish is hardware, so it lives on the menu beside the cartridges —
-  // a drawer of mouldings, not a preference buried in a page.
-  const finishItems = useMemo(
-    () => finishes.map((option) => ({ label: option.label, finishKey: option.key, swatch: option.swatch })),
-    [finishes],
-  );
-
   const menuGroups = useMemo(
     () => [
       ...groups,
@@ -92,6 +85,20 @@ export default function HandheldDeck() {
   const flat = useMemo(() => menuGroups.flatMap((group) => group.items), [menuGroups]);
   const locationKey = `${location.pathname}${location.search}`;
   const surface = useMemo(() => surfaceLabel(location, groups), [location, groups]);
+
+  // The finish is hardware, so it lives on the menu beside the cartridges — a
+  // drawer of mouldings, not a preference buried in a page. The one the device
+  // is wearing carries the same Now mark the list gives the surface you are on.
+  const finishItems = useMemo(
+    () =>
+      finishes.map((option) => ({
+        label: option.label,
+        finishKey: option.key,
+        swatch: option.swatch,
+        to: option.key === finishKey ? locationKey : undefined,
+      })),
+    [finishes, finishKey, locationKey],
+  );
 
   const nav = useModuleNavigation(locationKey);
   const flashTimer = useRef(0);
@@ -196,6 +203,20 @@ export default function HandheldDeck() {
   // The finish drawer. It opens from the wheel's Menu — and from the chin strip,
   // where the finish the device is wearing is written, so the device itself is
   // the way to change what it is wearing.
+  // A finish is worn whole, never mixed. Choosing one puts it on the device and
+  // steps the drawer aside, so the moulding you just picked is what you see.
+  const applyFinish = useCallback(
+    (item) => {
+      if (!item) return;
+      chooseFinish(item.finishKey);
+      setMenuMode(null);
+      blip("toggle");
+      buzz();
+      announce(`Finish · ${item.label}`);
+    },
+    [chooseFinish, announce],
+  );
+
   const openFinish = useCallback(() => {
     if (booting) finishBoot();
     setCursor(Math.max(0, finishItems.findIndex((item) => item.finishKey === finishKey)));
@@ -419,20 +440,15 @@ export default function HandheldDeck() {
       return;
     }
     if (menuMode === "finish") {
-      const item = finishItems[cursor];
-      if (item) {
-        chooseFinish(item.finishKey);
-        blip("toggle");
-        buzz();
-        announce(`Finish · ${item.label}`);
-      }
+      // The wheel's centre wears what the cursor is standing on.
+      applyFinish(finishItems[cursor]);
       return;
     }
     if (!menuOpen) return openMenu();
     const item = flat[cursor];
     if (item) go(item);
     else closeMenu();
-  }, [finishBoot, menuMode, sectionItems, finishItems, cursor, jumpToModule, chooseFinish, announce, menuOpen, openMenu, flat, go, closeMenu]);
+  }, [finishBoot, menuMode, sectionItems, finishItems, cursor, jumpToModule, applyFinish, announce, menuOpen, openMenu, flat, go, closeMenu]);
 
   const back = useCallback(() => {
     blip("back");
@@ -510,7 +526,7 @@ export default function HandheldDeck() {
                 : undefined
           }
           onActivate={(item) => {
-            if (menuMode === "finish") return select();
+            if (menuMode === "finish") return applyFinish(item);
             if (menuMode !== "sections") return go(item);
             setMenuMode(null);
             jumpToModule(item.sectionIndex);
@@ -542,7 +558,7 @@ export default function HandheldDeck() {
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        <div className="flex items-center gap-3 px-4 pt-3">
+        <div className="flex items-center gap-3 px-4 pt-2">
           {/* Speaker grille — a punched dot matrix, and the left block that
               balances the face buttons so the wheel sits dead centre */}
           <div className="hh-grille h-[76px] w-[76px] shrink-0 rounded-[14px]" />
@@ -570,7 +586,7 @@ export default function HandheldDeck() {
 
         {/* The chin seam, the case screws and the model strip */}
         <div
-          className="hh-engrave mt-1.5 flex items-center justify-between gap-2 px-4 pb-1 pt-1.5"
+          className="hh-engrave mt-1 flex items-center justify-between gap-2 px-4 pb-[3px] pt-1"
           style={{
             borderTop: "1px solid rgb(var(--hh-metal-rgb) / 0.24)",
             boxShadow: "inset 0 1px 0 var(--hh-shell-spec)",
@@ -590,7 +606,7 @@ export default function HandheldDeck() {
             type="button"
             onClick={openFinish}
             aria-label={`Hardware finish, ${finish.label}. Choose another finish`}
-            className="flex min-w-0 items-center gap-1.5 rounded-full px-2 py-[3px] text-[7px] font-bold uppercase tracking-[0.26em] transition-transform active:scale-95"
+            className="flex min-w-0 items-center gap-1.5 rounded-full px-2 py-[2px] text-[7px] font-bold uppercase tracking-[0.22em] transition-transform active:scale-95"
             style={{
               color: "var(--hh-metal)",
               background: "rgb(var(--hh-metal-rgb) / 0.10)",
@@ -598,7 +614,7 @@ export default function HandheldDeck() {
                 "inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.42), 0 1px 3px rgba(7,17,31,0.18)",
             }}
           >
-            <Palette className="h-[9px] w-[9px] shrink-0" style={{ color: "var(--hh-metal)" }} />
+            <Palette className="h-[8px] w-[8px] shrink-0" style={{ color: "var(--hh-metal)" }} />
             <span className="flex shrink-0 items-center gap-[3px]">
               {(finish.swatch || []).map((tone) => (
                 <span
