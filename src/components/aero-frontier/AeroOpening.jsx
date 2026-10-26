@@ -6,7 +6,7 @@ import { AERO } from "./aeroConfig";
 // in if it cannot be. A blank glass would be the wrong answer either way.
 export default function AeroOpening({ label = "Waking the field", note, onRetry }) {
   return (
-    <div className="flex min-h-screen items-center justify-center px-5" style={{ background: AERO.night }}>
+    <div className="flex h-full min-h-[260px] items-center justify-center px-5" style={{ background: AERO.night }}>
       <div className="w-full max-w-sm text-center">
         <p className="text-[7.5px] font-bold uppercase tracking-[0.3em]" style={{ color: AERO.amber }}>
           Aero-Frontier

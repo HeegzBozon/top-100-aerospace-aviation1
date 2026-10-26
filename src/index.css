@@ -953,3 +953,50 @@ button:focus-visible {
   .af-tick, .af-roll { animation: none; }
   .af-gauge { transition: none; }
 }
+
+/* ===== AERO-FRONTIER — HOLLOW FIELD, STAGED =====
+   The game's own presentation: a title card that plays itself out, toasts that
+   arrive and leave on the same beat, and a caret for the line currently being
+   said. Nothing here is timed in JavaScript, so a scene can never wait on a
+   timer that did not fire. */
+.af-card {
+  animation: af-card 2.6s ease both;
+}
+@keyframes af-card {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  78% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.af-toast {
+  animation: af-toast 2.6s ease both;
+}
+@keyframes af-toast {
+  0% { opacity: 0; transform: translateY(5px); }
+  10% { opacity: 1; transform: translateY(0); }
+  84% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-3px); }
+}
+
+.af-caret {
+  animation: af-caret 900ms steps(1) infinite;
+}
+@keyframes af-caret {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.af-bars {
+  animation: af-bars 320ms ease both;
+}
+@keyframes af-bars {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .af-card, .af-toast, .af-caret, .af-bars {
+    animation: none;
+  }
+}
