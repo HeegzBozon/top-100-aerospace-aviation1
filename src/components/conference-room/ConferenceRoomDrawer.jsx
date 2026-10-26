@@ -11,6 +11,7 @@ import RsvpControl from './RsvpControl';
 import VolunteerHostButton from './VolunteerHostButton';
 import NowFacilitatingRibbon from './NowFacilitatingRibbon';
 import FocusAreaBoard from './FocusAreaBoard';
+import AttendeeRoster from './AttendeeRoster';
 import VerifyAttendanceButton from './VerifyAttendanceButton';
 import useConferenceNotes from './useConferenceNotes';
 import BookYourStay from '@/components/travel/BookYourStay';
@@ -139,6 +140,8 @@ export default function ConferenceRoomDrawer({ room, attendees, user, accent, op
               <AvatarCluster items={volunteers} accent={accent} size={20} />
             </div>
           )}
+
+          <AttendeeRoster room={room} attendees={list} user={user} accent={accent} />
 
           {room.facilitator_name && (
             <div className="flex items-center gap-1.5">

@@ -15,7 +15,7 @@ import ShortcutsTile from './ShortcutsTile';
 import ModuleGrid from './ModuleGrid';
 import LensSwitcher from '@/components/lens-nav/LensSwitcher';
 import LensLanding from '@/components/lens-nav/LensLanding';
-import { stagesFor, stageMeta } from '@/components/lens-nav/lensConfig';
+import { LENSES, stagesFor, stageMeta } from '@/components/lens-nav/lensConfig';
 import PlatformBoardView from '@/components/platform-board/PlatformBoardView';
 import ConferenceRoomView from '@/components/conference-room/ConferenceRoomView';
 import RibbonCuttingsView from '@/components/ribbon-cuttings/RibbonCuttingsView';
@@ -40,9 +40,27 @@ export default function BulletinBoardCluster({
   const [composerOpen, setComposerOpen] = useState(false);
   const [composeType, setComposeType] = useState('note');
   const [editingPost, setEditingPost] = useState(null);
-  const [lens, setLens] = useState('lifecycle');
-  const [stage, setStage] = useState('aspiring');
-  const [board, setBoard] = useState(null);
+  // Deep links from a Fellow's profile open a board directly and, for Mission
+  // Rooms, the referenced room. The lens and stage are set to that board's
+  // natural home so returning from it lands somewhere the board actually lives.
+  const deepLink = (() => {
+    try {
+      const query = new URLSearchParams(window.location.search);
+      const requested = query.get('board');
+      if (!requested) return null;
+      const room = query.get('room');
+      for (const l of LENSES) {
+        const home = stagesFor(l.key).find((s) => (s.boards || []).includes(requested));
+        if (home) return { board: requested, lens: l.key, stage: home.key, room };
+      }
+      return { board: requested, room };
+    } catch { return null; }
+  })();
+
+  const [lens, setLens] = useState(deepLink?.lens || 'lifecycle');
+  const [stage, setStage] = useState(deepLink?.stage || 'aspiring');
+  const [board, setBoard] = useState(deepLink?.board || null);
+  const [initialRoomId] = useState(deepLink?.room || null);
 
   const handleLensChange = (next) => {
     setLens(next);
@@ -127,7 +145,7 @@ export default function BulletinBoardCluster({
           ) : board === 'platform' ? (
             <PlatformBoardView user={user} accent={accent} />
           ) : board === 'conference' ? (
-            <ConferenceRoomView user={user} accent={accent} />
+            <ConferenceRoomView user={user} accent={accent} initialRoomId={initialRoomId} />
           ) : board === 'ribbon' ? (
             <RibbonCuttingsView user={user} accent={accent} />
           ) : board === 'jobs' ? (
