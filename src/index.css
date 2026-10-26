@@ -596,6 +596,51 @@ button:focus-visible {
   to { transform: scaleX(1); }
 }
 
+/* The title itself: a film title settling into place out of loose letterspacing. */
+.as-title {
+  animation: as-title 1.15s cubic-bezier(0.22, 1, 0.36, 1) 0.7s both;
+}
+@keyframes as-title {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+    letter-spacing: 0.18em;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    letter-spacing: 0.01em;
+  }
+}
+
+/* The studio mark: held, then handed over. */
+.as-mark {
+  animation: as-mark 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes as-mark {
+  from { opacity: 0; transform: translateY(6px); filter: blur(3px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Departure: the card gives the frame back to the app. */
+.as-depart {
+  animation: as-depart 0.56s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes as-depart {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.03); }
+}
+
+/* The dissolve through the app's own cream, like a projector changing reels. */
+.as-handoff {
+  animation: as-handoff 0.5s ease-out forwards;
+}
+@keyframes as-handoff {
+  0% { opacity: 0; }
+  45% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
 .as-out {
   animation: as-out 0.6s ease forwards;
 }
@@ -604,11 +649,15 @@ button:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .as-veil, .as-rise, .as-rule, .as-out {
+  .as-veil, .as-rise, .as-rule, .as-out, .as-title, .as-mark, .as-depart {
     animation: none;
   }
   .as-hair {
     animation: none;
     transform: scaleX(1);
+  }
+  .as-handoff {
+    animation: none;
+    opacity: 0;
   }
 }

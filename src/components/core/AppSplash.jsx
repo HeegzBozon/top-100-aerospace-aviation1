@@ -1,31 +1,29 @@
 import { useCallback, useEffect, useState } from "react";
 import moment from "moment";
 import { base44 } from "@/api/base44Client";
-import { hourPhase, isReturningVisitor, markVisit, openingPlaysNow } from "./appOpening";
+import { hourPhase, isReturningVisitor, markVisit, pickHint, pickLine } from "./appOpening";
 
-// The title card. The app opens the way the console powers on: the hour's sky
-// behind the brand, then a welcome — plain for a first visit, by name for a
-// Fellow coming back. It plays once per session, in the glass on a phone and
-// full-frame on a desk, and any tap goes straight through to the app.
+// The title card. Every load opens the way a game opens: the studio mark, the
+// hour's sky, then the welcome — plain for a first visit, by name for a Fellow
+// coming back. It plays on every page load and stands in for the console's own
+// power-on; any tap goes straight through to the app.
 const LOGO =
   "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png";
-const SEQUENCE_MS = 3600;
-const FADE_MS = 600;
+const SEQUENCE_MS = 4400;
+const DEPART_MS = 560;
 
 export default function AppSplash() {
-  // Asked during the first render of the load, before anything else: whichever
-  // of the title card and the console's power-on asks first gets to play.
-  const [plays] = useState(() => openingPlaysNow());
   const [phase] = useState(() => hourPhase());
+  const [line] = useState(() => pickLine(phase));
+  const [hint] = useState(() => pickHint());
   const [who, setWho] = useState(() => ({ back: isReturningVisitor(), first: "" }));
-  const [closing, setClosing] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const [gone, setGone] = useState(false);
 
-  const close = useCallback(() => setClosing(true), []);
+  const close = useCallback(() => setLeaving(true), []);
 
-  // A welcome, and the first mark of this device.
+  // A welcome, and the first mark this device leaves.
   useEffect(() => {
-    if (!plays) return undefined;
     markVisit();
     let cancelled = false;
     base44.auth
@@ -41,28 +39,27 @@ export default function AppSplash() {
     return () => {
       cancelled = true;
     };
-  }, [plays]);
+  }, []);
 
   useEffect(() => {
-    if (!plays) return undefined;
     const timer = window.setTimeout(close, SEQUENCE_MS);
     return () => window.clearTimeout(timer);
-  }, [plays, close]);
+  }, [close]);
 
   useEffect(() => {
-    if (!closing) return undefined;
-    const timer = window.setTimeout(() => setGone(true), FADE_MS);
+    if (!leaving) return undefined;
+    const timer = window.setTimeout(() => setGone(true), DEPART_MS);
     return () => window.clearTimeout(timer);
-  }, [closing]);
+  }, [leaving]);
 
-  if (!plays || gone) return null;
+  if (gone) return null;
 
   const headline = who.back ? "Welcome back" : "Welcome";
   const stamp = moment().format("ddd D MMM · HH:mm");
 
   return (
     <div
-      className={`as-frame ${closing ? "as-out" : ""}`}
+      className={`as-frame ${leaving ? "as-depart" : ""}`}
       style={{ background: phase.sky }}
       role="status"
       aria-label={`${headline}. ${phase.kicker}.`}
@@ -92,20 +89,20 @@ export default function AppSplash() {
       />
 
       <div className="pointer-events-none relative z-20 flex h-full flex-col justify-between px-7 py-8 md:px-16 md:py-14">
-        <div className="flex items-center gap-3">
-          <img src={LOGO} alt="" className="as-rise h-8 w-8 object-contain" />
-          <span
-            className="as-rise text-[9px] font-bold uppercase tracking-[0.34em] text-editorial-gold"
-            style={{ animationDelay: "0.1s" }}
-          >
+        <div className="as-mark flex items-center gap-3">
+          <img src={LOGO} alt="" className="h-8 w-8 object-contain md:h-10 md:w-10" />
+          <span className="text-[9px] font-bold uppercase tracking-[0.34em] text-editorial-gold">
             TOP 100 Aerospace &amp; Aviation
+          </span>
+          <span className="ml-auto text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/40">
+            MMXXVI
           </span>
         </div>
 
         <div className="max-w-2xl">
           <p
             className="as-rise text-[9px] font-bold uppercase tracking-[0.34em] text-editorial-copper"
-            style={{ animationDelay: "0.4s" }}
+            style={{ animationDelay: "0.35s" }}
           >
             {phase.kicker}
           </p>
@@ -116,26 +113,31 @@ export default function AppSplash() {
           />
 
           <h1
-            className="as-rise mt-6 font-heading text-4xl leading-[1.06] text-editorial-cream md:text-6xl"
-            style={{ animationDelay: "0.6s" }}
+            className="as-title mt-5 font-heading text-[2.6rem] leading-[1.02] text-editorial-cream md:text-8xl"
+            style={{ color: "#FAF8F5" }}
           >
             {headline}
             {who.first ? (
               <>
-                , <span className="italic text-editorial-gold">{who.first}</span>
+                ,{" "}
+                <span className="italic" style={{ color: "#C9A87C" }}>
+                  {who.first}
+                </span>
               </>
             ) : null}
           </h1>
 
-          <figure className="as-rise mt-5 max-w-xl" style={{ animationDelay: "0.95s" }}>
-            <blockquote className="font-heading text-[15px] italic leading-relaxed text-editorial-cream/85 md:text-xl">
-              &ldquo;{phase.quote.text}&rdquo;
-            </blockquote>
-            <figcaption className="mt-3 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-gold">
-              {phase.quote.name}
-              {phase.quote.source ? ` · ${phase.quote.source}` : ""}
-            </figcaption>
-          </figure>
+          {line ? (
+            <figure className="as-rise mt-5 max-w-xl" style={{ animationDelay: "1.2s" }}>
+              <blockquote className="font-heading text-[15px] italic leading-relaxed text-editorial-cream/85 md:text-xl">
+                &ldquo;{line.text}&rdquo;
+              </blockquote>
+              <figcaption className="mt-3 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-gold">
+                {line.name}
+                {line.source ? ` · ${line.source}` : ""}
+              </figcaption>
+            </figure>
+          ) : null}
         </div>
 
         <div>
@@ -149,11 +151,21 @@ export default function AppSplash() {
             />
           </div>
           <div className="mt-3 flex items-center justify-between gap-4 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/50">
-            <span>Tap to enter</span>
+            <span className="as-rise" style={{ animationDelay: "2.2s" }}>
+              {hint}
+            </span>
             <span>{stamp}</span>
           </div>
         </div>
       </div>
+
+      {/* The dissolve: the projector hands the frame over to the app's own surface */}
+      {leaving ? (
+        <div
+          className="as-handoff pointer-events-none absolute inset-0 z-30"
+          style={{ background: "#FAF8F5" }}
+        />
+      ) : null}
     </div>
   );
 }
