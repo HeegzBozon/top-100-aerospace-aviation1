@@ -1,24 +1,23 @@
 import { Bell, CircleUser, Volume2, VolumeX } from "lucide-react";
 import { HANDHELD_LOGO } from "./HandheldMasthead";
 
-// The top bar, inside the glass. It is the app's own bar rather than the case's:
-// a dark stadium across the head of the picture, floating over the surface, and it
-// carries the three things a hand reaches for — you, what has come in, and the
-// sound latch. The mark at its left is the way home; beside it, where you are
-// reads as a title with a breadcrumb under it.
+// The control rail, inside the glass. One line, and three glyphs: where you are,
+// then the three things a hand actually reaches for — you, what has come in, and
+// the sound latch. The mark at its left is the way home.
 //
-// The case above it is branding only. Everything that acts lives here, inside the
-// glass, where the controls belong.
-const BAR_HEIGHT = 48;
+// Nothing else is drawn here. No second row, no plates on the keys, no counts: the
+// rail should read as the top edge of the picture rather than as a second toolbar,
+// and the surfaces below it keep the room.
+const RAIL_HEIGHT = 40;
 
-function BarKey({ label, onClick, children }) {
+function RailKey({ label, onClick, lit = false, children }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="hh-bar-key flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[7px] transition-transform active:translate-y-[1px]"
-      style={{ color: "var(--hh-key-ink)" }}
+      className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full transition-transform active:translate-y-[1px]"
+      style={{ color: lit ? "var(--hh-metal)" : "var(--hh-ink)" }}
     >
       {children}
     </button>
@@ -38,55 +37,58 @@ export default function ScreenTopBar({
     <div
       className="fixed z-[34] select-none md:hidden"
       style={{
-        left: "calc(var(--hh-glass-inset, 7px) + 6px)",
-        right: "calc(var(--hh-glass-inset, 7px) + 6px)",
-        top: "calc(var(--hh-top, 69px) + env(safe-area-inset-top) + 6px)",
-        height: BAR_HEIGHT,
+        left: "calc(var(--hh-glass-inset, 32px) + 8px)",
+        right: "calc(var(--hh-glass-inset, 32px) + 8px)",
+        top: "calc(var(--hh-top, 73px) + env(safe-area-inset-top) + 6px)",
+        height: RAIL_HEIGHT,
       }}
     >
       <div className="hh-screenbar flex h-full items-center gap-2 pl-1.5 pr-1.5">
-        {/* The mark, and the way home: the one thing everybody tries a logo for. */}
+        {/* The mark, and the way home. */}
         <button
           type="button"
           onClick={onHome}
           aria-label="Home — the front screen"
-          className="hh-badge flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full transition-transform active:translate-y-[1px]"
+          className="hh-badge flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full transition-transform active:translate-y-[1px]"
         >
-          <img src={HANDHELD_LOGO} alt="" className="h-[21px] w-[21px] object-contain" />
+          <img src={HANDHELD_LOGO} alt="" className="h-[16px] w-[16px] object-contain" />
         </button>
 
-        <div className="min-w-0 flex-1 leading-none">
-          <p
-            className="truncate text-[8.5px] font-bold uppercase tracking-[0.18em]"
-            style={{ color: "var(--hh-key-1)" }}
-          >
+        {/* Where you are: the surface, then the section as a quiet suffix. */}
+        <p className="flex min-w-0 flex-1 items-center gap-2 truncate text-[8.5px] font-bold uppercase tracking-[0.20em]">
+          <span className="truncate" style={{ color: "var(--hh-key-1)" }}>
             {surface}
-          </p>
-          <p
-            className="mt-[4px] flex items-center gap-1.5 truncate text-[6.5px] font-bold uppercase tracking-[0.20em]"
-            style={{ color: "rgb(255,255,255,0.56)" }}
-          >
-            <span className="h-[5px] w-[5px] shrink-0 rounded-full" style={{ background: "var(--hh-led)" }} />
-            <span className="truncate">{module || "Home"}</span>
-          </p>
-        </div>
+          </span>
+          {module ? (
+            <span
+              className="flex min-w-0 shrink items-center gap-1.5 text-[6.5px] tracking-[0.18em]"
+              style={{ color: "rgb(255,255,255,0.52)" }}
+            >
+              <span
+                className="h-[4px] w-[4px] shrink-0 rounded-full"
+                style={{ background: "var(--hh-led)" }}
+              />
+              <span className="truncate">{module}</span>
+            </span>
+          ) : null}
+        </p>
 
-        <div className="flex shrink-0 items-center gap-1">
-          <BarKey label="Your profile" onClick={onProfile}>
-            <CircleUser className="h-[13px] w-[13px]" strokeWidth={1.8} />
-          </BarKey>
+        <div className="flex shrink-0 items-center gap-0.5">
+          <RailKey label="Your profile" onClick={onProfile}>
+            <CircleUser className="h-[15px] w-[15px]" strokeWidth={1.7} />
+          </RailKey>
 
-          <BarKey label="Notifications" onClick={onNotifications}>
-            <Bell className="h-[13px] w-[13px]" strokeWidth={1.8} />
-          </BarKey>
+          <RailKey label="Notifications" onClick={onNotifications}>
+            <Bell className="h-[15px] w-[15px]" strokeWidth={1.7} />
+          </RailKey>
 
-          <BarKey label={soundOn ? "Sound off" : "Sound on"} onClick={onToggleSound}>
+          <RailKey label={soundOn ? "Sound off" : "Sound on"} onClick={onToggleSound} lit={soundOn}>
             {soundOn ? (
-              <Volume2 className="h-[13px] w-[13px]" strokeWidth={1.8} />
+              <Volume2 className="h-[15px] w-[15px]" strokeWidth={1.7} />
             ) : (
-              <VolumeX className="h-[13px] w-[13px]" strokeWidth={1.8} />
+              <VolumeX className="h-[15px] w-[15px]" strokeWidth={1.7} />
             )}
-          </BarKey>
+          </RailKey>
         </div>
       </div>
     </div>

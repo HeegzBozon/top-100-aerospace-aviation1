@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Palette } from "lucide-react";
@@ -23,27 +23,11 @@ import { surfaceLabel } from "./handheldDestinations";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
 import { openingPlaysNow } from "@/components/core/appOpening";
+import { applyShellVars, releaseShellVars } from "./handheldGeometry";
 
-// Chrome the device occupies: the shell lip above the glass, the brand bar that
-// lives inside the glass, and the control chin below. index.css consumes these
-// to inset every surface, so nothing is ever hidden behind the hardware.
-export const HANDHELD_TOP_CLEARANCE = 7;
-export const HANDHELD_BAR_CLEARANCE = 30;
-export const HANDHELD_DECK_CLEARANCE = 132;
-
-// The bar inside the glass — the stadium carrying you, what has come in, and the
-// sound latch — plus the air it floats in and the room it leaves under itself.
-export const HANDHELD_NAV_CLEARANCE = 60;
-
-// The desk margin: how much surface shows around the shell, on every side. The
-// device sits inside the viewport instead of filling it, so it reads as an
-// object.
-export const HANDHELD_FRAME_GUTTER = 14;
-
-// The moulding around the glass. --hh-top and --hh-bottom mark the glass opening,
-// so this width is added to both; HandheldScreenFrame draws the bezel back out to
-// the device bounds with it.
-export const HANDHELD_BEZEL_WIDTH = 18;
+// The device's space is measured in handheldGeometry — one set of numbers, applied
+// by the console and by the loading chassis alike, so the hardware is never hidden
+// behind a surface and the picture does not shift when the device changes hands.
 
 const BOOT_KEY = "top100-handheld-booted";
 
@@ -141,38 +125,13 @@ export default function HandheldDeck() {
     [sectionItems, finishItems, flat],
   );
 
-  // Reserve the hardware's space, and hand it back when the console is put away.
-  useEffect(() => {
-    document.body.classList.add("hh-shell");
-    const root = document.documentElement.style;
-    // Above the glass, on the case itself: the shell's top edge, the legend band,
-    // then the bezel — and the picture opens below all three.
-    root.setProperty("--hh-shell-top", `${HANDHELD_TOP_CLEARANCE + HANDHELD_FRAME_GUTTER}px`);
-    root.setProperty(
-      "--hh-top",
-      `${HANDHELD_TOP_CLEARANCE +
-        HANDHELD_BAR_CLEARANCE +
-        HANDHELD_FRAME_GUTTER +
-        HANDHELD_BEZEL_WIDTH}px`,
-    );
-    root.setProperty("--hh-bar", `${HANDHELD_BAR_CLEARANCE}px`);
-    root.setProperty("--hh-nav", `${HANDHELD_NAV_CLEARANCE}px`);
-    root.setProperty(
-      "--hh-bottom",
-      `${HANDHELD_DECK_CLEARANCE + HANDHELD_FRAME_GUTTER + HANDHELD_BEZEL_WIDTH}px`,
-    );
-    root.setProperty("--hh-frame", `${HANDHELD_FRAME_GUTTER}px`);
-    root.setProperty("--hh-bezel-w", `${HANDHELD_BEZEL_WIDTH}px`);
-    return () => {
-      document.body.classList.remove("hh-shell");
-      root.setProperty("--hh-top", "0px");
-      root.setProperty("--hh-bar", "0px");
-      root.setProperty("--hh-nav", "0px");
-      root.setProperty("--hh-shell-top", "0px");
-      root.setProperty("--hh-bottom", "0px");
-      root.setProperty("--hh-frame", "0px");
-      root.setProperty("--hh-bezel-w", "0px");
-    };
+  // Reserve the hardware's space, and hand it back when the console is put away
+  // (a surface asking for the whole glass). A layout effect, so the hardware is
+  // already in place on the frame the console appears in, and the same values the
+  // loading chassis applied — so the hand-over between them is invisible.
+  useLayoutEffect(() => {
+    applyShellVars();
+    return releaseShellVars;
   }, []);
 
   useEffect(() => () => clearTimeout(flashTimer.current), []);

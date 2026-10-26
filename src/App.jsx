@@ -13,6 +13,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HandheldShell from '@/components/handheld/HandheldShell';
 import AppSplash from '@/components/core/AppSplash';
+import ConsoleLoading from '@/components/core/ConsoleLoading';
 import PageTurn from '@/components/core/PageTurn';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
@@ -103,11 +104,8 @@ const AuthenticatedApp = () => {
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
-      </div>
-    );
+    // Console first: the device is painted, and the wait happens in its glass.
+    return <ConsoleLoading label="Powering up" />;
   }
 
   // Handle authentication errors
@@ -125,11 +123,7 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <PageTurn>
-    <Suspense fallback={
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense fallback={<ConsoleLoading label="Loading surface" />}>
     <Routes>
       {/* Everything renders inside the device on phones; desktop is untouched. */}
       <Route element={<HandheldShell />}>

@@ -273,8 +273,8 @@ button:focus-visible {
    reclaim the whole viewport when the console is put away (the message composer,
    for one). */
 :root {
-  --hh-top: 69px;
-  --hh-bar: 30px;
+  --hh-top: 73px;
+  --hh-bar: 34px;
   --hh-shell-top: 21px;
   --hh-bottom: 164px;
 
@@ -286,7 +286,7 @@ button:focus-visible {
 
   /* The bar inside the glass: the stadium itself, the air it floats in, and the
      room every surface leaves under it. Content begins below --hh-top + --hh-nav. */
-  --hh-nav: 60px;
+  --hh-nav: 52px;
 
   /* Finish tokens — the house finish, until a Fellow changes it (see
      handheldFinishes.js, which overwrites every one of these). */
