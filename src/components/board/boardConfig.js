@@ -9,6 +9,26 @@ export const BRAND = {
   ink: "#1A1A1A",
 };
 
+// The ring's own name for everything on the board. The console's cursor is held as
+// one of these keys, so the option the wheel is standing on and the card that
+// answers it can never be spelled two different ways.
+export const cursorKey = {
+  card: (key) => `card:${key}`,
+  task: (key) => `task:${key}`,
+  step: (key) => `step:${key}`,
+};
+
+// What the cursor looks like where it stands: a card on a direction, a task in the
+// check-in list. One tone and one weight, so the wheel's position reads the same
+// anywhere on the surface — an outline, so it sits over the card rather than
+// redrawing the card's own border.
+export const CURSOR = {
+  outline: `2px solid ${BRAND.copper}`,
+  outlineOffset: "2px",
+  boxShadow: "0 8px 18px rgba(30,58,90,0.18)",
+  transform: "translateY(-1px)",
+};
+
 // The Dashboard. Four directions across; the depth lives inside each one. Sideways is
 // the breadth of the platform, down a column is a single topic in full — the T.
 // Every card is a way into a surface that already exists: the dashboard holds the

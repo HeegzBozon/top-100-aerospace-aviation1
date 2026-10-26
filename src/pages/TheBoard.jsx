@@ -8,6 +8,8 @@ import SeasonBand from '@/components/board/SeasonBand';
 import { useCheckIn } from '@/components/board/useCheckIn';
 import HomeDock from '@/components/home-v3/HomeDock';
 import { BOARD_COLUMNS, BRAND } from '@/components/board/boardConfig';
+import useBoardCards from '@/components/board/useBoardCards';
+import useGlass from '@/hooks/useGlass';
 import { Loader2, RotateCcw } from 'lucide-react';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
@@ -84,6 +86,15 @@ export default function TheBoard() {
     phase,
     openRoles: data?.counts?.roles || 0,
     roomsOpen: data?.counts?.rooms || 0,
+  });
+
+  // The ring's cursor over the cards. Armed once the board is whole, and only
+  // inside the glass: the desk draws all five columns at once, so it needs no
+  // cursor to say where you are.
+  const glass = useGlass();
+  const { selectedKey } = useBoardCards({
+    checkIn,
+    enabled: glass && !state.loading && !state.failed,
   });
 
   const stats = useMemo(() => {
@@ -192,12 +203,19 @@ export default function TheBoard() {
       >
         {BOARD_COLUMNS.map((column) =>
           column.kind === 'check-in' ? (
-            <CheckInColumn key={column.key} column={column} checkIn={checkIn} user={data?.user} />
+            <CheckInColumn
+              key={column.key}
+              column={column}
+              checkIn={checkIn}
+              user={data?.user}
+              selectedKey={selectedKey}
+            />
           ) : (
             <BoardColumn
               key={column.key}
               column={column}
               stats={stats}
+              selectedKey={selectedKey}
               live={column.key === 'season' ? stats.seasonLine : null}
               band={column.key === 'season' ? <SeasonBand phase={phase} loading={state.loading} /> : null}
             />

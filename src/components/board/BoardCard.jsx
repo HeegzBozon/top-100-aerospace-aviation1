@@ -1,18 +1,25 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { BRAND } from "./boardConfig";
+import { BRAND, CURSOR, cursorKey } from "./boardConfig";
 
 // One card on the Board: what the section is, the number that stands behind it,
 // and the way in. The card is the map — the surface it opens holds the work.
-export default function BoardCard({ card, stat }) {
+//
+// The ring lands on the card itself, so the card carries the cursor's own name for
+// it — that is how the console brings it up the column — and wears the board's one
+// cursor tone while it is the card standing under the wheel.
+export default function BoardCard({ card, stat, selected }) {
   return (
     <Link
       to={card.to}
+      data-hh-card={cursorKey.card(card.key)}
+      aria-current={selected ? "true" : undefined}
       className="group block rounded-[10px] p-3 transition-shadow hover:shadow-md"
       style={{
         background: "#FFFFFF",
         border: "1px solid rgba(30,58,90,0.12)",
         boxShadow: "0 1px 2px rgba(30,58,90,0.05)",
+        ...(selected ? CURSOR : null),
       }}
     >
       <span

@@ -1,10 +1,10 @@
 import BoardCard from "./BoardCard";
-import { BRAND } from "./boardConfig";
+import { BRAND, cursorKey } from "./boardConfig";
 
 // One column of the Board: a numbered direction, what it covers, and the cards
 // that lead into it. On a phone the column is a full glass of its own and
 // scrolls inside itself — the wheel's way down; the ring's way across.
-export default function BoardColumn({ column, stats, live, band }) {
+export default function BoardColumn({ column, stats, live, band, selectedKey }) {
   const Icon = column.icon;
 
   return (
@@ -49,7 +49,12 @@ export default function BoardColumn({ column, stats, live, band }) {
 
       <div className="space-y-2.5">
         {column.cards.map((card) => (
-          <BoardCard key={card.key} card={card} stat={stats[card.stat]} />
+          <BoardCard
+            key={card.key}
+            card={card}
+            stat={stats[card.stat]}
+            selected={selectedKey === cursorKey.card(card.key)}
+          />
         ))}
       </div>
     </section>
