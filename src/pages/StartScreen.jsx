@@ -67,14 +67,13 @@ export default function StartScreen() {
 
   // The cursor is held as a key, not a position, so the list can gain the ballot
   // without the selection jumping.
-  const land = useCallback((target, wrap) => {
+  const land = useCallback((target) => {
     const list = optionsRef.current;
     if (!list.length) return null;
-    const next = wrap ? ((target % list.length) + list.length) % list.length : target;
-    if (next < 0 || next >= list.length) return null;
-    cursorRef.current = list[next].key;
-    setCursorKey(list[next].key);
-    return list[next].label;
+    if (target < 0 || target >= list.length) return null;
+    cursorRef.current = list[target].key;
+    setCursorKey(list[target].key);
+    return list[target].label;
   }, []);
 
   const here = useCallback(
@@ -82,17 +81,17 @@ export default function StartScreen() {
     [],
   );
 
-  // The console's handle on the title screen: rotation walks the options, back
-  // and forward walk the same list and stop at its ends, A opens what the
-  // cursor is standing on.
+  // The console's handle on the title screen: rotation walks the options and stops
+  // at the ends of the list — a menu six keys deep reads better as a menu than as a
+  // wheel — and A opens what the cursor is standing on.
   const api = useRef(null);
   if (!api.current) {
     api.current = {
       labels: () => optionsRef.current.map((option) => option.label),
       index: here,
-      step: (direction) => land(here() + direction, true),
-      page: (direction) => land(here() + direction, false),
-      goTo: (i) => land(i, false),
+      step: (direction) => land(here() + direction),
+      page: (direction) => land(here() + direction),
+      goTo: (i) => land(i),
       enter: () => {
         const option = optionsRef.current.find((item) => item.key === cursorRef.current);
         if (!option?.to) return false;
