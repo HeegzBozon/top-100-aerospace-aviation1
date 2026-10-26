@@ -22,7 +22,9 @@ const EXPORTS = [
     label: 'Is this you? Claim & verify your profile',
     hint: 'Claim requests behind the roster, and how each one was resolved.',
     filename: 'top100_women_profile_claims',
-    invoke: (nomineeIds) => base44.functions.invoke('exportPublicationLedger', { dataset: 'claims', nominee_ids: nomineeIds }),
+    invoke: ({ nomineeIds, claimsAll }) => base44.functions.invoke('exportPublicationLedger', claimsAll
+      ? { dataset: 'claims' }
+      : { dataset: 'claims', nominee_ids: nomineeIds }),
   },
   {
     key: 'submissions',
@@ -47,6 +49,7 @@ function downloadCsv(csv, filename) {
 
 export default function PublicationExportPanel({ nominees = [], user }) {
   const [busy, setBusy] = useState(null);
+  const [claimsAll, setClaimsAll] = useState(false);
   const { toast } = useToast();
 
   // Waitlist and claim rows carry personal contact details — admins only.
@@ -55,13 +58,16 @@ export default function PublicationExportPanel({ nominees = [], user }) {
   const handleExport = async (entry) => {
     setBusy(entry.key);
     try {
-      const data = (await entry.invoke(nominees.map((n) => n.id))).data;
+      const data = (await entry.invoke({ nomineeIds: nominees.map((n) => n.id), claimsAll })).data;
       if (!data?.csv) {
         toast({ variant: 'destructive', title: 'Nothing to export yet', description: data?.error || entry.label });
         return;
       }
       downloadCsv(data.csv, entry.filename);
-      toast({ title: 'Export ready', description: `${data.count} row${data.count === 1 ? '' : 's'} · ${entry.label}` });
+      // Anonymous nominators are counted out loud so the identity rule is seen
+      // at the moment the file leaves the platform.
+      const anonymousNote = data.anonymous ? ` · ${data.anonymous} anonymous nominator${data.anonymous === 1 ? '' : 's'}` : '';
+      toast({ title: 'Export ready', description: `${data.count} row${data.count === 1 ? '' : 's'}${anonymousNote} · ${entry.label}` });
     } catch (error) {
       toast({ variant: 'destructive', title: 'Export failed', description: error?.response?.data?.error || error.message });
     } finally {
@@ -84,7 +90,8 @@ export default function PublicationExportPanel({ nominees = [], user }) {
           </span>
         </div>
         <p className="mt-2 text-sm" style={{ color: `${brandColors.ink}cc` }}>
-          One CSV per surface. Waitlist and claim rows hold personal contact details, so they stay inside the admin view.
+          One CSV per surface. Waitlist and claim rows hold personal contact details, so they stay inside the admin view. Nominator rows carry
+          their own consent flag — rows marked ANONYMOUS must not leave the platform.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
           {EXPORTS.map((entry) => (
@@ -105,6 +112,32 @@ export default function PublicationExportPanel({ nominees = [], user }) {
               </span>
             </Button>
           ))}
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-t pt-4" style={{ borderColor: `${brandColors.goldPrestige}40` }}>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: brandColors.navyDeep }}>
+            Claim ledger scope
+          </span>
+          <div className="flex overflow-hidden rounded-lg border" style={{ borderColor: `${brandColors.goldPrestige}80` }}>
+            <button
+              type="button"
+              onClick={() => setClaimsAll(false)}
+              disabled={busy !== null}
+              className="px-3 py-1.5 text-xs font-medium"
+              style={{ background: claimsAll ? 'white' : brandColors.navyDeep, color: claimsAll ? brandColors.navyDeep : 'white' }}
+            >
+              This edition&apos;s roster ({nominees.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setClaimsAll(true)}
+              disabled={busy !== null}
+              className="px-3 py-1.5 text-xs font-medium"
+              style={{ background: claimsAll ? brandColors.navyDeep : 'white', color: claimsAll ? 'white' : brandColors.navyDeep }}
+            >
+              All historic claims
+            </button>
+          </div>
         </div>
       </div>
     </div>

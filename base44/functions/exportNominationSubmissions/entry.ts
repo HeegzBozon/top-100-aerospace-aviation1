@@ -7,6 +7,7 @@ import { csvEscape } from '../../shared/nomineeResolve.ts';
 // Provenance for internal review only; never read by discovery, ranking or scoring.
 const HEADERS = [
   'Submitted', 'Last Updated', 'Track', 'Review Status',
+  'Nominator Attribution',
   'Nominee', 'Nominee Email', 'Role / Org', 'Firm', 'Profile Link', 'Location',
   'Reason', 'Investing In',
   'Nominator', 'Nominator Email', 'Nominator Connection', 'Share Name Consent',
@@ -20,12 +21,23 @@ const TRACK_LABELS: Record<string, string> = {
   angels: 'TOP 100 Angels',
 };
 
+// Consent governs external use of a nominator's identity: only 'yes' may be
+// named outside the platform. The flag travels inside the row so a file cannot
+// be shared without the rule attached to it. Anything not explicitly consented
+// (including a blank answer) is treated as keep-internal.
+function nominatorAttribution(shareName: any): string {
+  if (shareName === 'yes') return 'consented';
+  if (shareName === 'no') return 'ANONYMOUS - keep internal';
+  return 'NOT STATED - keep internal';
+}
+
 // One CSV row per submission, columns aligned with HEADERS.
 function submissionRow(r: any): string {
   return [
     r.created_date, r.updated_date,
     TRACK_LABELS[r.nomination_type] || r.nomination_type || '',
     r.status || '',
+    nominatorAttribution(r.share_name),
     r.nominee_name, r.nominee_email, r.role_org, r.firm, r.link, r.location,
     r.reason, r.investing_in,
     r.nominator_name, r.nominator_email, r.nominator_connection, r.share_name,
@@ -68,7 +80,10 @@ export default async function (req: Request): Promise<Response> {
       byStatus[status] = (byStatus[status] || 0) + 1;
     }
 
-    return Response.json({ success: true, csv, count: all.length, byTrack, byStatus });
+    // Surfaces how many rows carry an identity rule at export time.
+    const anonymous = all.filter((r: any) => r.share_name !== 'yes').length;
+
+    return Response.json({ success: true, csv, count: all.length, anonymous, byTrack, byStatus });
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
   }
