@@ -15,6 +15,8 @@ import useModuleNavigation, { getStage } from "./useModuleNavigation";
 import { useHandheldDeck, getDeck } from "./handheldDeck";
 import HandheldNotifications from "./HandheldNotifications";
 import HandheldShareSheet from "./HandheldShareSheet";
+import HandheldSpeaker from "./HandheldSpeaker";
+import { stopPlaylist } from "./chiptune";
 import { surfaceLabel } from "./handheldDestinations";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
@@ -155,6 +157,10 @@ export default function HandheldDeck() {
   }, []);
 
   useEffect(() => () => clearTimeout(flashTimer.current), []);
+
+  // Putting the console away stops its music: the speaker key is gone once the
+  // device is off the glass, so the loop must not keep playing with no hand on it.
+  useEffect(() => () => stopPlaylist(), []);
 
   // The read-along: the wheel's play zone walks the page down the glass until
   // the bottom arrives or the reader takes over.
@@ -567,9 +573,11 @@ export default function HandheldDeck() {
         }}
       >
         <div className="flex items-center gap-3 px-4 pt-2">
-          {/* Speaker grille — a punched dot matrix, and the left block that
-              balances the face buttons so the wheel sits dead centre */}
-          <div className="hh-grille h-[76px] w-[76px] shrink-0 rounded-[14px]" />
+          {/* The case speaker, and the console's own music: the punched well on
+              the chin is the control — tap to unmute the onboard playlist, hold
+              for the next loop. It also balances the face buttons, so the wheel
+              sits dead centre. */}
+          <HandheldSpeaker onAnnounce={announce} />
 
           <div className="flex min-w-0 flex-1 justify-center">
             <ClickWheel

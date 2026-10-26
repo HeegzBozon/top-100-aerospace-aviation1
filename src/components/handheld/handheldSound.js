@@ -22,7 +22,10 @@ export function persistSound(on) {
   }
 }
 
-function context() {
+// The shell's one audio context: the blips below and the onboard music
+// (chiptune.js) share it, so the device has a single clock. Created lazily on the
+// first press, which is what lets the browser allow sound at all.
+export function shellAudio() {
   if (typeof window === "undefined") return null;
   const AudioCtor = window.AudioContext || window.webkitAudioContext;
   if (!AudioCtor) return null;
@@ -44,7 +47,7 @@ const TONES = {
 export function blip(kind = "select") {
   // "tick" is the detent click of the wheel — the shortest sound in the kit.
   if (!isSoundOn()) return;
-  const ac = context();
+  const ac = shellAudio();
   if (!ac) return;
   const [freq, duration] = TONES[kind] || TONES.select;
   const osc = ac.createOscillator();
