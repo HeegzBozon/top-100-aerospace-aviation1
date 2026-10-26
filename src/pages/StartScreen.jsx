@@ -122,7 +122,7 @@ export default function StartScreen() {
           <p className="mb-1 shrink-0 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/40">
             Select a surface
           </p>
-          <div className="grid min-h-0 flex-1 auto-rows-min grid-cols-2 gap-2 overflow-y-auto md:grid-cols-3">
+          <div className="grid min-h-0 flex-1 auto-rows-min grid-cols-3 gap-2 overflow-y-auto">
             {START_MENU.map((item) => (
               <StartMenuItem key={item.label} item={item} />
             ))}
