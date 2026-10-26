@@ -6,6 +6,7 @@ import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
 import HandheldMasthead from "./HandheldMasthead";
 import HandheldScreenFrame from "./HandheldScreenFrame";
+import HandheldBody from "./HandheldBody";
 import HandheldMenu from "./HandheldMenu";
 import HandheldBoot from "./HandheldBoot";
 import ModuleRail from "./ModuleRail";
@@ -192,6 +193,19 @@ export default function HandheldDeck() {
     }
   }, []);
 
+  // The finish drawer. It opens from the wheel's Menu — and from the chin strip,
+  // where the finish the device is wearing is written, so the device itself is
+  // the way to change what it is wearing.
+  const openFinish = useCallback(() => {
+    if (booting) finishBoot();
+    setCursor(Math.max(0, finishItems.findIndex((item) => item.finishKey === finishKey)));
+    setMenuMode("finish");
+    setNotificationsOpen(false);
+    setShareOpen(false);
+    blip("open");
+    buzz();
+  }, [booting, finishBoot, finishItems, finishKey]);
+
   const go = useCallback(
     (destination, tone = "select") => {
       if (!destination) return;
@@ -202,11 +216,7 @@ export default function HandheldDeck() {
       setShareOpen(false);
 
       // Not a cartridge: the hardware drawer opens where you stand.
-      if (destination.action === "finish") {
-        setCursor(Math.max(0, finishItems.findIndex((item) => item.finishKey === finishKey)));
-        setMenuMode("finish");
-        return;
-      }
+      if (destination.action === "finish") return openFinish();
       if (destination.action === "signin") return base44.auth.redirectToLogin(window.location.href);
       if (destination.action === "logout") return base44.auth.logout(`${window.location.origin}/`);
       if (destination.href) {
@@ -215,7 +225,7 @@ export default function HandheldDeck() {
       }
       if (destination.to) navigate(destination.to);
     },
-    [navigate, finishItems, finishKey],
+    [navigate, openFinish],
   );
 
   const openMenu = useCallback(() => {
@@ -445,6 +455,10 @@ export default function HandheldDeck() {
 
   return (
     <>
+      {/* One moulding behind everything: the display, the bezel and the deck are
+          all set into the same body. */}
+      <HandheldBody />
+
       <HandheldMasthead
         surface={surface}
         module={modules[moduleIndex]?.label}
@@ -520,12 +534,11 @@ export default function HandheldDeck() {
 
       <nav
         aria-label="Handheld console controls"
-        className="hh-body hh-grain fixed z-40 select-none md:hidden"
+        className="fixed z-40 select-none md:hidden"
         style={{
           left: "var(--hh-frame, 0px)",
           right: "var(--hh-frame, 0px)",
           bottom: "var(--hh-frame, 0px)",
-          borderRadius: "0 0 20px 20px",
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
@@ -559,7 +572,7 @@ export default function HandheldDeck() {
         <div
           className="hh-engrave mt-1.5 flex items-center justify-between gap-2 px-4 pb-1 pt-1.5"
           style={{
-            borderTop: "1px solid rgb(var(--hh-ink-rgb) / 0.12)",
+            borderTop: "1px solid rgb(var(--hh-metal-rgb) / 0.24)",
             boxShadow: "inset 0 1px 0 var(--hh-shell-spec)",
           }}
         >
@@ -571,14 +584,35 @@ export default function HandheldDeck() {
             HW-88
           </span>
 
-          <span
-            className="flex min-w-0 items-center gap-1.5 text-[7px] font-bold uppercase tracking-[0.26em]"
-            style={{ color: "var(--hh-metal)" }}
+          {/* The skin the device is wearing, and the way to change it: the name is
+              the control, and the tones on it are the finish's own shell. */}
+          <button
+            type="button"
+            onClick={openFinish}
+            aria-label={`Hardware finish, ${finish.label}. Choose another finish`}
+            className="flex min-w-0 items-center gap-1.5 rounded-full px-2 py-[3px] text-[7px] font-bold uppercase tracking-[0.26em] transition-transform active:scale-95"
+            style={{
+              color: "var(--hh-metal)",
+              background: "rgb(var(--hh-metal-rgb) / 0.10)",
+              boxShadow:
+                "inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.42), 0 1px 3px rgba(7,17,31,0.18)",
+            }}
           >
-            <span className="h-[3px] w-[3px] shrink-0 rounded-full" style={{ background: "rgb(var(--hh-metal-rgb) / 0.5)" }} />
+            <Palette className="h-[9px] w-[9px] shrink-0" style={{ color: "var(--hh-metal)" }} />
+            <span className="flex shrink-0 items-center gap-[3px]">
+              {(finish.swatch || []).map((tone) => (
+                <span
+                  key={tone}
+                  className="h-[6px] w-[6px] rounded-full"
+                  style={{ background: tone, boxShadow: "inset 0 0 0 1px rgba(7,17,31,0.35)" }}
+                />
+              ))}
+            </span>
             <span className="truncate">{finish.label}</span>
-            <span className="h-[3px] w-[3px] shrink-0 rounded-full" style={{ background: "rgb(var(--hh-metal-rgb) / 0.5)" }} />
-          </span>
+            <span className="shrink-0" style={{ color: "rgb(var(--hh-metal-rgb) / 0.8)" }}>
+              ▲
+            </span>
+          </button>
 
           <span
             className="flex items-center gap-1.5 text-[7px] font-bold uppercase tracking-[0.26em]"

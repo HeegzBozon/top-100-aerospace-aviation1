@@ -325,13 +325,19 @@ button:focus-visible {
   }
 
   /* The desk. The device is inset inside the viewport, so there is a surface
-     around it: a lamplit navy field the cream shell sits on, which is what makes
-     the shell read as a device rather than a page filling the glass. */
+     around it: a lamplit navy stage with the field's fine star grid, a wash of
+     rose gold off the top and the light pooling under the shell. The hardware
+     reads as an object on a desk rather than a page filling the glass. */
   body.hh-shell {
-    background:
-      radial-gradient(126% 58% at 50% 0%, rgba(201, 168, 124, 0.20) 0%, rgba(30, 58, 90, 0) 60%),
-      radial-gradient(120% 80% at 50% 104%, #060B16 0%, #0C1526 48%, #16233A 100%),
-      #0C1526;
+    background-color: #070C16;
+    background-image:
+      radial-gradient(150% 108% at 50% 42%, rgba(3, 6, 13, 0) 38%, rgba(3, 6, 13, 0.74) 100%),
+      radial-gradient(120% 58% at 50% 0%, rgba(201, 168, 124, 0.30) 0%, rgba(30, 58, 90, 0) 60%),
+      radial-gradient(96% 44% at 50% 104%, rgba(36, 68, 104, 0.55) 0%, rgba(8, 14, 27, 0) 74%),
+      radial-gradient(rgba(250, 248, 245, 0.08) 1px, rgba(250, 248, 245, 0) 1.3px),
+      linear-gradient(168deg, #18273F 0%, #0E1829 46%, #070C16 100%);
+    background-size: auto, auto, auto, 24px 24px, auto;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat;
   }
 }
 
@@ -397,7 +403,11 @@ button:focus-visible {
     rgba(7, 17, 31, 0) 1px,
     rgba(7, 17, 31, 0) 3px
   );
-  box-shadow: inset 0 0 54px rgba(7, 17, 31, 0.24), inset 0 1px 0 rgba(250, 248, 245, 0.45);
+  box-shadow:
+    inset 0 0 56px rgba(7, 17, 31, 0.26),
+    inset 0 1px 0 rgba(250, 248, 245, 0.42),
+    inset 0 2px 12px rgba(7, 17, 31, 0.30),
+    inset 0 0 0 1px rgba(7, 17, 31, 0.45);
 }
 .hh-glass::after {
   content: "";
@@ -466,13 +476,16 @@ button:focus-visible {
    a finish token, so changing the finish re-casts the whole device at once and
    nothing here is ever a hard-coded colour. */
 .hh-body {
-  background: linear-gradient(180deg, var(--hh-shell-1) 0%, var(--hh-shell-2) 58%, var(--hh-shell-3) 100%);
-  border-top: 1px solid var(--hh-shell-edge);
+  background:
+    linear-gradient(146deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 30%),
+    linear-gradient(180deg, var(--hh-shell-1) 0%, var(--hh-shell-2) 52%, var(--hh-shell-3) 100%);
   box-shadow:
-    0 -14px 30px rgba(7, 17, 31, 0.24),
-    0 22px 44px rgba(4, 9, 18, 0.52),
-    inset 0 1px 0 var(--hh-shell-spec),
-    inset 0 -1px 0 rgba(7, 17, 31, 0.18);
+    0 -12px 26px rgba(7, 17, 31, 0.24),
+    0 26px 52px rgba(4, 9, 18, 0.60),
+    0 2px 0 rgba(4, 9, 18, 0.35),
+    inset 0 1px 0 rgb(var(--hh-metal-rgb) / 0.55),
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.18),
+    inset 0 -1px 0 rgba(7, 17, 31, 0.22);
 }
 
 /* Moulded grain, and the soft falloff of a shell turning away from the light. */
@@ -493,31 +506,25 @@ button:focus-visible {
   text-shadow: 0 1px 0 var(--hh-shell-spec), 0 -1px 0 rgba(7, 17, 31, 0.22);
 }
 
-/* The moulding: the plate the glass is set into. Moulded shell, a machined metal
-   rail at its edge, a gloss that turns with the light, and the weight of the
-   device falling onto the deck below it. This is where the hardware reads. */
-.hh-bezel {
-  background:
-    linear-gradient(146deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 34%),
-    linear-gradient(180deg, var(--hh-shell-1) 0%, var(--hh-shell-2) 46%, var(--hh-shell-3) 100%);
+/* The machined rim around the screen opening: the metal the glass is set
+   against, bright where the light lands, with a seam milled just outside it. */
+.hh-rim {
   box-shadow:
-    0 16px 34px rgba(4, 9, 18, 0.50),
-    0 2px 0 rgba(4, 9, 18, 0.40),
-    inset 0 1px 0 var(--hh-shell-spec),
-    inset 0 -1px 0 rgba(7, 17, 31, 0.34),
     inset 0 0 0 2px var(--hh-metal-1),
-    inset 0 0 0 3px var(--hh-metal-2);
+    inset 0 0 0 3px var(--hh-metal-2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    0 0 0 1px rgba(7, 17, 31, 0.40),
+    0 5px 16px rgba(7, 17, 31, 0.28);
 }
 
 /* The step down: the dark recess the glass sits in, cut below the moulding, its
-   lip lit from above and its corners in the finish's own tone. */
+   corners in the finish's own tone and its lip casting onto the picture. */
 .hh-well {
-  background: linear-gradient(180deg, rgba(9, 14, 24, 0.92) 0%, rgba(5, 9, 17, 0.97) 100%);
+  background: linear-gradient(180deg, rgba(8, 12, 22, 0.94) 0%, rgba(4, 7, 14, 0.98) 100%);
   box-shadow:
-    inset 0 0 0 2px var(--hh-bezel),
-    inset 0 0 0 3px var(--hh-shell-spec),
-    inset 0 9px 22px rgba(2, 5, 12, 0.68),
-    inset 0 -5px 14px rgba(2, 5, 12, 0.50);
+    inset 0 0 0 1px var(--hh-bezel),
+    inset 0 10px 24px rgba(2, 5, 12, 0.72),
+    inset 0 -6px 16px rgba(2, 5, 12, 0.55);
 }
 
 /* A punched speaker grille. */

@@ -1,12 +1,12 @@
-// The viewer. The glass is set into a plate: moulded shell, a machined metal rail
-// along its edge, set screws in the corners, and a dark stepped recess the picture
-// sits down in. That step is what gives the screen its weight — the pane
-// (scanlines, vignette, sheen) lies over the bar and the picture alike, so the
-// whole screen reads as one display.
+// The viewer. The glass is recessed straight into the device's own moulding: a
+// machined metal rim runs around the opening, a dark step drops away below it,
+// and the picture sits at the bottom of that well with the case screws in the
+// corners. There is no panel here — the recess is cut into the one body that
+// carries the controls, which is what keeps the hardware reading as one object.
 //
 // --hh-top and --hh-bottom mark the glass opening, so the moulding is drawn back
 // out to the device bounds here, and only here.
-const SCREW = { position: "absolute", width: 7, height: 7 };
+const SCREW = { position: "absolute", width: 6, height: 6 };
 
 export default function HandheldScreenFrame() {
   return (
@@ -20,15 +20,19 @@ export default function HandheldScreenFrame() {
       }}
       aria-hidden="true"
     >
-      {/* The moulding, and the screws that hold the plate down */}
-      <div className="hh-bezel absolute inset-0 rounded-[24px]" />
-      <span className="hh-screw" style={{ ...SCREW, top: 5, left: 5 }} />
-      <span className="hh-screw" style={{ ...SCREW, top: 5, right: 5 }} />
-      <span className="hh-screw" style={{ ...SCREW, bottom: 5, left: 5 }} />
-      <span className="hh-screw" style={{ ...SCREW, bottom: 5, right: 5 }} />
+      {/* The machined rim the glass is set against */}
+      <div className="hh-rim absolute rounded-[20px]" style={{ inset: 6 }} />
 
-      {/* The step down, then the pane, over the bar and the picture alike */}
-      <div className="hh-well absolute rounded-[19px]" style={{ inset: 9 }} />
+      {/* The step down into the well */}
+      <div className="hh-well absolute rounded-[17px]" style={{ inset: 9 }} />
+
+      {/* The screws that pin the bezel to the body */}
+      <span className="hh-screw rounded-full" style={{ ...SCREW, top: 4, left: 4 }} />
+      <span className="hh-screw rounded-full" style={{ ...SCREW, top: 4, right: 4 }} />
+      <span className="hh-screw rounded-full" style={{ ...SCREW, bottom: 4, left: 4 }} />
+      <span className="hh-screw rounded-full" style={{ ...SCREW, bottom: 4, right: 4 }} />
+
+      {/* The pane, over the bar and the picture alike */}
       <div
         className="hh-glass absolute overflow-hidden rounded-[12px]"
         style={{ inset: "var(--hh-bezel-w, 18px)" }}
