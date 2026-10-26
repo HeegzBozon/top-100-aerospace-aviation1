@@ -5,8 +5,8 @@ import { Share } from "lucide-react";
 // X lists the sections of that surface: the deck's slides, or the page's own
 // modules. A confirms, B backs out. The mouldings are ours — rose gold, navy,
 // sand and copper — never another console's colours.
-const BOX = 76;
-const SIZE = 28;
+const BOX = 72;
+const SIZE = 26;
 const OFFSET = (BOX - SIZE) / 2;
 
 const face = (from, to, ink) => ({

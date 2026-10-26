@@ -67,7 +67,7 @@ function unlockOnGesture(ac) {
 }
 
 // The shell's one audio context: the blips below and the onboard music
-// (chiptune.js) share it, so the device has a single clock. Created lazily on the
+// (consoleMusic.js) share it, so the device has a single clock. Created lazily on the
 // first press, which is what lets the browser allow sound at all.
 export function shellAudio() {
   if (typeof window === "undefined") return null;

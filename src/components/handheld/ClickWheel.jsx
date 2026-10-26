@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Home, Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
 
 // Degrees of travel per detent. One detent = one menu row or one scroll notch.
 const STEP_DEGREES = 20;
@@ -37,14 +37,54 @@ const zoneAt = (deg) => {
 
 const ink = (active) => (active ? "var(--hh-metal)" : "var(--hh-key-ink-soft)");
 
-// The click wheel, as the hardware really is: a fixed ivory ring with four
-// actions printed on it — MENU, back, forward, play — a pressable centre, and
-// rotation for scrolling. Nothing decorative sits on the surface.
-export default function ClickWheel({ size = 132, playing, onRotate, onMenu, onPrev, onNext, onPlay, onHome }) {
+// How long the centre is held before it is a Home press rather than a Select.
+const HOLD_MS = 520;
+
+// The click wheel, as the hardware really is: a fixed ivory ring with four actions
+// printed on it — MENU, back, forward, play — a pressable centre, and rotation for
+// scrolling. Nothing decorative sits on the surface.
+//
+// The grammar is the one the wheel always taught: rotate to move, the centre selects
+// what the ring landed on, MENU goes up a level, and the bottom key plays. Holding
+// the centre takes you home.
+export default function ClickWheel({
+  size = 108,
+  playing,
+  onRotate,
+  onMenu,
+  onPrev,
+  onNext,
+  onPlay,
+  onSelect,
+  onHome,
+}) {
   const ringRef = useRef(null);
   const dotRef = useRef(null);
   const drag = useRef({ active: false, last: 0, travel: 0, moved: 0, started: 0 });
+  const holdRef = useRef(0);
+  const held = useRef(false);
   const [pressed, setPressed] = useState(null);
+
+  useEffect(() => () => clearTimeout(holdRef.current), []);
+
+  const beginCentre = () => {
+    held.current = false;
+    clearTimeout(holdRef.current);
+    holdRef.current = setTimeout(() => {
+      held.current = true;
+      onHome?.();
+    }, HOLD_MS);
+  };
+
+  const endCentre = () => {
+    clearTimeout(holdRef.current);
+    // A hold has already done its work; the release must not also select.
+    if (held.current) {
+      held.current = false;
+      return;
+    }
+    onSelect?.();
+  };
 
   // The finger marker is written straight to the DOM — a drag must never cost a
   // render.
@@ -118,8 +158,9 @@ export default function ClickWheel({ size = 132, playing, onRotate, onMenu, onPr
     if (key === "ArrowUp") fire("menu");
     else if (key === "ArrowLeft") fire("prev");
     else if (key === "ArrowRight") fire("next");
-    else if (key === "ArrowDown" || key === " ") fire("play");
-    else if (key === "Home" || key === "Enter") onHome?.();
+    else if (key === "ArrowDown") fire("play");
+    else if (key === "Enter" || key === " ") onSelect?.();
+    else if (key === "Home") onHome?.();
     else return;
     event.preventDefault();
   };
@@ -130,7 +171,7 @@ export default function ClickWheel({ size = 132, playing, onRotate, onMenu, onPr
         ref={ringRef}
         role="group"
         tabIndex={0}
-        aria-label="Click wheel. Rotate to scroll, top opens the menu, left and right step sections, bottom plays, centre goes home."
+        aria-label="Click wheel. Rotate to scroll, MENU goes up a level, left and right step sections, the bottom key plays, the centre selects."
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={endDrag}
@@ -172,14 +213,30 @@ export default function ClickWheel({ size = 132, playing, onRotate, onMenu, onPr
         />
       </div>
 
-      {/* Centre button — the same ivory as the wheel, cut by a fine groove. Home. */}
+      {/* Centre button — the same ivory as the wheel, cut by a fine groove. It
+          selects what the ring is standing on, exactly as A does; held, it takes
+          you home. */}
       <button
         type="button"
-        onClick={onHome}
-        aria-label="Home"
-        className="hh-key-center absolute left-1/2 top-1/2 flex h-[52px] w-[52px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-transform active:scale-95"
+        onPointerDown={beginCentre}
+        onPointerUp={endCentre}
+        onPointerLeave={endCentre}
+        onPointerCancel={endCentre}
+        onContextMenu={(event) => event.preventDefault()}
+        onKeyDown={(event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          onSelect?.();
+        }}
+        aria-label="Select. Hold to go home"
+        className="hh-key-center absolute left-1/2 top-1/2 flex h-[50px] w-[50px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-transform active:scale-95"
       >
-        <Home className="h-[15px] w-[15px]" style={{ color: "var(--hh-key-ink)" }} />
+        <span
+          className="text-[7.5px] font-extrabold uppercase tracking-[0.14em]"
+          style={{ color: "var(--hh-key-ink)" }}
+        >
+          Select
+        </span>
       </button>
     </div>
   );

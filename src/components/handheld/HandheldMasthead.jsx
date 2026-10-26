@@ -31,6 +31,7 @@ export default function HandheldMasthead({
   onToggleSound,
   onProfile,
   onNotifications,
+  onHome,
 }) {
   return (
     <header
@@ -43,10 +44,16 @@ export default function HandheldMasthead({
       }}
     >
       <div className="flex h-full items-center gap-2.5 px-2.5">
-        {/* The mark, set into the case rather than laid on it */}
-        <span className="hh-badge flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full">
+        {/* The mark, set into the case rather than laid on it — and the way back to
+            the front screen, which is the one thing everybody tries a logo for. */}
+        <button
+          type="button"
+          onClick={onHome}
+          aria-label="Home — the front screen"
+          className="hh-badge flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full transition-transform active:translate-y-[1px]"
+        >
           <img src={HANDHELD_LOGO} alt="" className="h-[22px] w-[22px] object-contain" />
-        </span>
+        </button>
 
         <div className="min-w-0 flex-1 leading-none">
           <p

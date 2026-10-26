@@ -17,7 +17,7 @@ import { useHandheldPicker } from "./handheldPicker";
 import HandheldNotifications from "./HandheldNotifications";
 import HandheldShareSheet from "./HandheldShareSheet";
 import HandheldSpeaker from "./HandheldSpeaker";
-import { stopPlaylist } from "./chiptune";
+import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
@@ -28,7 +28,7 @@ import { openingPlaysNow } from "@/components/core/appOpening";
 // to inset every surface, so nothing is ever hidden behind the hardware.
 export const HANDHELD_TOP_CLEARANCE = 12;
 export const HANDHELD_BAR_CLEARANCE = 52;
-export const HANDHELD_DECK_CLEARANCE = 168;
+export const HANDHELD_DECK_CLEARANCE = 136;
 
 // The desk margin: how much surface shows around the shell, on every side. The
 // device sits inside the viewport instead of filling it, so it reads as an
@@ -43,11 +43,13 @@ export const HANDHELD_BEZEL_WIDTH = 18;
 const BOOT_KEY = "top100-handheld-booted";
 
 // The handheld. One body: a legend band printed on the case, a viewer the content
-// renders in below it, and a chin carrying the click wheel, the face-button
-// diamond and the grille.
-// The wheel does it all — rotation scrolls the picture or walks the cartridge
-// menu, MENU opens it, back and forward step the page's modules, the bottom key
-// plays the page down the glass, and the centre goes home. Sharing sits on Y.
+// renders in below it, and a chin carrying the click wheel, the face buttons and the
+// grille.
+// The wheel does it all — rotation scrolls the picture or walks the menu, the centre
+// selects what the ring landed on, MENU goes up a level and opens the cartridges from
+// the top, back and forward step the page's modules, and the bottom key plays the page
+// down the glass. Holding the centre, or tapping the mark on the case, goes home.
+// Sharing sits on Y.
 export default function HandheldDeck() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -305,20 +307,55 @@ export default function HandheldDeck() {
     blip("back");
   }, []);
 
-  const toggleMenu = useCallback(() => {
-    if (booting) finishBoot();
-    if (menuOpen) closeMenu();
-    else openMenu();
-  }, [booting, finishBoot, menuOpen, closeMenu, openMenu]);
+  // MENU is the wheel's up-a-level key, the way the hardware always read: it puts
+  // away whatever is open — the share drawer, the notifications, the panel a surface
+  // has on the glass — and only opens the cartridges when there is nothing left to
+  // close. So the drawer never lands on top of a Fellow's work.
+  const upOneLevel = useCallback(() => {
+    if (booting) return finishBoot();
+    if (shareOpen) {
+      blip("back");
+      buzz();
+      return setShareOpen(false);
+    }
+    if (notificationsOpen) {
+      blip("back");
+      buzz();
+      return setNotificationsOpen(false);
+    }
+    if (menuOpen) return closeMenu();
+    if (picker?.back?.()) {
+      blip("back");
+      buzz();
+      return;
+    }
+    openMenu();
+  }, [
+    booting,
+    finishBoot,
+    shareOpen,
+    notificationsOpen,
+    menuOpen,
+    closeMenu,
+    picker,
+    openMenu,
+  ]);
 
+  // Home: the front screen from anywhere, and the top of the page once you are there.
+  // That is what the mark on the case and a hold of the wheel's centre both do.
   const goHome = useCallback(() => {
     blip("start");
     buzz();
     setMenuMode(null);
     setNotificationsOpen(false);
     setShareOpen(false);
+    if (location.pathname === "/") {
+      getStage()?.scrollTo({ top: 0 });
+      announce("Top");
+      return;
+    }
     navigate("/");
-  }, [navigate]);
+  }, [navigate, location.pathname, announce]);
 
   // Rotating the wheel: walk the menu, or scroll the picture like a scroll wheel.
   const rotate = useCallback(
@@ -539,6 +576,7 @@ export default function HandheldDeck() {
         onToggleSound={toggleSound}
         onProfile={openProfile}
         onNotifications={openNotifications}
+        onHome={goHome}
       />
 
       <HandheldScreenFrame />
@@ -615,7 +653,7 @@ export default function HandheldDeck() {
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        <div className="flex items-center gap-3 px-4 pt-2">
+        <div className="flex items-center gap-2.5 px-4 pt-1.5">
           {/* The case speaker, and the console's own music: the punched well on
               the chin is the control — tap to unmute the onboard playlist, hold
               for the next loop. It also balances the face buttons, so the wheel
@@ -630,13 +668,14 @@ export default function HandheldDeck() {
 
           <div className="flex min-w-0 flex-1 justify-center">
             <ClickWheel
-              size={132}
+              size={108}
               onRotate={rotate}
-              onMenu={toggleMenu}
+              onMenu={upOneLevel}
               onPrev={() => stepSection(-1)}
               onNext={() => stepSection(1)}
               playing={playing}
               onPlay={menuOpen || shareOpen ? null : togglePlay}
+              onSelect={select}
               onHome={goHome}
             />
           </div>
@@ -651,17 +690,17 @@ export default function HandheldDeck() {
 
         {/* The chin seam, the case screws and the model strip */}
         <div
-          className="hh-engrave mt-1 flex items-center justify-between gap-2 px-4 pb-[3px] pt-1"
+          className="hh-engrave mt-0.5 flex items-center justify-between gap-2 px-4 pb-[2px] pt-[3px]"
           style={{
             borderTop: "1px solid rgb(var(--hh-metal-rgb) / 0.24)",
             boxShadow: "inset 0 1px 0 var(--hh-shell-spec)",
           }}
         >
           <span
-            className="flex items-center gap-1.5 text-[7px] font-bold uppercase tracking-[0.26em]"
+            className="flex items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
             style={{ color: "var(--hh-ink-soft)" }}
           >
-            <span className="hh-screw h-[7px] w-[7px] rounded-full" />
+            <span className="hh-screw h-[6px] w-[6px] rounded-full" />
             HW-88
           </span>
 
@@ -671,7 +710,7 @@ export default function HandheldDeck() {
             type="button"
             onClick={openFinish}
             aria-label={`Hardware finish, ${finish.label}. Choose another finish`}
-            className="flex min-w-0 items-center gap-1.5 rounded-full px-2 py-[2px] text-[7px] font-bold uppercase tracking-[0.22em] transition-transform active:scale-95"
+            className="flex min-w-0 items-center gap-1.5 rounded-full px-2 py-[2px] text-[6.5px] font-bold uppercase tracking-[0.2em] transition-transform active:scale-95"
             style={{
               color: "var(--hh-metal)",
               background: "rgb(var(--hh-metal-rgb) / 0.10)",
@@ -679,7 +718,7 @@ export default function HandheldDeck() {
                 "inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.42), 0 1px 3px rgba(7,17,31,0.18)",
             }}
           >
-            <Palette className="h-[8px] w-[8px] shrink-0" style={{ color: "var(--hh-metal)" }} />
+            <Palette className="h-[7px] w-[7px] shrink-0" style={{ color: "var(--hh-metal)" }} />
             <span className="flex shrink-0 items-center gap-[3px]">
               {(finish.swatch || []).map((tone) => (
                 <span
@@ -696,11 +735,11 @@ export default function HandheldDeck() {
           </button>
 
           <span
-            className="flex items-center gap-1.5 text-[7px] font-bold uppercase tracking-[0.26em]"
+            className="flex items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
             style={{ color: "var(--hh-ink-soft)" }}
           >
             {isSignedIn ? "Fellow" : "Visitor"}
-            <span className="hh-screw h-[7px] w-[7px] rounded-full" />
+            <span className="hh-screw h-[6px] w-[6px] rounded-full" />
           </span>
         </div>
       </nav>

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { blip, buzz } from "./handheldSound";
-import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying } from "./chiptune";
+import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying } from "./consoleMusic";
 
 // The case speaker. The punched well the hardware already had is now the control:
-// tap it to unmute the console's own playlist — five 8-bit house loops written
-// into the device — and tap again to mute. Hold it to move on to the next loop,
-// which is how the rest of the playlist is reached without a screen for it. The
+// tap it to unmute the console's own record — three house loops and two lo-fi ones,
+// written into the device — and tap again to mute. Hold it to move on to the next
+// loop, which is how the rest of the record is reached without a screen for it. The
 // LED is lit while music is playing and the loop's name is printed on the well.
 const HOLD_MS = 620;
 
@@ -82,10 +82,10 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
       aria-label={
         playing
           ? `Speaker on, playing ${track.title}. Mute the music`
-          : "Speaker off. Play the console's music, five loops"
+          : "Speaker off. Play the console's music, three house loops and two lo-fi"
       }
       title="Tap to play or mute · hold for the next loop"
-      className="hh-speaker relative flex h-[76px] w-[76px] shrink-0 flex-col justify-between overflow-hidden rounded-[14px] p-2.5 text-left transition-transform active:scale-[0.97]"
+      className="hh-speaker relative flex h-[64px] w-[64px] shrink-0 flex-col justify-between overflow-hidden rounded-[12px] p-2 text-left transition-transform active:scale-[0.97]"
       style={{
         background: "radial-gradient(circle at 50% 8%, rgba(9,19,33,0.92), rgba(3,7,13,0.97))",
         boxShadow: playing
@@ -97,15 +97,15 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
           well so the speaker still reads as hardware rather than as a button. */}
       <span
         aria-hidden="true"
-        className="hh-grille pointer-events-none absolute inset-0 rounded-[14px] opacity-70"
+        className="hh-grille pointer-events-none absolute inset-0 rounded-[12px] opacity-70"
       />
 
       <span className="relative flex items-start justify-between">
         {playing ? (
-          <Volume2 className="h-[16px] w-[16px]" style={{ color: "var(--hh-metal-1)" }} />
+          <Volume2 className="h-[14px] w-[14px]" style={{ color: "var(--hh-metal-1)" }} />
         ) : (
           <VolumeX
-            className="h-[16px] w-[16px]"
+            className="h-[14px] w-[14px]"
             style={{ color: "rgb(var(--hh-metal-rgb) / 0.62)" }}
           />
         )}
@@ -121,7 +121,7 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
 
       <span className="relative block">
         <span
-          className="block font-heading text-[7.5px] font-bold uppercase leading-[1.25] tracking-[0.14em]"
+          className="block font-heading text-[7px] font-bold uppercase leading-[1.25] tracking-[0.14em]"
           style={{ color: playing ? "var(--hh-key-1)" : "rgb(var(--hh-metal-rgb) / 0.74)" }}
         >
           {playing ? track.title : "Sound off"}
