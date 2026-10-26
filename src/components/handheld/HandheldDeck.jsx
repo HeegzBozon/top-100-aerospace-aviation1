@@ -70,7 +70,7 @@ export default function HandheldDeck() {
       {
         key: "hardware",
         label: "Hardware",
-        items: [{ label: `Finish · ${finish.label}`, action: "finish", icon: Palette }],
+        items: [{ label: `Options · ${finish.label}`, action: "finish", icon: Palette }],
       },
     ],
     [groups, finish.label],
@@ -191,9 +191,10 @@ export default function HandheldDeck() {
     }
   }, []);
 
-  // The finish drawer. It opens from the wheel's Menu — and from the chin strip,
-  // where the finish the device is wearing is written, so the device itself is
-  // the way to change what it is wearing.
+  // The chassis options drawer: the finishes the device can wear. It opens from
+  // the wheel's Menu — and from the chin strip, where the device's own options
+  // control is seated, so the hardware itself is the way to change what it is
+  // wearing.
   // A finish is worn whole, never mixed. Choosing one puts it on the device and
   // steps the drawer aside, so the moulding you just picked is what you see.
   const applyFinish = useCallback(
@@ -203,7 +204,7 @@ export default function HandheldDeck() {
       setMenuMode(null);
       blip("toggle");
       buzz();
-      announce(`Finish · ${item.label}`);
+      announce(`Options · ${item.label}`);
     },
     [chooseFinish, announce],
   );
@@ -573,12 +574,12 @@ export default function HandheldDeck() {
             menuMode === "sections"
               ? [{ key: "sections", label: "On this surface", items: sectionItems }]
               : menuMode === "finish"
-                ? [{ key: "finish", label: "Hardware finish", items: finishItems }]
+                ? [{ key: "finish", label: "Options", items: finishItems }]
                 : menuGroups
           }
           cursor={cursor}
           locationKey={locationKey}
-          unit={menuMode === "sections" ? "sections" : menuMode === "finish" ? "finishes" : "cartridges"}
+          unit={menuMode === "sections" ? "sections" : menuMode === "finish" ? "options" : "cartridges"}
           hint={
             menuMode === "sections"
               ? "◀▶ Move · ● Go · B Back"
@@ -659,8 +660,8 @@ export default function HandheldDeck() {
           />
         </div>
 
-        {/* The maker's plate, cut into the chin: the model mark, the finish the
-            device is wearing — the name is the control that changes it — and who
+        {/* The maker's plate, cut into the chin: the model mark, the chassis
+            options — the swatch row is the finish the device is wearing — and who
             is holding it, with a machined hairline drawn out to either side. */}
         <div className="hh-plate mt-0.5 flex h-[20px] items-center gap-2 px-4">
           <span
@@ -682,7 +683,7 @@ export default function HandheldDeck() {
           <button
             type="button"
             onClick={openFinish}
-            aria-label={`Hardware finish, ${finish.label}. Choose another finish`}
+            aria-label={`Chassis options. Wearing ${finish.label}`}
             className="flex min-w-0 shrink-0 items-center gap-1.5 rounded-[7px] px-2 py-[3px] text-[6px] font-bold uppercase tracking-[0.18em] transition-transform active:translate-y-[1px]"
             style={{
               color: "var(--hh-pad-ink)",
@@ -701,7 +702,7 @@ export default function HandheldDeck() {
                 />
               ))}
             </span>
-            <span className="truncate">{finish.label}</span>
+            <span className="truncate">Options</span>
             <span className="shrink-0" style={{ color: "rgb(var(--hh-metal-rgb) / 0.8)" }}>
               ▲
             </span>
