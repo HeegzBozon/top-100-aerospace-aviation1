@@ -127,12 +127,15 @@ export default function AppSplash() {
             ) : null}
           </h1>
 
-          <p
-            className="as-rise mt-4 max-w-xl text-sm leading-relaxed text-editorial-cream/75 md:text-base"
-            style={{ animationDelay: "0.95s" }}
-          >
-            {who.back ? phase.welcomeBack : phase.welcome}
-          </p>
+          <figure className="as-rise mt-5 max-w-xl" style={{ animationDelay: "0.95s" }}>
+            <blockquote className="font-heading text-[15px] italic leading-relaxed text-editorial-cream/85 md:text-xl">
+              &ldquo;{phase.quote.text}&rdquo;
+            </blockquote>
+            <figcaption className="mt-3 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-gold">
+              {phase.quote.name}
+              {phase.quote.source ? ` · ${phase.quote.source}` : ""}
+            </figcaption>
+          </figure>
         </div>
 
         <div>

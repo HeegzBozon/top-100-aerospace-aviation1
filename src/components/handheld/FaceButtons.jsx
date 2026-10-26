@@ -1,9 +1,10 @@
 import { Share } from "lucide-react";
 
 // The face buttons, in the console diamond: Y above, X left, B right, A below.
-// Y sends whatever you are holding out through the device's own share drawer.
+// Y sends whatever you are holding out through the device's share drawer.
 // X lists the sections of that surface: the deck's slides, or the page's own
-// modules. A confirms, B backs out.
+// modules. A confirms, B backs out. The mouldings are ours — rose gold, navy,
+// sand and copper — never another console's colours.
 const BOX = 76;
 const SIZE = 28;
 const OFFSET = (BOX - SIZE) / 2;
@@ -28,7 +29,7 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
         onClick={onShare}
         aria-label="Y — share this page"
         className={base}
-        style={{ ...face("#F7CE55", "#CF9B00", "#3A2A00"), top: 0, left: OFFSET }}
+        style={{ ...face("#E6CDA4", "#B8935F", "#1E3A5A"), top: 0, left: OFFSET }}
       >
         <Share className="h-[14px] w-[14px]" strokeWidth={2.4} />
       </button>
@@ -38,7 +39,7 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
         onClick={onSections}
         aria-label="X — sections on this surface"
         className={base}
-        style={{ ...face("#5AA9E8", "#0067B8", "#F4FAFF"), top: OFFSET, left: 0 }}
+        style={{ ...face("#2E5478", "#16304B", "#FAF8F5"), top: OFFSET, left: 0 }}
       >
         X
       </button>
@@ -48,7 +49,7 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
         onClick={onBack}
         aria-label="B — back"
         className={base}
-        style={{ ...face("#EE5F4A", "#B2200F", "#FFF4F2"), top: OFFSET, right: 0 }}
+        style={{ ...face("#DCCBAE", "#B9A582", "#1E3A5A"), top: OFFSET, right: 0 }}
       >
         B
       </button>
@@ -58,7 +59,7 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
         onClick={onConfirm}
         aria-label="A — confirm"
         className={base}
-        style={{ ...face("#5CC44E", "#107C10", "#F1FBEF"), bottom: 0, left: OFFSET }}
+        style={{ ...face("#D79355", "#A5642C", "#FAF8F5"), bottom: 0, left: OFFSET }}
       >
         A
       </button>

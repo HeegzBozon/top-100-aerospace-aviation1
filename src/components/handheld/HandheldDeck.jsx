@@ -13,6 +13,7 @@ import useHandheldDestinations from "./useHandheldDestinations";
 import useModuleNavigation, { getStage } from "./useModuleNavigation";
 import { useHandheldDeck, getDeck } from "./handheldDeck";
 import HandheldNotifications from "./HandheldNotifications";
+import HandheldShareSheet from "./HandheldShareSheet";
 import { surfaceLabel } from "./handheldDestinations";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
@@ -42,6 +43,7 @@ export default function HandheldDeck() {
   const [cursor, setCursor] = useState(0);
   const menuOpen = menuMode !== null;
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [flash, setFlash] = useState("");
   const [booting, setBooting] = useState(() => {
@@ -177,6 +179,7 @@ export default function HandheldDeck() {
       buzz();
       setMenuMode(null);
       setNotificationsOpen(false);
+      setShareOpen(false);
 
       // Not a cartridge: the hardware drawer opens where you stand.
       if (destination.action === "finish") {
@@ -200,6 +203,7 @@ export default function HandheldDeck() {
     setCursor(current >= 0 ? current : 0);
     setMenuMode("cartridges");
     setNotificationsOpen(false);
+    setShareOpen(false);
     finishBoot();
     blip("open");
     buzz();
@@ -215,6 +219,7 @@ export default function HandheldDeck() {
     setCursor(Math.max(0, moduleIndex));
     setMenuMode("sections");
     setNotificationsOpen(false);
+    setShareOpen(false);
     finishBoot();
     blip("open");
     buzz();
@@ -236,6 +241,7 @@ export default function HandheldDeck() {
     buzz();
     setMenuMode(null);
     setNotificationsOpen(false);
+    setShareOpen(false);
     navigate("/");
   }, [navigate]);
 
@@ -335,38 +341,23 @@ export default function HandheldDeck() {
   // The bottom of the ring: the page reads itself down the glass, and the same
   // key stops it.
   const togglePlay = useCallback(() => {
-    if (menuOpen || booting) return;
+    if (menuOpen || shareOpen || booting) return;
     blip("toggle");
     buzz();
     setPlaying((prev) => !prev);
     announce(playing ? "Paused" : "Reading");
-  }, [menuOpen, booting, playing, announce]);
+  }, [menuOpen, shareOpen, booting, playing, announce]);
 
-  // Y: hands whatever the glass is holding to the device's own share drawer, so
-  // a profile or a cartridge leaves the console as a link.
-  const share = useCallback(async () => {
+  // Y: the share drawer, opened in the glass — the link you are holding, the
+  // code that opens it on a phone, and the ways out of it.
+  const share = useCallback(() => {
     if (menuOpen || booting) return;
-    blip("toggle");
+    blip("open");
     buzz();
-    const url = window.location.href;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: document.title, url });
-        announce("Shared");
-        return;
-      }
-      await navigator.clipboard.writeText(url);
-      announce("Link copied");
-    } catch (error) {
-      if (error?.name === "AbortError") return;
-      try {
-        await navigator.clipboard.writeText(url);
-        announce("Link copied");
-      } catch {
-        announce("Share unavailable");
-      }
-    }
-  }, [booting, menuOpen, announce]);
+    setMenuMode(null);
+    setNotificationsOpen(false);
+    setShareOpen(true);
+  }, [booting, menuOpen]);
 
   // You: the Fellow's own profile where they are signed in, the way in where not.
   const openProfile = useCallback(() => {
@@ -374,6 +365,7 @@ export default function HandheldDeck() {
     buzz();
     setMenuMode(null);
     setNotificationsOpen(false);
+    setShareOpen(false);
     if (!isSignedIn) return base44.auth.redirectToLogin(window.location.href);
     navigate("/Profile");
   }, [isSignedIn, navigate]);
@@ -384,6 +376,7 @@ export default function HandheldDeck() {
     blip("open");
     buzz();
     setMenuMode(null);
+    setShareOpen(false);
     if (!isSignedIn) return base44.auth.redirectToLogin(window.location.href);
     setNotificationsOpen(true);
   }, [isSignedIn]);
@@ -416,10 +409,11 @@ export default function HandheldDeck() {
     blip("back");
     buzz();
     if (booting) return finishBoot();
+    if (shareOpen) return setShareOpen(false);
     if (notificationsOpen) return setNotificationsOpen(false);
     if (menuOpen) return setMenuMode(null);
     navigate(-1);
-  }, [booting, finishBoot, menuOpen, notificationsOpen, navigate]);
+  }, [booting, finishBoot, menuOpen, notificationsOpen, shareOpen, navigate]);
 
   const toggleSound = useCallback(() => {
     setSoundOn((prev) => {
@@ -498,6 +492,13 @@ export default function HandheldDeck() {
         onClose={() => setNotificationsOpen(false)}
       />
 
+      <HandheldShareSheet
+        open={shareOpen && !booting}
+        surface={surface}
+        isSignedIn={isSignedIn}
+        onClose={() => setShareOpen(false)}
+      />
+
       <nav
         aria-label="Handheld console controls"
         className="hh-body hh-grain fixed bottom-0 left-0 right-0 z-40 select-none md:hidden"
@@ -516,7 +517,7 @@ export default function HandheldDeck() {
               onPrev={() => stepSection(-1)}
               onNext={() => stepSection(1)}
               playing={playing}
-              onPlay={menuOpen ? null : togglePlay}
+              onPlay={menuOpen || shareOpen ? null : togglePlay}
               onHome={goHome}
             />
           </div>

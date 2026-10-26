@@ -106,6 +106,19 @@ export default function Profile() {
     }
   }, [user]);
 
+  // Deep-link from the console's share drawer: land with the presentation
+  // settings open, exactly as if the Fellow pressed Presentation.
+  useEffect(() => {
+    if (user && new URLSearchParams(window.location.search).get('settings') === 'presentation') {
+      setPresentationOpen(true);
+      try {
+        const u = new URL(window.location.href);
+        u.searchParams.delete('settings');
+        window.history.replaceState({}, '', u);
+      } catch {}
+    }
+  }, [user]);
+
   const savePersonalization = async (patch) => {
     const previous = settings;
     setSettings((s) => ({ ...s, ...patch }));
