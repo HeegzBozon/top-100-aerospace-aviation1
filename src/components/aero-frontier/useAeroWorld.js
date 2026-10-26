@@ -442,7 +442,13 @@ export default function useAeroWorld({ doc, status, apply, setPos }) {
     const target = reachable(GRID, player.current.x, player.current.y, player.current.dir);
     if (!target) {
       const tile = facingTile(player.current.x, player.current.y, player.current.dir);
-      if (GRID[tile.ty]?.[tile.tx] === "w") toast("The creek is up and cold, and gives nothing from this side.");
+      if (GRID[tile.ty]?.[tile.tx] === "w") {
+        toast("The creek is up and cold, and gives nothing from this side.");
+        return;
+      }
+      // Nothing in front of you: A opens the kit you are carrying — the bag, the
+      // bench, the quests and the log. The one key the field always answers.
+      openMenu("bag");
       return;
     }
 
@@ -495,6 +501,7 @@ export default function useAeroWorld({ doc, status, apply, setPos }) {
     closeMenu,
     fitOptionsFor,
     gatherNode,
+    openMenu,
     playScript,
     startScript,
     statsFor,

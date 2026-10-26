@@ -61,11 +61,23 @@ export default function ClickWheel({
   onPlay,
   onSelect,
   onHome,
+  // Steering: a surface that is driven by the ring itself — the field game — keeps
+  // the same hardware but hands the wheel a different grammar. Its own four prints
+  // go on the ring, the zone under the thumb is reported as held until the thumb
+  // comes off, and a rotation is left alone (there is nothing to walk a list with
+  // while the wheel is being used as a joystick).
+  steer = false,
+  onSteer,
+  prints,
 }) {
   const ringRef = useRef(null);
   const dotRef = useRef(null);
   const drag = useRef({ active: false, last: 0, travel: 0, moved: 0, started: 0 });
   const press = useRef({ id: null, x: 0, y: 0, timer: 0, held: false, cancelled: false, captured: false });
+  const steerRef = useRef(null);
+  const stepTimer = useRef(0);
+  const steerDown = useRef(onSteer);
+  steerDown.current = onSteer;
   const [zone, setZone] = useState(null);
   const [holding, setHolding] = useState(false);
 
@@ -74,6 +86,19 @@ export default function ClickWheel({
   const holdLength = 2 * Math.PI * holdRadius;
 
   useEffect(() => () => clearTimeout(press.current.timer), []);
+
+  // Steering stops when the wheel goes away: a zone still held as the console
+  // unmounts must not leave the field walking on its own.
+  useEffect(
+    () => () => {
+      clearTimeout(stepTimer.current);
+      if (steerRef.current) {
+        steerDown.current?.(steerRef.current, false);
+        steerRef.current = null;
+      }
+    },
+    [],
+  );
 
   // --- the centre ---------------------------------------------------------
   // One press, one outcome. The pointer is captured so the button keeps the
@@ -150,6 +175,28 @@ export default function ClickWheel({
     showDot(false);
     if (ring && event?.pointerId != null) ring.releasePointerCapture?.(event.pointerId);
 
+    // Steering: the thumb coming off the ring is the walk stopping. A tap is not
+    // also a press — on the field the hold is the whole gesture.
+    if (steerRef.current) {
+      const held = steerRef.current;
+      const tapped =
+        event?.type === "pointerup" && drag.current.moved < TAP_TRAVEL && Date.now() - drag.current.started < TAP_MS;
+      steerRef.current = null;
+      if (!tapped) {
+        setZone(null);
+        onSteer?.(held, false);
+        return;
+      }
+      // A tap is a step, not nothing: the zone is held on for the length of one
+      // stride after the thumb has gone, so a quick press walks a pace or two.
+      clearTimeout(stepTimer.current);
+      stepTimer.current = setTimeout(() => {
+        setZone(null);
+        onSteer?.(held, false);
+      }, 150);
+      return;
+    }
+
     // A quick press that barely travelled is a button, not a turn.
     if (ring && event?.type === "pointerup" && drag.current.moved < TAP_TRAVEL && Date.now() - drag.current.started < TAP_MS) {
       const { deg } = geo(ring, event.clientX ?? 0, event.clientY ?? 0);
@@ -161,10 +208,21 @@ export default function ClickWheel({
     const ring = ringRef.current;
     if (!ring) return;
     ring.setPointerCapture?.(event.pointerId);
+    clearTimeout(stepTimer.current);
     const spot = geo(ring, event.clientX, event.clientY);
     drag.current = { active: true, last: spot.deg, travel: 0, moved: 0, started: Date.now() };
     moveDot(spot.x, spot.y);
     showDot(true);
+
+    if (steer) {
+      // A hold the last tap left running — its release is cleared just above — is
+      // let go of first, so a second press never walks two ways at once.
+      if (steerRef.current) onSteer?.(steerRef.current, false);
+      const here = zoneAt(spot.deg);
+      steerRef.current = here;
+      setZone(here);
+      onSteer?.(here, true);
+    }
   };
 
   const handlePointerMove = (event) => {
@@ -173,6 +231,19 @@ export default function ClickWheel({
 
     const spot = geo(ring, event.clientX, event.clientY);
     moveDot(spot.x, spot.y);
+
+    // Steering: where the thumb is standing on the ring is the way you walk, and
+    // sliding it round turns the walk. No detent fires — the ring steers.
+    if (steer) {
+      drag.current.last = spot.deg;
+      const here = zoneAt(spot.deg);
+      if (here === steerRef.current) return;
+      if (steerRef.current) onSteer?.(steerRef.current, false);
+      steerRef.current = here;
+      setZone(here);
+      onSteer?.(here, true);
+      return;
+    }
 
     const delta = shortestDelta(drag.current.last, spot.deg);
     if (Math.abs(delta) < 0.5) return;
@@ -208,7 +279,11 @@ export default function ClickWheel({
         ref={ringRef}
         role="group"
         tabIndex={0}
-        aria-label="Click wheel. Turn it to move, the centre selects, MENU goes up a level, the bottom key plays, and the centre held goes home."
+        aria-label={
+          steer
+            ? "Click wheel, steering. Hold a zone on the ring to walk that way, slide the thumb to turn, the centre acts, and the centre held goes home."
+            : "Click wheel. Turn it to move, the centre selects, MENU goes up a level, the bottom key plays, and the centre held goes home."
+        }
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={endDrag}
@@ -216,28 +291,61 @@ export default function ClickWheel({
         onKeyDown={handleKey}
         className="hh-key hh-wheel absolute inset-0 rounded-full outline-none ring-offset-2"
       >
-        <span
-          className="absolute left-1/2 top-[7px] -translate-x-1/2 text-[8px] font-extrabold uppercase tracking-[0.16em] transition-transform"
-          style={{ color: print(zone === "menu"), transform: zone === "menu" ? "translateX(-50%) scale(0.9)" : undefined }}
-        >
-          Menu
-        </span>
+        {prints ? (
+          /* A surface that steers with the ring puts its own four prints on it: the
+             same flat plastic, printed with the directions instead of the keys. */
+          <>
+            <span
+              className="absolute left-1/2 top-[7px] -translate-x-1/2 text-[14px] font-bold leading-none transition-transform"
+              style={{ color: print(zone === "menu"), transform: zone === "menu" ? "translateX(-50%) scale(0.86)" : undefined }}
+            >
+              {prints.up}
+            </span>
+            <span
+              className="absolute left-[10px] top-1/2 -translate-y-1/2 text-[14px] font-bold leading-none transition-transform"
+              style={{ color: print(zone === "prev"), transform: zone === "prev" ? "translateY(-50%) scale(0.86)" : undefined }}
+            >
+              {prints.left}
+            </span>
+            <span
+              className="absolute right-[10px] top-1/2 -translate-y-1/2 text-[14px] font-bold leading-none transition-transform"
+              style={{ color: print(zone === "next"), transform: zone === "next" ? "translateY(-50%) scale(0.86)" : undefined }}
+            >
+              {prints.right}
+            </span>
+            <span
+              className="absolute bottom-[7px] left-1/2 -translate-x-1/2 text-[14px] font-bold leading-none transition-transform"
+              style={{ color: print(zone === "play"), transform: zone === "play" ? "translateX(-50%) scale(0.86)" : undefined }}
+            >
+              {prints.down}
+            </span>
+          </>
+        ) : (
+          <>
+            <span
+              className="absolute left-1/2 top-[7px] -translate-x-1/2 text-[8px] font-extrabold uppercase tracking-[0.16em] transition-transform"
+              style={{ color: print(zone === "menu"), transform: zone === "menu" ? "translateX(-50%) scale(0.9)" : undefined }}
+            >
+              Menu
+            </span>
 
-        <SkipBack
-          className="absolute left-[9px] top-1/2 h-[13px] w-[13px] -translate-y-1/2 transition-transform"
-          style={{ color: print(zone === "prev"), transform: zone === "prev" ? "translateY(-50%) scale(0.88)" : undefined }}
-        />
-        <SkipForward
-          className="absolute right-[9px] top-1/2 h-[13px] w-[13px] -translate-y-1/2 transition-transform"
-          style={{ color: print(zone === "next"), transform: zone === "next" ? "translateY(-50%) scale(0.88)" : undefined }}
-        />
+            <SkipBack
+              className="absolute left-[9px] top-1/2 h-[13px] w-[13px] -translate-y-1/2 transition-transform"
+              style={{ color: print(zone === "prev"), transform: zone === "prev" ? "translateY(-50%) scale(0.88)" : undefined }}
+            />
+            <SkipForward
+              className="absolute right-[9px] top-1/2 h-[13px] w-[13px] -translate-y-1/2 transition-transform"
+              style={{ color: print(zone === "next"), transform: zone === "next" ? "translateY(-50%) scale(0.88)" : undefined }}
+            />
 
-        <span
-          className="absolute bottom-[7px] left-1/2 flex -translate-x-1/2 items-center transition-transform"
-          style={{ color: print(zone === "play"), transform: zone === "play" ? "translateX(-50%) scale(0.9)" : undefined }}
-        >
-          {playing ? <Pause className="h-[12px] w-[12px]" /> : <Play className="h-[13px] w-[13px]" />}
-        </span>
+            <span
+              className="absolute bottom-[7px] left-1/2 flex -translate-x-1/2 items-center transition-transform"
+              style={{ color: print(zone === "play"), transform: zone === "play" ? "translateX(-50%) scale(0.9)" : undefined }}
+            >
+              {playing ? <Pause className="h-[12px] w-[12px]" /> : <Play className="h-[13px] w-[13px]" />}
+            </span>
+          </>
+        )}
 
         {/* The finger, while the ring is being turned */}
         <span

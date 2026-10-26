@@ -21,6 +21,13 @@ import { useEffect, useState } from "react";
 //   enter — the confirm key. Returning false hands the key back, so a surface
 //           with nothing to open leaves A doing what it always did.
 //   back  — returning true means the press was taken (a panel closing).
+//   steer — optional, and rare. A surface that is steered by the ring itself — a
+//           game — hands over { prints, hold(dir, on) }: its own four prints for
+//           the ring, and the zone under the thumb reported held as up, down,
+//           left or right until the thumb comes off. While such a surface is
+//           active and nothing of the console's own is open over the glass, the
+//           four zones stop being menu/back/forward/play, and a rotation no
+//           longer walks anything.
 //
 // The registry is module-level because the console and the page render as
 // siblings in the layout, not as parent and child.

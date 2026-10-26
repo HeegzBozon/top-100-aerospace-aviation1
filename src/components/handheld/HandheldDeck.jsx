@@ -30,6 +30,10 @@ import { applyShellVars, releaseShellVars } from "./handheldGeometry";
 
 const BOOT_KEY = "top100-handheld-booted";
 
+// The four prints on the ring, and the directions they are when a surface steers
+// with it: the top of the wheel is away from you, the bottom towards you.
+const ZONE_DIR = { menu: "up", play: "down", prev: "left", next: "right" };
+
 // The handheld. One body: a legend band printed on the case, a viewer the content
 // renders in below it, and a chin carrying the click wheel, the face buttons and the
 // grille.
@@ -38,6 +42,9 @@ const BOOT_KEY = "top100-handheld-booted";
 // the top, back and forward step the page's modules, and the bottom key plays the page
 // down the glass. Holding the centre, or tapping the mark on the case, goes home.
 // Sharing sits on Y.
+// A surface may also take the ring itself and steer with it — the field game walks
+// on it — in which case the four zones become up, down, left and right for as long
+// as nothing of the console's own is open over the glass.
 export default function HandheldDeck() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -104,6 +111,12 @@ export default function HandheldDeck() {
   // profile's own panels — hands the console a picker, which outranks the
   // page's module marks: the ring walks what is actually on the screen.
   const picker = useHandheldPicker();
+  // And a surface may claim the ring outright: the field game steers its character
+  // with it. While nothing of the console's own is open over the glass, the four
+  // zones stop being menu/back/forward/play and become directions, reported held
+  // until the thumb comes off — so the wheel under the glass is the joystick.
+  const steering =
+    !menuOpen && !shareOpen && !notificationsOpen && !booting && picker?.steer ? picker.steer : null;
   const deckLabels = deck ? deck.labels() : [];
   const pickerLabels = picker ? picker.labels() : [];
   const modules = deck
@@ -327,6 +340,9 @@ export default function HandheldDeck() {
   const rotate = useCallback(
     (step) => {
       finishBoot();
+      // A steering surface has nothing to walk with a detent: the ring is under a
+      // thumb that is walking already.
+      if (steering) return;
       if (menuOpen) {
         const list = listFor(menuMode);
         if (!list.length) return;
@@ -350,7 +366,7 @@ export default function HandheldDeck() {
       // column — gets the ring before the glass or the window does.
       nav.scrollBy(step * 54);
     },
-    [menuOpen, menuMode, listFor, picker, deck, finishBoot, nav, announce],
+    [menuOpen, menuMode, listFor, picker, deck, finishBoot, nav, announce, steering],
   );
 
   const jumpGroup = useCallback(
@@ -642,13 +658,16 @@ export default function HandheldDeck() {
             <ClickWheel
               size={104}
               onRotate={rotate}
-              onMenu={upOneLevel}
-              onPrev={() => stepSection(-1)}
-              onNext={() => stepSection(1)}
+              onMenu={steering ? null : upOneLevel}
+              onPrev={steering ? null : () => stepSection(-1)}
+              onNext={steering ? null : () => stepSection(1)}
               playing={playing}
-              onPlay={menuOpen || shareOpen ? null : togglePlay}
+              onPlay={steering || menuOpen || shareOpen ? null : togglePlay}
               onSelect={select}
               onHome={goHome}
+              steer={!!steering}
+              onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}
+              prints={steering?.prints}
             />
           </div>
 
