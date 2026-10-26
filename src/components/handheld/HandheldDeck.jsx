@@ -577,7 +577,13 @@ export default function HandheldDeck() {
               the chin is the control — tap to unmute the onboard playlist, hold
               for the next loop. It also balances the face buttons, so the wheel
               sits dead centre. */}
-          <HandheldSpeaker onAnnounce={announce} />
+          <HandheldSpeaker
+            onAnnounce={announce}
+            onSoundOn={() => {
+              persistSound(true);
+              setSoundOn(true);
+            }}
+          />
 
           <div className="flex min-w-0 flex-1 justify-center">
             <ClickWheel

@@ -95,6 +95,7 @@ let step = 0;
 let bar = 0;
 let index = 0;
 let playing = false;
+let ctxBound = false;
 
 // The audio context is the shell's own, so the music and the control blips share
 // one clock. It is only asked for on a real press, which is what lets the browser
@@ -118,6 +119,20 @@ function ensure() {
     noise = ac.createBuffer(1, frames, ac.sampleRate);
     const data = noise.getChannelData(0);
     for (let i = 0; i < frames; i += 1) data[i] = Math.random() * 2 - 1;
+  }
+
+  // The clock freezes while the context is parked, so when it starts running
+  // mid-loop the bar is re-anchored to now: the music resumes rather than
+  // catching up on everything it missed.
+  if (!ctxBound) {
+    ctxBound = true;
+    ac.addEventListener("statechange", () => {
+      if (playing && ac.state === "running") {
+        step = 0;
+        bar = 0;
+        nextTime = ac.currentTime + 0.06;
+      }
+    });
   }
 
   return true;
@@ -197,7 +212,9 @@ function pump() {
   if (!ctx) return;
   const beat = 60 / PLAYLIST[index].bpm / 4;
   while (nextTime < ctx.currentTime + LOOKAHEAD) {
-    playStep(nextTime);
+    // Never book a note into the past: a context that was paused for a moment
+    // must not come back as one bar played all at once.
+    playStep(Math.max(nextTime, ctx.currentTime + 0.005));
     nextTime += beat;
     step += 1;
     if (step >= STEPS) {

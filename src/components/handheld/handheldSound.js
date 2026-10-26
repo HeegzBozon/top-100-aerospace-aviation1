@@ -22,6 +22,50 @@ export function persistSound(on) {
   }
 }
 
+// iOS sends web audio to the "ambient" session, which the hardware ring/silent
+// switch mutes — so the console can look like it is playing and make no sound at
+// all. Asking for the playback session is what puts the speaker past that switch.
+// Browsers without the API ignore this and the switch keeps its say.
+function requestPlaybackSession() {
+  try {
+    if (navigator.audioSession) navigator.audioSession.type = "playback";
+  } catch {
+    // Not supported — nothing to ask for.
+  }
+}
+
+let unlockBound = false;
+
+// A context may only start inside a real gesture. The first press normally does
+// it, but a context the browser parked at load can survive that attempt, and a
+// parked context is silence. So while one is suspended, any press or key is
+// another chance to start it, and the listeners retire themselves once it runs.
+function unlockOnGesture(ac) {
+  const tryResume = () => {
+    const settle = () => {
+      if (ac.state !== "running") return;
+      unlockBound = false;
+      window.removeEventListener("pointerdown", tryResume, true);
+      window.removeEventListener("keydown", tryResume, true);
+    };
+    let started;
+    try {
+      started = ac.resume();
+    } catch {
+      return;
+    }
+    if (started && typeof started.then === "function") started.then(settle, () => {});
+    else settle();
+  };
+
+  tryResume();
+  if (ac.state !== "running" && !unlockBound) {
+    unlockBound = true;
+    window.addEventListener("pointerdown", tryResume, true);
+    window.addEventListener("keydown", tryResume, true);
+  }
+}
+
 // The shell's one audio context: the blips below and the onboard music
 // (chiptune.js) share it, so the device has a single clock. Created lazily on the
 // first press, which is what lets the browser allow sound at all.
@@ -29,8 +73,11 @@ export function shellAudio() {
   if (typeof window === "undefined") return null;
   const AudioCtor = window.AudioContext || window.webkitAudioContext;
   if (!AudioCtor) return null;
-  if (!audioContext) audioContext = new AudioCtor();
-  if (audioContext.state === "suspended") audioContext.resume();
+  if (!audioContext) {
+    requestPlaybackSession();
+    audioContext = new AudioCtor();
+  }
+  if (audioContext.state === "suspended") unlockOnGesture(audioContext);
   return audioContext;
 }
 

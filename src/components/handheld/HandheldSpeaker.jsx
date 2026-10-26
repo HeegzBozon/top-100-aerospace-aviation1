@@ -10,7 +10,7 @@ import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying } from "
 // LED is lit while music is playing and the loop's name is printed on the well.
 const HOLD_MS = 620;
 
-export default function HandheldSpeaker({ onAnnounce }) {
+export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
   const [playing, setPlaying] = useState(() => isPlaying());
   const [track, setTrack] = useState(() => currentTrack());
   const holdTimer = useRef(0);
@@ -19,7 +19,14 @@ export default function HandheldSpeaker({ onAnnounce }) {
   useEffect(() => () => clearTimeout(holdTimer.current), []);
 
   const unmute = () => {
-    if (!playPlaylist()) return;
+    // Music is the loudest thing the device does, so asking for it also brings
+    // the console's sound back on: a speaker that played while the shell was
+    // "Sound off" would be a lie.
+    onSoundOn?.();
+    if (!playPlaylist()) {
+      onAnnounce?.("No sound on this device");
+      return;
+    }
     const now = currentTrack();
     setTrack(now);
     setPlaying(true);
@@ -37,6 +44,7 @@ export default function HandheldSpeaker({ onAnnounce }) {
     clearTimeout(holdTimer.current);
     holdTimer.current = setTimeout(() => {
       advanced.current = true;
+      onSoundOn?.();
       const now = nextTrack();
       playPlaylist();
       setTrack(now);
