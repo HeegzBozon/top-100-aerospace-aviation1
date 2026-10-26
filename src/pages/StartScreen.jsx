@@ -77,8 +77,13 @@ export default function StartScreen() {
           <span className="text-[8.5px] font-bold uppercase tracking-[0.3em] text-editorial-gold md:text-[9.5px]">
             TOP 100 Aerospace &amp; Aviation
           </span>
-          <span className="ml-auto text-[8px] font-bold uppercase tracking-[0.28em] text-editorial-cream/40">
-            MMXXVI
+          <span className="ml-auto flex flex-col items-end gap-0.5 text-right">
+            <span className="text-[8px] font-bold uppercase tracking-[0.28em] text-editorial-cream/45 md:text-[9.5px]">
+              MMXXVI
+            </span>
+            <span className="text-[7.5px] font-bold uppercase tracking-[0.2em] text-editorial-cream/35 md:text-[8.5px]">
+              {stamp}
+            </span>
           </span>
         </div>
 
@@ -127,12 +132,6 @@ export default function StartScreen() {
               <StartMenuItem key={item.label} item={item} />
             ))}
           </div>
-        </div>
-
-        <div className="mt-3 flex shrink-0 items-center justify-between gap-4 border-t border-editorial-cream/15 pt-3 text-[8px] font-bold uppercase tracking-[0.26em] text-editorial-cream/45">
-          <span className="md:hidden">Turn the wheel · ◀ ▶ walks the menu</span>
-          <span className="hidden md:inline">Choose a surface to begin</span>
-          <span>{stamp}</span>
         </div>
       </div>
 
