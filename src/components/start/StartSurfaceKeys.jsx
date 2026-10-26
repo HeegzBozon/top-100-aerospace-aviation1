@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import StartMenuItem from "./StartMenuItem";
 import { START_MENU } from "./startMenuConfig";
 
@@ -5,7 +6,16 @@ import { START_MENU } from "./startMenuConfig";
 // the same panel either way, so the menu is one shape to learn. The rows are
 // floored at a key's own height, so a short glass scrolls the grid instead of
 // squashing the rows until the tiles overlap each other.
-export default function StartSurfaceKeys() {
+//
+// The wheel walks these keys: the console holds the cursor as a key, and the key
+// it is on carries the selection. Anything below the fold is brought up so the
+// cursor is never off the screen.
+export default function StartSurfaceKeys({ cursorKey }) {
+  useEffect(() => {
+    if (!cursorKey) return;
+    document.querySelector(`[data-hh-key="${cursorKey}"]`)?.scrollIntoView({ block: "nearest" });
+  }, [cursorKey]);
+
   return (
     <div className="mt-4 flex min-h-0 flex-1 flex-col md:mt-8">
       <p className="mb-1.5 shrink-0 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/40">
@@ -14,7 +24,7 @@ export default function StartSurfaceKeys() {
 
       <div className="grid min-h-0 flex-1 auto-rows-min grid-cols-3 grid-rows-[repeat(2,minmax(66px,1fr))] gap-2 overflow-y-auto overscroll-contain md:gap-3 md:grid-rows-[repeat(2,minmax(112px,1fr))]">
         {START_MENU.map((item) => (
-          <StartMenuItem key={item.label} item={item} />
+          <StartMenuItem key={item.label} item={item} selected={item.key === cursorKey} />
         ))}
       </div>
     </div>

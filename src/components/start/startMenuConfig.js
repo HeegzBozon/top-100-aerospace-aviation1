@@ -5,13 +5,21 @@ import { Award, BadgeCheck, BookOpen, LayoutGrid, Trophy, Users } from "lucide-r
 // it. Every tile routes to a surface that already exists — the start screen
 // holds the menu, the surfaces hold the work.
 export const START_MENU = [
-  { index: "01", label: "Dashboard", to: "/board", icon: LayoutGrid },
-  { index: "02", label: "Selection Committee", to: "/selection-committee", icon: Award },
-  { index: "03", label: "Mission Briefing", to: "/mission-briefing", icon: BookOpen },
-  { index: "04", label: "Networking", to: "/networking", icon: Users },
-  { index: "05", label: "The Publication", to: "/Top100Women2025", icon: Trophy },
-  { index: "06", label: "Membership", to: "/Membership", icon: BadgeCheck },
+  { key: "dashboard", index: "01", label: "Dashboard", to: "/board", icon: LayoutGrid },
+  { key: "committee", index: "02", label: "Selection Committee", to: "/selection-committee", icon: Award },
+  { key: "briefing", index: "03", label: "Mission Briefing", to: "/mission-briefing", icon: BookOpen },
+  { key: "networking", index: "04", label: "Networking", to: "/networking", icon: Users },
+  { key: "publication", index: "05", label: "The Publication", to: "/Top100Women2025", icon: Trophy },
+  { key: "membership", index: "06", label: "Membership", to: "/Membership", icon: BadgeCheck },
 ];
+
+// The ballot: the one action the cycle is asking for, offered beside the
+// countdown so the closing date and the way to vote are read in one line.
+export const VOTE_OPTION = {
+  key: "vote",
+  label: "Vote now",
+  to: "/selection-committee",
+};
 
 export const START_LOGO =
   "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png";

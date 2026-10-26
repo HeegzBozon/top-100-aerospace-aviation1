@@ -13,6 +13,7 @@ import ModuleRail from "./ModuleRail";
 import useHandheldDestinations from "./useHandheldDestinations";
 import useModuleNavigation, { getStage } from "./useModuleNavigation";
 import { useHandheldDeck, getDeck } from "./handheldDeck";
+import { useHandheldPicker } from "./handheldPicker";
 import HandheldNotifications from "./HandheldNotifications";
 import HandheldShareSheet from "./HandheldShareSheet";
 import HandheldSpeaker from "./HandheldSpeaker";
@@ -109,9 +110,18 @@ export default function HandheldDeck() {
   // A surface that pages its sections (ModuleSlideDeck) hands the console a deck
   // to turn; everything else falls back to stepping the page's module marks.
   const deck = useHandheldDeck();
+  // A surface whose options are discrete — the title screen's keys, the
+  // profile's own panels — hands the console a picker, which outranks the
+  // page's module marks: the ring walks what is actually on the screen.
+  const picker = useHandheldPicker();
   const deckLabels = deck ? deck.labels() : [];
-  const modules = deck ? deckLabels.map((label) => ({ label })) : nav.modules;
-  const moduleIndex = deck ? deck.index() : nav.index;
+  const pickerLabels = picker ? picker.labels() : [];
+  const modules = deck
+    ? deckLabels.map((label) => ({ label }))
+    : picker
+      ? pickerLabels.map((label) => ({ label }))
+      : nav.modules;
+  const moduleIndex = deck ? deck.index() : picker ? picker.index() : nav.index;
   const sectionItems = modules.map((module, i) => ({
     label: module.label,
     sectionIndex: i,
@@ -320,6 +330,15 @@ export default function HandheldDeck() {
         setCursor((prev) => (prev + step + list.length) % list.length);
         return;
       }
+      // A picker walks its own options; a turn it declines is a turn the glass
+      // takes, which is how an open panel is read down.
+      if (picker) {
+        const label = picker.step(step);
+        if (label) {
+          announce(label);
+          return;
+        }
+      }
       if (deck) {
         deck.scrollBy(step * 54);
         return;
@@ -328,7 +347,7 @@ export default function HandheldDeck() {
       // column — gets the ring before the glass or the window does.
       nav.scrollBy(step * 54);
     },
-    [menuOpen, menuMode, listFor, deck, finishBoot, nav],
+    [menuOpen, menuMode, listFor, picker, deck, finishBoot, nav, announce],
   );
 
   const jumpGroup = useCallback(
@@ -361,6 +380,14 @@ export default function HandheldDeck() {
         }
         return jumpGroup(direction);
       }
+      // Back and forward move to the neighbour. A picker owns these keys: at the
+      // end of its options the press bumps instead of hunting for a section.
+      if (picker) {
+        const label = picker.page(direction);
+        if (label) announce(label);
+        else blip("back");
+        return;
+      }
       if (deck) {
         const next = deck.index() + direction;
         if (next < 0 || next >= deck.count()) {
@@ -386,12 +413,17 @@ export default function HandheldDeck() {
       }
       blip("back");
     },
-    [menuOpen, menuMode, listFor, jumpGroup, deck, nav, finishBoot, announce],
+    [menuOpen, menuMode, listFor, jumpGroup, picker, deck, nav, finishBoot, announce],
   );
 
   const jumpToModule = useCallback(
     (i) => {
       blip("move");
+      if (picker) {
+        const label = picker.goTo(i);
+        if (label) announce(label);
+        return;
+      }
       if (deck) {
         deck.goTo(i);
         announce(deck.labels()[i]);
@@ -399,7 +431,7 @@ export default function HandheldDeck() {
       }
       if (nav.goTo(i) !== null) announce(nav.modules[i]?.label);
     },
-    [deck, nav, announce],
+    [picker, deck, nav, announce],
   );
 
   // The bottom of the ring: the page reads itself down the glass, and the same
@@ -458,11 +490,20 @@ export default function HandheldDeck() {
       applyFinish(finishItems[cursor]);
       return;
     }
-    if (!menuOpen) return openMenu();
+    if (!menuOpen) {
+      // The ring has chosen, so A opens what it is standing on. A surface with
+      // nothing to open hands the key straight back.
+      if (picker?.enter?.()) {
+        blip("select");
+        buzz();
+        return;
+      }
+      return openMenu();
+    }
     const item = flat[cursor];
     if (item) go(item);
     else closeMenu();
-  }, [finishBoot, menuMode, sectionItems, finishItems, cursor, jumpToModule, applyFinish, announce, menuOpen, openMenu, flat, go, closeMenu]);
+  }, [finishBoot, menuMode, sectionItems, finishItems, cursor, jumpToModule, applyFinish, announce, menuOpen, openMenu, flat, go, closeMenu, picker]);
 
   const back = useCallback(() => {
     blip("back");
@@ -471,8 +512,10 @@ export default function HandheldDeck() {
     if (shareOpen) return setShareOpen(false);
     if (notificationsOpen) return setNotificationsOpen(false);
     if (menuOpen) return setMenuMode(null);
+    // A surface that opened something of its own takes the press first.
+    if (picker?.back?.()) return;
     navigate(-1);
-  }, [booting, finishBoot, menuOpen, notificationsOpen, shareOpen, navigate]);
+  }, [booting, finishBoot, menuOpen, notificationsOpen, shareOpen, navigate, picker]);
 
   const toggleSound = useCallback(() => {
     setSoundOn((prev) => {

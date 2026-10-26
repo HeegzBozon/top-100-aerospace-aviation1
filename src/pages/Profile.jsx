@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Download, Settings2, LayoutGrid } from 'lucide-react';
+import { BadgeCheck, Download, Loader2, Settings2, LayoutGrid } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
+import useGlass from '@/hooks/useGlass';
 import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
@@ -20,6 +21,7 @@ import StoryCreate from '@/components/fellow-home/StoryCreate';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
+import ProfileConsole from '@/components/fellow-home/ProfileConsole';
 import PresentationSettings from '@/components/profile-deck/PresentationSettings';
 
 export default function Profile() {
@@ -34,6 +36,9 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [presentationOpen, setPresentationOpen] = useState(false);
+  // On the glass the profile is read as a console: a menu of its own panels,
+  // then one panel open at a time on the click wheel.
+  const glass = useGlass();
 
   // Instrument cluster tab persists in the URL so returning Fellows land where they left off.
   const [tab, setTab] = useState(() => new URLSearchParams(window.location.search).get('tab') || 'top100');
@@ -312,107 +317,131 @@ export default function Profile() {
     />
   );
 
+  // The profile's panels, built once. The desk stacks them down the page; the
+  // glass hands the same panels to the console, which holds them one at a time.
+  const identityNode = (
+    <FellowIdentityHeader
+      user={user}
+      nominee={nominee}
+      accent={accent}
+      isOwner
+      coverKey={settings?.cover_asset_id}
+      sixWordStory={settings?.six_word_story || user?.six_word_story}
+      onEditIdentity={() => setWizardOpen(true)}
+      publicPath={publicPath}
+      statusKey={settings?.status_key}
+      savingStatus={savingStatus}
+      onStatusChange={saveStatus}
+      coverContent={
+        <SeasonBand
+          accent={accent}
+          underTally={blurbsContent}
+        />
+      }
+      hasStory={story.hasStory}
+      onAvatarTap={story.onAvatarTap}
+      clusterContent={
+        <InstrumentCluster
+          user={user}
+          nominee={nominee}
+          accent={accent}
+          groups={story.groups}
+          onOpen={story.openViewer}
+          onAdd={story.openCreate}
+          top100={top100.rankings}
+          activeTab={tab}
+          onTabChange={handleTabChange}
+          top100Loading={top100.loading}
+          storiesLoading={story.loading}
+        />
+      }
+    />
+  );
+
+  const boardNode = (
+    // Keyed on the board in the URL: an arriving deep link (the console's own
+    // menu sends them) mounts the cluster fresh so it opens on that board.
+    <BulletinBoardCluster
+      key={new URLSearchParams(window.location.search).get('board') || 'board'}
+      user={user}
+      nominee={nominee}
+      settings={settings}
+      accent={accent}
+      isOwner
+      statusKey={settings?.status_key}
+      savingStatus={savingStatus}
+      onStatusChange={saveStatus}
+      nextMove={{
+        eightCount: top100.rankings.length,
+        hasFlightography: !!(nominee?.career_history?.length || nominee?.education?.length || nominee?.skills?.length || nominee?.bio),
+        hasSixWord: !!(settings?.six_word_story || user?.six_word_story),
+      }}
+      onJumpToEight={jumpToEight}
+      onEditIdentity={() => setWizardOpen(true)}
+      wallEntries={entries}
+      onApproveWall={approve}
+      publicPath={publicPath}
+      flightography={fellowModules.flightography}
+      tradingCard={<ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />}
+      personalize={
+        <AccentCoverPicker
+          settings={settings}
+          accent={accent}
+          saving={saving}
+          error={saveError}
+          onChange={savePersonalization}
+        />
+      }
+      clusterOrder={settings?.cluster_module_order}
+      clusterHidden={settings?.cluster_hidden_modules}
+      onSaveLayout={saveClusterLayout}
+      clusterSizes={settings?.cluster_tile_sizes}
+      onSaveSizes={saveClusterSizes}
+    />
+  );
+
+  const accountNode = (
+    <>
+      <Link to="/board" className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
+        <LayoutGrid className="w-3 h-3" /> Dashboard
+      </Link>
+      <button onClick={() => setPresentationOpen(true)} className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
+        <Settings2 className="w-3 h-3" /> Presentation
+      </button>
+      <button
+        onClick={handleExportData}
+        disabled={exporting}
+        className="text-xs text-[var(--muted)] hover:text-[var(--text)] transition-colors flex items-center gap-1.5"
+      >
+        {exporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
+        {exporting ? 'Exporting...' : 'Download my data'}
+      </button>
+    </>
+  );
+
+  const panels = [
+    { key: 'identity', label: 'Identity', hint: 'Masthead, status and the record', icon: BadgeCheck, node: <div className="px-3 pt-3">{identityNode}</div> },
+    { key: 'board', label: 'Bulletin Board', hint: 'Instruments, boards and bulletins', icon: LayoutGrid, node: <div className="px-3 pt-3">{boardNode}</div> },
+    { key: 'account', label: 'Account', hint: 'Your card, presentation and data', icon: Settings2, node: <div className="flex flex-wrap items-center gap-x-5 gap-y-3 px-3 py-4">{accountNode}</div> },
+  ];
+
   return (
     <div className="min-h-screen overflow-x-hidden sf-pro" style={{ background: B.cream }}>
       <AnnouncementBanner />
-      <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
-        {/* Position 1 — locked. Identity above credential. */}
-        <div data-hh-module="Identity">
-        <FellowIdentityHeader
-          user={user}
-          nominee={nominee}
-          accent={accent}
-          isOwner
-          coverKey={settings?.cover_asset_id}
-          sixWordStory={settings?.six_word_story || user?.six_word_story}
-          onEditIdentity={() => setWizardOpen(true)}
-          publicPath={publicPath}
-          statusKey={settings?.status_key}
-          savingStatus={savingStatus}
-          onStatusChange={saveStatus}
-          coverContent={
-            <SeasonBand
-              accent={accent}
-              underTally={blurbsContent}
-            />
-          }
-          hasStory={story.hasStory}
-          onAvatarTap={story.onAvatarTap}
-          clusterContent={
-            <InstrumentCluster
-              user={user}
-              nominee={nominee}
-              accent={accent}
-              groups={story.groups}
-              onOpen={story.openViewer}
-              onAdd={story.openCreate}
-              top100={top100.rankings}
-              activeTab={tab}
-              onTabChange={handleTabChange}
-              top100Loading={top100.loading}
-              storiesLoading={story.loading}
-            />
-          }
-        />
-        </div>
 
-        {/* Master instrument cluster — the Bulletin Board. Houses everything below the masthead. */}
-        <div data-hh-module="Bulletin Board">
-        <BulletinBoardCluster
-          user={user}
-          nominee={nominee}
-          settings={settings}
-          accent={accent}
-          isOwner
-          statusKey={settings?.status_key}
-          savingStatus={savingStatus}
-          onStatusChange={saveStatus}
-          nextMove={{
-            eightCount: top100.rankings.length,
-            hasFlightography: !!(nominee?.career_history?.length || nominee?.education?.length || nominee?.skills?.length || nominee?.bio),
-            hasSixWord: !!(settings?.six_word_story || user?.six_word_story),
-          }}
-          onJumpToEight={jumpToEight}
-          onEditIdentity={() => setWizardOpen(true)}
-          wallEntries={entries}
-          onApproveWall={approve}
-          publicPath={publicPath}
-          flightography={fellowModules.flightography}
-          tradingCard={<ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />}
-          personalize={
-            <AccentCoverPicker
-              settings={settings}
-              accent={accent}
-              saving={saving}
-              error={saveError}
-              onChange={savePersonalization}
-            />
-          }
-          clusterOrder={settings?.cluster_module_order}
-          clusterHidden={settings?.cluster_hidden_modules}
-          onSaveLayout={saveClusterLayout}
-          clusterSizes={settings?.cluster_tile_sizes}
-          onSaveSizes={saveClusterSizes}
-        />
-        </div>
+      {glass ? (
+        <ProfileConsole panels={panels} />
+      ) : (
+        <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
+          {/* Position 1 — locked. Identity above credential. */}
+          <div data-hh-module="Identity">{identityNode}</div>
 
-        <div data-hh-module="Presentation" className="mt-8 flex justify-end gap-4">
-          <Link to="/board" className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
-            <LayoutGrid className="w-3 h-3" /> Dashboard
-          </Link>
-          <button onClick={() => setPresentationOpen(true)} className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
-            <Settings2 className="w-3 h-3" /> Presentation
-          </button>
-          <button
-            onClick={handleExportData}
-            disabled={exporting}
-            className="text-xs text-[var(--muted)] hover:text-[var(--text)] transition-colors flex items-center gap-1.5"
-          >
-            {exporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
-            {exporting ? 'Exporting...' : 'Download my data'}
-          </button>
+          {/* Master instrument cluster — the Bulletin Board. Houses everything below the masthead. */}
+          <div data-hh-module="Bulletin Board">{boardNode}</div>
+
+          <div data-hh-module="Presentation" className="mt-8 flex justify-end gap-4">{accountNode}</div>
         </div>
-      </div>
+      )}
 
       {/* Desktop dock spacing only — the handheld body reserves its own room. */}
       <div className="hidden h-28 md:block" />

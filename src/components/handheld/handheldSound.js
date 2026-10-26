@@ -82,7 +82,6 @@ export function shellAudio() {
 }
 
 const TONES = {
-  tick: [1180, 0.018],
   move: [430, 0.035],
   select: [660, 0.06],
   open: [760, 0.07],
@@ -92,7 +91,6 @@ const TONES = {
 };
 
 export function blip(kind = "select") {
-  // "tick" is the detent click of the wheel — the shortest sound in the kit.
   if (!isSoundOn()) return;
   const ac = shellAudio();
   if (!ac) return;

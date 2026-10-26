@@ -1,26 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { hourPhase } from '@/components/core/appOpening';
+import { useCountdown } from '@/components/events/useCountdown';
+import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import HomeDock from '@/components/home-v3/HomeDock';
 import StartSky from '@/components/start/StartSky';
 import StartMetaRow from '@/components/start/StartMetaRow';
 import StartMark from '@/components/start/StartMark';
 import StartSeasonLine from '@/components/start/StartSeasonLine';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
+import { START_MENU, VOTE_OPTION } from '@/components/start/startMenuConfig';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 
 // The title screen. The app opens like a game: the hour's sky, the mark, the
-// cycle's countdown, and the six surfaces one step off the dashboard. The
-// console's ring walks the keys and announces each one; a tap opens it.
+// cycle's countdown, and the six surfaces one step off the dashboard.
 //
-// The picture is a single column that fills the glass top to bottom — masthead,
-// mark, countdown, then the keys take everything that is left — so nothing has to
-// be centred and no stretch of the screen is ever left dead.
+// It is a menu, so the console treats it as one: the surfaces are handed to the
+// ring as a picker, and the cursor it walks is the selection drawn on the keys.
+// The ballot stands at the top of that list when the cycle is asking for it, so
+// the wheel reaches the same action the countdown sits beside.
 export default function StartScreen() {
+  const navigate = useNavigate();
   const [phase] = useState(() => hourPhase());
   const [status, setStatus] = useState({ loading: true, votingEnd: null, failed: false });
   const [attempt, setAttempt] = useState(0);
+  const [cursorKey, setCursorKey] = useState(START_MENU[0].key);
 
   useEffect(() => {
     let alive = true;
@@ -45,6 +51,64 @@ export default function StartScreen() {
     };
   }, [attempt]);
 
+  // The ballot is offered only while its countdown is still running, so neither
+  // the button nor the cursor can land on an action that has already closed.
+  const vote = useCountdown(status.votingEnd);
+  const voteLive = !status.loading && !status.failed && !!status.votingEnd && !vote.done;
+
+  // What the ring walks, top to bottom: the ballot first when it is live, then
+  // the six surfaces in the order the grid draws them.
+  const options = useMemo(() => (voteLive ? [VOTE_OPTION, ...START_MENU] : START_MENU), [voteLive]);
+
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+  const cursorRef = useRef(cursorKey);
+  cursorRef.current = cursorKey;
+
+  // The cursor is held as a key, not a position, so the list can gain the ballot
+  // without the selection jumping.
+  const land = useCallback((target, wrap) => {
+    const list = optionsRef.current;
+    if (!list.length) return null;
+    const next = wrap ? ((target % list.length) + list.length) % list.length : target;
+    if (next < 0 || next >= list.length) return null;
+    cursorRef.current = list[next].key;
+    setCursorKey(list[next].key);
+    return list[next].label;
+  }, []);
+
+  const here = useCallback(
+    () => Math.max(0, optionsRef.current.findIndex((option) => option.key === cursorRef.current)),
+    [],
+  );
+
+  // The console's handle on the title screen: rotation walks the options, back
+  // and forward walk the same list and stop at its ends, A opens what the
+  // cursor is standing on.
+  const api = useRef(null);
+  if (!api.current) {
+    api.current = {
+      labels: () => optionsRef.current.map((option) => option.label),
+      index: here,
+      step: (direction) => land(here() + direction, true),
+      page: (direction) => land(here() + direction, false),
+      goTo: (i) => land(i, false),
+      enter: () => {
+        const option = optionsRef.current.find((item) => item.key === cursorRef.current);
+        if (!option?.to) return false;
+        navigate(option.to);
+        return true;
+      },
+      back: () => false,
+    };
+  }
+
+  useEffect(() => registerPicker(api.current), []);
+
+  useEffect(() => {
+    touchPicker();
+  }, [cursorKey, options.length]);
+
   return (
     <div className="hh-slide-window relative flex flex-col p-1.5 md:block md:h-auto md:min-h-screen md:p-0">
       {/* The picture plane: the hour's sky, seated a hair inside the glass so no
@@ -61,11 +125,16 @@ export default function StartScreen() {
           <div className="mt-4 shrink-0 md:mt-10">
             <StartMark />
             <div className="mt-3 md:mt-4">
-              <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
+              <StartSeasonLine
+                status={status}
+                onRetry={() => setAttempt((n) => n + 1)}
+                voteTo={voteLive ? VOTE_OPTION.to : null}
+                voteSelected={cursorKey === VOTE_OPTION.key}
+              />
             </div>
           </div>
 
-          <StartSurfaceKeys />
+          <StartSurfaceKeys cursorKey={cursorKey} />
         </div>
 
         {/* Desktop navigation under the title screen. */}

@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { Home, Pause, Play, SkipBack, SkipForward } from "lucide-react";
-import { blip } from "./handheldSound";
 
 // Degrees of travel per detent. One detent = one menu row or one scroll notch.
 const STEP_DEGREES = 20;
@@ -108,7 +107,8 @@ export default function ClickWheel({ size = 132, playing, onRotate, onMenu, onPr
     if (Math.abs(drag.current.travel) >= STEP_DEGREES) {
       const direction = drag.current.travel > 0 ? 1 : -1;
       drag.current.travel -= direction * STEP_DEGREES;
-      blip("tick");
+      // A turn is silent: the wheel clicks under the finger and the screen names
+      // where it landed, so nothing ticks away like a clock while you read.
       onRotate?.(direction);
     }
   };
