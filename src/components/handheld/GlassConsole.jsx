@@ -66,9 +66,17 @@ export default function GlassConsole({ kicker, panels, openKey = null, onOpen, d
     api.current = {
       labels: () => panelsRef.current.map((panel) => panel.label),
       index: () => cursorRef.current,
-      step: (direction) => land(cursorRef.current + direction, true),
+      // Rotation walks the menu, and reads an open panel: a turn the console
+      // hands back is a turn the glass takes, so the panel scrolls.
+      step: (direction) => (openRef.current ? null : land(cursorRef.current + direction, true)),
       page: (direction) => land(cursorRef.current + direction, false),
-      goTo: (i) => land(i, false),
+      goTo: (i) => {
+        const label = land(i, false);
+        // A tick while a panel is open turns the panel, rather than moving the
+        // cursor out from under the one on the glass.
+        if (label && openRef.current) onOpenRef.current?.(panelsRef.current[i].key);
+        return label;
+      },
       enter: () => {
         // A panel is open, so A belongs to the panel and to nothing the console
         // would do. The press is consumed rather than opening the cartridges
