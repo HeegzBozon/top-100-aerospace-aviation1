@@ -5,55 +5,13 @@ import { Award, BadgeCheck, BookOpen, Compass, LayoutGrid, Trophy, Users } from 
 // step off it. Every row routes to a surface that already exists — the start
 // screen holds the menu, the surfaces hold the work.
 export const START_MENU = [
-  {
-    index: "01",
-    label: "Dashboard",
-    to: "/board",
-    icon: LayoutGrid,
-    blurb: "Your record and your loop, then four directions across.",
-  },
-  {
-    index: "02",
-    label: "Selection Committee",
-    to: "/selection-committee",
-    icon: Award,
-    blurb: "Your eight, in order. Position 1 reads as position 1.",
-  },
-  {
-    index: "03",
-    label: "Mission Briefing",
-    to: "/Top100OS",
-    icon: BookOpen,
-    blurb: "What the platform is, and how the measurement works.",
-  },
-  {
-    index: "04",
-    label: "Networking",
-    to: "/networking",
-    icon: Users,
-    blurb: "The rooms at the shows ahead, and who is standing in them.",
-  },
-  {
-    index: "05",
-    label: "The Publication",
-    to: "/Top100Women2025",
-    icon: Trophy,
-    blurb: "The editorial record of who was measured, and how.",
-  },
-  {
-    index: "06",
-    label: "Global Intelligence",
-    to: "/GlobalIntelligence",
-    icon: Compass,
-    blurb: "The live picture: launches, traffic and watch.",
-  },
-  {
-    index: "07",
-    label: "Membership",
-    to: "/Membership",
-    icon: BadgeCheck,
-    blurb: "What standing on the platform gives you, tier by tier.",
-  },
+  { index: "01", label: "Dashboard", to: "/board", icon: LayoutGrid },
+  { index: "02", label: "Selection Committee", to: "/selection-committee", icon: Award },
+  { index: "03", label: "Mission Briefing", to: "/mission-briefing", icon: BookOpen },
+  { index: "04", label: "Networking", to: "/networking", icon: Users },
+  { index: "05", label: "The Publication", to: "/Top100Women2025", icon: Trophy },
+  { index: "06", label: "Global Intelligence", to: "/GlobalIntelligence", icon: Compass },
+  { index: "07", label: "Membership", to: "/Membership", icon: BadgeCheck },
 ];
 
 export const START_LOGO =

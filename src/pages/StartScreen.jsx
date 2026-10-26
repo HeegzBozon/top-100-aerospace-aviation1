@@ -50,7 +50,7 @@ export default function StartScreen() {
 
   return (
     <div
-      className="hh-slide-window relative flex flex-col overflow-hidden px-5 py-6 md:h-auto md:min-h-screen md:px-16 md:py-14"
+      className="hh-slide-window relative flex flex-col overflow-hidden px-5 pb-10 pt-5 md:h-auto md:min-h-screen md:px-16 md:pb-14 md:pt-14"
       style={{ background: phase.sky }}
     >
       {/* The hour's weather, the same sky the title card opened on */}
@@ -68,7 +68,7 @@ export default function StartScreen() {
         style={{ boxShadow: 'inset 0 0 130px rgba(5,11,20,0.7)' }}
       />
 
-      <div className="relative flex flex-1 flex-col md:mx-auto md:w-full md:max-w-2xl">
+      <div className="relative flex min-h-0 flex-1 flex-col md:mx-auto md:w-full md:max-w-2xl">
         <div className="flex items-center gap-3">
           <img src={START_LOGO} alt="" className="h-7 w-7 object-contain md:h-9 md:w-9" />
           <span className="text-[8.5px] font-bold uppercase tracking-[0.3em] text-editorial-gold md:text-[9.5px]">
@@ -79,7 +79,7 @@ export default function StartScreen() {
           </span>
         </div>
 
-        <div className="mt-5 md:mt-10">
+        <div className="mt-4 md:mt-10">
           <p className="text-[8.5px] font-bold uppercase tracking-[0.3em] text-editorial-copper md:text-[9.5px]">
             {phase.kicker}
           </p>
@@ -87,7 +87,7 @@ export default function StartScreen() {
             className="mt-3 h-px w-32 md:w-56"
             style={{ background: 'linear-gradient(90deg, #B87333, #C9A87C 58%, transparent)' }}
           />
-          <h1 className="mt-4 font-heading text-[2.4rem] leading-[1.02] text-editorial-cream md:text-7xl">
+          <h1 className="mt-3 font-heading text-[2.05rem] leading-[1.02] text-editorial-cream md:text-7xl">
             TOP 100
           </h1>
           <p className="mt-1.5 text-[9px] font-bold uppercase tracking-[0.34em] text-editorial-cream/60 md:text-[11px]">
@@ -115,16 +115,18 @@ export default function StartScreen() {
           </div>
         </div>
 
-        <div className="mt-4 flex-1 md:mt-8">
-          <p className="mb-1 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/40">
+        <div className="mt-4 flex min-h-0 flex-1 flex-col md:mt-8">
+          <p className="mb-1 shrink-0 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/40">
             Select a surface
           </p>
-          {START_MENU.map((item) => (
-            <StartMenuItem key={item.key || item.label} item={item} />
-          ))}
+          <div className="-mr-2 min-h-0 flex-1 overflow-y-auto pr-2 md:overflow-visible">
+            {START_MENU.map((item) => (
+              <StartMenuItem key={item.label} item={item} />
+            ))}
+          </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-between gap-4 border-t border-editorial-cream/15 pt-3 text-[8px] font-bold uppercase tracking-[0.26em] text-editorial-cream/45">
+        <div className="mt-3 flex shrink-0 items-center justify-between gap-4 border-t border-editorial-cream/15 pt-3 text-[8px] font-bold uppercase tracking-[0.26em] text-editorial-cream/45">
           <span className="md:hidden">Turn the wheel · ◀ ▶ walks the menu</span>
           <span className="hidden md:inline">Choose a surface to begin</span>
           <span>{stamp}</span>

@@ -86,6 +86,7 @@ const Top100Women2025DeepLink = lazy(() => import('@/pages/Top100Women2025DeepLi
 const TheBoard = lazy(() => import('@/pages/TheBoard'));
 const StartScreen = lazy(() => import('@/pages/StartScreen'));
 const Networking = lazy(() => import('@/pages/Networking'));
+const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -218,6 +219,8 @@ const AuthenticatedApp = () => {
       <Route path="/dashboard" element={<TheBoard />} />
       {/* The conferencing layer: rooms ahead, and who is standing in them */}
       <Route path="/networking" element={<Networking />} />
+      {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
+      <Route path="/mission-briefing" element={<MissionBriefing />} />
       <Route path="/the-board" element={<TheBoard />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />
