@@ -1,67 +1,87 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { B } from "@/components/fellow-home/fellowHomeConfig";
 import { registerPicker, touchPicker } from "@/components/handheld/handheldPicker";
-import { getStage } from "@/components/handheld/useModuleNavigation";
+import { B } from "@/components/fellow-home/fellowHomeConfig";
 
-// The Fellow's own profile, as the console reads it: a menu of the profile's
-// panels, and one panel open on the glass.
+const getStage = () => document.querySelector("[data-handheld-screen]");
+
+// The console, on the glass. A surface hands over its own panels and the console
+// holds them: a menu of them, then one open at a time, driven by the click wheel.
+// Rotation walks the menu — the panels are drawn to the ring as a picker, so the
+// rail, the cursor and the keys always agree — or reads the open panel; A opens
+// what the cursor is standing on; B puts the panel away and comes back to the menu.
 //
-// The ring walks the menu and the row under the cursor is the one A opens. Once
-// a panel is open the ring reads it down the glass, back and forward turn to the
-// neighbouring panel, and B returns to the menu. Nothing about the panels
-// themselves changes: the desk shows the very same components stacked down a
-// page, and this is the glass's way of holding them one at a time.
-export default function ProfileConsole({ panels }) {
+// Controlled on purpose: the panel on the glass is `openKey` (null = the menu),
+// and every intention the Fellow has is reported back through `onOpen`, so the
+// surface beneath keeps owning the state the rest of its page reads.
+export default function GlassConsole({ kicker, panels, openKey = null, onOpen, deepLinkParam }) {
   const [cursor, setCursor] = useState(0);
-  const [open, setOpen] = useState(false);
-  const panelsRef = useRef(panels);
-  panelsRef.current = panels;
-  const cursorRef = useRef(0);
-  const openRef = useRef(false);
   const rowsRef = useRef([]);
 
+  const cursorRef = useRef(0);
+  cursorRef.current = cursor;
+  const openRef = useRef(openKey);
+  openRef.current = openKey;
+  const panelsRef = useRef(panels);
+  panelsRef.current = panels;
+  const onOpenRef = useRef(onOpen);
+  onOpenRef.current = onOpen;
+
+  // The cursor is held as a position the ring can walk, and wrapping is the
+  // console's own: a menu is a loop, so there is no dead end to fall into.
   const land = useCallback((target, wrap) => {
     const list = panelsRef.current;
     if (!list.length) return null;
     const next = wrap ? ((target % list.length) + list.length) % list.length : target;
     if (next < 0 || next >= list.length) return null;
-    cursorRef.current = next;
     setCursor(next);
     return list[next].label;
   }, []);
 
-  const enterAt = useCallback((i) => {
-    cursorRef.current = i;
-    openRef.current = true;
-    setCursor(i);
-    setOpen(true);
-  }, []);
+  // The cursor follows a panel opened from somewhere else — a rail tick, a deep
+  // link — so the rail and the header name the panel actually on the glass.
+  useEffect(() => {
+    if (!openKey) return;
+    const i = panels.findIndex((panel) => panel.key === openKey);
+    if (i >= 0) setCursor(i);
+  }, [openKey, panels]);
 
-  const leave = useCallback(() => {
-    openRef.current = false;
-    setOpen(false);
-  }, []);
+  // A URL that names a panel opens it, so the console's own menu and the pages
+  // around it can send a Fellow straight to a surface.
+  const location = useLocation();
+  const requested = deepLinkParam
+    ? new URLSearchParams(location.search).get(deepLinkParam)
+    : null;
 
-  // The console's handle on the profile: rotation walks the menu, or reads the
-  // panel that is open; back and forward move to the neighbour.
+  useEffect(() => {
+    if (!requested) return;
+    if (panelsRef.current.some((panel) => panel.key === requested)) {
+      onOpenRef.current?.(requested);
+    }
+  }, [requested]);
+
   const api = useRef(null);
   if (!api.current) {
     api.current = {
       labels: () => panelsRef.current.map((panel) => panel.label),
       index: () => cursorRef.current,
-      step: (direction) => (openRef.current ? null : land(cursorRef.current + direction, true)),
+      step: (direction) => land(cursorRef.current + direction, true),
       page: (direction) => land(cursorRef.current + direction, false),
       goTo: (i) => land(i, false),
       enter: () => {
-        if (openRef.current) return false;
-        enterAt(cursorRef.current);
+        // A panel is open, so A belongs to the panel and to nothing the console
+        // would do. The press is consumed rather than opening the cartridges
+        // across the Fellow's work.
+        if (openRef.current) return true;
+        const panel = panelsRef.current[cursorRef.current];
+        if (!panel) return false;
+        onOpenRef.current?.(panel.key);
         return true;
       },
       back: () => {
         if (!openRef.current) return false;
-        leave();
+        onOpenRef.current?.(null);
         return true;
       },
     };
@@ -69,36 +89,27 @@ export default function ProfileConsole({ panels }) {
 
   useEffect(() => registerPicker(api.current), []);
 
-  // A deep link into one of the profile's boards — the console's own menu sends
-  // those — opens the panel that holds it, rather than landing on the menu and
-  // making the Fellow find the board again.
-  const location = useLocation();
-  const boardParam = new URLSearchParams(location.search).get("board");
-
-  useEffect(() => {
-    if (!boardParam) return;
-    const i = panelsRef.current.findIndex((panel) => panel.key === "board");
-    if (i >= 0) enterAt(i);
-  }, [boardParam, enterAt]);
-
   useEffect(() => {
     touchPicker();
-  }, [cursor, open, panels.length]);
+  }, [cursor, openKey, panels.length]);
 
-  // A panel always opens at its own beginning, and the menu always comes back
-  // with the row you chose on the screen.
+  // A panel always opens at its own beginning, and the menu comes back with the
+  // row you chose on the screen.
   useEffect(() => {
     getStage()?.scrollTo({ top: 0 });
-  }, [cursor, open]);
+  }, [cursor, openKey]);
 
   useEffect(() => {
-    if (open) return;
+    if (openKey) return;
     rowsRef.current[cursor]?.scrollIntoView({ block: "nearest" });
-  }, [cursor, open]);
+  }, [cursor, openKey]);
 
   if (!panels.length) return null;
 
-  if (!open) {
+  const openIndex = panels.findIndex((panel) => panel.key === openKey);
+  const openPanel = openIndex >= 0 ? panels[openIndex] : null;
+
+  if (!openPanel) {
     return (
       <div className="px-3 pb-5 pt-4">
         <div
@@ -106,7 +117,7 @@ export default function ProfileConsole({ panels }) {
           style={{ borderBottom: `1px solid ${B.border}` }}
         >
           <p className="text-[8.5px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-            Your profile
+            {kicker}
           </p>
           <p className="text-[7.5px] font-bold uppercase tracking-[0.16em]" style={{ color: B.muted }}>
             ◀▶ Scroll · A Open
@@ -124,7 +135,7 @@ export default function ProfileConsole({ panels }) {
                 ref={(node) => {
                   rowsRef.current[i] = node;
                 }}
-                onClick={() => enterAt(i)}
+                onClick={() => onOpen?.(panel.key)}
                 aria-current={active ? "true" : undefined}
                 className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-[transform,box-shadow,border-color] duration-200 active:scale-[0.99]"
                 style={{
@@ -140,7 +151,9 @@ export default function ProfileConsole({ panels }) {
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
                   style={{ background: "rgba(30,58,90,0.06)", border: `1px solid ${B.border}` }}
                 >
-                  <Icon className="h-[16px] w-[16px]" style={{ color: active ? B.copper : B.navy }} />
+                  {Icon ? (
+                    <Icon className="h-[16px] w-[16px]" style={{ color: active ? B.copper : B.navy }} />
+                  ) : null}
                 </span>
 
                 <span className="min-w-0 flex-1">
@@ -171,8 +184,6 @@ export default function ProfileConsole({ panels }) {
     );
   }
 
-  const panel = panels[cursor];
-
   return (
     <div className="pb-5">
       <div
@@ -185,8 +196,8 @@ export default function ProfileConsole({ panels }) {
       >
         <button
           type="button"
-          onClick={leave}
-          aria-label="Back to the profile menu"
+          onClick={() => onOpen?.(null)}
+          aria-label={`Back to the ${kicker} menu`}
           className="flex shrink-0 items-center gap-0.5 text-[9px] font-bold uppercase tracking-[0.16em] transition-opacity active:opacity-60"
           style={{ color: B.copper }}
         >
@@ -194,15 +205,15 @@ export default function ProfileConsole({ panels }) {
         </button>
 
         <span className="min-w-0 flex-1 truncate text-right font-heading text-[12px]" style={{ color: B.navy }}>
-          {panel.label}
+          {openPanel.label}
         </span>
 
         <span className="shrink-0 text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: B.muted }}>
-          {cursor + 1} / {panels.length}
+          {openIndex + 1} / {panels.length}
         </span>
       </div>
 
-      <div>{panel.node}</div>
+      <div>{openPanel.node}</div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { BadgeCheck, Download, Loader2, Settings2, LayoutGrid } from 'lucide-react';
+import { BadgeCheck, BookOpen, Camera, Download, Loader2, Settings2, LayoutGrid } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import useGlass from '@/hooks/useGlass';
@@ -21,7 +21,8 @@ import StoryCreate from '@/components/fellow-home/StoryCreate';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
-import ProfileConsole from '@/components/fellow-home/ProfileConsole';
+import GlassConsole from '@/components/handheld/GlassConsole';
+import StudioPanel from '@/components/profile/StudioPanel';
 import PresentationSettings from '@/components/profile-deck/PresentationSettings';
 
 export default function Profile() {
@@ -32,7 +33,11 @@ export default function Profile() {
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingEightVisibility, setSavingEightVisibility] = useState(false);
   const [saveError, setSaveError] = useState('');
-  const [wizardOpen, setWizardOpen] = useState(false);
+  // The Studio: null is closed; an array of sitting ids opens the wizard on those
+  // sittings (an empty array walks the whole studio from the lobby).
+  const [wizard, setWizard] = useState(null);
+  // The panel the console is holding. Null is the console's own menu.
+  const [openPanel, setOpenPanel] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [presentationOpen, setPresentationOpen] = useState(false);
@@ -99,7 +104,7 @@ export default function Profile() {
     if (user && new URLSearchParams(window.location.search).get('studio') === 'open') {
       const params = new URLSearchParams(window.location.search);
       const ref = params.get('ref');
-      setWizardOpen(true);
+      setWizard([]);
       if (ref && !user.signup_referrer) {
         base44.auth.updateMe({ signup_referrer: ref }).catch(() => {});
       }
@@ -327,7 +332,7 @@ export default function Profile() {
       isOwner
       coverKey={settings?.cover_asset_id}
       sixWordStory={settings?.six_word_story || user?.six_word_story}
-      onEditIdentity={() => setWizardOpen(true)}
+      onEditIdentity={() => setWizard([])}
       publicPath={publicPath}
       statusKey={settings?.status_key}
       savingStatus={savingStatus}
@@ -377,7 +382,7 @@ export default function Profile() {
         hasSixWord: !!(settings?.six_word_story || user?.six_word_story),
       }}
       onJumpToEight={jumpToEight}
-      onEditIdentity={() => setWizardOpen(true)}
+      onEditIdentity={() => setWizard([])}
       wallEntries={entries}
       onApproveWall={approve}
       publicPath={publicPath}
@@ -419,8 +424,13 @@ export default function Profile() {
     </>
   );
 
+  // Identity locks to position 1. Flightography and The Studio are the record
+  // itself — the career, and the sittings that write it — so they sit directly
+  // under it, ahead of the boards.
   const panels = [
     { key: 'identity', label: 'Identity', hint: 'Masthead, status and the record', icon: BadgeCheck, node: <div className="px-3 pt-3">{identityNode}</div> },
+    { key: 'flightography', label: 'Flightography', hint: 'Career record, schools and skills', icon: BookOpen, node: <div className="px-3 pt-3">{fellowModules.flightography}</div> },
+    { key: 'studio', label: 'The Studio', hint: 'Three sittings, and the post that traveled', icon: Camera, node: <StudioPanel user={user} nominee={nominee} settings={settings} onOpenSitting={setWizard} /> },
     { key: 'board', label: 'Bulletin Board', hint: 'Instruments, boards and bulletins', icon: LayoutGrid, node: <div className="px-3 pt-3">{boardNode}</div> },
     { key: 'account', label: 'Account', hint: 'Your card, presentation and data', icon: Settings2, node: <div className="flex flex-wrap items-center gap-x-5 gap-y-3 px-3 py-4">{accountNode}</div> },
   ];
@@ -430,7 +440,13 @@ export default function Profile() {
       <AnnouncementBanner />
 
       {glass ? (
-        <ProfileConsole panels={panels} />
+        <GlassConsole
+          kicker="Your profile"
+          panels={panels}
+          openKey={openPanel}
+          onOpen={setOpenPanel}
+          deepLinkParam="board"
+        />
       ) : (
         <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
           {/* Position 1 — locked. Identity above credential. */}
@@ -447,11 +463,12 @@ export default function Profile() {
       <div className="hidden h-28 md:block" />
       <HomeDock />
 
-      {wizardOpen && (
+      {wizard && (
         <ProfileWizard
           user={user}
           nominee={nominee}
-          onClose={() => setWizardOpen(false)}
+          openWith={wizard}
+          onClose={() => setWizard(null)}
           onSaved={loadUser}
         />
       )}

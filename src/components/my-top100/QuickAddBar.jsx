@@ -9,7 +9,7 @@ export default function QuickAddBar({ onClick, hidden = false }) {
   if (hidden) return null;
   return (
     <div
-      className="lg:hidden fixed left-0 right-0 bottom-0 z-40 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+      className="hh-lift lg:hidden fixed left-0 right-0 bottom-0 z-40 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
       style={{ background: `linear-gradient(to top, ${brand.cream} 78%, ${brand.cream}00)` }}
     >
       <button

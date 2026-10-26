@@ -18,7 +18,9 @@ export const START_MENU = [
 export const VOTE_OPTION = {
   key: "vote",
   label: "Vote now",
-  to: "/selection-committee",
+  // Straight onto the ballot: the vote tab itself, with the title card in front
+  // of the Selection Committee skipped.
+  to: "/selection-committee?tab=vote",
 };
 
 export const START_LOGO =

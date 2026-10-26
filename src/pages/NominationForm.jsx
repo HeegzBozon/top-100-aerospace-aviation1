@@ -50,14 +50,17 @@ export default function NominationForm({ isPreview = false } = {}) {
   const [submitting, setSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [draftRestored, setDraftRestored] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
+  // A deep link names the surface it wants — the start screen's Vote now asks for
+  // the vote tab — and goes there directly, with no title card in the way.
+  const deepTab = useRef(new URLSearchParams(window.location.search).get('tab')).current;
+  const [showSplash, setShowSplash] = useState(!deepTab);
 
   // Live flow: show the splash, then reveal the unified My Top 100 hub inline.
   useEffect(() => {
-    if (isPreview) return;
+    if (isPreview || deepTab) return;
     const timer = setTimeout(() => setShowSplash(false), 2000);
     return () => clearTimeout(timer);
-  }, [isPreview]);
+  }, [isPreview, deepTab]);
 
   useEffect(() => {
     let active = true;
