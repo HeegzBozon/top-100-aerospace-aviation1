@@ -8,6 +8,7 @@ import EditorialTableOfContents from '@/components/publication/EditorialTableOfC
 import EditorialManifesto from '@/components/publication/EditorialManifesto';
 import EditorialPortraits from '@/components/publication/EditorialPortraits';
 import EditorialLedger from '@/components/publication/EditorialLedger';
+import PublicationExportPanel from '@/components/publication/PublicationExportPanel';
 import SignalReport from '@/components/publication/SignalReport';
 import OrbitalIndexComingSoon from '@/components/publication/OrbitalIndexComingSoon';
 import ArchiveExportSection from '@/components/publication/ArchiveExportSection';
@@ -30,7 +31,7 @@ import { publicationBrand as brandColors, top100Women2025Config } from '@/compon
 // Shared, stateful publication body. Rendered by both the standalone
 // /Top100Women2025 route and the HomeV3 composed front door so the two
 // views never drift apart.
-export default function PublicationBody({ suppressFloatingActions = false, initialSlug }) {
+export default function PublicationBody({ suppressFloatingActions = false, initialSlug, showExports = false }) {
   const { nominees, loading } = useTop100WomenNominees();
   const [selectedNominee, setSelectedNominee] = useState(null);
   const [autoPlaying, setAutoPlaying] = useState(false);
@@ -269,6 +270,7 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
             onSelectNominee={setSelectedNominee}
             discoveredIds={discoveredIds}
           />
+          {showExports && <PublicationExportPanel nominees={nominees} user={user} />}
         </EditorialSection>
       ),
     },

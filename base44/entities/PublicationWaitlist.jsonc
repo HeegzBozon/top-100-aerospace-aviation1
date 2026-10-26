@@ -1,0 +1,60 @@
+{
+  "name": "PublicationWaitlist",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Email address captured by a publication's \"Notify Me\" form"
+    },
+    "publication": {
+      "type": "string",
+      "description": "Publication key the signup belongs to, e.g. 'top100_women_2025'"
+    },
+    "surface": {
+      "type": "string",
+      "description": "Surface on the publication the signup was made from, e.g. 'orbital_index'"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "waiting",
+        "notified",
+        "converted",
+        "unsubscribed"
+      ],
+      "default": "waiting",
+      "description": "Lifecycle of the waitlist entry"
+    },
+    "notified_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the signup was notified that the feature is live"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal note. Admin-only."
+    }
+  },
+  "required": [
+    "email",
+    "publication"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

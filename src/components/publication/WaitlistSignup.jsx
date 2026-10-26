@@ -22,14 +22,27 @@ export default function WaitlistSignup() {
 
     setStatus('loading');
     setMessage('');
-    await base44.integrations.Core.SendEmail({
-      to: top100Women2025Config.waitlistEmail,
-      subject: top100Women2025Config.waitlistSubject,
-      body: `New waitlist signup for Orbital Index feature: ${trimmedEmail}`,
-    });
-    setStatus('success');
-    setMessage("You're on the list!");
-    setEmail('');
+    try {
+      // The signup is recorded first so it is always exportable; the CRM sync is
+      // best-effort and must not cost the visitor the entry they just made.
+      await base44.entities.PublicationWaitlist.create({
+        email: trimmedEmail,
+        publication: 'top100_women_2025',
+        surface: 'orbital_index',
+      });
+      base44.functions.invoke('subscribeNewsletter', { email: trimmedEmail, source: 'top100_women' }).catch(() => {});
+      await base44.integrations.Core.SendEmail({
+        to: top100Women2025Config.waitlistEmail,
+        subject: top100Women2025Config.waitlistSubject,
+        body: `New waitlist signup for Orbital Index feature: ${trimmedEmail}`,
+      });
+      setStatus('success');
+      setMessage("You're on the list!");
+      setEmail('');
+    } catch (error) {
+      setStatus('error');
+      setMessage('We could not save your signup. Please try again.');
+    }
   };
 
   if (status === 'success') {
