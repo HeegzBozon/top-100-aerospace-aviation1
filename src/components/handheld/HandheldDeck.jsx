@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import ClickWheel from "./ClickWheel";
+import FaceButtons from "./FaceButtons";
 import HandheldMasthead from "./HandheldMasthead";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldMenu from "./HandheldMenu";
@@ -13,15 +14,10 @@ import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
 // Chrome the device occupies: the masthead plus the viewer's status line above,
 // and the control chin below. index.css consumes these to inset every surface,
 // so nothing is ever hidden behind the hardware.
-export const HANDHELD_TOP_CLEARANCE = 90;
+export const HANDHELD_TOP_CLEARANCE = 82;
 export const HANDHELD_DECK_CLEARANCE = 188;
 
 const BOOT_KEY = "top100-handheld-booted";
-
-const faceStyle = (from, to, shadow) => ({
-  background: `linear-gradient(180deg, ${from}, ${to})`,
-  boxShadow: shadow,
-});
 
 const pillStyle = {
   background: "linear-gradient(180deg, #2A4E76, #1E3A5A)",
@@ -29,9 +25,9 @@ const pillStyle = {
 };
 
 // The handheld. One body: a masthead bezel, a viewer the content renders in, and
-// a chin carrying a click wheel, A/B, SELECT/START and the speaker. The wheel is
-// the navigation instrument — rotating it scrolls the picture, or walks the
-// cartridge menu when one is loaded.
+// a chin carrying a centred click wheel, the face-button diamond, MENU/START and
+// the speaker. The wheel is the analog instrument — rotating it scrolls the
+// picture, or walks the cartridge menu when one is loaded.
 export default function HandheldDeck() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -129,7 +125,8 @@ export default function HandheldDeck() {
         setCursor((prev) => (prev + step + flat.length) % flat.length);
         return;
       }
-      const viewer = document.querySelector("[data-handheld-screen]");
+      const viewer =
+        document.querySelector("[data-handheld-screen]") || document.querySelector(".hh-stage");
       const delta = step * 54;
       if (viewer && viewer.scrollHeight > viewer.clientHeight + 4) {
         viewer.scrollTop += delta;
@@ -231,76 +228,52 @@ export default function HandheldDeck() {
           boxShadow: "0 -10px 26px rgba(30,58,90,0.22), inset 0 1px 0 rgba(255,255,255,0.85)",
         }}
       >
-        <div className="flex items-start gap-3 px-4 pt-3">
-          <ClickWheel
-            size={132}
-            onRotate={rotate}
-            onMenu={toggleMenu}
-            onPrev={() => (menuOpen ? jumpGroup(-1) : cycleRail(-1))}
-            onNext={() => (menuOpen ? jumpGroup(1) : cycleRail(1))}
-            onHome={goHome}
-            onSelect={select}
+        <div className="flex items-center gap-3 px-4 pt-3">
+          {/* Speaker grille — the left block balances the buttons, so the wheel
+              sits dead centre in the body */}
+          <div
+            className="h-[72px] w-[72px] shrink-0 rounded-[12px]"
+            style={{
+              background:
+                "repeating-linear-gradient(112deg, rgba(184,115,51,0.5) 0 3px, rgba(184,115,51,0.08) 3px 10px)",
+              boxShadow: "inset 0 1px 1px rgba(255,255,255,0.75)",
+            }}
           />
 
-          <div className="flex flex-1 flex-col items-end gap-2 pt-0.5">
-            <div className="relative h-[72px] w-[106px]">
-              <button
-                type="button"
-                onClick={select}
-                aria-label="A — select"
-                className="absolute right-0 top-0 flex h-[46px] w-[46px] items-center justify-center rounded-full text-[12px] font-bold text-[#0B1929] transition-transform active:scale-90"
-                style={faceStyle("#E0AC73", "#B87333", "inset 0 1px 1px rgba(255,255,255,0.5), 0 4px 10px rgba(7,17,31,0.35)")}
-              >
-                A
-              </button>
-
-              <button
-                type="button"
-                onClick={back}
-                aria-label="B — back"
-                className="absolute bottom-0 left-0 flex h-[42px] w-[42px] items-center justify-center rounded-full text-[11px] font-bold text-[#FAF8F5]/85 transition-transform active:scale-90"
-                style={faceStyle("#33495F", "#1B2E44", "inset 0 1px 1px rgba(250,248,245,0.24), 0 4px 10px rgba(7,17,31,0.35)")}
-              >
-                B
-              </button>
-            </div>
-
-            {/* Speaker grille */}
-            <div
-              className="h-[30px] w-[106px] rounded-[9px]"
-              style={{
-                background:
-                  "repeating-linear-gradient(112deg, rgba(184,115,51,0.55) 0 3px, rgba(184,115,51,0.08) 3px 10px)",
-                boxShadow: "inset 0 1px 1px rgba(255,255,255,0.75)",
-              }}
-            />
+          <div className="flex min-w-0 flex-1 justify-center">
+            <ClickWheel size={132} onRotate={rotate} onSelect={select} />
           </div>
+
+          <FaceButtons
+            onConfirm={select}
+            onBack={back}
+            onPrev={menuOpen ? () => jumpGroup(-1) : () => cycleRail(-1)}
+            onNext={menuOpen ? () => jumpGroup(1) : () => cycleRail(1)}
+          />
         </div>
 
-        <div className="flex items-center justify-between px-5 pb-2 pt-2.5">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={toggleMenu}
-              aria-label="Select — cartridge menu"
-              className="rounded-full px-3 py-[6px] text-[7px] font-bold uppercase tracking-[0.22em] text-[#FAF8F5] transition-transform active:scale-95"
-              style={pillStyle}
-            >
-              Select
-            </button>
-            <button
-              type="button"
-              onClick={goHome}
-              aria-label="Start — home"
-              className="rounded-full px-3 py-[6px] text-[7px] font-bold uppercase tracking-[0.22em] text-[#FAF8F5] transition-transform active:scale-95"
-              style={pillStyle}
-            >
-              Start
-            </button>
-          </div>
+        <div className="relative flex items-center justify-center gap-2 px-4 pb-2 pt-2.5">
+          <button
+            type="button"
+            onClick={toggleMenu}
+            aria-label="Menu — cartridge menu"
+            className="rounded-full px-3 py-[6px] text-[7px] font-bold uppercase tracking-[0.22em] text-[#FAF8F5] transition-transform active:scale-95"
+            style={pillStyle}
+          >
+            Menu
+          </button>
+          <button
+            type="button"
+            onClick={goHome}
+            aria-label="Start — home"
+            className="rounded-full px-3 py-[6px] text-[7px] font-bold uppercase tracking-[0.22em] text-[#FAF8F5] transition-transform active:scale-95"
+            style={pillStyle}
+          >
+            Start
+          </button>
 
-          <span className="text-[7px] font-bold uppercase tracking-[0.3em] text-[#1E3A5A]/40">
-            {isSignedIn ? "TOP 100 OS · HW-88" : "VISITOR MODE"}
+          <span className="absolute right-4 text-[7px] font-bold uppercase tracking-[0.3em] text-[#1E3A5A]/40">
+            {isSignedIn ? "HW-88" : "VISITOR"}
           </span>
         </div>
       </nav>

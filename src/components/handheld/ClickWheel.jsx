@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { Play, SkipBack, SkipForward } from "lucide-react";
 import { blip } from "./handheldSound";
 
 // Degrees of travel per detent. One detent = one menu row or one scroll notch.
@@ -19,11 +18,11 @@ const shortestDelta = (from, to) => {
   return delta;
 };
 
-// The click wheel: a rotary touch ring with four printed cardinal controls and
-// a pressable centre. Dragging around the ring spins it in detents; tapping the
-// printed glyphs fires that control. It is the console's whole navigation
-// instrument — no directional pad.
-export default function ClickWheel({ size = 132, onRotate, onMenu, onPrev, onNext, onHome, onSelect }) {
+// The click wheel: a rotary touch ring with a pressable centre, the analog
+// instrument in the console's middle. Dragging around the ring spins it in
+// detents; the centre confirms. Discreet actions live on the face buttons, so
+// the ring itself stays clean.
+export default function ClickWheel({ size = 132, onRotate, onSelect }) {
   const ringRef = useRef(null);
   const drag = useRef({ active: false, last: 0, travel: 0, spin: 0 });
   const [spin, setSpin] = useState(0);
@@ -66,9 +65,6 @@ export default function ClickWheel({ size = 132, onRotate, onMenu, onPrev, onNex
     }
   };
 
-  const glyphClass =
-    "absolute flex h-[30px] w-[34px] items-center justify-center rounded-full text-[#1E3A5A]/70 transition-transform active:scale-90 active:text-[#B87333]";
-
   return (
     <div className="relative shrink-0 touch-none" style={{ width: size, height: size }}>
       {/* Touch ring */}
@@ -97,25 +93,11 @@ export default function ClickWheel({ size = 132, onRotate, onMenu, onPrev, onNex
         />
       </div>
 
-      {/* Printed cardinal controls */}
-      <button type="button" onClick={onMenu} aria-label="Open cartridge menu" className={glyphClass} style={{ top: 3, left: "50%", transform: "translateX(-50%)" }}>
-        <span className="text-[7px] font-bold uppercase tracking-[0.16em]">Menu</span>
-      </button>
-      <button type="button" onClick={onNext} aria-label="Next surface" className={glyphClass} style={{ top: "50%", right: 1, transform: "translateY(-50%)" }}>
-        <SkipForward className="h-[13px] w-[13px]" fill="currentColor" />
-      </button>
-      <button type="button" onClick={onHome} aria-label="Home" className={glyphClass} style={{ bottom: 3, left: "50%", transform: "translateX(-50%)" }}>
-        <Play className="h-[13px] w-[13px]" fill="currentColor" />
-      </button>
-      <button type="button" onClick={onPrev} aria-label="Previous surface" className={glyphClass} style={{ top: "50%", left: 1, transform: "translateY(-50%)" }}>
-        <SkipBack className="h-[13px] w-[13px]" fill="currentColor" />
-      </button>
-
       {/* Centre button */}
       <button
         type="button"
         onClick={onSelect}
-        aria-label="Select"
+        aria-label="Confirm"
         className="absolute left-1/2 top-1/2 flex h-[48px] w-[48px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-transform active:scale-90"
         style={{
           background: "linear-gradient(180deg, #DCA46A 0%, #B87333 100%)",

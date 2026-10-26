@@ -67,7 +67,7 @@ export default function CommsLayoutMobile({
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   return (
-    <div className="hh-stage md:hidden flex flex-col overflow-hidden">
+    <div className="hh-stage md:hidden flex flex-col">
       <MobileCommsContent
         currentPageName={currentPageName}
         user={user}

@@ -13,9 +13,11 @@ export default function HandheldBoot({ onDone }) {
       type="button"
       onClick={onDone}
       aria-label="Skip power-on sequence"
-      className="hh-boot fixed left-0 right-0 z-[46] flex flex-col items-center justify-center gap-3 md:hidden"
+      className="hh-boot fixed z-[46] flex flex-col items-center justify-center gap-3 overflow-hidden rounded-b-[12px] md:hidden"
       style={{
-        top: "calc(var(--hh-top, 90px) + env(safe-area-inset-top))",
+        left: 7,
+        right: 7,
+        top: "calc(54px + env(safe-area-inset-top))",
         bottom: "calc(var(--hh-bottom, 188px) + env(safe-area-inset-bottom))",
         background: "radial-gradient(120% 100% at 50% 0%, #16302D 0%, #0B1A1A 60%, #06100F 100%)",
       }}

@@ -268,29 +268,52 @@ button:focus-visible {
    under the masthead and above the chin, and reclaim the whole viewport when
    the console is put away (the message composer, for one). */
 :root {
-  --hh-top: 90px;
+  --hh-top: 82px;
   --hh-bottom: 188px;
 }
 
+/* The picture window, exactly: content never runs under the hardware or past the
+   glass. #root insets the document-flow surfaces; .hh-stage is the scrollable
+   window the layout shell renders inside. */
 @media (max-width: 767px) {
   body.hh-shell #root {
     padding-top: calc(var(--hh-top) + env(safe-area-inset-top));
     padding-bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+}
+
+/* A "screen tall" page means the screen you are looking at, not the phone. This
+   keeps full-height pages from leaving dead scroll under the content. */
+@media (max-width: 767px) {
+  body.hh-shell .min-h-screen,
+  body.hh-shell .h-screen {
+    min-height: calc(
+      100dvh - var(--hh-top) - var(--hh-bottom) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    );
+    height: auto;
   }
 }
 
 /* Bars that ride the bottom of the screen clear the chin instead of covering it. */
 @media (max-width: 767px) {
   body.hh-shell .hh-lift {
+    left: 7px;
+    right: 7px;
     bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
   }
 }
 
-/* Viewport minus the hardware — the picture window, exactly. */
 .hh-stage {
-  height: calc(
-    100dvh - var(--hh-top) - var(--hh-bottom) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
-  );
+  position: fixed;
+  left: 7px;
+  right: 7px;
+  top: calc(var(--hh-top) + env(safe-area-inset-top));
+  bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* LCD glass over the content: scanlines and a soft vignette, then a slow sheen. */
