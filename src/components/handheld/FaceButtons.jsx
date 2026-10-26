@@ -1,7 +1,7 @@
 // The face buttons, in the console diamond: Y above, X left, B right, A below.
 // A confirms, B backs out, X and Y step back and forward through surfaces.
-const BOX = 84;
-const SIZE = 32;
+const BOX = 76;
+const SIZE = 28;
 const OFFSET = (BOX - SIZE) / 2;
 
 const face = (from, to, ink) => ({
@@ -14,7 +14,7 @@ const face = (from, to, ink) => ({
 });
 
 const base =
-  "absolute flex items-center justify-center rounded-full text-[12px] font-bold transition-transform active:scale-90";
+  "absolute flex items-center justify-center rounded-full text-[11px] font-bold transition-transform active:scale-90";
 
 export default function FaceButtons({ onConfirm, onBack, onPrev, onNext }) {
   return (

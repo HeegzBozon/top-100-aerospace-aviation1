@@ -18,7 +18,7 @@ export default function HandheldBoot({ onDone }) {
         left: 7,
         right: 7,
         top: "calc(54px + env(safe-area-inset-top))",
-        bottom: "calc(var(--hh-bottom, 188px) + env(safe-area-inset-bottom))",
+        bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom))",
         background: "radial-gradient(120% 100% at 50% 0%, #16302D 0%, #0B1A1A 60%, #06100F 100%)",
       }}
     >

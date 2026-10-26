@@ -133,6 +133,7 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
               <div
                 key={key}
                 id={`tile-${key}`}
+                data-hh-module={tile.label}
                 ref={(el) => { tileRefs.current[key] = el; }}
                 {...dragHandlers}
                 className={`rounded-2xl p-4 flex flex-col relative ${sizeClass}`}
@@ -170,6 +171,7 @@ export default function ModuleGrid({ tiles, order, hidden, accent, onSave, edito
             <div
               key={key}
               id={`tile-${key}`}
+              data-hh-module={tile.label}
               ref={(el) => { tileRefs.current[key] = el; }}
               {...dragHandlers}
               className={`flex flex-col relative ${sizeClass}`}

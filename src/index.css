@@ -269,7 +269,7 @@ button:focus-visible {
    the console is put away (the message composer, for one). */
 :root {
   --hh-top: 82px;
-  --hh-bottom: 188px;
+  --hh-bottom: 176px;
 }
 
 /* The picture window, exactly: content never runs under the hardware or past the
@@ -373,8 +373,18 @@ button:focus-visible {
   50%, 100% { opacity: 0.15; }
 }
 
+/* Section announcement — the module the wheel just landed on. */
+.hh-flash {
+  animation: hh-flash-in 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes hh-flash-in {
+  0% { opacity: 0; transform: translateY(7px); }
+  12%, 72% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .hh-glass::after, .hh-boot-bar, .hh-flicker, .hh-blink {
+  .hh-glass::after, .hh-boot-bar, .hh-flicker, .hh-blink, .hh-flash {
     animation: none;
   }
 }

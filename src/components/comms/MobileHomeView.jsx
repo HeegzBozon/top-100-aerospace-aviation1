@@ -35,7 +35,7 @@ export default function MobileHomeView({ isDarkMode = false, setIsDarkMode, onSe
 
   return (
     <div
-      className="h-screen pb-28 overflow-y-auto scrollbar-hide"
+      className="h-screen pb-6 overflow-y-auto scrollbar-hide"
       style={{ background: theme.bg }}
     >
       {/* Sticky Header */}

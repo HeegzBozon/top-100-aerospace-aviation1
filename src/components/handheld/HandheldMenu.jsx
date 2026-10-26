@@ -16,7 +16,7 @@ export default function HandheldMenu({ groups, cursor, locationKey, onActivate, 
       className="fixed left-0 right-0 z-[45] flex flex-col md:hidden"
       style={{
         top: "calc(var(--hh-top, 90px) + env(safe-area-inset-top) + 5px)",
-        bottom: "calc(var(--hh-bottom, 188px) + env(safe-area-inset-bottom) + 5px)",
+        bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 5px)",
         left: 7,
         right: 7,
         borderRadius: 15,

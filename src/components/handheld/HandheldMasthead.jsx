@@ -1,11 +1,12 @@
 import { Volume2, VolumeX } from "lucide-react";
 
 // The mobile masthead, rebuilt as the console's top bezel: brand lockup, the
-// surface you are currently holding, sound, and the cartridge menu latch.
+// surface you are currently holding, and the sound latch. Every other control
+// lives on the wheel below.
 export const HANDHELD_LOGO =
   "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png";
 
-export default function HandheldMasthead({ surface, soundOn, onToggleSound, onOpenMenu }) {
+export default function HandheldMasthead({ surface, soundOn, onToggleSound }) {
   return (
     <header
       className="fixed left-0 right-0 top-0 z-40 select-none md:hidden"
@@ -36,19 +37,6 @@ export default function HandheldMasthead({ surface, soundOn, onToggleSound, onOp
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#1E3A5A]/60 transition-colors active:bg-[#1E3A5A]/10"
         >
           {soundOn ? <Volume2 className="h-[15px] w-[15px]" /> : <VolumeX className="h-[15px] w-[15px]" />}
-        </button>
-
-        <button
-          type="button"
-          onClick={onOpenMenu}
-          aria-label="Open the cartridge menu"
-          className="shrink-0 rounded-full px-2.5 py-[5px] text-[7px] font-bold uppercase tracking-[0.2em] text-[#FAF8F5] transition-transform active:scale-95"
-          style={{
-            background: "linear-gradient(180deg, #2A4E76, #1E3A5A)",
-            boxShadow: "inset 0 1px 0 rgba(250,248,245,0.24), 0 2px 5px rgba(30,58,90,0.30)",
-          }}
-        >
-          Menu
         </button>
       </div>
     </header>

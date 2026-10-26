@@ -303,6 +303,7 @@ export default function Profile() {
       <AnnouncementBanner />
       <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
         {/* Position 1 — locked. Identity above credential. */}
+        <div data-hh-module="Identity">
         <FellowIdentityHeader
           user={user}
           nominee={nominee}
@@ -339,6 +340,7 @@ export default function Profile() {
             />
           }
         />
+        </div>
 
         {/* Master instrument cluster — the Bulletin Board. Houses everything below the masthead. */}
         <BulletinBoardCluster

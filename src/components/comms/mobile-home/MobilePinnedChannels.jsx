@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { brandColors } from "@/components/core/brandTheme";
+import HomeModule from "./HomeModule";
 
 const PINNED_CONFIG = [
   {
@@ -46,11 +47,7 @@ export default function MobilePinnedChannels({ channels, onSelect, unreadCounts,
   };
 
   return (
-    <div className="px-4 mb-4">
-      <p className="text-xs font-semibold uppercase tracking-widest mb-2.5"
-        style={{ color: isDarkMode ? "rgba(255,255,255,0.45)" : "rgba(30,58,90,0.45)" }}>
-        Channels
-      </p>
+    <HomeModule label="Channels" isDarkMode={isDarkMode} className="mb-4">
       <div className="grid grid-cols-2 gap-2.5">
         {PINNED_CONFIG.map((cfg) => {
           const channel = findChannel(cfg);
@@ -81,6 +78,6 @@ export default function MobilePinnedChannels({ channels, onSelect, unreadCounts,
           );
         })}
       </div>
-    </div>
+    </HomeModule>
   );
 }

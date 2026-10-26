@@ -1,13 +1,13 @@
 // The viewer. A recessed LCD well drawn exactly around the picture window: the
 // bezel ring sits in the margin outside the content, a status line caps the top,
 // and the glass (scanlines, vignette, sheen) lies over the content alone.
-export default function HandheldScreenFrame({ surface }) {
+export default function HandheldScreenFrame({ surface, module }) {
   return (
     <div
       className="pointer-events-none fixed left-0 right-0 z-30 md:hidden"
       style={{
         top: "calc(54px + env(safe-area-inset-top))",
-        bottom: "calc(var(--hh-bottom, 188px) + env(safe-area-inset-bottom))",
+        bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom))",
       }}
       aria-hidden="true"
     >
@@ -22,17 +22,17 @@ export default function HandheldScreenFrame({ surface }) {
 
       {/* Status line — caps the well, above the picture */}
       <div
-        className="absolute left-[7px] right-[7px] top-[5px] flex h-[22px] items-center justify-between rounded-t-[12px] px-2.5"
+        className="absolute left-[7px] right-[7px] top-[5px] flex h-[22px] items-center justify-between gap-3 rounded-t-[12px] px-2.5"
         style={{
           background: "linear-gradient(180deg, rgba(7,17,31,0.90), rgba(7,17,31,0.62))",
         }}
       >
-        <span className="flex items-center gap-1.5 truncate text-[7px] font-bold uppercase tracking-[0.24em] text-[#C9A87C]">
+        <span className="flex min-w-0 items-center gap-1.5 text-[7px] font-bold uppercase tracking-[0.24em] text-[#C9A87C]">
           <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-[#2ED573]" />
-          {surface}
+          <span className="truncate">{surface}</span>
         </span>
-        <span className="shrink-0 text-[7px] font-bold uppercase tracking-[0.24em] text-[#FAF8F5]/40">
-          Wheel&nbsp;·&nbsp;A
+        <span className="shrink-0 truncate text-[7px] font-bold uppercase tracking-[0.24em] text-[#FAF8F5]/55">
+          {module || "Wheel · A"}
         </span>
       </div>
 
