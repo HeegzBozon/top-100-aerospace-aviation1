@@ -517,14 +517,17 @@ button:focus-visible {
     0 5px 16px rgba(7, 17, 31, 0.28);
 }
 
-/* The step down: the dark recess the glass sits in, cut below the moulding, its
-   corners in the finish's own tone and its lip casting onto the picture. */
+/* The step down: the dark recess the glass sits in, cut below the moulding. It is
+   a ring and never a fill — the middle is left clear so the picture shows through
+   and nothing is ever painted over the display. The step reads from the band of
+   shadow between the machined rim and the pane, and its lip falls onto the
+   picture just inside the glass. */
 .hh-well {
-  background: linear-gradient(180deg, rgba(8, 12, 22, 0.94) 0%, rgba(4, 7, 14, 0.98) 100%);
   box-shadow:
     inset 0 0 0 1px var(--hh-bezel),
-    inset 0 10px 24px rgba(2, 5, 12, 0.72),
-    inset 0 -6px 16px rgba(2, 5, 12, 0.55);
+    inset 0 0 0 10px rgba(4, 7, 14, 0.96),
+    inset 0 9px 20px rgba(2, 5, 12, 0.42),
+    inset 0 -5px 14px rgba(2, 5, 12, 0.30);
 }
 
 /* A punched speaker grille. */
