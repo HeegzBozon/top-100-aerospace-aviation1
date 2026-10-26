@@ -11,7 +11,8 @@ import HandheldBoot from "./HandheldBoot";
 import ModuleRail from "./ModuleRail";
 import useHandheldDestinations from "./useHandheldDestinations";
 import useModuleNavigation, { getStage } from "./useModuleNavigation";
-import { useHandheldDeck, getDeck } from "./handheldDeck";
+import { useHandheldDeck } from "./handheldDeck";
+import HandheldNotifications from "./HandheldNotifications";
 import { surfaceLabel } from "./handheldDestinations";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
@@ -28,8 +29,8 @@ const BOOT_KEY = "top100-handheld-booted";
 // The handheld. One body: a masthead bezel, a viewer the content renders in,
 // and a chin carrying the click wheel, the face-button diamond and the grille.
 // The wheel does it all — rotation scrolls the picture or walks the cartridge
-// menu, MENU opens it, back and forward step the page's modules, play reads the
-// page down the glass, and the centre goes home.
+// menu, MENU opens it, back and forward step the page's modules, share hands the
+// surface to the device's own share drawer, and the centre goes home.
 export default function HandheldDeck() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -39,7 +40,7 @@ export default function HandheldDeck() {
   const [menuMode, setMenuMode] = useState(null);
   const [cursor, setCursor] = useState(0);
   const menuOpen = menuMode !== null;
-  const [playing, setPlaying] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [flash, setFlash] = useState("");
   const [booting, setBooting] = useState(() => {
     try {
@@ -112,42 +113,6 @@ export default function HandheldDeck() {
 
   useEffect(() => () => clearTimeout(flashTimer.current), []);
 
-  // The read-along: the wheel's play zone walks the page down the glass until
-  // the bottom arrives or the reader takes over.
-  useEffect(() => {
-    if (!playing) return undefined;
-    let frame = 0;
-    const advance = () => {
-      const deckApi = getDeck();
-      if (deckApi) {
-        if (deckApi.atEnd()) {
-          if (deckApi.index() >= deckApi.count() - 1) {
-            setPlaying(false);
-            return;
-          }
-          deckApi.next();
-        } else {
-          deckApi.scrollBy(1);
-        }
-        frame = requestAnimationFrame(advance);
-        return;
-      }
-      const stage = getStage();
-      if (!stage) {
-        setPlaying(false);
-        return;
-      }
-      if (stage.scrollTop >= stage.scrollHeight - stage.clientHeight - 1) {
-        setPlaying(false);
-        return;
-      }
-      stage.scrollTop += 1;
-      frame = requestAnimationFrame(advance);
-    };
-    frame = requestAnimationFrame(advance);
-    return () => cancelAnimationFrame(frame);
-  }, [playing]);
-
   const announce = useCallback((label) => {
     if (!label) return;
     setFlash(label);
@@ -170,7 +135,7 @@ export default function HandheldDeck() {
       blip(tone);
       buzz();
       setMenuMode(null);
-      setPlaying(false);
+      setNotificationsOpen(false);
 
       // Not a cartridge: the hardware drawer opens where you stand.
       if (destination.action === "finish") {
@@ -193,7 +158,7 @@ export default function HandheldDeck() {
     const current = flat.findIndex((item) => item.to && item.to === locationKey);
     setCursor(current >= 0 ? current : 0);
     setMenuMode("cartridges");
-    setPlaying(false);
+    setNotificationsOpen(false);
     finishBoot();
     blip("open");
     buzz();
@@ -208,7 +173,7 @@ export default function HandheldDeck() {
     }
     setCursor(Math.max(0, moduleIndex));
     setMenuMode("sections");
-    setPlaying(false);
+    setNotificationsOpen(false);
     finishBoot();
     blip("open");
     buzz();
@@ -229,7 +194,7 @@ export default function HandheldDeck() {
     blip("start");
     buzz();
     setMenuMode(null);
-    setPlaying(false);
+    setNotificationsOpen(false);
     navigate("/");
   }, [navigate]);
 
@@ -237,7 +202,6 @@ export default function HandheldDeck() {
   const rotate = useCallback(
     (step) => {
       finishBoot();
-      setPlaying(false);
       if (menuOpen) {
         const list = listFor(menuMode);
         if (!list.length) return;
@@ -278,7 +242,6 @@ export default function HandheldDeck() {
   const stepSection = useCallback(
     (direction) => {
       finishBoot();
-      setPlaying(false);
       if (menuOpen) {
         if (menuMode === "sections" || menuMode === "finish") {
           const list = listFor(menuMode);
@@ -318,7 +281,6 @@ export default function HandheldDeck() {
   const jumpToModule = useCallback(
     (i) => {
       blip("move");
-      setPlaying(false);
       if (deck) {
         deck.goTo(i);
         announce(deck.labels()[i]);
@@ -329,13 +291,51 @@ export default function HandheldDeck() {
     [deck, nav, announce],
   );
 
-  const togglePlay = useCallback(() => {
-    if (menuOpen) return;
+  // The share key: hands whatever the glass is holding to the device's own share
+  // drawer, so a profile or a cartridge leaves the console as a link.
+  const share = useCallback(async () => {
+    if (menuOpen || booting) return;
     blip("toggle");
     buzz();
-    setPlaying((prev) => !prev);
-    announce(playing ? "Paused" : "Reading");
-  }, [menuOpen, playing, announce]);
+    const url = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: document.title, url });
+        announce("Shared");
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      announce("Link copied");
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+      try {
+        await navigator.clipboard.writeText(url);
+        announce("Link copied");
+      } catch {
+        announce("Share unavailable");
+      }
+    }
+  }, [booting, menuOpen, announce]);
+
+  // You: the Fellow's own profile where they are signed in, the way in where not.
+  const openProfile = useCallback(() => {
+    blip("select");
+    buzz();
+    setMenuMode(null);
+    setNotificationsOpen(false);
+    if (!isSignedIn) return base44.auth.redirectToLogin(window.location.href);
+    navigate("/Profile");
+  }, [isSignedIn, navigate]);
+
+  // What has come in — the same drawer rule as everything else: the way in where
+  // there is an account to receive it.
+  const openNotifications = useCallback(() => {
+    blip("open");
+    buzz();
+    setMenuMode(null);
+    if (!isSignedIn) return base44.auth.redirectToLogin(window.location.href);
+    setNotificationsOpen(true);
+  }, [isSignedIn]);
 
   const select = useCallback(() => {
     finishBoot();
@@ -365,9 +365,10 @@ export default function HandheldDeck() {
     blip("back");
     buzz();
     if (booting) return finishBoot();
+    if (notificationsOpen) return setNotificationsOpen(false);
     if (menuOpen) return setMenuMode(null);
     navigate(-1);
-  }, [booting, finishBoot, menuOpen, navigate]);
+  }, [booting, finishBoot, menuOpen, notificationsOpen, navigate]);
 
   const toggleSound = useCallback(() => {
     setSoundOn((prev) => {
@@ -385,6 +386,8 @@ export default function HandheldDeck() {
         module={modules[moduleIndex]?.label}
         soundOn={soundOn}
         onToggleSound={toggleSound}
+        onProfile={openProfile}
+        onNotifications={openNotifications}
       />
 
       <HandheldScreenFrame />
@@ -439,6 +442,11 @@ export default function HandheldDeck() {
         />
       )}
 
+      <HandheldNotifications
+        open={notificationsOpen && !booting}
+        onClose={() => setNotificationsOpen(false)}
+      />
+
       <nav
         aria-label="Handheld console controls"
         className="hh-body hh-grain fixed bottom-0 left-0 right-0 z-40 select-none md:hidden"
@@ -452,12 +460,11 @@ export default function HandheldDeck() {
           <div className="flex min-w-0 flex-1 justify-center">
             <ClickWheel
               size={132}
-              playing={playing}
               onRotate={rotate}
               onMenu={toggleMenu}
               onPrev={() => stepSection(-1)}
               onNext={() => stepSection(1)}
-              onPlay={menuOpen ? null : togglePlay}
+              onShare={menuOpen ? null : share}
               onHome={goHome}
             />
           </div>
