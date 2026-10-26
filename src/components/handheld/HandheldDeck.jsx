@@ -26,9 +26,9 @@ import { openingPlaysNow } from "@/components/core/appOpening";
 // Chrome the device occupies: the shell lip above the glass, the brand bar that
 // lives inside the glass, and the control chin below. index.css consumes these
 // to inset every surface, so nothing is ever hidden behind the hardware.
-export const HANDHELD_TOP_CLEARANCE = 12;
-export const HANDHELD_BAR_CLEARANCE = 52;
-export const HANDHELD_DECK_CLEARANCE = 136;
+export const HANDHELD_TOP_CLEARANCE = 7;
+export const HANDHELD_BAR_CLEARANCE = 42;
+export const HANDHELD_DECK_CLEARANCE = 132;
 
 // The desk margin: how much surface shows around the shell, on every side. The
 // device sits inside the viewport instead of filling it, so it reads as an
@@ -645,14 +645,19 @@ export default function HandheldDeck() {
 
       <nav
         aria-label="Handheld console controls"
-        className="fixed z-40 select-none md:hidden"
+        className="hh-chin fixed z-40 select-none md:hidden"
         style={{
           left: "var(--hh-frame, 0px)",
           right: "var(--hh-frame, 0px)",
           bottom: "var(--hh-frame, 0px)",
+          borderRadius: "0 0 26px 26px",
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
+        {/* The chin is pinned like a real moulding: a screw at each corner. */}
+        <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, left: 5 }} aria-hidden="true" />
+        <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, right: 5 }} aria-hidden="true" />
+
         <div className="flex items-center gap-2.5 px-4 pt-1.5">
           {/* The case speaker, and the console's own music: the punched well on
               the chin is the control — tap to unmute the onboard playlist, hold
@@ -668,7 +673,7 @@ export default function HandheldDeck() {
 
           <div className="flex min-w-0 flex-1 justify-center">
             <ClickWheel
-              size={108}
+              size={104}
               onRotate={rotate}
               onMenu={upOneLevel}
               onPrev={() => stepSection(-1)}
@@ -688,34 +693,36 @@ export default function HandheldDeck() {
           />
         </div>
 
-        {/* The chin seam, the case screws and the model strip */}
-        <div
-          className="hh-engrave mt-0.5 flex items-center justify-between gap-2 px-4 pb-[2px] pt-[3px]"
-          style={{
-            borderTop: "1px solid rgb(var(--hh-metal-rgb) / 0.24)",
-            boxShadow: "inset 0 1px 0 var(--hh-shell-spec)",
-          }}
-        >
+        {/* The maker's plate, cut into the chin: the model mark, the finish the
+            device is wearing — the name is the control that changes it — and who
+            is holding it, with a machined hairline drawn out to either side. */}
+        <div className="hh-plate mt-0.5 flex h-[20px] items-center gap-2 px-4">
           <span
-            className="flex items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
+            className="hh-engrave flex shrink-0 items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
             style={{ color: "var(--hh-ink-soft)" }}
           >
             <span className="hh-screw h-[6px] w-[6px] rounded-full" />
             HW-88
           </span>
 
-          {/* The skin the device is wearing, and the way to change it: the name is
-              the control, and the tones on it are the finish's own shell. */}
+          <span
+            aria-hidden="true"
+            className="h-px min-w-[8px] flex-1"
+            style={{
+              background: "linear-gradient(90deg, rgb(var(--hh-metal-rgb) / 0.04), rgb(var(--hh-metal-rgb) / 0.30))",
+            }}
+          />
+
           <button
             type="button"
             onClick={openFinish}
             aria-label={`Hardware finish, ${finish.label}. Choose another finish`}
-            className="flex min-w-0 items-center gap-1.5 rounded-full px-2 py-[2px] text-[6.5px] font-bold uppercase tracking-[0.2em] transition-transform active:scale-95"
+            className="hh-glasscap flex min-w-0 shrink-0 items-center gap-1.5 rounded-full px-2 py-[2px] text-[6px] font-bold uppercase tracking-[0.18em] transition-transform active:scale-95"
             style={{
               color: "var(--hh-metal)",
               background: "rgb(var(--hh-metal-rgb) / 0.10)",
               boxShadow:
-                "inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.42), 0 1px 3px rgba(7,17,31,0.18)",
+                "inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.38), 0 1px 3px rgba(7,17,31,0.18)",
             }}
           >
             <Palette className="h-[7px] w-[7px] shrink-0" style={{ color: "var(--hh-metal)" }} />
@@ -735,7 +742,15 @@ export default function HandheldDeck() {
           </button>
 
           <span
-            className="flex items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
+            aria-hidden="true"
+            className="h-px min-w-[8px] flex-1"
+            style={{
+              background: "linear-gradient(90deg, rgb(var(--hh-metal-rgb) / 0.30), rgb(var(--hh-metal-rgb) / 0.04))",
+            }}
+          />
+
+          <span
+            className="hh-engrave flex shrink-0 items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
             style={{ color: "var(--hh-ink-soft)" }}
           >
             {isSignedIn ? "Fellow" : "Visitor"}

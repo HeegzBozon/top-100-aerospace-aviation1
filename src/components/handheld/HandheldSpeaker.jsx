@@ -85,7 +85,7 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
           : "Speaker off. Play the console's music, three house loops and two lo-fi"
       }
       title="Tap to play or mute · hold for the next loop"
-      className="hh-speaker relative flex h-[64px] w-[64px] shrink-0 flex-col justify-between overflow-hidden rounded-[12px] p-2 text-left transition-transform active:scale-[0.97]"
+      className="hh-speaker hh-wellcap relative flex h-[64px] w-[64px] shrink-0 flex-col justify-between overflow-hidden rounded-[12px] p-2 text-left transition-transform active:scale-[0.97]"
       style={{
         background: "radial-gradient(circle at 50% 8%, rgba(9,19,33,0.92), rgba(3,7,13,0.97))",
         boxShadow: playing

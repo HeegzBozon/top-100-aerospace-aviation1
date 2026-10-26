@@ -4,7 +4,8 @@ import { Share } from "lucide-react";
 // Y sends whatever you are holding out through the device's share drawer.
 // X lists the sections of that surface: the deck's slides, or the page's own
 // modules. A confirms, B backs out. The mouldings are ours — rose gold, navy,
-// sand and copper — never another console's colours.
+// sand and copper — never another console's colours, and each cap carries the
+// same glass as the wheel.
 const BOX = 72;
 const SIZE = 26;
 const OFFSET = (BOX - SIZE) / 2;
@@ -19,7 +20,7 @@ const face = (from, to, ink) => ({
 });
 
 const base =
-  "absolute flex items-center justify-center rounded-full text-[11px] font-bold transition-transform active:scale-90";
+  "absolute flex items-center justify-center overflow-hidden rounded-full text-[11px] font-bold transition-transform active:scale-90";
 
 export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) {
   return (
@@ -31,7 +32,8 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
         className={base}
         style={{ ...face("#E6CDA4", "#B8935F", "#1E3A5A"), top: 0, left: OFFSET }}
       >
-        <Share className="h-[14px] w-[14px]" strokeWidth={2.4} />
+        <span aria-hidden="true" className="hh-cap" />
+        <Share className="relative h-[14px] w-[14px]" strokeWidth={2.4} />
       </button>
 
       <button
@@ -41,7 +43,8 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
         className={base}
         style={{ ...face("#2E5478", "#16304B", "#FAF8F5"), top: OFFSET, left: 0 }}
       >
-        X
+        <span aria-hidden="true" className="hh-cap" />
+        <span className="relative">X</span>
       </button>
 
       <button
@@ -51,7 +54,8 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
         className={base}
         style={{ ...face("#DCCBAE", "#B9A582", "#1E3A5A"), top: OFFSET, right: 0 }}
       >
-        B
+        <span aria-hidden="true" className="hh-cap" />
+        <span className="relative">B</span>
       </button>
 
       <button
@@ -61,7 +65,8 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
         className={base}
         style={{ ...face("#D79355", "#A5642C", "#FAF8F5"), bottom: 0, left: OFFSET }}
       >
-        A
+        <span aria-hidden="true" className="hh-cap" />
+        <span className="relative">A</span>
       </button>
     </div>
   );

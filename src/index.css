@@ -273,10 +273,10 @@ button:focus-visible {
    reclaim the whole viewport when the console is put away (the message composer,
    for one). */
 :root {
-  --hh-top: 96px;
-  --hh-bar: 52px;
-  --hh-shell-top: 26px;
-  --hh-bottom: 208px;
+  --hh-top: 81px;
+  --hh-bar: 42px;
+  --hh-shell-top: 21px;
+  --hh-bottom: 164px;
 
   /* The desk margin, the moulding around the glass, and the inset every surface
      on the picture is measured from — the last being the first two added. */
@@ -615,6 +615,189 @@ button:focus-visible {
   box-shadow:
     inset 0 2px 5px rgba(3, 6, 13, 0.22),
     0 1px 0 var(--hh-shell-spec);
+}
+
+/* ===== LIQUID GLASS — ONE GLASS LANGUAGE ACROSS THE HARDWARE =====
+   The wheel, the lens at its centre, the keys on the case and the band they sit
+   in are all cut from the same glass: a specular arc where the light lands, a
+   fine rim line, the shell's own tone refracting across the low side, and a slow
+   glint reading over the surface. Every tone is a finish token, so the whole
+   glass set is recast whenever the case is. */
+.hh-glasscap {
+  position: relative;
+}
+.hh-glasscap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 30% 12%, rgba(255, 255, 255, 0.70) 0%, rgba(255, 255, 255, 0.10) 36%, rgba(255, 255, 255, 0) 62%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0) 44%, rgba(7, 17, 31, 0.16) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+    inset 0 -5px 9px -8px rgba(7, 17, 31, 0.55);
+}
+
+/* Glass laid over a recess: only the lip catches the light. */
+.hh-wellcap {
+  position: relative;
+}
+.hh-wellcap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.05) 24%, rgba(255, 255, 255, 0) 54%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+/* ===== THE FITTED PARTS — THE BAND AND THE CHIN =====
+   Two moulded parts of one shell: the band cut across the case above the glass,
+   the deck the controls sit in below it. Each has its own channel, its own
+   parting line, and its own screws. */
+.hh-band {
+  border-radius: 13px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(7, 17, 31, 0.05) 100%);
+  box-shadow:
+    inset 0 1px 0 var(--hh-shell-spec),
+    inset 0 -1px 0 rgb(var(--hh-metal-rgb) / 0.24),
+    0 1px 2px rgba(7, 17, 31, 0.12);
+}
+.hh-band-edge {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--hh-metal-rgb) / 0.05),
+    rgb(var(--hh-metal-rgb) / 0.42),
+    rgb(var(--hh-metal-rgb) / 0.05)
+  );
+}
+.hh-chin {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(7, 17, 31, 0.05) 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--hh-metal-rgb) / 0.34),
+    inset 0 2px 0 var(--hh-shell-spec);
+}
+.hh-plate {
+  box-shadow:
+    inset 0 1px 0 var(--hh-shell-spec),
+    inset 0 2px 4px -3px rgba(7, 17, 31, 0.45);
+}
+
+/* ===== THE WHEEL — GLASS OVER A MACHINED RING =====
+   The groove around the centre lens, the specular arc across the top-left where
+   the light lands, the shell's tone colouring the low side, and the notches that
+   turn under the finger as the ring is scrubbed. */
+.hh-wheel-glass {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle closest-side at 50% 50%, rgba(255, 255, 255, 0) 0 44%, rgb(var(--hh-ink-rgb) / 0.14) 48%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(58% 44% at 34% 12%, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.14) 42%, rgba(255, 255, 255, 0) 70%),
+    radial-gradient(66% 54% at 70% 96%, rgb(var(--hh-metal-rgb) / 0.20) 0%, rgba(255, 255, 255, 0) 62%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 42%, rgba(7, 17, 31, 0.10) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    inset 0 -1px 1px rgb(var(--hh-metal-rgb) / 0.26),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+.hh-wheel-tick {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgb(var(--hh-ink-rgb) / 0.22) 0deg 0.5deg,
+    transparent 0.5deg 9deg
+  );
+  -webkit-mask-image: radial-gradient(circle closest-side at 50% 50%, transparent 0 70%, #000 76%, #000 96%, transparent 100%);
+  mask-image: radial-gradient(circle closest-side at 50% 50%, transparent 0 70%, #000 76%, #000 96%, transparent 100%);
+  opacity: 0.4;
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+/* The highlight under the finger: the glass's own reflection, carried round. */
+.hh-wheel-glint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.18) 44%, rgba(255, 255, 255, 0) 72%);
+  opacity: 0;
+  transition: opacity 260ms ease;
+  will-change: transform, opacity;
+}
+
+/* The centre: a lens. A slow glint crosses it, and the hold ring fills inside it
+   while the button is held down. */
+.hh-lens {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(46% 34% at 34% 16%, rgba(255, 255, 255, 0.90) 0%, rgba(255, 255, 255, 0.20) 48%, rgba(255, 255, 255, 0) 76%),
+    radial-gradient(70% 62% at 72% 94%, rgb(var(--hh-metal-rgb) / 0.18) 0%, rgba(255, 255, 255, 0) 62%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0) 54%, rgba(7, 17, 31, 0.12) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55),
+    inset 0 -4px 8px -6px rgba(7, 17, 31, 0.40);
+}
+.hh-lens::after {
+  content: "";
+  position: absolute;
+  inset: -45% -65%;
+  background: linear-gradient(104deg, rgba(255, 255, 255, 0) 44%, rgba(255, 255, 255, 0.38) 50%, rgba(255, 255, 255, 0) 56%);
+  animation: hh-lens-glint 8s ease-in-out infinite;
+}
+@keyframes hh-lens-glint {
+  0%, 100% { transform: translateX(-30%) rotate(10deg); opacity: 0; }
+  42% { opacity: 0.75; }
+  64% { transform: translateX(30%) rotate(10deg); opacity: 0; }
+}
+.hh-hold-ring {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px rgb(var(--hh-metal-rgb) / 0.45));
+}
+.hh-hold-sweep {
+  animation: hh-hold-sweep var(--hh-hold-ms, 720ms) linear forwards;
+}
+@keyframes hh-hold-sweep {
+  from { stroke-dashoffset: var(--hh-hold-len); }
+  to { stroke-dashoffset: 0; }
+}
+
+/* A glass cap on a face button. */
+.hh-cap {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 96% at 30% 8%, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.16) 34%, rgba(255, 255, 255, 0) 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 46%, rgba(7, 17, 31, 0.22) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.34),
+    inset 0 -6px 10px -8px rgba(7, 17, 31, 0.70);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hh-lens::after,
+  .hh-hold-sweep {
+    animation: none;
+  }
+  .hh-wheel-tick {
+    transition: none;
+  }
 }
 
 /* ===== APP OPENING — THE TITLE CARD =====
