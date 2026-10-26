@@ -265,16 +265,14 @@ button:focus-visible {
 /* ===== HANDHELD SHELL — THE DEVICE BODY =====
    --hh-top and --hh-bottom mark the GLASS opening: the moulding is drawn back out
    around them by --hh-bezel-w, so a deeper bezel thickens the hardware without
-   moving anything that lives on the picture. --hh-bar is the legend band — the
-   lockup, the surface you are holding, and the icon keys — and it is printed on
-   the CASE, so the glass opens below it: --hh-shell-top is the device's own top
-   edge, where that band begins. HandheldDeck sets these on mount and resets them
+   moving anything that lives on the picture. --hh-shell-top is the device's own
+   top edge, and the glass opens below the top lip: the case carries no printed
+   band, so the lip is the whole of it. HandheldDeck sets these on mount and resets them
    to 0 when it unmounts, so surfaces inset themselves around the device, and
    reclaim the whole viewport when the console is put away (the message composer,
    for one). */
 :root {
-  --hh-top: 73px;
-  --hh-bar: 34px;
+  --hh-top: 39px;
   --hh-shell-top: 21px;
   --hh-bottom: 164px;
 
@@ -284,9 +282,9 @@ button:focus-visible {
   --hh-bezel-w: 18px;
   --hh-glass-inset: calc(var(--hh-frame, 0px) + var(--hh-bezel-w, 0px));
 
-  /* The bar inside the glass: the stadium itself, the air it floats in, and the
-     room every surface leaves under it. Content begins below --hh-top + --hh-nav. */
-  --hh-nav: 52px;
+  /* The strip cut across the head of the glass, and the air it leaves under
+     itself. Content begins below --hh-top + --hh-nav. */
+  --hh-nav: 46px;
 
   /* Finish tokens — the house finish, until a Fellow changes it (see
      handheldFinishes.js, which overwrites every one of these). */
@@ -573,30 +571,38 @@ button:focus-visible {
     0 1px 3px rgba(3, 6, 13, 0.32);
 }
 
-/* ===== THE LEGEND BAND =====
-   The lockup and the icon keys are FITTED to the case, not drawn on it: the mark
-   sits in a machined badge, and the keys are the same moulded keys as the wheel's
-   — same recess, same specular edge, same press. Every tone is a finish token, so
-   the band is recast with the hardware. */
-.hh-badge {
-  background: linear-gradient(180deg, var(--hh-key-1) 0%, var(--hh-key-3) 100%);
+/* ===== THE STRIP — THE CONTROL RAIL =====
+   The machine's legend band, moved inside the glass and put to work. It is cut
+   flush across the head of the glass and closes the pane's own top corners, so it
+   reads as the top edge of the picture rather than as a toolbar floating over it:
+   a printed HOME key, the console's status, then the three hand keys, every cell
+   parted from the next by a machined seam. Every tone is a finish token, so the
+   strip is recast with the hardware. */
+.hh-strip {
+  border-radius: 11px 11px 0 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 54%),
+    var(--hh-recess);
   box-shadow:
-    inset 0 1px 0 var(--hh-key-spec),
-    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.45),
-    inset 0 -1px 0 rgba(3, 6, 13, 0.22),
-    0 1px 0 rgba(3, 6, 13, 0.30);
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -1px 0 rgb(var(--hh-metal-rgb) / 0.34),
+    0 6px 18px rgba(3, 6, 13, 0.30);
 }
-.hh-bar-key {
-  background: linear-gradient(180deg, var(--hh-key-1) 0%, var(--hh-key-2) 100%);
-  box-shadow:
-    inset 0 1px 0 var(--hh-key-spec),
-    inset 0 -1px 0 rgba(3, 6, 13, 0.20),
-    0 1px 0 rgba(3, 6, 13, 0.30);
+.hh-strip-key {
+  transition: background-color 150ms ease;
 }
-.hh-bar-key:active {
-  box-shadow:
-    inset 0 1px 3px rgba(3, 6, 13, 0.32),
-    0 1px 0 rgba(3, 6, 13, 0.24);
+.hh-strip-key:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+.hh-strip-seam {
+  width: 1px;
+  flex: none;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--hh-metal-rgb) / 0.05),
+    rgb(var(--hh-metal-rgb) / 0.42),
+    rgb(var(--hh-metal-rgb) / 0.05)
+  );
 }
 
 /* ===== RETRO POLYMER — THE CASE, AND HOW EVERYTHING IS FITTED TO IT =====
@@ -605,22 +611,6 @@ button:focus-visible {
    ivory ring with grey print over a metal centre button. Nothing on this device
    is glossy — the only sheen anywhere is what a 1px edge catches — and every tone
    here is a finish token, so the whole case is recast when the finish changes. */
-.hh-band {
-  border-radius: 10px;
-  background: linear-gradient(180deg, var(--hh-shell-2) 0%, var(--hh-shell-3) 100%);
-  box-shadow:
-    inset 0 1px 0 var(--hh-shell-spec),
-    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.10),
-    inset 0 -1px 0 rgba(3, 6, 13, 0.18);
-}
-.hh-band-edge {
-  background: linear-gradient(
-    90deg,
-    rgb(var(--hh-metal-rgb) / 0.05),
-    rgb(var(--hh-metal-rgb) / 0.45),
-    rgb(var(--hh-metal-rgb) / 0.05)
-  );
-}
 .hh-chin {
   background: linear-gradient(180deg, var(--hh-shell-2) 0%, var(--hh-shell-3) 100%);
   box-shadow:
@@ -631,23 +621,6 @@ button:focus-visible {
   box-shadow:
     inset 0 1px 0 var(--hh-shell-spec),
     inset 0 2px 4px -3px rgba(3, 6, 13, 0.45);
-}
-
-/* ===== THE BAR INSIDE THE GLASS =====
-   The one control surface that belongs to the picture rather than the case: a dark
-   stadium floating at the head of the glass, with the mark at its left and the
-   three keys at its right. It reads as the same device as the hardware because it
-   is cut from the finish's own recess tone and trimmed in the same metal. */
-.hh-screenbar {
-  border-radius: 9999px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 46%),
-    var(--hh-recess);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.34),
-    0 6px 16px rgba(3, 6, 13, 0.32),
-    0 1px 2px rgba(3, 6, 13, 0.26);
 }
 
 /* The keypad: matte rubberised keys with light legends, the way a thumb knows

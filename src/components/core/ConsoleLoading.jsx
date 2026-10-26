@@ -1,13 +1,12 @@
 import { useLayoutEffect } from "react";
 import { applyShellVars, releaseShellVars } from "@/components/handheld/handheldGeometry";
 import HandheldBody from "@/components/handheld/HandheldBody";
-import HandheldMasthead from "@/components/handheld/HandheldMasthead";
 import HandheldScreenFrame from "@/components/handheld/HandheldScreenFrame";
 import HandheldChin from "@/components/handheld/HandheldChin";
 
 // The app's loading state, console first.
 //
-// The case is painted immediately — body, crown, moulding, chin — and the wait
+// The case is painted immediately — body, moulding, chin — and the wait
 // happens inside the glass, where a surface will be. Nothing here reaches over the
 // hardware, so the device is present from the first frame and the picture simply
 // fills in underneath it. A desktop has no device, so there it is a plain wait.
@@ -20,7 +19,6 @@ export default function ConsoleLoading({ label = "Powering up" }) {
   return (
     <>
       <HandheldBody />
-      <HandheldMasthead />
       <HandheldScreenFrame />
       <HandheldChin />
 

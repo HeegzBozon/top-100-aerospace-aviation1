@@ -10,8 +10,8 @@
 //   18px       the picture, with the pane over it
 //
 // --hh-top and --hh-bottom mark where the glass opens, so the moulding is drawn
-// back out to the device bounds here, and only here. --hh-top sits below the
-// legend band, which belongs to the case and is drawn by HandheldMasthead.
+// back out to the device bounds here, and only here. The case carries nothing, so
+// --hh-top sits directly under the shell's own top lip.
 //
 // MOULDING + RIM + RECESS is what --hh-bezel-w has to be for the pane to land on
 // the picture's own edge.

@@ -1,22 +1,23 @@
 import { Bell, CircleUser, Volume2, VolumeX } from "lucide-react";
-import { HANDHELD_LOGO } from "./HandheldMasthead";
 
-// The control rail, inside the glass. One line, and three glyphs: where you are,
-// then the three things a hand actually reaches for — you, what has come in, and
-// the sound latch. The mark at its left is the way home.
+// The control rail: the strip cut flush across the head of the glass.
 //
-// Nothing else is drawn here. No second row, no plates on the keys, no counts: the
-// rail should read as the top edge of the picture rather than as a second toolbar,
-// and the surfaces below it keep the room.
-const RAIL_HEIGHT = 40;
+// It is the machine's legend band, moved inside the glass and put to work. No
+// logo, no pill, nothing floating over the picture: a printed HOME key at the
+// left, the console's status in the middle — where you are, and which section of
+// it — then the three keys a hand actually reaches for, each cell parted from the
+// next by a machined seam the way a strip of switches is. The strip closes the
+// pane's own top corners, so the rail reads as the top edge of the picture rather
+// than as a second toolbar, and the surfaces below it keep the room.
+const STRIP_HEIGHT = 32;
 
-function RailKey({ label, onClick, lit = false, children }) {
+function StripKey({ label, onClick, lit = false, children }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full transition-transform active:translate-y-[1px]"
+      className="hh-strip-key flex w-[33px] shrink-0 items-center justify-center"
       style={{ color: lit ? "var(--hh-metal)" : "var(--hh-ink)" }}
     >
       {children}
@@ -37,59 +38,66 @@ export default function ScreenTopBar({
     <div
       className="fixed z-[34] select-none md:hidden"
       style={{
-        left: "calc(var(--hh-glass-inset, 32px) + 8px)",
-        right: "calc(var(--hh-glass-inset, 32px) + 8px)",
-        top: "calc(var(--hh-top, 73px) + env(safe-area-inset-top) + 6px)",
-        height: RAIL_HEIGHT,
+        left: "var(--hh-glass-inset, 32px)",
+        right: "var(--hh-glass-inset, 32px)",
+        top: "calc(var(--hh-top, 73px) + env(safe-area-inset-top))",
+        height: STRIP_HEIGHT,
       }}
     >
-      <div className="hh-screenbar flex h-full items-center gap-2 pl-1.5 pr-1.5">
-        {/* The mark, and the way home. */}
+      <div className="hh-strip flex h-full items-stretch overflow-hidden">
+        {/* The printed way home. */}
         <button
           type="button"
           onClick={onHome}
           aria-label="Home — the front screen"
-          className="hh-badge flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full transition-transform active:translate-y-[1px]"
+          className="hh-strip-key flex shrink-0 items-center px-3 text-[7.5px] font-bold uppercase tracking-[0.26em]"
+          style={{ color: "var(--hh-ink-soft)" }}
         >
-          <img src={HANDHELD_LOGO} alt="" className="h-[16px] w-[16px] object-contain" />
+          Home
         </button>
 
+        <span aria-hidden="true" className="hh-strip-seam" />
+
         {/* Where you are: the surface, then the section as a quiet suffix. */}
-        <p className="flex min-w-0 flex-1 items-center gap-2 truncate text-[8.5px] font-bold uppercase tracking-[0.20em]">
+        <p className="flex min-w-0 flex-1 items-center gap-2 px-3 text-[8px] font-bold uppercase tracking-[0.20em]">
+          <span
+            className="hh-led h-[4px] w-[4px] shrink-0 rounded-full"
+            style={{ background: "var(--hh-led)" }}
+          />
           <span className="truncate" style={{ color: "var(--hh-key-1)" }}>
             {surface}
           </span>
           {module ? (
             <span
-              className="flex min-w-0 shrink items-center gap-1.5 text-[6.5px] tracking-[0.18em]"
-              style={{ color: "rgb(255,255,255,0.52)" }}
+              className="min-w-0 shrink truncate text-[6.5px] tracking-[0.18em]"
+              style={{ color: "rgb(255,255,255,0.5)" }}
             >
-              <span
-                className="h-[4px] w-[4px] shrink-0 rounded-full"
-                style={{ background: "var(--hh-led)" }}
-              />
-              <span className="truncate">{module}</span>
+              {module}
             </span>
           ) : null}
         </p>
 
-        <div className="flex shrink-0 items-center gap-0.5">
-          <RailKey label="Your profile" onClick={onProfile}>
-            <CircleUser className="h-[15px] w-[15px]" strokeWidth={1.7} />
-          </RailKey>
+        <span aria-hidden="true" className="hh-strip-seam" />
 
-          <RailKey label="Notifications" onClick={onNotifications}>
-            <Bell className="h-[15px] w-[15px]" strokeWidth={1.7} />
-          </RailKey>
+        <StripKey label="Your profile" onClick={onProfile}>
+          <CircleUser className="h-[15px] w-[15px]" strokeWidth={1.7} />
+        </StripKey>
 
-          <RailKey label={soundOn ? "Sound off" : "Sound on"} onClick={onToggleSound} lit={soundOn}>
-            {soundOn ? (
-              <Volume2 className="h-[15px] w-[15px]" strokeWidth={1.7} />
-            ) : (
-              <VolumeX className="h-[15px] w-[15px]" strokeWidth={1.7} />
-            )}
-          </RailKey>
-        </div>
+        <span aria-hidden="true" className="hh-strip-seam" />
+
+        <StripKey label="Notifications" onClick={onNotifications}>
+          <Bell className="h-[15px] w-[15px]" strokeWidth={1.7} />
+        </StripKey>
+
+        <span aria-hidden="true" className="hh-strip-seam" />
+
+        <StripKey label={soundOn ? "Sound off" : "Sound on"} onClick={onToggleSound} lit={soundOn}>
+          {soundOn ? (
+            <Volume2 className="h-[15px] w-[15px]" strokeWidth={1.7} />
+          ) : (
+            <VolumeX className="h-[15px] w-[15px]" strokeWidth={1.7} />
+          )}
+        </StripKey>
       </div>
     </div>
   );

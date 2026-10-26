@@ -4,7 +4,6 @@ import { base44 } from "@/api/base44Client";
 import { Palette } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
-import HandheldMasthead from "./HandheldMasthead";
 import ScreenTopBar from "./ScreenTopBar";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldBody from "./HandheldBody";
@@ -535,12 +534,9 @@ export default function HandheldDeck() {
           all set into the same body. */}
       <HandheldBody />
 
-      {/* The case's own line: branding, and nothing else. */}
-      <HandheldMasthead />
-
       <HandheldScreenFrame />
 
-      {/* The bar inside the glass: the controls, where the surfaces are. */}
+      {/* The strip across the head of the glass: where you are, and the controls. */}
       <ScreenTopBar
         surface={surface}
         module={modules[moduleIndex]?.label}
