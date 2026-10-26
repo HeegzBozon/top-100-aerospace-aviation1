@@ -5,20 +5,20 @@
 // loading chassis apply the same numbers, the picture never shifts as the console
 // takes over from a load.
 //
-// Above the glass, on the case itself: the shell's own top lip, then the moulding
-// — and the picture opens below both. Nothing is printed on the case, so the lip
-// is the whole of it and the glass opens as high as the hardware allows.
-const TOP_CLEARANCE = 7; // the shell's own top edge
+// Above the glass, on the case itself: the shell's top edge, then the moulding —
+// and the picture opens below both. Nothing is printed on the case, so the device
+// starts at the same slim margin as its sides and the glass opens as high as the
+// hardware allows: every pixel the old band held is the picture's now.
 const FRAME_GUTTER = 14; // the desk margin: how much surface shows around the shell
 const BEZEL_WIDTH = 18; // the moulding drawn back out around the glass
 
 // Inside the glass: the strip cut across its head, and the air it leaves under it.
-const NAV_CLEARANCE = 46;
+const NAV_CLEARANCE = 34;
 
 // Below the glass: the chin, carrying the wheel, the keys, the grille and the plate.
 const DECK_CLEARANCE = 132;
 
-export { TOP_CLEARANCE, NAV_CLEARANCE, DECK_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH };
+export { NAV_CLEARANCE, DECK_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH };
 
 // Whoever is painting the hardware puts its space on the document. The count is
 // the point: a loading chassis handing the device to the console must not take
@@ -30,11 +30,8 @@ export function applyShellVars() {
   holders += 1;
   document.body.classList.add("hh-shell");
   const root = document.documentElement.style;
-  root.setProperty("--hh-shell-top", `${TOP_CLEARANCE + FRAME_GUTTER}px`);
-  root.setProperty(
-    "--hh-top",
-    `${TOP_CLEARANCE + FRAME_GUTTER + BEZEL_WIDTH}px`,
-  );
+  root.setProperty("--hh-shell-top", `${FRAME_GUTTER}px`);
+  root.setProperty("--hh-top", `${FRAME_GUTTER + BEZEL_WIDTH}px`);
   root.setProperty("--hh-nav", `${NAV_CLEARANCE}px`);
   root.setProperty("--hh-bottom", `${DECK_CLEARANCE + FRAME_GUTTER + BEZEL_WIDTH}px`);
   root.setProperty("--hh-frame", `${FRAME_GUTTER}px`);

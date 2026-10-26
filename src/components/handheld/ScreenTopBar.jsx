@@ -9,7 +9,7 @@ import { Bell, CircleUser, Volume2, VolumeX } from "lucide-react";
 // next by a machined seam the way a strip of switches is. The strip closes the
 // pane's own top corners, so the rail reads as the top edge of the picture rather
 // than as a second toolbar, and the surfaces below it keep the room.
-const STRIP_HEIGHT = 32;
+const STRIP_HEIGHT = 28;
 
 function StripKey({ label, onClick, lit = false, children }) {
   return (

@@ -266,14 +266,15 @@ button:focus-visible {
    --hh-top and --hh-bottom mark the GLASS opening: the moulding is drawn back out
    around them by --hh-bezel-w, so a deeper bezel thickens the hardware without
    moving anything that lives on the picture. --hh-shell-top is the device's own
-   top edge, and the glass opens below the top lip: the case carries no printed
-   band, so the lip is the whole of it. HandheldDeck sets these on mount and resets them
+   top edge, and the glass opens below the moulding: the case carries no printed
+   band, so the top of the hardware is as slim as its sides and the picture takes
+   everything that band held. HandheldDeck sets these on mount and resets them
    to 0 when it unmounts, so surfaces inset themselves around the device, and
    reclaim the whole viewport when the console is put away (the message composer,
    for one). */
 :root {
-  --hh-top: 39px;
-  --hh-shell-top: 21px;
+  --hh-top: 32px;
+  --hh-shell-top: 14px;
   --hh-bottom: 164px;
 
   /* The desk margin, the moulding around the glass, and the inset every surface
@@ -284,7 +285,7 @@ button:focus-visible {
 
   /* The strip cut across the head of the glass, and the air it leaves under
      itself. Content begins below --hh-top + --hh-nav. */
-  --hh-nav: 46px;
+  --hh-nav: 34px;
 
   /* Finish tokens — the house finish, until a Fellow changes it (see
      handheldFinishes.js, which overwrites every one of these). */
