@@ -3,10 +3,10 @@ import moment from 'moment';
 import { RotateCcw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { hourPhase } from '@/components/core/appOpening';
-import { resolveCommitteePhase } from '@/components/fellow-home/season/useCommitteePhase';
 import HomeDock from '@/components/home-v3/HomeDock';
 import StartMenuItem from '@/components/start/StartMenuItem';
-import { START_LOGO, START_MENU } from '@/components/start/startMenuConfig';
+import VotingCountdown from '@/components/start/VotingCountdown';
+import { START_MENU } from '@/components/start/startMenuConfig';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 
@@ -15,12 +15,12 @@ const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 // The console's ring walks the rows and announces each one; a tap opens it.
 export default function StartScreen() {
   const [phase] = useState(() => hourPhase());
-  const [status, setStatus] = useState({ loading: true, line: '', failed: false });
+  const [status, setStatus] = useState({ loading: true, votingEnd: null, failed: false });
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let alive = true;
-    setStatus({ loading: true, line: '', failed: false });
+    setStatus({ loading: true, votingEnd: null, failed: false });
 
     base44.entities.Season
       .list('-start_date', 6)
@@ -28,17 +28,12 @@ export default function StartScreen() {
         if (!alive) return;
         const seasons = Array.isArray(result) ? result : result?.items || [];
         const current = seasons.find((season) => LIVE_PHASES.includes(season.status)) || seasons[0] || null;
-        const committee = current ? resolveCommitteePhase(current) : null;
-        setStatus({
-          loading: false,
-          failed: false,
-          line: current
-            ? `${current.name}${committee?.label ? ` · ${committee.label}` : ''}`
-            : 'No season on the calendar yet. The next cycle opens here.',
-        });
+        // The countdown reads from the season record itself, so it agrees with
+        // every other surface counting the same cycle down.
+        setStatus({ loading: false, failed: false, votingEnd: current?.voting_end || null });
       })
       .catch(() => {
-        if (alive) setStatus({ loading: false, line: '', failed: true });
+        if (alive) setStatus({ loading: false, votingEnd: null, failed: true });
       });
 
     return () => {
@@ -72,12 +67,9 @@ export default function StartScreen() {
       />
 
       <div className="relative flex min-h-0 flex-1 flex-col md:mx-auto md:w-full md:max-w-2xl">
-        <div className="flex items-center gap-3">
-          <img src={START_LOGO} alt="" className="h-7 w-7 object-contain md:h-9 md:w-9" />
-          <span className="text-[8.5px] font-bold uppercase tracking-[0.3em] text-editorial-gold md:text-[9.5px]">
-            TOP 100 Aerospace &amp; Aviation
-          </span>
-          <span className="ml-auto flex flex-col items-end gap-0.5 text-right">
+        {/* The mark lives on the hardware; this sheet carries only the date */}
+        <div className="flex justify-end">
+          <span className="flex flex-col items-end gap-0.5 text-right">
             <span className="text-[8px] font-bold uppercase tracking-[0.28em] text-editorial-cream/45 md:text-[9.5px]">
               MMXXVI
             </span>
@@ -102,7 +94,8 @@ export default function StartScreen() {
             Aerospace &amp; Aviation
           </p>
 
-          {/* Where the cycle stands, read once — the menu works without it */}
+          {/* The cycle, read once: the countdown to voting close, straight off the
+              season record, so it matches the board and the masthead */}
           <div className="mt-3 flex items-center gap-2 text-[9px] tracking-[0.06em] text-editorial-cream/55 md:text-[11px]">
             {status.loading ? (
               <span className="text-editorial-cream/45">Reading the season…</span>
@@ -117,8 +110,10 @@ export default function StartScreen() {
                   <RotateCcw className="h-[10px] w-[10px]" /> Read again
                 </button>
               </>
+            ) : status.votingEnd ? (
+              <VotingCountdown target={status.votingEnd} />
             ) : (
-              <span>{status.line}</span>
+              <span>No season on the calendar yet. The next cycle opens here.</span>
             )}
           </div>
         </div>
