@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
-import moment from 'moment';
-import { RotateCcw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { hourPhase } from '@/components/core/appOpening';
 import HomeDock from '@/components/home-v3/HomeDock';
-import StartMenuItem from '@/components/start/StartMenuItem';
-import VotingCountdown from '@/components/start/VotingCountdown';
-import { START_MENU } from '@/components/start/startMenuConfig';
+import StartSky from '@/components/start/StartSky';
+import StartMetaRow from '@/components/start/StartMetaRow';
+import StartMark from '@/components/start/StartMark';
+import StartSeasonLine from '@/components/start/StartSeasonLine';
+import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 
-// The start screen. The app opens like a game: the hour's sky, the mark, the
-// title, and the menu — the dashboard first, then the surfaces one step off it.
-// The console's ring walks the rows and announces each one; a tap opens it.
+// The title screen. The app opens like a game: the hour's sky, the mark, the
+// cycle's countdown, and the six surfaces one step off the dashboard. The
+// console's ring walks the keys and announces each one; a tap opens it.
+//
+// The picture is a single column that fills the glass top to bottom — masthead,
+// mark, countdown, then the keys take everything that is left — so nothing has to
+// be centred and no stretch of the screen is ever left dead.
 export default function StartScreen() {
   const [phase] = useState(() => hourPhase());
   const [status, setStatus] = useState({ loading: true, votingEnd: null, failed: false });
@@ -41,98 +45,28 @@ export default function StartScreen() {
     };
   }, [attempt]);
 
-  const stamp = moment().format('ddd D MMM · HH:mm');
-
   return (
     <div className="hh-slide-window relative flex flex-col p-1.5 md:block md:h-auto md:min-h-screen md:p-0">
-      {/* The picture plane sits inside the glass with its own corner radius and a
-          hair of clearance, so no edge of it can run under the moulding. */}
+      {/* The picture plane: the hour's sky, seated a hair inside the glass so no
+          edge of it can run under the moulding. */}
       <div
-        className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[14px] px-5 pb-7 pt-5 md:min-h-screen md:rounded-none md:px-16 md:pb-14 md:pt-14"
+        className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[14px] md:min-h-screen md:rounded-none"
         style={{ background: phase.sky }}
       >
-      {/* The hour's weather, the same sky the title card opened on */}
-      <div className="pointer-events-none absolute inset-0" style={{ background: phase.glow }} />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: 'radial-gradient(rgb(var(--editorial-cream-rgb) / 0.55) 0.5px, transparent 1px)',
-          backgroundSize: '32px 32px',
-          opacity: phase.stars ? 0.4 : 0.12,
-        }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{ boxShadow: 'inset 0 0 130px rgba(5,11,20,0.7)' }}
-      />
+        <StartSky phase={phase} />
 
-      <div className="relative flex min-h-0 flex-1 flex-col md:mx-auto md:w-full md:max-w-2xl">
-        {/* The hour and the date share the top line, so the kicker reads level
-            with the stamp instead of sitting in the air below it. */}
-        <div className="flex items-start justify-between gap-3">
-          <p className="text-[8.5px] font-bold uppercase tracking-[0.3em] text-editorial-copper md:text-[9.5px]">
-            {phase.kicker}
-          </p>
+        <div className="relative flex min-h-0 flex-1 flex-col px-5 pb-6 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
+          <StartMetaRow kicker={phase.kicker} />
 
-          <span className="flex flex-col items-end gap-0.5 text-right">
-            <span className="text-[8px] font-bold uppercase tracking-[0.28em] text-editorial-cream/45 md:text-[9.5px]">
-              MMXXVI
-            </span>
-            <span className="text-[7.5px] font-bold uppercase tracking-[0.2em] text-editorial-cream/35 md:text-[8.5px]">
-              {stamp}
-            </span>
-          </span>
-        </div>
-
-        <div className="mt-2.5 md:mt-10">
-          <div
-            className="mt-3 h-px w-32 md:w-56"
-            style={{ background: 'linear-gradient(90deg, #B87333, #C9A87C 58%, transparent)' }}
-          />
-          <h1 className="mt-2.5 font-heading text-[2.35rem] leading-[1.0] text-editorial-cream md:mt-3 md:text-7xl">
-            TOP 100
-          </h1>
-          <p className="mt-1.5 text-[9px] font-bold uppercase tracking-[0.34em] text-editorial-cream/60 md:text-[11px]">
-            Aerospace &amp; Aviation
-          </p>
-
-          {/* The cycle, read once: the countdown to voting close, straight off the
-              season record, so it matches the board and the masthead */}
-          <div className="mt-2.5 flex items-center gap-2 text-[9px] tracking-[0.06em] text-editorial-cream/55 md:mt-3 md:text-[11px]">
-            {status.loading ? (
-              <span className="text-editorial-cream/45">Reading the season…</span>
-            ) : status.failed ? (
-              <>
-                <span className="text-editorial-cream/45">Season status unavailable.</span>
-                <button
-                  type="button"
-                  onClick={() => setAttempt((n) => n + 1)}
-                  className="flex items-center gap-1 uppercase tracking-[0.18em] text-editorial-gold"
-                >
-                  <RotateCcw className="h-[10px] w-[10px]" /> Read again
-                </button>
-              </>
-            ) : status.votingEnd ? (
-              <VotingCountdown target={status.votingEnd} />
-            ) : (
-              <span>No season on the calendar yet. The next cycle opens here.</span>
-            )}
+          <div className="mt-4 shrink-0 md:mt-10">
+            <StartMark />
+            <div className="mt-3 md:mt-4">
+              <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
+            </div>
           </div>
-        </div>
 
-        {/* The keys take everything left over: two across, three down on a phone,
-            so the glass is worked end to end instead of trailing into dead space */}
-        <div className="mt-3 flex min-h-0 flex-1 flex-col md:mt-8">
-          <p className="mb-1 shrink-0 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/40">
-            Select a surface
-          </p>
-          <div className="grid min-h-0 flex-1 grid-cols-2 grid-rows-3 auto-rows-min gap-2 overflow-y-auto md:grid-cols-3 md:grid-rows-none">
-            {START_MENU.map((item) => (
-              <StartMenuItem key={item.label} item={item} />
-            ))}
-          </div>
+          <StartSurfaceKeys />
         </div>
-      </div>
 
         {/* Desktop navigation under the title screen. */}
         <div className="hidden md:block">

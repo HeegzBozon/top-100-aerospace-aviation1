@@ -1,13 +1,23 @@
-// The viewer. The glass is recessed straight into the device's own moulding: a
-// machined metal rim runs around the opening, a dark step drops away below it,
-// and the picture sits at the bottom of that well with the case screws in the
-// corners. There is no panel here — the recess is cut into the one body that
-// carries the controls, which is what keeps the hardware reading as one object.
+// The viewer: the glass assembly the picture is seen through.
 //
-// --hh-top and --hh-bottom mark the glass opening, so the moulding is drawn back
-// out to the device bounds here, and only here. --hh-top sits below the legend
-// band, which belongs to the case and is drawn by HandheldMasthead.
-const SCREW = { position: "absolute", width: 6, height: 6 };
+// It is one machined opening in the device's own moulding, drawn in three true
+// steps — and the steps tile exactly, so no band of hardware is ever doubled and
+// nothing is ever painted over the picture:
+//
+//   0 → 6px    the moulding's shoulder, and the four screws that pin the bezel
+//   6 → 9px    the rim: a 3px machined ring, lit along its top-left edge
+//   9 → 18px   the recess: the step down to the pane, in the finish's dark tone
+//   18px       the picture, with the pane over it
+//
+// --hh-top and --hh-bottom mark where the glass opens, so the moulding is drawn
+// back out to the device bounds here, and only here. --hh-top sits below the
+// legend band, which belongs to the case and is drawn by HandheldMasthead.
+//
+// MOULDING + RIM + RECESS is what --hh-bezel-w has to be for the pane to land on
+// the picture's own edge.
+const MOULDING = 6;
+const RIM = 3;
+const RECESS = 9;
 
 export default function HandheldScreenFrame() {
   return (
@@ -21,20 +31,20 @@ export default function HandheldScreenFrame() {
       }}
       aria-hidden="true"
     >
-      {/* The machined rim the glass is set against */}
-      <div className="hh-rim absolute rounded-[20px]" style={{ inset: 6 }} />
+      {/* The screws, seated in the shoulder: 5px, so they finish at the rim */}
+      <span className="hh-screw absolute h-[5px] w-[5px] rounded-full" style={{ top: 1, left: 1 }} />
+      <span className="hh-screw absolute h-[5px] w-[5px] rounded-full" style={{ top: 1, right: 1 }} />
+      <span className="hh-screw absolute h-[5px] w-[5px] rounded-full" style={{ bottom: 1, left: 1 }} />
+      <span className="hh-screw absolute h-[5px] w-[5px] rounded-full" style={{ bottom: 1, right: 1 }} />
 
-      {/* The step down into the well */}
-      <div className="hh-well absolute rounded-[17px]" style={{ inset: 9 }} />
+      {/* The rim — a ring, so the picture shows straight through its middle */}
+      <div className="hh-rim absolute rounded-[20px]" style={{ inset: MOULDING }} />
 
-      {/* The screws that pin the bezel to the body */}
-      <span className="hh-screw rounded-full" style={{ ...SCREW, top: 4, left: 4 }} />
-      <span className="hh-screw rounded-full" style={{ ...SCREW, top: 4, right: 4 }} />
-      <span className="hh-screw rounded-full" style={{ ...SCREW, bottom: 4, left: 4 }} />
-      <span className="hh-screw rounded-full" style={{ ...SCREW, bottom: 4, right: 4 }} />
+      {/* The step down to the pane */}
+      <div className="hh-well absolute rounded-[17px]" style={{ inset: MOULDING + RIM }} />
 
-      {/* The pane, over the picture — the rim is 20, the recess 17 and the pane
-          14, so the three steps nest the way one moulding does */}
+      {/* The pane over the picture: the rim is 20, the recess 17 and the pane 14,
+          so the three radii nest the way one moulding does */}
       <div
         className="hh-glass absolute overflow-hidden rounded-[14px]"
         style={{ inset: "var(--hh-bezel-w, 18px)" }}

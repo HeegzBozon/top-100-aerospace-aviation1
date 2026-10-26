@@ -400,26 +400,26 @@ button:focus-visible {
 }
 
 /* LCD glass over the content: scanlines and a soft vignette, then a slow sheen. */
+/* The pane itself: a soft vignette in the finish's recess tone seats the content
+   at the bottom of the well and a 1px ink line closes the opening. No scanlines
+   over the editorial surfaces — the picture stays as composed as it prints. */
 .hh-glass {
-  background: repeating-linear-gradient(
-    180deg,
-    rgba(7, 17, 31, 0.045) 0px,
-    rgba(7, 17, 31, 0.045) 1px,
-    rgba(7, 17, 31, 0) 1px,
-    rgba(7, 17, 31, 0) 3px
-  );
   box-shadow:
-    inset 0 0 52px var(--hh-recess-soft),
-    inset 0 1px 0 var(--hh-shell-spec),
-    inset 0 2px 10px rgba(3, 6, 13, 0.24),
-    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.34);
+    inset 0 0 44px var(--hh-recess-soft),
+    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.26),
+    inset 0 1px 0 rgb(255 255 255 / 0.10);
 }
 .hh-glass::after {
   content: "";
   position: absolute;
   inset: -30% -70%;
-  background: linear-gradient(90deg, transparent, rgba(250, 248, 245, 0.22), transparent);
-  animation: hh-sheen 9s ease-in-out infinite;
+  background: linear-gradient(
+    104deg,
+    rgba(255, 255, 255, 0) 44%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0) 56%
+  );
+  animation: hh-sheen 14s ease-in-out infinite;
 }
 @keyframes hh-sheen {
   0%, 100% { transform: translateX(-45%) rotate(12deg); opacity: 0; }
@@ -511,26 +511,33 @@ button:focus-visible {
   text-shadow: 0 1px 0 var(--hh-shell-spec), 0 -1px 0 rgba(7, 17, 31, 0.22);
 }
 
-/* The machined rim the glass is set against: one bright line off the light, the
-   metal under it, and a milled seam where it meets the moulding. */
+/* ===== THE VIEWER — THE MACHINED OPENING =====
+   The glass is one opening in the device's moulding, cut in three steps that tile
+   exactly (see HandheldScreenFrame): the shoulder, the rim, then the recess.
+   Both rings below are drawn as RINGS — never as filled boxes — so the middle of
+   each is left clear and the picture is never painted over. Every tone is a
+   finish token, so the whole viewer is recast with the hardware. */
 .hh-rim {
+  /* A 3px ring of turned metal: the dark face, a bright milled line down its
+     top-left edge where the light lands, and a shade down the other side. */
   box-shadow:
-    inset 0 0 0 1px var(--hh-shell-spec),
-    inset 0 0 0 2px var(--hh-metal-1),
+    inset 1px 1px 0 0 var(--hh-metal-1),
+    inset -1px -1px 0 0 var(--hh-metal-2),
     inset 0 0 0 3px var(--hh-metal-2),
-    0 0 0 1px rgb(var(--hh-ink-rgb) / 0.26),
-    0 3px 10px rgba(3, 6, 13, 0.22);
+    inset 0 0 0 4px rgb(var(--hh-metal-rgb) / 0.30),
+    0 0 0 1px rgb(var(--hh-ink-rgb) / 0.20),
+    0 2px 5px rgba(3, 6, 13, 0.18);
 }
 
-/* The step down: the recess the glass sits in, cut below the moulding in the
-   finish's own tone — not a black frame bolted on. It is a ring and never a
-   fill, so the middle is left clear and nothing is painted over the picture. */
+/* The step down to the pane: the finish's dark tone for the ring itself, then the
+   shadow the top lip casts into the well and the light the bottom lip catches —
+   which is what makes a ring read as a hole rather than a frame. */
 .hh-well {
   box-shadow:
-    inset 0 0 0 1px var(--hh-bezel),
-    inset 0 0 0 8px var(--hh-recess),
-    inset 0 6px 14px rgba(3, 6, 13, 0.34),
-    inset 0 -4px 10px rgba(3, 6, 13, 0.20);
+    inset 0 0 0 9px var(--hh-recess),
+    inset 0 10px 16px -12px rgba(3, 6, 13, 0.70),
+    inset 0 -8px 14px -12px var(--hh-shell-spec),
+    inset -9px 0 16px -14px rgba(3, 6, 13, 0.35);
 }
 
 /* A punched speaker grille. */
