@@ -9,8 +9,11 @@ const getStage = () => document.querySelector("[data-handheld-screen]");
 // The console, on the glass. A surface hands over its own panels and the console
 // holds them: a menu of them, then one open at a time, driven by the click wheel.
 // Rotation walks the menu — the panels are drawn to the ring as a picker, so the
-// rail, the cursor and the keys always agree — or reads the open panel; A opens
-// what the cursor is standing on; B puts the panel away and comes back to the menu.
+// rail, the cursor and the keys always agree — and stops at the ends of it: the
+// menu is an index of panels, not a loop (docs/handheld-cursor-rules.md). A turn
+// past the last panel is a turn the glass takes, so the page reads on. Rotation
+// reads the open panel too; A opens what the cursor is standing on; B puts the
+// panel away and comes back to the menu.
 //
 // Controlled on purpose: the panel on the glass is `openKey` (null = the menu),
 // and every intention the Fellow has is reported back through `onOpen`, so the
@@ -28,15 +31,15 @@ export default function GlassConsole({ kicker, panels, openKey = null, onOpen, d
   const onOpenRef = useRef(onOpen);
   onOpenRef.current = onOpen;
 
-  // The cursor is held as a position the ring can walk, and wrapping is the
-  // console's own: a menu is a loop, so there is no dead end to fall into.
-  const land = useCallback((target, wrap) => {
+  // The cursor is held as a position the ring can walk. The menu stops at its own
+  // ends: a turn past the first or last panel is declined, and the console hands
+  // it to the glass, which is where reading on from the end of a list belongs.
+  const land = useCallback((target) => {
     const list = panelsRef.current;
     if (!list.length) return null;
-    const next = wrap ? ((target % list.length) + list.length) % list.length : target;
-    if (next < 0 || next >= list.length) return null;
-    setCursor(next);
-    return list[next].label;
+    if (target < 0 || target >= list.length) return null;
+    setCursor(target);
+    return list[target].label;
   }, []);
 
   // The cursor follows a panel opened from somewhere else — a rail tick, a deep
@@ -68,10 +71,10 @@ export default function GlassConsole({ kicker, panels, openKey = null, onOpen, d
       index: () => cursorRef.current,
       // Rotation walks the menu, and reads an open panel: a turn the console
       // hands back is a turn the glass takes, so the panel scrolls.
-      step: (direction) => (openRef.current ? null : land(cursorRef.current + direction, true)),
-      page: (direction) => land(cursorRef.current + direction, false),
+      step: (direction) => (openRef.current ? null : land(cursorRef.current + direction)),
+      page: (direction) => land(cursorRef.current + direction),
       goTo: (i) => {
-        const label = land(i, false);
+        const label = land(i);
         // A tick while a panel is open turns the panel, rather than moving the
         // cursor out from under the one on the glass.
         if (label && openRef.current) onOpenRef.current?.(panelsRef.current[i].key);

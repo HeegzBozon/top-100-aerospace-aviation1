@@ -5,6 +5,12 @@ import { useEffect, useState } from "react";
 // the console's ring walks those options while the confirm key opens the one
 // standing under the cursor.
 //
+// The cursor law (docs/handheld-cursor-rules.md): a list stops at its ends. A
+// surface walks its options and declines the turn past the first or the last, so
+// the console hands that turn to the glass and the page reads on. Wrapping is
+// reserved for the one set that is a closed control rather than an index of
+// destinations — the console's own key grid. Nothing new wraps.
+//
 // A page of prose registers a deck instead (see handheldDeck). A surface that
 // registers a picker answers four questions:
 //   labels / index / goTo — what the rail and the masthead read
