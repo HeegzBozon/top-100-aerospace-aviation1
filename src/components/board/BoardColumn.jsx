@@ -4,7 +4,7 @@ import { BRAND } from "./boardConfig";
 // One column of the Board: a numbered direction, what it covers, and the cards
 // that lead into it. On a phone the column is a full glass of its own and
 // scrolls inside itself — the wheel's way down; the ring's way across.
-export default function BoardColumn({ column, stats, live }) {
+export default function BoardColumn({ column, stats, live, band }) {
   const Icon = column.icon;
 
   return (
@@ -13,6 +13,8 @@ export default function BoardColumn({ column, stats, live }) {
       data-hh-scroll
       className="flex w-[86%] shrink-0 snap-start flex-col overflow-y-auto scrollbar-hide pb-2 md:w-auto md:shrink md:overflow-visible"
     >
+      {band ? <div className="mb-2.5 shrink-0">{band}</div> : null}
+
       <header
         className="mb-2.5 shrink-0 border-t-2 pt-2"
         style={{ borderColor: BRAND.copper }}

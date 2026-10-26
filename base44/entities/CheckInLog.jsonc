@@ -1,0 +1,84 @@
+{
+  "name": "CheckInLog",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the Fellow whose check-in this is. Stable key across User and Nominee records."
+    },
+    "fellow_name": {
+      "type": "string",
+      "description": "Display name, denormalized for history readability"
+    },
+    "task_key": {
+      "type": "string",
+      "description": "Stable key of the generated task that was handled (e.g. 'seat-eight', 'sync-record'). Tasks are generated from the state of the other Board columns, never typed by hand."
+    },
+    "column_key": {
+      "type": "string",
+      "description": "The Board column that generated the task: season, development, business, recruiting, or identity for the daily sync anchor."
+    },
+    "title": {
+      "type": "string",
+      "description": "Task title as it read at the moment of check-in, denormalized so history stays legible after the copy changes"
+    },
+    "day_key": {
+      "type": "string",
+      "description": "Local calendar day the check-in belongs to, as YYYY-MM-DD. The daily loop resets on this key; history accrues across days."
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Fellow marked the task handled"
+    },
+    "note": {
+      "type": "string",
+      "description": "Optional line the Fellow leaves with the check-in"
+    }
+  },
+  "required": [
+    "user_email",
+    "task_key"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

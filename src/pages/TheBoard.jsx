@@ -1,20 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
+import { resolveCommitteePhase } from '@/components/fellow-home/season/useCommitteePhase';
 import BoardColumn from '@/components/board/BoardColumn';
+import CheckInColumn from '@/components/board/CheckInColumn';
+import SeasonBand from '@/components/board/SeasonBand';
+import { useCheckIn } from '@/components/board/useCheckIn';
 import HomeDock from '@/components/home-v3/HomeDock';
 import { BOARD_COLUMNS, BRAND } from '@/components/board/boardConfig';
 import { Loader2, RotateCcw } from 'lucide-react';
-
-const PHASE_LABEL = {
-  planning: 'In planning',
-  rollover: 'Rolling over',
-  nominations_open: 'Nominations open',
-  voting_open: 'Voting open',
-  review: 'In review',
-  completed: 'Finalised',
-  archived: 'Archived',
-};
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 const CLOSED_PHASES = ['completed', 'archived'];
@@ -24,22 +18,20 @@ const countOf = (result) =>
 
 const statLine = (value, suffix) => (value === null ? null : `${value} ${suffix}`);
 
-// The Board — the member's map of the platform, laid out as the T: four
-// directions across for breadth, each column scrollable all the way down for
-// depth. The console's ring crosses the columns; rotation moves inside one.
+// The Board — the member's map of the platform, laid out as the T: a check-in
+// column for the Fellow's own loop, then four directions across for breadth,
+// each scrollable all the way down for depth. The console's ring crosses the
+// columns; rotation moves inside one.
 export default function TheBoard() {
-  const [user, setUser] = useState(null);
-  const [stats, setStats] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [failed, setFailed] = useState(false);
+  const [data, setData] = useState(null);
+  const [state, setState] = useState({ loading: true, failed: false });
   const [attempt, setAttempt] = useState(0);
 
-  const top100 = useMyTop100(user?.email);
+  const top100 = useMyTop100(data?.user?.email);
 
   useEffect(() => {
     let alive = true;
-    setLoading(true);
-    setFailed(false);
+    setState({ loading: true, failed: false });
 
     (async () => {
       const me = await base44.auth.me().catch(() => null);
@@ -53,32 +45,27 @@ export default function TheBoard() {
       ]);
       if (!alive) return;
 
-      if (results.every((r) => r.status === 'rejected')) {
-        setFailed(true);
-        setLoading(false);
+      if (results.every((result) => result.status === 'rejected')) {
+        setState({ loading: false, failed: true });
         return;
       }
 
-      const [seasonResult, career, networks, availability, roles, rooms] = results;
-      const seasons = seasonResult.status === 'fulfilled' ? seasonResult.value || [] : [];
-      const current =
-        seasons.find((s) => LIVE_PHASES.includes(s.status)) || seasons[0] || null;
-      const closed = seasons.filter((s) => CLOSED_PHASES.includes(s.status)).length;
+      const seasons = results[0].status === 'fulfilled' ? results[0].value || [] : [];
+      const current = seasons.find((season) => LIVE_PHASES.includes(season.status)) || seasons[0] || null;
 
-      setUser(me);
-      setStats({
-        phase: current ? PHASE_LABEL[current.status] || null : null,
-        seasonLine: current
-          ? `${current.name}${current.status ? ` · ${PHASE_LABEL[current.status] || ''}` : ''}`
-          : 'No season on the calendar yet. The next cycle opens here.',
-        seasonsPast: closed ? `${closed} finalised` : null,
-        careerResources: statLine(countOf(career), 'curated'),
-        networks: statLine(countOf(networks), 'standing'),
-        availability: statLine(countOf(availability), 'available'),
-        openRoles: statLine(countOf(roles), 'open'),
-        roomsOpen: statLine(countOf(rooms), 'open'),
+      setData({
+        user: me,
+        current,
+        closed: seasons.filter((season) => CLOSED_PHASES.includes(season.status)).length,
+        counts: {
+          career: countOf(results[1]),
+          networks: countOf(results[2]),
+          availability: countOf(results[3]),
+          roles: countOf(results[4]),
+          rooms: countOf(results[5]),
+        },
       });
-      setLoading(false);
+      setState({ loading: false, failed: false });
     })();
 
     return () => {
@@ -86,10 +73,37 @@ export default function TheBoard() {
     };
   }, [attempt]);
 
-  const placed = top100.rankings.length;
-  const columnStats = { ...stats, ballotSlots: placed ? `${placed} of 8 placed` : null };
+  // The committee's own resolver, so the board and the masthead never disagree
+  // about where the season stands.
+  const phase = useMemo(() => (data ? resolveCommitteePhase(data.current) : null), [data]);
 
-  if (loading) {
+  const placed = top100.rankings.length;
+
+  const checkIn = useCheckIn(data?.user, {
+    placed,
+    phase,
+    openRoles: data?.counts?.roles || 0,
+    roomsOpen: data?.counts?.rooms || 0,
+  });
+
+  const stats = useMemo(() => {
+    if (!data) return {};
+    const { counts, current, closed } = data;
+    return {
+      seasonsPast: closed ? `${closed} finalised` : null,
+      ballotSlots: placed ? `${placed} of 8 placed` : null,
+      careerResources: statLine(counts.career, 'curated'),
+      networks: statLine(counts.networks, 'standing'),
+      availability: statLine(counts.availability, 'available'),
+      openRoles: statLine(counts.roles, 'open'),
+      roomsOpen: statLine(counts.rooms, 'open'),
+      seasonLine: current
+        ? `${current.name}${current.status ? ` · ${phase?.label || ''}` : ''}`
+        : 'No season on the calendar yet. The next cycle opens here.',
+    };
+  }, [data, phase, placed]);
+
+  if (state.loading) {
     return (
       <div
         className="hh-slide-window flex flex-col items-center justify-center gap-3 md:h-auto md:min-h-screen"
@@ -106,7 +120,7 @@ export default function TheBoard() {
     );
   }
 
-  if (failed) {
+  if (state.failed) {
     return (
       <div
         className="hh-slide-window flex flex-col items-center justify-center gap-4 px-8 text-center md:h-auto md:min-h-screen"
@@ -146,7 +160,7 @@ export default function TheBoard() {
           The Board
         </p>
         <h1 className="mt-2 font-heading text-3xl" style={{ color: BRAND.navy }}>
-          Four directions across. Depth inside each one.
+          Check in, then four directions across.
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed" style={{ color: 'rgba(26,26,26,0.66)' }}>
           Sideways is the breadth of the platform. Down a column is a single topic in full.
@@ -174,16 +188,21 @@ export default function TheBoard() {
 
       <div
         data-hh-track
-        className="flex min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-3 pb-3 scrollbar-hide md:grid md:h-auto md:grid-cols-4 md:gap-5 md:overflow-visible md:px-6 md:pb-10 md:pt-6"
+        className="flex min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-3 pb-3 scrollbar-hide md:grid md:h-auto md:grid-cols-2 md:gap-5 md:overflow-visible md:px-6 md:pb-10 md:pt-6 lg:grid-cols-3 xl:grid-cols-5"
       >
-        {BOARD_COLUMNS.map((column) => (
-          <BoardColumn
-            key={column.key}
-            column={column}
-            stats={columnStats}
-            live={column.key === 'season' ? columnStats.seasonLine : null}
-          />
-        ))}
+        {BOARD_COLUMNS.map((column) =>
+          column.kind === 'check-in' ? (
+            <CheckInColumn key={column.key} column={column} checkIn={checkIn} user={data?.user} />
+          ) : (
+            <BoardColumn
+              key={column.key}
+              column={column}
+              stats={stats}
+              live={column.key === 'season' ? stats.seasonLine : null}
+              band={column.key === 'season' ? <SeasonBand phase={phase} loading={state.loading} /> : null}
+            />
+          ),
+        )}
       </div>
 
       {/* Desktop navigation and breathing room under the columns. */}

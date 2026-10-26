@@ -128,8 +128,8 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* Everything renders inside the device on phones; desktop is untouched. */}
       <Route element={<HandheldShell />}>
-      {/* Logged-in Fellows land on their own profile; visitors get the editorial home */}
-      <Route path="/" element={isAuthenticated ? <Profile /> : <HomeV3 />} />
+      {/* Logged-in Fellows land on the Board; visitors get the editorial home */}
+      <Route path="/" element={isAuthenticated ? <TheBoard /> : <HomeV3 />} />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />
       <Route path="/onboarding-admin" element={<OnboardingAdmin />} />
