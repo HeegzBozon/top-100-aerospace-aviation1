@@ -10,15 +10,14 @@ import { Bell, CircleUser, Volume2, VolumeX } from "lucide-react";
 export const HANDHELD_LOGO =
   "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png";
 
-// A key on the case: moulded like the ones on the wheel, glassed like them, and
-// pressing like them.
+// A key on the case: the same matte moulding as the wheel, and the same press.
 function BarKey({ label, onClick, children }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="hh-bar-key hh-glasscap flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[8px] transition-transform active:translate-y-[1px]"
+      className="hh-bar-key flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[7px] transition-transform active:translate-y-[1px]"
       style={{ color: "var(--hh-key-ink)" }}
     >
       {children}

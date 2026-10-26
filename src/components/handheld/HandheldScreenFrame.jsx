@@ -38,15 +38,15 @@ export default function HandheldScreenFrame() {
       <span className="hh-screw absolute h-[5px] w-[5px] rounded-full" style={{ bottom: 1, right: 1 }} />
 
       {/* The rim — a ring, so the picture shows straight through its middle */}
-      <div className="hh-rim absolute rounded-[20px]" style={{ inset: MOULDING }} />
+      <div className="hh-rim absolute rounded-[16px]" style={{ inset: MOULDING }} />
 
       {/* The step down to the pane */}
-      <div className="hh-well absolute rounded-[17px]" style={{ inset: MOULDING + RIM }} />
+      <div className="hh-well absolute rounded-[13px]" style={{ inset: MOULDING + RIM }} />
 
-      {/* The pane over the picture: the rim is 20, the recess 17 and the pane 14,
+      {/* The pane over the picture: the rim is 16, the recess 13 and the pane 11,
           so the three radii nest the way one moulding does */}
       <div
-        className="hh-glass absolute overflow-hidden rounded-[14px]"
+        className="hh-glass absolute overflow-hidden rounded-[11px]"
         style={{ inset: "var(--hh-bezel-w, 18px)" }}
       />
     </div>

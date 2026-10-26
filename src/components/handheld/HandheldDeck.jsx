@@ -717,15 +717,15 @@ export default function HandheldDeck() {
             type="button"
             onClick={openFinish}
             aria-label={`Hardware finish, ${finish.label}. Choose another finish`}
-            className="hh-glasscap flex min-w-0 shrink-0 items-center gap-1.5 rounded-full px-2 py-[2px] text-[6px] font-bold uppercase tracking-[0.18em] transition-transform active:scale-95"
+            className="flex min-w-0 shrink-0 items-center gap-1.5 rounded-[7px] px-2 py-[3px] text-[6px] font-bold uppercase tracking-[0.18em] transition-transform active:translate-y-[1px]"
             style={{
-              color: "var(--hh-metal)",
-              background: "rgb(var(--hh-metal-rgb) / 0.10)",
+              color: "var(--hh-pad-ink)",
+              background: "linear-gradient(180deg, var(--hh-pad-1) 0%, var(--hh-pad-2) 100%)",
               boxShadow:
-                "inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.38), 0 1px 3px rgba(7,17,31,0.18)",
+                "inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -1px 0 rgba(3,6,13,0.30), 0 1px 0 rgba(3,6,13,0.34)",
             }}
           >
-            <Palette className="h-[7px] w-[7px] shrink-0" style={{ color: "var(--hh-metal)" }} />
+            <Palette className="h-[7px] w-[7px] shrink-0" style={{ color: "var(--hh-pad-ink)" }} />
             <span className="flex shrink-0 items-center gap-[3px]">
               {(finish.swatch || []).map((tone) => (
                 <span

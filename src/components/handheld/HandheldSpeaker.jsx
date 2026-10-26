@@ -85,9 +85,9 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
           : "Speaker off. Play the console's music, three house loops and two lo-fi"
       }
       title="Tap to play or mute · hold for the next loop"
-      className="hh-speaker hh-wellcap relative flex h-[64px] w-[64px] shrink-0 flex-col justify-between overflow-hidden rounded-[12px] p-2 text-left transition-transform active:scale-[0.97]"
+      className="hh-speaker relative flex h-[64px] w-[64px] shrink-0 flex-col justify-between overflow-hidden rounded-[10px] p-2 text-left transition-transform active:scale-[0.97]"
       style={{
-        background: "radial-gradient(circle at 50% 8%, rgba(9,19,33,0.92), rgba(3,7,13,0.97))",
+        background: "linear-gradient(180deg, #0E141C 0%, #05080D 100%)",
         boxShadow: playing
           ? "inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.55), inset 0 2px 8px rgba(0,0,0,0.55), 0 0 12px rgb(var(--hh-metal-rgb) / 0.20)"
           : "inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.30), inset 0 2px 8px rgba(0,0,0,0.55)",
@@ -97,7 +97,7 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
           well so the speaker still reads as hardware rather than as a button. */}
       <span
         aria-hidden="true"
-        className="hh-grille pointer-events-none absolute inset-0 rounded-[12px] opacity-70"
+        className="hh-grille pointer-events-none absolute inset-0 rounded-[10px] opacity-70"
       />
 
       <span className="relative flex items-start justify-between">
