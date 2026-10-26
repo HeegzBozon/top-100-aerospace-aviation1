@@ -10,6 +10,7 @@ import HandheldBoot from "./HandheldBoot";
 import ModuleRail from "./ModuleRail";
 import useHandheldDestinations from "./useHandheldDestinations";
 import useModuleNavigation, { getStage } from "./useModuleNavigation";
+import { useHandheldDeck, getDeck } from "./handheldDeck";
 import { surfaceLabel } from "./handheldDestinations";
 import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
 
@@ -32,8 +33,9 @@ export default function HandheldDeck() {
   const { groups, isSignedIn } = useHandheldDestinations();
 
   const [soundOn, setSoundOn] = useState(() => isSoundOn());
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuMode, setMenuMode] = useState(null);
   const [cursor, setCursor] = useState(0);
+  const menuOpen = menuMode !== null;
   const [playing, setPlaying] = useState(false);
   const [flash, setFlash] = useState("");
   const [booting, setBooting] = useState(() => {
@@ -47,10 +49,21 @@ export default function HandheldDeck() {
   const flat = useMemo(() => groups.flatMap((group) => group.items), [groups]);
   const locationKey = `${location.pathname}${location.search}`;
   const surface = useMemo(() => surfaceLabel(location, groups), [location, groups]);
-  const railItems = useMemo(() => groups.find((group) => group.key === "rail")?.items || [], [groups]);
 
   const nav = useModuleNavigation(locationKey);
   const flashTimer = useRef(0);
+
+  // A surface that pages its sections (ModuleSlideDeck) hands the console a deck
+  // to turn; everything else falls back to stepping the page's module marks.
+  const deck = useHandheldDeck();
+  const deckLabels = deck ? deck.labels() : [];
+  const modules = deck ? deckLabels.map((label) => ({ label })) : nav.modules;
+  const moduleIndex = deck ? deck.index() : nav.index;
+  const sectionItems = modules.map((module, i) => ({
+    label: module.label,
+    sectionIndex: i,
+    to: i === moduleIndex ? locationKey : undefined,
+  }));
 
   // Reserve the hardware's space, and hand it back when the console is put away.
   useEffect(() => {
@@ -73,6 +86,20 @@ export default function HandheldDeck() {
     if (!playing) return undefined;
     let frame = 0;
     const advance = () => {
+      const deckApi = getDeck();
+      if (deckApi) {
+        if (deckApi.atEnd()) {
+          if (deckApi.index() >= deckApi.count() - 1) {
+            setPlaying(false);
+            return;
+          }
+          deckApi.next();
+        } else {
+          deckApi.scrollBy(1);
+        }
+        frame = requestAnimationFrame(advance);
+        return;
+      }
       const stage = getStage();
       if (!stage) {
         setPlaying(false);
@@ -110,7 +137,7 @@ export default function HandheldDeck() {
       if (!destination) return;
       blip(tone);
       buzz();
-      setMenuOpen(false);
+      setMenuMode(null);
       setPlaying(false);
 
       if (destination.action === "signin") return base44.auth.redirectToLogin(window.location.href);
@@ -127,15 +154,30 @@ export default function HandheldDeck() {
   const openMenu = useCallback(() => {
     const current = flat.findIndex((item) => item.to && item.to === locationKey);
     setCursor(current >= 0 ? current : 0);
-    setMenuOpen(true);
+    setMenuMode("cartridges");
     setPlaying(false);
     finishBoot();
     blip("open");
     buzz();
   }, [flat, locationKey, finishBoot]);
 
+  // X lists what is on this surface: every slide of the deck, or the page's own
+  // modules where the surface declares no deck.
+  const openSections = useCallback(() => {
+    if (!modules.length) {
+      blip("back");
+      return;
+    }
+    setCursor(Math.max(0, moduleIndex));
+    setMenuMode("sections");
+    setPlaying(false);
+    finishBoot();
+    blip("open");
+    buzz();
+  }, [modules.length, moduleIndex, finishBoot]);
+
   const closeMenu = useCallback(() => {
-    setMenuOpen(false);
+    setMenuMode(null);
     blip("back");
   }, []);
 
@@ -148,7 +190,7 @@ export default function HandheldDeck() {
   const goHome = useCallback(() => {
     blip("start");
     buzz();
-    setMenuOpen(false);
+    setMenuMode(null);
     setPlaying(false);
     navigate("/");
   }, [navigate]);
@@ -159,8 +201,13 @@ export default function HandheldDeck() {
       finishBoot();
       setPlaying(false);
       if (menuOpen) {
-        if (!flat.length) return;
-        setCursor((prev) => (prev + step + flat.length) % flat.length);
+        const list = menuMode === "sections" ? sectionItems : flat;
+        if (!list.length) return;
+        setCursor((prev) => (prev + step + list.length) % list.length);
+        return;
+      }
+      if (deck) {
+        deck.scrollBy(step * 54);
         return;
       }
       const stage = getStage();
@@ -168,7 +215,7 @@ export default function HandheldDeck() {
       if (stage && stage.scrollHeight > stage.clientHeight + 4) stage.scrollTop += delta;
       else window.scrollBy(0, delta);
     },
-    [menuOpen, flat.length, finishBoot],
+    [menuOpen, menuMode, sectionItems, flat, deck, finishBoot],
   );
 
   const jumpGroup = useCallback(
@@ -188,28 +235,31 @@ export default function HandheldDeck() {
     [groups, cursor],
   );
 
-  const cycleRail = useCallback(
-    (step) => {
-      if (!railItems.length) return;
-      const current = railItems.findIndex((item) => item.to && item.to.split("?")[0] === location.pathname);
-      const next =
-        current === -1
-          ? step > 0
-            ? 0
-            : railItems.length - 1
-          : (current + step + railItems.length) % railItems.length;
-      go(railItems[next], "move");
-    },
-    [railItems, location.pathname, go],
-  );
-
   // Back and forward on the ring: step a module where the surface declares any,
   // otherwise move a screenful. In the menu they hop whole groups.
   const stepSection = useCallback(
     (direction) => {
       finishBoot();
       setPlaying(false);
-      if (menuOpen) return jumpGroup(direction);
+      if (menuOpen) {
+        if (menuMode === "sections") {
+          setCursor((prev) => Math.max(0, Math.min(sectionItems.length - 1, prev + direction)));
+          return;
+        }
+        return jumpGroup(direction);
+      }
+      if (deck) {
+        const next = deck.index() + direction;
+        if (next < 0 || next >= deck.count()) {
+          blip("back");
+          return;
+        }
+        if (direction > 0) deck.next();
+        else deck.prev();
+        blip("move");
+        announce(deck.labels()[next]);
+        return;
+      }
       const target = nav.step(direction);
       if (target !== null) {
         blip("move");
@@ -223,16 +273,21 @@ export default function HandheldDeck() {
       }
       blip("back");
     },
-    [menuOpen, jumpGroup, nav, finishBoot, announce],
+    [menuOpen, menuMode, sectionItems.length, jumpGroup, deck, nav, finishBoot, announce],
   );
 
   const jumpToModule = useCallback(
     (i) => {
       blip("move");
       setPlaying(false);
+      if (deck) {
+        deck.goTo(i);
+        announce(deck.labels()[i]);
+        return;
+      }
       if (nav.goTo(i) !== null) announce(nav.modules[i]?.label);
     },
-    [nav, announce],
+    [deck, nav, announce],
   );
 
   const togglePlay = useCallback(() => {
@@ -245,19 +300,25 @@ export default function HandheldDeck() {
 
   const select = useCallback(() => {
     finishBoot();
+    if (menuMode === "sections") {
+      const item = sectionItems[cursor];
+      setMenuMode(null);
+      if (item) jumpToModule(item.sectionIndex);
+      return;
+    }
     if (!menuOpen) return openMenu();
     const item = flat[cursor];
     if (item) go(item);
     else closeMenu();
-  }, [finishBoot, menuOpen, openMenu, flat, cursor, go, closeMenu]);
+  }, [finishBoot, menuMode, sectionItems, cursor, jumpToModule, menuOpen, openMenu, flat, go, closeMenu]);
 
   const back = useCallback(() => {
     blip("back");
     buzz();
     if (booting) return finishBoot();
-    if (menuOpen) return closeMenu();
+    if (menuOpen) return setMenuMode(null);
     navigate(-1);
-  }, [booting, finishBoot, menuOpen, closeMenu, navigate]);
+  }, [booting, finishBoot, menuOpen, navigate]);
 
   const toggleSound = useCallback(() => {
     setSoundOn((prev) => {
@@ -272,9 +333,9 @@ export default function HandheldDeck() {
     <>
       <HandheldMasthead surface={surface} soundOn={soundOn} onToggleSound={toggleSound} />
 
-      <HandheldScreenFrame surface={surface} module={nav.modules[nav.index]?.label} />
+      <HandheldScreenFrame surface={surface} module={modules[moduleIndex]?.label} />
 
-      <ModuleRail modules={nav.modules} index={nav.index} onJump={jumpToModule} />
+      <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
 
       {/* Section announcement — the page reports where the wheel just landed */}
       {flash && (
@@ -296,10 +357,20 @@ export default function HandheldDeck() {
 
       {menuOpen && !booting && (
         <HandheldMenu
-          groups={groups}
+          groups={
+            menuMode === "sections"
+              ? [{ key: "sections", label: "On this surface", items: sectionItems }]
+              : groups
+          }
           cursor={cursor}
           locationKey={locationKey}
-          onActivate={(item) => go(item)}
+          unit={menuMode === "sections" ? "sections" : "cartridges"}
+          hint={menuMode === "sections" ? "◀▶ Move · ● Go · B Back" : undefined}
+          onActivate={(item) => {
+            if (menuMode !== "sections") return go(item);
+            setMenuMode(null);
+            jumpToModule(item.sectionIndex);
+          }}
           onJump={() => jumpGroup(1)}
           onClose={closeMenu}
         />
@@ -345,8 +416,8 @@ export default function HandheldDeck() {
           <FaceButtons
             onConfirm={select}
             onBack={back}
-            onPrev={menuOpen ? () => jumpGroup(-1) : () => cycleRail(-1)}
-            onNext={menuOpen ? () => jumpGroup(1) : () => cycleRail(1)}
+            onPrev={openSections}
+            onNext={openMenu}
           />
         </div>
 

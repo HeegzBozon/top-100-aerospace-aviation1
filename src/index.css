@@ -316,6 +316,17 @@ button:focus-visible {
   -webkit-overflow-scrolling: touch;
 }
 
+/* A deck fills the glass exactly: one slide per screen, each scrolling inside
+   itself, the strip between them moving sideways. */
+.hh-slide-window {
+  height: calc(
+    100dvh - var(--hh-top) - var(--hh-bottom) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+  );
+}
+.hh-slide {
+  scroll-snap-align: start;
+}
+
 /* LCD glass over the content: scanlines and a soft vignette, then a slow sheen. */
 .hh-glass {
   background: repeating-linear-gradient(

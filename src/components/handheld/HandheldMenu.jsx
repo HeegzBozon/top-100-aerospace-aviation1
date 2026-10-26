@@ -2,7 +2,16 @@ import { useEffect, useRef } from "react";
 
 // The cartridge menu, rendered inside the viewer rather than over the app. The
 // wheel moves the cursor, the centre button loads the cartridge, B backs out.
-export default function HandheldMenu({ groups, cursor, locationKey, onActivate, onJump, onClose }) {
+export default function HandheldMenu({
+  groups,
+  cursor,
+  locationKey,
+  unit = "cartridges",
+  hint = "◀▶ Group · ● Load · B Back",
+  onActivate,
+  onJump,
+  onClose,
+}) {
   const cursorRef = useRef(null);
 
   useEffect(() => {
@@ -36,7 +45,7 @@ export default function HandheldMenu({ groups, cursor, locationKey, onActivate, 
           <span className="hh-blink">▶</span> TOP 100 OS
         </span>
         <span className="text-[8px] font-bold uppercase tracking-[0.28em] text-[#6E8B4A]">
-          {groups.reduce((total, group) => total + group.items.length, 0)} cartridges
+          {groups.reduce((total, group) => total + group.items.length, 0)} {unit}
         </span>
       </div>
 
@@ -103,7 +112,7 @@ export default function HandheldMenu({ groups, cursor, locationKey, onActivate, 
         style={{ borderTop: "1px solid rgba(169,196,108,0.24)", background: "rgba(7,16,9,0.75)" }}
       >
         <span className="text-[7px] font-bold uppercase tracking-[0.22em] text-[#6E8B4A]">
-          ◀▶ Group · ● Load · B Back
+          {hint}
         </span>
 
         <button
