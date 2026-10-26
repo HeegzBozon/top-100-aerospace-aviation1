@@ -67,8 +67,13 @@ export default function StartScreen() {
       />
 
       <div className="relative flex min-h-0 flex-1 flex-col md:mx-auto md:w-full md:max-w-2xl">
-        {/* The mark lives on the hardware; this sheet carries only the date */}
-        <div className="flex justify-end">
+        {/* The hour and the date share the top line, so the kicker reads level
+            with the stamp instead of sitting in the air below it. */}
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-[8.5px] font-bold uppercase tracking-[0.3em] text-editorial-copper md:text-[9.5px]">
+            {phase.kicker}
+          </p>
+
           <span className="flex flex-col items-end gap-0.5 text-right">
             <span className="text-[8px] font-bold uppercase tracking-[0.28em] text-editorial-cream/45 md:text-[9.5px]">
               MMXXVI
@@ -79,10 +84,7 @@ export default function StartScreen() {
           </span>
         </div>
 
-        <div className="mt-4 md:mt-10">
-          <p className="text-[8.5px] font-bold uppercase tracking-[0.3em] text-editorial-copper md:text-[9.5px]">
-            {phase.kicker}
-          </p>
+        <div className="mt-2.5 md:mt-10">
           <div
             className="mt-3 h-px w-32 md:w-56"
             style={{ background: 'linear-gradient(90deg, #B87333, #C9A87C 58%, transparent)' }}

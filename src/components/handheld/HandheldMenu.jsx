@@ -25,7 +25,7 @@ export default function HandheldMenu({
     <div
       className="fixed z-[45] flex flex-col md:hidden"
       style={{
-        top: "calc(var(--hh-top, 12px) + var(--hh-bar, 52px) + env(safe-area-inset-top) + 5px)",
+        top: "calc(var(--hh-top, 96px) + env(safe-area-inset-top) + 5px)",
         bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 5px)",
         left: "var(--hh-glass-inset, 7px)",
         right: "var(--hh-glass-inset, 7px)",

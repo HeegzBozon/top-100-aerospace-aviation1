@@ -11,7 +11,7 @@ export default function HandheldBody() {
         zIndex: -1,
         left: "var(--hh-frame, 0px)",
         right: "var(--hh-frame, 0px)",
-        top: "calc(var(--hh-top, 44px) - var(--hh-bezel-w, 18px) + env(safe-area-inset-top))",
+        top: "calc(var(--hh-shell-top, 26px) + env(safe-area-inset-top))",
         bottom: "var(--hh-frame, 0px)",
         borderRadius: "26px",
       }}

@@ -17,7 +17,7 @@ export default function HandheldBoot({ onDone }) {
       style={{
         left: "var(--hh-glass-inset, 7px)",
         right: "var(--hh-glass-inset, 7px)",
-        top: "calc(var(--hh-top, 12px) + var(--hh-bar, 52px) + env(safe-area-inset-top))",
+        top: "calc(var(--hh-top, 96px) + env(safe-area-inset-top))",
         bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom))",
         background: "radial-gradient(120% 100% at 50% 0%, var(--hh-well-1) 0%, var(--hh-well-2) 60%, var(--hh-well-3) 100%)",
       }}

@@ -9,7 +9,7 @@ export default function ModuleRail({ modules, index, onJump }) {
       className="pointer-events-none fixed z-30 flex w-[16px] flex-col items-center justify-center gap-[3px] md:hidden"
       style={{
         right: "calc(var(--hh-glass-inset, 7px) + 2px)",
-        top: "calc(var(--hh-top, 12px) + var(--hh-bar, 52px) + env(safe-area-inset-top) + 10px)",
+        top: "calc(var(--hh-top, 96px) + env(safe-area-inset-top) + 10px)",
         bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 10px)",
       }}
       aria-hidden="false"

@@ -263,16 +263,19 @@ button:focus-visible {
 }
 
 /* ===== HANDHELD SHELL — THE DEVICE BODY =====
-   --hh-top and --hh-bottom mark the GLASS opening, not the shell: the moulding is
-   drawn back out around them by --hh-bezel-w, so a deeper bezel thickens the
-   hardware without moving anything that lives on the picture. --hh-bar is the
-   brand bar that sits inside the glass, at the top of the picture. HandheldDeck
-   sets these on mount and resets them to 0 when it unmounts, so surfaces inset
-   themselves around the device, and reclaim the whole viewport when the console
-   is put away (the message composer, for one). */
+   --hh-top and --hh-bottom mark the GLASS opening: the moulding is drawn back out
+   around them by --hh-bezel-w, so a deeper bezel thickens the hardware without
+   moving anything that lives on the picture. --hh-bar is the legend band — the
+   lockup, the surface you are holding, and the icon keys — and it is printed on
+   the CASE, so the glass opens below it: --hh-shell-top is the device's own top
+   edge, where that band begins. HandheldDeck sets these on mount and resets them
+   to 0 when it unmounts, so surfaces inset themselves around the device, and
+   reclaim the whole viewport when the console is put away (the message composer,
+   for one). */
 :root {
-  --hh-top: 44px;
+  --hh-top: 96px;
   --hh-bar: 52px;
+  --hh-shell-top: 26px;
   --hh-bottom: 208px;
 
   /* The desk margin, the moulding around the glass, and the inset every surface
@@ -318,7 +321,7 @@ button:focus-visible {
    window the layout shell renders inside. */
 @media (max-width: 767px) {
   body.hh-shell #root {
-    padding-top: calc(var(--hh-top) + var(--hh-bar) + env(safe-area-inset-top));
+    padding-top: calc(var(--hh-top) + env(safe-area-inset-top));
     padding-bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
     padding-left: var(--hh-glass-inset);
     padding-right: var(--hh-glass-inset);
@@ -347,7 +350,7 @@ button:focus-visible {
   body.hh-shell .min-h-screen,
   body.hh-shell .h-screen {
     min-height: calc(
-      100dvh - var(--hh-top) - var(--hh-bar) - var(--hh-bottom) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+      100dvh - var(--hh-top) - var(--hh-bottom) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
     );
     height: auto;
   }
@@ -376,7 +379,7 @@ button:focus-visible {
   position: fixed;
   left: var(--hh-glass-inset);
   right: var(--hh-glass-inset);
-  top: calc(var(--hh-top) + var(--hh-bar) + env(safe-area-inset-top));
+  top: calc(var(--hh-top) + env(safe-area-inset-top));
   bottom: calc(var(--hh-bottom) + env(safe-area-inset-bottom));
   overflow-y: auto;
   overflow-x: hidden;
@@ -387,7 +390,7 @@ button:focus-visible {
    itself, the strip between them moving sideways. */
 .hh-slide-window {
   height: calc(
-    100dvh - var(--hh-top) - var(--hh-bar) - var(--hh-bottom) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    100dvh - var(--hh-top) - var(--hh-bottom) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
   );
 }
 .hh-slide {
@@ -575,13 +578,13 @@ button:focus-visible {
     inset 0 1px 0 var(--hh-key-spec);
 }
 
-/* The brand bar: the top strip of the glass, sitting behind the same pane as
-   the picture, under its own rail of light. */
+/* The legend band: printed on the case above the glass, not a panel behind it. A
+   soft lift at the top of the shell and a milled seam where the band meets the
+   bezel — the same trick the moulding uses everywhere else. */
 .hh-bar {
-  background: linear-gradient(180deg, var(--hh-shell-1) 0%, var(--hh-shell-2) 100%);
-  border-bottom: 1px solid var(--hh-shell-edge);
-  border-radius: 12px 12px 0 0;
-  box-shadow: inset 0 1px 0 var(--hh-shell-spec), 0 2px 8px rgba(7, 17, 31, 0.16);
+  background: linear-gradient(180deg, var(--hh-shell-spec) 0%, rgba(255, 255, 255, 0) 62%);
+  border-bottom: 1px solid rgb(var(--hh-metal-rgb) / 0.26);
+  box-shadow: inset 0 -1px 0 var(--hh-shell-edge);
 }
 
 /* ===== APP OPENING — THE TITLE CARD =====
@@ -592,7 +595,7 @@ button:focus-visible {
   z-index: 46;
   left: var(--hh-glass-inset, 7px);
   right: var(--hh-glass-inset, 7px);
-  top: calc(var(--hh-top, 12px) + var(--hh-bar, 52px) + env(safe-area-inset-top) + 5px);
+  top: calc(var(--hh-top, 96px) + env(safe-area-inset-top) + 5px);
   bottom: calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 5px);
   border-radius: 15px;
   overflow: hidden;
@@ -759,7 +762,7 @@ button:focus-visible {
   .page-turn-clip {
     left: var(--hh-glass-inset, 7px);
     right: var(--hh-glass-inset, 7px);
-    top: calc(var(--hh-top, 12px) + var(--hh-bar, 52px) + env(safe-area-inset-top) + 5px);
+    top: calc(var(--hh-top, 96px) + env(safe-area-inset-top) + 5px);
     bottom: calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 5px);
     border-radius: 12px;
   }

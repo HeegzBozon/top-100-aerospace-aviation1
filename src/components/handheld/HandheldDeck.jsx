@@ -39,8 +39,9 @@ export const HANDHELD_BEZEL_WIDTH = 18;
 
 const BOOT_KEY = "top100-handheld-booted";
 
-// The handheld. One body: a masthead bezel, a viewer the content renders in,
-// and a chin carrying the click wheel, the face-button diamond and the grille.
+// The handheld. One body: a legend band printed on the case, a viewer the content
+// renders in below it, and a chin carrying the click wheel, the face-button
+// diamond and the grille.
 // The wheel does it all — rotation scrolls the picture or walks the cartridge
 // menu, MENU opens it, back and forward step the page's modules, the bottom key
 // plays the page down the glass, and the centre goes home. Sharing sits on Y.
@@ -125,9 +126,15 @@ export default function HandheldDeck() {
   useEffect(() => {
     document.body.classList.add("hh-shell");
     const root = document.documentElement.style;
+    // Above the glass, on the case itself: the shell's top edge, the legend band,
+    // then the bezel — and the picture opens below all three.
+    root.setProperty("--hh-shell-top", `${HANDHELD_TOP_CLEARANCE + HANDHELD_FRAME_GUTTER}px`);
     root.setProperty(
       "--hh-top",
-      `${HANDHELD_TOP_CLEARANCE + HANDHELD_FRAME_GUTTER + HANDHELD_BEZEL_WIDTH}px`,
+      `${HANDHELD_TOP_CLEARANCE +
+        HANDHELD_BAR_CLEARANCE +
+        HANDHELD_FRAME_GUTTER +
+        HANDHELD_BEZEL_WIDTH}px`,
     );
     root.setProperty("--hh-bar", `${HANDHELD_BAR_CLEARANCE}px`);
     root.setProperty(
@@ -140,6 +147,7 @@ export default function HandheldDeck() {
       document.body.classList.remove("hh-shell");
       root.setProperty("--hh-top", "0px");
       root.setProperty("--hh-bar", "0px");
+      root.setProperty("--hh-shell-top", "0px");
       root.setProperty("--hh-bottom", "0px");
       root.setProperty("--hh-frame", "0px");
       root.setProperty("--hh-bezel-w", "0px");

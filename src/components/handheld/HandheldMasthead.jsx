@@ -1,10 +1,10 @@
 import { Bell, CircleUser, Volume2, VolumeX } from "lucide-react";
 
-// The brand bar. It is not a website header — it is the top strip of the glass:
-// the lockup, the surface you are holding (and the module inside it), and the
-// strip of icon keys — you, your transmissions, and the sound latch — all drawn
-// behind the same pane as the picture. Every tone comes from the active finish,
-// so it changes with the hardware.
+// The legend band. It is not a website header, and it is not inside the glass: it
+// is printed on the case, on the shell above the screen — the lockup, the surface
+// you are holding (and the module inside it), and the strip of icon keys: you,
+// your transmissions, and the sound latch. Every tone comes from the active
+// finish, so it changes with the hardware.
 export const HANDHELD_LOGO =
   "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png";
 
@@ -37,11 +37,11 @@ export default function HandheldMasthead({
       style={{
         left: "var(--hh-glass-inset, 7px)",
         right: "var(--hh-glass-inset, 7px)",
-        top: "calc(var(--hh-top, 12px) + env(safe-area-inset-top))",
+        top: "calc(var(--hh-shell-top, 26px) + env(safe-area-inset-top))",
         height: "var(--hh-bar, 52px)",
       }}
     >
-      <div className="flex h-full items-center gap-2 px-3">
+      <div className="flex h-full items-center gap-2 px-2.5">
         <img
           src={HANDHELD_LOGO}
           alt=""

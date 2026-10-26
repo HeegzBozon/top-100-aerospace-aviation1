@@ -5,7 +5,8 @@
 // carries the controls, which is what keeps the hardware reading as one object.
 //
 // --hh-top and --hh-bottom mark the glass opening, so the moulding is drawn back
-// out to the device bounds here, and only here.
+// out to the device bounds here, and only here. --hh-top sits below the legend
+// band, which belongs to the case and is drawn by HandheldMasthead.
 const SCREW = { position: "absolute", width: 6, height: 6 };
 
 export default function HandheldScreenFrame() {
@@ -15,7 +16,7 @@ export default function HandheldScreenFrame() {
       style={{
         left: "var(--hh-frame, 0px)",
         right: "var(--hh-frame, 0px)",
-        top: "calc(var(--hh-top, 44px) - var(--hh-bezel-w, 18px) + env(safe-area-inset-top))",
+        top: "calc(var(--hh-top, 96px) - var(--hh-bezel-w, 18px) + env(safe-area-inset-top))",
         bottom: "calc(var(--hh-bottom, 208px) - var(--hh-bezel-w, 18px) + env(safe-area-inset-bottom))",
       }}
       aria-hidden="true"
