@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { asRegex } from './crmConfig';
+import { asRegex, sortFor } from './crmConfig';
 
 // One member's rolodex, read and written through one hook. The search is a filter on the
 // server — never a walk through everything on screen — so the list stays one page, and
@@ -12,6 +12,8 @@ export default function useConferenceContacts() {
   const [contacts, setContacts] = useState([]);
   const [state, setState] = useState({ loading: true, failed: false });
   const [term, setTerm] = useState('');
+  const [sortKey, setSortKey] = useState('recent');
+  const [total, setTotal] = useState(0);
   const [attempt, setAttempt] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -51,12 +53,17 @@ export default function useConferenceContacts() {
             { conference_name: match },
           ];
         }
-        const page = await base44.entities.ConferenceContact.filter(query, {
-          sort: '-updated_date',
-          limit: 60,
-        });
+        const [page, counted] = await Promise.all([
+          base44.entities.ConferenceContact.filter(query, {
+            sort: sortFor(sortKey),
+            limit: 60,
+          }),
+          base44.entities.ConferenceContact.count({ created_by_id: me.id }).catch(() => null),
+        ]);
         if (!alive) return;
-        setContacts(page?.items || []);
+        const items = page?.items || [];
+        setContacts(items);
+        setTotal(typeof counted === 'number' ? counted : items.length);
         setState({ loading: false, failed: false });
       } catch {
         if (alive) setState({ loading: false, failed: true });
@@ -67,7 +74,7 @@ export default function useConferenceContacts() {
       alive = false;
       clearTimeout(timer);
     };
-  }, [me, term, attempt, refreshKey]);
+  }, [me, term, sortKey, attempt, refreshKey]);
 
   const save = useCallback(
     async (payload, id) => {
@@ -94,7 +101,7 @@ export default function useConferenceContacts() {
   const searching = term.trim().length > 0;
 
   return useMemo(
-    () => ({ me, contacts, state, term, setTerm, searching, reload, save, remove, touch }),
-    [me, contacts, state, term, searching, reload, save, remove, touch],
+    () => ({ me, contacts, state, term, setTerm, searching, sortKey, setSortKey, total, reload, save, remove, touch }),
+    [me, contacts, state, term, searching, sortKey, total, reload, save, remove, touch],
   );
 }

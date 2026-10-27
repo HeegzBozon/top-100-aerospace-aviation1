@@ -1,20 +1,19 @@
 import { useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
 import BusinessCardCapture from './BusinessCardCapture';
 import ContactDraftForm from './ContactDraftForm';
 import { C } from './crmConfig';
 
-// The capture, from a hand to the rolodex: a card photographed, a draft read from it, the
-// draft corrected by the person who was there, and only then a record. Nothing is written
-// until the member presses save, and a failure at any point leaves the way to type it in.
-export default function ContactCapture({ crm, innerRef }) {
+// The add-a-card feature: a card photographed or typed, read into a draft, corrected by the
+// person who was there, and only then written. Nothing is saved until it is confirmed here,
+// and a failure leaves the way to type it in.
+export default function ContactCapture({ crm, onSaved }) {
   const [draft, setDraft] = useState(null);
   const [cardUri, setCardUri] = useState('');
   const [saving, setSaving] = useState(false);
-  const [notice, setNotice] = useState('');
+  const [error, setError] = useState('');
 
   const open = (fields, uri) => {
-    setNotice('');
+    setError('');
     setCardUri(uri || '');
     setDraft(fields || {});
   };
@@ -25,23 +24,19 @@ export default function ContactCapture({ crm, innerRef }) {
       await crm.save(payload);
       setDraft(null);
       setCardUri('');
-      setNotice(`${payload.full_name} is in the rolodex.`);
+      onSaved?.(payload.full_name);
     } catch {
-      setNotice('That contact could not be saved. Try it once more.');
+      setError('That contact could not be saved. Try it once more.');
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div ref={innerRef}>
-      {notice ? (
-        <p
-          role="status"
-          className="mt-6 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em]"
-          style={{ color: C.copper }}
-        >
-          <CheckCircle2 className="h-3.5 w-3.5" /> {notice}
+    <div>
+      {error ? (
+        <p role="alert" className="mb-3 text-[11.5px]" style={{ color: C.copper }}>
+          {error}
         </p>
       ) : null}
 

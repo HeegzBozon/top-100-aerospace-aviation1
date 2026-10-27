@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Pencil, Trash2, X } from 'lucide-react';
+import { Pencil, Stamp, Trash2, X } from 'lucide-react';
 import ContactDraftForm from './ContactDraftForm';
 import ContactReadout from './ContactReadout';
-import { C, initialsFor } from './crmConfig';
+import { BTN, BTN_BASE, C, initialsFor } from './crmConfig';
 
-// One contact, opened over the page rather than taken away from it: the record read back,
-// the record corrected, and the record let go of. Deleting is a two-step press, because a
-// card you were handed is not a thing to lose by mis-tap.
+// One contact, opened over the list rather than taken away from it. The actions sit in a bar
+// under the name — log a touch, edit, remove — so the record is worked from one place, and
+// removing is still a two-step press: a card you were handed is not a thing to lose by mis-tap.
 export default function ContactDetailPanel({ contact, saving, touching, onClose, onSave, onRemove, onTouch }) {
   const [editing, setEditing] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -27,36 +27,73 @@ export default function ContactDetailPanel({ contact, saving, touching, onClose,
       />
 
       <div
-        className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-y-auto rounded-t-3xl md:inset-x-auto md:left-1/2 md:w-[620px] md:-translate-x-1/2 md:rounded-t-3xl"
-        style={{ background: C.paper, border: `1px solid ${C.border}` }}
+        className="absolute inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-2xl md:inset-x-auto md:left-1/2 md:w-[620px] md:-translate-x-1/2"
+        style={{ background: C.surface, border: `1px solid ${C.border}` }}
         role="dialog"
         aria-label={`${contact.full_name} — the record`}
       >
-        <div
-          className="sticky top-0 flex items-start gap-3 px-5 py-4"
-          style={{ background: C.paper, borderBottom: `1px solid ${C.border}` }}
-        >
+        <div className="sticky top-0 z-10 flex items-center gap-2.5 px-4 py-3" style={{ background: C.navy }}>
           <span
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-heading text-[15px]"
-            style={{ background: C.sand, color: C.navy }}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[12px] font-bold uppercase"
+            style={{ background: 'rgba(201,168,124,0.22)', color: C.gold }}
             aria-hidden="true"
           >
             {initialsFor(contact.full_name)}
           </span>
           <div className="min-w-0 flex-1">
-            <h2 className="truncate font-heading text-xl leading-tight" style={{ color: C.navy }}>
+            <p className="truncate text-[13.5px] font-semibold" style={{ color: C.cream }}>
               {contact.full_name}
-            </h2>
-            <p className="truncate text-[11.5px]" style={{ color: C.muted }}>
+            </p>
+            <p className="truncate text-[10px] uppercase tracking-[0.12em]" style={{ color: C.gold }}>
               {[contact.role_title, contact.company].filter(Boolean).join(' · ') || 'No role recorded'}
             </p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close" className="mt-0.5 shrink-0">
-            <X className="h-4 w-4" style={{ color: C.muted }} />
+          <button type="button" onClick={onClose} aria-label="Close" className="shrink-0 p-1">
+            <X className="h-4 w-4" style={{ color: C.cream }} />
           </button>
         </div>
 
-        <div className="px-5 py-5">
+        {!editing ? (
+          <div
+            className="flex flex-wrap items-center gap-2 px-4 py-2.5"
+            style={{ background: C.cream, borderBottom: `1px solid ${C.border}` }}
+          >
+            <button
+              type="button"
+              onClick={() => onTouch(contact)}
+              disabled={touching}
+              className={BTN_BASE}
+              style={BTN.navy}
+            >
+              <Stamp className="h-3.5 w-3.5" /> Log a touch
+            </button>
+            <button type="button" onClick={() => setEditing(true)} className={BTN_BASE} style={BTN.outline}>
+              <Pencil className="h-3.5 w-3.5" /> Edit
+            </button>
+            <span className="flex-1" />
+            {confirming ? (
+              <>
+                <button type="button" onClick={() => onRemove(contact)} className={BTN_BASE} style={BTN.primary}>
+                  <Trash2 className="h-3.5 w-3.5" /> Remove it
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirming(false)}
+                  className="px-2 py-2 text-[9px] font-bold uppercase tracking-[0.16em]"
+                  style={{ color: C.muted }}
+                >
+                  Keep it
+                </button>
+              </>
+            ) : (
+              <button type="button" onClick={() => setConfirming(true)} className={BTN_BASE} style={BTN.outline}>
+                <Trash2 className="h-3.5 w-3.5" /> Remove
+              </button>
+            )}
+          </div>
+        ) : null}
+
+        <div className="px-4 py-4">
           {editing ? (
             <ContactDraftForm
               initial={contact}
@@ -67,50 +104,8 @@ export default function ContactDetailPanel({ contact, saving, touching, onClose,
               onCancel={() => setEditing(false)}
             />
           ) : (
-            <ContactReadout contact={contact} onTouch={onTouch} touching={touching} />
+            <ContactReadout contact={contact} />
           )}
-
-          {!editing ? (
-            <div className="mt-6 flex flex-wrap items-center gap-2" style={{ borderTop: `1px solid ${C.border}`, paddingTop: 16 }}>
-              <button
-                type="button"
-                onClick={() => setEditing(true)}
-                className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em]"
-                style={{ background: C.navy, color: C.cream }}
-              >
-                <Pencil className="h-3.5 w-3.5" /> Edit the record
-              </button>
-              {confirming ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => onRemove(contact)}
-                    className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em]"
-                    style={{ background: C.copper, color: C.cream }}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" /> Let it go
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConfirming(false)}
-                    className="text-[9px] font-bold uppercase tracking-[0.2em]"
-                    style={{ color: C.muted }}
-                  >
-                    Keep it
-                  </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setConfirming(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em]"
-                  style={{ border: `1px solid ${C.border}`, color: C.muted, background: C.surface }}
-                >
-                  <Trash2 className="h-3.5 w-3.5" /> Remove from the rolodex
-                </button>
-              )}
-            </div>
-          ) : null}
         </div>
       </div>
     </div>

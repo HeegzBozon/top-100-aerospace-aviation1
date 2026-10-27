@@ -15,7 +15,7 @@ export default function ContactTagPicker({ tags = [], suggestions = [], onChange
             type="button"
             onClick={() => toggle(tag)}
             aria-pressed={on}
-            className="rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em]"
+            className="rounded-md px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em]"
             style={{
               background: on ? C.navy : C.surface,
               color: on ? C.cream : C.muted,

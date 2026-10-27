@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
 import { Camera, Loader2, PenLine, RotateCcw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { C } from './crmConfig';
+import { BTN_BASE, C } from './crmConfig';
 
-// The card in a hand, read into a draft. The photograph is uploaded privately — the
-// card never sits behind a public URL — and the reading is done from a short-lived
-// signed link, so the machine can see it without the card being loose on the web.
+// The card in a hand, read into a draft. The photograph is uploaded privately — the card
+// never sits behind a public URL — and the reading is done from a short-lived signed link,
+// so the machine can see it without the card being loose on the web.
 const CARD_SCHEMA = {
   type: 'object',
   properties: {
@@ -33,6 +33,9 @@ Rules:
 - website: the organization's or the person's web address, as printed.
 - phone: the telephone number as printed, keeping its spacing.
 - city and country: fill them only when they appear on the card.`;
+
+const TILE_BASE =
+  'flex items-start gap-3 rounded-lg px-3.5 py-3.5 text-left transition-colors disabled:opacity-60';
 
 export default function BusinessCardCapture({ onDraft, onManual }) {
   const inputRef = useRef(null);
@@ -64,69 +67,71 @@ export default function BusinessCardCapture({ onDraft, onManual }) {
   };
 
   return (
-    <section
-      className="mt-6 rounded-2xl p-5"
-      style={{ background: C.paper, border: `1px dashed ${C.copper}66` }}
-    >
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: C.copper }}>
-            Capture a card
-          </p>
-          <h2 className="mt-1.5 font-heading text-xl md:text-2xl" style={{ color: C.navy }}>
-            Handed a card at the show?
-          </h2>
-          <p className="mt-2 max-w-lg text-[12.5px] leading-relaxed" style={{ color: C.muted }}>
-            Photograph it. The card is read into a draft you check and correct before it is saved —
-            stored privately, in your rolodex alone.
-          </p>
-        </div>
+    <section className="rounded-lg p-4" style={{ background: C.paper, border: `1px dashed ${C.copper}66` }}>
+      <p className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: C.copper }}>
+        Add a card
+      </p>
+      <p className="mt-1.5 text-[13px] font-semibold" style={{ color: C.navy }}>
+        Photograph the card, or type it in.
+      </p>
+      <p className="mt-1 max-w-lg text-[11.5px] leading-relaxed" style={{ color: C.muted }}>
+        A photographed card is read into a draft you check and correct before anything is written.
+        The card is stored privately, in your rolodex alone.
+      </p>
 
-        <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={(event) => readCard(event.target.files?.[0])}
-          />
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => inputRef.current?.click()}
-            className="inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[9px] font-bold uppercase tracking-[0.2em] disabled:opacity-60"
-            style={{ background: C.navy, color: C.cream }}
-          >
-            {busy ? (
-              <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" /> Reading the card
-              </>
-            ) : (
-              <>
-                <Camera className="h-3.5 w-3.5" /> Photograph the card
-              </>
-            )}
-          </button>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={onManual}
-            className="inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[9px] font-bold uppercase tracking-[0.2em] disabled:opacity-60"
-            style={{ border: `1px solid ${C.border}`, color: C.navy, background: C.surface }}
-          >
-            <PenLine className="h-3.5 w-3.5" /> Type it in
-          </button>
-        </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(event) => readCard(event.target.files?.[0])}
+      />
+
+      <div className="mt-3.5 grid gap-2 sm:grid-cols-2">
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => inputRef.current?.click()}
+          className={TILE_BASE}
+          style={{ background: C.copper, color: C.cream }}
+        >
+          {busy ? <Loader2 className="mt-0.5 h-4 w-4 shrink-0 animate-spin" /> : <Camera className="mt-0.5 h-4 w-4 shrink-0" />}
+          <span className="min-w-0">
+            <span className="block text-[10px] font-bold uppercase tracking-[0.16em]">
+              {busy ? 'Reading the card' : 'Photograph the card'}
+            </span>
+            <span className="mt-0.5 block text-[11px] normal-case tracking-normal opacity-80">
+              {busy ? 'The draft opens when it is read' : 'Read into a draft you correct'}
+            </span>
+          </span>
+        </button>
+
+        <button
+          type="button"
+          disabled={busy}
+          onClick={onManual}
+          className={TILE_BASE}
+          style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.navy }}
+        >
+          <PenLine className="mt-0.5 h-4 w-4 shrink-0" style={{ color: C.copper }} />
+          <span className="min-w-0">
+            <span className="block text-[10px] font-bold uppercase tracking-[0.16em]">Type it in</span>
+            <span className="mt-0.5 block text-[11px] normal-case tracking-normal" style={{ color: C.muted }}>
+              Add a contact by hand
+            </span>
+          </span>
+        </button>
       </div>
 
       {error ? (
-        <div className="mt-4 flex items-center justify-between gap-3" style={{ color: C.copper }}>
+        <div className="mt-3.5 flex items-center justify-between gap-3" style={{ color: C.copper }}>
           <p className="text-[11.5px] leading-relaxed">{error}</p>
           <button
             type="button"
             onClick={() => setError('')}
-            className="inline-flex shrink-0 items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.2em]"
+            className={BTN_BASE}
+            style={{ border: `1px solid ${C.border}`, color: C.navy, background: C.surface }}
           >
             <RotateCcw className="h-3 w-3" /> Again
           </button>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Loader2, X } from 'lucide-react';
 import ContactField from './ContactField';
 import ContactTagPicker from './ContactTagPicker';
-import { C, CONTACT_KEYS, EMPTY_CONTACT, PERSON_FIELDS, SHOW_FIELDS, TAG_SUGGESTIONS, isEmailShaped, splitName } from './crmConfig';
+import { BTN, BTN_BASE, C, CONTACT_KEYS, EMPTY_CONTACT, PERSON_FIELDS, SHOW_FIELDS, TAG_SUGGESTIONS, isEmailShaped, splitName } from './crmConfig';
 
 // The draft, read from the card and then read by the Fellow who was there. Nothing is
 // saved until it is confirmed here, and an address that is not shaped like one is
@@ -48,11 +48,11 @@ export default function ContactDraftForm({ initial, cardUri, saving, submitLabel
   return (
     <form
       onSubmit={submit}
-      className="mt-4 rounded-2xl p-4 md:p-5"
+      className="rounded-lg p-4"
       style={{ background: C.paper, border: `1px solid ${C.border}` }}
     >
       {cardUri ? (
-        <p className="mb-4 text-[11px] leading-relaxed" style={{ color: C.muted }}>
+        <p className="mb-4 text-[11.5px] leading-relaxed" style={{ color: C.muted }}>
           Read from the card. Correct anything the card got wrong, and fill what it did not
           carry — the card stays attached to the record.
         </p>
@@ -70,7 +70,7 @@ export default function ContactDraftForm({ initial, cardUri, saving, submitLabel
         ))}
       </div>
 
-      <p className="mt-5 text-[8px] font-bold uppercase tracking-[0.28em]" style={{ color: C.copper }}>
+      <p className="mt-4 text-[8px] font-bold uppercase tracking-[0.18em]" style={{ color: C.copper }}>
         The show
       </p>
       <div className="mt-2 grid gap-3 sm:grid-cols-2">
@@ -79,7 +79,7 @@ export default function ContactDraftForm({ initial, cardUri, saving, submitLabel
         ))}
       </div>
 
-      <p className="mt-5 text-[8px] font-bold uppercase tracking-[0.28em]" style={{ color: C.copper }}>
+      <p className="mt-4 text-[8px] font-bold uppercase tracking-[0.18em]" style={{ color: C.copper }}>
         The follow-up
       </p>
       <div className="mt-2 space-y-3">
@@ -114,12 +114,12 @@ export default function ContactDraftForm({ initial, cardUri, saving, submitLabel
         </label>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-[9px] font-bold uppercase tracking-[0.2em] disabled:opacity-60"
-          style={{ background: C.copper, color: C.cream }}
+          className={BTN_BASE}
+          style={BTN.primary}
         >
           {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
           {submitLabel}
@@ -127,10 +127,10 @@ export default function ContactDraftForm({ initial, cardUri, saving, submitLabel
         <button
           type="button"
           onClick={onCancel}
-          className="inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[9px] font-bold uppercase tracking-[0.2em]"
-          style={{ border: `1px solid ${C.border}`, color: C.navy, background: C.surface }}
+          className={BTN_BASE}
+          style={BTN.outline}
         >
-          <X className="h-3.5 w-3.5" /> Not now
+          <X className="h-3.5 w-3.5" /> Cancel
         </button>
       </div>
     </form>

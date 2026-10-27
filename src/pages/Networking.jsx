@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Loader2, Radar, RotateCcw } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Loader2, Plus, Radar, RotateCcw, Users } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ConferenceRoomCard from '@/components/conference-room/ConferenceRoomCard';
 import { phaseForRoom } from '@/components/conference-room/conferenceRoomConfig';
@@ -10,17 +10,19 @@ import HomeDock from '@/components/home-v3/HomeDock';
 import ContactCapture from '@/components/crm/ContactCapture';
 import ContactRolodex from '@/components/crm/ContactRolodex';
 import useConferenceContacts from '@/components/crm/useConferenceContacts';
-import { C } from '@/components/crm/crmConfig';
+import { BTN, BTN_BASE, C } from '@/components/crm/crmConfig';
 
 const ROOM_STATUSES = ['open', 'live'];
 
-// AeroSync CRM: the conference relationship workspace, in one surface and three parts of
-// the same arc. Before the show, what to have in place and which rooms are open. During it,
-// the card handed over — photographed, read into a draft, corrected, kept. After it, the
-// rolodex, where each relationship carries the show it came from and the line that was said
-// would come next. One canonical entity behind each half of the page: ConferenceContact for
-// the people (private to the member who captured them), ConferenceRoom with ConferenceRsvp
-// for the rooms.
+// Two features on one page, each on its own canonical entity. Above: the AeroSync CRM — the
+// conference relationships, worked as a tool (capture, search, order, follow up). Below: the
+// shows still ahead, on ConferenceRoom with ConferenceRsvp, with who is already standing in
+// each room. Contact records are private to the member who captured them.
+const CRM_TABS = [
+  { key: 'contacts', label: 'Contacts' },
+  { key: 'capture', label: 'Add a card' },
+];
+
 export default function Networking() {
   const crm = useConferenceContacts();
 
@@ -28,9 +30,8 @@ export default function Networking() {
   const [data, setData] = useState(null);
   const [attempt, setAttempt] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
-
-  const captureRef = useRef(null);
-  const scrollToCapture = () => captureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const [tab, setTab] = useState('contacts');
+  const [notice, setNotice] = useState('');
 
   useEffect(() => {
     let alive = true;
@@ -102,31 +103,103 @@ export default function Networking() {
   const attendeesFor = (room) => (room ? rsvpsByRoom[room.id] || [] : []);
   const myRsvpFor = (room) => attendeesFor(room).find((rsvp) => rsvp.fellow_email === me?.email) || null;
 
+  const openTab = (key) => {
+    setNotice('');
+    setTab(key);
+  };
+
   return (
     <div className="min-h-screen" style={{ background: C.cream }}>
-      <div className="mx-auto w-full max-w-5xl px-4 py-8 md:px-8 md:py-14">
-        <header>
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: C.copper }}>
-            AeroSync CRM
-          </p>
-          <p className="mt-1 text-[9px] uppercase tracking-[0.24em]" style={{ color: C.muted }}>
-            Community Relationship Manager
-          </p>
-          <h1 className="mt-2 font-heading text-3xl leading-tight md:text-5xl" style={{ color: C.navy }}>
-            The people you met.
-          </h1>
-          <p className="mt-3 max-w-2xl text-[13px] leading-relaxed" style={{ color: C.muted }}>
-            A card handed over at a show, read into a contact of your own: who they are, the room you
-            met in, and the line you said would come next. Kept privately — no other Fellow sees it —
-            and worked from here before, during and after every conference.
+      <div className="mx-auto w-full max-w-5xl px-4 py-6 md:px-8 md:py-12">
+        <header className="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: C.copper }}>
+              Relationships
+            </p>
+            <h1 className="mt-1 font-heading text-2xl md:text-4xl" style={{ color: C.navy }}>
+              Networking
+            </h1>
+          </div>
+          <p className="text-[11px]" style={{ color: C.muted }}>
+            Every contact is private to the Fellow who captured it.
           </p>
         </header>
 
-        <ContactCapture crm={crm} innerRef={captureRef} />
-        <ContactRolodex crm={crm} onCapture={scrollToCapture} />
+        <section
+          className="mt-5 overflow-hidden rounded-xl"
+          style={{ background: C.surface, border: `1px solid ${C.border}` }}
+        >
+          <div className="flex items-center gap-2.5 px-3 py-2.5" style={{ background: C.navy }}>
+            <span
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md"
+              style={{ background: 'rgba(201,168,124,0.22)' }}
+            >
+              <Users className="h-4 w-4" style={{ color: C.gold }} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[10.5px] font-bold uppercase tracking-[0.18em]" style={{ color: C.cream }}>
+                AeroSync CRM
+              </p>
+              <p className="truncate text-[9px] uppercase tracking-[0.14em]" style={{ color: C.gold }}>
+                {crm.state.loading
+                  ? 'Reading your contacts'
+                  : `${crm.total} contact${crm.total === 1 ? '' : 's'} kept`}
+              </p>
+            </div>
+            <button type="button" onClick={() => openTab('capture')} className={BTN_BASE} style={BTN.primary}>
+              <Plus className="h-3.5 w-3.5" /> Add a card
+            </button>
+          </div>
 
-        <section className="mt-14">
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: C.copper }}>
+          <div className="flex items-center gap-1 px-2 pt-1.5" style={{ borderBottom: `1px solid ${C.border}` }}>
+            {CRM_TABS.map((item) => {
+              const active = tab === item.key;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => openTab(item.key)}
+                  aria-current={active ? 'page' : undefined}
+                  className="rounded-t-lg px-3 py-2 text-[9.5px] font-bold uppercase tracking-[0.16em]"
+                  style={
+                    active
+                      ? { color: C.navy, boxShadow: `inset 0 -2px 0 ${C.copper}` }
+                      : { color: C.muted }
+                  }
+                >
+                  {item.key === 'contacts' ? `Contacts (${crm.total})` : item.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="p-2.5 md:p-3.5">
+            {notice ? (
+              <p
+                role="status"
+                className="mb-2.5 inline-flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-[0.14em]"
+                style={{ color: C.copper }}
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" /> {notice}
+              </p>
+            ) : null}
+
+            {tab === 'contacts' ? (
+              <ContactRolodex crm={crm} onCapture={() => openTab('capture')} />
+            ) : (
+              <ContactCapture
+                crm={crm}
+                onSaved={(name) => {
+                  setNotice(`${name} added to the rolodex`);
+                  setTab('contacts');
+                }}
+              />
+            )}
+          </div>
+        </section>
+
+        <section className="mt-12">
+          <p className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: C.copper }}>
             The shows
           </p>
           <h2 className="mt-1.5 font-heading text-2xl" style={{ color: C.navy }}>
@@ -138,28 +211,28 @@ export default function Networking() {
           </p>
 
           {state.failed ? (
-            <div className="mt-5 rounded-2xl p-5 text-center" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+            <div className="mt-5 rounded-lg p-5 text-center" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
               <p className="font-heading text-lg" style={{ color: C.navy }}>
                 The rooms could not be read. Nothing is lost.
               </p>
               <button
                 type="button"
                 onClick={() => setAttempt((n) => n + 1)}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em]"
-                style={{ background: C.navy, color: C.cream }}
+                className={`${BTN_BASE} mt-3`}
+                style={BTN.navy}
               >
                 <RotateCcw className="h-3 w-3" /> Read them again
               </button>
             </div>
           ) : state.loading ? (
-            <div className="mt-5 flex items-center gap-2.5 rounded-2xl p-5" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+            <div className="mt-5 flex items-center gap-2.5 rounded-lg p-5" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
               <Loader2 className="h-4 w-4 animate-spin" style={{ color: C.copper }} />
-              <span className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: C.copper }}>
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: C.copper }}>
                 Reading the rooms
               </span>
             </div>
           ) : ahead.length === 0 ? (
-            <div className="mt-5 rounded-2xl p-6" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+            <div className="mt-5 rounded-lg p-6" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
               <Radar className="h-5 w-5" style={{ color: C.copper }} />
               <h3 className="mt-3 font-heading text-xl" style={{ color: C.navy }}>
                 No room is open yet.

@@ -7,7 +7,7 @@ export default function ContactField({ field, value, onChange, error }) {
   return (
     <label className={wide ? 'block sm:col-span-2' : 'block'}>
       <span
-        className="block text-[8px] font-bold uppercase tracking-[0.22em]"
+        className="block text-[8px] font-bold uppercase tracking-[0.16em]"
         style={{ color: C.muted }}
       >
         {label}

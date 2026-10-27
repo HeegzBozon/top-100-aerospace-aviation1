@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Briefcase, Globe, Link2, Mail, MapPin, Phone, Stamp } from 'lucide-react';
+import { Briefcase, Globe, Link2, Mail, MapPin, Phone } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { C, asHref, formatDay } from './crmConfig';
+import { C, asHref, formatDay, sinceLabel } from './crmConfig';
 
-// The card, read back. Everything printed on it, plus the show it came from and what was
-// said. The card itself is shown through a short-lived signed link, because it is stored
-// privately and never sits behind a public address.
+// The record, read back: everything printed on the card, the show it came from, what was
+// agreed next, and when the relationship was last worked. The card itself is shown through a
+// short-lived signed link, because it is stored privately and never sits behind a public URL.
 function Line({ icon: Icon, label, value, href }) {
   if (!value) return null;
   return (
     <div className="flex items-start gap-2.5">
       <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: C.copper }} />
       <div className="min-w-0">
-        <p className="text-[8px] font-bold uppercase tracking-[0.22em]" style={{ color: C.muted }}>
+        <p className="text-[8px] font-bold uppercase tracking-[0.16em]" style={{ color: C.muted }}>
           {label}
         </p>
         {href ? (
@@ -20,13 +20,13 @@ function Line({ icon: Icon, label, value, href }) {
             href={href}
             target={href.startsWith('http') ? '_blank' : undefined}
             rel="noreferrer"
-            className="block truncate text-[13px] underline decoration-dotted"
+            className="block truncate text-[12.5px] underline decoration-dotted"
             style={{ color: C.navy }}
           >
             {value}
           </a>
         ) : (
-          <p className="break-words text-[13px]" style={{ color: C.navy }}>
+          <p className="break-words text-[12.5px]" style={{ color: C.navy }}>
             {value}
           </p>
         )}
@@ -35,7 +35,18 @@ function Line({ icon: Icon, label, value, href }) {
   );
 }
 
-export default function ContactReadout({ contact, onTouch, touching }) {
+function Block({ label, children }) {
+  return (
+    <div className="rounded-lg p-3" style={{ background: C.cream, border: `1px solid ${C.border}` }}>
+      <p className="text-[8px] font-bold uppercase tracking-[0.16em]" style={{ color: C.copper }}>
+        {label}
+      </p>
+      {children}
+    </div>
+  );
+}
+
+export default function ContactReadout({ contact }) {
   const [card, setCard] = useState({ url: '', state: contact.card_file_uri ? 'loading' : 'none' });
 
   useEffect(() => {
@@ -58,54 +69,43 @@ export default function ContactReadout({ contact, onTouch, touching }) {
 
   const place = [contact.city, contact.country].filter(Boolean).join(', ');
   const show = [contact.conference_name, contact.met_context].filter(Boolean).join(' — ');
+  const hasContactLines = Boolean(
+    contact.email || contact.phone || contact.linkedin_url || contact.website || place || contact.company,
+  );
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Line icon={Mail} label="Email" value={contact.email} href={contact.email ? `mailto:${contact.email}` : ''} />
-        <Line icon={Phone} label="Telephone" value={contact.phone} href={contact.phone ? `tel:${contact.phone}` : ''} />
-        <Line icon={Link2} label="LinkedIn" value={contact.linkedin_url} href={asHref(contact.linkedin_url)} />
-        <Line icon={Globe} label="Site" value={contact.website} href={asHref(contact.website)} />
-        <Line icon={MapPin} label="Based in" value={place} />
-        <Line icon={Briefcase} label="Organization" value={contact.company} />
-      </div>
+    <div className="space-y-3">
+      {hasContactLines ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Line icon={Mail} label="Email" value={contact.email} href={contact.email ? `mailto:${contact.email}` : ''} />
+          <Line icon={Phone} label="Telephone" value={contact.phone} href={contact.phone ? `tel:${contact.phone}` : ''} />
+          <Line icon={Link2} label="LinkedIn" value={contact.linkedin_url} href={asHref(contact.linkedin_url)} />
+          <Line icon={Globe} label="Site" value={contact.website} href={asHref(contact.website)} />
+          <Line icon={MapPin} label="Based in" value={place} />
+          <Line icon={Briefcase} label="Organization" value={contact.company} />
+        </div>
+      ) : null}
 
-      <div className="rounded-xl p-3" style={{ background: C.cream, border: `1px solid ${C.border}` }}>
-        <p className="text-[8px] font-bold uppercase tracking-[0.22em]" style={{ color: C.copper }}>
-          Where you met
-        </p>
-        <p className="mt-1 text-[13px]" style={{ color: C.navy }}>
+      <Block label="Where you met">
+        <p className="mt-1 text-[12.5px]" style={{ color: C.navy }}>
           {show || 'No show recorded'}
           {contact.met_on ? ` · ${formatDay(contact.met_on)}` : ''}
         </p>
-      </div>
+      </Block>
 
-      <div>
-        <p className="text-[8px] font-bold uppercase tracking-[0.22em]" style={{ color: C.copper }}>
-          What was agreed next
-        </p>
-        <p className="mt-1 text-[13px] leading-relaxed" style={{ color: C.navy }}>
+      <Block label="Agreed next">
+        <p className="mt-1 text-[12.5px] leading-relaxed" style={{ color: C.navy }}>
           {contact.next_step || 'Nothing was written down.'}
         </p>
-        <div className="mt-2 flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => onTouch(contact)}
-            disabled={touching}
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[8.5px] font-bold uppercase tracking-[0.2em] disabled:opacity-60"
-            style={{ border: `1px solid ${C.border}`, color: C.navy, background: C.surface }}
-          >
-            <Stamp className="h-3 w-3" /> Log a touch
-          </button>
-          <span className="text-[9px] uppercase tracking-[0.18em]" style={{ color: C.muted }}>
-            {contact.last_touch ? `Last worked ${formatDay(contact.last_touch)}` : 'Never worked'}
-          </span>
-        </div>
-      </div>
+        <p className="mt-1.5 text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: C.muted }}>
+          {contact.last_touch ? `Last worked ${sinceLabel(contact.last_touch)}` : 'Never worked'}
+          {contact.met_on ? ` · met ${formatDay(contact.met_on)}` : ''}
+        </p>
+      </Block>
 
       {contact.notes ? (
         <div>
-          <p className="text-[8px] font-bold uppercase tracking-[0.22em]" style={{ color: C.copper }}>
+          <p className="text-[8px] font-bold uppercase tracking-[0.16em]" style={{ color: C.copper }}>
             Notes
           </p>
           <p className="mt-1 whitespace-pre-wrap text-[12.5px] leading-relaxed" style={{ color: C.navy }}>
@@ -119,7 +119,7 @@ export default function ContactReadout({ contact, onTouch, touching }) {
           {contact.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full px-2.5 py-1 text-[8.5px] font-bold uppercase tracking-[0.16em]"
+              className="rounded-md px-2 py-1 text-[8.5px] font-bold uppercase tracking-[0.14em]"
               style={{ background: C.sand, color: C.navy }}
             >
               {tag}
@@ -129,12 +129,12 @@ export default function ContactReadout({ contact, onTouch, touching }) {
       ) : null}
 
       {card.state === 'loading' ? (
-        <p className="text-[10px] uppercase tracking-[0.2em]" style={{ color: C.muted }}>
+        <p className="text-[9px] font-bold uppercase tracking-[0.16em]" style={{ color: C.muted }}>
           Reading the card
         </p>
       ) : null}
       {card.state === 'failed' ? (
-        <p className="text-[11px]" style={{ color: C.muted }}>
+        <p className="text-[11.5px]" style={{ color: C.muted }}>
           The captured card could not be opened just now.
         </p>
       ) : null}
@@ -143,10 +143,10 @@ export default function ContactReadout({ contact, onTouch, touching }) {
           <img
             src={card.url}
             alt={`The business card captured for ${contact.full_name}`}
-            className="w-full rounded-xl"
+            className="w-full rounded-lg"
             style={{ border: `1px solid ${C.border}` }}
           />
-          <figcaption className="mt-1.5 text-[9px] uppercase tracking-[0.18em]" style={{ color: C.muted }}>
+          <figcaption className="mt-1.5 text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: C.muted }}>
             The card as captured, stored privately
           </figcaption>
         </figure>
