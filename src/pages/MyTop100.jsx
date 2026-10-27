@@ -463,7 +463,7 @@ export default function MyTop100() {
   // same artifact, so it is written once.
   const listBlock = (
     <>
-      <ListNameEditor />
+      {ListNameEditor}
       <BallotStatusBanner
         rankings={rankings}
         votingOpen={votingOpen}
