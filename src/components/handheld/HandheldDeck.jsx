@@ -6,6 +6,7 @@ import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
 import { pressFaceKey } from "./handheldKeys";
 import ScreenTopBar from "./ScreenTopBar";
+import ViewerFoot from "./ViewerFoot";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldBody from "./HandheldBody";
 import HandheldMenu from "./HandheldMenu";
@@ -43,8 +44,9 @@ const ZONE_DIR = { menu: "up", play: "down", prev: "left", next: "right" };
 // The wheel does it all — rotation scrolls the picture or walks the menu, the centre
 // selects what the ring landed on, MENU goes up a level and opens the cartridges from
 // the top, back and forward step the page's modules, and the bottom key plays the page
-// down the glass. Holding the centre, or tapping the mark on the case, goes home.
-// Sharing sits on Y.
+// down the glass and stops it again. Holding the centre, or tapping the mark on the
+// case, goes home. Y opens the Edit drawer, and the share lives on the pill at the foot
+// of the glass — a key of its own, on every surface (see ViewerFoot).
 // A surface may also take the ring itself and steer with it — the field game walks
 // on it — in which case the four zones become up, down, left and right for as long
 // as nothing of the console's own is open over the glass.
@@ -513,16 +515,20 @@ export default function HandheldDeck() {
     announce(playing ? "Paused" : "Reading");
   }, [menuOpen, shareOpen, booting, playing, announce]);
 
-  // Y: the share drawer, opened in the glass — the link you are holding, the
-  // code that opens it on a phone, and the ways out of it.
-  const share = useCallback(() => {
-    if (menuOpen || booting) return;
-    blip("open");
+  // The foot's Share pill: the drawer opens in the glass where the app lives — the
+  // link you are holding, the code that opens it on a phone, and the ways out of it —
+  // and the same pill puts it away again. It was a print on the ring once; standing on
+  // its own it is always reachable, over a drawer and on a surface that has claimed the
+  // face keys.
+  const toggleShare = useCallback(() => {
+    if (booting) return;
+    blip(shareOpen ? "back" : "open");
     buzz();
+    if (shareOpen) return setShareOpen(false);
     setMenuMode(null);
     setNotificationsOpen(false);
     setShareOpen(true);
-  }, [booting, menuOpen]);
+  }, [booting, shareOpen]);
 
   // What has come in — the same drawer rule as everything else: the way in where
   // there is an account to receive it.
@@ -610,13 +616,17 @@ export default function HandheldDeck() {
         onNotifications={openNotifications}
       />
 
+      {/* The viewer's foot: the device's readout, and the one key a hand reaches for
+          on any surface — the share, off the ring and into a pill of its own. */}
+      <ViewerFoot shareOpen={shareOpen && !booting} onShare={toggleShare} />
+
       <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
 
       {/* Section announcement — the page reports where the wheel just landed */}
       {flash && (
         <div
           className="pointer-events-none fixed left-1/2 z-30 -translate-x-1/2 md:hidden"
-          style={{ bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 10px)" }}
+          style={{ bottom: "calc(var(--hh-bottom, 176px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 10px)" }}
         >
           <span
             className="hh-flash flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[8px] font-bold uppercase tracking-[0.2em] text-[#FAF8F5]"
@@ -706,7 +716,8 @@ export default function HandheldDeck() {
             onMenu={steering ? null : upOneLevel}
             onPrev={steering ? null : () => stepSection(-1)}
             onNext={steering ? null : () => stepSection(1)}
-            onPlay={steering || menuOpen || shareOpen ? null : share}
+            playing={playing}
+            onPlay={steering ? null : togglePlay}
             onSelect={select}
             onHome={goHome}
             steer={!!steering}
@@ -719,7 +730,7 @@ export default function HandheldDeck() {
               onConfirm={() => faceKey("A", select)}
               onBack={() => faceKey("B", back)}
               onSections={() => faceKey("X", openSections)}
-              onShare={() => faceKey("Y", share)}
+              onEdit={() => faceKey("Y", () => openBarDrawer("edit"))}
             />
           </div>
         </div>

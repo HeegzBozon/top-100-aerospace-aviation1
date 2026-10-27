@@ -15,6 +15,12 @@ const BEZEL_WIDTH = 18; // the moulding drawn back out around the glass
 // Inside the glass: the strip cut across its head, and the air it leaves under it.
 const NAV_CLEARANCE = 34;
 
+// Inside the glass, at its foot: the readout band — the cycle's stamp and the Share
+// pill. It is taken from the picture's own bottom edge rather than added below it, so
+// the pane keeps its full width and everything that lives on the picture is inset
+// above the band instead of running under it.
+const FOOT_CLEARANCE = 32;
+
 // Below the glass: the chin, carrying the wheel, the keys, the speaker and the plate.
 // The chin is three bands: the controls (the wheel's own height, which out-measures
 // both the key cluster and the speaker), the groove under them, and the footer plate —
@@ -40,6 +46,7 @@ export function applyShellVars() {
   root.setProperty("--hh-top", `${FRAME_GUTTER + BEZEL_WIDTH}px`);
   root.setProperty("--hh-nav", `${NAV_CLEARANCE}px`);
   root.setProperty("--hh-bottom", `${DECK_CLEARANCE + FRAME_GUTTER + BEZEL_WIDTH}px`);
+  root.setProperty("--hh-foot", `${FOOT_CLEARANCE}px`);
   root.setProperty("--hh-frame", `${FRAME_GUTTER}px`);
   root.setProperty("--hh-bezel-w", `${BEZEL_WIDTH}px`);
 }
@@ -54,6 +61,7 @@ export function releaseShellVars() {
     "--hh-nav",
     "--hh-shell-top",
     "--hh-bottom",
+    "--hh-foot",
     "--hh-frame",
     "--hh-bezel-w",
   ].forEach((name) => root.setProperty(name, "0px"));

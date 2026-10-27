@@ -2,7 +2,7 @@
 // standing under the hand — the chamber's candidates — registers a handler here and
 // the keypad becomes its instrument; the moment it stops taking keys, or unmounts,
 // the keypad goes back to what it always was: A confirms, B backs out, X lists the
-// sections, Y shares.
+// sections, Y opens the Edit drawer.
 //
 // A handler is handed the key's own name and returns true when it has taken the
 // press, false to let the console keep it.
@@ -31,7 +31,7 @@ export const pressFaceKey = (name) => (handler ? handler(name) === true : false)
 
 // Whether a surface is holding the four keys. The hardware reads this to put on the
 // legends that go with it: while the keys are held, Y prints its own letter — it is a
-// vote — and the ring's play zone carries the share.
+// vote — and the share stays on the pill at the foot of the glass, where it always is.
 export const useFaceKeysClaimed = () => {
   const [claimed, setClaimed] = useState(handler !== null);
 

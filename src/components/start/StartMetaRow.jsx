@@ -1,18 +1,13 @@
-import { useEffect, useState } from "react";
-import moment from "moment";
+import useClock from "@/hooks/useClock";
 
-// The title screen's top rule: the cycle's stamp, set at the same left inset as the
-// mark and the keys below it and closed by a hairline, so the screen opens on one
-// masthead line rather than on a heading standing alone above the mark. The stamp is
-// a running clock — the seconds advance and are set a shade brighter, so the screen
-// reads as live rather than as a photograph of a time.
+// The reader's stamp: the cycle's year, the day, and a running clock, the seconds set
+// a shade brighter than the minutes so the line reads as live rather than as a
+// photograph of a time. It closes the title screen on a desk, set at the same inset as
+// the mark and the keys above it and closed by a hairline. On the phone the same stamp
+// is printed on the device itself, in the band across the foot of the glass (see
+// ViewerFoot), which is why this one is only drawn from the desk breakpoint up.
 export default function StartMetaRow() {
-  const [now, setNow] = useState(() => moment());
-
-  useEffect(() => {
-    const tick = setInterval(() => setNow(moment()), 1000);
-    return () => clearInterval(tick);
-  }, []);
+  const now = useClock();
 
   return (
     <div className="shrink-0">

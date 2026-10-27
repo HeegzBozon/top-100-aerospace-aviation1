@@ -2,13 +2,13 @@ import { useFaceKeysClaimed } from "./handheldKeys";
 
 // The keypad, in the console diamond: Y above, X left, B right, A below.
 // Four lettered keys, as a keypad's keys are lettered: Y prints its own letter and
-// sends whatever you are holding out through the device's share drawer — the ring's
-// bottom key makes the same press, so the share sits under either thumb.
-// X lists the sections of that surface: the deck's slides, or the page's own
-// modules. A confirms, B backs out.
+// opens the Edit drawer — everything a Fellow authors, one press from anywhere, in the
+// same list the bar's own Edit cell holds. X lists the sections of that surface: the
+// deck's slides, or the page's own modules. A confirms, B backs out.
 //
 // While a surface is holding the four keys — the chamber's candidates — Y is a vote
-// like the rest of the keypad, and the share stays on the ring.
+// like the rest of the keypad. The share is not on this keypad at all: it stands on the
+// pill at the foot of the glass, where it is never taken away.
 //
 // These are the BlackBerry half of the device: matte rubberised keys with light
 // legends, rolled over their own bevel when pressed, set beside the wheel. The keys
@@ -31,7 +31,7 @@ const OFFSET_Y = (BOX_H - KEY_H) / 2;
 const cap =
   "hh-pad-key absolute flex items-center justify-center rounded-[9px] text-[12px] font-bold transition-transform active:translate-y-[1px]";
 
-export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) {
+export default function FaceButtons({ onConfirm, onBack, onSections, onEdit }) {
   const legend = { color: "var(--hh-pad-ink)" };
   const keysClaimed = useFaceKeysClaimed();
 
@@ -39,8 +39,8 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
     <div className="relative shrink-0" style={{ width: BOX_W, height: BOX_H }}>
       <button
         type="button"
-        onClick={onShare}
-        aria-label={keysClaimed ? "Y — vote on this set" : "Y — share this page"}
+        onClick={onEdit}
+        aria-label={keysClaimed ? "Y — vote on this set" : "Y — Edit menu"}
         className={cap}
         style={{ ...legend, width: KEY_W, height: KEY_H, top: 0, left: OFFSET_X }}
       >

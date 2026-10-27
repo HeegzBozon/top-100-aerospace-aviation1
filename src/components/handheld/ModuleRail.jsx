@@ -10,7 +10,7 @@ export default function ModuleRail({ modules, index, onJump }) {
       style={{
         right: "calc(var(--hh-glass-inset, 7px) + 2px)",
         top: "calc(var(--hh-top, 96px) + var(--hh-nav, 60px) + env(safe-area-inset-top) + 10px)",
-        bottom: "calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 10px)",
+        bottom: "calc(var(--hh-bottom, 176px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 10px)",
       }}
       aria-hidden="false"
     >

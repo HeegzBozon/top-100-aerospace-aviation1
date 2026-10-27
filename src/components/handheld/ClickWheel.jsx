@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Share, SkipForward, Undo2 } from "lucide-react";
+import { Pause, Play, SkipForward, Undo2 } from "lucide-react";
 
 // Degrees of travel per detent. One detent = one menu row or one scroll notch.
 const STEP_DEGREES = 20;
@@ -45,21 +45,23 @@ const zoneAt = (deg) => {
 const print = (active) => (active ? "var(--hh-metal)" : "var(--hh-key-ink-soft)");
 
 // The click wheel, as the hardware really is: one flat ivory ring of plastic with
-// four actions printed on it — MENU, back, forward, share — and a metal button at
+// four actions printed on it — MENU, back, forward, play — and a metal button at
 // its centre. Rotation scrubs; the centre presses.
 //
 // The grammar is the one the wheel always taught: rotate to move, the centre selects
-// what the ring landed on, MENU goes up a level, and the bottom key sends the page out
-// through the device's share drawer — the press the keypad's Y makes, on the key the
-// thumb already rests on. Holding the centre takes you home.
+// what the ring landed on, MENU goes up a level, and the bottom key plays the page
+// down the glass and stops it again, printing whichever way it is standing. Holding
+// the centre takes you home. The share is not printed here any more: it has a pill of
+// its own, at the foot of the glass (see ViewerFoot).
 export default function ClickWheel({
   size = 104,
   onRotate,
   onMenu,
   onPrev,
   onNext,
-  // The bottom print: the share, on this console's wheel, everywhere it is used.
+  // The bottom print: play and pause, following whichever way the page is standing.
   onPlay,
+  playing = false,
   onSelect,
   onHome,
   // Steering: a surface that is driven by the ring itself — the field game — keeps
@@ -283,7 +285,7 @@ export default function ClickWheel({
         aria-label={
           steer
             ? "Click wheel, steering. Hold a zone on the ring to walk that way, slide the thumb to turn, the centre acts, and the centre held goes home."
-            : "Click wheel. Turn it to move, the centre selects, MENU goes up a level, the bottom key shares, and the centre held goes home."
+            : "Click wheel. Turn it to move, the centre selects, MENU goes up a level, the bottom key plays and pauses, and the centre held goes home."
         }
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -345,7 +347,11 @@ export default function ClickWheel({
               className="absolute bottom-[7px] left-1/2 flex -translate-x-1/2 items-center transition-transform"
               style={{ color: print(zone === "play"), transform: zone === "play" ? "translateX(-50%) scale(0.9)" : undefined }}
             >
-              <Share className="h-[12px] w-[12px]" strokeWidth={2.4} />
+              {playing ? (
+                <Pause className="h-[12px] w-[12px]" strokeWidth={2.4} />
+              ) : (
+                <Play className="h-[12px] w-[12px]" strokeWidth={2.4} />
+              )}
             </span>
           </>
         )}

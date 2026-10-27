@@ -18,7 +18,9 @@ import { NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/componen
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 
 // The title screen. The app opens like a game: the hour's sky, the mark, the
-// cycle's countdown, and the surfaces one step off the dashboard.
+// cycle's countdown, and the surfaces one step off the dashboard. The cycle's stamp
+// is read at the foot: the device prints it in the band across the foot of the glass,
+// and a desk closes the page with it.
 //
 // It is a menu, so the console treats it as one: the surfaces are handed to the
 // ring as a picker, and the cursor it walks is the selection drawn on the keys.
@@ -154,8 +156,6 @@ export default function StartScreen() {
         <StartSky phase={phase} />
 
         <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-6 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
-          <StartMetaRow />
-
           {/* The masthead, the cycle read twice on its own two lines, and then the
               two keys the title screen asks for standing together in one row. */}
           <div className="hh-title-block mt-4 shrink-0 md:mt-10">
@@ -174,6 +174,13 @@ export default function StartScreen() {
           </div>
 
           <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />
+
+          {/* The stamp closes the screen on a desk. On the phone the same stamp is
+              printed on the device itself, in the band across the foot of the glass,
+              where the machine's readout belongs. */}
+          <div className="mt-8 hidden md:block">
+            <StartMetaRow />
+          </div>
         </div>
 
         {/* Desktop navigation under the title screen. */}
