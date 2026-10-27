@@ -108,10 +108,10 @@
 /* ===== THE VIEWER'S FOOT — THE READOUT BAND =====
    The companion to the control rail, cut across the FOOT of the glass instead of its
    head: the same recessed band, its seam run along the top edge where the rail's runs
-   along the bottom, closing the pane's own bottom corners. The device's readout is
-   printed at the left — the cycle's stamp, running — and the Share pill sits at the
-   right: the press that used to be printed on the ring, given a key of its own on
-   every surface. Every tone is a finish token, so the band is recast with the case. */
+   along the bottom, closing the pane's own bottom corners. It is the lowest part of the
+   picture — the glass opens straight onto the chin (see HandheldScreenFrame) — and one
+   thing is printed on it: the device's readout, the cycle's stamp, running. Every tone is
+   a finish token, so the band is recast with the case. */
 .hh-viewer-foot {
   border-radius: 0 0 11px 11px;
   background:
@@ -122,7 +122,10 @@
     inset 0 -1px 0 rgba(255, 255, 255, 0.07),
     0 -6px 18px rgba(3, 6, 13, 0.26);
 }
-.hh-viewer-pill {
+/* The Share pill: the press that used to ride the readout band, standing in the control
+   centre under the speaker now, where a thumb already rests. It lights while the drawer
+   it opened is standing open. */
+.hh-share-pill {
   transition: box-shadow 150ms ease;
   background: linear-gradient(180deg, var(--hh-pad-1) 0%, var(--hh-pad-2) 100%);
   box-shadow:
@@ -130,10 +133,10 @@
     inset 0 -1px 0 rgba(3, 6, 13, 0.30),
     inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.36);
 }
-.hh-viewer-pill:active {
+.hh-share-pill:active {
   box-shadow: inset 0 2px 4px rgba(3, 6, 13, 0.44);
 }
-.hh-viewer-pill[data-open="true"] {
+.hh-share-pill[data-open="true"] {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.95);

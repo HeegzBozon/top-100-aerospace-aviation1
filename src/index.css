@@ -282,10 +282,12 @@ button:focus-visible {
 :root {
   --hh-top: 32px;
   --hh-shell-top: 14px;
-  --hh-bottom: 190px;
-  /* The readout band cut across the FOOT of the glass: the cycle's stamp and the
-     Share pill. Taken from the picture's own bottom edge, so the pane keeps its
-     full width and everything on the picture is inset above it. */
+  /* Where the glass opens at its foot: the chin's own top edge. Nothing of the moulding
+     is held below the picture, so the whole strip between the pane and the controls is
+     the glass's. */
+  --hh-bottom: 172px;
+  /* The readout band at the foot of the glass — the cycle's stamp. It is the glass's own
+     footer: taken from the pane's bottom edge, with the content window ending on its top. */
   --hh-foot: 32px;
 
   /* The desk margin, the moulding around the glass, and the inset every surface

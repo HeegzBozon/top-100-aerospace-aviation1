@@ -15,10 +15,10 @@ const BEZEL_WIDTH = 18; // the moulding drawn back out around the glass
 // Inside the glass: the strip cut across its head, and the air it leaves under it.
 const NAV_CLEARANCE = 34;
 
-// Inside the glass, at its foot: the readout band — the cycle's stamp and the Share
-// pill. It is taken from the picture's own bottom edge rather than added below it, so
-// the pane keeps its full width and everything that lives on the picture is inset
-// above the band instead of running under it.
+// Inside the glass, at its foot: the readout band — the cycle's stamp. It is the glass's
+// own footer rather than a strip added below the picture: taken from the pane's bottom
+// edge, so the pane keeps its full width and everything that lives on the picture is
+// inset above the band instead of running under it.
 const FOOT_CLEARANCE = 32;
 
 // Below the glass: the chin, carrying the wheel, the keys, the speaker and the plate.
@@ -45,7 +45,10 @@ export function applyShellVars() {
   root.setProperty("--hh-shell-top", `${FRAME_GUTTER}px`);
   root.setProperty("--hh-top", `${FRAME_GUTTER + BEZEL_WIDTH}px`);
   root.setProperty("--hh-nav", `${NAV_CLEARANCE}px`);
-  root.setProperty("--hh-bottom", `${DECK_CLEARANCE + FRAME_GUTTER + BEZEL_WIDTH}px`);
+  // The picture opens straight onto the chin: no band of moulding is held below the
+  // pane, so the glass's bottom edge IS the chin's top edge and the readout band inside
+  // it is the lowest part of the picture.
+  root.setProperty("--hh-bottom", `${DECK_CLEARANCE + FRAME_GUTTER}px`);
   root.setProperty("--hh-foot", `${FOOT_CLEARANCE}px`);
   root.setProperty("--hh-frame", `${FRAME_GUTTER}px`);
   root.setProperty("--hh-bezel-w", `${BEZEL_WIDTH}px`);

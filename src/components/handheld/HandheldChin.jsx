@@ -1,3 +1,4 @@
+import { Share } from "lucide-react";
 import { FACE_KEYS } from "./FaceButtons";
 import ViewerFoot from "./ViewerFoot";
 import { DECK_CLEARANCE, FRAME_GUTTER } from "./handheldGeometry";
@@ -29,8 +30,18 @@ export default function HandheldChin() {
         <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, right: 5 }} />
 
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pt-1.5">
-          {/* The speaker well: punched, dimmed, waiting for its record. */}
-          <span className="hh-speaker h-[54px] w-[54px]" style={{ opacity: 0.55 }} />
+          {/* The speaker well and the Share pill beneath it: punched and waiting for
+              their controls. */}
+          <span className="flex flex-col items-center gap-1">
+            <span className="hh-speaker h-[54px] w-[54px]" style={{ opacity: 0.55 }} />
+            <span
+              className="hh-share-pill flex h-[21px] items-center gap-1.5 rounded-full px-2.5 text-[7px] font-bold uppercase tracking-[0.2em]"
+              style={{ color: "var(--hh-pad-ink)", opacity: 0.5 }}
+            >
+              <Share className="h-[9px] w-[9px] shrink-0" />
+              Share
+            </span>
+          </span>
 
           {/* The wheel, seated but not yet lit. */}
           <span
@@ -102,9 +113,8 @@ export default function HandheldChin() {
         </div>
       </div>
 
-      {/* The viewer's foot, painted unlit while the console is not mounted yet: the
-          readout band and the Share pill, standing exactly where the live ones take
-          over from them. */}
+      {/* The glass's footer, painted unlit while the console is not mounted yet: the
+          readout band, standing exactly where the live one takes over from it. */}
       <ViewerFoot staticView />
     </>
   );
