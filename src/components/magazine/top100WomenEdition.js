@@ -19,23 +19,28 @@ import {
 // every entry still pointing at the record it came from.
 
 export const HONOREES_SECTION_ID = 'sec-honorees';
+export const NAME_INDEX_SECTION_ID = 'sec-name-index';
 
-// The nine parts of the book, in the order it prints them. The contents is a page,
+// The eleven parts of the book, in the order it prints them. The contents is a page,
 // not a chapter: a magazine's contents is furniture, and giving it a section of its
 // own only ever produced a section that duplicated the page.
 //
 // The Well holds the two sections that are the heart of an edition of this kind —
-// the portraits and the index. Everything after the directory sits at the back of
-// the book, where a reader turns to it deliberately.
+// the portraits and the index. The front of book sets the case and then lets the
+// honorees speak it; everything after the directory sits at the back of the book,
+// where a reader turns to it deliberately — including the one alphabet that finds a
+// name, which is composed from the book's own portraits once they are numbered.
 export const EDITION_SECTIONS = [
   { id: 'sec-masthead', name: 'Masthead', section_type: 'evergreen', section_group: 'front_of_book' },
   { id: 'sec-numbers', name: 'By the Numbers', section_type: 'evergreen', section_group: 'front_of_book' },
   { id: 'sec-manifesto', name: 'The Manifesto', section_type: 'feature', section_group: 'front_of_book' },
+  { id: 'sec-voices', name: 'Voices', section_type: 'evergreen', section_group: 'front_of_book' },
   { id: 'sec-portraits', name: 'Featured Portraits', section_type: 'feature', section_group: 'well' },
   { id: HONOREES_SECTION_ID, name: 'The Index', section_type: 'profile', section_group: 'well' },
   { id: 'sec-orbital-index', name: 'Connections', section_type: 'evergreen', section_group: 'back_of_book' },
   { id: 'sec-signal-report', name: 'Signal Report', section_type: 'evergreen', section_group: 'back_of_book' },
   { id: 'sec-archive', name: 'Archive', section_type: 'evergreen', section_group: 'back_of_book' },
+  { id: NAME_INDEX_SECTION_ID, name: 'Index of Names', section_type: 'evergreen', section_group: 'back_of_book' },
   { id: 'sec-closing', name: 'Closing', section_type: 'colophon', section_group: 'back_of_book' },
 ].map((section, order) => ({ ...section, order }));
 
@@ -59,6 +64,32 @@ export function measure(nominees = []) {
     fields: Object.entries(fields).sort((a, b) => b[1] - a[1]),
     withVoice: nominees.filter((nominee) => voiceOf(nominee)).length,
   };
+}
+
+// The voices the edition is heard in: one honoree from each region first, so the
+// spread reads as the book rather than as the longest lines in it, then the strongest
+// of what is left. A voice is the honoree's own first-person line, held on her record
+// and printed as she wrote it.
+export function voicesFrom(nominees = [], max = 6) {
+  const heard = nominees
+    .map((nominee) => ({ name: clean(nominee.name), text: voiceOf(nominee), region: regionOf(nominee.country) }))
+    .filter((entry) => entry.name && entry.text.length >= 80);
+  const picked = [];
+  const seen = new Set();
+  const take = (entry) => {
+    if (!entry || !entry.text || seen.has(entry.text)) return;
+    seen.add(entry.text);
+    picked.push(entry);
+  };
+  const strongest = (list) => [...list].sort((a, b) => b.text.length - a.text.length);
+
+  [...new Set(heard.map((entry) => entry.region))].forEach((region) => {
+    take(strongest(heard.filter((entry) => entry.region === region))[0]);
+  });
+  strongest(heard).forEach((entry) => {
+    if (picked.length < max) take(entry);
+  });
+  return picked.slice(0, max);
 }
 
 // The editorial each section says, as the page says it — with every figure measured
@@ -128,6 +159,28 @@ const SECTION_EDITORIAL = {
     ],
   },
 
+  // The honorees' own lines, gathered into one spread ahead of the directory: the
+  // page that turns a book of names into a book with voices in it.
+  'sec-voices': (m, nominees) => {
+    const voices = voicesFrom(nominees);
+    return {
+      title: 'In Their Own Words',
+      subtitle: 'The edition, as the honorees say it.',
+      writer_credit: 'The Editors',
+      body: [
+        'One voice from each region of this edition, and the strongest of what is left, printed as each honoree wrote it.',
+        `${count(m.withVoice)} of the ${count(m.names)} honorees in this edition are held in their own voice on the record; every portrait in The Index opens on hers.`,
+      ].join('\n\n'),
+      blocks: [
+        { type: 'kicker', text: 'Voices' },
+        { type: 'heading', text: 'In Their Own Words' },
+        { type: 'body', text: `${count(m.withVoice)} of the ${count(m.names)} honorees in this edition are held in their own voice on the record; every portrait in The Index opens on hers.` },
+        ...voices.map((voice) => ({ type: 'pull_quote', text: voice.text, attribution: voice.name })),
+        { type: 'byline', text: 'Unedited, from the 2025 record.' },
+      ],
+    };
+  },
+
   'sec-portraits': {
     title: 'Leaders in focus',
     subtitle: 'The portraits.',
@@ -166,6 +219,16 @@ const SECTION_EDITORIAL = {
       { type: 'body', text: 'The index runs by region: the country each honoree works from, and nothing else.' },
     ],
   }),
+
+  // The one alphabet in the book. It carries no copy of its own: its pages are
+  // composed from the portraits the edition has already numbered (see editionPages).
+  [NAME_INDEX_SECTION_ID]: {
+    title: 'Index of Names',
+    subtitle: 'Every honoree in this edition, alphabetically, with the page she stands on.',
+    writer_credit: 'The Editors',
+    body: 'The names of this edition in one alphabet, each with the page her portrait stands on. The directory runs by region; this index runs by name. Page numbers refer to the portraits in The Index.',
+    blocks: null,
+  },
 
   'sec-orbital-index': {
     title: 'The Orbital Index',
@@ -236,7 +299,7 @@ export function editionSectionBlocks(nominees = []) {
   return Object.fromEntries(
     EDITION_SECTIONS.map((section) => {
       const editorial = SECTION_EDITORIAL[section.id];
-      const resolved = typeof editorial === 'function' ? editorial(m) : editorial;
+      const resolved = typeof editorial === 'function' ? editorial(m, nominees) : editorial;
       return [section.id, resolved?.blocks || null];
     }),
   );
@@ -319,7 +382,7 @@ export function editionArticles(nominees = []) {
 
   EDITION_SECTIONS.forEach((section) => {
     const editorial = SECTION_EDITORIAL[section.id];
-    const resolved = typeof editorial === 'function' ? editorial(m) : editorial;
+    const resolved = typeof editorial === 'function' ? editorial(m, nominees) : editorial;
     if (!resolved) return;
 
     push({
@@ -353,15 +416,20 @@ export const TOP100_WOMEN_2025_ISSUE = {
   cover_kicker: 'Vol I — 2025',
   theme_accent: 'rose_gold',
   assembly_mode: 'native',
+  // The cover is the edition's own artwork — an arc of rose gold on the institution's
+  // navy — with the masthead set in type over it. No photograph is claimed here that
+  // the edition cannot credit.
+  cover_image_url: 'https://media.base44.com/images/public/68996845be6727838fdb822e/c908d2434_generated_image.png',
+  // The cover is artwork rather than a photograph, and the credits say so: nothing
+  // is claimed on the cover that the edition cannot show.
   cover_credits: {
-    subject: 'The 2025 Honorees',
-    photographer: 'TOP 100 Editorial',
+    subject: 'The 2025 Edition',
     writer: 'The Editors',
   },
   preface:
     'The aerospace industry has long been defined by those who look up and reach further. This edition is the record of the women who did: the work they stand for, the country they work from, and the ground they hold for the next generation.',
   colophon:
-    'TOP 100 Women in Aerospace & Aviation — The Orbital Edition, Volume I (2025). Assembled from the published 2025 edition: its nine parts, its editorial copy, and the names it resolves. Measurement only; personal lists, availability and sponsorship carry no weight in this record.',
+    'TOP 100 Women in Aerospace & Aviation — The Orbital Edition, Volume I (2025). Assembled from the published 2025 edition: its eleven parts, its editorial copy, and the names it resolves. Measurement only; personal lists, availability and sponsorship carry no weight in this record.',
 };
 
 export function editionIssue(nominees = []) {
@@ -369,10 +437,9 @@ export function editionIssue(nominees = []) {
   return {
     ...TOP100_WOMEN_2025_ISSUE,
     preface: `The aerospace industry has long been defined by those who look up and reach further. This edition is the record of the ${count(m.names)} women who did: the work they stand for, the country they work from, and the ground they hold for the next generation.`,
-    colophon: `TOP 100 Women in Aerospace & Aviation — The Orbital Edition, Volume I (2025). Assembled from the published 2025 edition: its nine parts, its editorial copy, and the ${count(m.names)} names it resolves across ${plural(m.countries.length, 'country')}. Measurement only; personal lists, availability and sponsorship carry no weight in this record.`,
+    colophon: `TOP 100 Women in Aerospace & Aviation — The Orbital Edition, Volume I (2025). Assembled from the published 2025 edition: its eleven parts, its editorial copy, and the ${count(m.names)} names it resolves across ${plural(m.countries.length, 'country')}. Measurement only; personal lists, availability and sponsorship carry no weight in this record.`,
     cover_credits: {
-      subject: `The ${count(m.names)} Honorees of the 2025 Edition`,
-      photographer: 'TOP 100 Editorial',
+      subject: 'The 2025 Edition',
       writer: 'The Editors',
     },
   };
