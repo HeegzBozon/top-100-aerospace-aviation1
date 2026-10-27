@@ -37,9 +37,17 @@ export default function HandheldScreenFrame() {
       aria-hidden="true"
     >
       {/* The screws, seated in the shoulder: 3px, so they finish at the rim. The foot
-          carries none: there is no shoulder below the pane to pin. */}
-      <span className="hh-screw absolute h-[3px] w-[3px] rounded-full" style={{ top: 0.5, left: 0.5 }} />
-      <span className="hh-screw absolute h-[3px] w-[3px] rounded-full" style={{ top: 0.5, right: 0.5 }} />
+          carries none: there is no shoulder below the pane to pin.
+          They stand on the corner's own diagonal rather than against the flat of the
+          head. The shoulder is 4px wide, but the shell's corner is an 18px arc, and it
+          has already cut the head band away well before it reaches either of these two
+          points — a screw pinned to the top edge therefore hangs off the moulding and
+          prints as a bright dot of bare metal on the desk. Held half way out along the
+          corner instead — radius 16 of that 18: the middle of the band between the
+          shell's edge and the rim — it sits on the case, which is what it is: the screw
+          that pins the bezel. */}
+      <span className="hh-screw absolute h-[3px] w-[3px] rounded-full" style={{ top: 5.2, left: 5.2 }} />
+      <span className="hh-screw absolute h-[3px] w-[3px] rounded-full" style={{ top: 5.2, right: 5.2 }} />
 
       {/* The rim — a ring, so the picture shows straight through its middle. Its radius
           is the pane's, plus the width of everything held between them: 8 + 6 = 14, so
