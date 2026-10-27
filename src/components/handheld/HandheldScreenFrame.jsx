@@ -4,7 +4,7 @@
 // steps — and the steps tile exactly, so no band of hardware is ever doubled and
 // nothing is ever painted over the picture:
 //
-//   0 → 4px    the moulding's shoulder, and the four screws that pin the bezel
+//   0 → 4px    the moulding's shoulder — plain shell, carrying no hardware
 //   4 → 6px    the rim: a 2px machined ring, lit along its top-left edge
 //   6 → 10px   the recess: the step down to the pane, in the finish's dark tone
 //   10px       the picture, with the pane over it
@@ -36,18 +36,11 @@ export default function HandheldScreenFrame() {
       }}
       aria-hidden="true"
     >
-      {/* The screws, seated in the shoulder: 3px, so they finish at the rim. The foot
-          carries none: there is no shoulder below the pane to pin.
-          They stand on the corner's own diagonal rather than against the flat of the
-          head. The shoulder is 4px wide, but the shell's corner is an 18px arc, and it
-          has already cut the head band away well before it reaches either of these two
-          points — a screw pinned to the top edge therefore hangs off the moulding and
-          prints as a bright dot of bare metal on the desk. Held half way out along the
-          corner instead — radius 16 of that 18: the middle of the band between the
-          shell's edge and the rim — it sits on the case, which is what it is: the screw
-          that pins the bezel. */}
-      <span className="hh-screw absolute h-[3px] w-[3px] rounded-full" style={{ top: 5.2, left: 5.2 }} />
-      <span className="hh-screw absolute h-[3px] w-[3px] rounded-full" style={{ top: 5.2, right: 5.2 }} />
+      {/* No screws in the shoulder. It is 4px wide and the shell turns its corner on
+          an 18px arc, so there is no flat of the head to pin hardware to: a screw
+          seated anywhere up here stands on the corner itself and prints bare metal in
+          the one place the glass's corner has to read as solid case with nothing in
+          it. The chin carries the pins (see HandheldChin) — it has the flat for them. */}
 
       {/* The rim — a ring, so the picture shows straight through its middle. Its radius
           is the pane's, plus the width of everything held between them: 8 + 6 = 14, so
