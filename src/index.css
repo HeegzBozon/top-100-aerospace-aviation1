@@ -900,6 +900,28 @@ button:focus-visible {
   }
 }
 
+/* ===== A PANEL OPENED OVER THE PICTURE =====
+   The card's information panel seats itself in the glass the way the app opening
+   does, so the hardware stays in view while it is read: the strip that names where
+   the ring is standing, and the wheel under the thumb doing the walking. On a desk
+   it stays the centred panel it always was. */
+@media (max-width: 767px) {
+  .hh-glass-panel {
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0;
+    top: calc(var(--hh-top, 96px) + var(--hh-nav, 34px) + env(safe-area-inset-top) + 5px);
+    left: var(--hh-glass-inset, 7px);
+    right: var(--hh-glass-inset, 7px);
+    bottom: calc(var(--hh-bottom, 176px) + env(safe-area-inset-bottom) + 5px);
+  }
+  .hh-glass-panel-card {
+    height: 100%;
+    max-height: none;
+    border-radius: 16px;
+  }
+}
+
 /* ===== AERO-FRONTIER — THE FIELD'S OWN INSTRUMENTS =====
    The game is the one surface in the building that does not use the institution's
    chrome. It reads as warm working equipment: painted plates seated in a well, an
