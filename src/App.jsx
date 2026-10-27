@@ -85,6 +85,7 @@ const IntelligenceGlobe = lazy(() => import('@/pages/IntelligenceGlobe'));
 const MagazineStudio = lazy(() => import('@/pages/MagazineStudio'));
 const MagazineReader = lazy(() => import('@/pages/MagazineReader'));
 const Women2025Edition = lazy(() => import('@/pages/Women2025Edition'));
+const Top100Women2025Edition = lazy(() => import('@/pages/Top100Women2025'));
 const OgCardTest = lazy(() => import('@/pages/OgCardTest'));
 const OgCardGenerator = lazy(() => import('@/pages/OgCardGenerator'));
 const WomenCollageGenerator = lazy(() => import('@/pages/WomenCollageGenerator'));
@@ -304,6 +305,10 @@ const AuthenticatedApp = () => {
       <Route path="/og-card-test" element={<OgCardTest />} />
       <Route path="/og-card-generator" element={<OgCardGenerator />} />
       <Route path="/women-collage-generator" element={<WomenCollageGenerator />} />
+       {/* The edition's own entry point. Declared here, ahead of the pages loop, so it
+           mounts straight into the device shells like the rest of the publication
+           surfaces rather than inside the legacy comms layout. */}
+       <Route path="/Top100Women2025" element={<Top100Women2025Edition />} />
        <Route path="/Top100Women2025/:year/:month/:slug" element={<Top100Women2025DeepLink />} />
        <Route path="/Top100Women2025/:year/:month/:slug/index.html" element={<Top100Women2025DeepLink />} />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />

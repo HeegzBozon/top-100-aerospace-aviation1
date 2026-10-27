@@ -4,11 +4,11 @@ import { AlertCircle } from 'lucide-react';
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, detail: '' };
   }
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
+  static getDerivedStateFromError(error) {
+    return { hasError: true, detail: error?.message ? String(error.message) : '' };
   }
 
   componentDidCatch(error, info) {
@@ -24,6 +24,10 @@ export default class ErrorBoundary extends React.Component {
             <div>
               <p className="text-sm font-semibold text-red-900">Section failed to load</p>
               <p className="text-xs text-red-700 mt-1">Please refresh the page or try again later.</p>
+              {/* The failing message, kept quiet, so a fault can be named instead of guessed at. */}
+              {this.state.detail && (
+                <p className="mt-2 text-[10px] font-mono text-red-700/80 break-words">{this.state.detail}</p>
+              )}
             </div>
           </div>
         </div>
