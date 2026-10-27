@@ -132,9 +132,11 @@ export default function StartScreen() {
           return true;
         }
         // Nor is the way in: it is the platform's own door, which signs a Fellow in and
-        // opens the account a visitor has not made yet, and it comes back to this screen.
+        // opens the account a visitor has not made yet. Whoever walks through it is taken
+        // to their own profile — the home surface — rather than back to this screen, so
+        // signing in visibly arrives somewhere.
         if (option.action) {
-          base44.auth.redirectToLogin(window.location.href);
+          base44.auth.redirectToLogin('/Profile');
           return true;
         }
         if (!option.to) return false;

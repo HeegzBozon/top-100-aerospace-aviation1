@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { mergedIntoId } from '@/lib/nomineeMerge';
+import { mergedIntoId, preferredNominee } from '@/lib/nomineeMerge';
 
 // A superseded duplicate row resolves to its canonical master, so a legacy id or
 // a cached share link always lands on the current verified profile.
@@ -107,7 +107,7 @@ export function useProfileResolution(targetId, targetEmail) {
                 ]);
 
                 result.user = users[0] || result.user;
-                result.nominee = result.nominee || (nominees[0] ? await resolveCanonicalNominee(nominees[0]) : null);
+                result.nominee = result.nominee || (nominees.length ? await resolveCanonicalNominee(preferredNominee(nominees)) : null);
                 result.provider = providers[0] || null;
                 result.employer = employers[0] || null;
                 result.startup = startups[0] || result.startup;

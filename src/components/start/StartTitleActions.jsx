@@ -44,9 +44,9 @@ export default function StartTitleActions({
   onNotifyChange,
 }) {
   // The platform's own door: it signs a Fellow in, and opens the account a visitor has
-  // not made yet. Either reading starts here, with where the reader is standing as the
-  // place they come back to.
-  const toLogin = () => base44.auth.redirectToLogin(window.location.href);
+  // not made yet. Either reading comes back to the Fellow's own profile — the home
+  // surface — so signing in lands somewhere instead of on the screen it left from.
+  const toLogin = () => base44.auth.redirectToLogin('/Profile');
 
   return (
     <div className="mt-2.5 flex flex-wrap items-center gap-2 md:mt-3">

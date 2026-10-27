@@ -9,6 +9,20 @@ export function mergedIntoId(nominee) {
   return typeof id === 'string' && id ? id : null;
 }
 
+// One person, one record. Several rows can share an address — a legacy import and a
+// later self-claim — so an address-keyed lookup must pick the copy the Fellow has
+// claimed and verified, never whichever row the database happened to return first.
+const standing = (n) =>
+  (n?.claimed_by_user_id ? 4 : 0) +
+  (n?.claim_status === 'approved' ? 2 : 0) +
+  (n?.verified_status === 'self_verified' || n?.verified_status === 'fully_verified' ? 1 : 0);
+
+export function preferredNominee(rows) {
+  const list = (rows || []).filter(Boolean);
+  if (list.length < 2) return list[0] || null;
+  return [...list].sort((a, b) => standing(b) - standing(a))[0];
+}
+
 // id → canonical id, for every row that was folded into another.
 export function mergeMap(nominees) {
   const map = new Map();

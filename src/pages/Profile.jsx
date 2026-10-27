@@ -21,6 +21,8 @@ import StoryCreate from '@/components/fellow-home/StoryCreate';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
+import { preferredNominee, mergedIntoId } from '@/lib/nomineeMerge';
+import { ensureFellowSettings } from '@/lib/ensureFellowSettings';
 import GlassConsole from '@/components/handheld/GlassConsole';
 import StudioPanel from '@/components/profile/StudioPanel';
 import PresentationSettings from '@/components/profile-deck/PresentationSettings';
@@ -72,22 +74,28 @@ export default function Profile() {
       setUser(currentUser);
       if (!currentUser?.email) return;
 
-      const nominees = await base44.entities.Nominee.filter({ nominee_email: currentUser.email }).catch(() => []);
-      const nom = nominees?.[0] || null;
+      // One person, one record: the copy the Fellow has claimed and verified outranks a
+      // superseded duplicate for the same address, and a superseded row resolves to the
+      // master it was folded into. Reading the raw first row is what told a Fellow who
+      // already owned her profile that she still had to claim it.
+      const rows = await base44.entities.Nominee.filter({ nominee_email: currentUser.email }).catch(() => []);
+      let nom = preferredNominee(rows);
+      const masterId = mergedIntoId(nom || {});
+      if (masterId) nom = (await base44.entities.Nominee.get(masterId).catch(() => nom)) || nom;
       setNominee(nom);
 
       const found = await base44.entities.FellowProfileSettings.filter({ fellow_email: currentUser.email }).catch(() => []);
-      if (found?.[0]) {
-        setSettings(found[0]);
-      } else {
-        // Unconfigured Fellows get an accent derived from their primary discipline.
-        setSettings({
+      // The row the whole Studio is assembled from, written once for a Fellow who has
+      // never had one, so first arrival is a furnished page and not a set of empty states.
+      const provisioned = found?.[0] || (await ensureFellowSettings(currentUser, nom).catch(() => null));
+      setSettings(
+        provisioned || {
           domain_accent: accentForDiscipline(nom?.discipline),
           cover_asset_id: 'none',
           module_order: [],
           six_word_story: currentUser.six_word_story || '',
-        });
-      }
+        },
+      );
     } catch (error) {
       console.error('Error loading user:', error);
     } finally {
