@@ -148,9 +148,11 @@ export default function StartScreen() {
       {/* The picture plane: the hour's sky, edge to edge in the glass. The pane's
           own radius is the only thing that rounds it — nothing is inset, so no
           strip of the page behind the device shows at the picture's edges and the
-          star field runs the full height of the display. */}
+          star field runs the full height of the display. The two head corners take
+          the glass's arc; the foot is square, because the picture ends on the
+          readout band, where the glass is still running straight. */}
       <div
-        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[8px] md:min-h-screen md:rounded-none"
+        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-t-[8px] md:min-h-screen md:rounded-none"
         style={{ background: phase.sky }}
       >
         <StartSky phase={phase} />

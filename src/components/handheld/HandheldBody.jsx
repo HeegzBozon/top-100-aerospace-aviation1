@@ -3,6 +3,12 @@
 // keys, the grille. It sits at the very back of the stack (behind the picture),
 // which is what lets one continuous object carry both the display and the
 // controls instead of two panels butting together.
+//
+// Its corner is concentric with the glass: the pane opens 8px round and sits 10px
+// in from this edge, so 18 is the one radius that keeps the moulding the same width
+// as it turns the corner (18 = 8 + 10, and 14 = 8 + 6 for the rim inside it). A
+// rounder shell is what makes a bezel look fat at the corners and thin along the
+// sides — the glass and the case read as two shapes rather than one opening.
 export default function HandheldBody() {
   return (
     <div
@@ -13,7 +19,7 @@ export default function HandheldBody() {
         right: "var(--hh-frame, 0px)",
         top: "calc(var(--hh-shell-top, 26px) + env(safe-area-inset-top))",
         bottom: "var(--hh-frame, 0px)",
-        borderRadius: "26px",
+        borderRadius: "18px",
       }}
       aria-hidden="true"
     />

@@ -398,12 +398,19 @@ button:focus-visible {
   }
 }
 
+/* The picture window, clipped to the glass's own shape. The pane opens with an 8px
+   arc at its two top corners and runs straight down its sides to the chin's line, and
+   the window is rounded to match — so nothing a surface paints can ever cross the
+   opening, and the arcs read as one edge rather than as a rounded card sitting in a
+   square hole. The foot is set square on purpose: the picture ends above the readout
+   band, where the glass is still straight. */
 .hh-stage {
   position: fixed;
   left: var(--hh-glass-inset);
   right: var(--hh-glass-inset);
   top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top));
   bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom));
+  border-radius: 8px 8px 0 0;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;

@@ -121,6 +121,11 @@ export default function HandheldDeck() {
   // profile's own panels — hands the console a picker, which outranks the
   // page's module marks: the ring walks what is actually on the screen.
   const picker = useHandheldPicker();
+  // The left print on the ring — back, not rewind — ends at the console's own back
+  // handler when the surface has nothing of its own left to step through. That
+  // handler is declared further down this component, so it is read through a ref:
+  // whichever way either one is memoised, the two can never disagree.
+  const backRef = useRef(null);
   // And a surface may claim the ring outright: the field game steers its character
   // with it. While nothing of the console's own is open over the glass, the four
   // zones stop being menu/back/forward/play and become directions, reported held
@@ -446,6 +451,11 @@ export default function HandheldDeck() {
 
   // Back and forward on the ring: step a module where the surface declares any,
   // otherwise move a screenful. In the menu they hop whole groups.
+  //
+  // The forward key bumps at the end of a surface — there is nowhere further on to
+  // go. The back key does not: printed as back/undo, it steps back through the
+  // surface's own set while there is one, and when there is nothing of its own left
+  // to step through it leaves the surface, which is what the print promises.
   const stepSection = useCallback(
     (direction) => {
       finishBoot();
@@ -462,13 +472,15 @@ export default function HandheldDeck() {
       if (picker) {
         const label = picker.page(direction);
         if (label) announce(label);
+        else if (direction < 0) backRef.current?.();
         else blip("back");
         return;
       }
       if (deck) {
         const next = deck.index() + direction;
         if (next < 0 || next >= deck.count()) {
-          blip("back");
+          if (direction < 0) backRef.current?.();
+          else blip("back");
           return;
         }
         if (direction > 0) deck.next();
@@ -488,7 +500,8 @@ export default function HandheldDeck() {
         nav.jump(direction);
         return;
       }
-      blip("back");
+      if (direction < 0) backRef.current?.();
+      else blip("back");
     },
     [menuOpen, menuMode, listFor, groupsFor, jumpGroup, picker, deck, nav, finishBoot, announce],
   );
@@ -599,6 +612,7 @@ export default function HandheldDeck() {
     if (picker?.back?.()) return;
     navigate(-1);
   }, [booting, finishBoot, menuOpen, notificationsOpen, shareOpen, navigate, picker]);
+  backRef.current = back;
 
   return (
     <>
@@ -705,7 +719,9 @@ export default function HandheldDeck() {
              sized by its content can creep up over the pane and take the readout band
              with it. */
           height: `calc(${DECK_CLEARANCE}px + env(safe-area-inset-bottom))`,
-          borderRadius: "0 0 26px 26px",
+          /* Square where it meets the glass, and the body's own corner at the foot:
+             the same 18 the moulding carries, so the case turns one corner, not two. */
+          borderRadius: "0 0 18px 18px",
           paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
         }}
       >

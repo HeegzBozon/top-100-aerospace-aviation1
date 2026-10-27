@@ -41,19 +41,24 @@ export default function HandheldScreenFrame() {
       <span className="hh-screw absolute h-[3px] w-[3px] rounded-full" style={{ top: 0.5, left: 0.5 }} />
       <span className="hh-screw absolute h-[3px] w-[3px] rounded-full" style={{ top: 0.5, right: 0.5 }} />
 
-      {/* The rim — a ring, so the picture shows straight through its middle */}
-      <div className="hh-rim absolute rounded-[12px]" style={{ inset: `${MOULDING}px ${MOULDING}px 0` }} />
+      {/* The rim — a ring, so the picture shows straight through its middle. Its radius
+          is the pane's, plus the width of everything held between them: 8 + 6 = 14, so
+          the band around the opening keeps one width as it turns the corner. */}
+      <div className="hh-rim absolute rounded-[14px]" style={{ inset: `${MOULDING}px ${MOULDING}px 0` }} />
 
       {/* The step down to the pane. The band is laid from the pane's own edge
           outwards and clipped by the moulding, so its inner curve IS the pane's
-          curve: the three radii nest (12, 10, 8), the rail's rounded corners sit
-          inside it, and no part of the recess can ever paint over the picture.
+          curve: the radii nest exactly — 18 at the shell's edge, 14 at the rim, 12
+          here, 8 at the pane, each one the next smaller plus the width of the band
+          between them — so the opening keeps one bezel all the way round its
+          corners, the rail's rounded corners sit inside it, and no part of the
+          recess can ever paint over the picture.
           The band is laid wider than it reads (12px) because the clip, not the
           spread, is what shapes its outer curve — at the recess's own width the
           spread's corner would fall short of the clip's and leave a gap at each of
           the top corners for the surface behind the frame to show through as white. */}
       <div
-        className="hh-well absolute overflow-hidden rounded-[10px]"
+        className="hh-well absolute overflow-hidden rounded-[12px]"
         style={{ inset: `${MOULDING + RIM}px ${MOULDING + RIM}px 0` }}
       >
         <div

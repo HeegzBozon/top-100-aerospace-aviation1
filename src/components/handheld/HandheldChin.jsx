@@ -23,7 +23,8 @@ export default function HandheldChin() {
           right: `${FRAME_GUTTER}px`,
           bottom: `${FRAME_GUTTER}px`,
           height: `calc(${DECK_CLEARANCE}px + env(safe-area-inset-bottom))`,
-          borderRadius: "0 0 26px 26px",
+          /* Square where it meets the glass, and the body's own corner at the foot. */
+          borderRadius: "0 0 18px 18px",
           paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
         }}
       >
