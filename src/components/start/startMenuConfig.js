@@ -1,20 +1,27 @@
-import { Award, BadgeCheck, BookOpen, LayoutGrid, Plane, Trophy, Users } from "lucide-react";
+import { Award, BadgeCheck, BookOpen, LayoutGrid, ListChecks, Plane, Trophy, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
 // tile routes to a surface that already exists — the start screen holds the menu,
 // the surfaces hold the work.
 //
+// The committee stands as two surfaces rather than one drawer: nominating is the
+// work of putting names in, voting is the work of measuring them, and a Fellow
+// arriving at the title screen is almost always there for one of the two. Both land
+// inside the hub itself — the tab is the deep link, so neither waits behind the
+// title card in front of it.
+//
 // The game stands at the end of the row on purpose: it is the one surface built
 // for play, and it belongs beside the institution's work rather than inside it.
 export const START_MENU = [
   { key: "dashboard", index: "01", label: "Dashboard", to: "/board", icon: LayoutGrid },
-  { key: "committee", index: "02", label: "Selection Committee", to: "/selection-committee", icon: Award },
-  { key: "briefing", index: "03", label: "Mission Briefing", to: "/mission-briefing", icon: BookOpen },
-  { key: "networking", index: "04", label: "Networking", to: "/networking", icon: Users },
-  { key: "publication", index: "05", label: "The Publication", to: "/Top100Women2025", icon: Trophy },
-  { key: "membership", index: "06", label: "Membership", to: "/Membership", icon: BadgeCheck },
-  { key: "frontier", index: "07", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
+  { key: "nominate", index: "02", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
+  { key: "vote-surface", index: "03", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks },
+  { key: "briefing", index: "04", label: "Mission Briefing", to: "/mission-briefing", icon: BookOpen },
+  { key: "networking", index: "05", label: "Networking", to: "/networking", icon: Users },
+  { key: "publication", index: "06", label: "The Publication", to: "/Top100Women2025", icon: Trophy },
+  { key: "membership", index: "07", label: "Membership", to: "/Membership", icon: BadgeCheck },
+  { key: "frontier", index: "08", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
 ];
 
 // The ballot: the one action the cycle is asking for, offered beside the

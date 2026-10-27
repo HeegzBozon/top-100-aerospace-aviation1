@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import { registerFaceKeys } from '@/components/handheld/handheldKeys';
+import useAnchorPicker from '@/components/voting/useAnchorPicker';
 
 // The four candidates stand under the four face keys, in the order the cards are set:
 // X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
@@ -183,6 +184,22 @@ export default function AnchorVoting({ user }) {
     }
   };
 
+  // The ring walks the same four cards. While a set is standing, a turn of the wheel
+  // moves the cursor across it — the ends hold, so the first and the last card are as
+  // far as it goes — and the centre button votes for the card the cursor has reached.
+  const standing = phase === 'best' || phase === 'worst';
+  const setKey = currentSet.map((n) => n.id).join('|');
+  const cursor = useAnchorPicker({
+    count: currentSet.length,
+    labelAt: (i) => currentSet[i]?.name || `Candidate ${String.fromCharCode(65 + i)}`,
+    active: standing,
+    setKey,
+    onChoose: (i) => {
+      const nominee = currentSet[i];
+      if (nominee) handleSelect(nominee);
+    },
+  });
+
   // While a set is standing, the keypad is the vote: a press puts that key's own card
   // under the same hand the tap does. Between sets, and once the set is recorded, the
   // keys go back to the console — A confirm, B back, X sections, Y share.
@@ -306,6 +323,7 @@ export default function AnchorVoting({ user }) {
                 isTop={isTop}
                 isBottom={isBottom}
                 selectable={selectable && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
+                cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
                 keyLabel={VOTE_KEYS[idx]}

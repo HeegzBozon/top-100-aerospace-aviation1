@@ -63,7 +63,10 @@ export default function ModuleSlideDeck({ slides = [] }) {
       goTo: (i) => goTo(i),
       scrollBy: (delta) => {
         const slide = activeSlide();
-        if (slide) slide.scrollTop += delta;
+        if (!slide) return false;
+        const before = slide.scrollTop;
+        slide.scrollTop = before + delta;
+        return slide.scrollTop !== before;
       },
       atEnd: () => {
         const slide = activeSlide();

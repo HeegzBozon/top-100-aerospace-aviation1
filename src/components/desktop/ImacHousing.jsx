@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import ImacCrown from "./ImacCrown";
 import ImacChin from "./ImacChin";
 import ImacRoom from "./ImacRoom";
+import DesktopMenuBar from "./DesktopMenuBar";
 import useImacFinish from "./useImacFinish";
 import "./imac.css";
 
@@ -10,6 +11,10 @@ import "./imac.css";
 // Whoever paints it puts the desk on the document and wears the Fellow's colour,
 // so the shell and the loading chassis are literally the same machine — a surface
 // never arrives in a different computer than the one it left.
+//
+// The menubar stands at the head of the tube, holding its place while the surface
+// beneath it scrolls under — the same strip the handheld wears, so the desk and the
+// glass hold one menu between them.
 export default function ImacHousing({ children }) {
   const { finishKey, finish, pack, packs, options, chooseFinish, choosePack } = useImacFinish();
 
@@ -36,6 +41,7 @@ export default function ImacHousing({ children }) {
         role="region"
         aria-label="Machine screen"
       >
+        <DesktopMenuBar />
         {children}
       </div>
 

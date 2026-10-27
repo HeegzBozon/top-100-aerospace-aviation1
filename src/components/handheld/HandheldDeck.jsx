@@ -359,13 +359,15 @@ export default function HandheldDeck() {
           return;
         }
       }
+      // A detent that moves nothing is the end of the surface: the ring bumps, so
+      // the top and the bottom of a page are felt rather than swallowed in silence.
       if (deck) {
-        deck.scrollBy(step * 54);
+        if (deck.scrollBy(step * 54) === false) blip("back");
         return;
       }
       // Depth first: a surface that scrolls inside its own section — a Board
       // column — gets the ring before the glass or the window does.
-      nav.scrollBy(step * 54);
+      if (nav.scrollBy(step * 54) === false) blip("back");
     },
     [menuOpen, menuMode, listFor, picker, deck, finishBoot, nav, announce, steering],
   );
@@ -571,6 +573,8 @@ export default function HandheldDeck() {
       <ScreenTopBar
         surface={surface}
         module={modules[moduleIndex]?.label}
+        menuOpen={menuOpen}
+        onMenu={upOneLevel}
         soundOn={soundOn}
         onHome={goHome}
         onProfile={openProfile}

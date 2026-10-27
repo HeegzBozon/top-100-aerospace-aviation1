@@ -33,6 +33,13 @@ const markAt = (axis) =>
     ? axis.track.scrollLeft + Math.min(axis.track.clientWidth * 0.32, 200)
     : axis.stage.scrollTop + Math.min(axis.stage.clientHeight * 0.32, 200);
 
+// Move a scroller by a detent's worth, and say whether it moved at all.
+const nudge = (scroller, delta) => {
+  const before = scroller.scrollTop;
+  scroller.scrollTop = before + delta;
+  return scroller.scrollTop !== before;
+};
+
 // The section you are actually reading, when a surface scrolls inside one of its
 // sections rather than inside the glass — a Board column, say.
 const innerScrollerAt = (stage) => {
@@ -117,20 +124,18 @@ export default function useModuleNavigation(locationKey) {
   );
 
   // Depth: one section's own scroll where it has one, the glass next, the window
-  // last — so the ring always moves whatever is actually in front of you.
+  // last — so the ring always moves whatever is actually in front of you. It reports
+  // whether the surface moved at all: at the top or the bottom a turn must not be
+  // swallowed in silence, so the console bumps instead.
   const scrollBy = useCallback((delta) => {
     const axis = axisOf();
-    if (!axis) return;
+    if (!axis) return false;
     const inner = innerScrollerAt(axis.stage);
-    if (inner && inner.scrollHeight > inner.clientHeight + 4) {
-      inner.scrollTop += delta;
-      return;
-    }
+    if (inner && inner.scrollHeight > inner.clientHeight + 4) return nudge(inner, delta);
     if (!axis.across && axis.stage.scrollHeight > axis.stage.clientHeight + 4) {
-      axis.stage.scrollTop += delta;
-      return;
+      return nudge(axis.stage, delta);
     }
-    window.scrollBy(0, delta);
+    return nudge(document.scrollingElement || document.documentElement, delta);
   }, []);
 
   const jump = useCallback((direction) => {

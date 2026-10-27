@@ -30,7 +30,10 @@ function initials(name) {
 // The card fills the box it is given. On the glass that box is measured for it (see
 // GlassVoteSurface), so the four candidates stand in a 2x2 with nothing to scroll;
 // on the desk the grid rows already have a height of their own.
-export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, selectable, onInfo, onSelect }) {
+//
+// The ring walks these cards while a set is standing: the card the cursor is on
+// carries a copper ring, so where the wheel is pointing is legible on the glass.
+export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, selectable, cursor = false, onInfo, onSelect }) {
 
   const name = nominee.name || 'Unnamed nominee';
   const photo = nominee.avatar_url || nominee.photo_url || '';
@@ -53,6 +56,7 @@ export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, s
           border: `1px solid ${isTop ? brand.gold : isBottom ? `${brand.navy}30` : `${brand.navy}10`}`,
           opacity: anchored ? 0.72 : 1,
           cursor: selectable ? 'pointer' : 'default',
+          boxShadow: cursor ? `0 0 0 2px ${brand.gold}, 0 10px 22px -14px ${brand.navy}99` : undefined,
         }}
       >
         {/* Identity row */}
