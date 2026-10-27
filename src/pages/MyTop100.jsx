@@ -125,7 +125,7 @@ export default function MyTop100() {
           setShareCode(generateShareCode());
         }
 
-        // Resolve active voting season (ballot auto-sync window) + the Fellow's public profile id.
+        // Resolve the active voting season (the window the list stays editable in) + the Fellow's public profile id.
         // Prefer the parent group season so the ballot is recorded against the
         // combined pool (Women + Men + Angels), not a single cohort. The group
         // may still be in 'planning' while its cohorts are voting-open; in that
@@ -278,10 +278,9 @@ export default function MyTop100() {
     }
   };
 
-  // Auto-save + ballot auto-sync. No publish gate: the list persists on every
-  // change and the ranked ballot upserts automatically while the voting window
-  // is open. The list is the public, shareable artifact; the ballot is the
-  // measurement input — they are decoupled.
+  // Auto-save. No publish gate: the list persists on every change. The list is
+  // the public, shareable artifact; the ballot is the measurement input and is
+  // cast on the ballot surface — they are decoupled.
   const persistAndSync = useCallback(async (updatedRankings, updatedName) => {
     if (!user) return;
     setSaving(true);
@@ -511,7 +510,7 @@ export default function MyTop100() {
           <div className="mb-3">
             <ContextualTip userEmail={user?.email} tipKey="nominate_hub_mylist">
               {votingOpen
-                ? 'This is your ranked Top 100 — it doubles as your ballot while voting is open. Drag to reorder. You rank; the institution measures.'
+                ? 'This is your ranked Top 100 — your personal, shareable list. Drag to reorder. You rank; the institution measures.'
                 : 'This is your ranked Top 100 — your personal, shareable ranking. Nominations go to our review queue; ballot measurement opens with the voting window.'}
             </ContextualTip>
           </div>
@@ -564,7 +563,7 @@ export default function MyTop100() {
   const consolePanels = [
     { key: 'start', label: 'Start Here', hint: 'Why this is here, and where to begin', icon: Rocket, node: startNode },
     { key: 'nominate', label: 'Nominate', hint: `${totalNominations} nominated · ${rankings.length} on your list`, icon: Sparkles, node: <div className="pb-3">{nominateBody}</div> },
-    { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — your list is your ballot' : 'Your ranked ballot', icon: ListOrdered, node: glassVoteNode },
+    { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — cast your ballot' : 'Your ranked ballot', icon: ListOrdered, node: glassVoteNode },
   ];
 
   const shownTab = glass ? glassOpen : activeTab;

@@ -4,7 +4,7 @@
 
 **Not for publication.** Public-facing governance copy lives at `/governance` (firewall, measurement). This document is the internal rulebook.
 
-Last updated: 2026-10-23
+Last updated: 2026-10-27
 
 ---
 
@@ -86,6 +86,8 @@ TOP 100 Aerospace & Aviation is the **verified reputation graph** for aerospace 
 7. **Archival records are immutable** once finalized per cycle.
 8. **Coordination signals confer zero selection weight** and are never read by discovery, ranking, or scoring: `ConferenceRsvp.volunteer`, `DomainNetwork.facilitator_email`, `ConferenceRoom.patron_of_record_name`.
 9. **Display-only fields stay display-only.** Never read by discovery, ranking, or scoring: `og_card_url`, `public_slug`, `linkedin_proudest_screenshot_url`, all viral-post staging fields, and nomination provenance (`nomination_count`, `linked_nomination_ids`).
+10. **The ballot is sealed.** A Fellow's ranked ballot (`RankedVote`) is readable only by that Fellow and by admins, and only its voter may create or change it. Tallies are folded server-side; no published surface receives voters or ballots, only per-subject totals. A visitor reaches none of it.
+11. **A published list never writes a ballot.** The Eight (`UserTop100List`) is a public, ordinal publication. Casting, updating or mirroring a ranked ballot on a list edit is prohibited; ballots are cast on the ballot surface alone.
 
 ---
 
@@ -141,6 +143,7 @@ Entity: `UserTop100List`.
 - **Promotion into an occupied slot demotes the displaced entry to the tail.** It never deletes it.
 - **Subjects are Fellows and Nominees only.** No free-text or external subjects.
 - Entries carry **zero weight** in measurement or influence tier calculation.
+- **Publishing the list never writes a ballot.** Editing the list must not cast, update or mirror a `RankedVote`. The list is a publication; the ballot is a private vote cast on the ballot surface.
 
 ---
 
@@ -249,7 +252,8 @@ Listed so recommendations do not assume these are already solved.
 
 - **Canonical host** decision pending. The app is published at `https://top100aerospaceandaviation.base44.app`.
 - **Sitemap submission** to Search Console pending.
-- **Merged duplicate rows persist**, and resolution surfaces that key on slug rather than the master can serve stale, non-canonical content. One confirmed case: a merged record still holds a shareable slug, so that link opens the old profile with its earlier automated text.
+- **Merged duplicate rows persist as rows**, and that is intended: a retired row keeps its own cycle membership and its measured standing, so its cycle's published order cannot shift. Resolution follows `raw_nomination_data.merged_into` to the master, and the confirmed case (a folded row still holding a shareable slug) is closed — the master holds the slug, the retired row gives it up. Fold any new case the same way.
+- **The per-cycle score snapshot field** (`Nominee.seasonScores`) will not hold a season-keyed map: a written map returns an empty shape. Per-cycle scores stay on the row belonging to that cycle until the field's schema is corrected.
 - **Roster cleanup** outstanding: records missing indexable content, plus duplicate person rows.
 - **Automated third-person biography text** was generated before honorees could self-submit, and in at least one case contradicts what the honoree actually wrote. Automated text must never be presented as authored by the honoree.
 - **Rating and engagement fields are largely at defaults** (no signal yet), so they cannot be read as evidence of anything.
