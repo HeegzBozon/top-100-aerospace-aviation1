@@ -1,0 +1,275 @@
+/* ===== DESK MACHINE — A COLOURED RETRO iMAC HOUSING =====
+   The desktop counterpart to the handheld, and the same idea at desk scale: one
+   moulded artifact carries the whole platform, so every surface on a desk is seen
+   through the tube of one retro console. The shell is translucent polymer in one
+   of the classic colours — imacFinishes.js overwrites every --imac-* colour token
+   — and the geometry below is what insets every surface, the loading chassis and
+   the page turn alike. Nothing in the moulding is ever a hard-coded colour. */
+:root {
+  /* Geometry: the desk margin, then the resin that wraps the tube. --imac-top and
+     --imac-bottom are the tube's own opening, measured from the window. */
+  --imac-frame: 18px;
+  --imac-crown: 58px;
+  --imac-side: 30px;
+  --imac-chin: 104px;
+  --imac-glass-x: calc(var(--imac-frame) + var(--imac-side));
+  --imac-top: calc(var(--imac-frame) + var(--imac-crown));
+  --imac-bottom: calc(var(--imac-frame) + var(--imac-chin));
+  --imac-radius: 42px;
+  --imac-tube-radius: 10px;
+
+  /* The house machine: teal, the original. */
+  --imac-plastic-1: #45BBD4;
+  --imac-plastic-2: #1E86A6;
+  --imac-plastic-3: #0C5A78;
+  --imac-plastic-edge: rgba(255, 255, 255, 0.38);
+  --imac-ink: #05242F;
+  --imac-ink-rgb: 5 36 47;
+  --imac-ink-soft: rgba(5, 36, 47, 0.55);
+
+  /* Shared by every colour: brushed steel for the working parts, rose gold for the
+     machine's own rule, and the tone the tube sits down into. */
+  --imac-steel-1: #E6EBF0;
+  --imac-steel-2: #98A2AD;
+  --imac-steel-3: #5E6773;
+  --imac-tube: #0B1119;
+  --imac-tube-edge: rgba(2, 5, 10, 0.62);
+  --imac-led: #7BE08A;
+}
+
+@media (min-width: 768px) {
+  /* The desk: the same lamplit studio the handheld stands on, so the two machines
+     read as one product in one room. The desk itself never scrolls — the tube
+     does, and every surface keeps its own composition inside it. */
+  body.imac-shell {
+    background-color: #070C16;
+    background-image:
+      radial-gradient(150% 108% at 50% 42%, rgba(3, 6, 13, 0) 38%, rgba(3, 6, 13, 0.74) 100%),
+      radial-gradient(120% 58% at 50% 0%, rgba(201, 168, 124, 0.26) 0%, rgba(30, 58, 90, 0) 60%),
+      radial-gradient(96% 44% at 50% 104%, rgba(36, 68, 104, 0.55) 0%, rgba(8, 14, 27, 0) 74%),
+      linear-gradient(168deg, #18273F 0%, #0E1829 46%, #070C16 100%);
+    background-repeat: no-repeat;
+    overflow: hidden;
+  }
+
+  /* A screen-tall surface means the tube, not the window. */
+  body.imac-shell .min-h-screen,
+  body.imac-shell .h-screen {
+    min-height: calc(100dvh - var(--imac-top) - var(--imac-bottom));
+    height: auto;
+  }
+
+  /* Bars that ride the bottom or the top of the desk clear the bands, so a surface
+     never hides a control inside the resin. */
+  body.imac-shell .imac-lift {
+    bottom: calc(var(--imac-bottom) + 10px);
+  }
+  body.imac-shell .imac-fall {
+    top: var(--imac-top);
+  }
+
+  /* Surfaces already ask to be lifted clear of a device's chrome; on a desk that
+     chrome is the machine's chin, so they ask once and both machines answer. A pill
+     or a float takes the bottom only, so its own centring stands; a bar spans the
+     tube and never the resin beside it. */
+  body.imac-shell .imac-lift,
+  body.imac-shell .hh-lift-center,
+  body.imac-shell .hh-lift-right {
+    bottom: calc(var(--imac-bottom) + 10px);
+  }
+  body.imac-shell .imac-bar,
+  body.imac-shell .hh-lift {
+    left: var(--imac-glass-x);
+    right: var(--imac-glass-x);
+    bottom: calc(var(--imac-bottom) + 10px);
+  }
+
+  /* The page turn and the title card play inside the tube, never over the resin. */
+  body.imac-shell .page-turn-clip,
+  body.imac-shell .as-frame {
+    left: var(--imac-glass-x);
+    right: var(--imac-glass-x);
+    top: var(--imac-top);
+    bottom: var(--imac-bottom);
+    border-radius: var(--imac-tube-radius);
+  }
+}
+
+/* The machine: one moulding, drawn to the window's own edges. */
+.imac-machine {
+  position: fixed;
+  inset: var(--imac-frame);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--imac-radius);
+  /* Translucent resin: a specular sweep across the top face, the internal chassis
+     faintly visible through it, then the colour falling into its own shadow. */
+  background:
+    radial-gradient(120% 64% at 50% -8%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 62%),
+    linear-gradient(178deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.05) 16%, rgba(255, 255, 255, 0) 40%),
+    linear-gradient(172deg, var(--imac-plastic-1) 0%, var(--imac-plastic-2) 52%, var(--imac-plastic-3) 100%);
+  box-shadow:
+    inset 0 0 0 1px var(--imac-plastic-edge),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -34px 54px -42px rgba(3, 6, 13, 0.60),
+    0 2px 5px rgba(3, 6, 13, 0.42),
+    0 40px 84px -24px rgba(3, 6, 13, 0.72);
+}
+
+/* The bands above and below the tube: moulded grain, and how the resin catches the
+   light as it turns away from it. */
+.imac-band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 3px);
+  opacity: 0.55;
+}
+
+.imac-crown {
+  position: relative;
+  flex: 0 0 var(--imac-crown);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.imac-chin {
+  position: relative;
+  flex: 0 0 var(--imac-chin);
+  display: flex;
+  align-items: center;
+}
+
+/* The grip moulded into the crown, and the grilles punched either side of it. */
+.imac-grip {
+  width: 236px;
+  height: 11px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(3, 6, 13, 0.32) 0%, rgba(3, 6, 13, 0.16) 46%, rgba(255, 255, 255, 0.16) 100%);
+  box-shadow: inset 0 2px 5px rgba(3, 6, 13, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.imac-grille {
+  border-radius: 999px;
+  background-color: rgba(3, 6, 13, 0.06);
+  background-image: radial-gradient(circle at 50% 50%, rgba(3, 6, 13, 0.40) 1px, transparent 1.6px);
+  background-size: 7px 7px;
+  background-position: 3px 3px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.24);
+}
+
+/* The slot-loading tray, and the seam of a real moulding. */
+.imac-tray {
+  width: 138px;
+  height: 13px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #080C12 0%, #161D26 58%, #080C12 100%);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.85), 0 1px 0 rgba(255, 255, 255, 0.20);
+}
+
+.imac-screw {
+  background: radial-gradient(circle at 34% 28%, var(--imac-steel-1) 0%, var(--imac-steel-2) 66%, var(--imac-steel-3) 100%);
+  box-shadow: inset 0 0 0 1px rgba(3, 6, 13, 0.26), 0 1px 1px rgba(255, 255, 255, 0.30);
+}
+
+/* The colour the resin is moulded in: a swatch, and the ring on the one worn. */
+.imac-colour {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(3, 6, 13, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 4px rgba(3, 6, 13, 0.32),
+    0 1px 2px rgba(3, 6, 13, 0.35);
+  transition: transform 140ms ease;
+}
+.imac-colour:hover {
+  transform: translateY(-1px);
+}
+.imac-colour:focus-visible {
+  outline: 2px solid rgba(201, 168, 124, 0.95);
+  outline-offset: 2px;
+}
+.imac-colour[data-on="true"] {
+  box-shadow:
+    0 0 0 2px rgba(201, 168, 124, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 4px rgba(3, 6, 13, 0.32);
+}
+
+/* The power key, and the lamp beside it. */
+.imac-power {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  color: var(--imac-ink);
+  background: radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.10) 44%, rgba(3, 6, 13, 0.20) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(3, 6, 13, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 1px 3px rgba(3, 6, 13, 0.40);
+  transition: transform 140ms ease;
+}
+.imac-power:hover {
+  transform: translateY(-1px);
+}
+.imac-power:active {
+  box-shadow: inset 0 2px 6px rgba(3, 6, 13, 0.45), inset 0 0 0 1px rgba(3, 6, 13, 0.26);
+}
+.imac-power:focus-visible {
+  outline: 2px solid rgba(201, 168, 124, 0.95);
+  outline-offset: 2px;
+}
+.imac-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--imac-led);
+  box-shadow: 0 0 7px var(--imac-led), inset 0 0 2px rgba(3, 6, 13, 0.40);
+}
+
+/* The tube: the one opening the whole platform is seen through. Focus is carried
+   so the tube can be scrolled from the keyboard; the wheel and the trackpad scroll
+   it without asking. */
+.imac-screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0 var(--imac-side);
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: var(--imac-tube-radius);
+  background: var(--imac-tube);
+  box-shadow:
+    inset 0 0 0 1px var(--imac-tube-edge),
+    inset 0 11px 20px -14px rgba(0, 0, 0, 0.85),
+    inset 0 -7px 13px -11px rgba(255, 255, 255, 0.10),
+    inset 0 0 90px rgba(0, 0, 0, 0.45);
+}
+.imac-screen:focus-visible {
+  outline: 2px solid rgba(201, 168, 124, 0.85);
+  outline-offset: 2px;
+}
+
+/* The glass over the picture: one soft sheen, and the tube's own vignette. */
+.imac-glass {
+  position: absolute;
+  left: var(--imac-side);
+  right: var(--imac-side);
+  top: var(--imac-crown);
+  bottom: var(--imac-chin);
+  border-radius: var(--imac-tube-radius);
+  pointer-events: none;
+  background:
+    linear-gradient(124deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 36%),
+    radial-gradient(120% 92% at 50% 4%, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 56%);
+  box-shadow: inset 0 0 70px rgba(0, 0, 0, 0.30);
+}
+
+/* The wait, on the tube's own phosphor. */
+.imac-wait {
+  background: radial-gradient(120% 100% at 50% 0%, #16202C 0%, var(--imac-tube) 62%, #05080E 100%);
+}

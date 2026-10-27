@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HandheldShell from '@/components/handheld/HandheldShell';
+import DesktopShell from '@/components/desktop/DesktopShell';
 import AppSplash from '@/components/core/AppSplash';
 import ConsoleLoading from '@/components/core/ConsoleLoading';
 import PageTurn from '@/components/core/PageTurn';
@@ -128,6 +129,8 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* Everything renders inside the device on phones; desktop is untouched. */}
       <Route element={<HandheldShell />}>
+      {/* A desk is housed in the desk machine: everything below renders inside its tube */}
+      <Route element={<DesktopShell />}>
       {/* Fellows open on the start screen; visitors get the editorial home */}
       <Route path="/" element={isAuthenticated ? <StartScreen /> : <HomeV3 />} />
       <Route path="/start" element={<StartScreen />} />
@@ -300,6 +303,7 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="*" element={<PageNotFound />} />
+      </Route>
       </Route>
     </Routes>
     </Suspense>

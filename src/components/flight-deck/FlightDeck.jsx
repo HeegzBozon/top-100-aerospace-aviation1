@@ -33,7 +33,7 @@ export default function FlightDeck({ data, stats, phase, placed, children }) {
   }, []);
 
   return (
-    <div className="fd-chassis hh-grain relative flex h-screen min-h-0 flex-col overflow-hidden">
+    <div className="fd-panel relative flex h-full min-h-0 flex-col overflow-hidden pb-[78px]">
       <MastheadPlate operator={operator} live={live} />
       <TickerStrip cells={ticker} />
 
@@ -67,14 +67,6 @@ export default function FlightDeck({ data, stats, phase, placed, children }) {
         </div>
       </div>
 
-      {/* The chin: the machine's legend, and the clearance the dock rests in. */}
-      <div className="flex items-center gap-3 px-5 pb-[78px]">
-        <span className="hh-screw h-2 w-2 rounded-full" />
-        <p className="text-[7px] font-bold uppercase tracking-[0.3em]" style={{ color: "var(--hh-ink-soft)" }}>
-          The measured field · one moulding, two machines
-        </p>
-        <span className="hh-screw ml-auto h-2 w-2 rounded-full" />
-      </div>
     </div>
   );
 }

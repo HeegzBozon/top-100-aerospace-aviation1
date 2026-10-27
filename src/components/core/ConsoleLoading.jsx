@@ -3,6 +3,8 @@ import { applyShellVars, releaseShellVars } from "@/components/handheld/handheld
 import HandheldBody from "@/components/handheld/HandheldBody";
 import HandheldScreenFrame from "@/components/handheld/HandheldScreenFrame";
 import HandheldChin from "@/components/handheld/HandheldChin";
+import ImacHousing from "@/components/desktop/ImacHousing";
+import ImacWait from "@/components/desktop/ImacWait";
 
 // The app's loading state, console first.
 //
@@ -60,9 +62,12 @@ export default function ConsoleLoading({ label = "Powering up" }) {
         </div>
       </div>
 
-      {/* The desk with no device on it. */}
-      <div className="fixed inset-0 hidden items-center justify-center md:flex">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-800" />
+      {/* A desk is housed in the desk machine, so the wait happens inside its tube,
+          on a console that is already standing. */}
+      <div className="hidden md:block">
+        <ImacHousing>
+          <ImacWait label={label} />
+        </ImacHousing>
       </div>
     </>
   );

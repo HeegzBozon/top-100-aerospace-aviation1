@@ -235,8 +235,8 @@ export default function TheBoard() {
         {board}
       </div>
 
-      {/* A desk gets the same board seated in the Flight Deck. */}
-      <div className="hidden md:block">
+      {/* A desk gets the same board seated in the Flight Deck, inside the machine. */}
+      <div className="hidden h-full md:block">
         <FlightDeck data={data} stats={stats} phase={phase} placed={placed}>
           {board}
         </FlightDeck>

@@ -1104,3 +1104,8 @@ button:focus-visible {
     transition: none;
   }
 }
+
+/* The panel the Flight Deck's instruments sit on, inside the tube. */
+.fd-panel {
+  background: linear-gradient(180deg, var(--hh-shell-2) 0%, var(--hh-shell-3) 100%);
+}

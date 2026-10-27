@@ -46,7 +46,7 @@ export default function HomeDock() {
   if (isMobile) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-[100] -translate-x-1/2 px-4">
+    <div className="imac-lift fixed bottom-4 left-1/2 z-[100] -translate-x-1/2 px-4">
       {/* Menu flyout — opens upward from the dock's left edge */}
       {menuOpen && (
         <div
