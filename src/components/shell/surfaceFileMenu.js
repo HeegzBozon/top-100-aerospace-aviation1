@@ -33,3 +33,25 @@ export const fileGroupsWith = (machineGroups) => {
 
 export const flatSurfaceFileItems = () =>
   surfaceFileGroups().flatMap((group) => group.items || []);
+
+// The same contract for the Edit menu: what a surface puts in the reader's hands to author
+// where it stands — a note to the masthead about the article on the glass, a correction
+// proposed against it. Registered on exactly the same terms and gone the same way.
+let editStack = [];
+
+export function registerSurfaceEditGroups(getGroups) {
+  editStack.push(getGroups);
+  return () => {
+    editStack = editStack.filter((entry) => entry !== getGroups);
+  };
+}
+
+export const surfaceEditGroups = () => {
+  const top = editStack[editStack.length - 1];
+  return (top && top()) || [];
+};
+
+export const editGroupsWith = (machineGroups) => {
+  const own = surfaceEditGroups().filter((group) => group.items?.length);
+  return own.length ? [...own, ...machineGroups] : machineGroups;
+};

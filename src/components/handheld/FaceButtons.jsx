@@ -1,10 +1,12 @@
 import { useFaceKeysClaimed } from "./handheldKeys";
 
 // The keypad, in the console diamond: Y above, X left, B right, A below.
-// Four lettered keys, as a keypad's keys are lettered: Y prints its own letter and
-// opens the Edit drawer — everything a Fellow authors, one press from anywhere, in the
-// same list the bar's own Edit cell holds. X lists the sections of that surface: the
-// deck's slides, or the page's own modules. A confirms, B backs out.
+// Four lettered keys, as a keypad's keys are lettered: Y prints its own letter and opens
+// the Edit drawer — everything a Fellow authors, one press from anywhere, in the same list
+// the bar's own Edit cell holds — and X opens the File drawer beside it, the same list the
+// bar's File cell holds, so the key under a printed letter does what that letter says. The
+// surface's own places (the deck's slides, the page's own modules) lead that File list. A
+// confirms, B backs out.
 //
 // While a surface is holding the four keys — the chamber's candidates — Y is a vote
 // like the rest of the keypad. The share is not on this keypad at all: it stands on the
@@ -31,7 +33,7 @@ const OFFSET_Y = (BOX_H - KEY_H) / 2;
 const cap =
   "hh-pad-key absolute flex items-center justify-center rounded-[9px] text-[12px] font-bold transition-transform active:translate-y-[1px]";
 
-export default function FaceButtons({ onConfirm, onBack, onSections, onEdit }) {
+export default function FaceButtons({ onConfirm, onBack, onFile, onEdit }) {
   const legend = { color: "var(--hh-pad-ink)" };
   const keysClaimed = useFaceKeysClaimed();
 
@@ -49,8 +51,8 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onEdit }) {
 
       <button
         type="button"
-        onClick={onSections}
-        aria-label="X — sections on this surface"
+        onClick={onFile}
+        aria-label="X — File menu"
         className={cap}
         style={{ ...legend, width: KEY_W, height: KEY_H, top: OFFSET_Y, left: 0 }}
       >

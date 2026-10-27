@@ -1,0 +1,94 @@
+{
+  "name": "IssueFeedback",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "note",
+        "edit_request"
+      ],
+      "default": "note",
+      "description": "What the reader filed: a community note about a page they read, or a correction proposed against it."
+    },
+    "issue_id": {
+      "type": "string",
+      "description": "ID of the magazine issue the reader was reading."
+    },
+    "issue_title": {
+      "type": "string",
+      "description": "Issue title as it read at the moment of filing, so the record stays legible after the issue is renamed."
+    },
+    "page_number": {
+      "type": "number",
+      "default": 0,
+      "description": "Page of the issue the reader was standing on when they filed."
+    },
+    "article_id": {
+      "type": "string",
+      "description": "ID of the article the page rendered, when it rendered one."
+    },
+    "subject": {
+      "type": "string",
+      "description": "The article or issue the entry is filed against, as it read to the reader."
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email of the Fellow who filed the entry."
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of the author, denormalized."
+    },
+    "summary": {
+      "type": "string",
+      "description": "For a proposed edit: one line on what should change. Empty for a note."
+    },
+    "message": {
+      "type": "string",
+      "description": "The note itself, or the correction as the reader would have it read."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "reviewed",
+        "closed"
+      ],
+      "default": "open",
+      "description": "Masthead review state. Set by editors only; never read by discovery, ranking, or scoring."
+    }
+  },
+  "required": [
+    "kind",
+    "message",
+    "author_email"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

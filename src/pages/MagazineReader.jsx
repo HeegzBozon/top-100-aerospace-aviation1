@@ -9,6 +9,7 @@ import SinglePageReader from '@/components/magazine/SinglePageReader';
 import PdfViewer from '@/components/magazine/PdfViewer';
 import GlassIssueOpening from '@/components/magazine/glass/GlassIssueOpening';
 import GlassIssueReader from '@/components/magazine/glass/GlassIssueReader';
+import useIssueEditMenu from '@/components/magazine/glass/useIssueEditMenu';
 import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
 import { useToast } from '@/components/ui/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -103,6 +104,17 @@ export default function MagazineReader() {
       }),
   });
 
+  // The issue's Edit menu on a desk: a note to the masthead about the article being read,
+  // or a correction proposed against it. Both are filed on the same sheet the glass files
+  // from — the sheet stands over the desk too — and both belong to the masthead, never to
+  // the measurement.
+  const editMenu = useIssueEditMenu({
+    issue,
+    pages,
+    articles,
+    enabled: !isMobile && opened,
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: P.navyVoid }}>
@@ -158,6 +170,7 @@ export default function MagazineReader() {
   }
 
   return (
+    <>
     <div className="relative">
       {/* Mode toggle */}
       {!isPdf && pages.length > 0 && (
@@ -211,5 +224,9 @@ export default function MagazineReader() {
         />
       )}
     </div>
+
+    {/* The sheet the Edit menu files from, standing over the desk */}
+    {editMenu.panel}
+    </>
   );
 }

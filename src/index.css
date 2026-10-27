@@ -1021,6 +1021,17 @@ button:focus-visible {
     max-height: none;
     border-radius: 16px;
   }
+
+  /* A sheet a surface files from — a note to the masthead, a correction proposed against
+     the page — carries fields, so it hugs the foot of the picture rather than filling it:
+     the keyboard rises under it, and the lines being written stay in view above it. */
+  .hh-form-panel {
+    left: var(--hh-glass-inset, 7px);
+    right: var(--hh-glass-inset, 7px);
+    top: auto;
+    bottom: calc(var(--hh-bottom, 176px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+    max-height: calc(100dvh - var(--hh-top, 96px) - var(--hh-nav, 34px) - var(--hh-bottom, 176px) - 22px);
+  }
 }
 
 /* ===== AERO-FRONTIER — THE FIELD'S OWN INSTRUMENTS =====

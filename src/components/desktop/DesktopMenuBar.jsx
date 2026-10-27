@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import MenuBar, { KEY_CELL, MENU_CELL } from "@/components/shell/MenuBar";
 import MenuDropdown from "@/components/shell/MenuDropdown";
 import { menuGroups } from "@/components/shell/barMenus";
-import { fileGroupsWith } from "@/components/shell/surfaceFileMenu";
+import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import NotificationCenter from "@/components/notifications/NotificationCenter";
 import useHandheldDestinations from "@/components/handheld/useHandheldDestinations";
 import { surfaceLabel } from "@/components/handheld/handheldDestinations";
@@ -35,7 +35,7 @@ export default function DesktopMenuBar() {
       open === "file"
         ? fileGroupsWith(menuGroups("file", { isSignedIn, isAdmin }))
         : open === "edit"
-          ? menuGroups("edit", { isSignedIn, isAdmin })
+          ? editGroupsWith(menuGroups("edit", { isSignedIn, isAdmin }))
           : groups,
     [open, isSignedIn, isAdmin, groups],
   );

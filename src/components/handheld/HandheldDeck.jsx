@@ -24,7 +24,7 @@ import HandheldPlate from "./HandheldPlate";
 import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
 import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
-import { fileGroupsWith } from "@/components/shell/surfaceFileMenu";
+import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, persistSound } from "./handheldSound";
 import { openingPlaysNow } from "@/components/core/appOpening";
@@ -170,8 +170,18 @@ export default function HandheldDeck() {
       if (mode === "sections") return [{ key: "sections", label: "On this surface", items: sectionItems }];
       if (mode === "finish") return [{ key: "finish", label: "Customize", items: finishItems }];
       // File leads with the surface's own work — an issue being read keeps its entries
-      // there — and closes with the machine's own list.
-      if (mode === "file") return fileGroupsWith(barDrawers.file || []);
+      // there — then what this surface holds (the deck's slides, the page's own modules),
+      // and closes with the machine's own list. Edit leads the same way, with what the
+      // surface puts in the reader's hands to author.
+      if (mode === "file") {
+        return fileGroupsWith([
+          ...(barDrawers.file || []),
+          ...(sectionItems.length
+            ? [{ key: "sections", label: "On this surface", items: sectionItems }]
+            : []),
+        ]);
+      }
+      if (mode === "edit") return editGroupsWith(barDrawers.edit || []);
       return barDrawers[mode] || menuGroups;
     },
     [sectionItems, finishItems, barDrawers, menuGroups],
@@ -332,23 +342,6 @@ export default function HandheldDeck() {
     },
     [groupsFor, locationKey, finishBoot],
   );
-
-  // X lists what is on this surface: every slide of the deck, or the page's own
-  // modules where the surface declares no deck.
-  const openSections = useCallback(() => {
-    if (!modules.length) {
-      blip("back");
-      return;
-    }
-    setCursor(Math.max(0, moduleIndex));
-    setMenuMode("sections");
-    setNotificationsOpen(false);
-    setShareOpen(false);
-    setSearchOpen(false);
-    finishBoot();
-    blip("open");
-    buzz();
-  }, [modules.length, moduleIndex, finishBoot]);
 
   const closeMenu = useCallback(() => {
     setMenuMode(null);
@@ -805,7 +798,7 @@ export default function HandheldDeck() {
             <FaceButtons
               onConfirm={() => faceKey("A", select)}
               onBack={() => faceKey("B", back)}
-              onSections={() => faceKey("X", openSections)}
+              onFile={() => faceKey("X", () => openBarDrawer("file"))}
               onEdit={() => faceKey("Y", () => openBarDrawer("edit"))}
             />
           </div>

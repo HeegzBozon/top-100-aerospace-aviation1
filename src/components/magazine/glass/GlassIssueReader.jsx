@@ -6,6 +6,7 @@ import { useCinematicPlayback, PLAYBACK_SPEEDS } from '@/components/magazine/use
 import { buildIssueContents, buildNameIndex, foldLabel } from '@/components/magazine/glass/glassIssueEntries';
 import GlassIssuePage from '@/components/magazine/glass/GlassIssuePage';
 import GlassNameIndex from '@/components/magazine/glass/GlassNameIndex';
+import useIssueEditMenu from '@/components/magazine/glass/useIssueEditMenu';
 import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
 
 import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
@@ -131,11 +132,24 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     onBusy: () => setIsPlaying(false),
   });
 
-  // What the File menu is reporting stands over the issue, on every level of the reader.
+  // The issue's own Edit menu: the article the reader is standing on can be answered — a
+  // note to the masthead about what they have just read, or a correction proposed against
+  // it. Both are filed against the page under the ring, read by the masthead, and never
+  // printed into the issue by being filed.
+  const editMenu = useIssueEditMenu({
+    issue,
+    pages,
+    articles,
+    position,
+    onBusy: () => setIsPlaying(false),
+  });
+
+  // Whatever the menus are reporting stands over the issue, on every level of the reader.
   const withPanel = (content) => (
     <>
       {content}
       {fileMenu.panel}
+      {editMenu.panel}
     </>
   );
 
