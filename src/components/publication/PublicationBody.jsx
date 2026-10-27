@@ -22,7 +22,7 @@ import RsvpFloatingButton from '@/components/public/RsvpFloatingButton';
 import AuthenticatedIntelligenceHeader from '@/components/publication/AuthenticatedIntelligenceHeader';
 import EditorialNav from '@/components/publication/EditorialNav';
 import EditorialSection from '@/components/publication/EditorialSection';
-import ModuleSlideDeck from '@/components/handheld/ModuleSlideDeck';
+import PublicationConsole from '@/components/publication/PublicationConsole';
 import DiscoveryTracker from '@/components/publication/DiscoveryTracker';
 import EditorialBreak from '@/components/publication/EditorialBreak';
 import useTop100WomenNominees from '@/components/publication/useTop100WomenNominees';
@@ -324,8 +324,11 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
 
   return (
     <div ref={containerRef} className="max-w-[100vw] overflow-x-hidden" style={{ background: brandColors.cream }}>
-      {/* Unauthenticated User CTAs */}
-      <UnauthenticatedCTA user={user} />
+      {/* Unauthenticated User CTAs — a desk band. On the glass the same invitation is a
+          key on the edition's contents, printed where the reader is standing. */}
+      <div className="hidden md:block">
+        <UnauthenticatedCTA user={user} />
+      </div>
 
       {/* RSVP floating button — hidden when a host page renders its own dock */}
       {!suppressFloatingActions && <RsvpFloatingButton />}
@@ -339,7 +342,7 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
       {/* Progress Bar - hidden during countdown */}
       {!showCountdown && (
         <motion.div
-          className="fixed top-0 left-0 right-0 h-px z-50 origin-left"
+          className="fixed top-0 left-0 right-0 z-50 hidden h-px origin-left md:block"
           style={{
             background: brandColors.goldPrestige,
             scaleX: scrollYProgress
@@ -350,12 +353,23 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
       {/* Navigation - hidden during countdown */}
       {!showCountdown && <EditorialNav activeSection={activeSection} />}
 
-      {/* The deck: the publication's sections as slides the glass turns through */}
-      <ModuleSlideDeck slides={slides} />
+      {/* The console: the edition's contents on the glass, walked by the ring, and the
+          section it opens read down the picture. A desk gets the same sections in one
+          column. */}
+      <PublicationConsole
+        slides={slides}
+        discovered={discoveredIds.size}
+        total={nominees.length}
+        signedIn={Boolean(user)}
+        onSignIn={() => base44.auth.redirectToLogin()}
+      />
 
-      {/* Discovery progress tracker */}
+      {/* Discovery progress tracker — a desk chip. The glass prints the same readout on
+          the edition's contents instead of floating it over the picture. */}
       {!showCountdown && !selectedNominee && (
-        <DiscoveryTracker discoveredCount={discoveredIds.size} total={nominees.length} />
+        <div className="hidden md:block">
+          <DiscoveryTracker discoveredCount={discoveredIds.size} total={nominees.length} />
+        </div>
       )}
 
       {/* Profile Panel */}
