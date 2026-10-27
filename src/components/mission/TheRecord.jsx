@@ -8,7 +8,7 @@ import { B } from '@/components/fellow-home/fellowHomeConfig';
 // menu — each line says what it is and when it ran.
 const EDITORIAL = [
   {
-    label: 'The Publication',
+    label: 'Editorial',
     to: '/Top100Women2025',
     note: 'The editorial record of the 2025 cycle: features, profiles and the results.',
   },

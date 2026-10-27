@@ -1,4 +1,4 @@
-import { Award, BadgeCheck, BookOpen, LayoutGrid, ListChecks, Plane, Trophy, Users } from "lucide-react";
+import { Award, BookOpen, BookUser, LayoutGrid, ListChecks, Plane, Trophy, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -17,10 +17,10 @@ export const START_MENU = [
   { key: "dashboard", index: "01", label: "Dashboard", to: "/board", icon: LayoutGrid },
   { key: "nominate", index: "02", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
   { key: "vote-surface", index: "03", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks },
-  { key: "briefing", index: "04", label: "Mission Briefing", to: "/mission-briefing", icon: BookOpen },
-  { key: "networking", index: "05", label: "Networking", to: "/networking", icon: Users },
-  { key: "publication", index: "06", label: "The Publication", to: "/Top100Women2025", icon: Trophy },
-  { key: "membership", index: "07", label: "Membership", to: "/Membership", icon: BadgeCheck },
+  { key: "briefing", index: "04", label: "TOP 100 101", to: "/mission-briefing", icon: BookOpen },
+  { key: "networking", index: "05", label: "AeroSync", to: "/networking", icon: Users },
+  { key: "publication", index: "06", label: "Editorial", to: "/Top100Women2025", icon: Trophy },
+  { key: "passport", index: "07", label: "Passport", to: "/Profile", icon: BookUser },
   { key: "frontier", index: "08", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
 ];
 

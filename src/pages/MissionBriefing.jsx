@@ -82,7 +82,7 @@ export default function MissionBriefing() {
       <div className="mx-auto w-full max-w-3xl px-4 py-8 md:px-8 md:py-14">
         <header>
           <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-            Mission Briefing
+            TOP 100 101
           </p>
           <h1 className="mt-2 font-heading text-[2rem] leading-tight md:text-5xl" style={{ color: B.navy }}>
             Who we are, and what we measure.

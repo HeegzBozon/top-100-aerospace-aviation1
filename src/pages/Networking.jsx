@@ -96,7 +96,7 @@ export default function Networking() {
       <div className="mx-auto w-full max-w-5xl px-4 py-8 md:px-8 md:py-14">
         <header>
           <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-            Networking
+            AeroSync
           </p>
           <h1 className="mt-2 font-heading text-3xl leading-tight md:text-5xl" style={{ color: B.navy }}>
             The rooms ahead.

@@ -53,7 +53,7 @@ export default function VoteComingSoon() {
           className="text-xs font-bold uppercase tracking-[0.14em] px-6 py-3 rounded-full transition-all"
           style={{ color: brand.navy, border: `1px solid ${brand.navy}30` }}
         >
-          Browse the publication
+          Browse the editorial
         </a>
       </div>
 

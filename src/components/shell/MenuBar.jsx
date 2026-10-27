@@ -3,9 +3,9 @@ import { Bell, CircleUser, Volume2, VolumeX } from "lucide-react";
 // The menubar: the strip across the head of the picture, cloned from the desk the
 // machine imitates. The way home stands at the far left in faint type, the surface
 // you are standing on beside it with its lamp lit, the section you are reading in
-// quiet type, then the three keys a hand actually reaches for at the right — every
-// cell parted from the next by a machined hairline, and the whole strip closed in a
-// copper frame.
+// quiet type, then the three keys a hand actually reaches for at the right. The
+// strip is seamless: no frame around it, no rule between its cells — the cells are
+// parted by their own spacing, and the tone comes from the surface it is set into.
 //
 // It is one strip on both machines: on the glass it is the head band of the picture,
 // on the desk it stands across the top of the tube. The surface cell is the menu —
@@ -56,8 +56,6 @@ export default function MenuBar({
         Home
       </button>
 
-      <span className="mb-seam" aria-hidden="true" />
-
       {/* Where you stand — and the menu. The lamp is lit for the surface you are on,
           and the cell reads as pressed while the menu it opens is standing. */}
       <button
@@ -83,19 +81,13 @@ export default function MenuBar({
         ) : null}
       </button>
 
-      <span className="mb-seam" aria-hidden="true" />
-
       <BarKey label="Your profile" onClick={onProfile}>
         <CircleUser className="h-[15px] w-[15px]" strokeWidth={1.7} />
       </BarKey>
 
-      <span className="mb-seam" aria-hidden="true" />
-
       <BarKey label="Notifications" onClick={onNotifications}>
         <Bell className="h-[15px] w-[15px]" strokeWidth={1.7} />
       </BarKey>
-
-      <span className="mb-seam" aria-hidden="true" />
 
       <BarKey label={soundOn ? "Sound off" : "Sound on"} onClick={onToggleSound} lit={soundOn}>
         {soundOn ? (

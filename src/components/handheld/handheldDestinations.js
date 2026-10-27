@@ -1,7 +1,7 @@
 import {
-  Home, MessageCircle, Trophy, Award, Users, Calendar, Rocket, Send, Briefcase,
+  MessageCircle, Trophy, Award, Users, Calendar, Rocket, Send, Briefcase,
   GraduationCap, Network, Radar, LayoutGrid, Globe2, Compass, Newspaper,
-  ShoppingBag, BadgeCheck, Mail, CalendarCheck, Shield, LogIn, LogOut,
+  ShoppingBag, BookUser, Mail, CalendarCheck, Shield, LogIn, LogOut,
   Scissors, Layers, BookOpen, Gamepad2, Heart,
 } from "lucide-react";
 import { createPageUrl } from "@/utils";
@@ -17,7 +17,7 @@ export const NAVIGATOR_GROUPS = [
     label: "Identity",
     items: [
       { label: "Dashboard", to: "/board", icon: LayoutGrid },
-      { label: "My Profile", to: "/Profile", icon: Home },
+      { label: "Passport", to: "/Profile", icon: BookUser },
       { label: "The Bulletin", to: "/Profile?board=fellow", icon: LayoutGrid },
       { label: "Mission Rooms", to: "/Profile?board=conference", icon: Radar },
       { label: "Ribbon Cuttings", to: "/Profile?board=ribbon", icon: Scissors },
@@ -28,7 +28,7 @@ export const NAVIGATOR_GROUPS = [
     label: "Affiliation",
     items: [
       { label: "Selection Committee", to: "/selection-committee", icon: Award },
-      { label: "The Publication", to: "/Top100Women2025", icon: Trophy },
+      { label: "Editorial", to: "/Top100Women2025", icon: Trophy },
       { label: "Season Archive", to: "/ArchiveLanding", icon: BookOpen },
       { label: "Top Viral Posts", to: "/viralpost2026", icon: Newspaper },
       { label: "Patrons", to: "/Sponsors", icon: Heart },
@@ -50,7 +50,7 @@ export const NAVIGATOR_GROUPS = [
     items: [
       { label: "Comms", to: "/Comms", icon: MessageCircle },
       { label: "Calendar", to: "/events", icon: Calendar },
-      { label: "Networking", to: "/networking", icon: Users },
+      { label: "AeroSync", to: "/networking", icon: Users },
       { label: "Operation Moon Joy", to: "/hangouts", icon: Rocket },
       { label: "Local Legends", to: "/local-legends", icon: Users },
     ],
@@ -70,7 +70,6 @@ export const NAVIGATOR_GROUPS = [
     label: "Account",
     items: [
       { label: "Shop", to: "/Shop", icon: ShoppingBag },
-      { label: "Membership", to: "/Membership", icon: BadgeCheck },
       { label: "Subscribe", to: "/subscribe", icon: Mail },
       { label: "RSVP", to: "/rsvp", icon: CalendarCheck },
       { label: "Sign in", action: "signin", icon: LogIn, visitorsOnly: true },
@@ -88,10 +87,16 @@ export const RAIL_FALLBACK = CORE_NAV_ITEMS.map((item) => ({
 }));
 
 export const MORE_FALLBACK = [
-  { label: "Profile", to: "/Profile", icon: Home },
+  { label: "Passport", to: "/Profile", icon: BookUser },
   { label: "Play", to: "/Arcade", icon: Gamepad2 },
   { label: "Launch Party", to: "/LaunchParty", icon: Rocket },
 ];
+
+// A surface the platform has renamed: the bar names what the platform calls it, not
+// the route it happens to live on.
+const SURFACE_NAMES = {
+  "/mission-briefing": "TOP 100 101",
+};
 
 const pathOf = (to = "") => to.split("?")[0];
 
@@ -138,6 +143,7 @@ export function surfaceLabel(location, groups) {
     .find((item) => item.to && pathOf(item.to) === location.pathname);
   if (exact) return exact.label;
   if (loose) return loose.label;
+  if (SURFACE_NAMES[location.pathname]) return SURFACE_NAMES[location.pathname];
   const segment = location.pathname.split("/").filter(Boolean).pop() || "HOME";
   return segment.replace(/[-_]/g, " ").toUpperCase();
 }

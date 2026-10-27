@@ -8,12 +8,12 @@ import MenuBar from "@/components/shell/MenuBar";
 // on with its lamp lit, the section as a quiet suffix, then the three keys a hand
 // actually reaches for, every cell parted from the next by a machined seam.
 //
-// The seat the strip is set into runs from the top of the glass down to the picture.
-// It is cut square and painted the strip's own tone, so the head reads as one
-// continuous rail rather than a bar floating in a gap — and it fills the strip's
-// rounded ends out past the glass's curve, so nothing behind the rail (a surface's
-// paper, a fixed bar) can ever show through them.
-const STRIP_HEIGHT = 28;
+// The seat the strip is set into runs from the top of the glass down to the picture,
+// and the strip fills it edge to edge and top to bottom: one continuous rail across
+// the head, seamless — no frame, no gap, no step where the bar ends and the band
+// begins. Its top corners keep the glass's own curve, and it is cut square where it
+// meets the picture, so nothing behind the rail (a surface's paper, a fixed bar) can
+// ever show through around it.
 const HEAD_BAND = "var(--hh-nav, 34px)";
 
 export default function ScreenTopBar({
@@ -36,6 +36,7 @@ export default function ScreenTopBar({
         top: "calc(var(--hh-top, 73px) + env(safe-area-inset-top))",
         height: HEAD_BAND,
         background: "var(--hh-recess)",
+        borderRadius: "11px 11px 0 0",
       }}
     >
       <MenuBar
@@ -48,7 +49,7 @@ export default function ScreenTopBar({
         onNotifications={onNotifications}
         soundOn={soundOn}
         onToggleSound={onToggleSound}
-        style={{ height: STRIP_HEIGHT }}
+        style={{ height: HEAD_BAND }}
       />
     </div>
   );
