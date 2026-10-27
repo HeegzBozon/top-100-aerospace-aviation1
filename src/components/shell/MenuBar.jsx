@@ -34,6 +34,7 @@ function MenuCell({ label, hint, open, onClick }) {
       aria-haspopup="menu"
       aria-expanded={open}
       aria-label={hint ? `${label} menu — the ${hint} key` : `${label} menu`}
+      role="menuitem"
       className="mb-cell flex shrink-0 items-center gap-1.5 whitespace-nowrap px-2 text-[8px] font-bold uppercase tracking-[0.20em]"
       style={{ color: open ? "var(--mb-ink-strong)" : "var(--mb-ink)", width: MENU_CELL }}
     >
@@ -60,6 +61,7 @@ function BarKey({ label, onClick, children }) {
       type="button"
       onClick={onClick}
       aria-label={label}
+      role="menuitem"
       className="mb-cell flex shrink-0 items-center justify-center"
       style={{ color: "var(--mb-ink)", width: KEY_CELL }}
     >
@@ -115,6 +117,7 @@ export default function MenuBar({
         aria-haspopup="menu"
         aria-expanded={menuOpen}
         aria-label={`${surface} — the menu`}
+        role="menuitem"
         className="mb-cell flex min-w-0 flex-1 items-center gap-2 px-3 text-left text-[8px] font-bold uppercase tracking-[0.20em]"
       >
         <span className="mb-lamp h-[4px] w-[4px] shrink-0 rounded-full" aria-hidden="true" />

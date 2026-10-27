@@ -338,13 +338,11 @@ const AuthenticatedApp = () => {
 };
 
 
-// Prevent iOS Safari auto-zoom on input focus by enforcing maximum-scale=1
-if (typeof document !== 'undefined') {
-  const viewportMeta = document.querySelector('meta[name="viewport"]');
-  if (viewportMeta) {
-    viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-  }
-}
+/* iOS Safari no longer needs maximum-scale to keep from zooming into a field: every
+   input, textarea and contenteditable is pinned to 16px in globals.css, which is the
+   size below which Safari auto-zooms. Locking the scale also took pinch-zoom away from
+   every reader, so the lock is gone and the viewport stays as the document declares it
+   — a low-vision reader can magnify the page again (WCAG 1.4.4). */
 
 function App() {
   // Force HMR cache clear

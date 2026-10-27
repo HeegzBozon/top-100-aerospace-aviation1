@@ -77,7 +77,7 @@ export default function NotifyMe({
         aria-expanded={open}
         aria-current={selected ? 'true' : undefined}
         aria-controls="results-notify"
-        className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-[5px] text-[8px] font-bold uppercase tracking-[0.2em] transition-[transform,box-shadow,background-color] duration-200 active:scale-95 md:text-[8.5px]"
+        className="inline-flex min-h-[24px] shrink-0 items-center gap-1.5 rounded-full px-2.5 py-[5px] text-[8px] font-bold uppercase tracking-[0.2em] transition-[transform,box-shadow,background-color] duration-200 active:scale-95 md:text-[8.5px]"
         style={{
           background: state === 'done' || selected ? 'rgba(201,168,124,0.95)' : 'rgba(6,12,22,0.32)',
           border: '1px solid rgba(201,168,124,0.5)',

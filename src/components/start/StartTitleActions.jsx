@@ -14,8 +14,10 @@ import { ACCOUNT_KEYS, VOTE_OPTION } from "./startMenuConfig";
 // alert opens its own field directly under the row, full width, so the row itself never
 // moves when it does — and on a phone with the keys up, that field is the first thing
 // above them.
+/* min-h-[24px] is the smallest a target may be — the type stays at 8.5px, the box grows
+   around it, so the pill reads exactly as it did and the thumb has something to land on. */
 const PILL =
-  "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-[3px] text-[8.5px] font-bold uppercase tracking-[0.18em] transition-[transform,box-shadow] duration-200 active:scale-95 md:text-[9.5px]";
+  "inline-flex min-h-[24px] shrink-0 items-center gap-1 rounded-full px-2.5 py-[5px] text-[8.5px] font-bold uppercase tracking-[0.18em] transition-[transform,box-shadow] duration-200 active:scale-95 md:text-[9.5px]";
 
 const loud = (selected) => ({
   color: "#16293F",

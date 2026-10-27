@@ -13,6 +13,7 @@ export default function ViewAsCell({ viewingAsVisitor, onToggle }) {
 
   return (
     <button
+      role="menuitem"
       type="button"
       onClick={onToggle}
       data-open={viewingAsVisitor ? 'true' : 'false'}
