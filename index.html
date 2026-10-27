@@ -18,6 +18,58 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/5d2b9cc54_generated_image.png" />
 
+    <!-- The opening, painted from this document's own bytes: no stylesheet, no script,
+         no remote image. See #boot-shell in the body. -->
+    <style>
+      #boot-shell {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 2rem 1.75rem 2.25rem;
+        pointer-events: none;
+        color: #faf8f5;
+        background:
+          radial-gradient(120% 80% at 50% 0%, #183152 0%, #0b1828 55%, #070c16 100%);
+      }
+      @media (min-width: 768px) {
+        #boot-shell { padding: 3.5rem 4rem 3rem; }
+      }
+      .bs-top { display: flex; align-items: center; gap: 0.75rem; }
+      .bs-mark { display: block; height: 32px; width: 32px; object-fit: contain; }
+      @media (min-width: 768px) {
+        .bs-mark { height: 40px; width: 40px; }
+      }
+      .bs-word, .bs-year, .bs-note {
+        font-family: system-ui, -apple-system, "Montserrat", Arial, sans-serif;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+      }
+      .bs-word { color: #c9a87c; }
+      .bs-year { margin-left: auto; color: rgba(250, 248, 245, 0.4); }
+      .bs-bar { height: 1px; background: rgba(250, 248, 245, 0.15); position: relative; overflow: hidden; }
+      .bs-bar::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform-origin: left center;
+        background: linear-gradient(90deg, #b87333, #c9a87c);
+        animation: bs-load 2.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+      }
+      @keyframes bs-load {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(0.9); }
+      }
+      .bs-note { margin-top: 0.85rem; color: rgba(201, 168, 124, 0.75); }
+      @media (prefers-reduced-motion: reduce) {
+        .bs-bar::after { animation: none; transform: scaleX(0.5); }
+      }
+    </style>
+
     <!-- Primary Meta — v4.1 Positioning -->
     <title>TOP 100 Aerospace &amp; Aviation | The Verified Reputation Graph for Aerospace</title>
     <meta name="description" content="The verified professional index for aerospace and aviation. Community nomination, blind voting, permanent record. We don't rank. We measure. 300+ Fellows across 40+ countries." />
@@ -200,6 +252,21 @@
     </script>
   </head>
   <body>
+    <!-- The first frame is the institution, not a white screen: this card is already
+         painted when the document arrives, and AppSplash removes it the moment its own
+         card is on screen. It carries the mark, the wordmark and the measure rule only,
+         so the welcome beneath it rises into an empty middle. -->
+    <div id="boot-shell" aria-hidden="true">
+      <div class="bs-top">
+        <img class="bs-mark" src="/brand/top100-mark-128.png" width="32" height="32" alt="" />
+        <span class="bs-word">TOP 100 Aerospace &amp; Aviation</span>
+        <span class="bs-year">MMXXVI</span>
+      </div>
+      <div class="bs-foot">
+        <div class="bs-bar"></div>
+        <div class="bs-note">We don't rank. We measure.</div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -7,8 +7,9 @@ import { hourPhase, isReturningVisitor, markVisit, pickHint, pickLine } from "./
 // hour's sky, then the welcome — plain for a first visit, by name for a Fellow
 // coming back. It plays on every page load and stands in for the console's own
 // power-on; any tap goes straight through to the app.
-const LOGO =
-  "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png";
+// Cut to the size it is drawn at: the original was a 1024px, 1.8 MB file shown at
+// 32–40px, which made the mark the largest thing on the first screen and the slowest.
+const LOGO = "/brand/top100-mark-128.png";
 const SEQUENCE_MS = 4400;
 const DEPART_MS = 740;
 
@@ -25,6 +26,9 @@ export default function AppSplash() {
   // A welcome, and the first mark this device leaves.
   useEffect(() => {
     markVisit();
+    // The static card in index.html has been on screen since the document arrived.
+    // This card is now painted over it, so the handover can be made.
+    document.getElementById("boot-shell")?.remove();
     let cancelled = false;
     base44.auth
       .me()

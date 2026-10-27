@@ -75,4 +75,4 @@ export const NOTIFY_OPTION = {
 };
 
 export const START_LOGO =
-  "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png";
+  "/brand/top100-mark-128.png";

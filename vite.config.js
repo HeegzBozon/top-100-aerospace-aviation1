@@ -24,6 +24,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          // The bundler's own helper shims (interop, _extends) are virtual modules with
+          // no path. Left to chance they get parked inside whichever chunk first needs
+          // them — which is how a 200-byte helper ended up inside the 1.5 MB 3D chunk,
+          // making the entry screen import three.js and recharts to reach it. They get
+          // their own tiny chunk instead, so a page that draws no chart and no globe
+          // downloads neither.
+          if (!id.includes('/node_modules/') && !id.includes('/src/')) return 'helpers';
           if (!id.includes('/node_modules/')) return;
           if (id.includes('/three/') || id.includes('/globe.gl/')) return 'vendor-3d';
           if (id.includes('/recharts/')) return 'vendor-recharts';
