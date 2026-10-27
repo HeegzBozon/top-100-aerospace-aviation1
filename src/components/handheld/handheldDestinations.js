@@ -49,7 +49,7 @@ export const NAVIGATOR_GROUPS = [
     items: [
       { label: "Comms", to: "/Comms", icon: MessageCircle },
       { label: "Calendar", to: "/events", icon: Calendar },
-      { label: "AeroSync CRM", to: "/networking?tab=contacts", icon: Users },
+      { label: "AeroSync CRM", to: "/aerosync", icon: Users },
       { label: "Operation Moon Joy", to: "/hangouts", icon: Rocket },
       { label: "Local Legends", to: "/local-legends", icon: Users },
     ],

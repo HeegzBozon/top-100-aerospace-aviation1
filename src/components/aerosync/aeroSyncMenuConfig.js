@@ -1,13 +1,13 @@
 import { Calendar, Camera, Radar, Users } from 'lucide-react';
 
-// The AeroSync title screen: the CRM as a cartridge of its own, the features a Fellow
-// meets inside it, in order. Every key routes to a feature that already exists on the
-// Networking surface — the title screen holds the menu, the surface holds the work — and
-// each lands on the feature itself rather than on the top of the page.
+// The AeroSync title screen: the CRM as a cartridge of its own, the features a Fellow meets
+// inside it, in order. Each key lands on a surface of its own — the title screen holds the
+// menu, the surfaces hold the work — and opens the view that was asked for rather than the
+// top of the page.
 export const AEROSYNC_MENU = [
-  { key: 'contacts', index: '00', label: 'Contacts', to: '/networking?tab=contacts', icon: Users },
-  { key: 'add-card', index: '01', label: 'Add a card', to: '/networking?tab=capture', icon: Camera },
-  { key: 'rooms', index: '02', label: 'Rooms ahead', to: '/networking?section=rooms', icon: Radar },
+  { key: 'contacts', index: '00', label: 'Contacts', to: '/aerosync/contacts', icon: Users },
+  { key: 'add-card', index: '01', label: 'Add a card', to: '/aerosync/contacts?tab=capture', icon: Camera },
+  { key: 'rooms', index: '02', label: 'Rooms ahead', to: '/aerosync/rooms', icon: Radar },
   { key: 'calendar', index: '03', label: 'The calendar', to: '/events', icon: Calendar },
 ];
 

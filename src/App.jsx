@@ -89,7 +89,8 @@ const WomenCollageGenerator = lazy(() => import('@/pages/WomenCollageGenerator')
 const Top100Women2025DeepLink = lazy(() => import('@/pages/Top100Women2025DeepLink'));
 const TheBoard = lazy(() => import('@/pages/TheBoard'));
 const StartScreen = lazy(() => import('@/pages/StartScreen'));
-const Networking = lazy(() => import('@/pages/Networking'));
+const AeroSyncContacts = lazy(() => import('@/pages/AeroSyncContacts'));
+const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
 
@@ -218,10 +219,13 @@ const AuthenticatedApp = () => {
       {/* The member's map of the platform: four columns across, depth inside each */}
       <Route path="/board" element={<TheBoard />} />
       <Route path="/dashboard" element={<TheBoard />} />
-      {/* The conferencing layer: rooms ahead, and who is standing in them */}
-      <Route path="/networking" element={<Networking />} />
-      {/* AeroSync opens on its own title screen, the way the platform does */}
+      {/* AeroSync opens on its own title screen, the way the platform does, and the
+          surfaces it lists live beneath it */}
       <Route path="/aerosync" element={<AeroSyncTitle />} />
+      <Route path="/aerosync/contacts" element={<AeroSyncContacts />} />
+      <Route path="/aerosync/rooms" element={<AeroSyncRooms />} />
+      {/* The networking page is retired: its work lives on AeroSync's surfaces now */}
+      <Route path="/networking" element={<Navigate to="/aerosync" replace />} />
       {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
       <Route path="/mission-briefing" element={<MissionBriefing />} />
       <Route path="/the-board" element={<TheBoard />} />
