@@ -1,4 +1,5 @@
 import MenuBar from "@/components/shell/MenuBar";
+import { useFaceKeysClaimed } from "@/components/handheld/handheldKeys";
 
 // The control rail: the strip cut flush across the head of the glass.
 //
@@ -9,7 +10,10 @@ import MenuBar from "@/components/shell/MenuBar";
 // key a hand actually reaches for, every cell parted from the next by a machined seam.
 //
 // File and Edit open the console's own drawer in the matching list, so the wheel
-// walks them the way it walks everything else on this device.
+// walks them the way it walks everything else on this device — and each prints, small
+// beside its word, the face key that does the same thing (X for File, Y for Edit), so a
+// hand moving between the strip and the keypad never has to guess. A surface that has
+// claimed the four keys takes them off the strip with it: the words stay, the hints go.
 //
 // The seat the strip is set into runs from the top of the glass down to the picture,
 // and the strip fills it edge to edge and top to bottom: one continuous rail across
@@ -31,6 +35,8 @@ export default function ScreenTopBar({
   onEdit,
   onNotifications,
 }) {
+  const keysClaimed = useFaceKeysClaimed();
+
   return (
     <div
       className="fixed z-[34] select-none md:hidden"
@@ -54,6 +60,8 @@ export default function ScreenTopBar({
         onFile={onFile}
         onEdit={onEdit}
         onNotifications={onNotifications}
+        fileHint={keysClaimed ? "" : "X"}
+        editHint={keysClaimed ? "" : "Y"}
         style={{ height: HEAD_BAND }}
       />
     </div>

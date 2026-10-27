@@ -1,25 +1,36 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Loader2, Radar, RotateCcw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { B } from '@/components/fellow-home/fellowHomeConfig';
 import ConferenceRoomCard from '@/components/conference-room/ConferenceRoomCard';
 import { phaseForRoom } from '@/components/conference-room/conferenceRoomConfig';
 import NetworkingHero from '@/components/networking/NetworkingHero';
 import BeforeYouGo from '@/components/networking/BeforeYouGo';
 import HomeDock from '@/components/home-v3/HomeDock';
+import ContactCapture from '@/components/crm/ContactCapture';
+import ContactRolodex from '@/components/crm/ContactRolodex';
+import useConferenceContacts from '@/components/crm/useConferenceContacts';
+import { C } from '@/components/crm/crmConfig';
 
 const ROOM_STATUSES = ['open', 'live'];
 
-// Networking. A conferencing layer inside the platform: the shows on the
-// calendar, the rooms the Fellows have opened in them, who is standing in each
-// one, and what to have in place before you go. One canonical entity behind it
-// — ConferenceRoom, with ConferenceRsvp for the declarations.
+// AeroSync CRM: the conference relationship workspace, in one surface and three parts of
+// the same arc. Before the show, what to have in place and which rooms are open. During it,
+// the card handed over — photographed, read into a draft, corrected, kept. After it, the
+// rolodex, where each relationship carries the show it came from and the line that was said
+// would come next. One canonical entity behind each half of the page: ConferenceContact for
+// the people (private to the member who captured them), ConferenceRoom with ConferenceRsvp
+// for the rooms.
 export default function Networking() {
+  const crm = useConferenceContacts();
+
   const [state, setState] = useState({ loading: true, failed: false });
   const [data, setData] = useState(null);
   const [attempt, setAttempt] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  const captureRef = useRef(null);
+  const scrollToCapture = () => captureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   useEffect(() => {
     let alive = true;
@@ -92,99 +103,116 @@ export default function Networking() {
   const myRsvpFor = (room) => attendeesFor(room).find((rsvp) => rsvp.fellow_email === me?.email) || null;
 
   return (
-    <div className="min-h-screen" style={{ background: B.cream }}>
+    <div className="min-h-screen" style={{ background: C.cream }}>
       <div className="mx-auto w-full max-w-5xl px-4 py-8 md:px-8 md:py-14">
         <header>
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
+          <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: C.copper }}>
             AeroSync CRM
           </p>
-          <p className="mt-1 text-[9px] uppercase tracking-[0.24em]" style={{ color: B.muted }}>
+          <p className="mt-1 text-[9px] uppercase tracking-[0.24em]" style={{ color: C.muted }}>
             Community Relationship Manager
           </p>
-          <h1 className="mt-2 font-heading text-3xl leading-tight md:text-5xl" style={{ color: B.navy }}>
-            The rooms ahead.
+          <h1 className="mt-2 font-heading text-3xl leading-tight md:text-5xl" style={{ color: C.navy }}>
+            The people you met.
           </h1>
-          <p className="mt-3 max-w-2xl text-[13px] leading-relaxed" style={{ color: B.muted }}>
-            The shows on the calendar, the rooms Fellows have opened in each one, and who is already
-            standing in them. Declare your attendance, and the introductions follow.
+          <p className="mt-3 max-w-2xl text-[13px] leading-relaxed" style={{ color: C.muted }}>
+            A card handed over at a show, read into a contact of your own: who they are, the room you
+            met in, and the line you said would come next. Kept privately — no other Fellow sees it —
+            and worked from here before, during and after every conference.
           </p>
         </header>
 
-        {state.failed ? (
-          <div className="mt-8 rounded-2xl p-5 text-center" style={{ background: '#FFFFFF', border: B.border }}>
-            <p className="font-heading text-lg" style={{ color: B.navy }}>
-              The rooms could not be read. Nothing is lost.
-            </p>
-            <button
-              type="button"
-              onClick={() => setAttempt((n) => n + 1)}
-              className="mt-3 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em]"
-              style={{ background: B.navy, color: B.cream }}
-            >
-              <RotateCcw className="h-3 w-3" /> Read them again
-            </button>
-          </div>
-        ) : state.loading ? (
-          <div className="mt-8 flex items-center gap-2.5 rounded-2xl p-5" style={{ background: '#FFFFFF', border: B.border }}>
-            <Loader2 className="h-4 w-4 animate-spin" style={{ color: B.copper }} />
-            <span className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: B.copper }}>
-              Reading the rooms
-            </span>
-          </div>
-        ) : ahead.length === 0 ? (
-          <div className="mt-8 rounded-2xl p-6" style={{ background: '#FFFFFF', border: B.border }}>
-            <Radar className="h-5 w-5" style={{ color: B.copper }} />
-            <h2 className="mt-3 font-heading text-xl" style={{ color: B.navy }}>
-              No room is open yet.
-            </h2>
-            <p className="mt-2 max-w-xl text-[12.5px] leading-relaxed" style={{ color: B.muted }}>
-              When the next show opens its room, it lands here first — with the Fellows already
-              declared, and the focus areas they are standing in for. Until then, the calendar holds
-              everything the chamber has running.
-            </p>
-            <Link
-              to="/events"
-              className="mt-4 inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.2em]"
-              style={{ color: B.copper }}
-            >
-              Open the calendar
-              <ArrowRight className="h-3 w-3" />
-            </Link>
-          </div>
-        ) : (
-          <div className="mt-6 space-y-8">
-            <NetworkingHero
-              room={nextRoom}
-              attendees={attendeesFor(nextRoom)}
-              myRsvp={myRsvpFor(nextRoom)}
-              user={me}
-              onChanged={() => setRefreshKey((key) => key + 1)}
-            />
+        <ContactCapture crm={crm} innerRef={captureRef} />
+        <ContactRolodex crm={crm} onCapture={scrollToCapture} />
 
-            {laterRooms.length ? (
-              <section>
-                <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-                  Further out
-                </p>
-                <h2 className="mt-1.5 font-heading text-xl" style={{ color: B.navy }}>
-                  {laterRooms.length} more room{laterRooms.length === 1 ? '' : 's'} on the calendar.
-                </h2>
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  {laterRooms.map((room) => (
-                    <ConferenceRoomCard
-                      key={room.id}
-                      room={room}
-                      attendees={attendeesFor(room)}
-                      user={me}
-                      accent={B.navy}
-                      onRsvpChanged={() => setRefreshKey((key) => key + 1)}
-                    />
-                  ))}
+        <section className="mt-14">
+          <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: C.copper }}>
+            The shows
+          </p>
+          <h2 className="mt-1.5 font-heading text-2xl" style={{ color: C.navy }}>
+            The rooms ahead.
+          </h2>
+          <p className="mt-2 max-w-2xl text-[12.5px] leading-relaxed" style={{ color: C.muted }}>
+            The shows on the calendar, the rooms Fellows have opened in each one, and who is already
+            standing in them. Declare your attendance, and the introductions follow.
+          </p>
+
+          {state.failed ? (
+            <div className="mt-5 rounded-2xl p-5 text-center" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+              <p className="font-heading text-lg" style={{ color: C.navy }}>
+                The rooms could not be read. Nothing is lost.
+              </p>
+              <button
+                type="button"
+                onClick={() => setAttempt((n) => n + 1)}
+                className="mt-3 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em]"
+                style={{ background: C.navy, color: C.cream }}
+              >
+                <RotateCcw className="h-3 w-3" /> Read them again
+              </button>
+            </div>
+          ) : state.loading ? (
+            <div className="mt-5 flex items-center gap-2.5 rounded-2xl p-5" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+              <Loader2 className="h-4 w-4 animate-spin" style={{ color: C.copper }} />
+              <span className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: C.copper }}>
+                Reading the rooms
+              </span>
+            </div>
+          ) : ahead.length === 0 ? (
+            <div className="mt-5 rounded-2xl p-6" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+              <Radar className="h-5 w-5" style={{ color: C.copper }} />
+              <h3 className="mt-3 font-heading text-xl" style={{ color: C.navy }}>
+                No room is open yet.
+              </h3>
+              <p className="mt-2 max-w-xl text-[12.5px] leading-relaxed" style={{ color: C.muted }}>
+                When the next show opens its room, it lands here first — with the Fellows already
+                declared, and the focus areas they are standing in for. Until then, the calendar holds
+                everything the chamber has running.
+              </p>
+              <Link
+                to="/events"
+                className="mt-4 inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.2em]"
+                style={{ color: C.copper }}
+              >
+                Open the calendar
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+          ) : (
+            <div className="mt-5 space-y-8">
+              <NetworkingHero
+                room={nextRoom}
+                attendees={attendeesFor(nextRoom)}
+                myRsvp={myRsvpFor(nextRoom)}
+                user={me}
+                onChanged={() => setRefreshKey((key) => key + 1)}
+              />
+
+              {laterRooms.length ? (
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: C.copper }}>
+                    Further out
+                  </p>
+                  <h3 className="mt-1.5 font-heading text-xl" style={{ color: C.navy }}>
+                    {laterRooms.length} more room{laterRooms.length === 1 ? '' : 's'} on the calendar.
+                  </h3>
+                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    {laterRooms.map((room) => (
+                      <ConferenceRoomCard
+                        key={room.id}
+                        room={room}
+                        attendees={attendeesFor(room)}
+                        user={me}
+                        accent={C.navy}
+                        onRsvpChanged={() => setRefreshKey((key) => key + 1)}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </section>
-            ) : null}
-          </div>
-        )}
+              ) : null}
+            </div>
+          )}
+        </section>
 
         <BeforeYouGo
           nominee={data?.nominee}

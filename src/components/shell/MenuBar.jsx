@@ -21,7 +21,10 @@ export const MENU_CELL = 50;
 // fixed line.
 export const KEY_CELL = 33;
 
-function MenuCell({ label, open, onClick }) {
+// Each word carries, small and beside it, the key the control centre does the same thing
+// with: X lists the sections the File cell holds, Y opens the Edit drawer. On a desk there
+// are no such keys, so the hint is handed in and is simply absent there.
+function MenuCell({ label, hint, open, onClick }) {
   return (
     <button
       type="button"
@@ -29,11 +32,23 @@ function MenuCell({ label, open, onClick }) {
       data-open={open ? "true" : "false"}
       aria-haspopup="menu"
       aria-expanded={open}
-      aria-label={`${label} menu`}
-      className="mb-cell flex shrink-0 items-center whitespace-nowrap px-2 text-[8px] font-bold uppercase tracking-[0.20em]"
+      aria-label={hint ? `${label} menu — the ${hint} key` : `${label} menu`}
+      className="mb-cell flex shrink-0 items-center gap-1.5 whitespace-nowrap px-2 text-[8px] font-bold uppercase tracking-[0.20em]"
       style={{ color: open ? "var(--mb-ink-strong)" : "var(--mb-ink)", width: MENU_CELL }}
     >
       {label}
+      {hint ? (
+        <span
+          aria-hidden="true"
+          className="rounded-[3px] px-[3px] py-[1px] text-[6.5px] leading-none"
+          style={{
+            border: `1px solid rgb(var(--hh-metal-rgb) / ${open ? 0.72 : 0.4})`,
+            color: open ? "var(--mb-ink-strong)" : "var(--mb-ink-soft)",
+          }}
+        >
+          {hint}
+        </span>
+      ) : null}
     </button>
   );
 }
@@ -63,6 +78,9 @@ export default function MenuBar({
   onFile,
   onEdit,
   onNotifications,
+  /* The face keys that do the same thing, where the machine has them. */
+  fileHint = "",
+  editHint = "",
   className = "",
   style,
 }) {
@@ -79,8 +97,8 @@ export default function MenuBar({
         <Home className="h-[15px] w-[15px]" strokeWidth={1.8} />
       </BarKey>
 
-      <MenuCell label="File" open={fileOpen} onClick={onFile} />
-      <MenuCell label="Edit" open={editOpen} onClick={onEdit} />
+      <MenuCell label="File" hint={fileHint} open={fileOpen} onClick={onFile} />
+      <MenuCell label="Edit" hint={editHint} open={editOpen} onClick={onEdit} />
 
       {/* Where you stand — and the journey drawer. The lamp is lit for the surface you
           are on, and the cell reads as pressed while the drawer stands. */}
