@@ -31,7 +31,7 @@ export default function HandheldScreenFrame() {
       style={{
         left: "var(--hh-frame, 0px)",
         right: "var(--hh-frame, 0px)",
-        top: "calc(var(--hh-top, 96px) - var(--hh-bezel-w, 10px) + env(safe-area-inset-top))",
+        top: "calc(var(--hh-top, 96px) - var(--hh-bezel-w, 14px) + env(safe-area-inset-top))",
         bottom: "calc(var(--hh-bottom, 172px) + env(safe-area-inset-bottom))",
       }}
       aria-hidden="true"
@@ -74,7 +74,7 @@ export default function HandheldScreenFrame() {
           chin. */}
       <div
         className="hh-glass absolute overflow-hidden rounded-[8px]"
-        style={{ inset: "var(--hh-bezel-w, 10px) var(--hh-bezel-w, 10px) 0" }}
+        style={{ inset: "var(--hh-bezel-w, 14px) var(--hh-bezel-w, 14px) 0" }}
       />
     </div>
   );

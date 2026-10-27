@@ -757,7 +757,7 @@ export default function HandheldDeck() {
              with it. */
           height: `calc(${DECK_CLEARANCE}px + env(safe-area-inset-bottom))`,
           /* Square where it meets the glass, and the body's own corner at the foot:
-             the same 18 the moulding carries, so the case turns one corner, not two. */
+             the same 22 the moulding carries, so the case turns one corner, not two. */
           borderRadius: "0 0 22px 22px",
           paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
         }}

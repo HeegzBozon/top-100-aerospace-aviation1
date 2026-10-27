@@ -192,7 +192,9 @@ export default function HandheldSearch({ onClose, groups = [] }) {
                     className="flex w-full items-center gap-2 px-3 py-2 text-left"
                     style={rowStyle}
                   >
-                    <item.icon className="h-[13px] w-[13px] shrink-0" style={{ color: "var(--hh-lcd-soft)" }} />
+                    {item.icon ? (
+                      <item.icon className="h-[13px] w-[13px] shrink-0" style={{ color: "var(--hh-lcd-soft)" }} />
+                    ) : null}
                     <span className="flex-1 truncate text-[11.5px] font-semibold" style={{ color: "var(--hh-lcd)" }}>
                       {item.label}
                     </span>
