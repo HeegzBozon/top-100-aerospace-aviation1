@@ -63,13 +63,13 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
     borderRadius: '1rem',
   };
 
-  // On the glass the card is not given a height to fill — the panel it sits in scrolls
-  // instead of stretching — so below the desk breakpoint it carries a floor of its own,
-  // and the front face is never left with nothing to stand on.
+  // The card fills the box it is given. On the glass that box is measured for it (see
+  // GlassVoteSurface), so the four candidates stand in a 2x2 with nothing to scroll;
+  // on the desk the grid rows already have a height of their own, so it just fills.
   return (
     <motion.div
       layout
-      className="relative h-full min-h-[240px] md:min-h-0"
+      className="relative h-full min-h-0"
       style={{ perspective: '1000px' }}
     >
       <div
@@ -94,11 +94,11 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
           role="button"
           tabIndex={selectable ? 0 : -1}
         >
-          <div className="h-full flex flex-col gap-2.5 p-4">
+          <div className="h-full flex flex-col gap-2 p-2.5 md:gap-2.5 md:p-4">
             {/* Identity row */}
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-2 md:gap-3">
               <div
-                className="h-14 w-14 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-base font-bold"
+                className="h-10 w-10 shrink-0 overflow-hidden rounded-xl flex items-center justify-center text-[13px] font-bold md:h-14 md:w-14 md:text-base"
                 style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: 'white' }}
               >
                 {photo ? (
@@ -108,29 +108,32 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm lg:text-base font-bold leading-snug truncate" style={{ color: brand.navy }}>{name}</p>
+                <p className="truncate text-[12.5px] font-bold leading-snug md:text-sm lg:text-base" style={{ color: brand.navy }}>{name}</p>
                 {(discipline || stageBand) && (
-                  <p className="text-[11px] lg:text-xs font-semibold leading-tight mt-1" style={{ color: `${brand.navy}60` }}>
+                  <p className="mt-0.5 truncate text-[10px] font-semibold leading-tight md:mt-1 md:text-[11px] lg:text-xs" style={{ color: `${brand.navy}60` }}>
                     {[discipline, stageBand].filter(Boolean).join(' · ')}
                   </p>
                 )}
               </div>
               <div className="flex flex-col items-end gap-1 shrink-0">
                 {isTop && (
-                  <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: brand.gold, color: 'white' }}>
+                  <span className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold md:px-2 md:text-[10px]" style={{ background: brand.gold, color: 'white' }}>
                     <ArrowUp className="w-3 h-3" /> First
                   </span>
                 )}
                 {isBottom && (
-                  <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: brand.navy, color: 'white' }}>
+                  <span className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold md:px-2 md:text-[10px]" style={{ background: brand.navy, color: 'white' }}>
                     <ArrowDown className="w-3 h-3" /> Last
                   </span>
                 )}
+                {/* The desk's affordance, in the card's own corner. On the glass the same
+                    panel opens from the labelled row at the foot of the card, where a
+                    thumb can reach it and where it can say what it is. */}
                 <button
                   onClick={(e) => { e.stopPropagation(); onInfo(); }}
-                  className="h-7 w-7 rounded-full flex items-center justify-center"
+                  className="hidden h-7 w-7 items-center justify-center rounded-full md:flex"
                   style={{ background: `${brand.navy}06` }}
-                  aria-label="Full evidence"
+                  aria-label={`Full evidence for ${name}`}
                 >
                   <Info className="w-3.5 h-3.5" style={{ color: `${brand.navy}60` }} />
                 </button>
@@ -139,7 +142,7 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
 
             {/* Six word story */}
             {story ? (
-              <p className="text-sm lg:text-base font-semibold italic leading-snug line-clamp-2" style={{ color: brand.navy }}>
+              <p className="line-clamp-2 text-[12px] font-semibold italic leading-snug md:text-sm lg:text-base" style={{ color: brand.navy }}>
                 <span style={{ color: brand.gold }}>&ldquo;</span>{story}<span style={{ color: brand.gold }}>&rdquo;</span>
               </p>
             ) : (
@@ -147,14 +150,40 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
             )}
 
             {/* Biography snippet */}
+            {/* On the glass there is no room for the biography on the face of a card
+                that has to share the screen with three others: it is in full on the back. */}
             {bio && (
-              <p className="text-xs lg:text-sm leading-relaxed line-clamp-2 lg:line-clamp-3" style={{ color: `${brand.navy}70` }}>{bio}</p>
+              <p className="hidden text-xs leading-relaxed line-clamp-2 md:block lg:text-sm lg:line-clamp-3" style={{ color: `${brand.navy}70` }}>{bio}</p>
             )}
 
-            {/* Flip affordance */}
+            {/* More info. On the glass it is a labelled, full-width key at the foot of
+                the card — a corner circle is neither found nor read as "more" — with the
+                card's full evidence beside it. On the desk it stays the printed rule it
+                always was. */}
+            <div className="mt-auto flex items-center gap-1.5 md:hidden">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onFlipToggle?.(true); }}
+                aria-label={`More information about ${name}`}
+                className="flex min-h-[38px] flex-1 items-center justify-center gap-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.1em] transition-[filter,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110"
+                style={{ background: brand.navy, color: 'white' }}
+              >
+                <RotateCw className="h-3.5 w-3.5" /> More info
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onInfo(); }}
+                aria-label={`Full evidence for ${name}`}
+                className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+                style={{ background: `${brand.navy}0A`, border: `1px solid ${brand.navy}14` }}
+              >
+                <Info className="h-4 w-4" style={{ color: brand.navy }} />
+              </button>
+            </div>
+
             <button
               onClick={(e) => { e.stopPropagation(); onFlipToggle?.(true); }}
-              className="mt-auto pt-2 border-t flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider self-start"
+              className="mt-auto hidden items-center gap-1.5 self-start border-t pt-2 text-[10px] font-bold uppercase tracking-wider md:flex"
               style={{ color: `${brand.navy}50`, borderColor: `${brand.navy}10` }}
             >
               <RotateCw className="w-3 h-3" /> Flip for more info

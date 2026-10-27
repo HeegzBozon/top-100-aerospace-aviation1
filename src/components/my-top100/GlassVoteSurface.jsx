@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ChevronLeft, Clock, ListOrdered, Lock, Award } from 'lucide-react';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { brand } from '@/components/nominate/NominateConfig';
@@ -40,6 +40,9 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
       hint: user?.role === 'admin' ? 'Weigh nominees head to head' : 'Unlocks next season',
       icon: user?.role === 'admin' ? Award : Lock,
       node: chamberNode,
+      // The one card that must fit the glass whole: it draws four candidates and wants
+      // them all in view, twice two, with nothing to scroll.
+      fill: true,
     },
   ];
 
@@ -113,6 +116,41 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
   }, [cursor, openKey]);
 
   const openCard = cards.find((card) => card.key === openKey) || null;
+
+  // A filling card is measured the room left under this panel's own header, so it takes
+  // exactly the rest of the glass and the candidates are never pushed off the bottom.
+  // Measured before paint, so the cards are never drawn collapsed for a frame.
+  const panelRef = useRef(null);
+  const [fillHeight, setFillHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    if (!openCard?.fill) {
+      setFillHeight(0);
+      return;
+    }
+
+    const measure = () => {
+      const stage = getStage();
+      const node = panelRef.current;
+      if (!stage || !node) return;
+      const stageBox = stage.getBoundingClientRect();
+      const nodeBox = node.getBoundingClientRect();
+      // Room from the top of this panel to the foot of the glass, read in the glass's
+      // own scroll space, so a scroll never changes the answer.
+      const room = stageBox.height - (nodeBox.top - stageBox.top) + stage.scrollTop;
+      setFillHeight(Math.max(240, Math.min(stageBox.height, Math.round(room))));
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    const stage = getStage();
+    if (stage) observer.observe(stage);
+    window.addEventListener('resize', measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [openKey, openCard?.fill]);
 
   const statusLine = status.open
     ? `Voting is open${status.endLabel ? ` · closes ${status.endLabel}` : ''} · ${
@@ -235,7 +273,13 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
         </span>
       </div>
 
-      <div>{openCard.node}</div>
+      <div
+        ref={panelRef}
+        className={openCard.fill ? 'flex flex-col overflow-y-auto' : undefined}
+        style={openCard.fill && fillHeight ? { height: fillHeight } : undefined}
+      >
+        {openCard.node}
+      </div>
     </div>
   );
 }

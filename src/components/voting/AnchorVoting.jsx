@@ -238,7 +238,7 @@ export default function AnchorVoting({ user }) {
             <h2 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
               Anchor Selection
             </h2>
-            <p className="text-[11px] leading-snug max-w-md" style={{ color: `${brand.navy}60` }}>
+            <p className="hidden text-[11px] leading-snug max-w-md md:block" style={{ color: `${brand.navy}60` }}>
               Two taps. The one you advance first and the one you advance last become anchors — five real comparisons, recorded as observations.
             </p>
           </div>
@@ -255,7 +255,7 @@ export default function AnchorVoting({ user }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
-            className="mt-3 mb-4 flex items-center gap-2"
+            className="mt-2 mb-2.5 flex items-center gap-2 md:mt-3 md:mb-4"
           >
             {phase === 'best' && <ArrowUp className="w-4 h-4 shrink-0" style={{ color: brand.gold }} />}
             {phase === 'worst' && <ArrowDown className="w-4 h-4 shrink-0" style={{ color: `${brand.navy}70` }} />}
@@ -264,7 +264,7 @@ export default function AnchorVoting({ user }) {
         </AnimatePresence>
 
         {/* Controls: undo mid-set / review last set / resume */}
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
+        <div className="mb-2 flex flex-wrap items-center gap-2 md:mb-3">
           {phase === 'worst' && (
             <button onClick={undoFirstPick} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80` }}>
               <Undo2 className="w-3.5 h-3.5" /> Undo first pick
@@ -291,8 +291,9 @@ export default function AnchorVoting({ user }) {
           )}
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-3 lg:gap-4 flex-1 min-h-0">
+        {/* Four candidates, twice two — on the glass the whole set has to stand in view
+            at once, so the grid takes its rows from the height it is given. */}
+        <div className="grid grid-cols-2 grid-rows-2 gap-2 sm:gap-3 lg:gap-4 flex-1 min-h-0">
           {currentSet.map((nominee, idx) => {
             const isTop = nominee.id === topId;
             const isBottom = nominee.id === bottomId;
@@ -329,7 +330,7 @@ export default function AnchorVoting({ user }) {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="mt-5 flex items-center justify-center gap-2 text-sm font-bold"
+              className="mt-2 flex items-center justify-center gap-2 text-sm font-bold md:mt-5"
               style={{ color: brand.gold }}
             >
               <Check className="w-4 h-4" /> 5 comparisons recorded
