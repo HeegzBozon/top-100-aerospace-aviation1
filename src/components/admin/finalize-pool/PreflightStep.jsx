@@ -43,7 +43,7 @@ export default function PreflightStep({ season, log, setLog }) {
           )}
         </div>
         <div className="rounded-xl border border-editorial-navy/10 p-5">
-          <p className="text-xs uppercase tracking-widest text-editorial-gold font-bold">Recommended</p>
+          <p className="text-xs uppercase tracking-widest text-editorial-label font-bold">Recommended</p>
           <p className="font-heading text-lg text-editorial-navy mt-1">Retire legacy nominations</p>
           <p className="text-sm text-editorial-navy/60 mt-1">Copies legacy records into the intake hub with a migration flag. Safe to run twice; duplicates are skipped.</p>
           <Button onClick={migrate} disabled={!!busy || !log.backup_downloaded_at} variant="outline" className="mt-4 gap-2 border-editorial-navy/30 text-editorial-navy">

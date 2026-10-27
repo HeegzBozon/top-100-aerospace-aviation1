@@ -20,6 +20,7 @@ module.exports = {
                 cream: 'rgb(var(--editorial-cream-rgb) / <alpha-value>)',
                 gold: 'rgb(var(--editorial-gold-rgb) / <alpha-value>)',
                 copper: 'rgb(var(--editorial-copper-rgb) / <alpha-value>)',
+                label: 'rgb(var(--editorial-label-rgb) / <alpha-value>)',
             },
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

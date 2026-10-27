@@ -20,7 +20,7 @@ export default function CohortCard({ cohort, handlers, onFinalize, active }) {
       <div className="p-5 space-y-4">
         <header className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.25em] text-editorial-gold font-bold">{cohort.parent_season_id ? 'Cohort' : 'Season'}</p>
+            <p className="text-[10px] uppercase tracking-[0.25em] text-editorial-label font-bold">{cohort.parent_season_id ? 'Cohort' : 'Season'}</p>
             <h4 className="font-heading text-xl text-editorial-navy truncate">{cohortName(cohort)}</h4>
             {cohort.cohort_label && <p className="text-xs text-editorial-navy/50 truncate">{cohort.name}</p>}
           </div>

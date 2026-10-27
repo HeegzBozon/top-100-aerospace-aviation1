@@ -5,6 +5,8 @@ const brandColors = {
   navyDeep: '#1e3a5a',
   skyBlue: '#4a90b8',
   goldPrestige: '#c9a87c',
+  // Label ink for cream plates: gold reads 2.11:1 there, this reads 5.30:1.
+  goldInk: '#8F5C2C',
   cream: '#faf8f5',
   ink: '#1a1a1a',
 };
@@ -32,7 +34,7 @@ export default function ComingSoonIntelligenceTab() {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
       <div className="rounded-2xl border bg-white/70 p-4 md:p-6" style={{ borderColor: `${brandColors.ink}10` }}>
         <div className="mb-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.24em]" style={{ color: brandColors.goldPrestige }}>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.24em]" style={{ color: brandColors.goldInk }}>
             In Progress
           </p>
           <h3 className="mt-2 text-xl font-light md:text-2xl" style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: brandColors.navyDeep }}>

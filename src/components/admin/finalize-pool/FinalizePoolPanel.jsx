@@ -30,9 +30,9 @@ export default function FinalizePoolPanel({ season, onClose, onFinalized }) {
     <section className="rounded-2xl border border-editorial-navy/15 bg-white overflow-hidden">
       <div className="bg-editorial-navy text-white px-6 py-5 border-b-2 border-editorial-copper flex items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-editorial-gold font-bold">Lifecycle phase · Finalize the pool</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-editorial-label font-bold">Lifecycle phase · Finalize the pool</p>
           <h3 className="font-heading text-2xl mt-1">{season.cohort_label || season.name}</h3>
-          {season.pool_finalized_at && <p className="text-xs text-editorial-gold mt-1">Previously finalized {new Date(season.pool_finalized_at).toLocaleString()}</p>}
+          {season.pool_finalized_at && <p className="text-xs text-editorial-label mt-1">Previously finalized {new Date(season.pool_finalized_at).toLocaleString()}</p>}
         </div>
         <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/10"><X className="w-5 h-5" /></Button>
       </div>

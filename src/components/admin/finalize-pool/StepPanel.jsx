@@ -9,7 +9,7 @@ export default function StepPanel({ title, lede, loading, error, children }) {
       <div className="h-px bg-editorial-copper/40 my-6" />
       {loading ? (
         <div className="py-16 flex flex-col items-center gap-3 text-editorial-navy/60">
-          <Loader2 className="w-7 h-7 animate-spin text-editorial-gold" />
+          <Loader2 className="w-7 h-7 animate-spin text-editorial-label" />
           <span className="text-xs uppercase tracking-widest">Auditing the pool…</span>
         </div>
       ) : error ? (
@@ -24,7 +24,7 @@ export default function StepPanel({ title, lede, loading, error, children }) {
 export function CleanState({ icon: Icon, title, body }) {
   return (
     <div className="rounded-xl bg-editorial-cream border border-editorial-gold/30 py-12 px-6 text-center">
-      <Icon className="w-9 h-9 mx-auto text-editorial-gold mb-3" />
+      <Icon className="w-9 h-9 mx-auto text-editorial-label mb-3" />
       <p className="font-heading text-lg text-editorial-navy">{title}</p>
       <p className="text-sm text-editorial-navy/60 mt-1 max-w-md mx-auto">{body}</p>
     </div>

@@ -12,6 +12,8 @@ const brandColors = {
   navyDeep: '#1e3a5a',
   skyBlue: '#4a90b8',
   goldPrestige: '#c9a87c',
+  // Label ink for cream plates: gold reads 2.11:1 there, this reads 5.30:1.
+  goldInk: '#8F5C2C',
   goldLight: '#e8d4b8',
   cream: '#faf8f5',
 };
@@ -335,7 +337,7 @@ export default function ArchiveExport({ nominees, title = "TOP 100 Women in Aero
         viewport={{ once: true }}
         className="text-center mb-8"
       >
-        <p className="text-sm tracking-widest uppercase mb-2" style={{ color: brandColors.goldPrestige }}>
+        <p className="text-sm tracking-widest uppercase mb-2" style={{ color: brandColors.goldInk }}>
           Archive Center
         </p>
         <h2 className="text-2xl md:text-3xl font-bold" style={{ color: brandColors.navyDeep }}>

@@ -39,7 +39,7 @@ export default function ArchiveVolumesSection() {
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-[9px] tracking-[0.25em] uppercase mb-2" style={{ color: brandColors.goldPrestige }}>
+                  <p className="text-[9px] tracking-[0.25em] uppercase mb-2" style={{ color: brandColors.goldInk }}>
                     {v.volume} · {v.year}
                   </p>
                   <h3

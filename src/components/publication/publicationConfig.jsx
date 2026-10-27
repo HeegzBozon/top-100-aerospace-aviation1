@@ -2,6 +2,11 @@ export const publicationBrand = {
   navyDeep: '#1e3a5a',
   skyBlue: '#4a90b8',
   goldPrestige: '#c9a87c',
+  // The label ink. Gold is the accent on the navy plates (5.19:1 there), but on this
+  // publication's cream it reads at 2.11:1, so small-caps labels take burnished
+  // copper: 5.3:1 on cream, 5.6:1 on white. Structure stays gold; only the letters
+  // that must be read at 9px change.
+  goldInk: '#8F5C2C',
   goldLight: '#e8d4b8',
   cream: '#faf8f5',
   ink: '#1a1a1a',

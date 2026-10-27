@@ -16,6 +16,7 @@ import DesktopShell from '@/components/desktop/DesktopShell';
 import AppSplash from '@/components/core/AppSplash';
 import ConsoleLoading from '@/components/core/ConsoleLoading';
 import PageTurn from '@/components/core/PageTurn';
+import SurfaceLoader from '@/components/core/SurfaceLoader';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
@@ -247,7 +248,14 @@ const AuthenticatedApp = () => {
       <Route path="/hangouts" element={<Hangouts />} />
       <Route path="/moon-joy" element={<Hangouts />} />
       <Route path="/2030-vision" element={<Vision2030 />} />
-      <Route path="/play" element={<FlightSimulator />} />
+      {/* The two instrument surfaces carry the 3D and charting chunks. Each waits in
+          place, inside the frame already standing, rather than handing the glass back
+          to the boot console. */}
+      <Route path="/play" element={
+        <Suspense fallback={<SurfaceLoader label="Preparing the simulator" />}>
+          <FlightSimulator />
+        </Suspense>
+      } />
       {/* Aero-Frontier: the inherited airfield, the airframe, and the first circuit */}
       <Route path="/aero-frontier" element={<AeroFrontier />} />
       <Route path="/common-ground" element={<CommonGround />} />
@@ -283,7 +291,11 @@ const AuthenticatedApp = () => {
       <Route path="/viralpost2026" element={<ViralPost2026 />} />
       <Route path="/viralpost2026/featured/:slug" element={<ViralPost2026Featured />} />
       <Route path="/honoree/2021/:slugId" element={<HonoreePublication />} />
-      <Route path="/intelligence-globe" element={<IntelligenceGlobe />} />
+      <Route path="/intelligence-globe" element={
+        <Suspense fallback={<SurfaceLoader label="Assembling the globe" />}>
+          <IntelligenceGlobe />
+        </Suspense>
+      } />
       <Route path="/magazine-studio" element={<MagazineStudio />} />
       <Route path="/magazine/:issueId" element={<MagazineReader />} />
       {/* The title screen's TOP 100 Women 2025 key: the edition itself, resolved to the
