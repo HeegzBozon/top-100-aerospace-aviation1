@@ -19,10 +19,6 @@ export default function StartSurfaceKeys({ cursorKey }) {
 
   return (
     <div className="mt-4 flex min-h-0 flex-1 flex-col md:mt-8">
-      <p className="mb-1.5 shrink-0 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/40">
-        Select a surface
-      </p>
-
       <div className="grid grid-cols-3 auto-rows-[minmax(66px,auto)] gap-2 overflow-y-auto overscroll-contain md:auto-rows-[minmax(104px,auto)] md:gap-3">
         {START_MENU.map((item) => (
           <StartMenuItem key={item.label} item={item} selected={item.key === cursorKey} />

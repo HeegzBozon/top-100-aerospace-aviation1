@@ -408,6 +408,24 @@ button:focus-visible {
   scroll-snap-align: start;
 }
 
+/* ===== THE KEYBOARD =====
+   The one time the controls center is put away. The keyboard stands exactly where
+   the chin stands, so the chin goes while a field is being written into, and the
+   clearance it held is handed over wholesale: the body re-declares --hh-bottom,
+   which outranks the value inherited from the document root, so the stage, the
+   glass panels and every bar riding the bottom of the picture are measured from
+   the keyboard instead of from the wheel. The moulding stays — the device is still
+   the device while the keys are up — and everything returns the moment they go. */
+@media (max-width: 767px) {
+  body.hh-keyboard {
+    --hh-bottom: var(--hh-keyboard, 0px);
+  }
+
+  body.hh-keyboard .hh-chin {
+    display: none;
+  }
+}
+
 /* LCD glass over the content: scanlines and a soft vignette, then a slow sheen. */
 /* The pane itself: a soft vignette in the finish's recess tone seats the content
    at the bottom of the well and a 1px ink line closes the opening. No scanlines
