@@ -1,10 +1,16 @@
 import { useEffect, useRef } from "react";
 
-// The cartridge menu, rendered inside the viewer rather than over the app. The
+// The console's menu drawer, rendered inside the viewer rather than over the app. The
 // wheel moves the cursor, the centre button loads the cartridge, B backs out.
 // The pane is the finish's phosphor, so the screen changes with the hardware.
+//
+// It is one drawer for every menu the device opens: the console's own cartridges, the
+// bar's File and Edit lists, the surface's sections, and the finishes the case can wear.
+// Each prints its own name in the title bar — the console's keeps the OS mark — so the
+// key that opened it reads back: Y lands on a drawer headed Edit.
 export default function HandheldMenu({
   groups,
+  label,
   cursor,
   locationKey,
   unit = "cartridges",
@@ -36,7 +42,7 @@ export default function HandheldMenu({
         boxShadow: "inset 0 0 0 2px var(--hh-bezel)",
       }}
       role="dialog"
-      aria-label="Cartridge menu"
+      aria-label={label ? `${label} menu` : "Cartridge menu"}
     >
       {/* Title bar */}
       <div
@@ -47,7 +53,7 @@ export default function HandheldMenu({
           className="flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-[0.28em]"
           style={{ color: "var(--hh-lcd)" }}
         >
-          <span className="hh-blink">▶</span> TOP 100 OS
+          <span className="hh-blink">▶</span> {label || "TOP 100 OS"}
         </span>
         <span
           className="text-[8px] font-bold uppercase tracking-[0.28em]"

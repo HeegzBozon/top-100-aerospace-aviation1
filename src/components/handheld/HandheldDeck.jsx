@@ -38,6 +38,11 @@ const BOOT_KEY = "top100-handheld-booted";
 // with it: the top of the wheel is away from you, the bottom towards you.
 const ZONE_DIR = { menu: "up", play: "down", prev: "left", next: "right" };
 
+// What each drawer is called. The console's own menu is the machine itself, so it keeps
+// the OS mark; every other drawer prints the name of the menu it is holding, so the
+// press that opened it reads back on the glass — Y lands on a drawer headed Edit.
+const DRAWER_TITLES = { file: "File", edit: "Edit", sections: "Sections", finish: "Customize" };
+
 // The handheld. One body: a legend band printed on the case, a viewer the content
 // renders in below it, and a chin carrying the click wheel, the face buttons and the
 // grille.
@@ -45,8 +50,9 @@ const ZONE_DIR = { menu: "up", play: "down", prev: "left", next: "right" };
 // selects what the ring landed on, MENU goes up a level and opens the cartridges from
 // the top, back and forward step the page's modules, and the bottom key plays the page
 // down the glass and stops it again. Holding the centre, or tapping the mark on the
-// case, goes home. Y opens the Edit drawer, and the share lives on the pill at the foot
-// of the glass — a key of its own, on every surface (see ViewerFoot).
+// case, goes home. Y opens the Edit drawer — the same list the bar's own Edit cell
+// holds, one press from anywhere — and the share lives on the pill at the foot of the
+// glass: a key of its own, on every surface (see ViewerFoot).
 // A surface may also take the ring itself and steer with it — the field game walks
 // on it — in which case the four zones become up, down, left and right for as long
 // as nothing of the console's own is open over the glass.
@@ -643,6 +649,7 @@ export default function HandheldDeck() {
       {menuOpen && !booting && (
         <HandheldMenu
           groups={groupsFor(menuMode)}
+          label={DRAWER_TITLES[menuMode]}
           cursor={cursor}
           locationKey={locationKey}
           unit={
