@@ -40,7 +40,7 @@ export default function ScreenTopBar({
         top: "calc(var(--hh-top, 73px) + env(safe-area-inset-top))",
         height: HEAD_BAND,
         background: "var(--hh-recess)",
-        borderRadius: "11px 11px 0 0",
+        borderRadius: "8px 8px 0 0",
       }}
     >
       <MenuBar

@@ -109,11 +109,12 @@
    The companion to the control rail, cut across the FOOT of the glass instead of its
    head: the same recessed band, its seam run along the top edge where the rail's runs
    along the bottom, closing the pane's own bottom corners. It is the lowest part of the
-   picture — the glass opens straight onto the chin (see HandheldScreenFrame) — and one
-   thing is printed on it: the device's readout, the cycle's stamp, running. Every tone is
-   a finish token, so the band is recast with the case. */
+   picture — the glass opens straight onto the chin (see HandheldScreenFrame) — and two
+   things ride it: the Share pill at its left and the device's readout at its right, the
+   cycle's stamp, running, with a machined seam ruled between them. Every tone is a
+   finish token, so the band is recast with the case. */
 .hh-viewer-foot {
-  border-radius: 0 0 11px 11px;
+  border-radius: 0 0 8px 8px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.05) 52%),
     var(--hh-recess);
@@ -122,9 +123,21 @@
     inset 0 -1px 0 rgba(255, 255, 255, 0.07),
     0 -6px 18px rgba(3, 6, 13, 0.26);
 }
-/* The Share pill: the press that used to ride the readout band, standing in the control
-   centre under the speaker now, where a thumb already rests. It lights while the drawer
-   it opened is standing open. */
+/* The seam through the middle of the band: ruled from the pill to the readout, faded at
+   both ends so the two ends of the band read as one instrument rather than as two
+   things with a gap between them. */
+.hh-foot-seam {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--hh-metal-rgb) / 0) 0%,
+    rgb(var(--hh-metal-rgb) / 0.42) 20%,
+    rgb(var(--hh-metal-rgb) / 0.42) 80%,
+    rgb(var(--hh-metal-rgb) / 0) 100%
+  );
+}
+/* The Share pill: the press that rides the readout band, at the left of the foot of the
+   glass, where the hand already holding the machine can reach it without leaving the
+   picture. It lights while the drawer it opened is standing open. */
 .hh-share-pill {
   transition: box-shadow 150ms ease;
   background: linear-gradient(180deg, var(--hh-pad-1) 0%, var(--hh-pad-2) 100%);

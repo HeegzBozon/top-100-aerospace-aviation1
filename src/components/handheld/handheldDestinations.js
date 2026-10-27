@@ -1,7 +1,7 @@
 import {
   MessageCircle, Trophy, Award, Users, Calendar, Rocket, Send, Briefcase,
   GraduationCap, Network, Radar, LayoutGrid, Globe2, Compass, Newspaper,
-  ShoppingBag, BookUser, Mail, CalendarCheck, Shield, LogIn, LogOut,
+  ShoppingBag, Mail, CalendarCheck, Shield, LogIn, LogOut,
   Scissors, Layers, BookOpen, Gamepad2, Heart,
 } from "lucide-react";
 import { createPageUrl } from "@/utils";
@@ -17,7 +17,6 @@ export const NAVIGATOR_GROUPS = [
     label: "Identity",
     items: [
       { label: "Dashboard", to: "/board", icon: LayoutGrid },
-      { label: "Passport", to: "/Profile", icon: BookUser },
       { label: "The Bulletin", to: "/Profile?board=fellow", icon: LayoutGrid },
       { label: "Mission Rooms", to: "/Profile?board=conference", icon: Radar },
       { label: "Ribbon Cuttings", to: "/Profile?board=ribbon", icon: Scissors },
@@ -50,7 +49,7 @@ export const NAVIGATOR_GROUPS = [
     items: [
       { label: "Comms", to: "/Comms", icon: MessageCircle },
       { label: "Calendar", to: "/events", icon: Calendar },
-      { label: "AeroSync", to: "/networking", icon: Users },
+      { label: "AeroSync CRM", to: "/networking", icon: Users },
       { label: "Operation Moon Joy", to: "/hangouts", icon: Rocket },
       { label: "Local Legends", to: "/local-legends", icon: Users },
     ],
@@ -87,7 +86,6 @@ export const RAIL_FALLBACK = CORE_NAV_ITEMS.map((item) => ({
 }));
 
 export const MORE_FALLBACK = [
-  { label: "Passport", to: "/Profile", icon: BookUser },
   { label: "Play", to: "/Arcade", icon: Gamepad2 },
   { label: "Launch Party", to: "/LaunchParty", icon: Rocket },
 ];

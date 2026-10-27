@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Palette, Share } from "lucide-react";
+import { Palette } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
 import { pressFaceKey } from "./handheldKeys";
@@ -51,8 +51,8 @@ const DRAWER_TITLES = { file: "File", edit: "Edit", sections: "Sections", finish
 // the top, back and forward step the page's modules, and the bottom key plays the page
 // down the glass and stops it again. Holding the centre, or tapping the mark on the
 // case, goes home. Y opens the Edit drawer — the same list the bar's own Edit cell
-// holds, one press from anywhere — and the share stands on its own pill in the control
-// centre, under the speaker, on every surface.
+// holds, one press from anywhere — and the share stands on its own pill at the left of the
+// readout band, in the glass itself, on every surface.
 // A surface may also take the ring itself and steer with it — the field game walks
 // on it — in which case the four zones become up, down, left and right for as long
 // as nothing of the console's own is open over the glass.
@@ -622,8 +622,9 @@ export default function HandheldDeck() {
         onNotifications={openNotifications}
       />
 
-      {/* The glass's footer: the device's readout, cut across the foot of the picture. */}
-      <ViewerFoot />
+      {/* The glass's footer: the share at its left, the device's readout at its right,
+          cut across the foot of the picture. */}
+      <ViewerFoot shareOpen={shareOpen} onShare={toggleShare} />
 
       <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
 
@@ -717,23 +718,11 @@ export default function HandheldDeck() {
             are the same width, so the wheel sits dead centre whatever either of them
             measures. */}
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pt-1.5">
-          {/* The left column: the case speaker with the console's record on it, and
-              under it the Share pill — off the readout band and into the control centre,
-              where a thumb already rests and no page can take it away. */}
-          <div className="flex flex-col items-center gap-1">
+          {/* The left column: the case speaker with the console's record on it. The
+              Share pill that stood under it rides the readout band now, at the left of
+              the foot of the glass (see ViewerFoot). */}
+          <div className="flex items-center justify-center">
             <HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />
-
-            <button
-              type="button"
-              onClick={toggleShare}
-              data-open={shareOpen || undefined}
-              aria-label={shareOpen ? "Close the share drawer" : "Share this page"}
-              className="hh-share-pill flex h-[21px] shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[7px] font-bold uppercase tracking-[0.2em]"
-              style={{ color: "var(--hh-pad-ink)" }}
-            >
-              <Share className="h-[9px] w-[9px] shrink-0" />
-              Share
-            </button>
           </div>
 
           <ClickWheel

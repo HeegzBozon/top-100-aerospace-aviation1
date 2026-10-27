@@ -1,4 +1,4 @@
-import { Award, BookOpen, BookUser, LayoutGrid, ListChecks, Plane, Shield, Trophy, Users } from "lucide-react";
+import { Award, BookOpen, LayoutGrid, ListChecks, Plane, Shield, Trophy, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -17,11 +17,10 @@ export const START_MENU = [
   { key: "read", index: "00", label: "Read", to: "/mission-briefing", icon: BookOpen },
   { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
   { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks },
-  { key: "passport", index: "03", label: "Passport", to: "/Profile", icon: BookUser },
+  { key: "networking", index: "03", label: "AeroSync CRM", to: "/networking", icon: Users },
   { key: "dashboard", index: "04", label: "Dashboard", to: "/board", icon: LayoutGrid },
   { key: "results", index: "05", label: "Results", to: "/Top100Women2025", icon: Trophy },
-  { key: "networking", index: "06", label: "AeroSync", to: "/networking", icon: Users },
-  { key: "frontier", index: "07", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
+  { key: "frontier", index: "06", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -29,7 +28,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "08",
+  index: "07",
   label: "Admin",
   to: "/Admin",
   icon: Shield,

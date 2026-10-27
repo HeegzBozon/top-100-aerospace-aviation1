@@ -96,7 +96,10 @@ export default function Networking() {
       <div className="mx-auto w-full max-w-5xl px-4 py-8 md:px-8 md:py-14">
         <header>
           <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-            AeroSync
+            AeroSync CRM
+          </p>
+          <p className="mt-1 text-[9px] uppercase tracking-[0.24em]" style={{ color: B.muted }}>
+            Community Relationship Manager
           </p>
           <h1 className="mt-2 font-heading text-3xl leading-tight md:text-5xl" style={{ color: B.navy }}>
             The rooms ahead.

@@ -280,7 +280,7 @@ button:focus-visible {
    reclaim the whole viewport when the console is put away (the message composer,
    for one). */
 :root {
-  --hh-top: 32px;
+  --hh-top: 24px;
   --hh-shell-top: 14px;
   /* Where the glass opens at its foot: the chin's own top edge. Nothing of the moulding
      is held below the picture, so the whole strip between the pane and the controls is
@@ -293,7 +293,7 @@ button:focus-visible {
   /* The desk margin, the moulding around the glass, and the inset every surface
      on the picture is measured from — the last being the first two added. */
   --hh-frame: 14px;
-  --hh-bezel-w: 18px;
+  --hh-bezel-w: 10px;
   --hh-glass-inset: calc(var(--hh-frame, 0px) + var(--hh-bezel-w, 0px));
 
   /* The strip cut across the head of the glass, and the air it leaves under
@@ -680,7 +680,7 @@ button:focus-visible {
    parted from the next by a machined seam. Every tone is a finish token, so the
    strip is recast with the hardware. */
 .hh-strip {
-  border-radius: 11px 11px 0 0;
+  border-radius: 8px 8px 0 0;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 54%),
     var(--hh-recess);
@@ -786,7 +786,7 @@ button:focus-visible {
   right: var(--hh-glass-inset, 7px);
   top: calc(var(--hh-top, 96px) + env(safe-area-inset-top) + 5px);
   bottom: calc(var(--hh-bottom, 176px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
-  border-radius: 15px;
+  border-radius: 8px;
   overflow: hidden;
 }
 @media (min-width: 768px) {
@@ -953,12 +953,12 @@ button:focus-visible {
     right: var(--hh-glass-inset, 7px);
     top: calc(var(--hh-top, 96px) + env(safe-area-inset-top) + 5px);
     bottom: calc(var(--hh-bottom, 176px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
-    border-radius: 12px;
+    border-radius: 8px;
   }
   .page-cast,
   .page-sheet,
   .page-curl {
-    border-radius: 12px;
+    border-radius: 8px;
   }
 }
 

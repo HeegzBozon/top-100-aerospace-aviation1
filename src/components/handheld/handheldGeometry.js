@@ -10,7 +10,7 @@
 // starts at the same slim margin as its sides and the glass opens as high as the
 // hardware allows: every pixel the old band held is the picture's now.
 const FRAME_GUTTER = 14; // the desk margin: how much surface shows around the shell
-const BEZEL_WIDTH = 18; // the moulding drawn back out around the glass
+const BEZEL_WIDTH = 10; // the moulding drawn back out around the glass — as thin as the steps allow
 
 // Inside the glass: the strip cut across its head, and the air it leaves under it.
 const NAV_CLEARANCE = 34;
