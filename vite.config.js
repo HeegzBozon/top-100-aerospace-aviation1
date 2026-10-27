@@ -63,41 +63,13 @@ export default defineConfig({
     modulePreload: { polyfill: false },
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // The bundler's own shims — the commonjs interop helpers and the preload
-          // helper — are virtual modules: they live at ids that begin with a null byte,
-          // and no rule of path segments can place them. Left to chance Rollup parks
-          // them in the first chunk that wants them, which is the entry; every vendor
-          // then imports them back *from the entry* while the entry imports that vendor,
-          // and a binding read across that cycle arrives undefined. That is what broke
-          // the app at boot: "…x is not a function" before the first render.
-          //
-          // They get a chunk of their own, keyed on the null-byte prefix alone. Matching
-          // them by "not in node_modules and not in src" also caught the HTML entry
-          // itself, which renamed the entry to "helpers" and recreated the cycle.
-          if (id.startsWith('\0')) return 'helpers';
-          if (!id.includes('/node_modules/')) return;
-          // Exactly the packages that render in 3D, and no further — a page with no globe
-          // pays nothing for it. The small utilities the globe shares with the rest of the
-          // app (kapsule and friends) stay out: one of them is a bare barrel of a module
-          // the general vendor chunk also imports, and its presence here gave the entry a
-          // path to the whole stack.
-          if (/\/node_modules\/(three|three-[^/]+|troika-[^/]+|globe\.gl)\//.test(id)) return 'vendor-3d';
-          if (id.includes('/recharts/') || id.includes('/victory-vendor/') || id.includes('/d3-') || id.includes('/d3/')) return 'vendor-charts';
-          // Heavy libraries only pages reach, in chunks only those pages pull.
-          if (id.includes('/jspdf/') || id.includes('/html2canvas/')) return 'vendor-pdf';
-          if (id.includes('/hls.js/')) return 'vendor-video';
-          if (id.includes('/chess.js/') || id.includes('/react-chessboard/')) return 'vendor-chess';
-          if (id.includes('/@daily-co/')) return 'vendor-call';
-          if (id.includes('/@stripe/') || /\/node_modules\/stripe\//.test(id)) return 'vendor-payments';
-          if (id.includes('/@anthropic-ai/')) return 'vendor-ai';
-          if (id.includes('/react-leaflet/') || id.includes('/leaflet/')) return 'vendor-maps';
-          if (id.includes('/@radix-ui/') || id.includes('/framer-motion/') || id.includes('/@floating-ui/') || id.includes('/cmdk/') || id.includes('/vaul/') || id.includes('/react-day-picker/') || id.includes('/embla-carousel')) return 'vendor-ui';
-          if (id.includes('/@tanstack/')) return 'vendor-query';
-          if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router')) return 'vendor-react';
-          if (id.includes('/lodash')) return 'vendor-utils';
-          return 'vendor-misc';
-        },
+        // No manual chunking. Every rule that pulled a family of packages apart from the
+        // rest closed a cycle somewhere in this app's vendor graph: the bundler's
+        // commonjs interop shims call into React while React calls back into them, and a
+        // binding read across one of those cycles arrives undefined. That is what left
+        // the published site on a blank first frame while the dev server, a single
+        // graph, ran perfectly. Rollup splits on dynamic imports alone, which cannot
+        // produce a cycle.
       },
     },
   },
