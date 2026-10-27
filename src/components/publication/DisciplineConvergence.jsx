@@ -156,7 +156,7 @@ export default function DisciplineConvergence({ nominees }) {
   // Compute cohort distribution
   const disciplineData = useMemo(() => {
     const map = {};
-    nominees.forEach(n => {
+    (nominees || []).forEach(n => {
       const disc = n.industry || n.professional_role || 'Other';
       map[disc] = (map[disc] || 0) + 1;
     });
@@ -168,12 +168,16 @@ export default function DisciplineConvergence({ nominees }) {
 
   // Radar data — normalize cohort + funding together
   const radarData = useMemo(() => {
+    // Funding attributes arrive per discipline and may be absent entirely, so every
+    // read falls back to zero and a missing award record can never throw.
+    const funds = Object.values(fundingData || {}).filter((f) => f && typeof f === 'object');
+    const maxFund = Math.max(...funds.map((f) => Number(f.usFederalFunding) || 0), 1);
+    const maxCount = Math.max(...disciplineData.map((d) => Number(d.value) || 0), 1);
+
     return disciplineData.slice(0, 6).map(({ name, value }) => {
       const fund = fundingData?.[name];
-      const maxFund = Math.max(...Object.values(fundingData || {}).map(f => f.usFederalFunding || 0), 1);
-      const fundNorm = fund ? Math.round((fund.usFederalFunding / maxFund) * 100) : 0;
-      const maxCount = Math.max(...disciplineData.map(d => d.value), 1);
-      const cohortNorm = Math.round((value / maxCount) * 100);
+      const fundNorm = fund ? Math.round(((Number(fund.usFederalFunding) || 0) / maxFund) * 100) : 0;
+      const cohortNorm = Math.round(((Number(value) || 0) / maxCount) * 100);
       return {
         subject: name,
         Cohort: cohortNorm,

@@ -52,7 +52,9 @@ export default function OrbitalIndex({ nominees, onSelectNominee, isAdmin = fals
 
       // Company edges
       if (nominee.company) {
-        const companyKey = nominee.company.toLowerCase().trim();
+        // Company arrives from imports where it may be absent or not a string —
+        // coerce before keying so one odd record cannot break the index.
+        const companyKey = String(nominee.company || '').toLowerCase().trim();
         if (!companyNodes.has(companyKey)) {
           const companyNodeId = `company_${companyKey.replace(/[^a-z0-9]+/g, '_')}`;
           companyNodes.set(companyKey, {
@@ -76,7 +78,7 @@ export default function OrbitalIndex({ nominees, onSelectNominee, isAdmin = fals
 
       // Country edges
       if (nominee.country) {
-        const countryKey = nominee.country.toLowerCase().trim();
+        const countryKey = String(nominee.country || '').toLowerCase().trim();
         if (!countryNodes.has(countryKey)) {
           const countryNodeId = `country_${countryKey.replace(/[^a-z0-9]+/g, '_')}`;
           countryNodes.set(countryKey, {
@@ -100,7 +102,7 @@ export default function OrbitalIndex({ nominees, onSelectNominee, isAdmin = fals
 
       // Industry edges
       if (nominee.industry) {
-        const industryKey = nominee.industry.toLowerCase().trim();
+        const industryKey = String(nominee.industry || '').toLowerCase().trim();
         if (!industryNodes.has(industryKey)) {
           const industryNodeId = `industry_${industryKey.replace(/[^a-z0-9]+/g, '_')}`;
           industryNodes.set(industryKey, {

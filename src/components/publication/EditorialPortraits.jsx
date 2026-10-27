@@ -282,7 +282,11 @@ const PortraitCard = ({ nominee, index, layout = 'default', onSelect }) => {
 
 export default function EditorialPortraits({ nominees, onSelectNominee }) {
   // Take top 15 for featured portraits
-  const featured = nominees.slice(0, 15);
+  const featured = (nominees || []).slice(0, 15);
+
+  // Portraits are drawn from the record. With no record in hand there are no
+  // portraits to place — the section stands down rather than drawing empty slots.
+  if (!featured.length) return null;
   
   return (
     <section 

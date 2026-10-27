@@ -219,11 +219,12 @@ export default function EnhancedGeographicDistribution({ nominees }) {
   };
 
   const analytics = useMemo(() => {
-    if (!nominees.length) return null;
+    if (!nominees?.length) return null;
 
-    // Country distribution with continent mapping
+    // Country distribution with continent mapping. Records arrive with country
+    // missing as often as not, so every field here is read defensively.
     const countryMap = {};
-    nominees.forEach(n => {
+    (nominees || []).forEach(n => {
       const country = n.country || n.Country || n.region || n.location;
       if (country && typeof country === 'string' && country.trim()) {
         const normalizedCountry = country.trim();

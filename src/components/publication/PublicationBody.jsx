@@ -10,6 +10,9 @@ import EditorialPortraits from '@/components/publication/EditorialPortraits';
 import EditorialLedger from '@/components/publication/EditorialLedger';
 import PublicationExportPanel from '@/components/publication/PublicationExportPanel';
 import SignalReport from '@/components/publication/SignalReport';
+import PublicationSectionBoundary from '@/components/publication/PublicationSectionBoundary';
+import PublicationUnavailable from '@/components/publication/PublicationUnavailable';
+import { resetEditionCache } from '@/components/publication/useTop100WomenNominees';
 import OrbitalIndexComingSoon from '@/components/publication/OrbitalIndexComingSoon';
 import ArchiveExportSection from '@/components/publication/ArchiveExportSection';
 import ArchiveVolumesSection from '@/components/publication/ArchiveVolumesSection';
@@ -31,7 +34,7 @@ import { publicationBrand as brandColors, top100Women2025Config } from '@/compon
 // /Top100Women2025 route and the HomeV3 composed front door so the two
 // views never drift apart.
 export default function PublicationBody({ suppressFloatingActions = false, initialSlug, showExports = false }) {
-  const { nominees, loading } = useTop100WomenNominees();
+  const { nominees, loading, error } = useTop100WomenNominees();
   const [selectedNominee, setSelectedNominee] = useState(null);
   const [autoPlaying, setAutoPlaying] = useState(false);
   const [shareNominee, setShareNominee] = useState(null);
@@ -150,6 +153,20 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
   }, [loading, nominees.length]);
 
   if (loading) return null;
+
+  // Nothing to read: the record could not be assembled, or the season resolved to
+  // no honorees. Show the edition's own designed state rather than handing an empty
+  // record to the sections, whose parsers have nothing to draw from.
+  if (error || nominees.length === 0) {
+    return (
+      <PublicationUnavailable
+        onRetry={() => {
+          resetEditionCache();
+          window.location.reload();
+        }}
+      />
+    );
+  }
 
   const nameFor = (id, fallback) => {
     const section = top100Women2025Config.sections.find((s) => s.id === id);
@@ -321,12 +338,25 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
     },
   ];
 
+  // Every section stands on its own: a section meeting an unexpected record shape
+  // is re-assembled locally instead of blanking the edition behind the app boundary.
+  const safeSlides = slides.map((slide) => ({
+    ...slide,
+    content: (
+      <PublicationSectionBoundary key={slide.key} name={slide.key} label={slide.label}>
+        {slide.content}
+      </PublicationSectionBoundary>
+    ),
+  }));
+
   return (
     <div ref={containerRef} className="max-w-[100vw] overflow-x-hidden" style={{ background: brandColors.cream }}>
       {/* Unauthenticated User CTAs — a desk band. On the glass the same invitation is a
           key on the edition's contents, printed where the reader is standing. */}
       <div className="hidden md:block">
-        <UnauthenticatedCTA user={user} />
+        <PublicationSectionBoundary name="invitation">
+          <UnauthenticatedCTA user={user} />
+        </PublicationSectionBoundary>
       </div>
 
       {/* RSVP floating button — hidden when a host page renders its own dock */}
@@ -347,24 +377,32 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
       )}
 
       {/* Navigation - hidden during countdown */}
-      {!showCountdown && <EditorialNav activeSection={activeSection} />}
+      {!showCountdown && (
+        <PublicationSectionBoundary name="navigation">
+          <EditorialNav activeSection={activeSection} />
+        </PublicationSectionBoundary>
+      )}
 
       {/* The console: the edition's contents on the glass, walked by the ring, and the
           section it opens read down the picture. A desk gets the same sections in one
           column. */}
-      <PublicationConsole
-        slides={slides}
-        discovered={discoveredIds.size}
-        total={nominees.length}
-        signedIn={Boolean(user)}
-        onSignIn={() => base44.auth.redirectToLogin()}
-      />
+      <PublicationSectionBoundary name="console">
+        <PublicationConsole
+          slides={safeSlides}
+          discovered={discoveredIds.size}
+          total={nominees.length}
+          signedIn={Boolean(user)}
+          onSignIn={() => base44.auth.redirectToLogin()}
+        />
+      </PublicationSectionBoundary>
 
       {/* Discovery progress tracker — a desk chip. The glass prints the same readout on
           the edition's contents instead of floating it over the picture. */}
       {!showCountdown && !selectedNominee && (
         <div className="hidden md:block">
-          <DiscoveryTracker discoveredCount={discoveredIds.size} total={nominees.length} />
+          <PublicationSectionBoundary name="progress">
+            <DiscoveryTracker discoveredCount={discoveredIds.size} total={nominees.length} />
+          </PublicationSectionBoundary>
         </div>
       )}
 
