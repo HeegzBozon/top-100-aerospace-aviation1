@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import MenuBar, { KEY_CELL, MENU_CELL } from "@/components/shell/MenuBar";
 import MenuDropdown from "@/components/shell/MenuDropdown";
 import { menuGroups } from "@/components/shell/barMenus";
+import { fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import NotificationCenter from "@/components/notifications/NotificationCenter";
 import useHandheldDestinations from "@/components/handheld/useHandheldDestinations";
 import { surfaceLabel } from "@/components/handheld/handheldDestinations";
@@ -32,7 +33,7 @@ export default function DesktopMenuBar() {
   const drawer = useMemo(
     () =>
       open === "file"
-        ? menuGroups("file", { isSignedIn, isAdmin })
+        ? fileGroupsWith(menuGroups("file", { isSignedIn, isAdmin }))
         : open === "edit"
           ? menuGroups("edit", { isSignedIn, isAdmin })
           : groups,
@@ -49,6 +50,9 @@ export default function DesktopMenuBar() {
     if (!item) return;
     if (item.action === "signin") return toLogin();
     if (item.action === "logout") return base44.auth.logout(`${window.location.origin}/`);
+    // A surface's own File entry does its work where it stands: the drawer goes down on the
+    // press and the surface reports what came of it.
+    if (item.onSelect) return item.onSelect();
     if (item.href) {
       window.open(item.href, "_blank", "noopener");
       return;

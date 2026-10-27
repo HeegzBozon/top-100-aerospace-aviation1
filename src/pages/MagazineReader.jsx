@@ -9,11 +9,14 @@ import SinglePageReader from '@/components/magazine/SinglePageReader';
 import PdfViewer from '@/components/magazine/PdfViewer';
 import GlassIssueOpening from '@/components/magazine/glass/GlassIssueOpening';
 import GlassIssueReader from '@/components/magazine/glass/GlassIssueReader';
+import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
+import { useToast } from '@/components/ui/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function MagazineReader() {
   const { issueId } = useParams();
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   const [issue, setIssue] = useState(null);
   const [pages, setPages] = useState([]);
   const [articles, setArticles] = useState([]);
@@ -81,6 +84,24 @@ export default function MagazineReader() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [opened]);
+
+  // The issue's File menu on a desk: the machine's own list carries the issue while a desk
+  // reader is open — the PDF a reader keeps, and the link to hand out — reported in the
+  // machine's notices. On the handheld the glass reader registers the fuller list, with the
+  // honoree standing under the ring beside these two, so this one stands down there.
+  useIssueFileMenu({
+    issue,
+    pages,
+    articles,
+    enabled: !isMobile && opened,
+    present: 'toast',
+    onNotice: ({ tone, title, message }) =>
+      toast({
+        title,
+        description: message,
+        variant: tone === 'error' ? 'destructive' : 'default',
+      }),
+  });
 
   if (loading) {
     return (

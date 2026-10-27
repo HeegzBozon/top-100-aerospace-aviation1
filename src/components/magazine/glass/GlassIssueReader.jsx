@@ -6,6 +6,7 @@ import { useCinematicPlayback, PLAYBACK_SPEEDS } from '@/components/magazine/use
 import { buildIssueContents, buildNameIndex, foldLabel } from '@/components/magazine/glass/glassIssueEntries';
 import GlassIssuePage from '@/components/magazine/glass/GlassIssuePage';
 import GlassNameIndex from '@/components/magazine/glass/GlassNameIndex';
+import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
 
 import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
 
@@ -116,6 +117,28 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
 
   const openName = (entry) => openAt(entry.position);
 
+  // The issue's own File menu: the honoree the reader has turned to can be followed or
+  // connected to their rolodex, her profile shared or taken away as a sheet, and the issue
+  // itself handed out or downloaded as a PDF. It is registered with the machine for as long
+  // as this reader stands open, and reports in the glass through the panel it hands back.
+  const fileMenu = useIssueFileMenu({
+    issue,
+    pages,
+    articles,
+    nameIndex,
+    position,
+    onOpenRegister: openRegister,
+    onBusy: () => setIsPlaying(false),
+  });
+
+  // What the File menu is reporting stands over the issue, on every level of the reader.
+  const withPanel = (content) => (
+    <>
+      {content}
+      {fileMenu.panel}
+    </>
+  );
+
   // Refs, because the console's hands read the surface as it stands now rather than
   // as it was when the picker was registered.
   const viewRef = useRef(view);
@@ -192,7 +215,7 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   }, [view, position]);
 
   if (view === 'page') {
-    return (
+    return withPanel(
       <GlassIssuePage
         issue={issue}
         page={openPage}
@@ -215,22 +238,22 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
         }}
         nextSection={nextSection}
         onBack={() => setView('contents')}
-      />
+      />,
     );
   }
 
   if (view === 'index') {
-    return (
+    return withPanel(
       <GlassNameIndex
         entries={nameIndex}
         read={read}
         onOpen={openName}
         onBack={() => setView('contents')}
-      />
+      />,
     );
   }
 
-  return (
+  return withPanel(
     <GlassStudioList
       kicker={isPdf ? 'Pages' : 'Contents'}
       hint="◀▶ Walk · A Read"
@@ -269,6 +292,6 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
           {total ? 'Nothing here yet.' : 'This issue has no pages.'}
         </p>
       )}
-    />
+    />,
   );
 }

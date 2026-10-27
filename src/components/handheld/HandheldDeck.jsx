@@ -24,6 +24,7 @@ import HandheldPlate from "./HandheldPlate";
 import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
 import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
+import { fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, persistSound } from "./handheldSound";
 import { openingPlaysNow } from "@/components/core/appOpening";
@@ -168,6 +169,9 @@ export default function HandheldDeck() {
     (mode) => {
       if (mode === "sections") return [{ key: "sections", label: "On this surface", items: sectionItems }];
       if (mode === "finish") return [{ key: "finish", label: "Customize", items: finishItems }];
+      // File leads with the surface's own work — an issue being read keeps its entries
+      // there — and closes with the machine's own list.
+      if (mode === "file") return fileGroupsWith(barDrawers.file || []);
       return barDrawers[mode] || menuGroups;
     },
     [sectionItems, finishItems, barDrawers, menuGroups],
@@ -286,6 +290,9 @@ export default function HandheldDeck() {
       if (destination.action === "finish") return openFinish();
       if (destination.action === "signin") return base44.auth.redirectToLogin(window.location.href);
       if (destination.action === "logout") return base44.auth.logout(`${window.location.origin}/`);
+      // A surface's own File entry does its work where it stands: the drawer goes down on
+      // the press, and the surface reports in the glass what came of it.
+      if (destination.onSelect) return destination.onSelect();
       if (destination.href) {
         window.open(destination.href, "_blank", "noopener");
         return;
@@ -312,7 +319,7 @@ export default function HandheldDeck() {
   // on this device and the entries land where you already are.
   const openBarDrawer = useCallback(
     (kind) => {
-      const items = (barDrawers[kind] || []).flatMap((group) => group.items);
+      const items = groupsFor(kind).flatMap((group) => group.items);
       const current = items.findIndex((item) => item.to && item.to === locationKey);
       setCursor(current >= 0 ? current : 0);
       setMenuMode(kind);
@@ -323,7 +330,7 @@ export default function HandheldDeck() {
       blip("open");
       buzz();
     },
-    [barDrawers, locationKey, finishBoot],
+    [groupsFor, locationKey, finishBoot],
   );
 
   // X lists what is on this surface: every slide of the deck, or the page's own

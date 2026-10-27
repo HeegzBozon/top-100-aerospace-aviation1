@@ -10,6 +10,7 @@ import GlassNameIndexRow from '@/components/magazine/glass/GlassNameIndexRow';
 import useFollowing from '@/components/following/useFollowing';
 import useListEntry from '@/components/following/useListEntry';
 import { personKey } from '@/components/following/honoreeRecord';
+import { reasonLine } from '@/components/following/followingCopy';
 
 const EMPTY = new Set();
 
@@ -17,16 +18,6 @@ const EMPTY = new Set();
 const arrange = (entries, order) => (order === 'name'
   ? [...entries].sort((a, b) => a.indexForm.localeCompare(b.indexForm))
   : [...entries].sort((a, b) => a.number - b.number));
-
-// What an action that did not go through says, in the register's own voice. An action that
-// cannot be taken is explained rather than hidden: the reader is told what is missing.
-const REFUSALS = {
-  'signed-out': 'Sign in to keep the people you follow, and a list of your own.',
-  'no-address': 'No address on her record, so she cannot be followed yet.',
-  'no-record': 'This name is not linked to a record yet.',
-  failed: 'That did not go through. Try it again.',
-};
-const refusal = (reason) => REFUSALS[reason] || REFUSALS.failed;
 
 // The Index of Names, on the glass.
 //
@@ -139,13 +130,13 @@ export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onB
   const toggleFollow = async (entry) => {
     const res = await following.toggle({ name: entry.name, portrait: entry.portrait, nomineeId: entry.nomineeId });
     if (res.ok) setNotice(res.following ? `Following ${res.name}` : `${res.name} is no longer in the people you follow`);
-    else setNotice(refusal(res.reason));
+    else setNotice(reasonLine(res.reason));
   };
 
   const addToList = async (entry) => {
     const res = await list.add(entry);
     if (res.ok) setNotice(res.already ? `${res.name} is already on your list` : `${res.name} added to your TOP 100`);
-    else setNotice(refusal(res.reason));
+    else setNotice(reasonLine(res.reason));
   };
 
   if (card) {

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, RotateCcw, Users } from 'lucide-react';
+import { BookOpen, Heart, RotateCcw, Users } from 'lucide-react';
 import FollowingRow from '@/components/following/FollowingRow';
 import useFollowing from '@/components/following/useFollowing';
 import useListEntry from '@/components/following/useListEntry';
@@ -154,12 +154,18 @@ export default function FollowingLedger() {
             No one followed yet.
           </p>
           <p className="mt-1 max-w-md text-[11.5px] leading-relaxed" style={{ color: C.muted }}>
-            Open the Index of Names in the 2025 edition, choose an honoree, and press Follow. She
-            stands here — with her card beside her, when you hold one.
+            A name is kept where it is published. Open an issue and walk its Index of Names, or open
+            any honoree's profile, and press Follow — she stands here, with the card you hold for
+            her beside her.
           </p>
-          <Link to="/women-2025" className={`${BTN_BASE} mt-3`} style={BTN.primary}>
-            <Heart className="h-3.5 w-3.5" /> Open the edition
-          </Link>
+          <div className="mt-3.5 flex flex-wrap items-center gap-2">
+            <Link to="/women-2025" className={BTN_BASE} style={BTN.primary}>
+              <Heart className="h-3.5 w-3.5" /> TOP 100 Women 2025
+            </Link>
+            <Link to="/ArchiveLanding" className={BTN_BASE} style={BTN.outline}>
+              <BookOpen className="h-3.5 w-3.5" /> The full archive
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="mt-2 space-y-1.5">
