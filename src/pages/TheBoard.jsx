@@ -7,6 +7,7 @@ import CheckInColumn from '@/components/board/CheckInColumn';
 import SeasonBand from '@/components/board/SeasonBand';
 import { useCheckIn } from '@/components/board/useCheckIn';
 import HomeDock from '@/components/home-v3/HomeDock';
+import FlightDeck from '@/components/flight-deck/FlightDeck';
 import { BOARD_COLUMNS, BRAND } from '@/components/board/boardConfig';
 import useBoardCards from '@/components/board/useBoardCards';
 import useGlass from '@/hooks/useGlass';
@@ -158,11 +159,8 @@ export default function TheBoard() {
     );
   }
 
-  return (
-    <div
-      className="hh-slide-window flex flex-col md:block md:h-auto md:min-h-screen"
-      style={{ background: BRAND.cream }}
-    >
+  const board = (
+    <>
       <header className="hidden px-6 pt-8 md:block">
         <p
           className="text-[9px] font-bold uppercase tracking-[0.3em]"
@@ -223,9 +221,26 @@ export default function TheBoard() {
         )}
       </div>
 
-      {/* Desktop navigation and breathing room under the columns. */}
+      {/* Clearance under the columns for the dock the deck carries. */}
       <div className="hidden h-28 md:block" />
       <HomeDock />
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* A phone gets the handheld's own page, exactly as it was: the glass, the
+          ring, and four directions across. */}
+      <div className="hh-slide-window flex flex-col md:hidden" style={{ background: BRAND.cream }}>
+        {board}
+      </div>
+
+      {/* A desk gets the same board seated in the Flight Deck. */}
+      <div className="hidden md:block">
+        <FlightDeck data={data} stats={stats} phase={phase} placed={placed}>
+          {board}
+        </FlightDeck>
+      </div>
+    </>
   );
 }
