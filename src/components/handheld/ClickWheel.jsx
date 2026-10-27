@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { Pause, Play, Share, SkipBack, SkipForward } from "lucide-react";
 
 // Degrees of travel per detent. One detent = one menu row or one scroll notch.
 const STEP_DEGREES = 20;
@@ -61,6 +61,10 @@ export default function ClickWheel({
   onPlay,
   onSelect,
   onHome,
+  // A surface that has taken all four face keys for its own work — the chamber's
+  // candidates — hands the bottom print the share instead: the press the Y key makes
+  // everywhere else, on the one key that is left over.
+  playIsShare = false,
   // Steering: a surface that is driven by the ring itself — the field game — keeps
   // the same hardware but hands the wheel a different grammar. Its own four prints
   // go on the ring, the zone under the thumb is reported as held until the thumb
@@ -282,7 +286,9 @@ export default function ClickWheel({
         aria-label={
           steer
             ? "Click wheel, steering. Hold a zone on the ring to walk that way, slide the thumb to turn, the centre acts, and the centre held goes home."
-            : "Click wheel. Turn it to move, the centre selects, MENU goes up a level, the bottom key plays, and the centre held goes home."
+            : playIsShare
+              ? "Click wheel. Turn it to move, the centre selects, MENU goes up a level, and the bottom key shares."
+              : "Click wheel. Turn it to move, the centre selects, MENU goes up a level, the bottom key plays, and the centre held goes home."
         }
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -342,7 +348,13 @@ export default function ClickWheel({
               className="absolute bottom-[7px] left-1/2 flex -translate-x-1/2 items-center transition-transform"
               style={{ color: print(zone === "play"), transform: zone === "play" ? "translateX(-50%) scale(0.9)" : undefined }}
             >
-              {playing ? <Pause className="h-[12px] w-[12px]" /> : <Play className="h-[13px] w-[13px]" />}
+              {playIsShare ? (
+                <Share className="h-[12px] w-[12px]" strokeWidth={2.4} />
+              ) : playing ? (
+                <Pause className="h-[12px] w-[12px]" />
+              ) : (
+                <Play className="h-[13px] w-[13px]" />
+              )}
             </span>
           </>
         )}

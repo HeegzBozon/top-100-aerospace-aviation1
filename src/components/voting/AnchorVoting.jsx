@@ -13,11 +13,10 @@ import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import { registerFaceKeys } from '@/components/handheld/handheldKeys';
 
-// The four candidates stand under the four face keys. The keypad is a diamond — Y
-// above, X left, B right, A below — and read clockwise from the top it is the same
-// walk as the 2x2 grid the cards are drawn in, so every key's card is on the side its
-// key sits on: Y top-left, B top-right, A bottom-right, X bottom-left.
-const VOTE_KEYS = ['Y', 'B', 'X', 'A'];
+// The four candidates stand under the four face keys, in the order the cards are set:
+// X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
+// standing, so the share moves to the ring's play zone for as long as the keys are held.
+const VOTE_KEYS = ['X', 'Y', 'A', 'B'];
 
 function shuffle(arr) {
   const a = [...arr];
