@@ -17,6 +17,18 @@ export const AuthProvider = ({ children }) => {
     checkAppState();
   }, []);
 
+  // The gate never stays shut. The bootstrap above waits on network calls that have no
+  // timeout of their own, so one request the network never answers leaves the machine
+  // on its aperture for ever. After a few seconds the app opens as a visitor; a real
+  // answer that lands later still signs the user in.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setIsLoadingPublicSettings(false);
+      setIsLoadingAuth(false);
+    }, 5000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   const checkAppState = async () => {
     try {
       setIsLoadingPublicSettings(true);

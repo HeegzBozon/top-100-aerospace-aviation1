@@ -303,6 +303,31 @@
       </div>
     </div>
     <div id="root"></div>
+    <script>
+      /* The card above is a first coat of paint, not a screen of its own: the moment
+         React owns the frame it must go, and it must go even if React never arrives.
+         The entry calls window.__revealApp() as soon as it has rendered; the timer
+         below is the safety net, so a stalled bundle can never leave a static card
+         standing over a live app. */
+      (function () {
+        var revealed = false;
+        window.__revealApp = function () {
+          if (revealed) return;
+          revealed = true;
+          window.__appMounted = true;
+          var shell = document.getElementById('boot-shell');
+          if (!shell) return;
+          shell.style.transition = 'opacity 240ms ease';
+          shell.style.opacity = '0';
+          window.setTimeout(function () {
+            if (shell.parentNode) shell.parentNode.removeChild(shell);
+          }, 260);
+        };
+        window.setTimeout(function () {
+          if (!window.__appMounted) window.__revealApp();
+        }, 3000);
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
