@@ -4,7 +4,6 @@ import { BadgeCheck, BookOpen, Camera, Download, Loader2, Settings2, LayoutGrid 
 import { Link } from 'react-router-dom';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import useGlass from '@/hooks/useGlass';
-import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
 import FellowIdentityHeader from '@/components/fellow-home/FellowIdentityHeader';
@@ -469,7 +468,6 @@ export default function Profile() {
 
       {/* Desktop dock spacing only — the handheld body reserves its own room. */}
       <div className="hidden h-28 md:block" />
-      <HomeDock />
 
       {wizard && (
         <ProfileWizard

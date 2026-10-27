@@ -6,7 +6,6 @@ import ExperienceHero from '@/components/events/ExperienceHero';
 import PublicationBody from '@/components/publication/PublicationBody';
 import PublicationSectionBoundary from '@/components/publication/PublicationSectionBoundary';
 import PublicationLoading from '@/components/publication/PublicationLoading';
-import HomeDock from '@/components/home-v3/HomeDock';
 import PublicationUnavailable from '@/components/publication/PublicationUnavailable';
 import useTop100WomenNominees, { resetEditionCache } from '@/components/publication/useTop100WomenNominees';
 
@@ -73,7 +72,6 @@ export default function HomeV3() {
       <div className="h-24" />
 
       {/* Sticky bottom dock — consolidates menu, nominate, RSVP, newsletter, shop */}
-      <HomeDock />
     </>
   );
 }

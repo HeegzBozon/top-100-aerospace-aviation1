@@ -1,4 +1,3 @@
-import HomeDock from "@/components/home-v3/HomeDock";
 import StartMetaRow from "@/components/start/StartMetaRow";
 import DesktopStartSky from "./DesktopStartSky";
 import DesktopStartRail from "./DesktopStartRail";
@@ -54,7 +53,6 @@ export default function DesktopStartScreen({
         </div>
       </div>
 
-      <HomeDock />
     </div>
   );
 }

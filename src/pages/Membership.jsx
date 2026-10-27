@@ -7,7 +7,6 @@ import AccessTierCard from '@/components/membership/AccessTierCard';
 import SelectionIntegrityLine from '@/components/membership/SelectionIntegrityLine';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import AdvocacyStrip from '@/components/events/AdvocacyStrip';
-import HomeDock from '@/components/home-v3/HomeDock';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -232,7 +231,6 @@ export default function Membership() {
       <div className="h-24" />
 
       {/* HomeV3-aligned sticky bottom dock */}
-      <HomeDock />
     </div>
   );
 }

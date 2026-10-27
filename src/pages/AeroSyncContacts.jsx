@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import HomeDock from '@/components/home-v3/HomeDock';
 import AeroSyncWorkbench from '@/components/aerosync/AeroSyncWorkbench';
 import { C } from '@/components/crm/crmConfig';
 
@@ -32,7 +31,6 @@ export default function AeroSyncContacts() {
 
         <div className="h-24" />
       </div>
-      <HomeDock />
     </div>
   );
 }

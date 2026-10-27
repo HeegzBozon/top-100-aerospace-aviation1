@@ -1,4 +1,3 @@
-import HomeDock from '@/components/home-v3/HomeDock';
 import BeforeYouGo from '@/components/networking/BeforeYouGo';
 import RoomsAheadBoard from '@/components/aerosync/RoomsAheadBoard';
 import useRoomsAhead from '@/components/aerosync/useRoomsAhead';
@@ -37,7 +36,6 @@ export default function AeroSyncRooms() {
 
         <div className="h-24" />
       </div>
-      <HomeDock />
     </div>
   );
 }
