@@ -3,6 +3,39 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import path from 'path'
 
+// The opening frame is already painted from the document's own bytes — see
+// #boot-shell in index.html, which carries its own styles inline. The app's
+// stylesheet used to be a render-blocking request in front of that frame, so the
+// first paint waited on 58 KiB it did not need yet. It is served as a preload and
+// promoted to a stylesheet the moment it lands: same bytes, same cascade, but the
+// opening no longer waits behind it. React mounts far later than the sheet
+// arrives, so nothing flashes unstyled.
+function asyncAppCss() {
+  return {
+    name: 'async-app-css',
+    enforce: 'post',
+    generateBundle(_options, bundle) {
+      const html = Object.values(bundle).find(
+        (f) => f.type === 'asset' && typeof f.fileName === 'string' && f.fileName.endsWith('.html')
+      );
+      if (!html) return;
+      const source = String(html.source);
+      if (source.includes('rel="preload" as="style"')) return;
+      html.source = source.replace(/<link\b[^>]*>/g, (tag) => {
+        if (!/rel="stylesheet"/.test(tag) || !/\.css"/.test(tag)) return tag;
+        const href = (tag.match(/href="([^"]+)"/) || [])[1];
+        if (!href) return tag;
+        const cors = /\scrossorigin\b/.test(tag) ? ' crossorigin' : '';
+        return (
+          `<link rel="preload" as="style" href="${href}"${cors} ` +
+          `onload="this.onload=null;this.rel='stylesheet'">` +
+          `<noscript><link rel="stylesheet" href="${href}"${cors}></noscript>`
+        );
+      });
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   logLevel: 'error', // Suppress warnings, only show errors
@@ -13,6 +46,7 @@ export default defineConfig({
       legacySDKImports: true
     }),
     react(),
+    asyncAppCss(),
   ],
   resolve: {
     alias: {

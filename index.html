@@ -65,6 +65,34 @@
         to { transform: scaleX(0.9); }
       }
       .bs-note { margin-top: 0.85rem; color: rgba(201, 168, 124, 0.75); }
+
+      /* The welcome itself. The headline is the largest thing on the first screen,
+         so it is drawn here, from the document's own bytes, instead of waiting for
+         the script to mount and animate it in — that wait was the whole of the
+         Largest Contentful Paint. The card that takes over paints the same line, in
+         the same place, at the same size and in the same face, so the handover is
+         invisible; the mid block reserves the kicker's line above the rule so the
+         headline does not move when the hour's kicker fades in under it. */
+      .bs-mid { max-width: 42rem; }
+      .bs-kicker { height: 11px; }
+      .bs-rule {
+        margin-top: 1rem;
+        height: 1px;
+        width: 9rem;
+        background: linear-gradient(90deg, #b87333, #c9a87c 58%, transparent);
+      }
+      .bs-headline {
+        margin-top: 1.25rem;
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: 2.6rem;
+        line-height: 1.02;
+        color: #faf8f5;
+      }
+      @media (min-width: 768px) {
+        .bs-rule { width: 16rem; }
+        .bs-headline { font-size: 6rem; }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .bs-bar::after { animation: none; transform: scaleX(0.5); }
       }
@@ -261,6 +289,11 @@
         <img class="bs-mark" src="/brand/top100-mark-128.png" width="32" height="32" alt="" />
         <span class="bs-word">TOP 100 Aerospace &amp; Aviation</span>
         <span class="bs-year">MMXXVI</span>
+      </div>
+      <div class="bs-mid">
+        <div class="bs-kicker"></div>
+        <div class="bs-rule"></div>
+        <div class="bs-headline">Welcome</div>
       </div>
       <div class="bs-foot">
         <div class="bs-bar"></div>

@@ -117,7 +117,7 @@ export default function AppSplash() {
           />
 
           <h1
-            className="as-title mt-5 font-heading text-[2.6rem] leading-[1.02] text-editorial-cream md:text-8xl"
+            className="mt-5 font-heading text-[2.6rem] leading-[1.02] text-editorial-cream md:text-8xl"
             style={{ color: "#FAF8F5" }}
           >
             {headline}
