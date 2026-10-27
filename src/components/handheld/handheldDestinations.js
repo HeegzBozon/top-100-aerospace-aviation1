@@ -7,6 +7,7 @@ import {
 import { createPageUrl } from "@/utils";
 import { CORE_NAV_ITEMS } from "@/components/layout/navConfig";
 import { iconMap, DefaultIcon } from "@/components/icons";
+import { APP_GROUPS } from "@/components/shell/appRegistry";
 
 // The handheld's destination model. ADMIN-owned rail items stay the command
 // rail (the D-pad cycles them); the curated groups below give every surface a
@@ -17,77 +18,9 @@ import { iconMap, DefaultIcon } from "@/components/icons";
 // simply not there for someone who has no record yet, while the platform's published
 // work (the edition, the archive, the chamber) is offered to both, so a newcomer walks
 // the same machine a Fellow does and is offered the way in at the end of it.
-export const NAVIGATOR_GROUPS = [
-  {
-    key: "identity",
-    label: "Identity",
-    membersOnly: true,
-    items: [
-      { label: "Dashboard", to: "/board", icon: LayoutGrid },
-      { label: "The Bulletin", to: "/Profile?board=fellow", icon: LayoutGrid },
-      { label: "Mission Rooms", to: "/Profile?board=conference", icon: Radar },
-      { label: "Ribbon Cuttings", to: "/Profile?board=ribbon", icon: Scissors },
-    ],
-  },
-  {
-    key: "affiliation",
-    label: "Affiliation",
-    items: [
-      { label: "Selection Committee", to: "/selection-committee", icon: Award },
-      { label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
-      { label: "Season Archive", to: "/ArchiveLanding", icon: BookOpen },
-      { label: "Top Viral Posts", to: "/viralpost2026", icon: Newspaper },
-      { label: "Patrons", to: "/Sponsors", icon: Heart },
-    ],
-  },
-  {
-    key: "availability",
-    label: "Availability",
-    membersOnly: true,
-    items: [
-      { label: "Introductions", to: "/Profile?board=intros", icon: Send },
-      { label: "Job Board", to: "/Profile?board=jobs", icon: Briefcase },
-      { label: "Career Center", to: "/Profile?board=career", icon: GraduationCap },
-      { label: "Domain Networks", to: "/Profile?board=networks", icon: Network },
-    ],
-  },
-  {
-    key: "community",
-    label: "Community",
-    items: [
-      { label: "Comms", to: "/Comms", icon: MessageCircle, membersOnly: true },
-      { label: "Calendar", to: "/events", icon: Calendar },
-      { label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
-      { label: "Operation Moon Joy", to: "/hangouts", icon: Rocket },
-      { label: "Local Legends", to: "/local-legends", icon: Users },
-    ],
-  },
-  {
-    key: "intelligence",
-    label: "Intelligence",
-    items: [
-      { label: "Intelligence Globe", to: "/intelligence-globe", icon: Globe2 },
-      { label: "Global Intelligence", to: "/GlobalIntelligence", icon: Compass },
-      { label: "Magazine Studio", to: "/magazine-studio", icon: BookOpen, membersOnly: true },
-      { label: "Platform Board", to: "/platform-board", icon: Layers },
-    ],
-  },
-  {
-    key: "account",
-    label: "Account",
-    items: [
-      { label: "Shop", to: "/Shop", icon: ShoppingBag },
-      { label: "Subscribe", to: "/subscribe", icon: Mail },
-      { label: "RSVP", to: "/rsvp", icon: CalendarCheck },
-      // The way in, in both readings — signing in, and making the account a visitor has
-      // not got yet — standing where a member finds the way out.
-      { label: "Log in", action: "signin", icon: LogIn, visitorsOnly: true },
-      { label: "Join", action: "join", icon: UserPlus, visitorsOnly: true },
-      { label: "Log out", action: "logout", icon: LogOut, membersOnly: true },
-      { label: "Admin Portal", to: "/Admin", icon: Shield, adminOnly: true },
-    ],
-  },
-];
+// The applications this machine runs: the same registry the desk shelf draws from, so a
+// surface added once is reachable on both machines — shelf, index drawer and navigator.
+export const NAVIGATOR_GROUPS = APP_GROUPS;
 
 // Used when no RailItem records are configured, mirroring the legacy dock.
 export const RAIL_FALLBACK = CORE_NAV_ITEMS.map((item) => ({

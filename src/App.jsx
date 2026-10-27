@@ -17,6 +17,7 @@ import AppSplash from '@/components/core/AppSplash';
 import ConsoleLoading from '@/components/core/ConsoleLoading';
 import PageTurn from '@/components/core/PageTurn';
 import SurfaceLoader from '@/components/core/SurfaceLoader';
+import MachineProviders from '@/components/core/MachineProviders';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
@@ -99,13 +100,10 @@ const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
 
 
-const { Pages, Layout, mainPage } = pagesConfig;
-const mainPageKey = mainPage ?? Object.keys(Pages)[0];
-const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
-
-const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-  <Layout currentPageName={currentPageName}>{children}</Layout>
-  : <>{children}</>;
+// Every surface is an application the machine runs: the shell draws the chrome and
+// MachineProviders mounts the services, so a route renders its own content and nothing
+// else. The legacy per-page layout (and the second chrome it drew) is retired.
+const { Pages } = pagesConfig;
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
@@ -130,6 +128,7 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
+    <MachineProviders>
     <PageTurn>
     <Suspense fallback={<ConsoleLoading label="Loading surface" />}>
     <Routes>
@@ -153,73 +152,25 @@ const AuthenticatedApp = () => {
       <Route path="/GlobalIntelligence" element={<GlobalIntelligence />} />
       <Route path="/global-intelligence" element={<GlobalIntelligence />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
-      <Route path="/LaunchParty" element={
-        <LayoutWrapper currentPageName="LaunchParty">
-          <LaunchParty />
-        </LayoutWrapper>
-      } />
-      <Route path="/AgentSkillRegistry" element={
-        <LayoutWrapper currentPageName="AgentSkillRegistry">
-          <AgentSkillRegistry />
-        </LayoutWrapper>
-      } />
-      <Route path="/agent-skills" element={
-        <LayoutWrapper currentPageName="AgentSkillRegistry">
-          <AgentSkillRegistry />
-        </LayoutWrapper>
-      } />
+      <Route path="/LaunchParty" element={<LaunchParty />} />
+      <Route path="/AgentSkillRegistry" element={<AgentSkillRegistry />} />
+      <Route path="/agent-skills" element={<AgentSkillRegistry />} />
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/art-command-center" element={<ARTCommandCenter />} />
       <Route path="/team-manager" element={<TeamManager />} />
       <Route path="/feature-to-team-mapper" element={<FeatureToTeamMapper />} />
-      <Route path="/portal" element={
-        <LayoutWrapper currentPageName="AuthorityStackPortal">
-          <AuthorityStackPortal />
-        </LayoutWrapper>
-      } />
-      <Route path="/solutions" element={
-        <LayoutWrapper currentPageName="Solutions">
-          <Solutions />
-        </LayoutWrapper>
-      } />
-      <Route path="/linkedin-manager" element={
-        <LayoutWrapper currentPageName="LinkedInManager">
-          <LinkedInManager />
-        </LayoutWrapper>
-      } />
-      <Route path="/top100-tv-channels" element={
-        <LayoutWrapper currentPageName="Top100AerospaceAviationTV">
-          <Top100AerospaceAviationTV />
-        </LayoutWrapper>
-      } />
+      <Route path="/portal" element={<AuthorityStackPortal />} />
+      <Route path="/solutions" element={<Solutions />} />
+      <Route path="/linkedin-manager" element={<LinkedInManager />} />
+      <Route path="/top100-tv-channels" element={<Top100AerospaceAviationTV />} />
       <Route path="/payment-plan" element={<PaymentPlan />} />
       <Route path="/season4" element={<Season4Launch />} />
-      <Route path="/artemis-2" element={
-        <LayoutWrapper currentPageName="ArtemisArticle">
-          <ArtemisArticle />
-        </LayoutWrapper>
-      } />
-      <Route path="/newsletter/may-2026" element={
-        <LayoutWrapper currentPageName="MonthlyNewsletterMay2026">
-          <MonthlyNewsletterMay2026 />
-        </LayoutWrapper>
-      } />
-      <Route path="/community-round" element={
-        <LayoutWrapper currentPageName="CommunityRound">
-          <CommunityRound />
-        </LayoutWrapper>
-      } />
-      <Route path="/star-summit" element={
-        <LayoutWrapper currentPageName="STARSummit">
-          <STARSummit />
-        </LayoutWrapper>
-      } />
+      <Route path="/artemis-2" element={<ArtemisArticle />} />
+      <Route path="/newsletter/may-2026" element={<MonthlyNewsletterMay2026 />} />
+      <Route path="/community-round" element={<CommunityRound />} />
+      <Route path="/star-summit" element={<STARSummit />} />
       <Route path="/artemis-mission-brief" element={<ArtemisMissionBrief />} />
-      <Route path="/rooms" element={
-        <LayoutWrapper currentPageName="MissionRooms">
-          <MissionRooms />
-        </LayoutWrapper>
-      } />
+      <Route path="/rooms" element={<MissionRooms />} />
       <Route path="/home-v3" element={<HomeV3 />} />
       {/* The member's map of the platform: four columns across, depth inside each */}
       <Route path="/board" element={<TheBoard />} />
@@ -281,11 +232,7 @@ const AuthenticatedApp = () => {
       <Route path="/volume-two-top100" element={<Navigate to="/archive/6a6b7954c924445e2599968d" replace />} />
       <Route path="/Nominations" element={<Navigate to="/selection-committee" replace />} />
       <Route path="/nominations" element={<Navigate to="/selection-committee" replace />} />
-      <Route path="/top100-tv" element={
-        <LayoutWrapper currentPageName="Top100TV">
-          <Top100TV />
-        </LayoutWrapper>
-      } />
+      <Route path="/top100-tv" element={<Top100TV />} />
       <Route path="/articles/nine-months-of-2026" element={<NineMonths2026 />} />
       <Route path="/viralpost2022" element={<ViralPost2022 />} />
       <Route path="/viralpost2022/featured/:slug" element={<ViralPost2022Featured />} />
@@ -323,15 +270,7 @@ const AuthenticatedApp = () => {
       <Route path="/Nominee" element={<Navigate to="/ProfileView" replace />} />
       <Route path="/UserProfile" element={<Navigate to="/ProfileView" replace />} />
       {Object.entries(Pages).map(([path, Page]) => (
-        <Route
-          key={path}
-          path={`/${path}`}
-          element={
-            <LayoutWrapper currentPageName={path}>
-              <Page />
-            </LayoutWrapper>
-          }
-        />
+        <Route key={path} path={`/${path}`} element={<Page />} />
       ))}
       <Route path="*" element={<PageNotFound />} />
       </Route>
@@ -339,6 +278,7 @@ const AuthenticatedApp = () => {
     </Routes>
     </Suspense>
     </PageTurn>
+    </MachineProviders>
   );
 };
 

@@ -1,25 +1,31 @@
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
-// The surfaces, read as an index rather than as a keypad: a printed contents page at
-// the foot of the cover. Each entry draws its own rule in rose gold as the pointer
-// crosses it, and the arrow enters from the corner — the same movement at every entry,
-// so the whole page feels ruled by one hand.
+// The surfaces, drawn as modules rather than as a contents page.
+//
+// Each one is a plate seated on the cover: cream stock with a copper hairline round its
+// edge, a machined navy well holding the surface's mark, the index stamp cut in copper,
+// and the word that says what the plate is for — Open. It lifts under the pointer and its
+// edge warms, the way a cartridge comes up out of its slot, so nothing about it reads as
+// printed matter. The whole plate is the target, and it is a real link: pressing it, or
+// walking the console's ring onto it with the keys, does the same thing.
 export default function DesktopSurfaceIndex({ items }) {
   return (
     <section className="ds-rise mt-11" style={{ animationDelay: "380ms" }} aria-label="Surfaces">
       <div className="flex items-center gap-4">
-        <p className="text-[9px] font-bold uppercase tracking-[0.36em] text-editorial-gold/85">Index</p>
+        <p className="text-[9px] font-bold uppercase tracking-[0.36em] text-editorial-gold/85">
+          Surfaces
+        </p>
         <span
           className="h-px flex-1"
           style={{ background: "linear-gradient(90deg, rgb(var(--editorial-gold-rgb) / 0.4), transparent)" }}
         />
         <p className="text-[9px] font-bold uppercase tracking-[0.26em] text-editorial-cream/35">
-          {items.length} surfaces
+          {items.length} installed
         </p>
       </div>
 
-      <div className="mt-1 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((item) => {
           const Icon = item.icon;
           return (
@@ -27,25 +33,29 @@ export default function DesktopSurfaceIndex({ items }) {
               key={item.key}
               to={item.to}
               data-hh-key={item.key}
-              className="group relative flex flex-col justify-between gap-7 border-t border-editorial-cream/[0.12] py-5 pr-7 transition-colors duration-300 hover:border-editorial-gold/60 focus-visible:outline-none"
+              aria-label={`Open ${item.label}`}
+              className="ds-module group relative flex min-h-[136px] flex-col justify-between rounded-[14px] p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-editorial-gold/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
-              <span
-                aria-hidden="true"
-                className="absolute left-0 top-0 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-editorial-gold via-editorial-gold/70 to-transparent transition-transform duration-500 group-hover:scale-x-100 group-focus-visible:scale-x-100"
-              />
+              {/* The plate itself: stock, edge and shadow, all behind the content. */}
+              <span aria-hidden="true" className="ds-module-face absolute inset-0 rounded-[14px]" />
 
-              <span className="flex items-center justify-between gap-3">
-                <span className="font-heading text-[11px] tracking-[0.14em] text-editorial-gold/70">
+              <span className="relative flex items-start justify-between">
+                <span className="ds-module-well flex h-10 w-10 shrink-0 items-center justify-center rounded-[9px]">
+                  <Icon className="h-[17px] w-[17px] text-editorial-gold" strokeWidth={1.7} />
+                </span>
+                <span className="font-heading text-[10px] leading-none tracking-[0.18em] text-editorial-copper/80">
                   {item.index}
                 </span>
-                <Icon className="h-[13px] w-[13px] text-editorial-gold/45 transition-colors duration-300 group-hover:text-editorial-gold" />
               </span>
 
-              <span className="flex items-end justify-between gap-2">
-                <span className="font-heading text-[clamp(0.92rem,1.1vw,1.15rem)] leading-[1.15] text-editorial-cream/90 transition-colors duration-300 group-hover:text-editorial-cream">
+              <span className="relative mt-4 block">
+                <span className="block font-heading text-[clamp(0.95rem,1.05vw,1.12rem)] leading-[1.15] text-editorial-navy">
                   {item.label}
                 </span>
-                <ArrowUpRight className="mb-[2px] h-4 w-4 shrink-0 -translate-x-1 translate-y-1 text-editorial-gold opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100" />
+                <span className="mt-2 flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-[0.24em] text-editorial-copper">
+                  Open
+                  <ArrowUpRight className="h-3 w-3 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </span>
               </span>
             </Link>
           );

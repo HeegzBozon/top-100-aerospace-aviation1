@@ -55,14 +55,16 @@ These modules are the operating system. They are **single-source-of-truth**: a s
 | Clock | `components/shell/MenuBarClock.jsx` | Inside `MenuBar` — therefore on both. |
 | Operator lens (view-as-visitor) | `components/shell/ViewAsCell.jsx` + `lib/viewerPreview.js` | Admin only. Answers to the **record**, not to the reading. |
 | Notifications | `components/notifications/NotificationCenter.jsx` | Reached from the bar, not from a page header. |
-| Desk shelf | `components/desktop/DesktopDock.jsx` | Mounted **once**, at shell level. |
-| Glass launcher | `components/handheld/handheldDestinations.js` + `useHandheldDestinations.js` | `NAVIGATOR_GROUPS` + admin-configured `RailItem` rail. |
+| **Application registry** | `components/shell/appRegistry.js` | **The one list of applications the machine runs** (`APP_GROUPS`, `SHELF`, `INDEX_GROUPS`). Every launcher reads it. |
+| Desk shelf | `components/desktop/DesktopDock.jsx` | Mounted **once**, at shell level; draws `SHELF` + `INDEX_GROUPS` from the registry. |
+| Glass launcher | `components/handheld/handheldDestinations.js` + `useHandheldDestinations.js` | `NAVIGATOR_GROUPS` (= registry) + admin-configured `RailItem` rail. |
 | Hardware keys | `components/handheld/handheldKeys.js` | A surface claims the face keys here (`useFaceKeysClaimed`), so the rail drops its hints while they are taken. |
 | Case finish | `useImacFinish`, `imac.css`, `deskDock.css`, `hh-*` tokens | One finish recasts the machine; nothing hard-codes a colour. |
 | Page transition | `components/core/PageTurn.jsx` | The sheet that peels on every surface change. |
 | Opening | `components/core/AppSplash.jsx` | Title card, once per session. |
 | Loading | `components/core/ConsoleLoading.jsx`, `SurfaceLoader.jsx` | The machine is painted first; the wait happens inside its glass. |
-| Immersive surfaces | `components/desktop/DesktopShell.jsx` → `FULL_BLEED` | Surfaces that own the whole tube put the shelf away. |
+| Immersive surfaces | `components/shell/immersiveSurfaces.js` | One policy, read by the shells: the desk stands the shelf back, the glass keeps its console. |
+| Machine services | `components/core/MachineProviders.jsx` | Theme, conversations, unread, comms theme, sidebar — mounted once above the router. No page layout owns them. |
 
 ---
 
@@ -73,7 +75,7 @@ These modules are the operating system. They are **single-source-of-truth**: a s
 3. **Orientation is provided, not invented.** The lamp, the surface name, the section suffix, the clock, the way home — supplied by `MenuBar`. Nothing re-states them inside the picture.
 4. **Respect the window.** On the glass, bottom-anchored elements ride the chin via `.hh-lift` / `.hh-lift-center` / `.hh-lift-right`, and read `--hh-top`, `--hh-bottom`, `--hh-foot`, `--hh-glass-inset`. Never hard-code a viewport offset.
 5. **Colour comes from tokens.** `--editorial-*`, `--hh-*`, `--fd-*`. No raw hex in a component; no ad-hoc palette. Copper for structural rules and primary buttons; rose gold for masthead and secondary accents.
-6. **Immersive is declared, not improvised.** A surface that needs the whole tube is added to `FULL_BLEED` in `DesktopShell` (and, for the glass, hidden via `setPutAway` from `HandheldShell`). Never hide the machine from inside a page.
+6. **Immersive is declared, not improvised.** A surface that needs the whole picture is added to `components/shell/immersiveSurfaces.js`. Never hide the machine from inside a page.
 7. **The three states are built.** Loading, empty, and error are designed surfaces, not placeholders or a spinner in the corner.
 8. **The machine persists across a surface change.** Data lives in entities; a surface never re-invents state the machine already holds (`AuthContext`, `viewerPreview`, finish, draft).
 9. **Both machines, one story.** New work is walked on desk and handheld before it is called done.
@@ -111,29 +113,28 @@ Verified by reading the route tree and every consumer of the chrome modules.
 - **One machine at every moment.** `HandheldShell` puts the console away for the keyboard and on request (`setPutAway`); `CommsLayoutMobile` reuses that context instead of building a second device.
 - **The chassis and the loading state are the same machine.** `ConsoleLoading` / `AppSplash` / `PageTurn` are mounted at app level, above the router's surfaces.
 
-### Gaps — the spine is not yet universal ⚠
+### Gaps — all closed on 2026-10-27 ✅
 
-1. **Legacy comms layout still inside the machine (highest priority).**
-   14 routes are wrapped in `LayoutWrapper` (`CommsLayoutDesktop` / `CommsLayoutMobile`) *inside* the OS: `LaunchParty`, `AgentSkillRegistry` (×2), `AuthorityStackPortal`, `Solutions`, `LinkedInManager`, `Top100AerospaceAviationTV`, `ArtemisArticle`, `MonthlyNewsletterMay2026`, `CommunityRound`, `STARSummit`, `MissionRooms`, `Top100TV` — plus the `pagesConfig` loop at `App.jsx:330`, which still mounts every legacy page that way.
-   **Effect:** those surfaces draw a second chrome (icon rail + drawer sidebar) inside the tube on desk, and on the glass they can put the console away and run their own `MobileHomeView` / `MobileCommsView`. They are outside the OS grammar.
-2. **Three dock implementations, two dead.**
-   Live: `components/desktop/DesktopDock.jsx` (419 lines). Dead: `components/dock/DesktopDock.jsx` and `components/capabilities/dock/DesktopDock.jsx` (identical 210-line copies), referenced only by `components/layout/PublicLayout.jsx`, which nothing imports. Competing canon is a trap for future builds.
-3. **Two independent launcher registries.**
-   The desk shelf declares its own `SHELF` + `INDEX_GROUPS` inside `DesktopDock`; the glass reads `NAVIGATOR_GROUPS` + the admin-configured `RailItem` rail. The two machines therefore offer **different sets of applications**, and an admin's rail configuration reaches only one of them.
-4. **Immersive policy is declared on the desk only.**
-   `FULL_BLEED` is a desktop list. The glass has no equivalent declaration, so "owns the whole screen" is implicit and undocumented per surface.
-5. **No surface registry.** Nothing enumerates "the applications this machine runs": title screen keys (`startMenuConfig`), desk shelf, glass groups, and `pagesConfig` are four lists.
+Fixed in the change that ratified this document; verified in code.
+
+1. **Legacy comms layout retired.** `grep -c LayoutWrapper src/App.jsx` is 0. The provider stack lives in `components/core/MachineProviders.jsx`, mounted once above the router, so a route renders its own content and nothing else. `CommsLayoutDesktop`, `CommsLayoutMobile` and `PublicLayout` are deleted. `/Comms` is now an ordinary surface (`src/pages/Comms.jsx`) that owns its view and asks the console to step aside only while a message is composed on a phone.
+2. **One dock.** `components/dock/DesktopDock.jsx`, `components/capabilities/dock/DesktopDock.jsx` and the barrel that re-exported it are deleted; `components/desktop/DesktopDock.jsx` is the only shelf.
+3. **One launcher registry.** `components/shell/appRegistry.js` declares the applications once. Desk shelf, index drawer and glass navigator all read it, so a surface added there is reachable on both machines.
+4. **Immersive declared once.** `components/shell/immersiveSurfaces.js` holds the policy; the desk stands the shelf back, the glass keeps its console.
+5. **One list, not four.** `pagesConfig` now only routes. Title-screen keys remain a curated front row — ordered for the reading, not a launcher.
 
 ---
 
-## 7. Migration backlog (ordered, with acceptance)
+## 7. Migration backlog
 
-1. **Retire `LayoutWrapper` / the comms layout.** Every route becomes a bare surface inside the shells.
-   *Accept when* `grep -c LayoutWrapper src/App.jsx` is 0, `CommsLayoutDesktop`/`CommsLayoutMobile` are unreferenced, and the 14 listed surfaces render with the machine's bar and shelf only.
-2. **Delete the dead docks.** Remove `components/dock/DesktopDock.jsx`, `components/capabilities/dock/DesktopDock.jsx`, and `components/layout/PublicLayout.jsx` once confirmed unreferenced. One dock remains.
-3. **Unify the launcher registry.** One module owns "the applications this machine runs" — one list, two presentations (shelf on desk, wheel groups on glass), admin `RailItem` honoured by both.
-   *Accept when* adding an application in one place makes it reachable on both machines and in the title screen's keys.
-4. **Declare immersive per surface, not per machine.** One policy (`{ path, mode }`) read by both shells, so "owns the whole screen" is stated once.
+**Closed 2026-10-27 — all four items. See §6.**
+
+### Watching (keep these from creeping back)
+
+- `components/comms/Drawer.jsx`, `components/comms/CommsIconRail.jsx` and `components/comms/MobileHomeView.jsx` are unreferenced leftovers of the retired layout; delete on sight.
+- `pagesConfig` still exports a `Layout`; `src/Layout.jsx` is a passthrough and must stay empty.
+- The glass keeps its console on immersive surfaces by design. Do not "fix" that.
+- No launcher may declare its own application list again. Add to `appRegistry.js`.
 
 ---
 

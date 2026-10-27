@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { isViewingAsVisitor } from "@/lib/viewerPreview";
+import { INDEX_GROUPS, SHELF } from "@/components/shell/appRegistry";
 import "./deskDock.css";
 
 // The desk's shelf: the row of things a hand reaches for without opening a menu.
@@ -31,37 +32,9 @@ import "./deskDock.css";
 // when pointed at; the sixth opens the index, which is everything else the platform holds.
 // The seal is the one primary: copper, and the only thing on the shelf with a word always
 // showing. The account stands at the far end, where a machine keeps it.
-const SHELF = [
-  { label: "Selection Committee", to: "/selection-committee", icon: Award },
-  { label: "Calendar", to: "/events", icon: Calendar },
-  { label: "TOP 100 Women 2025", to: "/Top100Women2025", icon: Trophy },
-  { label: "Shop", to: "/Shop", icon: ShoppingBag },
-  { label: "Subscribe", to: "/subscribe", icon: Mail },
-];
-
-const INDEX_GROUPS = [
-  {
-    key: "machine",
-    label: "Around the machine",
-    items: [
-      { label: "Operation: Moon Joy", to: "/moon-joy", icon: Compass },
-      { label: "Local Legends", to: "/local-legends", icon: Users },
-      { label: "Mission Theatre", to: "/LaunchParty", icon: Ticket },
-      { label: "2030 Vision", to: "/2030-vision", icon: Landmark },
-      { label: "About", to: "/about", icon: Info },
-    ],
-  },
-  {
-    key: "record",
-    label: "The record",
-    items: [
-      { label: "Top Viral Posts", to: "/viralpost2026", icon: Trophy },
-      { label: "My Profile", to: "/Profile", icon: User, membersOnly: true },
-      { label: "Admin Portal", to: "/Admin", icon: Shield, adminOnly: true },
-    ],
-  },
-];
-
+// The shelf's applications and the index behind it come from the machine's one registry
+// (components/shell/appRegistry), which the glass reads as well: a surface added there is
+// on the shelf, in this drawer, and on the console, without a second list to keep in step.
 const pathOf = (to = "") => to.split("?")[0];
 
 export default function DesktopDock() {
@@ -117,7 +90,9 @@ export default function DesktopDock() {
             shelf itself, so a tile is always still the thing a press lands on. */}
         {open ? <div className="fixed inset-0" onClick={close} aria-hidden="true" /> : null}
 
-        {open === "index" ? <IndexPanel onClose={close} visible={visible} /> : null}
+        {open === "index" ? (
+          <IndexPanel onClose={close} visible={visible} signedIn={signedIn} />
+        ) : null}
 
         <div className="ds-shelf relative flex items-center gap-1 rounded-[22px] px-2.5 py-2">
           {/* The front screen, marked the way a machine marks its own application. */}
@@ -277,7 +252,7 @@ function Tile({ to, label, icon: Icon, active }) {
   );
 }
 
-function IndexPanel({ onClose, visible }) {
+function IndexPanel({ onClose, visible, signedIn }) {
   return (
     <div
       role="menu"
@@ -311,6 +286,9 @@ function IndexPanel({ onClose, visible }) {
 
       <div className="mt-5 grid grid-cols-2 gap-x-6">
         {INDEX_GROUPS.map((group) => {
+          // A group that belongs to a Fellow's own record goes whole, exactly as it does
+          // on the glass: the flag stands on the group, not on every entry inside it.
+          if (group.membersOnly && !signedIn) return null;
           const items = group.items.filter(visible);
           if (!items.length) return null;
           return (

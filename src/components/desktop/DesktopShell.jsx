@@ -2,17 +2,13 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ImacHousing from "./ImacHousing";
 import DesktopDock from "./DesktopDock";
+import { standsBackOnDesk } from "@/components/shell/immersiveSurfaces";
 
-// The surfaces that own the whole tube: a game driven from its own instrument panel, a
-// session running live, a magazine spread being read. The shelf stands back from these,
-// so nothing of the machine sits over the thing being operated.
-const FULL_BLEED = [
-  /^\/play\b/,
-  /^\/aero-frontier\b/,
-  /^\/common-ground\b/,
-  /^\/session-portal\b/,
-  /^\/magazine\//,
-];
+// Which surfaces own the whole tube — a game driven from its own instrument panel, a
+// session running live, a magazine spread being read — is declared once, in
+// components/shell/immersiveSurfaces, so the desk and the glass answer from one policy.
+// The shelf stands back from those surfaces here; the glass keeps its console, because the
+// console is the machine and not furniture laid over the picture.
 
 // Every desktop surface renders inside one retro console: a translucent shell in
 // one of the classic colours, the bands that wrap the tube, and the tube the whole
@@ -27,7 +23,7 @@ export default function DesktopShell() {
 
   if (isMobile) return <Outlet />;
 
-  const bare = FULL_BLEED.some((pattern) => pattern.test(pathname));
+  const bare = standsBackOnDesk(pathname);
 
   return (
     <>
