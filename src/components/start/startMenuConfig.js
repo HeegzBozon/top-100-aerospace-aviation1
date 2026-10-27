@@ -14,7 +14,7 @@ import { Award, BookOpen, BookUser, LayoutGrid, ListChecks, Plane, Trophy, Users
 // The game stands at the end of the row on purpose: it is the one surface built
 // for play, and it belongs beside the institution's work rather than inside it.
 export const START_MENU = [
-  { key: "briefing", index: "00", label: "101", to: "/mission-briefing", icon: BookOpen },
+  { key: "read", index: "00", label: "Read", to: "/mission-briefing", icon: BookOpen },
   { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
   { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks },
   { key: "passport", index: "03", label: "Passport", to: "/Profile", icon: BookUser },

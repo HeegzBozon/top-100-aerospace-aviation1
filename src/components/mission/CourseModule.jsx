@@ -1,17 +1,37 @@
+import { Check } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 
-// One step of the briefing. Every step is a module to the console, so the wheel
-// walks the sequence and announces each title as it lands.
-export default function BriefingStep({ step, children }) {
+// One module of the course. Every module is a module to the console, so the wheel
+// walks the course and announces each title as it lands. The tick at the head of
+// the module is the reader's own place: it fills once the module has been through,
+// which is what the chapter bands and the rail count.
+export default function CourseModule({ step, read = false, children }) {
   return (
     <section
       data-hh-module={step.title}
       className="scroll-mt-24 border-t pt-7 md:pt-10"
       style={{ borderColor: B.border }}
     >
-      <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-        {step.index} · {step.kicker}
-      </p>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
+          {step.index} · {step.kicker}
+        </p>
+        {read ? (
+          <span
+            className="inline-flex shrink-0 items-center gap-1.5 text-[7.5px] font-bold uppercase tracking-[0.22em]"
+            style={{ color: B.copper }}
+          >
+            <span
+              className="flex h-[13px] w-[13px] items-center justify-center rounded-full"
+              style={{ background: 'rgba(201,168,124,0.24)', border: '1px solid rgba(184,115,51,0.5)' }}
+            >
+              <Check className="h-2 w-2" />
+            </span>
+            Read
+          </span>
+        ) : null}
+      </div>
+
       <h2 className="mt-2 font-heading text-[1.7rem] leading-tight md:text-4xl" style={{ color: B.navy }}>
         {step.title}
       </h2>

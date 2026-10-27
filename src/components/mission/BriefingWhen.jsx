@@ -39,7 +39,7 @@ export default function BriefingWhen({ season, loading, failed, onRetry }) {
     return (
       <div className="mt-5 rounded-xl px-3.5 py-3" style={{ background: '#FFFFFF', border: `1px solid ${B.border}` }}>
         <p className="text-[12px]" style={{ color: B.muted }}>
-          The calendar could not be read. The briefing stands without it.
+          The calendar could not be read. The course stands without it.
         </p>
         <button
           type="button"

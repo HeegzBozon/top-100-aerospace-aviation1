@@ -1,0 +1,67 @@
+{
+  "name": "CourseProgress",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow whose place in the course this is. One record per reader; the stable key for reads and writes."
+    },
+    "read_keys": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Module keys the reader has been through, in no particular order. Chapter and course progress are read from this against the course config; nothing is stored twice."
+    },
+    "last_read_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the reader last turned a page of the course"
+    }
+  },
+  "required": [
+    "fellow_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

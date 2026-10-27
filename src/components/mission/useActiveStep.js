@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-// Which step of the briefing the reader is standing in. The picture scrolls
+// Which module of the course the reader is standing in. The picture scrolls
 // inside the console's own window on a phone and the window itself on a desk,
 // so the hook finds whichever one is actually moving.
 export default function useActiveStep(count) {

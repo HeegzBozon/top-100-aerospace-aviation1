@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, LayoutGrid } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import HomeDock from '@/components/home-v3/HomeDock';
-import BriefingRail from '@/components/mission/BriefingRail';
-import BriefingStep from '@/components/mission/BriefingStep';
+import CourseRail from '@/components/mission/CourseRail';
+import CourseChapter from '@/components/mission/CourseChapter';
+import CourseModule from '@/components/mission/CourseModule';
 import BriefingWhen from '@/components/mission/BriefingWhen';
 import TheRecord from '@/components/mission/TheRecord';
 import useActiveStep from '@/components/mission/useActiveStep';
-import { BRIEFING_STEPS } from '@/components/mission/missionBriefingConfig';
+import useCourseProgress from '@/components/mission/useCourseProgress';
+import { COURSE } from '@/components/mission/courseConfig';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 const NEXT_STEPS = [
@@ -18,15 +20,24 @@ const NEXT_STEPS = [
   { label: 'Sit on the committee', to: '/selection-committee' },
 ];
 
-// Mission Briefing. The onboarding sequence: why the platform exists, who
-// stands in it, what it measures, when the cycle turns, where it lives, how a
-// Fellow enters — then the record itself. Steps stack and the console's wheel
-// walks them, so a phone reads it the way the console intends.
+// Read — the course. Chapter zero is the onboarding: the origin story, the mission
+// and the vision, the values, then the six questions — who, what, when, where, why,
+// how. After it come the record behind the institution, the cycle running now, and
+// what it is pointed at next. It is an ongoing course, so chapters are published as
+// the institution takes on new work, and the reader's place is kept: reaching a
+// module is reading it, and the rail counts what has been read.
 export default function MissionBriefing() {
   const [state, setState] = useState({ loading: true, failed: false });
   const [data, setData] = useState({ seasons: [] });
   const [attempt, setAttempt] = useState(0);
-  const { refs, active, goTo } = useActiveStep(BRIEFING_STEPS.length);
+
+  // The whole course, flat, in the order it is read — the order the wheel walks.
+  const flat = useMemo(
+    () => COURSE.flatMap((chapter) => chapter.modules.map((module) => ({ ...module, chapterKey: chapter.key }))),
+    [],
+  );
+  const { refs, active, goTo } = useActiveStep(flat.length);
+  const { read, markRead } = useCourseProgress();
 
   useEffect(() => {
     let alive = true;
@@ -49,30 +60,34 @@ export default function MissionBriefing() {
     };
   }, [attempt]);
 
+  // Where the rail already says the reader is standing is where the reading is
+  // banked: one effect, so the course's memory is never a second act of its own.
+  useEffect(() => {
+    const module = flat[active];
+    if (module) markRead(module.key);
+  }, [active, flat, markRead]);
+
   const seasons = data.seasons || [];
   const current = seasons.find((season) => LIVE_PHASES.includes(season.status)) || seasons[0] || null;
   const retry = () => setAttempt((n) => n + 1);
 
-  const extraFor = (key) => {
-    if (key === 'when') {
+  const readIn = (chapter) => chapter.modules.filter((module) => read.includes(module.key)).length;
+  const known = useMemo(() => new Set(flat.map((module) => module.key)), [flat]);
+  const readCount = read.filter((key) => known.has(key)).length;
+  const activeChapter = Math.max(
+    0,
+    COURSE.findIndex((chapter) => chapter.key === flat[active]?.chapterKey),
+  );
+  const chapterStart = (i) => COURSE.slice(0, i).reduce((n, chapter) => n + chapter.modules.length, 0);
+
+  const extraFor = (module) => {
+    if (module.extra === 'season') {
       return (
-        <BriefingWhen
-          season={current}
-          loading={state.loading}
-          failed={state.failed}
-          onRetry={retry}
-        />
+        <BriefingWhen season={current} loading={state.loading} failed={state.failed} onRetry={retry} />
       );
     }
-    if (key === 'record') {
-      return (
-        <TheRecord
-          seasons={seasons}
-          loading={state.loading}
-          failed={state.failed}
-          onRetry={retry}
-        />
-      );
+    if (module.extra === 'record') {
+      return <TheRecord seasons={seasons} loading={state.loading} failed={state.failed} onRetry={retry} />;
     }
     return null;
   };
@@ -82,30 +97,50 @@ export default function MissionBriefing() {
       <div className="mx-auto w-full max-w-3xl px-4 py-8 md:px-8 md:py-14">
         <header>
           <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-            TOP 100 101
+            Read · The course
           </p>
           <h1 className="mt-2 font-heading text-[2rem] leading-tight md:text-5xl" style={{ color: B.navy }}>
             Who we are, and what we measure.
           </h1>
           <p className="mt-3 max-w-2xl text-[13px] leading-relaxed" style={{ color: B.muted }}>
-            Eight steps, in order. Read it in one sitting before you take a seat on the committee, or
-            come back to a single step when you need it. The last step is the record itself — every
-            publication and every closed cycle.
+            Chapter zero is the onboarding: the origin story, the mission and the vision, the values, and
+            the six questions — who, what, when, where, why, how. Then the record behind the institution,
+            the cycle running now, and what comes next. Read it in one sitting or a module at a time; your
+            place is kept.
           </p>
         </header>
 
-        <BriefingRail steps={BRIEFING_STEPS} active={active} onJump={goTo} />
+        <CourseRail
+          chapters={COURSE.map((chapter) => ({ ...chapter, readCount: readIn(chapter) }))}
+          activeChapter={activeChapter}
+          readCount={readCount}
+          total={flat.length}
+          onJump={(i) => goTo(chapterStart(i))}
+        />
 
-        <div className="mt-6 space-y-7 md:space-y-10">
-          {BRIEFING_STEPS.map((step, i) => (
-            <div
-              key={step.key}
-              ref={(node) => {
-                refs.current[i] = node;
-              }}
-            >
-              <BriefingStep step={step}>{extraFor(step.key)}</BriefingStep>
-            </div>
+        <div className="mt-6 space-y-8 md:space-y-12">
+          {COURSE.map((chapter) => (
+            <section key={chapter.key}>
+              <CourseChapter chapter={chapter} readCount={readIn(chapter)} />
+
+              <div className="mt-5 space-y-7 md:space-y-10">
+                {chapter.modules.map((module) => {
+                  const i = flat.findIndex((item) => item.key === module.key);
+                  return (
+                    <div
+                      key={module.key}
+                      ref={(node) => {
+                        refs.current[i] = node;
+                      }}
+                    >
+                      <CourseModule step={module} read={read.includes(module.key)}>
+                        {extraFor(module)}
+                      </CourseModule>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
           ))}
         </div>
 
@@ -114,7 +149,7 @@ export default function MissionBriefing() {
             Where to go next
           </p>
           <h2 className="mt-2 font-heading text-xl text-editorial-cream md:text-2xl">
-            The briefing is the map. The board is the work.
+            The course is the map. The board is the work.
           </h2>
           <div className="mt-4 flex flex-wrap gap-2.5">
             {NEXT_STEPS.map((item, i) => (
