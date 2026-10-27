@@ -1,8 +1,25 @@
 import React from 'react';
-import { BookOpen, Plus, Trash2, Calendar } from 'lucide-react';
+import { BookOpen, Plus, Trash2, Calendar, Sparkles } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, ISSUE_STATUSES, statusLabel, statusColor } from '@/components/magazine/magazineConfig';
 
-export default function IssueList({ issues, onSelect, onCreate, onDelete }) {
+// The alchemy key. On a desk it stands beside New Issue: one press binds the published
+// 2025 edition — its nine sections, its editorial copy and its hundred honorees — into
+// an issue the studio can work.
+function AlchemizeKey({ onAlchemize, busy, wide }) {
+  return (
+    <button
+      onClick={onAlchemize}
+      disabled={busy}
+      className={`inline-flex items-center gap-2 rounded-full text-sm font-medium transition-all hover:opacity-90 disabled:opacity-60 ${wide ? 'px-5 py-2.5' : 'px-4 py-2'}`}
+      style={{ background: P.copper, color: P.cream }}
+    >
+      <Sparkles className="w-4 h-4" />
+      {busy ? 'Binding the edition…' : 'Alchemize from TOP 100 Women 2025'}
+    </button>
+  );
+}
+
+export default function IssueList({ issues, onSelect, onCreate, onDelete, onAlchemize, alchemizing }) {
   if (!issues.length) {
     return (
       <div className="text-center py-24">
@@ -13,13 +30,16 @@ export default function IssueList({ issues, onSelect, onCreate, onDelete }) {
         <p className="text-sm mb-8" style={{ color: 'rgba(30,58,90,0.55)' }}>
           Create your first digital magazine issue to begin planning, drafting, and assembling content.
         </p>
-        <button
-          onClick={onCreate}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all hover:opacity-90"
-          style={{ background: P.navy, color: P.cream }}
-        >
-          <Plus className="w-4 h-4" /> Create Issue
-        </button>
+        <div className="flex flex-col items-center gap-3">
+          {onAlchemize && <AlchemizeKey onAlchemize={onAlchemize} busy={alchemizing} wide />}
+          <button
+            onClick={onCreate}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all hover:opacity-90"
+            style={{ background: P.navy, color: P.cream }}
+          >
+            <Plus className="w-4 h-4" /> Create Issue
+          </button>
+        </div>
       </div>
     );
   }
@@ -31,13 +51,16 @@ export default function IssueList({ issues, onSelect, onCreate, onDelete }) {
           <h2 className="text-xl font-serif" style={{ color: P.navy }}>Issues</h2>
           <p className="text-xs mt-1" style={{ color: 'rgba(30,58,90,0.5)' }}>{issues.length} issue{issues.length !== 1 ? 's' : ''}</p>
         </div>
-        <button
-          onClick={onCreate}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all hover:opacity-90"
-          style={{ background: P.navy, color: P.cream }}
-        >
-          <Plus className="w-4 h-4" /> New Issue
-        </button>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {onAlchemize && <AlchemizeKey onAlchemize={onAlchemize} busy={alchemizing} />}
+          <button
+            onClick={onCreate}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all hover:opacity-90"
+            style={{ background: P.navy, color: P.cream }}
+          >
+            <Plus className="w-4 h-4" /> New Issue
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
