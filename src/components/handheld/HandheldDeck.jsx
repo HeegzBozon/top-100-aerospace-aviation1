@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Palette } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
-import { pressFaceKey, useFaceKeysClaimed } from "./handheldKeys";
+import { pressFaceKey } from "./handheldKeys";
 import ScreenTopBar from "./ScreenTopBar";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldBody from "./HandheldBody";
@@ -58,10 +58,6 @@ export default function HandheldDeck() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
-  // The share is the keypad's Y. A surface that has taken the four face keys keeps Y
-  // for its own work, and the share comes down onto the ring's play key instead — the
-  // one key left under the hand.
-  const keysClaimed = useFaceKeysClaimed();
   const [flash, setFlash] = useState("");
   const [booting, setBooting] = useState(() => {
     // The app-wide title card is the power-on when it plays; the console's own
@@ -679,9 +675,7 @@ export default function HandheldDeck() {
               onMenu={steering ? null : upOneLevel}
               onPrev={steering ? null : () => stepSection(-1)}
               onNext={steering ? null : () => stepSection(1)}
-              playing={playing}
-              onPlay={steering || menuOpen || shareOpen ? null : keysClaimed ? share : togglePlay}
-              playIsShare={keysClaimed}
+              onPlay={steering || menuOpen || shareOpen ? null : share}
               onSelect={select}
               onHome={goHome}
               steer={!!steering}

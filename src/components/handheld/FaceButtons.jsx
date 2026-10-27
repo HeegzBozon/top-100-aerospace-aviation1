@@ -1,14 +1,14 @@
-import { Share } from "lucide-react";
 import { useFaceKeysClaimed } from "./handheldKeys";
 
 // The keypad, in the console diamond: Y above, X left, B right, A below.
-// Y sends whatever you are holding out through the device's share drawer.
+// Four lettered keys, as a keypad's keys are lettered: Y prints its own letter and
+// sends whatever you are holding out through the device's share drawer — the ring's
+// bottom key makes the same press, so the share sits under either thumb.
 // X lists the sections of that surface: the deck's slides, or the page's own
 // modules. A confirms, B backs out.
 //
 // While a surface is holding the four keys — the chamber's candidates — Y is a vote
-// like the rest of the keypad and the share has moved to the ring, so the key prints
-// its own letter again.
+// like the rest of the keypad, and the share stays on the ring.
 //
 // These are the BlackBerry half of the device: matte rubberised keys with light
 // legends, rolled over their own bevel when pressed, set in a tight cluster beside
@@ -35,7 +35,7 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
         className={cap}
         style={{ ...legend, width: KEY_W, height: KEY_H, top: 0, left: OFFSET_X }}
       >
-        {keysClaimed ? "Y" : <Share className="h-[13px] w-[13px]" strokeWidth={2.4} />}
+        Y
       </button>
 
       <button
