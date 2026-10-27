@@ -168,6 +168,13 @@ button:focus-visible {
   body {
     @apply bg-background text-foreground;
   }
+  /* Never let the browser re-cast the type it is handed: Safari's text autosizing
+     changes the size of whole surfaces the moment a picture is re-flowed for the
+     keys, which reads as a zoom the reader never asked for. */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 }
 
 /* Editorial publication tokens shared by light and dark app themes. */
@@ -275,7 +282,7 @@ button:focus-visible {
 :root {
   --hh-top: 32px;
   --hh-shell-top: 14px;
-  --hh-bottom: 164px;
+  --hh-bottom: 178px;
 
   /* The desk margin, the moulding around the glass, and the inset every surface
      on the picture is measured from — the last being the first two added. */

@@ -32,11 +32,21 @@ export default function useKeyboardOpen() {
       frame = 0;
       if (!alive) return;
 
-      const held = viewport ? Math.max(0, Math.round(window.innerHeight - viewport.height)) : 0;
+      // A picture zoomed in on — which is what Safari does the moment a field
+      // smaller than 16px takes the cursor — shortens the visual viewport exactly as
+      // a keyboard does, and says nothing about the keys. Nothing is measured from
+      // it: the glass keeps its height instead of reserving room for hardware that
+      // is not there.
+      const zoomed = viewport ? viewport.scale > 1.01 : false;
+      const held =
+        viewport && !zoomed ? Math.max(0, Math.round(window.innerHeight - viewport.height)) : 0;
       const open = typingInto() || held >= KEYBOARD_MIN;
-      // The keys' own height where the frame can report it. Nothing to reserve where
-      // it cannot: the picture keeps its height and the field is carried into view.
-      const height = held >= KEYBOARD_MIN ? held : 0;
+      // The keys' own height where the frame can report it, capped so one bad
+      // reading can never take more of the picture than the keys themselves could.
+      // Where it cannot be read at all, nothing is reserved: the picture keeps its
+      // height and the field is carried into view over the keys instead.
+      const height =
+        held >= KEYBOARD_MIN ? Math.min(held, Math.round(window.innerHeight * 0.6)) : 0;
 
       setKeyboard((was) => {
         const next = { open, height };

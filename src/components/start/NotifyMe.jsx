@@ -9,8 +9,19 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // else: the signup is recorded on the publication waitlist first — so it is always
 // exportable — and the CRM sync follows best-effort behind it, because a failed
 // sync must never cost a reader the entry they just made.
-export default function NotifyMe({ publication = 'results_go_live_2026', surface = 'title_screen' }) {
-  const [open, setOpen] = useState(false);
+export default function NotifyMe({
+  publication = 'results_go_live_2026',
+  surface = 'title_screen',
+  // The ring can reach this too. Where the alert is seated on the title screen the
+  // open state is held up with the list the wheel walks, so a turn of the ring and a
+  // tap of the key are the same press.
+  open: openProp,
+  onOpenChange,
+  selected = false,
+}) {
+  const [selfOpen, setSelfOpen] = useState(false);
+  const open = openProp ?? selfOpen;
+  const setOpen = (next) => (onOpenChange ? onOpenChange(next) : setSelfOpen(next));
   const [email, setEmail] = useState('');
   const [state, setState] = useState('idle'); // idle | loading | done | error
   const [note, setNote] = useState('');
@@ -62,14 +73,19 @@ export default function NotifyMe({ publication = 'results_go_live_2026', surface
     <>
       <button
         type="button"
-        onClick={() => setOpen((was) => !was)}
+        onClick={() => setOpen(!open)}
         aria-expanded={open}
+        aria-current={selected ? 'true' : undefined}
         aria-controls="results-notify"
-        className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-[5px] text-[8px] font-bold uppercase tracking-[0.2em] transition-colors md:text-[8.5px]"
+        className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-[5px] text-[8px] font-bold uppercase tracking-[0.2em] transition-[transform,box-shadow,background-color] duration-200 active:scale-95 md:text-[8.5px]"
         style={{
-          background: state === 'done' ? 'rgba(201,168,124,0.9)' : 'rgba(6,12,22,0.32)',
+          background: state === 'done' || selected ? 'rgba(201,168,124,0.95)' : 'rgba(6,12,22,0.32)',
           border: '1px solid rgba(201,168,124,0.5)',
-          color: state === 'done' ? '#1E3A5A' : '#C9A87C',
+          color: state === 'done' || selected ? '#16293F' : '#C9A87C',
+          boxShadow:
+            selected && state !== 'done'
+              ? '0 0 0 1px rgba(201,168,124,0.7), 0 6px 16px rgba(3,6,13,0.4)'
+              : 'none',
         }}
       >
         {state === 'done' ? <Check className="h-3 w-3" /> : open ? <X className="h-3 w-3" /> : <Bell className="h-3 w-3" />}

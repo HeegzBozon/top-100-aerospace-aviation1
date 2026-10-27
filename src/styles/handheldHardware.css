@@ -1,0 +1,116 @@
+/* The hardware's own chrome: the speaker well, the footer plate, and the one rule
+   that keeps a field from zooming the picture on a phone. Kept beside index.css
+   rather than inside it — the case is one subject, and the token sheet is another.
+   Every tone here is a finish token, so the whole of it recasts with the case. */
+
+/* ===== THE CASE SPEAKER — THE PUNCHED WELL =====
+   The console's speaker is moulded the way the desk machine's is: a circle of the
+   case turned down into the chin, a fine hole field punched through the middle of
+   it, and the clear resin lens that sits over both. The well is also the control for
+   the machine's own record, so it is what the thumb lands on. */
+.hh-speaker {
+  position: relative;
+  flex: none;
+  border-radius: 9999px;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, rgba(3, 6, 13, 0.18) 0 1px, rgba(3, 6, 13, 0) 1px 5px),
+    radial-gradient(circle at 50% 50%, var(--hh-shell-1) 0%, var(--hh-shell-2) 52%, var(--hh-shell-3) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.32),
+    inset 0 2px 6px rgba(3, 6, 13, 0.55),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.08),
+    0 1px 0 var(--hh-shell-spec);
+}
+
+/* The punched field: a fine hole grid, clipped to a circle. */
+.hh-speaker::before {
+  content: "";
+  position: absolute;
+  inset: 13%;
+  border-radius: 9999px;
+  background-color: rgba(3, 6, 13, 0.34);
+  background-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.66) 1px, rgba(0, 0, 0, 0) 1.4px);
+  background-size: 4px 4px;
+  background-position: 2px 2px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+/* The clear resin lens over it, seated in the moulding. */
+.hh-speaker::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: linear-gradient(
+    146deg,
+    rgba(255, 255, 255, 0.20) 0%,
+    rgba(255, 255, 255, 0.04) 42%,
+    rgba(255, 255, 255, 0) 66%
+  );
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    inset 0 -3px 7px rgba(3, 6, 13, 0.30);
+}
+
+/* The lamp, set in the punched field: dead glass until the record plays. */
+.hh-speaker-led {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(150, 166, 184, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
+}
+.hh-speaker-led[data-on="true"] {
+  background: var(--hh-led);
+  box-shadow: 0 0 6px var(--hh-led), inset 0 0 2px rgba(3, 6, 13, 0.40);
+}
+
+/* ===== THE CHASSIS FOOTER — THE MAKER'S PLATE =====
+   The band cut across the very bottom of the case: the model mark engraved at the
+   left, the key that changes what the device is wearing in the middle, and who is
+   holding it at the right. A machined groove runs along its top edge, so the plate
+   reads as its own moulding set into the chin rather than as the chin's last line. */
+.hh-footer {
+  background: linear-gradient(
+    180deg,
+    rgba(3, 6, 13, 0.26) 0%,
+    rgba(3, 6, 13, 0.10) 55%,
+    rgba(255, 255, 255, 0.015) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(3, 6, 13, 0.42),
+    inset 0 2px 3px -2px rgba(3, 6, 13, 0.30),
+    inset 0 -1px 0 rgb(var(--hh-metal-rgb) / 0.20);
+}
+
+/* The status lamp beside who is holding the console. */
+.hh-footer-led {
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: rgba(150, 166, 184, 0.20);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.hh-footer-led[data-on="true"] {
+  background: var(--hh-led);
+  box-shadow: 0 0 6px var(--hh-led);
+}
+
+/* ===== A FIELD ON A PHONE =====
+   Safari zooms the whole page in the moment a field drawn smaller than 16px takes
+   the cursor, and a zoomed page is not the device's page: the picture jumps, and the
+   console reads a keyboard that is not there. So on a phone every field the device
+   carries is set at 16px — which is also the size a field should be to be read and
+   hit with a thumb. */
+@media (max-width: 767px) {
+  body.hh-shell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  body.hh-shell textarea,
+  body.hh-shell select,
+  body.hh-shell [contenteditable="true"] {
+    font-size: 16px;
+  }
+}

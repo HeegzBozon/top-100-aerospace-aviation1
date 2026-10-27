@@ -12,7 +12,7 @@ import StartSeasonLine from '@/components/start/StartSeasonLine';
 import PublicationCountdown from '@/components/start/PublicationCountdown';
 import StartTitleActions from '@/components/start/StartTitleActions';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
-import { START_MENU, VOTE_OPTION } from '@/components/start/startMenuConfig';
+import { NOTIFY_OPTION, START_MENU, VOTE_OPTION } from '@/components/start/startMenuConfig';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 
@@ -22,13 +22,15 @@ const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 // It is a menu, so the console treats it as one: the surfaces are handed to the
 // ring as a picker, and the cursor it walks is the selection drawn on the keys.
 // The ballot stands at the top of that list when the cycle is asking for it, so
-// the wheel reaches the same action the countdown sits beside.
+// the wheel reaches the same action the countdown sits beside — and the publishing
+// alert stands next to it, the ring opening its field where the key would.
 export default function StartScreen() {
   const navigate = useNavigate();
   const [phase] = useState(() => hourPhase());
   const [status, setStatus] = useState({ loading: true, votingEnd: null, failed: false });
   const [attempt, setAttempt] = useState(0);
   const [cursorKey, setCursorKey] = useState(START_MENU[0].key);
+  const [notifyOpen, setNotifyOpen] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -58,14 +60,21 @@ export default function StartScreen() {
   const vote = useCountdown(status.votingEnd);
   const voteLive = !status.loading && !status.failed && !!status.votingEnd && !vote.done;
 
-  // What the ring walks, top to bottom: the ballot first when it is live, then
-  // the surfaces in the order the grid draws them.
-  const options = useMemo(() => (voteLive ? [VOTE_OPTION, ...START_MENU] : START_MENU), [voteLive]);
+  // What the ring walks, top to bottom: the two things the title screen is asking
+  // for — the ballot while its cycle is running, and the publishing alert for a
+  // reader who will not be watching on the day — then the surfaces, in the order the
+  // grid draws them.
+  const options = useMemo(
+    () => (voteLive ? [VOTE_OPTION, NOTIFY_OPTION, ...START_MENU] : [NOTIFY_OPTION, ...START_MENU]),
+    [voteLive],
+  );
 
   const optionsRef = useRef(options);
   optionsRef.current = options;
   const cursorRef = useRef(cursorKey);
   cursorRef.current = cursorKey;
+  const notifyRef = useRef(notifyOpen);
+  notifyRef.current = notifyOpen;
 
   // The cursor is held as a key, not a position, so the list can gain the ballot
   // without the selection jumping.
@@ -96,11 +105,22 @@ export default function StartScreen() {
       goTo: (i) => land(i),
       enter: () => {
         const option = optionsRef.current.find((item) => item.key === cursorRef.current);
-        if (!option?.to) return false;
+        if (!option) return false;
+        // The alert is not a cartridge: the ring opens its field where you stand.
+        if (option.key === NOTIFY_OPTION.key) {
+          setNotifyOpen(true);
+          return true;
+        }
+        if (!option.to) return false;
         navigate(option.to);
         return true;
       },
-      back: () => false,
+      // A field the ring opened is closed by the ring before anything else.
+      back: () => {
+        if (!notifyRef.current) return false;
+        setNotifyOpen(false);
+        return true;
+      },
     };
   }
 
@@ -137,7 +157,13 @@ export default function StartScreen() {
             <div className="mt-3 md:mt-4">
               <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
               <PublicationCountdown />
-              <StartTitleActions voteLive={voteLive} voteSelected={cursorKey === VOTE_OPTION.key} />
+              <StartTitleActions
+                voteLive={voteLive}
+                voteSelected={cursorKey === VOTE_OPTION.key}
+                notifyOpen={notifyOpen}
+                onNotifyChange={setNotifyOpen}
+                notifySelected={cursorKey === NOTIFY_OPTION.key}
+              />
             </div>
           </div>
 

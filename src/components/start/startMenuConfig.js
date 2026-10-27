@@ -34,5 +34,13 @@ export const VOTE_OPTION = {
   to: "/selection-committee?tab=vote",
 };
 
+// The publishing alert: the other thing the title screen asks for, standing beside
+// the ballot. It is not a surface — the ring opens the field where it stands — so it
+// is only reached through the console's cursor.
+export const NOTIFY_OPTION = {
+  key: "notify",
+  label: "Get notified",
+};
+
 export const START_LOGO =
   "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png";

@@ -77,7 +77,7 @@ export default function HandheldDeck() {
       {
         key: "hardware",
         label: "Hardware",
-        items: [{ label: `Options · ${finish.label}`, action: "finish", icon: Palette }],
+        items: [{ label: `Customize · ${finish.label}`, action: "finish", icon: Palette }],
       },
     ],
     [groups, finish.label],
@@ -204,9 +204,9 @@ export default function HandheldDeck() {
     }
   }, []);
 
-  // The chassis options drawer: the finishes the device can wear. It opens from
-  // the wheel's Menu — and from the chin strip, where the device's own options
-  // control is seated, so the hardware itself is the way to change what it is
+  // The chassis customize drawer: the finishes the device can wear. It opens from
+  // the wheel's Menu — and from the footer of the case, where the device's own
+  // Customize key is seated, so the hardware itself is the way to change what it is
   // wearing.
   // A finish is worn whole, never mixed. Choosing one puts it on the device and
   // steps the drawer aside, so the moulding you just picked is what you see.
@@ -217,7 +217,7 @@ export default function HandheldDeck() {
       setMenuMode(null);
       blip("toggle");
       buzz();
-      announce(`Options · ${item.label}`);
+      announce(`Customize · ${item.label}`);
     },
     [chooseFinish, announce],
   );
@@ -596,12 +596,12 @@ export default function HandheldDeck() {
             menuMode === "sections"
               ? [{ key: "sections", label: "On this surface", items: sectionItems }]
               : menuMode === "finish"
-                ? [{ key: "finish", label: "Options", items: finishItems }]
+                ? [{ key: "finish", label: "Customize", items: finishItems }]
                 : menuGroups
           }
           cursor={cursor}
           locationKey={locationKey}
-          unit={menuMode === "sections" ? "sections" : menuMode === "finish" ? "options" : "cartridges"}
+          unit={menuMode === "sections" ? "sections" : menuMode === "finish" ? "finishes" : "cartridges"}
           hint={
             menuMode === "sections"
               ? "◀▶ Move · ● Go · B Back"
@@ -647,41 +647,45 @@ export default function HandheldDeck() {
         <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, left: 5 }} aria-hidden="true" />
         <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, right: 5 }} aria-hidden="true" />
 
-        <div className="flex items-center gap-2.5 px-4 pt-1.5">
-          {/* The case speaker, and the console's own music: the punched well on
-              the chin is the control — tap to unmute the onboard playlist, hold
-              for the next loop. It also balances the face buttons, so the wheel
-              sits dead centre. */}
+        {/* The controls, spaced so a thumb never has to guess: the speaker on the
+            left, the wheel on the centre line, the keypad on the right. The two sides
+            are the same width, so the wheel sits dead centre whatever either of them
+            measures. */}
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pt-1.5">
+          {/* The case speaker, and the console's own music: the punched well is the
+              control — tap to take the record off standby, hold for the next loop. */}
           <HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />
 
-          <div className="flex min-w-0 flex-1 justify-center">
-            <ClickWheel
-              size={104}
-              onRotate={rotate}
-              onMenu={steering ? null : upOneLevel}
-              onPrev={steering ? null : () => stepSection(-1)}
-              onNext={steering ? null : () => stepSection(1)}
-              onPlay={steering || menuOpen || shareOpen ? null : share}
-              onSelect={select}
-              onHome={goHome}
-              steer={!!steering}
-              onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}
-              prints={steering?.prints}
+          <ClickWheel
+            size={104}
+            onRotate={rotate}
+            onMenu={steering ? null : upOneLevel}
+            onPrev={steering ? null : () => stepSection(-1)}
+            onNext={steering ? null : () => stepSection(1)}
+            onPlay={steering || menuOpen || shareOpen ? null : share}
+            onSelect={select}
+            onHome={goHome}
+            steer={!!steering}
+            onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}
+            prints={steering?.prints}
+          />
+
+          <div className="flex justify-end">
+            <FaceButtons
+              onConfirm={() => faceKey("A", select)}
+              onBack={() => faceKey("B", back)}
+              onSections={() => faceKey("X", openSections)}
+              onShare={() => faceKey("Y", share)}
             />
           </div>
-
-          <FaceButtons
-            onConfirm={() => faceKey("A", select)}
-            onBack={() => faceKey("B", back)}
-            onSections={() => faceKey("X", openSections)}
-            onShare={() => faceKey("Y", share)}
-          />
         </div>
 
-        {/* The maker's plate, cut into the chin: the model mark, the chassis
-            options — the swatch row is the finish the device is wearing — and who
-            is holding it, with a machined hairline drawn out to either side. */}
-        <div className="hh-plate mt-0.5 flex h-[20px] items-center gap-2 px-4">
+        {/* The footer of the chassis: the maker's plate, cut across the very bottom
+            of the case, under its own machined groove. The model mark is engraved at
+            the left, the key that changes what the device is wearing sits in the
+            middle — the swatch row on it is the finish it is wearing now — and the
+            right says who is holding the console, with a lamp beside it. */}
+        <div className="hh-footer relative mt-2 flex h-[24px] items-center gap-2.5 px-4">
           <span
             className="hh-engrave flex shrink-0 items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
             style={{ color: "var(--hh-ink-soft)" }}
@@ -692,7 +696,7 @@ export default function HandheldDeck() {
 
           <span
             aria-hidden="true"
-            className="h-px min-w-[8px] flex-1"
+            className="h-px min-w-[6px] flex-1"
             style={{
               background: "linear-gradient(90deg, rgb(var(--hh-metal-rgb) / 0.04), rgb(var(--hh-metal-rgb) / 0.30))",
             }}
@@ -701,34 +705,29 @@ export default function HandheldDeck() {
           <button
             type="button"
             onClick={openFinish}
-            aria-label={`Chassis options. Wearing ${finish.label}`}
-            className="flex min-w-0 shrink-0 items-center gap-1.5 rounded-[7px] px-2 py-[3px] text-[6px] font-bold uppercase tracking-[0.18em] transition-transform active:translate-y-[1px]"
-            style={{
-              color: "var(--hh-pad-ink)",
-              background: "linear-gradient(180deg, var(--hh-pad-1) 0%, var(--hh-pad-2) 100%)",
-              boxShadow:
-                "inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -1px 0 rgba(3,6,13,0.30), 0 1px 0 rgba(3,6,13,0.34)",
-            }}
+            aria-label={`Customize the console. Wearing ${finish.label}`}
+            className="hh-pad-key flex h-[19px] min-w-0 shrink-0 items-center gap-[7px] rounded-[9px] px-2.5 text-[6.5px] font-bold uppercase tracking-[0.18em]"
+            style={{ color: "var(--hh-pad-ink)" }}
           >
-            <Palette className="h-[7px] w-[7px] shrink-0" style={{ color: "var(--hh-pad-ink)" }} />
+            <Palette className="h-[8px] w-[8px] shrink-0" />
             <span className="flex shrink-0 items-center gap-[3px]">
               {(finish.swatch || []).map((tone) => (
                 <span
                   key={tone}
-                  className="h-[6px] w-[6px] rounded-full"
+                  className="h-[7px] w-[7px] rounded-full"
                   style={{ background: tone, boxShadow: "inset 0 0 0 1px rgba(7,17,31,0.35)" }}
                 />
               ))}
             </span>
-            <span className="truncate">Options</span>
-            <span className="shrink-0" style={{ color: "rgb(var(--hh-metal-rgb) / 0.8)" }}>
+            <span className="truncate">Customize</span>
+            <span className="shrink-0" style={{ color: "rgb(var(--hh-metal-rgb) / 0.85)" }}>
               ▲
             </span>
           </button>
 
           <span
             aria-hidden="true"
-            className="h-px min-w-[8px] flex-1"
+            className="h-px min-w-[6px] flex-1"
             style={{
               background: "linear-gradient(90deg, rgb(var(--hh-metal-rgb) / 0.30), rgb(var(--hh-metal-rgb) / 0.04))",
             }}
@@ -738,8 +737,8 @@ export default function HandheldDeck() {
             className="hh-engrave flex shrink-0 items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
             style={{ color: "var(--hh-ink-soft)" }}
           >
+            <span className="hh-footer-led" data-on={isSignedIn} aria-hidden="true" />
             {isSignedIn ? "Fellow" : "Visitor"}
-            <span className="hh-screw h-[6px] w-[6px] rounded-full" />
           </span>
         </div>
       </nav>

@@ -3,11 +3,14 @@ import { Volume2, VolumeX } from "lucide-react";
 import { blip, buzz } from "./handheldSound";
 import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying } from "./consoleMusic";
 
-// The case speaker. The punched well the hardware already had is now the control:
-// tap it to unmute the console's own record — three house loops and two lo-fi ones,
-// written into the device — and tap again to mute. Hold it to move on to the next
-// loop, which is how the rest of the record is reached without a screen for it. The
-// LED is lit while music is playing and the loop's name is printed on the well.
+// The case speaker, and the machine's own record.
+//
+// It is moulded the way the desk machine's speaker is: a circle of the case turned
+// down into the chin, a fine hole field punched through the middle of it, and the
+// clear resin lens that sits over both (see .hh-speaker). Because the well is also
+// the control, the press, the glyph and the lamp are all this adds — tap it to take
+// the record off standby, tap again to mute, hold it to move on to the next loop.
+// The loop's name is printed under it, where the name on a speaker's record belongs.
 const HOLD_MS = 620;
 
 export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
@@ -85,49 +88,34 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
           : "Speaker off. Play the console's music, three house loops and two lo-fi"
       }
       title="Tap to play or mute · hold for the next loop"
-      className="hh-speaker relative flex h-[64px] w-[64px] shrink-0 flex-col justify-between overflow-hidden rounded-[10px] p-2 text-left transition-transform active:scale-[0.97]"
-      style={{
-        background: "linear-gradient(180deg, #0E141C 0%, #05080D 100%)",
-        boxShadow: playing
-          ? "inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.55), inset 0 2px 8px rgba(0,0,0,0.55), 0 0 12px rgb(var(--hh-metal-rgb) / 0.20)"
-          : "inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.30), inset 0 2px 8px rgba(0,0,0,0.55)",
-      }}
+      className="group relative flex w-[66px] shrink-0 flex-col items-center gap-1.5 transition-transform active:scale-[0.97]"
     >
-      {/* The punched grille stays exactly as the moulding had it, drawn over the
-          well so the speaker still reads as hardware rather than as a button. */}
-      <span
-        aria-hidden="true"
-        className="hh-grille pointer-events-none absolute inset-0 rounded-[10px] opacity-70"
-      />
+      {/* The well itself: plastic, punched through, under its resin lens. */}
+      <span className="hh-speaker flex h-[54px] w-[54px] items-center justify-center">
+        <span className="relative z-10 flex items-center justify-center">
+          {playing ? (
+            <Volume2 className="h-[15px] w-[15px]" style={{ color: "var(--hh-metal-1)" }} />
+          ) : (
+            <VolumeX
+              className="h-[15px] w-[15px]"
+              style={{ color: "rgb(var(--hh-metal-rgb) / 0.62)" }}
+            />
+          )}
+        </span>
 
-      <span className="relative flex items-start justify-between">
-        {playing ? (
-          <Volume2 className="h-[14px] w-[14px]" style={{ color: "var(--hh-metal-1)" }} />
-        ) : (
-          <VolumeX
-            className="h-[14px] w-[14px]"
-            style={{ color: "rgb(var(--hh-metal-rgb) / 0.62)" }}
-          />
-        )}
-
-        <span
-          className={playing ? "hh-led h-[5px] w-[5px] rounded-full" : "h-[5px] w-[5px] rounded-full"}
-          style={{
-            background: playing ? "var(--hh-led)" : "rgba(150,166,184,0.22)",
-            boxShadow: playing ? undefined : "inset 0 0 0 1px rgba(255,255,255,0.08)",
-          }}
-        />
+        {/* The lamp, set in the punched field the way the desk's is. */}
+        <span className="hh-speaker-led z-10" data-on={playing} aria-hidden="true" />
       </span>
 
-      <span className="relative block">
+      <span className="flex w-full flex-col items-center leading-none">
         <span
-          className="block font-heading text-[7px] font-bold uppercase leading-[1.25] tracking-[0.14em]"
+          className="w-full truncate text-center font-heading text-[6.5px] font-bold uppercase tracking-[0.12em]"
           style={{ color: playing ? "var(--hh-key-1)" : "rgb(var(--hh-metal-rgb) / 0.74)" }}
         >
           {playing ? track.title : "Sound off"}
         </span>
         <span
-          className="mt-[3px] block text-[5.5px] font-bold uppercase tracking-[0.2em]"
+          className="mt-[3px] text-[5.5px] font-bold uppercase tracking-[0.18em]"
           style={{ color: "rgb(var(--hh-metal-rgb) / 0.68)" }}
         >
           {playing ? "Hold ▸ next" : "Tap to play"}

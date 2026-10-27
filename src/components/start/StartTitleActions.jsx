@@ -11,7 +11,13 @@ import { VOTE_OPTION } from "./startMenuConfig";
 // The alert opens its own field directly under the row, full width, so the row
 // itself never moves when it does — and on a phone with the keys up, that field is
 // the first thing above them.
-export default function StartTitleActions({ voteLive = false, voteSelected = false }) {
+export default function StartTitleActions({
+  voteLive = false,
+  voteSelected = false,
+  notifyOpen = false,
+  notifySelected = false,
+  onNotifyChange,
+}) {
   return (
     <div className="mt-2.5 flex flex-wrap items-center gap-2 md:mt-3">
       {voteLive ? (
@@ -34,7 +40,7 @@ export default function StartTitleActions({ voteLive = false, voteSelected = fal
         </Link>
       ) : null}
 
-      <NotifyMe />
+      <NotifyMe open={notifyOpen} onOpenChange={onNotifyChange} selected={notifySelected} />
     </div>
   );
 }

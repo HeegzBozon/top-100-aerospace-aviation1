@@ -11,16 +11,18 @@ import { useFaceKeysClaimed } from "./handheldKeys";
 // like the rest of the keypad, and the share stays on the ring.
 //
 // These are the BlackBerry half of the device: matte rubberised keys with light
-// legends, rolled over their own bevel when pressed, set in a tight cluster beside
-// the wheel. The material comes from the finish, so the keypad recasts with the case.
-const BOX = 72;
-const KEY_W = 30;
-const KEY_H = 24;
+// legends, rolled over their own bevel when pressed, set beside the wheel. The keys
+// are cut wide and stood well apart — a thumb is not a stylus, and the gap between
+// two keys is what tells a hand which one it is on without looking down at it. The
+// material comes from the finish, so the keypad recasts with the case.
+const BOX = 84;
+const KEY_W = 34;
+const KEY_H = 30;
 const OFFSET_X = (BOX - KEY_W) / 2;
 const OFFSET_Y = (BOX - KEY_H) / 2;
 
 const cap =
-  "hh-pad-key absolute flex items-center justify-center rounded-[7px] text-[11px] font-bold transition-transform active:translate-y-[1px]";
+  "hh-pad-key absolute flex items-center justify-center rounded-[9px] text-[12px] font-bold transition-transform active:translate-y-[1px]";
 
 export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) {
   const legend = { color: "var(--hh-pad-ink)" };
@@ -70,3 +72,7 @@ export default function FaceButtons({ onConfirm, onBack, onSections, onShare }) 
     </div>
   );
 }
+
+// The cluster's measurements, so the flat keypad a load paints lands on exactly the
+// footprint the live keys take over from (see HandheldChin).
+export const FACE_KEYS = { BOX, KEY_W, KEY_H, OFFSET_X, OFFSET_Y };

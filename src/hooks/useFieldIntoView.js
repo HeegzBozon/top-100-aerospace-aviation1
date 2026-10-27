@@ -16,6 +16,10 @@ export default function useFieldIntoView(open, height) {
     const watch = (field) => {
       timers.forEach(clearTimeout);
       const carry = () => {
+        // iOS slides the whole document up to bring a field over the keys. The
+        // picture is fixed, so the document is put back where it was and only the
+        // glass does the moving — otherwise the hardware travels with it.
+        if (window.scrollY > 1) window.scrollTo(0, 0);
         if (field?.isConnected) field.scrollIntoView({ block: "center", inline: "nearest" });
       };
       // Once when the picture has moved for the keys, once more when it settles.
