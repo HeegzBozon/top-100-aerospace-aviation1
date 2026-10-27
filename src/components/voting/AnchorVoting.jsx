@@ -13,7 +13,7 @@ import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import { registerFaceKeys } from '@/components/handheld/handheldKeys';
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
-import AnchorLedger from '@/components/voting/AnchorLedger';
+import VoteMechanicsPopover from '@/components/voting/VoteMechanicsPopover';
 
 // The four candidates stand under the four face keys, in the order the cards are set:
 // X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
@@ -50,6 +50,7 @@ export default function AnchorVoting({ user }) {
   const [panelToken, setPanelToken] = useState('A');
   const [sessionCount, setSessionCount] = useState(0);
   const [history, setHistory] = useState([]); // completed sets for review/back
+  const [explainerOpen, setExplainerOpen] = useState(false);
 
   // Load active season + nominee pool once.
   useEffect(() => {
@@ -188,7 +189,9 @@ export default function AnchorVoting({ user }) {
   // The ring walks the same four cards. While a set is standing, a turn of the wheel
   // moves the cursor across it — the ends hold, so the first and the last card are as
   // far as it goes — and the centre button votes for the card the cursor has reached.
-  const standing = phase === 'best' || phase === 'worst';
+  // Reading the explainer suspends the vote: while it is open the ring and the keys
+  // belong to the reader, not to the ballot, so no mark can be made by accident.
+  const standing = (phase === 'best' || phase === 'worst') && !explainerOpen;
   const setKey = currentSet.map((n) => n.id).join('|');
   const cursor = useAnchorPicker({
     count: currentSet.length,
@@ -206,7 +209,7 @@ export default function AnchorVoting({ user }) {
   // keys go back to the console — A confirm, B back, X sections, Y share.
   const voteKeys = useRef(null);
   voteKeys.current =
-    (phase === 'best' || phase === 'worst') && currentSet.length === 4
+    (phase === 'best' || phase === 'worst') && !explainerOpen && currentSet.length === 4
       ? (key) => {
           const i = VOTE_KEYS.indexOf(key);
           if (i < 0 || !currentSet[i]) return false;
@@ -218,7 +221,7 @@ export default function AnchorVoting({ user }) {
   useEffect(() => {
     if (!voteKeys.current) return undefined;
     return registerFaceKeys((key) => (voteKeys.current ? voteKeys.current(key) : false));
-  }, [phase, currentSet]);
+  }, [phase, currentSet, explainerOpen]);
 
   if (loading) {
     return (
@@ -244,14 +247,9 @@ export default function AnchorVoting({ user }) {
     );
   }
 
-  // The two stakes this set has taken, read back to the voter: the card advanced first
-  // (ordinal 1) and the card advanced last (ordinal 4). Null while a stake stands open.
-  const topNominee = currentSet.find((n) => n.id === topId) || null;
-  const bottomNominee = currentSet.find((n) => n.id === bottomId) || null;
-
   const prompt =
-    phase === 'best' ? 'Which of these would you advance first?' :
-    phase === 'worst' ? 'And which of these three would you advance last?' :
+    phase === 'best' ? 'Rank 1?' :
+    phase === 'worst' ? 'Rank 4?' :
     phase === 'submitting' ? 'Recording your comparisons…' :
     phase === 'review' ? 'Reviewing your last set.' :
     'Anchored. Drawing the next set.';
@@ -262,7 +260,7 @@ export default function AnchorVoting({ user }) {
       <div className="flex-1 flex flex-col min-w-0 px-3 pt-2.5 pb-4 md:px-4 md:pt-4 md:pb-6 lg:px-8">
         <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
         {/* The console names this panel on its own strip, so on the glass the title
-            stands down and the ledger, the prompt and the cards take the room. */}
+            stands down and the prompt and the cards take the room. */}
         <div className="mb-1 hidden md:block">
           <div>
             <h2 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
@@ -274,12 +272,8 @@ export default function AnchorVoting({ user }) {
           </div>
         </div>
 
-        {/* The ledger: the two stakes this set is measured from, printed as slots at the
-            head of the panel — where the console's own strip names the surface, so the
-            title stands down and the state of the set speaks first. */}
-        <AnchorLedger top={topNominee} bottom={bottomNominee} />
-
-        {/* Prompt, with the session's tally beside it */}
+        {/* Prompt, with the way into the explainer beside it and the session's tally at
+            the far end of the row. */}
         <AnimatePresence mode="wait">
           <motion.div
             key={prompt}
@@ -304,7 +298,8 @@ export default function AnchorVoting({ user }) {
                 <Loader2 className="h-3 w-3 animate-spin" style={{ color: brand.gold }} />
               </span>
             )}
-            <p className="text-[12.5px] font-semibold md:text-sm" style={{ color: brand.navy }}>{prompt}</p>
+            <p className="whitespace-nowrap font-heading text-[15px] leading-none md:text-[17px]" style={{ color: brand.navy }}>{prompt}</p>
+            <VoteMechanicsPopover open={explainerOpen} onOpenChange={setExplainerOpen} />
             <span
               className="ml-auto shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold tabular-nums"
               style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
@@ -349,7 +344,7 @@ export default function AnchorVoting({ user }) {
                 token={token}
                 isTop={isTop}
                 isBottom={isBottom}
-                selectable={selectable && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
+                selectable={selectable && !explainerOpen && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
