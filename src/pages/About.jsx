@@ -213,7 +213,7 @@ export default function About() {
           
           <div className="grid md:grid-cols-2 gap-8 text-left mb-16">
             <FadeIn delay={0.1} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
-              <h3 className="text-xl font-bold text-[#c9a87c] mb-3 uppercase tracking-wider text-sm">For the Talent</h3>
+              <h3 className="text-xl font-bold text-editorial-label mb-3 uppercase tracking-wider text-sm">For the Talent</h3>
               <p className="text-slate-600 text-sm leading-relaxed font-medium">
                 When a Fellow is recognized, it's the beginning of a persistent record. Her Flightography accumulates human-verified endorsements. Her domain network connects her across 40+ countries. Her influence tier rises as she mentors and endorses others.
               </p>

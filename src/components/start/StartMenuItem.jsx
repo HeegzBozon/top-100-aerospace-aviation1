@@ -37,7 +37,7 @@ export default function StartMenuItem({ item, selected }) {
         <Icon className="h-[15px] w-[15px] shrink-0 text-editorial-gold md:h-[19px] md:w-[19px]" />
         <span
           className={`font-heading text-[9px] leading-none md:text-[11px] ${
-            selected ? "text-editorial-gold" : "text-editorial-cream/35"
+            selected ? "text-editorial-gold" : "text-editorial-cream/65"
           }`}
         >
           {item.index}

@@ -55,6 +55,12 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 500,
+    // Ship ES2020 as written. esbuild otherwise rewrites syntax the platform's browsers
+    // all speak natively (async/await, optional chaining, class fields) and injects the
+    // helpers it needs to do it — bytes no visitor here ever runs. The modulepreload
+    // polyfill goes with it: it only exists for browsers that will never load this app.
+    target: 'es2020',
+    modulePreload: { polyfill: false },
     rollupOptions: {
       output: {
         manualChunks(id) {

@@ -11,9 +11,9 @@ export default function StartMetaRow() {
 
   return (
     <div className="shrink-0">
-      <p className="truncate text-[8.5px] font-bold uppercase tracking-[0.14em] text-editorial-cream/45 md:text-[9.5px] md:tracking-[0.2em]">
-        <span className="text-editorial-cream/60">MMXXVI</span>
-        <span className="mx-1.5 text-editorial-cream/25">·</span>
+      <p className="truncate text-[8.5px] font-bold uppercase tracking-[0.14em] text-editorial-cream/70 md:text-[9.5px] md:tracking-[0.2em]">
+        <span className="text-editorial-cream/80">MMXXVI</span>
+        <span className="mx-1.5 text-editorial-cream/45">·</span>
         {now.format("ddd D MMM · HH:mm")}
         <span className="text-editorial-cream/70">:{now.format("ss")}</span>
       </p>

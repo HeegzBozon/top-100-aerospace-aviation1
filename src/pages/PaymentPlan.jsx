@@ -130,7 +130,7 @@ export default function PaymentPlan() {
         >
           <div className="flex items-center justify-center gap-2 mb-3">
             <Sparkles className="w-4 h-4 text-[#c9a87c]" />
-            <span className="text-xs font-black tracking-widest text-[#c9a87c] uppercase">Payment Plan</span>
+            <span className="text-xs font-black tracking-widest text-editorial-label uppercase">Payment Plan</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-[#1e3a5a] mb-2">Choose Your Payment Plan</h1>
           <p className="text-gray-500 text-sm max-w-md mx-auto">
