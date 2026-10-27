@@ -57,6 +57,23 @@ Use `jcodemunch-mcp` for all code lookups. Never read full files when MCP is ava
 
 Never open an entire file just to find one function. Query by symbol first.
 
+## The Machine — OS Canon (read before any UI work)
+
+The platform is a **virtual computer**, not a website with pages. Two machines, one operating system: the **desk machine** (`ImacHousing` / `DesktopShell` / `DesktopMenuBar` / `DesktopDock`) and the **handheld** (`HandheldShell` / `ScreenTopBar` / `HandheldDeck`). The machine is the product; pages are applications it runs.
+
+**Canonical spec: `docs/os/TOP-100-OS-CANON.md`.** Read it before building or reshaping any surface. It covers the shared spine (one menu bar in two seats, one menu model, one shelf), the app contract for new surfaces, the interface vocabulary, the verified audit register, and the migration backlog.
+
+Six rules that override convenience:
+
+1. One machine on screen, never two, never none — the split is made once in `useIsMobile()`.
+2. Surfaces never mount their own chrome. Commands go to `barMenus` / `surfaceFileMenu`.
+3. The spine is single-source: consume `shell/MenuBar`, `DesktopDock`, `handheldDestinations` — never copy or fork them.
+4. Immersive surfaces are declared (`FULL_BLEED`), never improvised from inside a page.
+5. Colour and type come from tokens (`--editorial-*`, `--hh-*`, `--fd-*`); no raw hex.
+6. Both machines, one story: a build is not done until it is walked on desk and handheld.
+
+No feature may be marked DEPLOYED with the legacy `LayoutWrapper` / comms layout wrapping it — that is a second chrome inside the machine and is tracked as backlog item 1 in the canon.
+
 ## Architecture Rules (Non-Negotiable)
 
 1. Frontend/backend boundary is the Base44 SDK. Data logic goes in backend functions, not components.
