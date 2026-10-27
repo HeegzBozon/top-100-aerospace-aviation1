@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Menu, X, Shield, CalendarCheck, Users, ShoppingBag, Mail, Home, LogIn, LogOut, User } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { isViewingAsVisitor } from '@/lib/viewerPreview';
 
 const NAV_LINKS = [
   { label: 'Operation: Moon Joy', to: '/moon-joy' },
@@ -28,6 +29,9 @@ export default function HomeDock() {
   const [authState, setAuthState] = useState('checking');
 
   useEffect(() => {
+    // The operator's preview answers here the way it answers everywhere: standing in a
+    // visitor's place means the dock offers the way in, not the way out.
+    if (isViewingAsVisitor()) { setAuthState('signedout'); return; }
     base44.auth.me()
       .then((u) => { setUser(u); setAuthState('signedin'); })
       .catch(() => setAuthState('signedout'));

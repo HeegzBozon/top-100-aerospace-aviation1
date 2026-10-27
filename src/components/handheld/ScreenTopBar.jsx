@@ -1,5 +1,7 @@
 import MenuBar from "@/components/shell/MenuBar";
 import { useFaceKeysClaimed } from "@/components/handheld/handheldKeys";
+import { useAuth } from "@/lib/AuthContext";
+import { toggleViewingAsVisitor } from "@/lib/viewerPreview";
 
 // The control rail: the strip cut flush across the head of the glass.
 //
@@ -36,6 +38,9 @@ export default function ScreenTopBar({
   onNotifications,
 }) {
   const keysClaimed = useFaceKeysClaimed();
+  // The operator's lens: on the glass it is the same cell the desk machine wears — drawn
+  // for an admin, and answering to the record rather than to the reading.
+  const { realUser, viewingAsVisitor } = useAuth();
 
   return (
     <div
@@ -60,6 +65,9 @@ export default function ScreenTopBar({
         onFile={onFile}
         onEdit={onEdit}
         onNotifications={onNotifications}
+        showViewAs={realUser?.role === "admin"}
+        viewingAsVisitor={viewingAsVisitor}
+        onToggleViewAs={toggleViewingAsVisitor}
         fileHint={keysClaimed ? "" : "X"}
         editHint={keysClaimed ? "" : "Y"}
         style={{ height: HEAD_BAND }}

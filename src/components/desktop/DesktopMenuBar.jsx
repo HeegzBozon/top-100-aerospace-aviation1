@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
+import { toggleViewingAsVisitor } from "@/lib/viewerPreview";
 import MenuBar, { KEY_CELL, MENU_CELL } from "@/components/shell/MenuBar";
 import MenuDropdown from "@/components/shell/MenuDropdown";
 import { menuGroups } from "@/components/shell/barMenus";
@@ -22,6 +24,9 @@ export default function DesktopMenuBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { groups, isSignedIn, isAdmin } = useHandheldDestinations();
+  // The lens answers to the record, not to the reading: an admin looking at the visitor's
+  // machine must still be able to walk back out of it.
+  const { realUser, viewingAsVisitor } = useAuth();
 
   // Which drawer is down: the surface's own journey map, File, or Edit.
   const [open, setOpen] = useState(null);
@@ -84,6 +89,9 @@ export default function DesktopMenuBar() {
         onFile={() => toggle("file")}
         onEdit={() => toggle("edit")}
         onNotifications={() => (isSignedIn ? setNotificationsOpen(true) : toLogin())}
+        showViewAs={realUser?.role === "admin"}
+        viewingAsVisitor={viewingAsVisitor}
+        onToggleViewAs={toggleViewingAsVisitor}
       />
 
       <MenuDropdown

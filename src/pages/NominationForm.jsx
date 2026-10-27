@@ -22,6 +22,7 @@ import StageReview from '@/components/nominate/StageReview';
 import StageConfirmation from '@/components/nominate/StageConfirmation';
 import NominationSplash from '@/components/nominate/NominationSplash';
 import NominateBallotGate from '@/components/nominate/NominateBallotGate';
+import { isViewingAsVisitor } from '@/lib/viewerPreview';
 import ConsoleLoading from '@/components/core/ConsoleLoading';
 import MyTop100 from '@/pages/MyTop100';
 
@@ -70,7 +71,9 @@ export default function NominationForm({ isPreview = false } = {}) {
     let active = true;
     (async () => {
       try {
-        const authenticated = await base44.auth.isAuthenticated();
+        // The operator's preview answers here too: standing in a visitor's place means this
+        // surface opens for a visitor and nothing else.
+        const authenticated = isViewingAsVisitor() ? false : await base44.auth.isAuthenticated();
         if (!active) return;
         setSignedIn(!!authenticated);
         // A visitor files a nomination from the guided hub and nowhere else — there is no

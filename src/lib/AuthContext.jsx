@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
+import { setViewingAsVisitor, useViewingAsVisitor } from '@/lib/viewerPreview';
 
 const AuthContext = createContext();
 
@@ -126,10 +127,21 @@ export const AuthProvider = ({ children }) => {
     base44.auth.redirectToLogin(window.location.href);
   };
 
+  // The reading on the glass, and the record standing behind it. An operator's preview is
+  // drawn for the operator alone: every surface below reads the visitor's answers, while
+  // the one key that belongs to the operator — the bar's own lens — reads the record, so
+  // the way back is never hidden by the view it is there to show.
+  const viewingAsVisitor = useViewingAsVisitor();
+  const shownUser = viewingAsVisitor ? null : user;
+  const shownAuthenticated = viewingAsVisitor ? false : isAuthenticated;
+
   return (
     <AuthContext.Provider value={{ 
-      user, 
-      isAuthenticated, 
+      user: shownUser, 
+      isAuthenticated: shownAuthenticated,
+      realUser: user,
+      viewingAsVisitor,
+      setViewingAsVisitor,
       isLoadingAuth,
       isLoadingPublicSettings,
       authError,

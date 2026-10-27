@@ -1,4 +1,5 @@
 import { Bell, Home } from "lucide-react";
+import ViewAsCell from "@/components/shell/ViewAsCell";
 
 // The menubar: the strip across the head of the picture, cloned from the desk the
 // machine imitates. It leads the way a desk machine's bar does — home, then File, then
@@ -78,6 +79,11 @@ export default function MenuBar({
   onFile,
   onEdit,
   onNotifications,
+  /* The operator's lens: drawn for an admin only, and never while the operator is
+     standing in a visitor's place. */
+  showViewAs = false,
+  viewingAsVisitor = false,
+  onToggleViewAs,
   /* The face keys that do the same thing, where the machine has them. */
   fileHint = "",
   editHint = "",
@@ -124,6 +130,10 @@ export default function MenuBar({
           </span>
         ) : null}
       </button>
+
+      {showViewAs ? (
+        <ViewAsCell viewingAsVisitor={viewingAsVisitor} onToggle={onToggleViewAs} />
+      ) : null}
 
       <BarKey label="Notifications" onClick={onNotifications}>
         <Bell className="h-[15px] w-[15px]" strokeWidth={1.7} />
