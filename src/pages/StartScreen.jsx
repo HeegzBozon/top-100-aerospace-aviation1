@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '@/lib/AuthContext';
 import { hourPhase } from '@/components/core/appOpening';
 import { useCountdown } from '@/components/events/useCountdown';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
@@ -12,7 +13,7 @@ import StartSeasonLine from '@/components/start/StartSeasonLine';
 import PublicationCountdown from '@/components/start/PublicationCountdown';
 import StartTitleActions from '@/components/start/StartTitleActions';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
-import { NOTIFY_OPTION, START_MENU, VOTE_OPTION } from '@/components/start/startMenuConfig';
+import { NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 
@@ -26,11 +27,16 @@ const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 // alert stands next to it, the ring opening its field where the key would.
 export default function StartScreen() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [phase] = useState(() => hourPhase());
   const [status, setStatus] = useState({ loading: true, votingEnd: null, failed: false });
   const [attempt, setAttempt] = useState(0);
   const [cursorKey, setCursorKey] = useState(START_MENU[0].key);
   const [notifyOpen, setNotifyOpen] = useState(false);
+
+  // The menu is the platform's, not the operator's: the surfaces a Fellow meets, and —
+  // for the few who run it — one extra key at the end of the row.
+  const menuItems = useMemo(() => startMenuFor(user?.role === "admin"), [user?.role]);
 
   useEffect(() => {
     let alive = true;
@@ -65,8 +71,8 @@ export default function StartScreen() {
   // reader who will not be watching on the day — then the surfaces, in the order the
   // grid draws them.
   const options = useMemo(
-    () => (voteLive ? [VOTE_OPTION, NOTIFY_OPTION, ...START_MENU] : [NOTIFY_OPTION, ...START_MENU]),
-    [voteLive],
+    () => (voteLive ? [VOTE_OPTION, NOTIFY_OPTION, ...menuItems] : [NOTIFY_OPTION, ...menuItems]),
+    [voteLive, menuItems],
   );
 
   const optionsRef = useRef(options);
@@ -148,7 +154,7 @@ export default function StartScreen() {
         <StartSky phase={phase} />
 
         <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-6 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
-          <StartMetaRow kicker={phase.kicker} />
+          <StartMetaRow />
 
           {/* The masthead, the cycle read twice on its own two lines, and then the
               two keys the title screen asks for standing together in one row. */}
@@ -167,7 +173,7 @@ export default function StartScreen() {
             </div>
           </div>
 
-          <StartSurfaceKeys cursorKey={cursorKey} />
+          <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />
         </div>
 
         {/* Desktop navigation under the title screen. */}

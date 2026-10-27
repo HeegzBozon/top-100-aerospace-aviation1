@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
 
-// The title screen's top rule: the hour's name on the left, the cycle's stamp on
-// the right, closed by a hairline so the two read as one masthead line instead of
-// floating in the air above the mark. The stamp is a running clock — the seconds
-// advance and are set a shade brighter, so the screen reads as live rather than
-// as a photograph of a time.
-export default function StartMetaRow({ kicker }) {
+// The title screen's top rule: the cycle's stamp, set at the same left inset as the
+// mark and the keys below it and closed by a hairline, so the screen opens on one
+// masthead line rather than on a heading standing alone above the mark. The stamp is
+// a running clock — the seconds advance and are set a shade brighter, so the screen
+// reads as live rather than as a photograph of a time.
+export default function StartMetaRow() {
   const [now, setNow] = useState(() => moment());
 
   useEffect(() => {
@@ -16,18 +16,12 @@ export default function StartMetaRow({ kicker }) {
 
   return (
     <div className="shrink-0">
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="min-w-0 truncate text-[8.5px] font-bold uppercase tracking-[0.3em] text-editorial-copper md:text-[9.5px]">
-          {kicker}
-        </p>
-
-        <p className="shrink-0 whitespace-nowrap text-right text-[7px] font-bold uppercase tracking-[0.12em] text-editorial-cream/40 md:text-[9.5px] md:tracking-[0.2em]">
-          <span className="text-editorial-cream/55">MMXXVI</span>
-          <span className="mx-1.5 text-editorial-cream/25">·</span>
-          {now.format("ddd D MMM · HH:mm")}
-          <span className="text-editorial-cream/70">:{now.format("ss")}</span>
-        </p>
-      </div>
+      <p className="truncate text-[8.5px] font-bold uppercase tracking-[0.14em] text-editorial-cream/45 md:text-[9.5px] md:tracking-[0.2em]">
+        <span className="text-editorial-cream/60">MMXXVI</span>
+        <span className="mx-1.5 text-editorial-cream/25">·</span>
+        {now.format("ddd D MMM · HH:mm")}
+        <span className="text-editorial-cream/70">:{now.format("ss")}</span>
+      </p>
 
       <div
         className="mt-2 h-px w-full md:mt-3"

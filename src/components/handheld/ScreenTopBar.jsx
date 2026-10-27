@@ -4,9 +4,9 @@ import MenuBar from "@/components/shell/MenuBar";
 //
 // It is the machine's legend band, moved inside the glass and put to work — the
 // menubar the desk machine wears, at the size of a hand. No logo, no pill, nothing
-// floating over the picture: File and Edit printed at the left, the surface you are
-// on with its lamp lit and the section as a quiet suffix, then the one key a hand
-// actually reaches for, every cell parted from the next by a machined seam.
+// floating over the picture: the way home, File and Edit printed at the left, the
+// surface you are on with its lamp lit and the section as a quiet suffix, then the one
+// key a hand actually reaches for, every cell parted from the next by a machined seam.
 //
 // File and Edit open the console's own drawer in the matching list, so the wheel
 // walks them the way it walks everything else on this device.
@@ -25,6 +25,7 @@ export default function ScreenTopBar({
   menuOpen,
   fileOpen,
   editOpen,
+  onHome,
   onMenu,
   onFile,
   onEdit,
@@ -48,6 +49,7 @@ export default function ScreenTopBar({
         menuOpen={menuOpen}
         fileOpen={fileOpen}
         editOpen={editOpen}
+        onHome={onHome}
         onMenu={onMenu}
         onFile={onFile}
         onEdit={onEdit}

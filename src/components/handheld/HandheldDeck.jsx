@@ -603,6 +603,7 @@ export default function HandheldDeck() {
         menuOpen={menuOpen && menuMode !== "file" && menuMode !== "edit"}
         fileOpen={menuMode === "file"}
         editOpen={menuMode === "edit"}
+        onHome={goHome}
         onMenu={upOneLevel}
         onFile={() => openBarDrawer("file")}
         onEdit={() => openBarDrawer("edit")}

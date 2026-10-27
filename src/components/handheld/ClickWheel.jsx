@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Share, SkipBack, SkipForward } from "lucide-react";
+import { Share, SkipForward, Undo2 } from "lucide-react";
 
 // Degrees of travel per detent. One detent = one menu row or one scroll notch.
 const STEP_DEGREES = 20;
@@ -330,7 +330,9 @@ export default function ClickWheel({
               Menu
             </span>
 
-            <SkipBack
+            {/* Back, not rewind: the left key steps back through the surface's own
+                set — a column, a group — so the print says so. */}
+            <Undo2
               className="absolute left-[9px] top-1/2 h-[13px] w-[13px] -translate-y-1/2 transition-transform"
               style={{ color: print(zone === "prev"), transform: zone === "prev" ? "translateY(-50%) scale(0.88)" : undefined }}
             />

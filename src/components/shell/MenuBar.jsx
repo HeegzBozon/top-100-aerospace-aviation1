@@ -1,19 +1,25 @@
-import { Bell } from "lucide-react";
+import { Bell, Home } from "lucide-react";
 
 // The menubar: the strip across the head of the picture, cloned from the desk the
-// machine imitates. It leads the way a desk machine's bar does — File, then Edit —
-// and behind them stands the surface you are on with its lamp lit, the section you
-// are reading in quiet type, and the one key a hand reaches for at the right.
+// machine imitates. It leads the way a desk machine's bar does — home, then File, then
+// Edit — and behind them stands the surface you are on with its lamp lit, the section
+// you are reading in quiet type, and the one key a hand reaches for at the right.
 //
-// The way home is File's first entry and everything a Fellow authors sits in Edit, so
-// the bar carries no account glyph of its own: your own record is a press away in the
-// menu that means editing, and nothing is lost for the space.
+// The way home is a key of its own, printed as the one glyph every machine prints it
+// with, and everything a Fellow authors about themselves sits in Edit — so the bar
+// carries no account glyph: your own record is one press into the menu that means
+// editing, and nothing is lost for the space.
 //
 // It is one strip on both machines: on the glass it is the head band of the picture,
 // on the desk it stands across the top of the tube. The surface cell is the journey
 // drawer — the wheel's MENU opens the same thing from the hardware — and File and Edit
 // open the two lists a desk machine keeps under those names.
 export const MENU_CELL = 50;
+
+// A key rather than a word: the way home at one end of the strip, notifications at
+// the other. Both are the same width, so the words between them are measured from a
+// fixed line.
+export const KEY_CELL = 33;
 
 function MenuCell({ label, open, onClick }) {
   return (
@@ -38,8 +44,8 @@ function BarKey({ label, onClick, children }) {
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="mb-cell flex w-[33px] shrink-0 items-center justify-center"
-      style={{ color: "var(--mb-ink)" }}
+      className="mb-cell flex shrink-0 items-center justify-center"
+      style={{ color: "var(--mb-ink)", width: KEY_CELL }}
     >
       {children}
     </button>
@@ -52,6 +58,7 @@ export default function MenuBar({
   menuOpen = false,
   fileOpen = false,
   editOpen = false,
+  onHome,
   onMenu,
   onFile,
   onEdit,
@@ -66,6 +73,12 @@ export default function MenuBar({
       role="menubar"
       aria-label="Menu bar"
     >
+      {/* The way home, printed the way a machine prints it: one glyph, at the head
+          of the strip, where a hand looks for it first. */}
+      <BarKey label="Home" onClick={onHome}>
+        <Home className="h-[15px] w-[15px]" strokeWidth={1.8} />
+      </BarKey>
+
       <MenuCell label="File" open={fileOpen} onClick={onFile} />
       <MenuCell label="Edit" open={editOpen} onClick={onEdit} />
 

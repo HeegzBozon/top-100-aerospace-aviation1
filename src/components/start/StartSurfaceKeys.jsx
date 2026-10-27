@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import StartMenuItem from "./StartMenuItem";
-import { START_MENU } from "./startMenuConfig";
 
 // The surfaces, as keys. Three to a row, on the phone and on the desk — the same
 // panel either way, so the menu is one shape to learn. A key is a key: on the
@@ -11,7 +10,7 @@ import { START_MENU } from "./startMenuConfig";
 // The wheel walks these keys: the console holds the cursor as a key, and the key
 // it is on carries the selection. Anything below the fold is brought up so the
 // cursor is never off the screen.
-export default function StartSurfaceKeys({ cursorKey }) {
+export default function StartSurfaceKeys({ items, cursorKey }) {
   useEffect(() => {
     if (!cursorKey) return;
     document.querySelector(`[data-hh-key="${cursorKey}"]`)?.scrollIntoView({ block: "nearest" });
@@ -20,7 +19,7 @@ export default function StartSurfaceKeys({ cursorKey }) {
   return (
     <div className="mt-4 flex min-h-0 flex-1 flex-col md:mt-8">
       <div className="grid grid-cols-3 auto-rows-[minmax(66px,auto)] gap-2 overflow-y-auto overscroll-contain md:auto-rows-[minmax(104px,auto)] md:gap-3">
-        {START_MENU.map((item) => (
+        {items.map((item) => (
           <StartMenuItem key={item.label} item={item} selected={item.key === cursorKey} />
         ))}
       </div>

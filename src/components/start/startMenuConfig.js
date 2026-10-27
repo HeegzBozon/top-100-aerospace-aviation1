@@ -1,4 +1,4 @@
-import { Award, BookOpen, BookUser, LayoutGrid, ListChecks, Plane, Trophy, Users } from "lucide-react";
+import { Award, BookOpen, BookUser, LayoutGrid, ListChecks, Plane, Shield, Trophy, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -23,6 +23,20 @@ export const START_MENU = [
   { key: "networking", index: "06", label: "AeroSync", to: "/networking", icon: Users },
   { key: "frontier", index: "07", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
 ];
+
+// Administration, held back from the row: the surface the few who run the platform
+// need, offered at the end of the menu so the titles a Fellow meets read the same
+// whatever they are entitled to.
+export const ADMIN_MENU = {
+  key: "admin",
+  index: "08",
+  label: "Admin",
+  to: "/Admin",
+  icon: Shield,
+};
+
+// The row as it is drawn for whoever is reading it.
+export const startMenuFor = (isAdmin) => (isAdmin ? [...START_MENU, ADMIN_MENU] : START_MENU);
 
 // The ballot: the one action the cycle is asking for, offered beside the
 // countdown so the closing date and the way to vote are read in one line.
