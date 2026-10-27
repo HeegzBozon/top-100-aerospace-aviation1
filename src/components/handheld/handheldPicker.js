@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 
-// One picker at a time. A surface whose options are discrete and enterable — the
-// title screen's surfaces, the profile's own panels — registers one here, and
-// the console's ring walks those options while the confirm key opens the one
-// standing under the cursor.
+// One picker at a time — the one on top. A surface whose options are discrete and
+// enterable — the title screen's surfaces, the committee's ballot, the profile's own
+// panels — registers one here, and the console's ring walks those options while the
+// confirm key opens the one standing under the cursor.
+//
+// The pickers are held as a stack, because surfaces nest: the committee's console
+// holds a menu of panels, and a panel can hold a menu of its own. A surface that
+// registers while another is up takes the wheel; the moment it unmounts, the picker
+// underneath answers again, so a nested surface hands the ring back exactly as it
+// found it. Only the top one is ever asked anything.
 //
 // The cursor law (docs/handheld-cursor-rules.md): a list stops at its ends. A
 // surface walks its options and declines the turn past the first or the last, so
@@ -31,23 +37,21 @@ import { useEffect, useState } from "react";
 //
 // The registry is module-level because the console and the page render as
 // siblings in the layout, not as parent and child.
-let picker = null;
+let stack = [];
 const listeners = new Set();
 
 const announce = () => listeners.forEach((listener) => listener());
 
 export const registerPicker = (api) => {
-  picker = api;
+  stack = [...stack.filter((entry) => entry !== api), api];
   announce();
   return () => {
-    if (picker === api) {
-      picker = null;
-      announce();
-    }
+    stack = stack.filter((entry) => entry !== api);
+    announce();
   };
 };
 
-export const getPicker = () => picker;
+export const getPicker = () => stack[stack.length - 1] || null;
 
 // The surface calls this whenever its options or its cursor move.
 export const touchPicker = () => announce();

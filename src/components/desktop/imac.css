@@ -12,12 +12,9 @@
   --imac-crown: 58px;
   --imac-side: 30px;
   --imac-chin: 104px;
-  /* The table in front of the machine, where the keyboard and the mouse stand. It is
-     desk, not machine, so the shell stops above it and --imac-bottom counts it. */
-  --imac-desk: 140px;
   --imac-glass-x: calc(var(--imac-frame) + var(--imac-side));
   --imac-top: calc(var(--imac-frame) + var(--imac-crown));
-  --imac-bottom: calc(var(--imac-desk) + var(--imac-chin));
+  --imac-bottom: calc(var(--imac-frame) + var(--imac-chin));
   --imac-radius: 42px;
   --imac-tube-radius: 10px;
 
@@ -105,7 +102,7 @@
 /* The machine: one moulding, drawn to the window's own edges. */
 .imac-machine {
   position: fixed;
-  inset: var(--imac-frame) var(--imac-frame) var(--imac-desk) var(--imac-frame);
+  inset: var(--imac-frame);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -351,134 +348,36 @@
     inset 0 -3px 7px rgba(3, 6, 13, 0.28);
 }
 
-/* ===== THE TABLE IN FRONT — KEYBOARD AND MOUSE =====
-   The peripherals that came with the machine, standing on the desk below it and cast
-   from the same resin as the shell, so a finish re-casts the whole table. They are
-   props: the only things on this desk that answer a press are the keys on the chin. */
-.imac-peripherals {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 10px;
-  z-index: 4;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 54px;
-  pointer-events: none;
-}
-
-/* A peripheral's cable: a beige lead curving up to the machine's underside. */
-.imac-cable {
-  position: absolute;
-  bottom: 100%;
-  border-top: 2px solid rgba(214, 210, 183, 0.85);
-  border-right: 2px solid rgba(214, 210, 183, 0.85);
-  border-radius: 0 20px 0 0;
-  pointer-events: none;
-}
-
-/* The keyboard: a pearl deck on a translucent resin base that rims past it. */
-.imac-keyboard {
-  position: relative;
-  padding: 6px;
-  border-radius: 11px 11px 16px 16px;
-  background: linear-gradient(180deg, var(--imac-plastic-1) 0%, var(--imac-plastic-2) 46%, var(--imac-plastic-3) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.34),
-    0 4px 10px -4px rgba(3, 6, 13, 0.55),
-    0 12px 20px -16px rgba(3, 6, 13, 0.60);
-}
-/* The leads rise from each peripheral's back and end at the machine's underside, so
-   they never appear to stop in mid-air. */
-.imac-keyboard .imac-cable {
-  right: 26px;
-  width: 52px;
-  height: 26px;
-}
-.imac-keyboard-deck {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 6px 7px 7px;
-  border-radius: 7px 7px 11px 11px;
-  background: linear-gradient(180deg, #F8F7F4 0%, #EAE7E1 62%, #DCD7CE 100%);
-  box-shadow:
-    inset 0 0 0 1px rgba(3, 6, 13, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.90);
-}
-.imac-key-row {
-  display: flex;
-  justify-content: center;
-  gap: 3px;
-}
-.imac-key {
+/* ===== THE SPEAKER THAT PLAYS =====
+   The left speaker of the chin's pair is a control, the way the well on the console's
+   chin is on the glass: tap it and the desk plays the machine's own record, tap again
+   and it is muted, hold it and the record moves on. The grille and the resin lens stay
+   exactly as moulded — all that is added here is the glyph, the lamp, and the press. */
+.imac-speaker-key {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 14px;
-  border-radius: 3px;
-  font-size: 6px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: rgba(232, 226, 213, 0.60);
-  background: linear-gradient(180deg, #3A3A3D 0%, #2B2B2E 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.13),
-    0 1px 0 rgba(3, 6, 13, 0.45);
+  cursor: pointer;
+  transition: transform 140ms ease;
 }
-.imac-key-fn {
-  width: 12px;
-  height: 11px;
-  color: transparent;
+.imac-speaker-key:active {
+  transform: scale(0.97);
 }
-.imac-key-space {
-  width: 118px;
+.imac-speaker-key:focus-visible {
+  outline: 2px solid var(--imac-rule);
+  outline-offset: 3px;
 }
-
-/* The mouse: a puck of the same resin over its white structure, with the one round
-   click surface on top. */
-.imac-mouse {
-  position: relative;
-  width: 62px;
-  height: 52px;
-  border-radius: 50% 50% 46% 46% / 48% 48% 52% 52%;
-  background:
-    radial-gradient(84% 66% at 50% 24%, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0.06) 46%, rgba(255, 255, 255, 0) 64%),
-    linear-gradient(176deg, var(--imac-plastic-1) 0%, var(--imac-plastic-2) 52%, var(--imac-plastic-3) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.36),
-    inset 0 -5px 10px -7px rgba(3, 6, 13, 0.60),
-    0 5px 11px -5px rgba(3, 6, 13, 0.60);
-}
-.imac-mouse .imac-cable {
-  left: 8px;
-  width: 56px;
-  height: 78px;
-}
-.imac-mouse-click {
+.imac-speaker-led {
   position: absolute;
-  left: 50%;
-  top: 16%;
-  width: 34px;
-  height: 34px;
-  transform: translateX(-50%);
+  top: 12px;
+  right: 12px;
+  width: 4px;
+  height: 4px;
   border-radius: 999px;
-  background: radial-gradient(circle at 42% 34%, #FFFFFF 0%, #F2F0EB 58%, #D8D4CC 100%);
-  box-shadow:
-    inset 0 0 0 1px rgba(3, 6, 13, 0.12),
-    inset 0 -3px 6px rgba(3, 6, 13, 0.10),
-    0 2px 4px rgba(3, 6, 13, 0.30);
+  background: rgba(3, 6, 13, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
 }
-
-/* A short window keeps the machine and puts the peripherals away: the tube is worth
-   more than the props, and the desk closes up as if the table were cleared. */
-@media (min-width: 768px) and (max-height: 860px) {
-  :root {
-    --imac-desk: 18px;
-  }
-  .imac-peripherals {
-    display: none;
-  }
+.imac-speaker-led[data-on="true"] {
+  background: var(--imac-led);
+  box-shadow: 0 0 6px var(--imac-led), inset 0 0 2px rgba(3, 6, 13, 0.40);
 }

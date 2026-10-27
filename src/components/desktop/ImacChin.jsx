@@ -1,6 +1,7 @@
 import { Power } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ImacColourRack from "./ImacColourRack";
+import ImacMusicControl from "./ImacMusicControl";
 
 // The machine's chin: the slot-loading tray, the printed lockup, the colour the resin
 // is moulded in, and the power key. Every control on it is real — the key takes the
@@ -19,7 +20,8 @@ export default function ImacChin({
 
   return (
     <div className="imac-chin imac-band gap-6 px-7">
-      <span className="imac-speaker" aria-hidden="true" />
+      {/* The left speaker of the pair is a control: the machine's own record. */}
+      <ImacMusicControl />
       <span className="imac-screw h-2.5 w-2.5 flex-none rounded-full" aria-hidden="true" />
       <span className="imac-tray flex-none" aria-hidden="true" />
 

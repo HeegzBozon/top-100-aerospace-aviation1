@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import ImacCrown from "./ImacCrown";
 import ImacChin from "./ImacChin";
-import ImacPeripherals from "./ImacPeripherals";
 import useImacFinish from "./useImacFinish";
 import "./imac.css";
 
@@ -44,9 +43,6 @@ export default function ImacHousing({ children }) {
         onChoose={chooseFinish}
         onChoosePack={choosePack}
       />
-
-      {/* The keyboard and the mouse, standing on the desk below the machine. */}
-      <ImacPeripherals />
     </div>
   );
 }

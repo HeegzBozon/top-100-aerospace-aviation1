@@ -16,6 +16,7 @@ import { saveRankedVote } from '@/functions/saveRankedVote';
 import { Loader2, Pencil, Check, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
 import AnchorVoting from '@/components/voting/AnchorVoting';
 import VoteComingSoon from '@/components/my-top100/VoteComingSoon';
+import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
 import NominateViewToggle from '@/components/my-top100/NominateViewToggle';
 import QuickAddBar from '@/components/my-top100/QuickAddBar';
 import MobileNominateView from '@/components/my-top100/MobileNominateView';
@@ -540,10 +541,29 @@ export default function MyTop100() {
     </div>
   );
 
-  const voteNode = (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      {user?.role === 'admin' ? <AnchorVoting user={user} /> : <VoteComingSoon />}
-    </div>
+  const chamberNode = user?.role === 'admin' ? <AnchorVoting user={user} /> : <VoteComingSoon />;
+
+  const voteNode = <div className="flex-1 flex flex-col overflow-hidden">{chamberNode}</div>;
+
+  // On the glass the ballot is read the way the title screen is read: the surfaces the
+  // vote tab reaches are drawn as keys and walked by the wheel — the ballot itself,
+  // the window it counts in, and the chamber — and B unwinds them a level at a time.
+  const glassVoteNode = (
+    <GlassVoteSurface
+      user={user}
+      status={{
+        open: votingOpen,
+        closed: votingClosed,
+        endLabel: season?.voting_end
+          ? new Date(season.voting_end).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+          : null,
+        ranked: rankings.length,
+        minimum: 3,
+      }}
+      ballotNode={<div className="px-3 pb-28">{listBlock}</div>}
+      chamberNode={chamberNode}
+      onExit={() => setGlassOpen(null)}
+    />
   );
 
   // The three surfaces the console holds. The desk reads them as tabs; the glass
@@ -551,7 +571,7 @@ export default function MyTop100() {
   const consolePanels = [
     { key: 'start', label: 'Start Here', hint: 'Why this is here, and where to begin', icon: Rocket, node: startNode },
     { key: 'nominate', label: 'Nominate', hint: `${totalNominations} nominated · ${rankings.length} on your list`, icon: Sparkles, node: <div className="pb-3">{nominateBody}</div> },
-    { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — your list is your ballot' : 'Your ranked ballot', icon: ListOrdered, node: voteNode },
+    { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — your list is your ballot' : 'Your ranked ballot', icon: ListOrdered, node: glassVoteNode },
   ];
 
   const shownTab = glass ? glassOpen : activeTab;
