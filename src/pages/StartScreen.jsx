@@ -145,14 +145,15 @@ export default function StartScreen() {
        typing into. Three levels are named so the change is deterministic: each stops
        being a flex track and takes its own height. */
     <div className="hh-slide-window hh-scroll-window relative flex flex-col md:block md:h-auto md:min-h-screen">
-      {/* The picture plane: the hour's sky, edge to edge in the glass. The pane's
-          own radius is the only thing that rounds it — nothing is inset, so no
-          strip of the page behind the device shows at the picture's edges and the
-          star field runs the full height of the display. The two head corners take
-          the glass's arc; the foot is square, because the picture ends on the
-          readout band, where the glass is still running straight. */}
+      {/* The picture plane: the hour's sky, edge to edge in the glass. Nothing is
+          inset and nothing is rounded, so no strip of the page behind the device
+          shows at the picture's edges and the star field runs the full height of the
+          display, straight into the strip across the head of the glass: the bar above
+          carries the glass's own arc, and the sky fills the corners under it, square.
+          The foot is square for the same reason — the picture ends on the readout
+          band, where the glass is still running straight. */}
       <div
-        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-t-[8px] md:min-h-screen md:rounded-none"
+        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden md:min-h-screen"
         style={{ background: phase.sky }}
       >
         <StartSky phase={phase} />

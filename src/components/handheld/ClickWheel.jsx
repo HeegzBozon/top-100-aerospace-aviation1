@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Pause, Play, SkipForward, Undo2 } from "lucide-react";
+import { Pause, Play, Search, SkipForward, Undo2 } from "lucide-react";
 
 // Degrees of travel per detent. One detent = one menu row or one scroll notch.
 const STEP_DEGREES = 20;
@@ -45,21 +45,25 @@ const zoneAt = (deg) => {
 const print = (active) => (active ? "var(--hh-metal)" : "var(--hh-key-ink-soft)");
 
 // The click wheel, as the hardware really is: one flat ivory ring of plastic with
-// four actions printed on it — MENU, back, forward, play — and a metal button at
-// its centre. Rotation scrubs; the centre presses.
+// four prints on it — MENU, back, forward, search — and a metal button at its centre.
+// Rotation scrubs; the centre presses.
 //
 // The grammar is the one the wheel always taught: rotate to move, the centre selects
-// what the ring landed on, MENU goes up a level, and the bottom key plays the page
-// down the glass and stops it again, printing whichever way it is standing. Holding
-// the centre takes you home. The share is not printed here any more: it has a pill of
-// its own, at the foot of the glass (see ViewerFoot).
+// what the ring landed on, MENU goes up a level, and the bottom key searches — a
+// directory of people this size is a lookup before it is anything else. Play is that
+// key's second print, set small beside the magnifier: held, the page rolls down the
+// glass and stops, the way it always did. Holding the centre takes you home. The share
+// is not printed here any more: it has a pill of its own, at the foot of the glass
+// (see ViewerFoot).
 export default function ClickWheel({
   size = 104,
   onRotate,
   onMenu,
   onPrev,
   onNext,
-  // The bottom print: play and pause, following whichever way the page is standing.
+  // The bottom print: search on a press, and — held — the page roll, play and pause
+  // following whichever way the page is standing.
+  onSearch,
   onPlay,
   playing = false,
   onSelect,
@@ -163,13 +167,16 @@ export default function ClickWheel({
     if (dotRef.current) dotRef.current.style.opacity = on ? "1" : "0";
   };
 
-  const fire = (zoneName) => {
+  const fire = (zoneName, held = false) => {
     setZone(zoneName);
     setTimeout(() => setZone((current) => (current === zoneName ? null : current)), 180);
     if (zoneName === "menu") onMenu?.();
     else if (zoneName === "prev") onPrev?.();
     else if (zoneName === "next") onNext?.();
-    else onPlay?.();
+    // The bottom print: a press searches, a press held plays. A surface that hands the
+    // ring no search of its own still gets the page roll on a plain press.
+    else if (held || !onSearch) onPlay?.();
+    else onSearch?.();
   };
 
   const endDrag = (event) => {
@@ -200,10 +207,15 @@ export default function ClickWheel({
       return;
     }
 
-    // A quick press that barely travelled is a button, not a turn.
-    if (ring && event?.type === "pointerup" && drag.current.moved < TAP_TRAVEL && Date.now() - drag.current.started < TAP_MS) {
+    // A press that barely travelled is a button, not a turn — and how long it stood is
+    // the bottom print's second function: that key searches on a press and plays on a
+    // hold. Every other zone reads the same either way.
+    if (ring && event?.type === "pointerup" && drag.current.moved < TAP_TRAVEL) {
+      const held = Date.now() - drag.current.started >= TAP_MS;
       const { deg } = geo(ring, event.clientX ?? 0, event.clientY ?? 0);
-      if (Number.isFinite(deg)) fire(zoneAt(deg));
+      if (!Number.isFinite(deg)) return;
+      const zoneName = zoneAt(deg);
+      if (!held || zoneName === "play") fire(zoneName, held);
     }
   };
 
@@ -285,7 +297,7 @@ export default function ClickWheel({
         aria-label={
           steer
             ? "Click wheel, steering. Hold a zone on the ring to walk that way, slide the thumb to turn, the centre acts, and the centre held goes home."
-            : "Click wheel. Turn it to move, the centre selects, MENU goes up a level, the bottom key plays and pauses, and the centre held goes home."
+            : "Click wheel. Turn it to move, the centre selects, MENU goes up a level, the bottom key searches — held, it plays and pauses — and the centre held goes home."
         }
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -344,14 +356,18 @@ export default function ClickWheel({
             />
 
             <span
-              className="absolute bottom-[7px] left-1/2 flex -translate-x-1/2 items-center transition-transform"
+              className="absolute bottom-[7px] left-1/2 flex -translate-x-1/2 items-center gap-[3px] transition-transform"
               style={{ color: print(zone === "play"), transform: zone === "play" ? "translateX(-50%) scale(0.9)" : undefined }}
             >
-              {playing ? (
-                <Pause className="h-[12px] w-[12px]" strokeWidth={2.4} />
-              ) : (
-                <Play className="h-[12px] w-[12px]" strokeWidth={2.4} />
-              )}
+              <Search className="h-[13px] w-[13px]" strokeWidth={2.5} />
+              {/* the second print on this key: held, the page rolls and stops */}
+              <span className="flex items-center" style={{ color: "var(--hh-key-ink-soft)" }}>
+                {playing ? (
+                  <Pause className="h-[9px] w-[9px]" strokeWidth={2.6} />
+                ) : (
+                  <Play className="h-[9px] w-[9px]" strokeWidth={2.6} />
+                )}
+              </span>
             </span>
           </>
         )}

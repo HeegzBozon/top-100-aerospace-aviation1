@@ -4,10 +4,10 @@
 // steps — and the steps tile exactly, so no band of hardware is ever doubled and
 // nothing is ever painted over the picture:
 //
-//   0 → 4px    the moulding's shoulder — plain shell, carrying no hardware
-//   4 → 6px    the rim: a 2px machined ring, lit along its top-left edge
-//   6 → 10px   the recess: the step down to the pane, in the finish's dark tone
-//   10px       the picture, with the pane over it
+//   0 → 8px    the moulding's shoulder — plain shell, carrying no hardware
+//   8 → 10px   the rim: a 2px machined ring, lit along its top-left edge
+//   10 → 14px  the recess: the step down to the pane, in the finish's dark tone
+//   14px       the picture, with the pane over it
 //
 // The steps run down the head and both sides only. The foot of the glass is the case's
 // own lip: the opening lands on the chin, so no moulding is held below the picture and
@@ -20,7 +20,7 @@
 // MOULDING + RIM + RECESS is what --hh-bezel-w has to be for the pane to land on
 // the picture's own edge — and that bezel is held as thin as the moulding allows, so
 // the glass takes everything the case does not need.
-const MOULDING = 4;
+const MOULDING = 8;
 const RIM = 2;
 const RECESS = 4;
 
@@ -36,8 +36,8 @@ export default function HandheldScreenFrame() {
       }}
       aria-hidden="true"
     >
-      {/* No screws in the shoulder. It is 4px wide and the shell turns its corner on
-          an 18px arc, so there is no flat of the head to pin hardware to: a screw
+      {/* No screws in the shoulder. The shell turns its corner on a 22px arc, so there
+          is no flat of the head to pin hardware to at either end: a screw
           seated anywhere up here stands on the corner itself and prints bare metal in
           the one place the glass's corner has to read as solid case with nothing in
           it. The chin carries the pins (see HandheldChin) — it has the flat for them. */}
@@ -49,7 +49,7 @@ export default function HandheldScreenFrame() {
 
       {/* The step down to the pane. The band is laid from the pane's own edge
           outwards and clipped by the moulding, so its inner curve IS the pane's
-          curve: the radii nest exactly — 18 at the shell's edge, 14 at the rim, 12
+          curve: the radii nest exactly — 22 at the shell's edge, 14 at the rim, 12
           here, 8 at the pane, each one the next smaller plus the width of the band
           between them — so the opening keeps one bezel all the way round its
           corners, the rail's rounded corners sit inside it, and no part of the
@@ -68,9 +68,10 @@ export default function HandheldScreenFrame() {
         />
       </div>
 
-      {/* The pane over the picture: the rim is 12, the recess 10 and the pane 8,
-          so the three radii nest the way one moulding does. It is set square at the
-          foot — no step below it — so the picture runs down to the chin. */}
+      {/* The pane over the picture: the rim sits at 8, the well at 10 and the pane at
+          the bezel's own 14, so the three steps nest the way one moulding does. It is
+          set square at the foot — no step below it — so the picture runs down to the
+          chin. */}
       <div
         className="hh-glass absolute overflow-hidden rounded-[8px]"
         style={{ inset: "var(--hh-bezel-w, 10px) var(--hh-bezel-w, 10px) 0" }}

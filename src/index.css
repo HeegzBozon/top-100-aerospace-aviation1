@@ -280,7 +280,7 @@ button:focus-visible {
    reclaim the whole viewport when the console is put away (the message composer,
    for one). */
 :root {
-  --hh-top: 24px;
+  --hh-top: 28px;
   --hh-shell-top: 14px;
   /* Where the glass opens at its foot: the chin's own top edge. Nothing of the moulding
      is held below the picture, so the whole strip between the pane and the controls is
@@ -293,7 +293,9 @@ button:focus-visible {
   /* The desk margin, the moulding around the glass, and the inset every surface
      on the picture is measured from — the last being the first two added. */
   --hh-frame: 14px;
-  --hh-bezel-w: 10px;
+  /* Set deeper than the steps need: the case takes more and the picture gives it up,
+     which is what makes the opening read as a well rather than a frame. */
+  --hh-bezel-w: 14px;
   --hh-glass-inset: calc(var(--hh-frame, 0px) + var(--hh-bezel-w, 0px));
 
   /* The strip cut across the head of the glass, and the air it leaves under
@@ -350,14 +352,16 @@ button:focus-visible {
   }
 
   /* The desk. The device is inset inside the viewport, so there is a surface
-     around it: a lamplit navy stage with the field's fine star grid, a wash of
-     rose gold off the top and the light pooling under the shell. The hardware
-     reads as an object on a desk rather than a page filling the glass. */
+     around it: a lamplit navy stage with the field's fine star grid, a cool wash
+     off the top and the light pooling under the shell. The wash is navy, not metal:
+     the corners of the case open onto it, and warm there reads as a gap bitten out
+     of the moulding. The hardware reads as an object on a desk rather than a page
+     filling the glass. */
   body.hh-shell {
     background-color: #070C16;
     background-image:
       radial-gradient(150% 108% at 50% 42%, rgba(3, 6, 13, 0) 38%, rgba(3, 6, 13, 0.74) 100%),
-      radial-gradient(120% 58% at 50% 0%, rgba(201, 168, 124, 0.30) 0%, rgba(30, 58, 90, 0) 60%),
+      radial-gradient(120% 58% at 50% 0%, rgba(58, 96, 140, 0.32) 0%, rgba(30, 58, 90, 0) 60%),
       radial-gradient(96% 44% at 50% 104%, rgba(36, 68, 104, 0.55) 0%, rgba(8, 14, 27, 0) 74%),
       radial-gradient(rgba(250, 248, 245, 0.08) 1px, rgba(250, 248, 245, 0) 1.3px),
       linear-gradient(168deg, #18273F 0%, #0E1829 46%, #070C16 100%);
@@ -410,7 +414,6 @@ button:focus-visible {
   right: var(--hh-glass-inset);
   top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top));
   bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom));
-  border-radius: 8px 8px 0 0;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -457,6 +460,12 @@ button:focus-visible {
     display: none;
   }
 
+  /* A drawer that carries a field takes the keys' own line at its foot: the readout
+     band sits inside the picture the keys have taken, so nothing is held back for it. */
+  body.hh-keyboard .hh-keyed-drawer {
+    bottom: calc(var(--hh-bottom, 0px) + env(safe-area-inset-bottom) + 5px);
+  }
+
   /* A surface that carries a field gives up its window. The title screen is drawn
      as one glass tall and clipped to it, which is right until the keys take two
      thirds of the picture: then the window becomes a page — its own height, nothing
@@ -497,13 +506,14 @@ button:focus-visible {
    over the editorial surfaces — the picture stays as composed as it prints. */
 .hh-glass {
   box-shadow:
-    /* the ink line that closes the opening */
-    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.22),
+    /* the steel line that closes the opening — cold, so the glass's own edge never
+       prints a warm sliver at the corners the strip and the picture share */
+    inset 0 0 0 1px rgba(226, 233, 241, 0.16),
     /* the moulding's shadow falling into the picture, the light it catches along
-       the bottom lip, then the recess tone seating the content in the well */
-    inset 0 5px 10px -6px rgba(3, 6, 13, 0.30),
+       the bottom lip, then the recess tone seating the content deeper in the well */
+    inset 0 9px 16px -9px rgba(3, 6, 13, 0.52),
     inset 0 -3px 8px -6px rgba(255, 255, 255, 0.10),
-    inset 0 0 30px rgba(3, 6, 13, 0.16);
+    inset 0 0 44px rgba(3, 6, 13, 0.24);
 }
 
 /* Power-on sequence. */
@@ -617,8 +627,8 @@ button:focus-visible {
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -1px 0 rgba(3, 6, 13, 0.42),
     /* and the shadow the opening itself throws out across the shell around it */
-    0 1px 2px rgba(3, 6, 13, 0.42),
-    0 14px 28px -14px rgba(3, 6, 13, 0.62);
+    0 2px 3px rgba(3, 6, 13, 0.50),
+    0 18px 36px -16px rgba(3, 6, 13, 0.70);
 }
 
 /* The step down to the pane: the finish's dark tone for the ring itself, then the
@@ -634,8 +644,8 @@ button:focus-visible {
   box-shadow:
     /* the top lip of the opening casting down into the well, the bottom lip
        catching the light — what makes a ring read as a hole, not a frame */
-    inset 0 7px 11px -10px rgba(3, 6, 13, 0.80),
-    inset 0 -5px 10px -11px rgba(255, 255, 255, 0.16);
+    inset 0 11px 18px -13px rgba(3, 6, 13, 0.92),
+    inset 0 -5px 10px -11px rgba(255, 255, 255, 0.18);
 }
 
 /* A punched speaker grille. */

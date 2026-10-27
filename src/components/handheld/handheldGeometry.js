@@ -10,7 +10,11 @@
 // starts at the same slim margin as its sides and the glass opens as high as the
 // hardware allows: every pixel the old band held is the picture's now.
 const FRAME_GUTTER = 14; // the desk margin: how much surface shows around the shell
-const BEZEL_WIDTH = 10; // the moulding drawn back out around the glass — as thin as the steps allow
+// The moulding drawn back out around the glass. It is set deeper than the steps
+// themselves need: a wider case around a smaller picture is what gives the opening
+// its depth, and the shell's corner grows with it so the bezel keeps one width as it
+// turns (see HandheldBody and HandheldScreenFrame).
+const BEZEL_WIDTH = 14;
 
 // Inside the glass: the strip cut across its head, and the air it leaves under it.
 const NAV_CLEARANCE = 34;

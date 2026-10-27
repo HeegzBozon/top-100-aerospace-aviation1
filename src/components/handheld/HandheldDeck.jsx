@@ -10,6 +10,7 @@ import ViewerFoot from "./ViewerFoot";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldBody from "./HandheldBody";
 import HandheldMenu from "./HandheldMenu";
+import HandheldSearch from "./HandheldSearch";
 import HandheldBoot from "./HandheldBoot";
 import ModuleRail from "./ModuleRail";
 import useHandheldDestinations from "./useHandheldDestinations";
@@ -66,6 +67,7 @@ export default function HandheldDeck() {
   const menuOpen = menuMode !== null;
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [flash, setFlash] = useState("");
   const [booting, setBooting] = useState(() => {
@@ -131,7 +133,9 @@ export default function HandheldDeck() {
   // zones stop being menu/back/forward/play and become directions, reported held
   // until the thumb comes off — so the wheel under the glass is the joystick.
   const steering =
-    !menuOpen && !shareOpen && !notificationsOpen && !booting && picker?.steer ? picker.steer : null;
+    !menuOpen && !shareOpen && !notificationsOpen && !searchOpen && !booting && picker?.steer
+      ? picker.steer
+      : null;
   const deckLabels = deck ? deck.labels() : [];
   const pickerLabels = picker ? picker.labels() : [];
   const modules = deck
@@ -263,6 +267,7 @@ export default function HandheldDeck() {
     setMenuMode("finish");
     setNotificationsOpen(false);
     setShareOpen(false);
+    setSearchOpen(false);
     blip("open");
     buzz();
   }, [booting, finishBoot, finishItems, finishKey]);
@@ -275,6 +280,7 @@ export default function HandheldDeck() {
       setMenuMode(null);
       setNotificationsOpen(false);
       setShareOpen(false);
+    setSearchOpen(false);
 
       // Not a cartridge: the hardware drawer opens where you stand.
       if (destination.action === "finish") return openFinish();
@@ -295,6 +301,7 @@ export default function HandheldDeck() {
     setMenuMode("cartridges");
     setNotificationsOpen(false);
     setShareOpen(false);
+    setSearchOpen(false);
     finishBoot();
     blip("open");
     buzz();
@@ -311,6 +318,7 @@ export default function HandheldDeck() {
       setMenuMode(kind);
       setNotificationsOpen(false);
       setShareOpen(false);
+    setSearchOpen(false);
       finishBoot();
       blip("open");
       buzz();
@@ -329,6 +337,7 @@ export default function HandheldDeck() {
     setMenuMode("sections");
     setNotificationsOpen(false);
     setShareOpen(false);
+    setSearchOpen(false);
     finishBoot();
     blip("open");
     buzz();
@@ -355,6 +364,11 @@ export default function HandheldDeck() {
       buzz();
       return setNotificationsOpen(false);
     }
+    if (searchOpen) {
+      blip("back");
+      buzz();
+      return setSearchOpen(false);
+    }
     if (menuOpen) return closeMenu();
     if (picker?.back?.()) {
       blip("back");
@@ -367,6 +381,7 @@ export default function HandheldDeck() {
     finishBoot,
     shareOpen,
     notificationsOpen,
+    searchOpen,
     menuOpen,
     closeMenu,
     picker,
@@ -381,6 +396,7 @@ export default function HandheldDeck() {
     setMenuMode(null);
     setNotificationsOpen(false);
     setShareOpen(false);
+    setSearchOpen(false);
     if (location.pathname === "/") {
       getStage()?.scrollTo({ top: 0 });
       announce("Top");
@@ -396,6 +412,8 @@ export default function HandheldDeck() {
       // A steering surface has nothing to walk with a detent: the ring is under a
       // thumb that is walking already.
       if (steering) return;
+      // Nor has the search: that drawer is a field, and a field is typed into.
+      if (searchOpen) return;
       if (menuOpen) {
         const list = listFor(menuMode);
         if (!list.length) return;
@@ -527,12 +545,26 @@ export default function HandheldDeck() {
   // The bottom of the ring: the page reads itself down the glass, and the same
   // key stops it.
   const togglePlay = useCallback(() => {
-    if (menuOpen || shareOpen || booting) return;
+    if (menuOpen || shareOpen || searchOpen || booting) return;
     blip("toggle");
     buzz();
     setPlaying((prev) => !prev);
     announce(playing ? "Paused" : "Reading");
   }, [menuOpen, shareOpen, booting, playing, announce]);
+
+  // The wheel's bottom print: the machine's own search, standing in the glass the way
+  // the cartridges do. It is reached from the ring alone, so it opens over whatever is
+  // on the picture and closes with MENU, B or its own Exit — never a modal over the
+  // device, which is what keeps the hardware the thing being held.
+  const openSearch = useCallback(() => {
+    if (booting) finishBoot();
+    blip("open");
+    buzz();
+    setMenuMode(null);
+    setNotificationsOpen(false);
+    setShareOpen(false);
+    setSearchOpen(true);
+  }, [booting, finishBoot]);
 
   // The foot's Share pill: the drawer opens in the glass where the app lives — the
   // link you are holding, the code that opens it on a phone, and the ways out of it —
@@ -556,6 +588,7 @@ export default function HandheldDeck() {
     buzz();
     setMenuMode(null);
     setShareOpen(false);
+    setSearchOpen(false);
     if (!isSignedIn) return base44.auth.redirectToLogin(window.location.href);
     setNotificationsOpen(true);
   }, [isSignedIn]);
@@ -660,6 +693,10 @@ export default function HandheldDeck() {
 
       {booting && <HandheldBoot onDone={finishBoot} />}
 
+      {searchOpen && !booting && (
+        <HandheldSearch groups={groups} onClose={() => setSearchOpen(false)} />
+      )}
+
       {menuOpen && !booting && (
         <HandheldMenu
           groups={groupsFor(menuMode)}
@@ -721,7 +758,7 @@ export default function HandheldDeck() {
           height: `calc(${DECK_CLEARANCE}px + env(safe-area-inset-bottom))`,
           /* Square where it meets the glass, and the body's own corner at the foot:
              the same 18 the moulding carries, so the case turns one corner, not two. */
-          borderRadius: "0 0 18px 18px",
+          borderRadius: "0 0 22px 22px",
           paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
         }}
       >
@@ -748,6 +785,7 @@ export default function HandheldDeck() {
             onPrev={steering ? null : () => stepSection(-1)}
             onNext={steering ? null : () => stepSection(1)}
             playing={playing}
+            onSearch={steering ? null : openSearch}
             onPlay={steering ? null : togglePlay}
             onSelect={select}
             onHome={goHome}
