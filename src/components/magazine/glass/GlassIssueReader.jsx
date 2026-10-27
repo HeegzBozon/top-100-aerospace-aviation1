@@ -1,14 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, List } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { useCinematicPlayback, PLAYBACK_SPEEDS } from '@/components/magazine/useCinematicPlayback';
-import { buildIssueContents, foldLabel } from '@/components/magazine/glass/glassIssueEntries';
+import { buildIssueContents, buildNameIndex, foldLabel } from '@/components/magazine/glass/glassIssueEntries';
 import GlassIssuePage from '@/components/magazine/glass/GlassIssuePage';
+import GlassNameIndex from '@/components/magazine/glass/GlassNameIndex';
 
 import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
 
 const getStage = () => document.querySelector('[data-handheld-screen]') || document.querySelector('.hh-stage');
+
+// The register stands at the head of the contents: one press takes the reader out of the
+// page-by-page walk and into the issue's own roll of names.
+const REGISTER_KEY = 'issue-name-index';
 
 // An issue, read on the glass.
 //
@@ -37,6 +42,29 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     }
     return buildIssueContents(pages);
   }, [isPdf, total, pages]);
+
+  // The register of names: the issue's own honorees, numbered as they stand in it, read
+  // from the portraits the issue already carries.
+  const nameIndex = useMemo(() => (isPdf ? [] : buildNameIndex(pages)), [isPdf, pages]);
+
+  // What has been opened in this sitting. Kept on the glass and nowhere else: it is the
+  // record of one reading, not a property of the issue.
+  const [read, setRead] = useState(() => new Set());
+
+  // What the ring walks: the register at the head of the contents, then the issue's own
+  // landmarks. One list, so a turn or a press means the same thing in either.
+  const listRows = useMemo(() => {
+    const register = nameIndex.length
+      ? [{
+        key: REGISTER_KEY,
+        isRegister: true,
+        position: null,
+        label: 'Index of Names',
+        hint: `${nameIndex.length} names`,
+      }]
+      : [];
+    return register.concat(contents);
+  }, [contents, nameIndex.length]);
 
   const openPage = pages[position - 1] || null;
   const fold = foldLabel(openPage, position, total);
@@ -76,7 +104,17 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     setIsPlaying(false);
     setPosition(target);
     setView('page');
+    setRead((prev) => (prev.has(target) ? prev : new Set(prev).add(target)));
   };
+
+  // Into the register, and out of it on to the page the name stands on.
+  const openRegister = () => {
+    setIsPlaying(false);
+    setCursor(0);
+    setView('index');
+  };
+
+  const openName = (entry) => openAt(entry.position);
 
   // Refs, because the console's hands read the surface as it stands now rather than
   // as it was when the picker was registered.
@@ -88,13 +126,13 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   positionRef.current = position;
   const playingRef = useRef(isPlaying);
   playingRef.current = isPlaying;
-  const contentsRef = useRef(contents);
-  contentsRef.current = contents;
+  const listRef = useRef(listRows);
+  listRef.current = listRows;
   const foldRef = useRef(fold);
   foldRef.current = fold;
 
   const land = (target) => {
-    const list = contentsRef.current;
+    const list = listRef.current;
     if (target < 0 || target >= list.length) return null;
     setCursor(target);
     return list[target].label;
@@ -105,7 +143,7 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     api.current = {
       labels: () => (viewRef.current === 'page'
         ? [foldRef.current]
-        : contentsRef.current.map((entry) => entry.label)),
+        : listRef.current.map((entry) => entry.label)),
       index: () => (viewRef.current === 'page' ? 0 : cursorRef.current),
       // Rotation walks the contents. On a page it declines, so the glass takes the
       // turn and scrolls the page under the thumb.
@@ -124,13 +162,17 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
           setIsPlaying(!playingRef.current);
           return true;
         }
-        const entry = contentsRef.current[cursorRef.current];
+        const entry = listRef.current[cursorRef.current];
         if (!entry) return false;
+        if (entry.isRegister) {
+          openRegister();
+          return true;
+        }
         openAt(entry.position);
         return true;
       },
       back: () => {
-        if (viewRef.current === 'page') {
+        if (viewRef.current === 'page' || viewRef.current === 'index') {
           setView('contents');
           return true;
         }
@@ -143,7 +185,7 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
 
   useEffect(() => {
     touchPicker();
-  }, [view, cursor, position, isPlaying, total]);
+  }, [view, cursor, position, isPlaying, total, nameIndex.length]);
 
   useEffect(() => {
     getStage()?.scrollTo({ top: 0 });
@@ -177,6 +219,17 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     );
   }
 
+  if (view === 'index') {
+    return (
+      <GlassNameIndex
+        entries={nameIndex}
+        read={read}
+        onOpen={openName}
+        onBack={() => setView('contents')}
+      />
+    );
+  }
+
   return (
     <GlassStudioList
       kicker={isPdf ? 'Pages' : 'Contents'}
@@ -198,14 +251,19 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
           </p>
         </div>
       )}
-      entries={contents.map((entry) => ({
+      entries={listRows.map((entry) => ({
         key: entry.key,
         label: entry.label,
         hint: entry.hint,
-        icon: BookOpen,
+        icon: entry.isRegister ? List : BookOpen,
+        tone: entry.isRegister ? 'action' : undefined,
       }))}
       cursor={cursor}
-      onOpen={(i, entry) => { setCursor(i); openAt(entry.position); }}
+      onOpen={(i, entry) => {
+        setCursor(i);
+        if (entry.key === REGISTER_KEY) openRegister();
+        else openAt(entry.position);
+      }}
       empty={(
         <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(30,58,90,0.6)' }}>
           {total ? 'Nothing here yet.' : 'This issue has no pages.'}

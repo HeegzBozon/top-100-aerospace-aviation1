@@ -154,7 +154,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
             )}
           </div>
         </div>
-        <div className="flex-shrink-0 px-6 py-2 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
+        <div className="flex-shrink-0 px-6 py-1 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
           <span className="text-[10px] font-mono" style={{ color: 'rgba(30,58,90,0.3)' }}>
             {String(pageNumber).padStart(2, '0')} <span style={{ opacity: 0.5 }}>/ {String(totalPages).padStart(2, '0')}</span>
           </span>
@@ -292,7 +292,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
             {rest.map((block, i) => <BlockRenderer key={i} block={block} lead={i === firstBody} />)}
           </div>
         </div>
-        <div className="flex-shrink-0 px-6 py-2 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
+        <div className="flex-shrink-0 px-6 py-1 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
           <span className="text-[10px] font-mono" style={{ color: 'rgba(30,58,90,0.3)' }}>
             {String(pageNumber).padStart(2, '0')} <span style={{ opacity: 0.5 }}>/ {String(totalPages).padStart(2, '0')}</span>
           </span>
@@ -320,7 +320,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
         </div>
       </div>
       {/* Page number footer */}
-      <div className="flex-shrink-0 px-6 py-2 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
+      <div className="flex-shrink-0 px-6 py-1 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
         <span className="text-[10px] font-mono" style={{ color: 'rgba(30,58,90,0.3)' }}>
           {String(pageNumber).padStart(2, '0')} <span style={{ opacity: 0.5 }}>/ {String(totalPages).padStart(2, '0')}</span>
         </span>

@@ -36,6 +36,38 @@ export function buildIssueContents(pages = []) {
   }));
 }
 
+// The register behind the issue: every honoree in it, numbered in the order she stands in
+// the book, with the letter her surname falls under and the folio her portrait prints. Read
+// from the portraits themselves, so a register can never disagree with the issue it indexes.
+export function buildNameIndex(pages = []) {
+  const entries = [];
+
+  pages.forEach((page, index) => {
+    if (page.layout_type !== 'profile') return;
+    const blocks = page.content_blocks || [];
+    const name = blocks.find((block) => block.type === 'heading' && block.text)?.text?.trim();
+    if (!name) return;
+
+    const parts = name.split(/\s+/);
+    const surname = parts[parts.length - 1] || name;
+    const given = parts.slice(0, -1).join(' ');
+
+    entries.push({
+      key: page.id || `name-${index}`,
+      number: entries.length + 1,
+      name,
+      indexForm: given ? `${surname}, ${given}` : surname,
+      letter: (surname.charAt(0) || '#').toUpperCase(),
+      region: blocks.find((block) => block.type === 'kicker' && block.text)?.text || '',
+      stand: blocks.find((block) => block.type === 'byline' && block.text)?.text || '',
+      pageNumber: page.page_number || index + 1,
+      position: index + 1,
+    });
+  });
+
+  return entries;
+}
+
 // What the issue's own fold reads: the position over the run, and the name of what
 // is standing open.
 export function foldLabel(page, position, total) {

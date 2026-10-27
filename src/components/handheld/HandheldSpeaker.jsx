@@ -88,7 +88,7 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
           : "Speaker off. Play the console's music, three house loops and two lo-fi"
       }
       title="Tap to play or mute · hold for the next loop"
-      className="group relative flex w-[66px] shrink-0 flex-col items-center gap-1.5 transition-transform active:scale-[0.97]"
+      className="group relative flex w-[66px] shrink-0 flex-col items-center gap-1 transition-transform active:scale-[0.97]"
     >
       {/* The well itself: plastic, punched through, under its resin lens. */}
       <span className="hh-speaker flex h-[54px] w-[54px] items-center justify-center">
@@ -110,13 +110,13 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
       <span className="flex w-full flex-col items-center leading-none">
         <span
           className="w-full truncate text-center font-heading text-[6.5px] font-bold uppercase tracking-[0.12em]"
-          style={{ color: playing ? "var(--hh-key-1)" : "rgb(var(--hh-metal-rgb) / 0.74)" }}
+          style={{ color: playing ? "var(--hh-key-1)" : "var(--hh-metal-1)" }}
         >
           {playing ? track.title : "Sound off"}
         </span>
         <span
-          className="mt-[3px] text-[5.5px] font-bold uppercase tracking-[0.18em]"
-          style={{ color: "rgb(var(--hh-metal-rgb) / 0.68)" }}
+          className="mt-[2px] text-[5.5px] font-bold uppercase tracking-[0.16em]"
+          style={{ color: "var(--hh-metal-1)" }}
         >
           {playing ? "Hold ▸ next" : "Tap to play"}
         </span>
