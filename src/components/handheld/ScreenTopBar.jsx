@@ -5,7 +5,7 @@ import MenuBar from "@/components/shell/MenuBar";
 // It is the machine's legend band, moved inside the glass and put to work — the
 // menubar the desk machine wears, at the size of a hand. No logo, no pill, nothing
 // floating over the picture: the way home printed at the left, the surface you are
-// on with its lamp lit, the section as a quiet suffix, then the three keys a hand
+// on with its lamp lit, the section as a quiet suffix, then the two keys a hand
 // actually reaches for, every cell parted from the next by a machined seam.
 //
 // The seat the strip is set into runs from the top of the glass down to the picture,
@@ -21,11 +21,9 @@ export default function ScreenTopBar({
   module,
   menuOpen,
   onMenu,
-  soundOn,
   onHome,
   onProfile,
   onNotifications,
-  onToggleSound,
 }) {
   return (
     <div
@@ -47,8 +45,6 @@ export default function ScreenTopBar({
         onMenu={onMenu}
         onProfile={onProfile}
         onNotifications={onNotifications}
-        soundOn={soundOn}
-        onToggleSound={onToggleSound}
         style={{ height: HEAD_BAND }}
       />
     </div>

@@ -1,9 +1,9 @@
-import { Bell, CircleUser, Home, Volume2, VolumeX } from "lucide-react";
+import { Bell, CircleUser, Home } from "lucide-react";
 
 // The menubar: the strip across the head of the picture, cloned from the desk the
 // machine imitates. The way home stands at the far left as the mark itself, the surface
 // you are standing on beside it with its lamp lit, the section you are reading in
-// quiet type, then the three keys a hand actually reaches for at the right. The
+// quiet type, then the two keys a hand actually reaches for at the right. The
 // strip is seamless: no frame around it, no rule between its cells — the cells are
 // parted by their own spacing, and the tone comes from the surface it is set into.
 //
@@ -11,14 +11,14 @@ import { Bell, CircleUser, Home, Volume2, VolumeX } from "lucide-react";
 // on the desk it stands across the top of the tube. The surface cell is the menu —
 // the wheel's MENU opens the same drawer from the hardware, and a press of the title
 // does exactly what that key does.
-function BarKey({ label, onClick, lit = false, children }) {
+function BarKey({ label, onClick, children }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
       className="mb-cell flex w-[33px] shrink-0 items-center justify-center"
-      style={{ color: lit ? "var(--mb-lamp)" : "var(--mb-ink)" }}
+      style={{ color: "var(--mb-ink)" }}
     >
       {children}
     </button>
@@ -33,8 +33,6 @@ export default function MenuBar({
   onMenu,
   onProfile,
   onNotifications,
-  soundOn,
-  onToggleSound,
   className = "",
   style,
 }) {
@@ -81,14 +79,6 @@ export default function MenuBar({
 
       <BarKey label="Notifications" onClick={onNotifications}>
         <Bell className="h-[15px] w-[15px]" strokeWidth={1.7} />
-      </BarKey>
-
-      <BarKey label={soundOn ? "Sound off" : "Sound on"} onClick={onToggleSound} lit={soundOn}>
-        {soundOn ? (
-          <Volume2 className="h-[15px] w-[15px]" strokeWidth={1.7} />
-        ) : (
-          <VolumeX className="h-[15px] w-[15px]" strokeWidth={1.7} />
-        )}
       </BarKey>
     </div>
   );

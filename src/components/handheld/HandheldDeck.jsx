@@ -21,7 +21,7 @@ import HandheldSpeaker from "./HandheldSpeaker";
 import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
 import useHandheldFinish from "./useHandheldFinish";
-import { blip, buzz, isSoundOn, persistSound } from "./handheldSound";
+import { blip, buzz, persistSound } from "./handheldSound";
 import { openingPlaysNow } from "@/components/core/appOpening";
 import { applyShellVars, releaseShellVars } from "./handheldGeometry";
 
@@ -51,7 +51,6 @@ export default function HandheldDeck() {
   const location = useLocation();
   const { groups, isSignedIn } = useHandheldDestinations();
 
-  const [soundOn, setSoundOn] = useState(() => isSoundOn());
   const [menuMode, setMenuMode] = useState(null);
   const [cursor, setCursor] = useState(0);
   const menuOpen = menuMode !== null;
@@ -552,15 +551,6 @@ export default function HandheldDeck() {
     navigate(-1);
   }, [booting, finishBoot, menuOpen, notificationsOpen, shareOpen, navigate, picker]);
 
-  const toggleSound = useCallback(() => {
-    setSoundOn((prev) => {
-      persistSound(!prev);
-      if (!prev) setTimeout(() => blip("toggle"), 0);
-      return !prev;
-    });
-    buzz();
-  }, []);
-
   return (
     <>
       {/* One moulding behind everything: the display, the bezel and the deck are
@@ -575,11 +565,9 @@ export default function HandheldDeck() {
         module={modules[moduleIndex]?.label}
         menuOpen={menuOpen}
         onMenu={upOneLevel}
-        soundOn={soundOn}
         onHome={goHome}
         onProfile={openProfile}
         onNotifications={openNotifications}
-        onToggleSound={toggleSound}
       />
 
       <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
@@ -664,13 +652,7 @@ export default function HandheldDeck() {
               the chin is the control — tap to unmute the onboard playlist, hold
               for the next loop. It also balances the face buttons, so the wheel
               sits dead centre. */}
-          <HandheldSpeaker
-            onAnnounce={announce}
-            onSoundOn={() => {
-              persistSound(true);
-              setSoundOn(true);
-            }}
-          />
+          <HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />
 
           <div className="flex min-w-0 flex-1 justify-center">
             <ClickWheel

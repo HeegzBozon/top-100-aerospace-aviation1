@@ -2,22 +2,29 @@ import { useEffect, useState } from "react";
 
 // Is the on-screen keyboard up on a phone, and how much of the picture is it holding?
 //
-// The keys are the one thing that stands where the console's controls stand, so
-// they are measured rather than guessed at: the visual viewport is the only place a
-// keyboard reports itself. On iOS the layout viewport keeps its height while the
-// visual one is held down by the keys; on a browser that shrinks the layout viewport
-// with them instead, the difference is nil and nothing needs standing aside — the
-// whole picture has already moved up, chin and all.
+// Two signals, because neither is always there. A field with the cursor in it is the
+// one the keys were called up for, and it is what keeps the console's controls away
+// from the picture whatever the frame can report. The visual viewport is where the
+// keys give their own height — read from the bottom of the viewport and nothing
+// added, since the height already carries the strip under them. A browser that
+// shrinks the layout viewport with the keys instead reports nothing extra and needs
+// nothing: the whole picture has already moved up, chin and all.
 const GLASS = "(max-width: 767px)";
 const KEYBOARD_MIN = 120; // px of picture held before this counts as keys, not chrome
+const FIELD = "input, textarea, select, [contenteditable='true']";
+
+const typingInto = () => {
+  const active = document.activeElement;
+  return !!active && !!active.matches?.(FIELD);
+};
 
 export default function useKeyboardOpen() {
   const [keyboard, setKeyboard] = useState({ open: false, height: 0 });
 
   useEffect(() => {
-    const viewport = window.visualViewport;
-    if (!viewport || !window.matchMedia(GLASS).matches) return undefined;
+    if (!window.matchMedia(GLASS).matches) return undefined;
 
+    const viewport = window.visualViewport;
     let frame = 0;
     let alive = true;
 
@@ -25,10 +32,14 @@ export default function useKeyboardOpen() {
       frame = 0;
       if (!alive) return;
 
-      const held = Math.max(0, Math.round(window.innerHeight - viewport.height));
-      const open = held >= KEYBOARD_MIN;
+      const held = viewport ? Math.max(0, Math.round(window.innerHeight - viewport.height)) : 0;
+      const open = typingInto() || held >= KEYBOARD_MIN;
+      // The keys' own height where the frame can report it. Nothing to reserve where
+      // it cannot: the picture keeps its height and the field is carried into view.
+      const height = held >= KEYBOARD_MIN ? held : 0;
+
       setKeyboard((was) => {
-        const next = { open, height: open ? held : 0 };
+        const next = { open, height };
         return was.open === next.open && was.height === next.height ? was : next;
       });
     };
@@ -38,13 +49,19 @@ export default function useKeyboardOpen() {
     };
 
     measure();
-    viewport.addEventListener("resize", onShift);
-    viewport.addEventListener("scroll", onShift);
+    viewport?.addEventListener("resize", onShift);
+    viewport?.addEventListener("scroll", onShift);
+    document.addEventListener("focusin", onShift);
+    document.addEventListener("focusout", onShift);
+    window.addEventListener("resize", onShift);
     return () => {
       alive = false;
       if (frame) cancelAnimationFrame(frame);
-      viewport.removeEventListener("resize", onShift);
-      viewport.removeEventListener("scroll", onShift);
+      viewport?.removeEventListener("resize", onShift);
+      viewport?.removeEventListener("scroll", onShift);
+      document.removeEventListener("focusin", onShift);
+      document.removeEventListener("focusout", onShift);
+      window.removeEventListener("resize", onShift);
     };
   }, []);
 

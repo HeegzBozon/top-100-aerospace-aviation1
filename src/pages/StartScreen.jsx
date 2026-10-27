@@ -10,7 +10,7 @@ import StartMetaRow from '@/components/start/StartMetaRow';
 import StartMark from '@/components/start/StartMark';
 import StartSeasonLine from '@/components/start/StartSeasonLine';
 import PublicationCountdown from '@/components/start/PublicationCountdown';
-import NotifyMe from '@/components/start/NotifyMe';
+import StartTitleActions from '@/components/start/StartTitleActions';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
 import { START_MENU, VOTE_OPTION } from '@/components/start/startMenuConfig';
 
@@ -130,16 +130,14 @@ export default function StartScreen() {
         <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-6 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
           <StartMetaRow kicker={phase.kicker} />
 
-          <div className="mt-4 shrink-0 md:mt-10">
+          {/* The masthead, the cycle read twice on its own two lines, and then the
+              two keys the title screen asks for standing together in one row. */}
+          <div className="hh-title-block mt-4 shrink-0 md:mt-10">
             <StartMark />
             <div className="mt-3 md:mt-4">
-              <StartSeasonLine
-                status={status}
-                onRetry={() => setAttempt((n) => n + 1)}
-                voteTo={voteLive ? VOTE_OPTION.to : null}
-                voteSelected={cursorKey === VOTE_OPTION.key}
-              />
-              <PublicationCountdown action={<NotifyMe />} />
+              <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
+              <PublicationCountdown />
+              <StartTitleActions voteLive={voteLive} voteSelected={cursorKey === VOTE_OPTION.key} />
             </div>
           </div>
 

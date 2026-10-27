@@ -421,6 +421,13 @@ button:focus-visible {
     --hh-bottom: var(--hh-keyboard, 0px);
   }
 
+  /* The picture ends where the keys begin: read from the bottom of the viewport with
+     nothing added, because the height the keys report already carries the strip under
+     them. The chin's clearance is spent on the glass instead of held back from it. */
+  body.hh-keyboard .hh-stage {
+    bottom: var(--hh-keyboard, 0px);
+  }
+
   body.hh-keyboard .hh-chin {
     display: none;
   }
@@ -441,6 +448,21 @@ button:focus-visible {
   body.hh-keyboard .hh-scroll-page {
     min-height: 0;
     overflow: visible;
+  }
+
+  /* And the title section is read tighter while the keys are up: the mark comes down
+     a size and the page's own margins close, so the two readings and the field being
+     written into stand above the keyboard without a scroll. */
+  body.hh-keyboard .hh-scroll-page {
+    padding-top: 4px;
+    padding-bottom: 10px;
+  }
+  body.hh-keyboard .hh-title-block {
+    margin-top: 6px;
+  }
+  body.hh-keyboard .hh-title-block h1 {
+    font-size: 1.7rem;
+    line-height: 1;
   }
 }
 
