@@ -1,7 +1,7 @@
-import { Bell, CircleUser, Volume2, VolumeX } from "lucide-react";
+import { Bell, CircleUser, Home, Volume2, VolumeX } from "lucide-react";
 
 // The menubar: the strip across the head of the picture, cloned from the desk the
-// machine imitates. The way home stands at the far left in faint type, the surface
+// machine imitates. The way home stands at the far left as the mark itself, the surface
 // you are standing on beside it with its lamp lit, the section you are reading in
 // quiet type, then the three keys a hand actually reaches for at the right. The
 // strip is seamless: no frame around it, no rule between its cells — the cells are
@@ -45,16 +45,10 @@ export default function MenuBar({
       role="menubar"
       aria-label="Menu bar"
     >
-      {/* The way home, printed faint at the far left. */}
-      <button
-        type="button"
-        onClick={onHome}
-        aria-label="Home — the front screen"
-        className="mb-cell flex shrink-0 items-center px-3 text-[7.5px] font-bold uppercase tracking-[0.26em]"
-        style={{ color: "var(--mb-ink-soft)" }}
-      >
-        Home
-      </button>
+      {/* The way home: the mark at the far left, where the desk keeps it. */}
+      <BarKey label="Home — the front screen" onClick={onHome}>
+        <Home className="h-[15px] w-[15px]" strokeWidth={1.7} />
+      </BarKey>
 
       {/* Where you stand — and the menu. The lamp is lit for the surface you are on,
           and the cell reads as pressed while the menu it opens is standing. */}

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 // One key of the title screen. A key, not a card: the surface's mark, its place
 // in the menu, and its name, inside a moulded rectangle that lifts under the
-// finger. No subheadings — six of these have to read at a glance on a phone, and
+// finger. No subheadings — a whole menu has to read at a glance on a phone, and
 // data-hh-key is what lets the console's ring land on a key the wheel has walked
 // to. The one under the cursor is lit, so the menu reads as a menu.
 export default function StartMenuItem({ item, selected }) {

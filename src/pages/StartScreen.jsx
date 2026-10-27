@@ -9,6 +9,7 @@ import StartSky from '@/components/start/StartSky';
 import StartMetaRow from '@/components/start/StartMetaRow';
 import StartMark from '@/components/start/StartMark';
 import StartSeasonLine from '@/components/start/StartSeasonLine';
+import PublicationCountdown from '@/components/start/PublicationCountdown';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
 import { START_MENU, VOTE_OPTION } from '@/components/start/startMenuConfig';
 
@@ -132,6 +133,7 @@ export default function StartScreen() {
                 voteTo={voteLive ? VOTE_OPTION.to : null}
                 voteSelected={cursorKey === VOTE_OPTION.key}
               />
+              <PublicationCountdown />
             </div>
           </div>
 

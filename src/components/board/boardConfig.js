@@ -76,10 +76,10 @@ export const BOARD_COLUMNS = [
       },
       {
         key: "publication",
-        title: "Editorial",
+        title: "Results",
         blurb: "The editorial record of who was measured, and how.",
         to: "/Top100Women2025",
-        action: "Read the editorial",
+        action: "Open the results",
       },
     ],
   },

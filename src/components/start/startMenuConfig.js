@@ -14,14 +14,14 @@ import { Award, BookOpen, BookUser, LayoutGrid, ListChecks, Plane, Trophy, Users
 // The game stands at the end of the row on purpose: it is the one surface built
 // for play, and it belongs beside the institution's work rather than inside it.
 export const START_MENU = [
-  { key: "dashboard", index: "01", label: "Dashboard", to: "/board", icon: LayoutGrid },
-  { key: "nominate", index: "02", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
-  { key: "vote-surface", index: "03", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks },
-  { key: "briefing", index: "04", label: "TOP 100 101", to: "/mission-briefing", icon: BookOpen },
-  { key: "networking", index: "05", label: "AeroSync", to: "/networking", icon: Users },
-  { key: "publication", index: "06", label: "Editorial", to: "/Top100Women2025", icon: Trophy },
-  { key: "passport", index: "07", label: "Passport", to: "/Profile", icon: BookUser },
-  { key: "frontier", index: "08", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
+  { key: "briefing", index: "00", label: "101", to: "/mission-briefing", icon: BookOpen },
+  { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
+  { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks },
+  { key: "passport", index: "03", label: "Passport", to: "/Profile", icon: BookUser },
+  { key: "dashboard", index: "04", label: "Dashboard", to: "/board", icon: LayoutGrid },
+  { key: "results", index: "05", label: "Results", to: "/Top100Women2025", icon: Trophy },
+  { key: "networking", index: "06", label: "AeroSync", to: "/networking", icon: Users },
+  { key: "frontier", index: "07", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
 ];
 
 // The ballot: the one action the cycle is asking for, offered beside the

@@ -28,7 +28,7 @@ export const NAVIGATOR_GROUPS = [
     label: "Affiliation",
     items: [
       { label: "Selection Committee", to: "/selection-committee", icon: Award },
-      { label: "Editorial", to: "/Top100Women2025", icon: Trophy },
+      { label: "Results", to: "/Top100Women2025", icon: Trophy },
       { label: "Season Archive", to: "/ArchiveLanding", icon: BookOpen },
       { label: "Top Viral Posts", to: "/viralpost2026", icon: Newspaper },
       { label: "Patrons", to: "/Sponsors", icon: Heart },
@@ -95,7 +95,7 @@ export const MORE_FALLBACK = [
 // A surface the platform has renamed: the bar names what the platform calls it, not
 // the route it happens to live on.
 const SURFACE_NAMES = {
-  "/mission-briefing": "TOP 100 101",
+  "/mission-briefing": "101",
 };
 
 const pathOf = (to = "") => to.split("?")[0];

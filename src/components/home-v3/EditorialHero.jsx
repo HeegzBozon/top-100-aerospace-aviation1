@@ -112,7 +112,7 @@ export default function EditorialHero() {
             href="#hero"
             className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-4 text-sm font-bold text-white backdrop-blur-md transition-all hover:bg-white/10"
           >
-            View the Editorial
+            View the Results
             <ArrowRight className="h-4 w-4" />
           </a>
         </motion.div>

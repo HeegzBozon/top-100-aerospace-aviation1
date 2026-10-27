@@ -83,7 +83,7 @@ export const BRIEFING_STEPS = [
     terms: [
       { term: 'In the handheld', note: 'This console: your record and your loop, the selection committee, the editorial, the intelligence layer.' },
       { term: 'At the shows', note: 'Mission rooms open ahead of IAC, Paris, Dubai and the rest — who is going, what they are there to do, and what is verified afterwards.' },
-      { term: 'In the editorial', note: 'The editorial record of each cycle: features, profiles, pull quotes and the results, composed issue by issue.' },
+      { term: 'In Results', note: 'The editorial record of each cycle: features, profiles, pull quotes and the results, composed issue by issue.' },
       { term: 'In the archive', note: 'Every finalized cycle, frozen. Read a Fellow’s season as it was measured at the time.' },
       { term: 'By domain', note: 'The eight Communities of Practice — space R&D, commercial aviation, defense, manufacturing, operations, engineering, policy, entrepreneurship.' },
     ],
