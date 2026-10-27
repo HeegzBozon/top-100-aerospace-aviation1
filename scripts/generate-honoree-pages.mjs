@@ -29,6 +29,16 @@ const cap = (s, n) => {
   return t.length > n ? `${t.slice(0, n - 1).trimEnd()}…` : t;
 };
 
+// Point social crawlers straight at the bytes. The app's own file URL answers with a
+// 302 to the media host, and some crawlers (and most preview caches) handle that worse
+// than a direct URL, so both the /files/mp/public/ and /files/public/ shapes are
+// rewritten to the host that actually serves the image. URLs already on that host are
+// returned untouched.
+const directMedia = (url) => String(url ?? "").replace(
+  /^https:\/\/base44\.app\/api\/apps\/([^/]+)\/files\/(?:mp\/)?public\/[^/]+\//,
+  "https://media.base44.com/images/public/$1/"
+);
+
 function renderPage(h) {
   const title = `${h.name} — Top 100 Women in Aerospace & Aviation ${YEAR}`;
   const description = cap(
@@ -38,7 +48,7 @@ function renderPage(h) {
   const headline = [h.title, h.company].filter(Boolean).join(" · ");
   const deepLink = `${ORIGIN}/Top100Women2025/${YEAR}/12/${h.slug}/index.html`;
   const canonical = `${ORIGIN}/profiles/${h.id}`;
-  const image = h.card || h.photo;
+  const image = directMedia(h.card || h.photo);
 
   const person = {
     "@context": "https://schema.org",
@@ -48,7 +58,7 @@ function renderPage(h) {
     ...(h.title ? { jobTitle: h.title } : {}),
     ...(h.company ? { worksFor: { "@type": "Organization", name: h.company } } : {}),
     ...(h.country ? { address: { "@type": "PostalAddress", addressCountry: h.country } } : {}),
-    ...(h.photo ? { image: h.photo } : {}),
+    ...(h.photo ? { image: directMedia(h.photo) } : {}),
     ...(description ? { description } : {}),
   };
 

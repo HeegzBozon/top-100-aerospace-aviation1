@@ -42,5 +42,6 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
-Sitemap: https://top100aerospaceandaviation.base44.app/sitemap.xml
-Sitemap: https://top100aerospaceandaviation.base44.app/functions/getProfileSitemap
+# One entry point on the custom domain: a sitemap index whose children are the
+# marketing pages and the generated profile sitemap.
+Sitemap: https://top100aero.space/sitemap.xml

@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://top100aerospaceandaviation.base44.app/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
-  <url><loc>https://top100aerospaceandaviation.base44.app/Top100Women2025</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
-  <url><loc>https://top100aerospaceandaviation.base44.app/nominate</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://top100aerospaceandaviation.base44.app/solutions</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://top100aerospaceandaviation.base44.app/rooms</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://top100aerospaceandaviation.base44.app/events</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://top100aerospaceandaviation.base44.app/viralpost2022</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-</urlset>
+<!--
+  One entry point for crawlers, on the custom domain.
+
+  Two children:
+  - sitemap-pages.xml          the public marketing surfaces, maintained by hand.
+  - functions/getProfileSitemap one URL per indexable Fellow profile, generated
+                               from live data so it never goes stale.
+
+  This file is an index rather than a list so there is a single URL to submit, while
+  the profile set keeps updating itself without a rebuild.
+-->
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://top100aero.space/sitemap-pages.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://top100aero.space/functions/getProfileSitemap</loc>
+  </sitemap>
+</sitemapindex>
