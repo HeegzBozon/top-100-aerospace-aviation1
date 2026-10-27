@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Loader2, Plus, Radar, RotateCcw, Users } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -30,8 +30,19 @@ export default function Networking() {
   const [data, setData] = useState(null);
   const [attempt, setAttempt] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [tab, setTab] = useState('contacts');
+  // The title screen's keys deep-link into a feature, so this surface opens on the one that
+  // was asked for rather than on the top of the page: the tab the query names, and the rooms
+  // section scrolled to when it is the rooms that were asked for.
+  const [tab, setTab] = useState(() =>
+    new URLSearchParams(window.location.search).get('tab') === 'capture' ? 'capture' : 'contacts',
+  );
   const [notice, setNotice] = useState('');
+  const roomsRef = useRef(null);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('section') !== 'rooms') return;
+    roomsRef.current?.scrollIntoView({ block: 'start' });
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -198,7 +209,7 @@ export default function Networking() {
           </div>
         </section>
 
-        <section className="mt-12">
+        <section ref={roomsRef} className="mt-12">
           <p className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: C.copper }}>
             The shows
           </p>

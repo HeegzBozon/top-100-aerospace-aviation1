@@ -17,7 +17,7 @@ export const START_MENU = [
   { key: "read", index: "00", label: "Read", to: "/mission-briefing", icon: BookOpen },
   { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
   { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks },
-  { key: "networking", index: "03", label: "AeroSync CRM", to: "/networking", icon: Users },
+  { key: "networking", index: "03", label: "AeroSync CRM", to: "/aerosync", icon: Users },
   { key: "dashboard", index: "04", label: "Dashboard", to: "/board", icon: LayoutGrid },
   { key: "results", index: "05", label: "Results", to: "/Top100Women2025", icon: Trophy },
   { key: "frontier", index: "06", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },

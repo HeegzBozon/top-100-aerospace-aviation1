@@ -90,6 +90,7 @@ const Top100Women2025DeepLink = lazy(() => import('@/pages/Top100Women2025DeepLi
 const TheBoard = lazy(() => import('@/pages/TheBoard'));
 const StartScreen = lazy(() => import('@/pages/StartScreen'));
 const Networking = lazy(() => import('@/pages/Networking'));
+const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
 
 
@@ -219,6 +220,8 @@ const AuthenticatedApp = () => {
       <Route path="/dashboard" element={<TheBoard />} />
       {/* The conferencing layer: rooms ahead, and who is standing in them */}
       <Route path="/networking" element={<Networking />} />
+      {/* AeroSync opens on its own title screen, the way the platform does */}
+      <Route path="/aerosync" element={<AeroSyncTitle />} />
       {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
       <Route path="/mission-briefing" element={<MissionBriefing />} />
       <Route path="/the-board" element={<TheBoard />} />
