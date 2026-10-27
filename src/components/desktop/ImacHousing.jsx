@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import ImacCrown from "./ImacCrown";
 import ImacChin from "./ImacChin";
+import ImacRoom from "./ImacRoom";
 import useImacFinish from "./useImacFinish";
 import "./imac.css";
 
@@ -18,6 +19,11 @@ export default function ImacHousing({ children }) {
   }, []);
 
   return (
+    <>
+    {/* The room the machine stands in: wall, light and desk, cut from the pack the
+        moulding is in. Painted first, so the machine sits in it rather than on it. */}
+    <ImacRoom pack={pack} />
+
     <div className="imac-machine">
       <ImacCrown />
 
@@ -44,5 +50,6 @@ export default function ImacHousing({ children }) {
         onChoosePack={choosePack}
       />
     </div>
+    </>
   );
 }

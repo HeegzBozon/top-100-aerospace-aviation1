@@ -6,15 +6,20 @@
    — and the geometry below is what insets every surface, the loading chassis and
    the page turn alike. Nothing in the moulding is ever a hard-coded colour. */
 :root {
-  /* Geometry: the desk margin, then the resin that wraps the tube. --imac-top and
-     --imac-bottom are the tube's own opening, measured from the window. */
-  --imac-frame: 18px;
+  /* Geometry. The machine does not fill the window: it stands in a room, so the scene
+     around it is part of the composition — wall above and either side, and the desk it
+     stands on in front. --imac-top and --imac-bottom are the tube's own opening,
+     measured from the window, so everything that has to sit on the picture (the
+     opening card, the page turn, the bars) reads the same two numbers. */
+  --room-top: 46px;
+  --room-x: clamp(28px, 5vw, 128px);
+  --room-foot: clamp(44px, 7.5vh, 146px);
   --imac-crown: 58px;
   --imac-side: 30px;
   --imac-chin: 104px;
-  --imac-glass-x: calc(var(--imac-frame) + var(--imac-side));
-  --imac-top: calc(var(--imac-frame) + var(--imac-crown));
-  --imac-bottom: calc(var(--imac-frame) + var(--imac-chin));
+  --imac-glass-x: calc(var(--room-x) + var(--imac-side));
+  --imac-top: calc(var(--room-top) + var(--imac-crown));
+  --imac-bottom: calc(var(--room-foot) + var(--imac-chin));
   --imac-radius: 42px;
   --imac-tube-radius: 10px;
 
@@ -99,10 +104,11 @@
   }
 }
 
-/* The machine: one moulding, drawn to the window's own edges. */
+/* The machine: one moulding, standing in the room. */
 .imac-machine {
   position: fixed;
-  inset: var(--imac-frame);
+  inset: var(--room-top) var(--room-x) var(--room-foot) var(--room-x);
+  z-index: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -380,4 +386,169 @@
 .imac-speaker-led[data-on="true"] {
   background: var(--imac-led);
   box-shadow: 0 0 6px var(--imac-led), inset 0 0 2px rgba(3, 6, 13, 0.40);
+}
+
+/* ===== THE ROOM — THE DESK THE MACHINE STANDS ON =====
+   A computer is not a page: it is an object on a desk, in a room, at some hour of the
+   day. So the window around the moulding is painted as that room — a wall, a key light
+   falling across it, the ambient bloom of the machine's own resin, a slow drift of dust
+   in the light, the desk it stands on, and the light it pools in front of itself. The
+   room is cut from the pack the moulding is in (see imacScenes.js), and its bloom and
+   its pool always take the machine's own colour, so changing the finish re-lights the
+   room with it. Every tone below is a scene token; none of them is ever hard-coded. */
+.imac-room {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--scene-wall-2, #0D1728);
+}
+
+.imac-room-wall {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    180deg,
+    var(--scene-wall-1) 0%,
+    var(--scene-wall-2) 58%,
+    var(--scene-wall-3) 100%
+  );
+}
+
+/* The scene's own detail on the wall — stars, a sunbeam, a panel rule — and, over it,
+   the wash the hour leaves behind and the vignette that closes the room in. */
+.imac-room-wall::before,
+.imac-room-wall::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.imac-room-wall::after {
+  background:
+    var(--scene-wash-layer),
+    radial-gradient(128% 96% at 50% 44%, rgba(3, 6, 13, 0) 36%, var(--scene-vignette) 100%);
+}
+
+/* The key light: the one source in the room, breathing very slowly. */
+.imac-room-key {
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  top: -4%;
+  height: 78%;
+  background: radial-gradient(
+    var(--scene-key),
+    var(--scene-key-color) 0%,
+    transparent var(--scene-key-stop, 70%)
+  );
+  animation: imac-room-breathe 34s ease-in-out infinite alternate;
+}
+
+/* The ambient bloom: the machine's own resin, thrown up the wall behind it. */
+.imac-room-glow {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: -6%;
+  height: 64%;
+  background: radial-gradient(50% 50% at 50% 50%, var(--scene-tint) 0%, transparent 70%);
+  opacity: var(--scene-glow-a, 0.22);
+  filter: blur(26px);
+  animation: imac-room-drift 27s ease-in-out infinite alternate;
+}
+
+/* Dust in the light: one tile of specks, drifting off the diagonal by exactly one
+   tile, so the loop never shows a seam. */
+.imac-room-motes {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--scene-mote, rgba(255, 255, 255, 0.05)) 1px, transparent 1.5px);
+  background-size: 54px 54px;
+  background-position: 14px 10px;
+  opacity: 0.75;
+  animation: imac-room-motes 46s linear infinite;
+}
+
+/* The desk: its top edge runs behind the machine, so the machine stands on it, and the
+   lip catches whatever light the room has. */
+.imac-room-desk {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--room-foot) + 10%);
+  background: linear-gradient(180deg, var(--scene-desk-1) 0%, var(--scene-desk-2) 56%, var(--scene-desk-3) 100%);
+  box-shadow:
+    0 -24px 36px -26px rgba(3, 6, 13, 0.55),
+    inset 0 1px 0 var(--scene-desk-lip);
+}
+
+/* The light the machine throws forward onto the desk. */
+.imac-room-pool {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: calc(var(--room-foot) * 0.12);
+  height: calc(var(--room-foot) * 1.1);
+  background: radial-gradient(50% 100% at 50% 50%, var(--scene-tint) 0%, transparent 72%);
+  opacity: var(--scene-pool-a, 0.2);
+  filter: blur(18px);
+}
+
+/* ---- Studio: the device's own desk, dark and lamplit, the field's stars on the wall -- */
+.imac-room--studio .imac-room-wall::before {
+  background-image: radial-gradient(rgba(250, 248, 245, 0.05) 1px, transparent 1.3px);
+  background-size: 24px 24px;
+}
+
+/* ---- Sunroom: sun across the wall, and the room it bleaches -- */
+.imac-room--sunroom .imac-room-wall::before {
+  background-image: linear-gradient(180deg, rgba(255, 247, 226, 0.88) 0%, rgba(255, 241, 208, 0) 46%);
+  clip-path: polygon(6% 0, 58% 0, 40% 100%, 0 100%);
+  opacity: 0.7;
+}
+
+/* ---- Library: the institution's panelling, ruled in its own rose gold ---- */
+.imac-room--library .imac-room-wall::before {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(201, 168, 124, 0.055) 0 1px,
+    transparent 1px 104px
+  );
+}
+
+@keyframes imac-room-drift {
+  from {
+    transform: translate3d(-2%, 0, 0) scale(1);
+    opacity: calc(var(--scene-glow-a, 0.22) * 0.72);
+  }
+  to {
+    transform: translate3d(2%, 1.5%, 0) scale(1.08);
+    opacity: calc(var(--scene-glow-a, 0.22) * 1.12);
+  }
+}
+
+@keyframes imac-room-breathe {
+  from {
+    opacity: calc(var(--scene-key-a, 1) * 0.78);
+    transform: translateX(-1.2%);
+  }
+  to {
+    opacity: var(--scene-key-a, 1);
+    transform: translateX(1.2%);
+  }
+}
+
+@keyframes imac-room-motes {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-54px, -54px, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .imac-room-key,
+  .imac-room-glow,
+  .imac-room-motes {
+    animation: none;
+  }
 }

@@ -63,8 +63,15 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
     borderRadius: '1rem',
   };
 
+  // On the glass the card is not given a height to fill — the panel it sits in scrolls
+  // instead of stretching — so below the desk breakpoint it carries a floor of its own,
+  // and the front face is never left with nothing to stand on.
   return (
-    <motion.div layout className="relative h-full" style={{ perspective: '1000px' }}>
+    <motion.div
+      layout
+      className="relative h-full min-h-[240px] md:min-h-0"
+      style={{ perspective: '1000px' }}
+    >
       <div
         className="h-full relative"
         style={{
