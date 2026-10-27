@@ -26,6 +26,7 @@ const SOURCE_TAGS = {
   'common_ground': ['Newsletter', 'CommonGround', 'CommonGround 5.0', 'Civic Interest'],
   'vision_2030': ['Newsletter', '2030 Vision', 'Institutional Interest'],
   'top100_women': ['Newsletter', 'Top 100 Women', 'Orbital Index Waitlist', 'Publication Waitlist'],
+  'results_go_live': ['Newsletter', 'Top 100', 'Results Go Live', 'Publication Waitlist'],
   'general': ['Newsletter', 'General Subscribe'],
 };
 
@@ -35,6 +36,7 @@ const SMART_LIST_TAGS = {
   'common_ground': 'SmartList: CommonGround Subscribers',
   'vision_2030': 'SmartList: 2030 Vision Subscribers',
   'top100_women': 'SmartList: Top 100 Women Publication',
+  'results_go_live': 'SmartList: Results Go Live',
   'general': 'SmartList: General Newsletter',
 };
 
