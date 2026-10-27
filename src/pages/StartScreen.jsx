@@ -150,12 +150,12 @@ export default function StartScreen() {
           strip of the page behind the device shows at the picture's edges and the
           star field runs the full height of the display. */}
       <div
-        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[11px] md:min-h-screen md:rounded-none"
+        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[8px] md:min-h-screen md:rounded-none"
         style={{ background: phase.sky }}
       >
         <StartSky phase={phase} />
 
-        <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-6 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
+        <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-3 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
           {/* The masthead, the cycle read twice on its own two lines, and then the
               two keys the title screen asks for standing together in one row. */}
           <div className="hh-title-block mt-4 shrink-0 md:mt-10">

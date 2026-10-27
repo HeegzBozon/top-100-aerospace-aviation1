@@ -13,6 +13,7 @@ import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import { registerFaceKeys } from '@/components/handheld/handheldKeys';
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
+import AnchorLedger from '@/components/voting/AnchorLedger';
 
 // The four candidates stand under the four face keys, in the order the cards are set:
 // X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
@@ -243,6 +244,11 @@ export default function AnchorVoting({ user }) {
     );
   }
 
+  // The two stakes this set has taken, read back to the voter: the card advanced first
+  // (ordinal 1) and the card advanced last (ordinal 4). Null while a stake stands open.
+  const topNominee = currentSet.find((n) => n.id === topId) || null;
+  const bottomNominee = currentSet.find((n) => n.id === bottomId) || null;
+
   const prompt =
     phase === 'best' ? 'Which of these would you advance first?' :
     phase === 'worst' ? 'And which of these three would you advance last?' :
@@ -255,9 +261,9 @@ export default function AnchorVoting({ user }) {
       {/* Voting surface */}
       <div className="flex-1 flex flex-col min-w-0 px-3 pt-2.5 pb-4 md:px-4 md:pt-4 md:pb-6 lg:px-8">
         <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
-        {/* The console names this panel on its own strip, so on the glass the title and
-            the set count stand down and the cards take the room. */}
-        <div className="hidden items-center justify-between mb-1 md:flex">
+        {/* The console names this panel on its own strip, so on the glass the title
+            stands down and the ledger, the prompt and the cards take the room. */}
+        <div className="mb-1 hidden md:block">
           <div>
             <h2 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
               Anchor Selection
@@ -266,12 +272,14 @@ export default function AnchorVoting({ user }) {
               Two taps. The one you advance first and the one you advance last become anchors — five real comparisons, recorded as observations.
             </p>
           </div>
-          <span className="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full" style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}>
-            {sessionCount} sets
-          </span>
         </div>
 
-        {/* Prompt */}
+        {/* The ledger: the two stakes this set is measured from, printed as slots at the
+            head of the panel — where the console's own strip names the surface, so the
+            title stands down and the state of the set speaks first. */}
+        <AnchorLedger top={topNominee} bottom={bottomNominee} />
+
+        {/* Prompt, with the session's tally beside it */}
         <AnimatePresence mode="wait">
           <motion.div
             key={prompt}
@@ -279,23 +287,42 @@ export default function AnchorVoting({ user }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
-            className="flex items-center gap-2 mb-1.5 md:mt-3 md:mb-4"
+            className="mb-1.5 mt-1.5 flex items-center gap-2 md:mb-4 md:mt-3"
           >
-            {phase === 'best' && <ArrowUp className="w-4 h-4 shrink-0" style={{ color: brand.gold }} />}
-            {phase === 'worst' && <ArrowDown className="w-4 h-4 shrink-0" style={{ color: `${brand.navy}70` }} />}
+            {phase === 'best' && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.gold}1F` }}>
+                <ArrowUp className="h-3 w-3" style={{ color: brand.gold }} />
+              </span>
+            )}
+            {phase === 'worst' && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
+                <ArrowDown className="h-3 w-3" style={{ color: `${brand.navy}90` }} />
+              </span>
+            )}
+            {phase === 'submitting' && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
+                <Loader2 className="h-3 w-3 animate-spin" style={{ color: brand.gold }} />
+              </span>
+            )}
             <p className="text-[12.5px] font-semibold md:text-sm" style={{ color: brand.navy }}>{prompt}</p>
+            <span
+              className="ml-auto shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold tabular-nums"
+              style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
+            >
+              {sessionCount} sets
+            </span>
           </motion.div>
         </AnimatePresence>
 
         {/* Controls: undo mid-set / review last set / resume */}
         <div className="mb-1.5 flex flex-wrap items-center gap-1.5 md:mb-3 md:gap-2">
           {phase === 'worst' && (
-            <button onClick={undoFirstPick} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80` }}>
+            <button onClick={undoFirstPick} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <Undo2 className="w-3.5 h-3.5" /> Undo first pick
             </button>
           )}
           {history.length > 0 && (phase === 'best' || phase === 'worst') && (
-            <button onClick={goBack} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80` }}>
+            <button onClick={goBack} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <ArrowLeft className="w-3.5 h-3.5" /> Review last set
             </button>
           )}
@@ -339,10 +366,10 @@ export default function AnchorVoting({ user }) {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="mt-2 flex items-center justify-center gap-2 text-sm font-bold md:mt-5"
-              style={{ color: brand.gold }}
+              className="mx-auto mt-2 flex items-center justify-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-bold md:mt-5 md:text-xs"
+              style={{ background: `${brand.gold}18`, border: `1px solid ${brand.gold}55`, color: brand.navy }}
             >
-              <Check className="w-4 h-4" /> 5 comparisons recorded
+              <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> 5 comparisons recorded
             </motion.div>
           )}
         </AnimatePresence>
