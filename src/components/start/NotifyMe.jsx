@@ -18,6 +18,9 @@ export default function NotifyMe({
   open: openProp,
   onOpenChange,
   selected = false,
+  // The desk seats this beside a full-height action, so it takes that action's
+  // measure; the phone keeps the small pill it has always worn.
+  large = false,
 }) {
   const [selfOpen, setSelfOpen] = useState(false);
   const open = openProp ?? selfOpen;
@@ -68,6 +71,7 @@ export default function NotifyMe({
   };
 
   const label = state === 'done' ? 'On the list' : open ? 'Close' : 'Get notified';
+  const ICON = large ? 'h-3.5 w-3.5' : 'h-3 w-3';
 
   return (
     <>
@@ -77,7 +81,11 @@ export default function NotifyMe({
         aria-expanded={open}
         aria-current={selected ? 'true' : undefined}
         aria-controls="results-notify"
-        className="inline-flex min-h-[24px] shrink-0 items-center gap-1.5 rounded-full px-2.5 py-[5px] text-[8px] font-bold uppercase tracking-[0.2em] transition-[transform,box-shadow,background-color] duration-200 active:scale-95 md:text-[8.5px]"
+        className={`inline-flex shrink-0 items-center gap-1.5 rounded-full font-bold uppercase transition-[transform,box-shadow,background-color] duration-200 active:scale-95 ${
+          large
+            ? "h-[46px] px-6 text-[10.5px] tracking-[0.22em]"
+            : "min-h-[24px] px-2.5 py-[5px] text-[8px] tracking-[0.2em] md:text-[8.5px]"
+        }`}
         style={{
           background: state === 'done' || selected ? 'rgba(201,168,124,0.95)' : 'rgba(6,12,22,0.32)',
           border: '1px solid rgba(201,168,124,0.5)',
@@ -88,14 +96,16 @@ export default function NotifyMe({
               : 'none',
         }}
       >
-        {state === 'done' ? <Check className="h-3 w-3" /> : open ? <X className="h-3 w-3" /> : <Bell className="h-3 w-3" />}
+        {state === 'done' ? <Check className={ICON} /> : open ? <X className={ICON} /> : <Bell className={ICON} />}
         {label}
       </button>
 
       {open ? (
         <div
           id="results-notify"
-          className="mt-1 basis-full rounded-xl p-3 md:max-w-md"
+          className={`basis-full rounded-xl ${
+            large ? "mt-4 w-full max-w-md p-4" : "mt-1 p-3 md:max-w-md"
+          }`}
           style={{ background: 'rgba(6,12,22,0.46)', border: '1px solid rgba(201,168,124,0.34)', backdropFilter: 'blur(6px)' }}
         >
           {state === 'done' ? (

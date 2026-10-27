@@ -1,0 +1,80 @@
+/* ===== DESK TITLE SCREEN — THE COVER =====
+   The desk does not show the phone's keypad: it opens on a cover. Everything that
+   moves here sits behind the type and is driven by native keyframes, never by a
+   render — the plate is the one thing on the surface that must never stutter. Every
+   tone is an editorial token or the cover's own ink, so the plate recasts with the
+   brand rather than with the machine. */
+
+/* The hour's light, breathing: a slow swell and drift, so the sky reads as air
+   rather than as a photograph of a sky. */
+.ds-breathe {
+  animation: ds-breathe 34s ease-in-out infinite;
+}
+@keyframes ds-breathe {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.9; }
+  50% { transform: translate3d(2%, -2%, 0) scale(1.09); opacity: 1; }
+}
+
+/* The star field. Each layer shifts by exactly one tile, so the loop is seamless
+   however fine the field is set. */
+.ds-drift,
+.ds-drift-slow {
+  animation: ds-drift 120s linear infinite;
+}
+.ds-drift-slow {
+  animation-duration: 190s;
+}
+@keyframes ds-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(calc(var(--ds-tile, 34px) * -1), calc(var(--ds-tile, 34px) * -1), 0); }
+}
+
+/* One long sheen crossing the plate. Slow enough to be noticed only twice. */
+.ds-sheen {
+  background: linear-gradient(104deg, transparent 34%, rgba(255, 255, 255, 0.05) 48%, transparent 62%);
+  background-size: 260% 100%;
+  animation: ds-sheen 27s ease-in-out infinite;
+}
+@keyframes ds-sheen {
+  0%, 100% { background-position: 6% 0; }
+  50% { background-position: 94% 0; }
+}
+
+/* The reading lands: the plate's contents arrive in sequence, never all at once. */
+.ds-rise {
+  animation: ds-rise 1000ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ds-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* The masthead, struck in metal: cream turning to rose gold turning to copper, and
+   travelling slowly enough that the title reads as set rather than as animated. */
+.ds-metal {
+  background-image: linear-gradient(96deg, #FAF8F5 0%, #FFFFFF 22%, #F1E0C6 50%, #C9A87C 76%, #E9D6B4 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: ds-metal 24s ease-in-out infinite;
+}
+@keyframes ds-metal {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-breathe,
+  .ds-drift,
+  .ds-drift-slow,
+  .ds-sheen,
+  .ds-rise,
+  .ds-metal {
+    animation: none;
+  }
+  .ds-metal {
+    background-position: 30% 50%;
+  }
+}
