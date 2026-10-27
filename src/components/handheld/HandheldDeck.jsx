@@ -26,7 +26,7 @@ import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, persistSound } from "./handheldSound";
 import { openingPlaysNow } from "@/components/core/appOpening";
-import { applyShellVars, releaseShellVars } from "./handheldGeometry";
+import { applyShellVars, DECK_CLEARANCE, releaseShellVars } from "./handheldGeometry";
 
 // The device's space is measured in handheldGeometry — one set of numbers, applied
 // by the console and by the loading chassis alike, so the hardware is never hidden
@@ -699,6 +699,11 @@ export default function HandheldDeck() {
           left: "var(--hh-frame, 0px)",
           right: "var(--hh-frame, 0px)",
           bottom: "var(--hh-frame, 0px)",
+          /* Measured, not grown: the chin is one band of a fixed depth, so its top edge
+             lands exactly on the glass's own foot whatever the case is wearing. A chin
+             sized by its content can creep up over the pane and take the readout band
+             with it. */
+          height: `calc(${DECK_CLEARANCE}px + env(safe-area-inset-bottom))`,
           borderRadius: "0 0 26px 26px",
           paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
         }}

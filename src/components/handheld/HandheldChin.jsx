@@ -17,13 +17,14 @@ export default function HandheldChin() {
     <>
       <div
         aria-hidden="true"
-        className="hh-chin pointer-events-none fixed z-40 select-none pb-3 md:hidden"
+        className="hh-chin pointer-events-none fixed z-40 select-none md:hidden"
         style={{
           left: `${FRAME_GUTTER}px`,
           right: `${FRAME_GUTTER}px`,
           bottom: `${FRAME_GUTTER}px`,
-          height: `${DECK_CLEARANCE}px`,
+          height: `calc(${DECK_CLEARANCE}px + env(safe-area-inset-bottom))`,
           borderRadius: "0 0 26px 26px",
+          paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
         }}
       >
         <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, left: 5 }} />

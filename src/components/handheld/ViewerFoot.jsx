@@ -11,35 +11,39 @@ import useClock from "@/hooks/useClock";
 //
 // The loading chassis paints the same band with staticView, so the footprint is
 // already standing when the console comes up over it and nothing shifts.
+//
+// It stands above the case (the chin) in the stack, and its bottom edge is measured
+// from the same line as the pane's: the glass's own lip and the chin meet exactly
+// there, so nothing the machine wears can ever rise over the readout.
 export default function ViewerFoot({ staticView = false }) {
   const now = useClock();
 
   return (
     <div
       aria-hidden={staticView || undefined}
-      className="hh-viewer-foot pointer-events-none fixed z-[34] flex items-center px-2.5 md:hidden"
+      className="hh-viewer-foot pointer-events-none fixed z-[42] flex items-center px-2.5 md:hidden"
       style={{
         left: "var(--hh-glass-inset, 7px)",
         right: "var(--hh-glass-inset, 7px)",
-        bottom: "var(--hh-bottom, 172px)",
-        height: "var(--hh-foot, 0px)",
+        bottom: "calc(var(--hh-bottom, 172px) + env(safe-area-inset-bottom))",
+        height: "var(--hh-foot, 32px)",
       }}
     >
       {/* The readout: the cycle, the day, and the seconds turning over */}
       <span
-        className="flex min-w-0 items-baseline gap-1.5 text-[8px] font-bold uppercase tracking-[0.14em]"
+        className="flex min-w-0 items-baseline gap-1.5 text-[9px] font-bold uppercase tracking-[0.14em]"
         style={{
-          color: "var(--hh-lcd-soft)",
+          color: "var(--hh-lcd)",
           fontVariantNumeric: "tabular-nums",
           opacity: staticView ? 0.55 : 1,
         }}
       >
-        <span style={{ color: "var(--hh-lcd)" }}>MMXXVI</span>
-        <span className="shrink-0" style={{ opacity: 0.5 }}>
+        <span style={{ color: "var(--hh-lcd-bright)" }}>MMXXVI</span>
+        <span className="shrink-0" style={{ opacity: 0.6 }}>
           ·
         </span>
         <span className="truncate">{now.format("ddd D MMM")}</span>
-        <span className="shrink-0" style={{ opacity: 0.5 }}>
+        <span className="shrink-0" style={{ opacity: 0.6 }}>
           ·
         </span>
         <span className="shrink-0">
