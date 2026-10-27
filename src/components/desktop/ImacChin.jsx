@@ -19,6 +19,7 @@ export default function ImacChin({
 
   return (
     <div className="imac-chin imac-band gap-6 px-7">
+      <span className="imac-speaker" aria-hidden="true" />
       <span className="imac-screw h-2.5 w-2.5 flex-none rounded-full" aria-hidden="true" />
       <span className="imac-tray flex-none" aria-hidden="true" />
 
@@ -72,6 +73,7 @@ export default function ImacChin({
       </button>
       <span className="imac-led flex-none" aria-hidden="true" />
       <span className="imac-screw h-2.5 w-2.5 flex-none rounded-full" aria-hidden="true" />
+      <span className="imac-speaker" aria-hidden="true" />
     </div>
   );
 }
