@@ -3,6 +3,7 @@ import ImacCrown from "./ImacCrown";
 import ImacChin from "./ImacChin";
 import ImacRoom from "./ImacRoom";
 import DesktopMenuBar from "./DesktopMenuBar";
+import MissionNudge from "@/components/mission/chronicle/MissionNudge";
 import useImacFinish from "./useImacFinish";
 import "./imac.css";
 
@@ -46,6 +47,10 @@ export default function ImacHousing({ children }) {
       </div>
 
       <div className="imac-glass" aria-hidden="true" />
+
+      {/* The season's notice is drawn on the tube, inside the moulding — never over
+          the resin, the crown or the chin. */}
+      <MissionNudge surface="desktop" />
       <ImacChin
         finish={finish}
         pack={pack}

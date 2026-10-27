@@ -17,7 +17,6 @@ import AppSplash from '@/components/core/AppSplash';
 import ConsoleLoading from '@/components/core/ConsoleLoading';
 import PageTurn from '@/components/core/PageTurn';
 import SurfaceLoader from '@/components/core/SurfaceLoader';
-import MissionNudge from '@/components/mission/chronicle/MissionNudge';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
@@ -364,7 +363,6 @@ function App() {
             <NavigationTracker />
             {/* The title card plays once per session, over everything */}
             <AppSplash />
-            <MissionNudge />
             <AuthenticatedApp />
           </Router>
           <Toaster />

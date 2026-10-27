@@ -375,6 +375,18 @@ button:focus-visible {
   }
 }
 
+/* A notice drawn in the glass: the picture window exactly, so it is clipped by the
+   same opening and never reaches the moulding around it. */
+.hh-notice {
+  position: fixed;
+  left: var(--hh-glass-inset);
+  right: var(--hh-glass-inset);
+  top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top));
+  bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom));
+  border-radius: 8px;
+  overflow: hidden;
+}
+
 /* A "screen tall" page means the screen you are looking at, not the phone. This
    keeps full-height pages from leaving dead scroll under the content. */
 @media (max-width: 767px) {

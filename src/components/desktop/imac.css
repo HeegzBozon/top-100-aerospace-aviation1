@@ -311,6 +311,18 @@
   background: radial-gradient(120% 100% at 50% 0%, #16202C 0%, var(--imac-tube) 62%, #05080E 100%);
 }
 
+/* A notice drawn on the tube: exactly the opening the picture fills, so it is cut
+   off by the same corners and never reaches the resin around it. */
+.imac-notice {
+  position: absolute;
+  left: var(--imac-side);
+  right: var(--imac-side);
+  top: var(--imac-crown);
+  bottom: var(--imac-chin);
+  border-radius: var(--imac-tube-radius);
+  overflow: hidden;
+}
+
 /* ===== THE SPEAKERS — MOULDED BEHIND THE CHIN'S RESIN =====
    A punched radial grille over the machine's inner housing, seen through a clear
    lens, exactly as they were seated behind the resin faceplate. Every tone is the

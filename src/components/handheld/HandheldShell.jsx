@@ -4,6 +4,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import useKeyboardOpen from "@/hooks/useKeyboardOpen";
 import useFieldIntoView from "@/hooks/useFieldIntoView";
 import HandheldDeck from "./HandheldDeck";
+import MissionNudge from "@/components/mission/chronicle/MissionNudge";
 
 // The device wraps the whole app: every surface renders inside the picture
 // window and exactly one console is ever on screen. A layout that builds its
@@ -68,6 +69,8 @@ export default function HandheldShell() {
             <Outlet />
           </div>
         </div>
+        {/* The season's notice stands in the glass, clipped to the picture window. */}
+        <MissionNudge surface="handheld" />
       </div>
       {!putAway && <HandheldDeck />}
     </DeviceContext.Provider>
