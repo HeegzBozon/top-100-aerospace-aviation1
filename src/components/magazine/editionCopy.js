@@ -1,4 +1,4 @@
-import { getContinent } from '@/components/publication/countryToContinentMap';
+import { countryToContinentMap, getContinent } from '@/components/publication/countryToContinentMap';
 
 // The editing layer for the edition.
 //
@@ -85,11 +85,65 @@ export function fieldOf(industry) {
   return match ? match.name : 'The Wider Field';
 }
 
+// The edition's regions. The platform's map resolves a country to a continent; the
+// index reads those in five groups, the way an atlas is bound — Asia and Oceania
+// travel together, so a region of one name never has to stand as a chapter.
+const REGION_GROUPS = {
+  'Asia': 'Asia & Oceania',
+  'Oceania': 'Asia & Oceania',
+};
+
+// The country field is a free-text place: sometimes a city, sometimes two countries,
+// sometimes a sentence about where she is from ("currently based in USA (originally
+// from Iraq and New Zealand)"). It is read the way a reader would read it — the first
+// place the record names that the platform's own map knows, and nothing else. What
+// the map does not carry is reported as beyond the map rather than guessed at.
+const MAP_LOWER = Object.fromEntries(
+  Object.entries(countryToContinentMap).map(([name, continent]) => [name.toLowerCase(), { name, continent }]),
+);
+const MAP_KEYS_BY_LENGTH = Object.keys(MAP_LOWER).sort((a, b) => b.length - a.length);
+
+const COUNTRY_ALIASES = {
+  usa: 'United States', 'u.s.a': 'United States', 'us': 'United States',
+  'united states of america': 'United States',
+  'greater phoenix area': 'United States', 'washington dc-baltimore area': 'United States',
+  suisse: 'Switzerland', macedonia: 'North Macedonia', holland: 'Netherlands',
+  mexique: 'Mexico', uae: 'United Arab Emirates',
+  'south korea': 'Korea South', 'republic of korea': 'Korea South',
+  'türkiye': 'Turkey', turkiye: 'Turkey',
+  england: 'United Kingdom', scotland: 'United Kingdom', wales: 'United Kingdom', 'great britain': 'United Kingdom',
+};
+
+export function resolveCountry(value) {
+  const text = clean(value).replace(/\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!text) return '';
+  const parts = text.split(/[/,;]|\band\b|&|\s[-–]\s/i).map((part) => part.trim()).filter(Boolean);
+  for (const part of parts) {
+    const key = part.toLowerCase();
+    const alias = COUNTRY_ALIASES[key];
+    if (alias) return alias;
+    if (MAP_LOWER[key]) return MAP_LOWER[key].name;
+    // A place named inside the field ("Greater Phoenix Area", "Almuñécar, Andalusia,
+    // Spain") still resolves — and resolves to the same name its alias does, so one
+    // country is one country in the index.
+    const within = MAP_KEYS_BY_LENGTH.find((known) => key.includes(known));
+    if (within) return COUNTRY_ALIASES[within] || MAP_LOWER[within].name;
+  }
+  return text;
+}
+
+// The country as the edition prints it: the place the record names, resolved to the
+// name the map knows when it can be, so one country is one country in the index.
+export function countryOf(nominee = {}) {
+  return resolveCountry(nominee.country);
+}
+
 // The region a name works from, read off the country on her record through the
-// platform's own map. A country the map does not carry is reported as such, never
-// guessed at.
+// platform's own map, in the edition's regional groups.
 export function regionOf(country) {
-  return getContinent(clean(country)) || 'Beyond the Map';
+  const continent = getContinent(resolveCountry(country));
+  if (!continent) return 'Beyond the Map';
+  return REGION_GROUPS[continent] || continent;
 }
 
 export function listNames(names = [], max = 4) {

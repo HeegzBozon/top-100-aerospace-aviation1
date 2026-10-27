@@ -1,5 +1,6 @@
 import {
   clean,
+  countryOf,
   fieldOf,
   listNames,
   paragraphs,
@@ -44,7 +45,7 @@ const plural = (n, word) => `${count(n)} ${word}${n === 1 ? '' : 's'}`;
 // What the edition measures, read off the records it resolves. Used for the numbers
 // page and for every line of copy that would otherwise have to claim a figure.
 export function measure(nominees = []) {
-  const countries = [...new Set(nominees.map((n) => clean(n.country)).filter(Boolean))];
+  const countries = [...new Set(nominees.map(countryOf).filter(Boolean))];
   const regions = [...new Set(nominees.map((n) => regionOf(n.country)).filter(Boolean))];
   const fields = {};
   nominees.forEach((nominee) => {
@@ -253,7 +254,7 @@ export function regionPackages(nominees = []) {
 
   return [...byRegion.entries()]
     .map(([region, names]) => {
-      const countries = [...new Set(names.map((n) => clean(n.country)).filter(Boolean))].sort();
+      const countries = [...new Set(names.map(countryOf).filter(Boolean))].sort();
       return {
         region,
         names,
@@ -288,7 +289,7 @@ export function packageArticle(pkg) {
 // the directory.
 export function honoreeArticle(nominee, region) {
   const stand = standFrom(nominee);
-  const country = clean(nominee.country);
+  const country = countryOf(nominee);
   const industry = clean(nominee.industry, 46);
   const summary = clean(nominee.description);
   const bio = clean(nominee.bio || nominee.bio_extended);
