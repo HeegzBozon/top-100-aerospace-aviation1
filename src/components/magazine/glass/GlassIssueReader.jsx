@@ -41,6 +41,13 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   const openPage = pages[position - 1] || null;
   const fold = foldLabel(openPage, position, total);
 
+  // The section ahead: the next landmark after the page standing open. A reader walks a
+  // hundred-page issue by its parts, so the way on to the next one is a single press.
+  const nextSection = useMemo(
+    () => (isPdf ? null : contents.find((entry) => entry.position > position) || null),
+    [contents, isPdf, position],
+  );
+
   // The film: paced by the page it is holding, and it stops at the colophon. The turn
   // reads the standing page off the ref, because the console's own hands hold this
   // function long after the render that made it.
@@ -161,6 +168,10 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
         }}
         progress={progress}
         onTurn={turn}
+        onJumpSection={() => {
+          if (nextSection) setPosition(nextSection.position);
+        }}
+        nextSection={nextSection}
         onBack={() => setView('contents')}
       />
     );

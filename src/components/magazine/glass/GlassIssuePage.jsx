@@ -1,4 +1,4 @@
-import { BookOpen, ChevronLeft, Gauge, Loader2, Pause, Play } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronsRight, Gauge, Loader2, Pause, Play, SkipForward, Undo2 } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
 import { foldLabel } from '@/components/magazine/glass/glassIssueEntries';
@@ -24,6 +24,8 @@ export default function GlassIssuePage({
   onCycleSpeed,
   progress,
   onTurn,
+  onJumpSection,
+  nextSection,
   onBack,
 }) {
   const canPrev = position > 1;
@@ -50,16 +52,30 @@ export default function GlassIssuePage({
         </p>
       </div>
 
-      {/* The film's progress across the page being held */}
-      <div className="mt-1.5 h-[2px] w-full overflow-hidden rounded-full" style={{ background: 'rgba(30,58,90,0.10)' }}>
-        <div
-          className="h-full rounded-full"
-          style={{
-            width: `${playing ? Math.min((progress || 0) * 100, 100) : 0}%`,
-            background: `linear-gradient(90deg, ${P.gold}, ${P.copper})`,
-            transition: 'width 120ms linear',
-          }}
-        />
+      {/* The film's progress across the page being held, and the way on to the next
+          section of the book */}
+      <div className="mt-1.5 flex items-center gap-2">
+        <div className="h-[2px] min-w-0 flex-1 overflow-hidden rounded-full" style={{ background: 'rgba(30,58,90,0.10)' }}>
+          <div
+            className="h-full rounded-full"
+            style={{
+              width: `${playing ? Math.min((progress || 0) * 100, 100) : 0}%`,
+              background: `linear-gradient(90deg, ${P.gold}, ${P.copper})`,
+              transition: 'width 120ms linear',
+            }}
+          />
+        </div>
+        <button
+          type="button"
+          disabled={!nextSection}
+          onClick={onJumpSection}
+          aria-label={nextSection ? `Jump to the next section: ${nextSection.label}` : 'No further section'}
+          title={nextSection ? `Next section: ${nextSection.label}` : 'No further section'}
+          className="flex flex-none items-center gap-1 rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.16em] disabled:opacity-30"
+          style={{ color: P.navy, border: '1px solid rgba(30,58,90,0.16)' }}
+        >
+          <ChevronsRight className="h-3 w-3" /> Section
+        </button>
       </div>
 
       {/* The page itself */}
@@ -80,7 +96,15 @@ export default function GlassIssuePage({
             style={{ border: 0 }}
           />
         ) : page ? (
-          <PageRenderer page={page} issue={issue} articles={articles} pageNumber={position} totalPages={total} />
+          <PageRenderer
+            page={page}
+            issue={issue}
+            articles={articles}
+            pageNumber={position}
+            totalPages={total}
+            playing={playing}
+            progress={progress}
+          />
         ) : (
           <div className="flex h-full items-center justify-center p-6 text-center">
             <p className="text-[11px]" style={{ color: 'rgba(30,58,90,0.6)' }}>
@@ -90,16 +114,19 @@ export default function GlassIssuePage({
         )}
       </div>
 
-      {/* The controls: turning, and the film */}
+      {/* The controls: turning, and the film. The two turns carry the wheel's own prints —
+          back and forward, as they are cut into the ring under the thumb. */}
       <div className="flex items-center justify-between gap-2 pt-2">
         <button
           type="button"
           disabled={!canPrev}
           onClick={() => onTurn(-1)}
-          className="flex h-8 items-center gap-1 rounded-full px-2.5 text-[8.5px] font-bold uppercase tracking-[0.14em] disabled:opacity-30"
+          aria-label="Previous page"
+          title="Previous page"
+          className="flex h-8 w-8 flex-none items-center justify-center rounded-full disabled:opacity-30"
           style={{ color: P.navy, border: '1px solid rgba(30,58,90,0.16)' }}
         >
-          <ChevronLeft className="h-3.5 w-3.5" /> Prev
+          <Undo2 className="h-3.5 w-3.5" />
         </button>
 
         <button
@@ -126,10 +153,12 @@ export default function GlassIssuePage({
           type="button"
           disabled={!canNext}
           onClick={() => onTurn(1)}
-          className="flex h-8 items-center gap-1 rounded-full px-2.5 text-[8.5px] font-bold uppercase tracking-[0.14em] disabled:opacity-30"
+          aria-label="Next page"
+          title="Next page"
+          className="flex h-8 w-8 flex-none items-center justify-center rounded-full disabled:opacity-30"
           style={{ color: P.navy, border: '1px solid rgba(30,58,90,0.16)' }}
         >
-          Next <ChevronLeft className="h-3.5 w-3.5 rotate-180" />
+          <SkipForward className="h-3.5 w-3.5" />
         </button>
       </div>
 

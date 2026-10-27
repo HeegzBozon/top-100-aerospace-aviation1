@@ -1,9 +1,22 @@
 import React from 'react';
-import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
+import { MAGAZINE_PALETTE as P, PORTRAIT_FOCUS } from '@/components/magazine/magazineConfig';
+import PinnedPageHead from '@/components/magazine/PinnedPageHead';
+import { usePageTeleprompter, PAGE_SCROLL_ATTR } from '@/components/magazine/pageTeleprompter';
+
+// The blocks that make up a page's head: what pins to the top of the frame while the body
+// runs beneath it.
+const HEAD_TYPES = ['kicker', 'heading', 'byline'];
 
 // Renders a single magazine page's content based on its layout type and blocks.
 // Used by both the flipbook and single-page reader.
-export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages }) {
+export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, progress = 0 }) {
+  // The film may roll a page under the reader. The hook is called here, once, for every
+  // layout — a page with nothing to scroll simply never takes the ref, and nothing rolls.
+  const { ref: scrollRef } = usePageTeleprompter({
+    playing,
+    progress,
+    pageKey: page?.id || pageNumber,
+  });
   const blocks = page.content_blocks || [];
   const bg = page.background_image_url;
   const credits = issue.cover_credits || {};
@@ -85,11 +98,13 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
 
     return (
       <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8">
-          <p className="text-[10px] font-bold uppercase tracking-[0.4em] mb-2" style={{ color: P.gold }}>Contents</p>
-          <h2 className="font-serif text-xl sm:text-2xl" style={{ color: P.navy }}>{issue.title}</h2>
-          {issue.subtitle && <p className="text-[11px] mt-1" style={{ color: 'rgba(30,58,90,0.5)' }}>{issue.subtitle}</p>}
-          <div className="mt-5 space-y-5">
+        <div className="flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+          <PinnedPageHead className="px-6 sm:px-8">
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] mb-2" style={{ color: P.gold }}>Contents</p>
+            <h2 className="font-serif text-xl sm:text-2xl" style={{ color: P.navy }}>{issue.title}</h2>
+            {issue.subtitle && <p className="text-[11px] mt-1" style={{ color: 'rgba(30,58,90,0.5)' }}>{issue.subtitle}</p>}
+          </PinnedPageHead>
+          <div className="space-y-5 px-6 pb-6 pt-5 sm:px-8">
             {contents.map((section) => (
               <div key={section.id}>
                 <div className="flex items-center gap-2 mb-2">
@@ -238,15 +253,18 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     const heading = blocks.find((b) => b.type === 'heading');
     const byline = blocks.find((b) => b.type === 'byline');
     const kicker = blocks.find((b) => b.type === 'kicker');
-    const rest = blocks.filter((b) => !['image', 'heading', 'byline'].includes(b.type));
+    // The head — the region she is indexed under, her name, her stand — is the page's own
+    // plate, so the body picks up with what follows it. The portrait is the banner above
+    // the plate, not a block of the body.
+    const rest = blocks.filter((b) => !['image', 'kicker', 'heading', 'byline'].includes(b.type));
     const firstBody = rest.findIndex((b) => b.type === 'body');
 
     return (
       <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
           {image?.url ? (
             <figure className="relative">
-              <img src={image.url} alt={heading?.text || ''} className="w-full h-52 sm:h-72 object-cover object-top" />
+              <img src={image.url} alt={heading?.text || ''} className="w-full h-60 sm:h-80 object-cover" style={PORTRAIT_FOCUS} />
               {image.caption && (
                 <figcaption
                   className="absolute bottom-0 left-0 right-0 px-4 py-2.5 text-[8.5px] font-bold uppercase tracking-[0.24em]"
@@ -259,13 +277,18 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
           ) : (
             <div className="h-16" />
           )}
-          <div className="px-5 pt-4 pb-6 sm:px-7">
+          {/* The plate is the page's banner, and it pins: once the portrait has gone by,
+              the region, the name and the stand stay at the head of the frame, with the
+              portrait itself collapsed into a seal beside them. */}
+          <PinnedPageHead className="px-5 pt-3 sm:px-7" portraitUrl={image?.url}>
             {kicker?.text && (
               <p className="text-[9px] font-bold uppercase tracking-[0.32em] mb-2" style={{ color: P.gold }}>{kicker.text}</p>
             )}
             <h2 className="font-serif text-2xl sm:text-3xl leading-tight" style={{ color: P.navy }}>{heading?.text}</h2>
             {byline?.text && <p className="text-[11px] mt-2 leading-relaxed" style={{ color: P.copper }}>{byline.text}</p>}
-            <div className="w-10 h-px my-4" style={{ background: `${P.copper}66` }} />
+          </PinnedPageHead>
+          <div className="px-5 pb-6 pt-4 sm:px-7">
+            <div className="w-10 h-px mb-4" style={{ background: `${P.copper}66` }} />
             {rest.map((block, i) => <BlockRenderer key={i} block={block} lead={i === firstBody} />)}
           </div>
         </div>
@@ -278,12 +301,23 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     );
   }
 
-  // Default: article page with content blocks
+  // Default: article page with content blocks. The opening kicker, title and byline are
+  // the page's head, and they pin; the body picks up beneath them, so nothing is set twice.
   const leadBody = blocks.findIndex((b) => b.type === 'body');
+  let headEnd = 0;
+  while (headEnd < blocks.length && HEAD_TYPES.includes(blocks[headEnd].type)) headEnd += 1;
+
   return (
     <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
-      <div className="flex-1 overflow-y-auto p-6 sm:p-8">
-        {blocks.map((block, i) => <BlockRenderer key={i} block={block} lead={i === leadBody} />)}
+      <div className="flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+        {headEnd > 0 && (
+          <PinnedPageHead className="px-6 sm:px-8">
+            {blocks.slice(0, headEnd).map((block, i) => <BlockRenderer key={i} block={block} />)}
+          </PinnedPageHead>
+        )}
+        <div className="px-6 pb-6 pt-4 sm:px-8">
+          {blocks.slice(headEnd).map((block, i) => <BlockRenderer key={headEnd + i} block={block} lead={headEnd + i === leadBody} />)}
+        </div>
       </div>
       {/* Page number footer */}
       <div className="flex-shrink-0 px-6 py-2 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>

@@ -119,7 +119,15 @@ export default function CinematicFlipbook({ pages, articles = [], issue, isPlayi
         >
           {pages.map((page, i) => (
             <div key={page.id || i} style={{ height: '100%', overflow: 'hidden' }}>
-              <PageRenderer page={page} issue={issue} articles={articles} pageNumber={i + 1} totalPages={totalPages} />
+              <PageRenderer
+                page={page}
+                issue={issue}
+                articles={articles}
+                pageNumber={i + 1}
+                totalPages={totalPages}
+                playing={isPlaying && currentPage === i}
+                progress={currentPage === i ? progress : 0}
+              />
             </div>
           ))}
         </HTMLFlipBook>

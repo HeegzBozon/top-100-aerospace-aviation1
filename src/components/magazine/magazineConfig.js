@@ -151,3 +151,8 @@ export const MAGAZINE_PALETTE = {
   white: '#ffffff',
   muted: '#6b7280',
 };
+
+// How a portrait is framed on a page: on the face, not on the top edge of the file.
+// Photo files arrive with wildly different amounts of headroom, and pinning the top of
+// the file to the top of the frame is what takes the chin off a head-and-shoulders shot.
+export const PORTRAIT_FOCUS = { objectPosition: '50% 22%' };
