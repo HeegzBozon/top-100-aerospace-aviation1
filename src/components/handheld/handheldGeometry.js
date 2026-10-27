@@ -15,12 +15,14 @@ const BEZEL_WIDTH = 18; // the moulding drawn back out around the glass
 // Inside the glass: the strip cut across its head, and the air it leaves under it.
 const NAV_CLEARANCE = 34;
 
-// Below the glass: the chin, carrying the wheel, the keys, the grille and the plate.
-// The chin is three bands: the controls (the wheel's own height), the groove under
-// them, and the footer plate. The count below is what those add up to, plus a
+// Below the glass: the chin, carrying the wheel, the keys, the speaker and the plate.
+// The chin is three bands: the controls (the wheel's own height, which out-measures
+// both the key cluster and the speaker), the groove under them, and the footer plate —
+// under which the case runs on a little, so the plate is set into the moulding rather
+// than bleeding off its bottom edge. The count below is what those add up to, plus a
 // hair of slack — the live chin is measured from its content, so this has to stay
 // at or above it or the case would sit on the bottom of the picture.
-const DECK_CLEARANCE = 146;
+const DECK_CLEARANCE = 158;
 
 export { NAV_CLEARANCE, DECK_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH };
 

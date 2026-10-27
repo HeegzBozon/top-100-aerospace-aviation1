@@ -14,12 +14,12 @@ something useful at the end of a list (it scrolls the page) instead of
 teleporting.
 
 **2. Wrapping is an exception, never a default.**
-A wrap is only correct when the set is a *closed control* rather than an *index of
-destinations*: every option is already on the glass, the set is cyclic by nature,
-and travelling around it is what the control is for. Today there is exactly one
-such set — the console's own key grid on the device's face (the home menu).
-Every list of surfaces, panels, cards or options stops. Nothing new wraps without
-this document changing first.
+A wrap would only be correct when the set is a *closed control* rather than an *index
+of destinations*: every option already on the glass, the set cyclic by nature, and
+travelling around it what the control is for. Nothing on this device qualifies today —
+every list of surfaces, panels, cards, drawers, modules or options stops, the
+console's own drawer included, which bumps at its first and its last entry the way the
+end of a page bumps. A wrap would have to justify itself here before any code moves.
 
 **3. If a set scrolls, it never wraps.**
 The moment a set runs past the glass — a long panel menu, a card column, a
@@ -45,7 +45,7 @@ legend on the glass says how the ends behave.
 | Console panel menu (index of panels) | Stops at the ends; a turn past the end scrolls the panel/page | `GlassConsole` — Profile, Selection Committee |
 | Title-screen surface keys | Stops at the ends | `StartScreen` |
 | Board cards, and the columns across | Stops at the ends in both axes | `useBoardCards` — The Board |
-| Console's own key grid (home menu) | Wraps — the one closed control | `HandheldDeck` |
+| Console's own drawer (home menu, File, Edit) | Stops at the ends; the ring bumps at the first and the last entry | `HandheldDeck` |
 | A page of prose (deck) | Not a picker at all: rotation scrolls the picture | `ModuleSlideDeck` |
 
 Two consequences worth keeping in mind when a new surface is built:
@@ -71,4 +71,4 @@ step: (direction) => {
   setCursor(target);
   return list[target].label; // the rail announces where the ring landed
 },
-``
+`

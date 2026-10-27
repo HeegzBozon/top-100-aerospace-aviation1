@@ -1,16 +1,37 @@
-import { Bell, CircleUser, Home } from "lucide-react";
+import { Bell } from "lucide-react";
 
 // The menubar: the strip across the head of the picture, cloned from the desk the
-// machine imitates. The way home stands at the far left as the mark itself, the surface
-// you are standing on beside it with its lamp lit, the section you are reading in
-// quiet type, then the two keys a hand actually reaches for at the right. The
-// strip is seamless: no frame around it, no rule between its cells — the cells are
-// parted by their own spacing, and the tone comes from the surface it is set into.
+// machine imitates. It leads the way a desk machine's bar does — File, then Edit —
+// and behind them stands the surface you are on with its lamp lit, the section you
+// are reading in quiet type, and the one key a hand reaches for at the right.
+//
+// The way home is File's first entry and everything a Fellow authors sits in Edit, so
+// the bar carries no account glyph of its own: your own record is a press away in the
+// menu that means editing, and nothing is lost for the space.
 //
 // It is one strip on both machines: on the glass it is the head band of the picture,
-// on the desk it stands across the top of the tube. The surface cell is the menu —
-// the wheel's MENU opens the same drawer from the hardware, and a press of the title
-// does exactly what that key does.
+// on the desk it stands across the top of the tube. The surface cell is the journey
+// drawer — the wheel's MENU opens the same thing from the hardware — and File and Edit
+// open the two lists a desk machine keeps under those names.
+export const MENU_CELL = 50;
+
+function MenuCell({ label, open, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-open={open ? "true" : "false"}
+      aria-haspopup="menu"
+      aria-expanded={open}
+      aria-label={`${label} menu`}
+      className="mb-cell flex shrink-0 items-center whitespace-nowrap px-2 text-[8px] font-bold uppercase tracking-[0.20em]"
+      style={{ color: open ? "var(--mb-ink-strong)" : "var(--mb-ink)", width: MENU_CELL }}
+    >
+      {label}
+    </button>
+  );
+}
+
 function BarKey({ label, onClick, children }) {
   return (
     <button
@@ -29,9 +50,11 @@ export default function MenuBar({
   surface,
   module,
   menuOpen = false,
-  onHome,
+  fileOpen = false,
+  editOpen = false,
   onMenu,
-  onProfile,
+  onFile,
+  onEdit,
   onNotifications,
   className = "",
   style,
@@ -43,13 +66,11 @@ export default function MenuBar({
       role="menubar"
       aria-label="Menu bar"
     >
-      {/* The way home: the mark at the far left, where the desk keeps it. */}
-      <BarKey label="Home — the front screen" onClick={onHome}>
-        <Home className="h-[15px] w-[15px]" strokeWidth={1.7} />
-      </BarKey>
+      <MenuCell label="File" open={fileOpen} onClick={onFile} />
+      <MenuCell label="Edit" open={editOpen} onClick={onEdit} />
 
-      {/* Where you stand — and the menu. The lamp is lit for the surface you are on,
-          and the cell reads as pressed while the menu it opens is standing. */}
+      {/* Where you stand — and the journey drawer. The lamp is lit for the surface you
+          are on, and the cell reads as pressed while the drawer stands. */}
       <button
         type="button"
         onClick={onMenu}
@@ -72,10 +93,6 @@ export default function MenuBar({
           </span>
         ) : null}
       </button>
-
-      <BarKey label="Your profile" onClick={onProfile}>
-        <CircleUser className="h-[15px] w-[15px]" strokeWidth={1.7} />
-      </BarKey>
 
       <BarKey label="Notifications" onClick={onNotifications}>
         <Bell className="h-[15px] w-[15px]" strokeWidth={1.7} />

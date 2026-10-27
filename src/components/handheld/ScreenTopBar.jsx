@@ -4,9 +4,12 @@ import MenuBar from "@/components/shell/MenuBar";
 //
 // It is the machine's legend band, moved inside the glass and put to work — the
 // menubar the desk machine wears, at the size of a hand. No logo, no pill, nothing
-// floating over the picture: the way home printed at the left, the surface you are
-// on with its lamp lit, the section as a quiet suffix, then the two keys a hand
+// floating over the picture: File and Edit printed at the left, the surface you are
+// on with its lamp lit and the section as a quiet suffix, then the one key a hand
 // actually reaches for, every cell parted from the next by a machined seam.
+//
+// File and Edit open the console's own drawer in the matching list, so the wheel
+// walks them the way it walks everything else on this device.
 //
 // The seat the strip is set into runs from the top of the glass down to the picture,
 // and the strip fills it edge to edge and top to bottom: one continuous rail across
@@ -20,9 +23,11 @@ export default function ScreenTopBar({
   surface,
   module,
   menuOpen,
+  fileOpen,
+  editOpen,
   onMenu,
-  onHome,
-  onProfile,
+  onFile,
+  onEdit,
   onNotifications,
 }) {
   return (
@@ -41,9 +46,11 @@ export default function ScreenTopBar({
         surface={surface}
         module={module}
         menuOpen={menuOpen}
-        onHome={onHome}
+        fileOpen={fileOpen}
+        editOpen={editOpen}
         onMenu={onMenu}
-        onProfile={onProfile}
+        onFile={onFile}
+        onEdit={onEdit}
         onNotifications={onNotifications}
         style={{ height: HEAD_BAND }}
       />

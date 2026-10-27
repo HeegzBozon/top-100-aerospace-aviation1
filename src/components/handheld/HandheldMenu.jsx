@@ -113,7 +113,7 @@ export default function HandheldMenu({
                   ) : null}
 
                   <span
-                    className="flex-1 truncate text-[12px] font-semibold leading-none"
+                    className="flex-1 truncate whitespace-nowrap text-[12px] font-semibold leading-none"
                     style={{ color: isCursor || isActive ? "var(--hh-lcd-bright)" : "var(--hh-lcd)" }}
                   >
                     {item.label}

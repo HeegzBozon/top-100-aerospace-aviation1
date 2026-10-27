@@ -2,14 +2,16 @@
 // the hand: the groups the machine can reach, the surface you are standing on marked
 // Now, and a click-catcher behind the panel that puts it away — the same walk the
 // console's cartridge menu gives the ring on the glass.
-export default function MenuDropdown({ open, groups, locationKey, onGo, onClose }) {
+export default function MenuDropdown({ open, groups, locationKey, onGo, onClose, style }) {
   if (!open) return null;
 
   return (
     <>
       <div className="fixed inset-0 z-[38]" onClick={onClose} aria-hidden="true" />
 
-      <div className="mb-drop z-[39]" role="menu" aria-label="Menu">
+      {/* `style` carries the one thing that varies between drawers: which cell of the
+          bar this one drops from. */}
+      <div className="mb-drop z-[39]" role="menu" aria-label="Menu" style={style}>
         {groups.map((group) => (
           <div key={group.key} className="px-1.5 py-1.5">
             <p

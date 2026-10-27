@@ -18,8 +18,10 @@ import { useHandheldPicker } from "./handheldPicker";
 import HandheldNotifications from "./HandheldNotifications";
 import HandheldShareSheet from "./HandheldShareSheet";
 import HandheldSpeaker from "./HandheldSpeaker";
+import HandheldPlate from "./HandheldPlate";
 import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
+import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, persistSound } from "./handheldSound";
 import { openingPlaysNow } from "@/components/core/appOpening";
@@ -49,7 +51,7 @@ const ZONE_DIR = { menu: "up", play: "down", prev: "left", next: "right" };
 export default function HandheldDeck() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { groups, isSignedIn } = useHandheldDestinations();
+  const { groups, isSignedIn, isAdmin } = useHandheldDestinations();
 
   const [menuMode, setMenuMode] = useState(null);
   const [cursor, setCursor] = useState(0);
@@ -131,11 +133,31 @@ export default function HandheldDeck() {
     to: i === moduleIndex ? locationKey : undefined,
   }));
 
-  // What the wheel walks, per drawer it happens to be in.
-  const listFor = useCallback(
-    (mode) => (mode === "sections" ? sectionItems : mode === "finish" ? finishItems : flat),
-    [sectionItems, finishItems, flat],
+  // The two lists the bar's own cells stand for: File, holding the front screen and
+  // the platform's surfaces, and Edit, holding everything a Fellow authors. They are
+  // drawers like the cartridges, so the wheel walks them the same way.
+  const barDrawers = useMemo(
+    () => ({
+      file: barMenuGroups("file", { isSignedIn, isAdmin }),
+      edit: barMenuGroups("edit", { isSignedIn, isAdmin }),
+    }),
+    [isSignedIn, isAdmin],
   );
+
+  // What each drawer shows, in the shape the drawer renders and the order the cursor
+  // walks: the surface's own sections, the finishes the case can wear, one of the
+  // bar's two lists, or the journey's cartridges.
+  const groupsFor = useCallback(
+    (mode) => {
+      if (mode === "sections") return [{ key: "sections", label: "On this surface", items: sectionItems }];
+      if (mode === "finish") return [{ key: "finish", label: "Customize", items: finishItems }];
+      return barDrawers[mode] || menuGroups;
+    },
+    [sectionItems, finishItems, barDrawers, menuGroups],
+  );
+
+  // What the wheel walks, per drawer it happens to be in.
+  const listFor = useCallback((mode) => groupsFor(mode).flatMap((group) => group.items), [groupsFor]);
 
   // Reserve the hardware's space, and hand it back when the console is put away
   // (a surface asking for the whole glass). A layout effect, so the hardware is
@@ -265,6 +287,24 @@ export default function HandheldDeck() {
     buzz();
   }, [flat, locationKey, finishBoot]);
 
+  // File and Edit, the bar's own two cells: they open the same drawer the wheel's
+  // MENU opens, each holding its own list, so the ring walks them like anything else
+  // on this device and the entries land where you already are.
+  const openBarDrawer = useCallback(
+    (kind) => {
+      const items = (barDrawers[kind] || []).flatMap((group) => group.items);
+      const current = items.findIndex((item) => item.to && item.to === locationKey);
+      setCursor(current >= 0 ? current : 0);
+      setMenuMode(kind);
+      setNotificationsOpen(false);
+      setShareOpen(false);
+      finishBoot();
+      blip("open");
+      buzz();
+    },
+    [barDrawers, locationKey, finishBoot],
+  );
+
   // X lists what is on this surface: every slide of the deck, or the page's own
   // modules where the surface declares no deck.
   const openSections = useCallback(() => {
@@ -346,7 +386,15 @@ export default function HandheldDeck() {
       if (menuOpen) {
         const list = listFor(menuMode);
         if (!list.length) return;
-        setCursor((prev) => (prev + step + list.length) % list.length);
+        // The cursor law: a list stops at its ends. The first and the last entry
+        // refuse the turn and the ring bumps, rather than wrapping round to the far
+        // end of the drawer — the same rule the pickers and the modules keep.
+        const next = cursor + step;
+        if (next < 0 || next >= list.length) {
+          blip("back");
+          return;
+        }
+        setCursor(next);
         return;
       }
       // A picker walks its own options; a turn it declines is a turn the glass
@@ -368,14 +416,14 @@ export default function HandheldDeck() {
       // column — gets the ring before the glass or the window does.
       if (nav.scrollBy(step * 54) === false) blip("back");
     },
-    [menuOpen, menuMode, listFor, picker, deck, finishBoot, nav, announce, steering],
+    [menuOpen, menuMode, listFor, cursor, picker, deck, finishBoot, nav, announce, steering],
   );
 
   const jumpGroup = useCallback(
-    (step) => {
+    (step, groups = menuGroups) => {
       const starts = [];
       let running = 0;
-      menuGroups.forEach((group) => {
+      groups.forEach((group) => {
         starts.push(running);
         running += group.items.length;
       });
@@ -399,7 +447,7 @@ export default function HandheldDeck() {
           setCursor((prev) => Math.max(0, Math.min(list.length - 1, prev + direction)));
           return;
         }
-        return jumpGroup(direction);
+        return jumpGroup(direction, groupsFor(menuMode));
       }
       // Back and forward move to the neighbour. A picker owns these keys: at the
       // end of its options the press bumps instead of hunting for a section.
@@ -434,7 +482,7 @@ export default function HandheldDeck() {
       }
       blip("back");
     },
-    [menuOpen, menuMode, listFor, jumpGroup, picker, deck, nav, finishBoot, announce],
+    [menuOpen, menuMode, listFor, groupsFor, jumpGroup, picker, deck, nav, finishBoot, announce],
   );
 
   const jumpToModule = useCallback(
@@ -476,17 +524,6 @@ export default function HandheldDeck() {
     setShareOpen(true);
   }, [booting, menuOpen]);
 
-  // You: the Fellow's own profile where they are signed in, the way in where not.
-  const openProfile = useCallback(() => {
-    blip("select");
-    buzz();
-    setMenuMode(null);
-    setNotificationsOpen(false);
-    setShareOpen(false);
-    if (!isSignedIn) return base44.auth.redirectToLogin(window.location.href);
-    navigate("/Profile");
-  }, [isSignedIn, navigate]);
-
   // What has come in — the same drawer rule as everything else: the way in where
   // there is an account to receive it.
   const openNotifications = useCallback(() => {
@@ -521,10 +558,10 @@ export default function HandheldDeck() {
       }
       return openMenu();
     }
-    const item = flat[cursor];
+    const item = listFor(menuMode)[cursor];
     if (item) go(item);
     else closeMenu();
-  }, [finishBoot, menuMode, sectionItems, finishItems, cursor, jumpToModule, applyFinish, announce, menuOpen, openMenu, flat, go, closeMenu, picker]);
+  }, [finishBoot, menuMode, sectionItems, finishItems, cursor, jumpToModule, applyFinish, announce, menuOpen, openMenu, listFor, go, closeMenu, picker]);
 
   // A surface with four things standing under the hand — the chamber's candidates —
   // answers the face keys first: Y, B, X and A read clockwise from the top of the
@@ -563,10 +600,12 @@ export default function HandheldDeck() {
       <ScreenTopBar
         surface={surface}
         module={modules[moduleIndex]?.label}
-        menuOpen={menuOpen}
+        menuOpen={menuOpen && menuMode !== "file" && menuMode !== "edit"}
+        fileOpen={menuMode === "file"}
+        editOpen={menuMode === "edit"}
         onMenu={upOneLevel}
-        onHome={goHome}
-        onProfile={openProfile}
+        onFile={() => openBarDrawer("file")}
+        onEdit={() => openBarDrawer("edit")}
         onNotifications={openNotifications}
       />
 
@@ -592,16 +631,16 @@ export default function HandheldDeck() {
 
       {menuOpen && !booting && (
         <HandheldMenu
-          groups={
-            menuMode === "sections"
-              ? [{ key: "sections", label: "On this surface", items: sectionItems }]
-              : menuMode === "finish"
-                ? [{ key: "finish", label: "Customize", items: finishItems }]
-                : menuGroups
-          }
+          groups={groupsFor(menuMode)}
           cursor={cursor}
           locationKey={locationKey}
-          unit={menuMode === "sections" ? "sections" : menuMode === "finish" ? "finishes" : "cartridges"}
+          unit={
+            menuMode === "sections"
+              ? "sections"
+              : menuMode === "finish"
+                ? "finishes"
+                : "entries"
+          }
           hint={
             menuMode === "sections"
               ? "◀▶ Move · ● Go · B Back"
@@ -615,7 +654,11 @@ export default function HandheldDeck() {
             setMenuMode(null);
             jumpToModule(item.sectionIndex);
           }}
-          onJump={menuMode === "cartridges" ? () => jumpGroup(1) : null}
+          onJump={
+            menuMode === "sections" || menuMode === "finish"
+              ? null
+              : () => jumpGroup(1, groupsFor(menuMode))
+          }
           onClose={closeMenu}
         />
       )}
@@ -640,7 +683,7 @@ export default function HandheldDeck() {
           right: "var(--hh-frame, 0px)",
           bottom: "var(--hh-frame, 0px)",
           borderRadius: "0 0 26px 26px",
-          paddingBottom: "env(safe-area-inset-bottom)",
+          paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
         }}
       >
         {/* The chin is pinned like a real moulding: a screw at each corner. */}
@@ -680,67 +723,8 @@ export default function HandheldDeck() {
           </div>
         </div>
 
-        {/* The footer of the chassis: the maker's plate, cut across the very bottom
-            of the case, under its own machined groove. The model mark is engraved at
-            the left, the key that changes what the device is wearing sits in the
-            middle — the swatch row on it is the finish it is wearing now — and the
-            right says who is holding the console, with a lamp beside it. */}
-        <div className="hh-footer relative mt-2 flex h-[24px] items-center gap-2.5 px-4">
-          <span
-            className="hh-engrave flex shrink-0 items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
-            style={{ color: "var(--hh-ink-soft)" }}
-          >
-            <span className="hh-screw h-[6px] w-[6px] rounded-full" />
-            HW-88
-          </span>
-
-          <span
-            aria-hidden="true"
-            className="h-px min-w-[6px] flex-1"
-            style={{
-              background: "linear-gradient(90deg, rgb(var(--hh-metal-rgb) / 0.04), rgb(var(--hh-metal-rgb) / 0.30))",
-            }}
-          />
-
-          <button
-            type="button"
-            onClick={openFinish}
-            aria-label={`Customize the console. Wearing ${finish.label}`}
-            className="hh-pad-key flex h-[19px] min-w-0 shrink-0 items-center gap-[7px] rounded-[9px] px-2.5 text-[6.5px] font-bold uppercase tracking-[0.18em]"
-            style={{ color: "var(--hh-pad-ink)" }}
-          >
-            <Palette className="h-[8px] w-[8px] shrink-0" />
-            <span className="flex shrink-0 items-center gap-[3px]">
-              {(finish.swatch || []).map((tone) => (
-                <span
-                  key={tone}
-                  className="h-[7px] w-[7px] rounded-full"
-                  style={{ background: tone, boxShadow: "inset 0 0 0 1px rgba(7,17,31,0.35)" }}
-                />
-              ))}
-            </span>
-            <span className="truncate">Customize</span>
-            <span className="shrink-0" style={{ color: "rgb(var(--hh-metal-rgb) / 0.85)" }}>
-              ▲
-            </span>
-          </button>
-
-          <span
-            aria-hidden="true"
-            className="h-px min-w-[6px] flex-1"
-            style={{
-              background: "linear-gradient(90deg, rgb(var(--hh-metal-rgb) / 0.30), rgb(var(--hh-metal-rgb) / 0.04))",
-            }}
-          />
-
-          <span
-            className="hh-engrave flex shrink-0 items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
-            style={{ color: "var(--hh-ink-soft)" }}
-          >
-            <span className="hh-footer-led" data-on={isSignedIn} aria-hidden="true" />
-            {isSignedIn ? "Fellow" : "Visitor"}
-          </span>
-        </div>
+        {/* The maker's plate, fitted into the foot of the case. */}
+        <HandheldPlate finish={finish} isSignedIn={isSignedIn} onCustomize={openFinish} />
       </nav>
     </>
   );

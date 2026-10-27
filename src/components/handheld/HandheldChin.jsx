@@ -13,7 +13,7 @@ export default function HandheldChin() {
   return (
     <div
       aria-hidden="true"
-      className="hh-chin pointer-events-none fixed z-40 select-none md:hidden"
+      className="hh-chin pointer-events-none fixed z-40 select-none pb-3 md:hidden"
       style={{
         left: `${FRAME_GUTTER}px`,
         right: `${FRAME_GUTTER}px`,
@@ -45,7 +45,7 @@ export default function HandheldChin() {
         {/* The keys, drawn flat — the cluster they land on. */}
         <div
           className="relative justify-self-end"
-          style={{ width: FACE_KEYS.BOX, height: FACE_KEYS.BOX }}
+          style={{ width: FACE_KEYS.BOX_W, height: FACE_KEYS.BOX_H }}
         >
           {[
             { top: 0, left: FACE_KEYS.OFFSET_X },
@@ -69,8 +69,9 @@ export default function HandheldChin() {
         </div>
       </div>
 
-      {/* The footer plate: the model mark, engraved and unlit. */}
-      <div className="hh-footer relative mt-2 flex h-[24px] items-center gap-2.5 px-4">
+      {/* The footer plate: the model mark, engraved and unlit, seated inside the
+          case the way the live plate is. */}
+      <div className="hh-footer relative mt-2 flex h-[24px] items-center gap-2.5 px-3">
         <span
           className="hh-engrave flex shrink-0 items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
           style={{ color: "var(--hh-ink-soft)" }}

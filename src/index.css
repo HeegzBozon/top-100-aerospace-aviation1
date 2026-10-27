@@ -282,7 +282,7 @@ button:focus-visible {
 :root {
   --hh-top: 32px;
   --hh-shell-top: 14px;
-  --hh-bottom: 178px;
+  --hh-bottom: 190px;
 
   /* The desk margin, the moulding around the glass, and the inset every surface
      on the picture is measured from — the last being the first two added. */
