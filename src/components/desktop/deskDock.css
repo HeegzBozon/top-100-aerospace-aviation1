@@ -1,0 +1,94 @@
+/* ===== THE DESK'S SHELF — THE DOCK =====
+   The row of things a hand reaches for without opening a menu, moulded from the machine
+   it stands on: the same polymer tones, the same steel hairline, a brass seam parting its
+   parts. A tile lifts when it is pointed at, the surface you are on lamps underneath it,
+   and each prints its own name above itself rather than carrying a permanent label — the
+   shelf stays quiet until it is asked something. Every tone is a finish token, so the dock
+   is recast with the case it is set into. */
+.ds-shelf {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 46%),
+    linear-gradient(180deg, var(--hh-shell-1) 0%, var(--hh-shell-2) 62%, var(--hh-shell-3) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.16),
+    inset 0 1px 0 var(--hh-shell-spec),
+    inset 0 -14px 22px -18px rgba(3, 6, 13, 0.8),
+    0 14px 34px -16px rgba(3, 6, 13, 0.78),
+    0 2px 6px rgba(3, 6, 13, 0.42);
+}
+
+/* A machined seam where two parts of the shelf meet. */
+.ds-seam {
+  width: 1px;
+  align-self: stretch;
+  margin: 5px;
+  flex: none;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--hh-metal-rgb) / 0.04),
+    rgb(var(--hh-metal-rgb) / 0.46),
+    rgb(var(--hh-metal-rgb) / 0.04)
+  );
+}
+
+/* A key on the shelf: matte, bevelled at its edges, pressed by rolling over its own
+   bevel — the same language as the machine's moulding. */
+.ds-tile {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.34),
+    0 1px 0 rgba(3, 6, 13, 0.3);
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+.ds-tile:hover {
+  transform: translateY(-4px);
+}
+.ds-tile:active {
+  transform: translateY(-1px);
+}
+.ds-tile:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(var(--hh-metal-rgb) / 0.85);
+}
+
+/* The name a tile prints when it is pointed at. */
+.ds-tip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translate(-50%, 4px);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 4px 7px;
+  border-radius: 5px;
+  background: rgba(6, 12, 21, 0.97);
+  border: 1px solid rgb(var(--hh-metal-rgb) / 0.38);
+  color: var(--hh-ink);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+  z-index: 2;
+}
+.ds-tile:hover .ds-tip,
+.ds-tile:focus-visible .ds-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-tile:hover,
+  .ds-tile:active {
+    transform: none;
+  }
+  .ds-tip {
+    transition: none;
+  }
+}

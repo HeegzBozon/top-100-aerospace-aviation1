@@ -1,5 +1,6 @@
 import { Bell, Home } from "lucide-react";
 import ViewAsCell from "@/components/shell/ViewAsCell";
+import MenuBarClock from "@/components/shell/MenuBarClock";
 
 // The menubar: the strip across the head of the picture, cloned from the desk the
 // machine imitates. It leads the way a desk machine's bar does — home, then File, then
@@ -89,6 +90,8 @@ export default function MenuBar({
   /* The face keys that do the same thing, where the machine has them. */
   fileHint = "",
   editHint = "",
+  /* The desk prints the clock at the far end of its strip; the glass has no room for it. */
+  showClock = false,
   className = "",
   style,
 }) {
@@ -141,6 +144,8 @@ export default function MenuBar({
       <BarKey label="Notifications" onClick={onNotifications}>
         <Bell className="h-[15px] w-[15px]" strokeWidth={1.7} />
       </BarKey>
+
+      {showClock ? <MenuBarClock /> : null}
     </div>
   );
 }
