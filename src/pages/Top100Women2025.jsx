@@ -1,4 +1,5 @@
 import PublicationBody from '@/components/publication/PublicationBody';
+import PublicationSectionBoundary from '@/components/publication/PublicationSectionBoundary';
 import PublicationLoading from '@/components/publication/PublicationLoading';
 import PublicationUnavailable from '@/components/publication/PublicationUnavailable';
 import useTop100WomenNominees, { resetEditionCache } from '@/components/publication/useTop100WomenNominees';
@@ -15,5 +16,11 @@ export default function Top100Women2025() {
 
   if (loading) return <PublicationLoading />;
   if (error || nominees.length === 0) return <PublicationUnavailable onRetry={reloadEdition} />;
-  return <PublicationBody showExports />;
+  // The edition's own body sits inside an edition boundary as well, so nothing this
+  // route renders can ever reach the app-wide fault box marked "Section failed to load".
+  return (
+    <PublicationSectionBoundary name="edition" label="The Orbital Edition">
+      <PublicationBody showExports />
+    </PublicationSectionBoundary>
+  );
 }

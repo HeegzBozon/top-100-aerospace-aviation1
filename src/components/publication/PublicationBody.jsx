@@ -408,6 +408,7 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
 
       {/* Profile Panel */}
       {selectedNominee && (
+        <PublicationSectionBoundary name="profile-panel" label="This profile">
         <EnhancedProfilePanel
           nominee={selectedNominee}
           rank={selectedNominee.finalRank || nominees.findIndex(n => n.id === selectedNominee.id) + 1}
@@ -431,15 +432,18 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
           }}
           hasPrevNominee={nominees.findIndex(n => n.id === selectedNominee.id) > 0}
         />
+        </PublicationSectionBoundary>
       )}
 
       {/* Shareable Card Modal */}
       {shareNominee && (
+        <PublicationSectionBoundary name="share-card" label="This card">
         <ShareableCard
           nominee={shareNominee}
           rank={nominees.findIndex(n => n.id === shareNominee.id) + 1}
           onClose={() => setShareNominee(null)}
         />
+        </PublicationSectionBoundary>
       )}
     </div>
   );

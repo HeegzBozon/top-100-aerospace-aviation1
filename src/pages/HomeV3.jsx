@@ -4,6 +4,7 @@ import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import AdvocacyStrip from '@/components/events/AdvocacyStrip';
 import ExperienceHero from '@/components/events/ExperienceHero';
 import PublicationBody from '@/components/publication/PublicationBody';
+import PublicationSectionBoundary from '@/components/publication/PublicationSectionBoundary';
 import PublicationLoading from '@/components/publication/PublicationLoading';
 import HomeDock from '@/components/home-v3/HomeDock';
 import PublicationUnavailable from '@/components/publication/PublicationUnavailable';
@@ -62,7 +63,9 @@ export default function HomeV3() {
         ) : pubError || nominees.length === 0 ? (
           <PublicationUnavailable onRetry={reloadEdition} />
         ) : (
-          <PublicationBody suppressFloatingActions />
+          <PublicationSectionBoundary name="edition" label="The Orbital Edition">
+            <PublicationBody suppressFloatingActions />
+          </PublicationSectionBoundary>
         )}
       </div>
 
