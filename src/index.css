@@ -424,6 +424,24 @@ button:focus-visible {
   body.hh-keyboard .hh-chin {
     display: none;
   }
+
+  /* A surface that carries a field gives up its window. The title screen is drawn
+     as one glass tall and clipped to it, which is right until the keys take two
+     thirds of the picture: then the window becomes a page — its own height, nothing
+     clipped — and the glass scrolls, so the form being typed into is reachable.
+     Each of its three levels is named, and each stops being a flex track that can
+     be squeezed to nothing: a block takes the height of what it holds. */
+  body.hh-keyboard .hh-scroll-window,
+  body.hh-keyboard .hh-scroll-plane,
+  body.hh-keyboard .hh-scroll-page {
+    display: block;
+    height: auto;
+  }
+  body.hh-keyboard .hh-scroll-plane,
+  body.hh-keyboard .hh-scroll-page {
+    min-height: 0;
+    overflow: visible;
+  }
 }
 
 /* LCD glass over the content: scanlines and a soft vignette, then a slow sheen. */

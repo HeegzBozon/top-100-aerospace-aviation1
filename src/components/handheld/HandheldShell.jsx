@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import useKeyboardOpen from "@/hooks/useKeyboardOpen";
+import useFieldIntoView from "@/hooks/useFieldIntoView";
 import HandheldDeck from "./HandheldDeck";
 
 // The device wraps the whole app: every surface renders inside the picture
@@ -34,6 +35,9 @@ export default function HandheldShell() {
   const keyboard = useKeyboardOpen();
   // Stable, so a surface reporting its state never re-triggers itself.
   const api = useMemo(() => ({ inside: true, setPutAway }), []);
+
+  // The field being typed into is kept above the keys, inside the glass.
+  useFieldIntoView(keyboard.open, keyboard.height);
 
   useEffect(() => {
     if (!isMobile || !keyboard.open) return undefined;

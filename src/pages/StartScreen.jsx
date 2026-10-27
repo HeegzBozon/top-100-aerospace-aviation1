@@ -111,18 +111,23 @@ export default function StartScreen() {
   }, [cursorKey, options.length]);
 
   return (
-    <div className="hh-slide-window relative flex flex-col md:block md:h-auto md:min-h-screen">
+    /* hh-scroll-window / hh-scroll-plane / hh-scroll-page: while the keys are up
+       this surface stops being one glass tall and clipped to it, and becomes a page
+       the picture can scroll — which is what leaves room for the address a reader is
+       typing into. Three levels are named so the change is deterministic: each stops
+       being a flex track and takes its own height. */
+    <div className="hh-slide-window hh-scroll-window relative flex flex-col md:block md:h-auto md:min-h-screen">
       {/* The picture plane: the hour's sky, edge to edge in the glass. The pane's
           own radius is the only thing that rounds it — nothing is inset, so no
           strip of the page behind the device shows at the picture's edges and the
           star field runs the full height of the display. */}
       <div
-        className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[11px] md:min-h-screen md:rounded-none"
+        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[11px] md:min-h-screen md:rounded-none"
         style={{ background: phase.sky }}
       >
         <StartSky phase={phase} />
 
-        <div className="relative flex min-h-0 flex-1 flex-col px-5 pb-6 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
+        <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-6 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
           <StartMetaRow kicker={phase.kicker} />
 
           <div className="mt-4 shrink-0 md:mt-10">
