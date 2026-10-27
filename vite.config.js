@@ -64,22 +64,25 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // The bundler's own helper shims (interop, _extends) are virtual modules with
-          // no path. Left to chance they get parked inside whichever chunk first needs
-          // them — which is how a 200-byte helper ended up inside the 1.5 MB 3D chunk,
-          // making the entry screen import three.js and recharts to reach it. They get
-          // their own tiny chunk instead, so a page that draws no chart and no globe
-          // downloads neither.
-          if (!id.includes('/node_modules/') && !id.includes('/src/')) return 'helpers';
+          // Two rules, and both are safe: a chunk may only ever depend *on* app code,
+          // never the other way round, so no chunk cycle can form.
+          //
+          // Three.js keeps a chunk of its own, so a page that shows no globe never
+          // downloads it. Everything else from node_modules shares one long-cached
+          // vendor chunk. Fine-grained hand-splitting could not be made acyclic: each
+          // vendor reached back into the entry for a shared interop binding while the
+          // entry imported that vendor, and a binding read across that cycle arrives
+          // undefined — which surfaced as "…x is not a function" mid-render.
           if (!id.includes('/node_modules/')) return;
-          if (id.includes('/three/') || id.includes('/globe.gl/')) return 'vendor-3d';
-          if (id.includes('/recharts/')) return 'vendor-recharts';
-          if (id.includes('/d3-') || id.includes('/d3/')) return 'vendor-d3';
-          if (id.includes('/react-leaflet/') || id.includes('/leaflet/')) return 'vendor-maps';
-          if (id.includes('/@radix-ui/') || id.includes('/framer-motion/') || id.includes('/@floating-ui/') || id.includes('/cmdk/') || id.includes('/vaul/') || id.includes('/react-day-picker/') || id.includes('/embla-carousel')) return 'vendor-ui';
-          if (id.includes('/@tanstack/')) return 'vendor-query';
-          if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router')) return 'vendor-react';
-          if (id.includes('/lodash')) return 'vendor-utils';
+          if (
+            id.includes('/node_modules/three/') ||
+            id.includes('/node_modules/three-globe/') ||
+            id.includes('/node_modules/globe.gl/') ||
+            id.includes('/node_modules/three-render-objects/')
+          ) {
+            return 'vendor-3d';
+          }
+          return 'vendor';
         },
       },
     },
