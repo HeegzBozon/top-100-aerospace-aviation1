@@ -5,9 +5,8 @@ import { useAuth } from '@/lib/AuthContext';
 import { hourPhase } from '@/components/core/appOpening';
 import { useCountdown } from '@/components/events/useCountdown';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
-import HomeDock from '@/components/home-v3/HomeDock';
+import DesktopStartScreen from '@/components/desktop/start/DesktopStartScreen';
 import StartSky from '@/components/start/StartSky';
-import StartMetaRow from '@/components/start/StartMetaRow';
 import StartMark from '@/components/start/StartMark';
 import StartSeasonLine from '@/components/start/StartSeasonLine';
 import PublicationCountdown from '@/components/start/PublicationCountdown';
@@ -159,60 +158,68 @@ export default function StartScreen() {
   }, [cursorKey, options.length]);
 
   return (
-    /* hh-scroll-window / hh-scroll-plane / hh-scroll-page: while the keys are up
-       this surface stops being one glass tall and clipped to it, and becomes a page
-       the picture can scroll — which is what leaves room for the address a reader is
-       typing into. Three levels are named so the change is deterministic: each stops
-       being a flex track and takes its own height. */
-    <div className="hh-slide-window hh-scroll-window relative flex flex-col md:block md:h-auto md:min-h-screen">
-      {/* The picture plane: the hour's sky, edge to edge in the glass. Nothing is
-          inset and nothing is rounded, so no strip of the page behind the device
-          shows at the picture's edges and the star field runs the full height of the
-          display, straight into the strip across the head of the glass: the bar above
-          carries the glass's own arc, and the sky fills the corners under it, square.
-          The foot is square for the same reason — the picture ends on the readout
-          band, where the glass is still running straight. */}
-      <div
-        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden md:min-h-screen"
-        style={{ background: phase.sky }}
-      >
-        <StartSky phase={phase} />
+    <>
+      {/* The desk opens on the cover rather than on the keypad: the same menu, the same
+          actions and the same season record, drawn as a magazine front instead of as a
+          control panel. */}
+      <div className="hidden md:block">
+        <DesktopStartScreen
+          phase={phase}
+          status={status}
+          onRetry={() => setAttempt((n) => n + 1)}
+          menuItems={menuItems}
+          signedIn={signedIn}
+          voteLive={voteLive}
+          vote={vote}
+          notifyOpen={notifyOpen}
+          onNotifyChange={setNotifyOpen}
+        />
+      </div>
 
-        <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-3 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
-          {/* The masthead, the cycle read twice on its own two lines, and then the
-              two keys the title screen asks for standing together in one row. */}
-          <div className="hh-title-block mt-4 shrink-0 md:mt-10">
-            <StartMark />
-            <div className="mt-3 md:mt-4">
-              <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
-              <PublicationCountdown />
-              <StartTitleActions
-                signedIn={signedIn}
-                voteLive={voteLive}
-                selectedKey={cursorKey}
-                notifyOpen={notifyOpen}
-                onNotifyChange={setNotifyOpen}
-                notifySelected={cursorKey === NOTIFY_OPTION.key}
-              />
+      <div className="md:hidden">
+        {/* hh-scroll-window / hh-scroll-plane / hh-scroll-page: while the keys are up
+            this surface stops being one glass tall and clipped to it, and becomes a page
+            the picture can scroll — which is what leaves room for the address a reader is
+            typing into. Three levels are named so the change is deterministic: each stops
+            being a flex track and takes its own height. */}
+        <div className="hh-slide-window hh-scroll-window relative flex flex-col">
+          {/* The picture plane: the hour's sky, edge to edge in the glass. Nothing is
+              inset and nothing is rounded, so no strip of the page behind the device
+              shows at the picture's edges and the star field runs the full height of the
+              display, straight into the strip across the head of the glass: the bar above
+              carries the glass's own arc, and the sky fills the corners under it, square.
+              The foot is square for the same reason — the picture ends on the readout
+              band, where the glass is still running straight. */}
+          <div
+            className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden"
+            style={{ background: phase.sky }}
+          >
+            <StartSky phase={phase} />
+
+            <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-3 pt-5">
+              {/* The masthead, the cycle read twice on its own two lines, and then the
+                  two keys the title screen asks for standing together in one row. */}
+              <div className="hh-title-block mt-4 shrink-0">
+                <StartMark />
+                <div className="mt-3">
+                  <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
+                  <PublicationCountdown />
+                  <StartTitleActions
+                    signedIn={signedIn}
+                    voteLive={voteLive}
+                    selectedKey={cursorKey}
+                    notifyOpen={notifyOpen}
+                    onNotifyChange={setNotifyOpen}
+                    notifySelected={cursorKey === NOTIFY_OPTION.key}
+                  />
+                </div>
+              </div>
+
+              <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />
             </div>
           </div>
-
-          <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />
-
-          {/* The stamp closes the screen on a desk. On the phone the same stamp is
-              printed on the device itself, in the band across the foot of the glass,
-              where the machine's readout belongs. */}
-          <div className="mt-8 hidden md:block">
-            <StartMetaRow />
-          </div>
-        </div>
-
-        {/* Desktop navigation under the title screen. */}
-        <div className="hidden md:block">
-          <div className="h-20" />
-          <HomeDock />
         </div>
       </div>
-    </div>
+    </>
   );
 }

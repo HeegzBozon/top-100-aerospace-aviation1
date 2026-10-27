@@ -6,7 +6,6 @@ import BoardColumn from '@/components/board/BoardColumn';
 import CheckInColumn from '@/components/board/CheckInColumn';
 import SeasonBand from '@/components/board/SeasonBand';
 import { useCheckIn } from '@/components/board/useCheckIn';
-import HomeDock from '@/components/home-v3/HomeDock';
 import FlightDeck from '@/components/flight-deck/FlightDeck';
 import { BOARD_COLUMNS, BRAND } from '@/components/board/boardConfig';
 import useBoardCards from '@/components/board/useBoardCards';
@@ -223,7 +222,6 @@ export default function TheBoard() {
 
       {/* Clearance under the columns for the dock the deck carries. */}
       <div className="hidden h-28 md:block" />
-      <HomeDock />
     </>
   );
 

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { hourPhase } from '@/components/core/appOpening';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
-import HomeDock from '@/components/home-v3/HomeDock';
 import StartSky from '@/components/start/StartSky';
 import StartMetaRow from '@/components/start/StartMetaRow';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
@@ -92,7 +91,6 @@ export default function AeroSyncTitle() {
 
         <div className="hidden md:block">
           <div className="h-20" />
-          <HomeDock />
         </div>
       </div>
     </div>

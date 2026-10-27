@@ -20,7 +20,6 @@ import EndorsementWall from '@/components/fellow-home/EndorsementWall';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import ConnectButton from '@/components/fellow-home/ConnectButton';
 import FollowButton from '@/components/fellow-home/FollowButton';
-import HomeDock from '@/components/home-v3/HomeDock';
 import { accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
 import { statusByKey } from '@/components/fellow-home/fellowStatuses';
 import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
@@ -177,7 +176,6 @@ export default function ProfileView({ userId: propUserId = null }) {
                 />
             )}
 
-            <HomeDock />
         </div>
     );
 }

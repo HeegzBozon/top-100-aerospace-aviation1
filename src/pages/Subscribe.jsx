@@ -5,7 +5,6 @@ import { Mail, ChevronRight, Check, Sparkles, Compass, Telescope, Rocket, ArrowR
 import { subscribeNewsletter } from '@/functions/subscribeNewsletter';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import AdvocacyStrip from '@/components/events/AdvocacyStrip';
-import HomeDock from '@/components/home-v3/HomeDock';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -323,7 +322,6 @@ export default function Subscribe() {
       </div>
 
       <div className="h-24" />
-      <HomeDock />
     </div>
   );
 }

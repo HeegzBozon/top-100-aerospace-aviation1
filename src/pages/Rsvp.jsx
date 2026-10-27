@@ -18,7 +18,6 @@ import { captureRsvp } from '@/functions/captureRsvp';
 import { base44 } from '@/api/base44Client';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import AdvocacyStrip from '@/components/events/AdvocacyStrip';
-import HomeDock from '@/components/home-v3/HomeDock';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const NAVY = '#1e3a5a';
@@ -464,7 +463,6 @@ export default function Rsvp() {
       </div>
 
       <div className="h-24" />
-      <HomeDock />
     </div>
   );
 }

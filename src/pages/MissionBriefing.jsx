@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, LayoutGrid } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
-import HomeDock from '@/components/home-v3/HomeDock';
 import CourseRail from '@/components/mission/CourseRail';
 import CourseChapter from '@/components/mission/CourseChapter';
 import CourseModule from '@/components/mission/CourseModule';
@@ -173,7 +172,6 @@ export default function MissionBriefing() {
 
         <div className="h-24" />
       </div>
-      <HomeDock />
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import NineMonthsArticleHero from '@/components/nine-months/NineMonthsArticleHero';
 import NineMonthsMilestones from '@/components/nine-months/NineMonthsMilestones';
 import NineMonthsArticleClosing from '@/components/nine-months/NineMonthsArticleClosing';
-import HomeDock from '@/components/home-v3/HomeDock';
 
 export default function NineMonths2026() {
   useEffect(() => {
@@ -47,7 +46,6 @@ export default function NineMonths2026() {
           <NineMonthsArticleClosing />
         </div>
       </article>
-      <HomeDock />
     </main>
   );
 }

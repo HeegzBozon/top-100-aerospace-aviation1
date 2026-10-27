@@ -1,4 +1,3 @@
-import HomeDock from '@/components/home-v3/HomeDock';
 import FollowingLedger from '@/components/following/FollowingLedger';
 import { C } from '@/components/crm/crmConfig';
 
@@ -27,7 +26,6 @@ export default function AeroSyncFollowing() {
 
         <div className="h-24" />
       </div>
-      <HomeDock />
     </div>
   );
 }

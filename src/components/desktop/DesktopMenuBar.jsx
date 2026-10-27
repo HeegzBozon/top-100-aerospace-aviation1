@@ -89,6 +89,7 @@ export default function DesktopMenuBar() {
         onFile={() => toggle("file")}
         onEdit={() => toggle("edit")}
         onNotifications={() => (isSignedIn ? setNotificationsOpen(true) : toLogin())}
+        showClock
         showViewAs={realUser?.role === "admin"}
         viewingAsVisitor={viewingAsVisitor}
         onToggleViewAs={toggleViewingAsVisitor}
