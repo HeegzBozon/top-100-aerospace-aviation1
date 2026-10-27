@@ -39,8 +39,12 @@ export function buildIssueContents(pages = []) {
 // The register behind the issue: every honoree in it, numbered in the order she stands in
 // the book, with the letter her surname falls under and the folio her portrait prints. Read
 // from the portraits themselves, so a register can never disagree with the issue it indexes.
-export function buildNameIndex(pages = []) {
+export function buildNameIndex(pages = [], articles = []) {
   const entries = [];
+  // The issue's portraits and its articles are one honoree twice over: the page carries the
+  // picture and the stand, the article carries the record she came from. The register needs
+  // both, so the name it prints stays joined to the record a Fellow can follow or keep.
+  const articleById = new Map(articles.map((article) => [article.id, article]));
 
   pages.forEach((page, index) => {
     if (page.layout_type !== 'profile') return;
@@ -52,6 +56,8 @@ export function buildNameIndex(pages = []) {
     const surname = parts[parts.length - 1] || name;
     const given = parts.slice(0, -1).join(' ');
 
+    const article = articleById.get(page.article_id) || null;
+
     entries.push({
       key: page.id || `name-${index}`,
       number: entries.length + 1,
@@ -59,7 +65,9 @@ export function buildNameIndex(pages = []) {
       indexForm: given ? `${surname}, ${given}` : surname,
       letter: (surname.charAt(0) || '#').toUpperCase(),
       region: blocks.find((block) => block.type === 'kicker' && block.text)?.text || '',
-      stand: blocks.find((block) => block.type === 'byline' && block.text)?.text || '',
+      stand: blocks.find((block) => block.type === 'byline' && block.text)?.text || article?.subtitle || '',
+      portrait: blocks.find((block) => block.type === 'image' && block.url)?.url || article?.hero_image_url || '',
+      nomineeId: article?.nominee_id || '',
       pageNumber: page.page_number || index + 1,
       position: index + 1,
     });

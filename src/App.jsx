@@ -83,6 +83,7 @@ const HonoreePublication = lazy(() => import('@/pages/HonoreePublication'));
 const IntelligenceGlobe = lazy(() => import('@/pages/IntelligenceGlobe'));
 const MagazineStudio = lazy(() => import('@/pages/MagazineStudio'));
 const MagazineReader = lazy(() => import('@/pages/MagazineReader'));
+const Women2025Edition = lazy(() => import('@/pages/Women2025Edition'));
 const OgCardTest = lazy(() => import('@/pages/OgCardTest'));
 const OgCardGenerator = lazy(() => import('@/pages/OgCardGenerator'));
 const WomenCollageGenerator = lazy(() => import('@/pages/WomenCollageGenerator'));
@@ -91,6 +92,7 @@ const TheBoard = lazy(() => import('@/pages/TheBoard'));
 const StartScreen = lazy(() => import('@/pages/StartScreen'));
 const AeroSyncContacts = lazy(() => import('@/pages/AeroSyncContacts'));
 const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
+const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
 
@@ -224,6 +226,7 @@ const AuthenticatedApp = () => {
       <Route path="/aerosync" element={<AeroSyncTitle />} />
       <Route path="/aerosync/contacts" element={<AeroSyncContacts />} />
       <Route path="/aerosync/rooms" element={<AeroSyncRooms />} />
+      <Route path="/aerosync/following" element={<AeroSyncFollowing />} />
       {/* The networking page is retired: its work lives on AeroSync's surfaces now */}
       <Route path="/networking" element={<Navigate to="/aerosync" replace />} />
       {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
@@ -282,6 +285,9 @@ const AuthenticatedApp = () => {
       <Route path="/intelligence-globe" element={<IntelligenceGlobe />} />
       <Route path="/magazine-studio" element={<MagazineStudio />} />
       <Route path="/magazine/:issueId" element={<MagazineReader />} />
+      {/* The title screen's TOP 100 Women 2025 key: the edition itself, resolved to the
+          issue bound for it, rather than a page about the edition */}
+      <Route path="/women-2025" element={<Women2025Edition />} />
       <Route path="/og-card-test" element={<OgCardTest />} />
       <Route path="/og-card-generator" element={<OgCardGenerator />} />
       <Route path="/women-collage-generator" element={<WomenCollageGenerator />} />

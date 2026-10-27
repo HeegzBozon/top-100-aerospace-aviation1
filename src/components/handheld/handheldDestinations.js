@@ -27,7 +27,7 @@ export const NAVIGATOR_GROUPS = [
     label: "Affiliation",
     items: [
       { label: "Selection Committee", to: "/selection-committee", icon: Award },
-      { label: "Results", to: "/Top100Women2025", icon: Trophy },
+      { label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
       { label: "Season Archive", to: "/ArchiveLanding", icon: BookOpen },
       { label: "Top Viral Posts", to: "/viralpost2026", icon: Newspaper },
       { label: "Patrons", to: "/Sponsors", icon: Heart },

@@ -3,7 +3,7 @@ import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 // One name in the register: the number the issue gives her, the name as an index sets it
 // (surname first), where she stands, the folio her portrait prints, and the pip that says
 // the page has been opened in this sitting.
-export default function GlassNameIndexRow({ entry, active = false, read = false, onClick }) {
+export default function GlassNameIndexRow({ entry, active = false, read = false, followed = false, onClick }) {
   const ink = active ? P.cream : P.navy;
   const soft = active ? 'rgba(250,248,245,0.62)' : 'rgba(30,58,90,0.5)';
   const stands = [entry.region, entry.stand].filter(Boolean).join(' · ');
@@ -44,7 +44,17 @@ export default function GlassNameIndexRow({ entry, active = false, read = false,
             background: read ? P.copper : 'transparent',
             border: `1px solid ${read ? P.copper : active ? 'rgba(250,248,245,0.42)' : 'rgba(30,58,90,0.22)'}`,
           }}
+          title={read ? 'Opened in this sitting' : 'Not opened yet'}
         />
+        {/* The name a Fellow keeps: marked in the roll itself, in rose gold, so the
+            register reads as their own standing with the edition */}
+        {followed ? (
+          <span
+            className="h-[5px] w-[5px] rounded-full"
+            style={{ background: P.gold }}
+            title="Following"
+          />
+        ) : null}
       </span>
     </button>
   );

@@ -1,9 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import GlassHonoreeCard from '@/components/magazine/glass/GlassHonoreeCard';
 import GlassNameIndexRail from '@/components/magazine/glass/GlassNameIndexRail';
 import GlassNameIndexRow from '@/components/magazine/glass/GlassNameIndexRow';
+import useFollowing from '@/components/following/useFollowing';
+import useListEntry from '@/components/following/useListEntry';
+import { personKey } from '@/components/following/honoreeRecord';
 
 const EMPTY = new Set();
 
@@ -11,6 +17,16 @@ const EMPTY = new Set();
 const arrange = (entries, order) => (order === 'name'
   ? [...entries].sort((a, b) => a.indexForm.localeCompare(b.indexForm))
   : [...entries].sort((a, b) => a.number - b.number));
+
+// What an action that did not go through says, in the register's own voice. An action that
+// cannot be taken is explained rather than hidden: the reader is told what is missing.
+const REFUSALS = {
+  'signed-out': 'Sign in to keep the people you follow, and a list of your own.',
+  'no-address': 'No address on her record, so she cannot be followed yet.',
+  'no-record': 'This name is not linked to a record yet.',
+  failed: 'That did not go through. Try it again.',
+};
+const refusal = (reason) => REFUSALS[reason] || REFUSALS.failed;
 
 // The Index of Names, on the glass.
 //
@@ -23,11 +39,28 @@ const arrange = (entries, order) => (order === 'name'
 // A name opened in this sitting keeps a filled pip, so the register records the reading as
 // it happens. That is a record of one sitting on one glass, and is kept nowhere else.
 export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onBack }) {
+  const navigate = useNavigate();
   const [order, setOrder] = useState('number');
   const [cursor, setCursor] = useState(0);
+  const [card, setCard] = useState(null);
+  const [notice, setNotice] = useState('');
   const listEl = useRef(null);
+
+  // The two bridges off this register: the people a Fellow follows, kept in AeroSync, and
+  // the list they keep, which is the list the Selection Committee orders and submits.
+  const following = useFollowing();
+  const list = useListEntry();
+
   const handlers = useRef({ onOpen, onBack });
   handlers.current = { onOpen, onBack };
+
+  // A name already followed is marked in the roll itself, so the register reads as the
+  // reader's own standing with the edition rather than as one more list to search.
+  const followedNames = useMemo(
+    () => new Set(following.rows.map((row) => personKey(row.following_name)).filter(Boolean)),
+    [following.rows],
+  );
+  const isFollowed = (entry) => followedNames.has(personKey(entry.name));
 
   const ordered = useMemo(() => arrange(entries, order), [entries, order]);
 
@@ -81,7 +114,9 @@ export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onB
       enter: () => {
         const entry = listRef.current[cursorRef.current];
         if (!entry) return false;
-        handlers.current.onOpen?.(entry);
+        // A name is opened before it is acted on: her card carries reading, following and
+        // keeping, and the ring walks all three.
+        setCard(entry);
         return true;
       },
       back: () => {
@@ -92,13 +127,50 @@ export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onB
   }
 
   useEffect(() => registerPicker(api.current), []);
-  useEffect(() => { touchPicker(); }, [ordered, cursor]);
+  useEffect(() => { touchPicker(); }, [ordered, cursor, card, following.rows.length, list.count]);
 
   useEffect(() => {
     listEl.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: 'nearest' });
   }, [cursor, ordered]);
 
   const opened = entries.filter((entry) => read.has(entry.position)).length;
+
+  // What a press on the card does, and what the card says when it cannot.
+  const toggleFollow = async (entry) => {
+    const res = await following.toggle({ name: entry.name, portrait: entry.portrait, nomineeId: entry.nomineeId });
+    if (res.ok) setNotice(res.following ? `Following ${res.name}` : `${res.name} is no longer in the people you follow`);
+    else setNotice(refusal(res.reason));
+  };
+
+  const addToList = async (entry) => {
+    const res = await list.add(entry);
+    if (res.ok) setNotice(res.already ? `${res.name} is already on your list` : `${res.name} added to your TOP 100`);
+    else setNotice(refusal(res.reason));
+  };
+
+  if (card) {
+    return (
+      <GlassHonoreeCard
+        entry={card}
+        wasRead={read.has(card.position)}
+        followed={isFollowed(card)}
+        inList={!!list.positionOf(card.nomineeId)}
+        listPosition={list.positionOf(card.nomineeId)}
+        signedIn={following.signedIn}
+        notice={notice}
+        onRead={() => onOpen?.(card)}
+        onToggleFollow={() => toggleFollow(card)}
+        onAddToList={() => addToList(card)}
+        onOpenList={() => navigate('/selection-committee?tab=nominate')}
+        onOpenAeroSync={() => navigate('/aerosync/following')}
+        onSignIn={() => base44.auth.redirectToLogin(window.location.href)}
+        onClose={() => {
+          setNotice('');
+          setCard(null);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="px-3 pb-5 pt-3">
@@ -110,7 +182,7 @@ export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onB
         </p>
         <div className="flex items-center gap-2">
           <p className="text-[7.5px] font-bold uppercase tracking-[0.16em]" style={{ color: 'rgba(30,58,90,0.5)' }}>
-            ◀▶ Walk · A Read
+            ◀▶ Walk · A Open
           </p>
           <button
             type="button"
@@ -131,16 +203,29 @@ export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onB
           {' of '}
           {entries.length} opened this sitting
         </p>
-        <button
-          type="button"
-          onClick={switchOrder}
-          title={order === 'number' ? 'Numbered as the book numbers them · tap for one alphabet' : 'One alphabet · tap for the book’s numbering'}
-          aria-label={order === 'number' ? 'Sorted by number. Sort by name' : 'Sorted by name. Sort by number'}
-          className="flex-none rounded-full px-2 py-0.5 font-mono text-[9px]"
-          style={{ color: P.navy, background: 'rgba(30,58,90,0.05)', border: '1px solid rgba(30,58,90,0.30)' }}
-        >
-          {order === 'number' ? 'No.' : 'A–Z'}
-        </button>
+        <div className="flex flex-none items-center gap-1.5">
+          {following.rows.length ? (
+            <button
+              type="button"
+              onClick={() => navigate('/aerosync/following')}
+              title="The people you follow, with the cards you hold for them"
+              className="flex-none rounded-full px-2 py-0.5 font-mono text-[9px]"
+              style={{ color: P.copper, border: '1px solid rgba(184,115,51,0.5)' }}
+            >
+              {following.rows.length} followed
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={switchOrder}
+            title={order === 'number' ? 'Numbered as the book numbers them · tap for one alphabet' : 'One alphabet · tap for the book’s numbering'}
+            aria-label={order === 'number' ? 'Sorted by number. Sort by name' : 'Sorted by name. Sort by number'}
+            className="flex-none rounded-full px-2 py-0.5 font-mono text-[9px]"
+            style={{ color: P.navy, background: 'rgba(30,58,90,0.05)', border: '1px solid rgba(30,58,90,0.30)' }}
+          >
+            {order === 'number' ? 'No.' : 'A–Z'}
+          </button>
+        </div>
       </div>
 
       <GlassNameIndexRail letters={letters} onJump={jumpToLetter} />
@@ -157,7 +242,8 @@ export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onB
               entry={entry}
               active={i === cursor}
               read={read.has(entry.position)}
-              onClick={() => handlers.current.onOpen?.(entry)}
+              followed={isFollowed(entry)}
+              onClick={() => setCard(entry)}
             />
           ))}
         </div>

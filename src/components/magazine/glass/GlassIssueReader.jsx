@@ -45,7 +45,7 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
 
   // The register of names: the issue's own honorees, numbered as they stand in it, read
   // from the portraits the issue already carries.
-  const nameIndex = useMemo(() => (isPdf ? [] : buildNameIndex(pages)), [isPdf, pages]);
+  const nameIndex = useMemo(() => (isPdf ? [] : buildNameIndex(pages, articles)), [isPdf, pages, articles]);
 
   // What has been opened in this sitting. Kept on the glass and nowhere else: it is the
   // record of one reading, not a property of the issue.
