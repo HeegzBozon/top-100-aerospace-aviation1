@@ -1,0 +1,101 @@
+{
+  "name": "MissionChronicle",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow whose path this is. One record per Fellow; the stable key for reads and writes."
+    },
+    "season_id": {
+      "type": "string",
+      "description": "Season this chronicle was opened against"
+    },
+    "season_label": {
+      "type": "string",
+      "description": "Denormalized season name, for the record's own header"
+    },
+    "guide_name": {
+      "type": "string",
+      "description": "The name the Fellow gave the guide on first arrival"
+    },
+    "aircraft_key": {
+      "type": "string",
+      "description": "Key of the chosen airframe from the curated roster. Cosmetic only; never read by discovery, measurement, ranking, or selection."
+    },
+    "completed_missions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Mission keys the Fellow has finished on the season's path. Cosmetic progression only; never read by discovery, measurement, ranking, or selection."
+    },
+    "xp": {
+      "type": "number",
+      "default": 0,
+      "description": "Participation points, derived from completed_missions. Buys airframes and nothing else; never read by discovery, measurement, ranking, or selection."
+    },
+    "choices": {
+      "type": "object",
+      "default": {},
+      "description": "Curated choices made along the path (domain accent, first surface opened). Expression only; never feeds measurement."
+    },
+    "dismissed_nudges": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Mission keys whose gentle nudge the Fellow has waved away"
+    },
+    "last_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time the Fellow stood on the path"
+    }
+  },
+  "required": [
+    "fellow_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

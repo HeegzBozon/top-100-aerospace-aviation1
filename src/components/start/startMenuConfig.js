@@ -1,4 +1,4 @@
-import { Award, BookOpen, LayoutGrid, ListChecks, LogIn, Plane, Shield, Trophy, UserPlus, Users } from "lucide-react";
+import { Award, BookOpen, Compass, LayoutGrid, ListChecks, LogIn, Plane, Shield, Trophy, UserPlus, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -17,14 +17,17 @@ import { Award, BookOpen, LayoutGrid, ListChecks, LogIn, Plane, Shield, Trophy, 
 // may do them. Measuring is a Fellow's — the ballot needs an account — and so are the
 // surfaces that hold a person's own record, so they carry the member flag and are simply
 // not drawn for a visitor.
+// The path leads the row: it is the guided way through a cycle, so a Fellow who has
+// never been here before meets the guide before they meet the work.
 export const START_MENU = [
-  { key: "read", index: "00", label: "Read", to: "/mission-briefing", icon: BookOpen },
-  { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
-  { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
-  { key: "networking", index: "03", label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
-  { key: "dashboard", index: "04", label: "Dashboard", to: "/board", icon: LayoutGrid, membersOnly: true },
-  { key: "results", index: "05", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
-  { key: "frontier", index: "06", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
+  { key: "path", index: "00", label: "The Path", to: "/mission", icon: Compass, membersOnly: true },
+  { key: "read", index: "01", label: "Read", to: "/mission-briefing", icon: BookOpen },
+  { key: "nominate", index: "02", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
+  { key: "vote-surface", index: "03", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
+  { key: "networking", index: "04", label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
+  { key: "dashboard", index: "05", label: "Dashboard", to: "/board", icon: LayoutGrid, membersOnly: true },
+  { key: "results", index: "06", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
+  { key: "frontier", index: "07", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -32,7 +35,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "07",
+  index: "08",
   label: "Admin",
   to: "/Admin",
   icon: Shield,

@@ -17,6 +17,7 @@ import AppSplash from '@/components/core/AppSplash';
 import ConsoleLoading from '@/components/core/ConsoleLoading';
 import PageTurn from '@/components/core/PageTurn';
 import SurfaceLoader from '@/components/core/SurfaceLoader';
+import MissionNudge from '@/components/mission/chronicle/MissionNudge';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
@@ -97,6 +98,7 @@ const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
 const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
+const MissionPath = lazy(() => import('@/pages/MissionPath'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -234,6 +236,9 @@ const AuthenticatedApp = () => {
       <Route path="/networking" element={<Navigate to="/aerosync" replace />} />
       {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
       <Route path="/mission-briefing" element={<MissionBriefing />} />
+      {/* The season's path: the narrative spine of a cycle — the guide, the call,
+          the threshold, the trials, the return. Cosmetic progression only. */}
+      <Route path="/mission" element={<MissionPath />} />
       <Route path="/the-board" element={<TheBoard />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />
@@ -359,6 +364,7 @@ function App() {
             <NavigationTracker />
             {/* The title card plays once per session, over everything */}
             <AppSplash />
+            <MissionNudge />
             <AuthenticatedApp />
           </Router>
           <Toaster />
