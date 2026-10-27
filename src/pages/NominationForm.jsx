@@ -21,6 +21,8 @@ import StageLocalLegends from '@/components/nominate/StageLocalLegends';
 import StageReview from '@/components/nominate/StageReview';
 import StageConfirmation from '@/components/nominate/StageConfirmation';
 import NominationSplash from '@/components/nominate/NominationSplash';
+import NominateBallotGate from '@/components/nominate/NominateBallotGate';
+import ConsoleLoading from '@/components/core/ConsoleLoading';
 import MyTop100 from '@/pages/MyTop100';
 
 const SURVEY_ID = '69f45633daacf496cacd8666';
@@ -49,6 +51,8 @@ export default function NominationForm({ isPreview = false } = {}) {
   const [stage, setStage] = useState(STAGES.WELCOME);
   const [submitting, setSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  // null until the platform answers whether a Fellow is standing here at all.
+  const [signedIn, setSignedIn] = useState(null);
   const [draftRestored, setDraftRestored] = useState(false);
   // A deep link names the surface it wants — the start screen's Vote now asks for
   // the vote tab — and goes there directly, with no title card in the way.
@@ -67,7 +71,11 @@ export default function NominationForm({ isPreview = false } = {}) {
     (async () => {
       try {
         const authenticated = await base44.auth.isAuthenticated();
-        if (!authenticated || !active) return;
+        if (!active) return;
+        setSignedIn(!!authenticated);
+        // A visitor files a nomination from the guided hub and nowhere else — there is no
+        // list of their own to read yet, so the record is not asked for.
+        if (!authenticated) return;
         const me = await base44.auth.me();
         if (!active) return;
         setCurrentUser(me);
@@ -76,7 +84,11 @@ export default function NominationForm({ isPreview = false } = {}) {
           name: prev.name || me.full_name || '',
           email: prev.email || me.email || '',
         }));
-      } catch { /* not logged in — that's fine */ }
+      } catch {
+        // No Fellow here, or the check itself failed: either way the surface opens for a
+        // visitor rather than waiting on an answer that is not coming.
+        if (active) setSignedIn(false);
+      }
     })();
     return () => { active = false; };
   }, []);
@@ -299,8 +311,15 @@ export default function NominationForm({ isPreview = false } = {}) {
 
   const handleExit = () => navigate('/');
 
+  // Putting names forward needs no account: the guided hub below is open to everyone, and
+  // asks for the name and address to credit. Measuring — weighing the names against one
+  // another — is a Fellow's work, so the hub that follows the splash, and the ballot
+  // inside it, open for one. A visitor who asked for the ballot by name is taken to the
+  // way in rather than shown a ballot they cannot cast.
   if (!isPreview) {
-    return showSplash ? <NominationSplash /> : <MyTop100 />;
+    if (signedIn === null) return <ConsoleLoading label="Checking your account" />;
+    if (!signedIn && deepTab === 'vote') return <NominateBallotGate />;
+    if (signedIn) return showSplash ? <NominationSplash /> : <MyTop100 />;
   }
 
   return (
