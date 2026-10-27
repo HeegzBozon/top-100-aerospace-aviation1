@@ -7,9 +7,17 @@ import IssueOpening from '@/components/magazine/IssueOpening';
 import CinematicFlipbook from '@/components/magazine/CinematicFlipbook';
 import SinglePageReader from '@/components/magazine/SinglePageReader';
 import PdfViewer from '@/components/magazine/PdfViewer';
+import GlassIssueOpening from '@/components/magazine/glass/GlassIssueOpening';
+import GlassIssueReader from '@/components/magazine/glass/GlassIssueReader';
+import useIssueEditMenu from '@/components/magazine/glass/useIssueEditMenu';
+import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
+import { useToast } from '@/components/ui/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function MagazineReader() {
   const { issueId } = useParams();
+  const isMobile = useIsMobile();
+  const { toast } = useToast();
   const [issue, setIssue] = useState(null);
   const [pages, setPages] = useState([]);
   const [articles, setArticles] = useState([]);
@@ -78,6 +86,35 @@ export default function MagazineReader() {
     return () => window.removeEventListener('keydown', handler);
   }, [opened]);
 
+  // The issue's File menu on a desk: the machine's own list carries the issue while a desk
+  // reader is open — the PDF a reader keeps, and the link to hand out — reported in the
+  // machine's notices. On the handheld the glass reader registers the fuller list, with the
+  // honoree standing under the ring beside these two, so this one stands down there.
+  useIssueFileMenu({
+    issue,
+    pages,
+    articles,
+    enabled: !isMobile && opened,
+    present: 'toast',
+    onNotice: ({ tone, title, message }) =>
+      toast({
+        title,
+        description: message,
+        variant: tone === 'error' ? 'destructive' : 'default',
+      }),
+  });
+
+  // The issue's Edit menu on a desk: a note to the masthead about the article being read,
+  // or a correction proposed against it. Both are filed on the same sheet the glass files
+  // from — the sheet stands over the desk too — and both belong to the masthead, never to
+  // the measurement.
+  const editMenu = useIssueEditMenu({
+    issue,
+    pages,
+    articles,
+    enabled: !isMobile && opened,
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: P.navyVoid }}>
@@ -100,20 +137,40 @@ export default function MagazineReader() {
     );
   }
 
-  // Cinematic opening
+  // Cinematic opening. On the handheld it plays inside the glass, seated in the device
+  // rather than over it, with both ways in walked on the ring.
   if (!opened) {
-    return (
-      <IssueOpening
-        issue={issue}
-        onBegin={() => setOpened(true)}
-        onAutoPlay={() => { setOpened(true); setIsPlaying(true); }}
-      />
-    );
+    const opening = {
+      issue,
+      onBegin: () => setOpened(true),
+      onAutoPlay: () => { setOpened(true); setIsPlaying(true); },
+    };
+    return isMobile ? <GlassIssueOpening {...opening} /> : <IssueOpening {...opening} />;
   }
 
   const isPdf = issue.assembly_mode === 'pdf';
 
+  // On the handheld the issue is read on the glass: the contents walked on the ring,
+  // one page standing open at a time, and the film started and stopped from the same
+  // hand. The desk keeps the flipbook, which is the shape for a pointer and a wide
+  // picture.
+  if (isMobile) {
+    return (
+      <GlassIssueReader
+        issue={issue}
+        pages={pages}
+        articles={articles}
+        signedUrl={pdfSignedUrl}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        speed={playbackSpeed}
+        setSpeed={setPlaybackSpeed}
+      />
+    );
+  }
+
   return (
+    <>
     <div className="relative">
       {/* Mode toggle */}
       {!isPdf && pages.length > 0 && (
@@ -167,5 +224,9 @@ export default function MagazineReader() {
         />
       )}
     </div>
+
+    {/* The sheet the Edit menu files from, standing over the desk */}
+    {editMenu.panel}
+    </>
   );
 }

@@ -15,10 +15,12 @@ const FIELDS = ['avatar_url', 'publish_consent', 'industry_role', 'headline', 'l
 
 const draftKey = (email) => `pw-draft-${email || 'anon'}`;
 
-export default function ProfileWizard({ user, nominee, onClose, onSaved }) {
+// `openWith` opens the Studio straight on those sittings, so the console's studio
+// panel can send a Fellow to the appointment they picked instead of the lobby.
+export default function ProfileWizard({ user, nominee, onClose, onSaved, openWith = null }) {
   // phase: lobby → overture → steps → review
-  const [phase, setPhase] = useState('lobby');
-  const [queue, setQueue] = useState([]);
+  const [phase, setPhase] = useState(openWith?.length ? 'overture' : 'lobby');
+  const [queue, setQueue] = useState(() => openWith || []);
   const [qIdx, setQIdx] = useState(0);
   const [stepIdx, setStepIdx] = useState(0);
   const [dir, setDir] = useState('forward');

@@ -78,7 +78,7 @@ export default function NewYearCountdownBar() {
       <motion.div
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="fixed bottom-0 left-0 right-0 z-50"
+        className="hh-lift fixed bottom-0 left-0 right-0 z-50"
       >
       <div
         className="relative overflow-hidden"

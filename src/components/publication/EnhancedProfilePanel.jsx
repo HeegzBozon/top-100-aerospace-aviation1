@@ -634,7 +634,7 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4"
+        className="hh-glass-panel fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4"
         onClick={onClose}
       >
         {/* Backdrop */}
@@ -647,8 +647,8 @@ export default function EnhancedProfilePanel({ nominee, rank, onClose, onShare, 
           exit={{ scale: 0.94, y: 32, opacity: 0 }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl"
-          style={{ height: 'min(92vh, 700px)', background: b.cream }}
+          className="hh-glass-panel-card relative flex h-full w-full flex-col overflow-hidden rounded-2xl shadow-2xl sm:h-[min(92vh,700px)] sm:max-w-sm sm:rounded-3xl"
+          style={{ background: b.cream }}
         >
           {/* Persistent chrome */}
           <ModalChrome rank={rank} onClose={onClose} />

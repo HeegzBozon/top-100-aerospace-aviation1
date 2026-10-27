@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Hash, MessageSquare } from "lucide-react";
 import { brandColors } from "@/components/core/brandTheme";
+import HomeModule from "./HomeModule";
 
 export default function MobileUnreadPulse({ unreads, onSelect, isDarkMode }) {
   if (!unreads.length) return null;
@@ -8,13 +9,9 @@ export default function MobileUnreadPulse({ unreads, onSelect, isDarkMode }) {
   const cardBg = isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.75)";
   const cardBorder = isDarkMode ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.6)";
   const text = isDarkMode ? "#ffffff" : brandColors.navyDeep;
-  const textMuted = isDarkMode ? "rgba(255,255,255,0.55)" : "rgba(30,58,90,0.55)";
 
   return (
-    <div className="px-4 mb-3">
-      <p className="text-xs font-semibold uppercase tracking-widest mb-2.5" style={{ color: textMuted }}>
-        Unread
-      </p>
+    <HomeModule label="Unread" isDarkMode={isDarkMode} className="mb-3">
       <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1" style={{ WebkitOverflowScrolling: "touch" }}>
         {unreads.map((conv) => {
           const isDm = conv.type === "dm";
@@ -50,6 +47,6 @@ export default function MobileUnreadPulse({ unreads, onSelect, isDarkMode }) {
           );
         })}
       </div>
-    </div>
+    </HomeModule>
   );
 }

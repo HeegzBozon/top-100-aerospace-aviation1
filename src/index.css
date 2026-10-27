@@ -168,6 +168,13 @@ button:focus-visible {
   body {
     @apply bg-background text-foreground;
   }
+  /* Never let the browser re-cast the type it is handed: Safari's text autosizing
+     changes the size of whole surfaces the moment a picture is re-flowed for the
+     keys, which reads as a zoom the reader never asked for. */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 }
 
 /* Editorial publication tokens shared by light and dark app themes. */
@@ -232,6 +239,27 @@ button:focus-visible {
   animation: ppc-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+/* ===== HANDHELD CONSOLE CHROME ===== */
+@keyframes hh-deck-rise {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.hh-deck {
+  animation: hh-deck-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes hh-led-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(46, 213, 115, 0.9); }
+  50% { opacity: 0.5; box-shadow: 0 0 2px rgba(46, 213, 115, 0.45); }
+}
+.hh-led {
+  animation: hh-led-pulse 3.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hh-deck, .hh-led {
+    animation: none;
+  }
+}
+
 /* ===== PROFILE DECK — SLIDE TRANSITIONS ===== */
 @keyframes deck-slide-enter {
   from { opacity: 0; transform: translateY(24px) scale(0.985); }
@@ -239,4 +267,1080 @@ button:focus-visible {
 }
 .deck-slide-enter {
   animation: deck-slide-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ===== HANDHELD SHELL — THE DEVICE BODY =====
+   --hh-top and --hh-bottom mark the GLASS opening: the moulding is drawn back out
+   around them by --hh-bezel-w, so a deeper bezel thickens the hardware without
+   moving anything that lives on the picture. --hh-shell-top is the device's own
+   top edge, and the glass opens below the moulding: the case carries no printed
+   band, so the top of the hardware is as slim as its sides and the picture takes
+   everything that band held. HandheldDeck sets these on mount and resets them
+   to 0 when it unmounts, so surfaces inset themselves around the device, and
+   reclaim the whole viewport when the console is put away (the message composer,
+   for one). */
+:root {
+  --hh-top: 28px;
+  --hh-shell-top: 14px;
+  /* Where the glass opens at its foot: the chin's own top edge. Nothing of the moulding
+     is held below the picture, so the whole strip between the pane and the controls is
+     the glass's. */
+  --hh-bottom: 172px;
+  /* The readout band at the foot of the glass — the cycle's stamp. It is the glass's own
+     footer: taken from the pane's bottom edge, with the content window ending on its top. */
+  --hh-foot: 32px;
+
+  /* The desk margin, the moulding around the glass, and the inset every surface
+     on the picture is measured from — the last being the first two added. */
+  --hh-frame: 14px;
+  /* Set deeper than the steps need: the case takes more and the picture gives it up,
+     which is what makes the opening read as a well rather than a frame. */
+  --hh-bezel-w: 14px;
+  --hh-glass-inset: calc(var(--hh-frame, 0px) + var(--hh-bezel-w, 0px));
+
+  /* The strip cut across the head of the glass, and the air it leaves under
+     itself. Content begins below --hh-top + --hh-nav. */
+  --hh-nav: 34px;
+
+  /* Finish tokens — the house finish, until a Fellow changes it (see
+     handheldFinishes.js, which overwrites every one of these). */
+  --hh-shell-1: #2C3C52;
+  --hh-shell-2: #22303F;
+  --hh-shell-3: #18222E;
+  --hh-shell-edge: rgba(184,115,51,0.55);
+  --hh-shell-spec: rgba(255,255,255,0.20);
+  --hh-grain: rgba(255,255,255,0.035);
+  --hh-bezel: rgba(10,18,30,0.70);
+  --hh-recess: #0B1522;
+  --hh-recess-soft: rgba(6,12,22,0.34);
+  --hh-ink: #EFE9DC;
+  --hh-ink-rgb: 239 233 220;
+  --hh-ink-soft: rgba(239,233,220,0.42);
+  --hh-metal: #B87333;
+  --hh-metal-rgb: 184 115 51;
+  --hh-metal-1: #E0A96B;
+  --hh-metal-2: #7E4A1C;
+  --hh-grille: rgba(184,115,51,0.40);
+  --hh-key-1: #F7F3EA;
+  --hh-key-2: #EBE5D8;
+  --hh-key-3: #D9D1C0;
+  --hh-key-spec: rgba(255,255,255,0.62);
+  --hh-key-ink: #2A3038;
+  --hh-key-ink-soft: rgba(42,48,56,0.52);
+  --hh-pad-1: #3B4759;
+  --hh-pad-2: #2A3442;
+  --hh-pad-ink: #E9E4D8;
+  --hh-well-1: #101B2A;
+  --hh-well-2: #0A1220;
+  --hh-well-3: #050A12;
+  --hh-lcd: #A9BCCC;
+  --hh-lcd-rgb: 169 188 204;
+  --hh-lcd-soft: #5F7387;
+  --hh-lcd-bright: #DDE9F2;
+  --hh-led: #8FD3E8;
+}
+
+/* The picture window, exactly: content never runs under the hardware or past the
+   glass. #root insets the document-flow surfaces; .hh-stage is the scrollable
+   window the layout shell renders inside. */
+@media (max-width: 767px) {
+  body.hh-shell #root {
+    padding-top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top));
+    padding-bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom));
+    padding-left: var(--hh-glass-inset);
+    padding-right: var(--hh-glass-inset);
+  }
+
+  /* The desk. The device is inset inside the viewport, so there is a surface
+     around it: a lamplit navy stage with the field's fine star grid, a cool wash
+     off the top and the light pooling under the shell. The wash is navy, not metal:
+     the corners of the case open onto it, and warm there reads as a gap bitten out
+     of the moulding. The hardware reads as an object on a desk rather than a page
+     filling the glass. */
+  body.hh-shell {
+    background-color: #070C16;
+    background-image:
+      radial-gradient(150% 108% at 50% 42%, rgba(3, 6, 13, 0) 38%, rgba(3, 6, 13, 0.74) 100%),
+      radial-gradient(120% 58% at 50% 0%, rgba(58, 96, 140, 0.32) 0%, rgba(30, 58, 90, 0) 60%),
+      radial-gradient(96% 44% at 50% 104%, rgba(36, 68, 104, 0.55) 0%, rgba(8, 14, 27, 0) 74%),
+      radial-gradient(rgba(250, 248, 245, 0.08) 1px, rgba(250, 248, 245, 0) 1.3px),
+      linear-gradient(168deg, #18273F 0%, #0E1829 46%, #070C16 100%);
+    background-size: auto, auto, auto, 24px 24px, auto;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat;
+  }
+}
+
+/* A "screen tall" page means the screen you are looking at, not the phone. This
+   keeps full-height pages from leaving dead scroll under the content. */
+@media (max-width: 767px) {
+  body.hh-shell .min-h-screen,
+  body.hh-shell .h-screen {
+    min-height: calc(
+      100dvh - var(--hh-top) - var(--hh-nav) - var(--hh-bottom) - var(--hh-foot, 0px) -
+        env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    );
+    height: auto;
+  }
+}
+
+/* Bars that ride the bottom of the screen clear the chin instead of covering it. */
+@media (max-width: 767px) {
+  body.hh-shell .hh-lift {
+    left: var(--hh-glass-inset);
+    right: var(--hh-glass-inset);
+    bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom));
+  }
+}
+
+/* The same clearance for bars that anchor themselves sideways — a centered
+   reader control, a right-hand action — leaving left/right and any transform
+   exactly as the surface set them. */
+@media (max-width: 767px) {
+  body.hh-shell .hh-lift-center,
+  body.hh-shell .hh-lift-right {
+    bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom));
+  }
+}
+
+/* The picture window, clipped to the glass's own shape. The pane opens with an 8px
+   arc at its two top corners and runs straight down its sides to the chin's line, and
+   the window is rounded to match — so nothing a surface paints can ever cross the
+   opening, and the arcs read as one edge rather than as a rounded card sitting in a
+   square hole. The foot is set square on purpose: the picture ends above the readout
+   band, where the glass is still straight. */
+.hh-stage {
+  position: fixed;
+  left: var(--hh-glass-inset);
+  right: var(--hh-glass-inset);
+  top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top));
+  bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* A deck fills the glass exactly: one slide per screen, each scrolling inside
+   itself, the strip between them moving sideways. */
+.hh-slide-window {
+  height: calc(
+    100dvh - var(--hh-top) - var(--hh-nav) - var(--hh-bottom) - var(--hh-foot, 0px) -
+      env(safe-area-inset-top) - env(safe-area-inset-bottom)
+  );
+}
+.hh-slide {
+  scroll-snap-align: start;
+}
+
+/* ===== THE KEYBOARD =====
+   The one time the controls center is put away. The keyboard stands exactly where
+   the chin stands, so the chin goes while a field is being written into, and the
+   clearance it held is handed over wholesale: the body re-declares --hh-bottom,
+   which outranks the value inherited from the document root, so the stage, the
+   glass panels and every bar riding the bottom of the picture are measured from
+   the keyboard instead of from the wheel. The moulding stays — the device is still
+   the device while the keys are up — and everything returns the moment they go. */
+@media (max-width: 767px) {
+  body.hh-keyboard {
+    --hh-bottom: var(--hh-keyboard, 0px);
+  }
+
+  /* The picture ends where the keys begin: read from the bottom of the viewport with
+     nothing added, because the height the keys report already carries the strip under
+     them. The chin's clearance is spent on the glass instead of held back from it. */
+  body.hh-keyboard .hh-stage {
+    bottom: var(--hh-keyboard, 0px);
+  }
+
+  body.hh-keyboard .hh-chin {
+    display: none;
+  }
+
+  /* The band goes with the chin: the keys are standing where it stood. */
+  body.hh-keyboard .hh-viewer-foot {
+    display: none;
+  }
+
+  /* A drawer that carries a field takes the keys' own line at its foot: the readout
+     band sits inside the picture the keys have taken, so nothing is held back for it. */
+  body.hh-keyboard .hh-keyed-drawer {
+    bottom: calc(var(--hh-bottom, 0px) + env(safe-area-inset-bottom) + 5px);
+  }
+
+  /* A surface that carries a field gives up its window. The title screen is drawn
+     as one glass tall and clipped to it, which is right until the keys take two
+     thirds of the picture: then the window becomes a page — its own height, nothing
+     clipped — and the glass scrolls, so the form being typed into is reachable.
+     Each of its three levels is named, and each stops being a flex track that can
+     be squeezed to nothing: a block takes the height of what it holds. */
+  body.hh-keyboard .hh-scroll-window,
+  body.hh-keyboard .hh-scroll-plane,
+  body.hh-keyboard .hh-scroll-page {
+    display: block;
+    height: auto;
+  }
+  body.hh-keyboard .hh-scroll-plane,
+  body.hh-keyboard .hh-scroll-page {
+    min-height: 0;
+    overflow: visible;
+  }
+
+  /* And the title section is read tighter while the keys are up: the mark comes down
+     a size and the page's own margins close, so the two readings and the field being
+     written into stand above the keyboard without a scroll. */
+  body.hh-keyboard .hh-scroll-page {
+    padding-top: 4px;
+    padding-bottom: 10px;
+  }
+  body.hh-keyboard .hh-title-block {
+    margin-top: 6px;
+  }
+  body.hh-keyboard .hh-title-block h1 {
+    font-size: 1.7rem;
+    line-height: 1;
+  }
+}
+
+/* LCD glass over the content: scanlines and a soft vignette, then a slow sheen. */
+/* The pane itself: a soft vignette in the finish's recess tone seats the content
+   at the bottom of the well and a 1px ink line closes the opening. No scanlines
+   over the editorial surfaces — the picture stays as composed as it prints. */
+.hh-glass {
+  box-shadow:
+    /* the steel line that closes the opening — cold, so the glass's own edge never
+       prints a warm sliver at the corners the strip and the picture share */
+    inset 0 0 0 1px rgba(226, 233, 241, 0.16),
+    /* the moulding's shadow falling into the picture, the light it catches along
+       the bottom lip, then the recess tone seating the content deeper in the well */
+    inset 0 9px 16px -9px rgba(3, 6, 13, 0.52),
+    inset 0 -3px 8px -6px rgba(255, 255, 255, 0.10),
+    inset 0 0 44px rgba(3, 6, 13, 0.24);
+}
+
+/* Power-on sequence. */
+.hh-boot {
+  animation: hh-boot-in 240ms ease both;
+}
+@keyframes hh-boot-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.hh-boot-bar {
+  transform-origin: left center;
+  animation: hh-boot-load 1.75s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes hh-boot-load {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.hh-flicker {
+  animation: hh-flicker 1.9s steps(1) both;
+}
+@keyframes hh-flicker {
+  0%, 7% { opacity: 0; }
+  8%, 11% { opacity: 1; }
+  12% { opacity: 0.3; }
+  13%, 100% { opacity: 1; }
+}
+.hh-blink {
+  animation: hh-blink 1.1s steps(1) infinite;
+}
+@keyframes hh-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.15; }
+}
+
+/* Section announcement — the module the wheel just landed on. */
+.hh-flash {
+  animation: hh-flash-in 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes hh-flash-in {
+  0% { opacity: 0; transform: translateY(7px); }
+  12%, 72% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hh-glass::after, .hh-boot-bar, .hh-flicker, .hh-blink, .hh-flash {
+    animation: none;
+  }
+}
+
+/* ===== HARDWARE — THE MOULDING =====
+   The shell, the chin, the well, the keys and the brasswork. Every tone below is
+   a finish token, so changing the finish re-casts the whole device at once and
+   nothing here is ever a hard-coded colour. */
+.hh-body {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 16%),
+    linear-gradient(180deg, var(--hh-shell-1) 0%, var(--hh-shell-2) 58%, var(--hh-shell-3) 100%);
+  box-shadow:
+    /* the object standing on the desk: a tight contact shadow, then the wide soft
+       one it throws further out */
+    0 -8px 20px rgba(7, 17, 31, 0.26),
+    0 8px 14px -6px rgba(4, 9, 18, 0.36),
+    0 30px 56px -10px rgba(4, 9, 18, 0.62),
+    0 1px 0 rgba(4, 9, 18, 0.35),
+    /* the moulding itself: a steel hairline all round, the light caught along the
+       top lip, and the falloff of a shell turning away from the light at the foot.
+       Steel, and it stays steel: this line is what traces the shell's corner arcs,
+       and a warm metal on an arc reads as an orange gap bitten out of the case. The
+       finish's own light tone is used, so it recasts with the finish. */
+    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.12),
+    inset 0 1px 0 var(--hh-shell-spec),
+    inset 0 2px 6px -4px rgba(255, 255, 255, 0.16),
+    inset 0 -26px 34px -30px rgba(3, 6, 13, 0.72);
+}
+
+/* Moulded grain, and the soft falloff of a shell turning away from the light. */
+.hh-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, var(--hh-grain) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, var(--hh-grain) 0 1px, transparent 1px 4px);
+  opacity: 0.5;
+}
+
+/* Lettering cut into the shell and lit from above. */
+.hh-engrave {
+  text-shadow: 0 1px 0 var(--hh-shell-spec), 0 -1px 0 rgba(7, 17, 31, 0.22);
+}
+
+/* ===== THE VIEWER — THE MACHINED OPENING =====
+   The glass is one opening in the device's moulding, cut in three steps that tile
+   exactly (see HandheldScreenFrame): the shoulder, the rim, then the recess.
+   Both rings below are drawn as RINGS — never as filled boxes — so the middle of
+   each is left clear and the picture is never painted over. Every tone is a
+   finish token, so the whole viewer is recast with the hardware. */
+.hh-rim {
+  /* The screen surround: a 1px steel line at the outer edge, then a flat dark
+     ring of bezel — the bezel of a moulded appliance, not a lens. The line is
+     steel because it follows the opening's own arcs all the way round: printed in
+     copper it leaves a warm sliver in each of the glass's four corners, which is
+     exactly where the corner should read as solid case with nothing in it. */
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.18),
+    inset 0 0 0 3px var(--hh-recess),
+    /* the bevel: lit along the top of the ring, in shade along the bottom */
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.42),
+    /* and the shadow the opening itself throws out across the shell around it */
+    0 2px 3px rgba(3, 6, 13, 0.50),
+    0 18px 36px -16px rgba(3, 6, 13, 0.70);
+}
+
+/* The step down to the pane: the finish's dark tone for the ring itself, then the
+   shadow the top lip casts into the well and the light the bottom lip catches —
+   which is what makes a ring read as a hole rather than a frame. */
+/* The step down to the pane. The band itself is drawn from the pane's edge
+   outwards (see HandheldScreenFrame), so this element is the rounded opening that
+   clips it: all that belongs here is the shadow the top lip casts into the well
+   and the light the bottom lip catches, which is what makes a ring read as a hole
+   rather than a frame. Nothing solid is painted from it, so the picture keeps the
+   whole of its own rounded corners. */
+.hh-well {
+  box-shadow:
+    /* the top lip of the opening casting down into the well, the bottom lip
+       catching the light — what makes a ring read as a hole, not a frame */
+    inset 0 11px 18px -13px rgba(3, 6, 13, 0.92),
+    inset 0 -5px 10px -11px rgba(255, 255, 255, 0.18);
+}
+
+/* A punched speaker grille. */
+.hh-grille {
+  background-image: radial-gradient(circle at 50% 50%, var(--hh-grille) 1px, transparent 1.7px);
+  background-size: 9px 9px;
+  background-position: 4px 4px;
+  box-shadow: inset 0 1px 1px var(--hh-shell-spec), inset 0 -1px 3px rgba(7, 17, 31, 0.14);
+}
+
+/* Case screws — the seam of a real moulding. */
+.hh-screw {
+  position: relative;
+  background: radial-gradient(circle at 34% 28%, var(--hh-metal-1) 0%, var(--hh-metal-2) 72%, rgba(7, 17, 31, 0.55) 100%);
+  box-shadow: inset 0 0 0 1px rgba(7, 17, 31, 0.28), 0 1px 1px var(--hh-shell-spec);
+}
+.hh-screw::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  top: 50%;
+  height: 1px;
+  background: rgba(7, 17, 31, 0.45);
+  transform: rotate(-38deg);
+}
+
+/* Keys: the wheel ring, and the metal button at its centre. Both are matte
+   mouldings with hard 1px edges — the way plastic parts actually meet. */
+.hh-key {
+  background: linear-gradient(180deg, var(--hh-key-1) 0%, var(--hh-key-2) 100%);
+  box-shadow:
+    inset 0 1px 0 var(--hh-key-spec),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.22),
+    0 1px 0 rgba(3, 6, 13, 0.34),
+    0 2px 6px rgba(3, 6, 13, 0.22);
+}
+.hh-key:focus-visible {
+  box-shadow: 0 0 0 2px rgb(var(--hh-metal-rgb) / 0.7);
+}
+.hh-key-center {
+  background: linear-gradient(180deg, var(--hh-metal-1) 0%, var(--hh-metal) 52%, var(--hh-metal-2) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.30),
+    0 0 0 1px rgb(var(--hh-ink-rgb) / 0.24),
+    0 1px 3px rgba(3, 6, 13, 0.32);
+}
+
+/* ===== THE STRIP — THE CONTROL RAIL =====
+   The machine's legend band, moved inside the glass and put to work. It is cut
+   flush across the head of the glass and closes the pane's own top corners, so it
+   reads as the top edge of the picture rather than as a toolbar floating over it:
+   a printed HOME key, the console's status, then the three hand keys, every cell
+   parted from the next by a machined seam. Every tone is a finish token, so the
+   strip is recast with the hardware. */
+.hh-strip {
+  border-radius: 8px 8px 0 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 54%),
+    var(--hh-recess);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -1px 0 rgb(var(--hh-metal-rgb) / 0.34),
+    0 6px 18px rgba(3, 6, 13, 0.30);
+}
+.hh-strip-key {
+  transition: background-color 150ms ease;
+}
+.hh-strip-key:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+.hh-strip-seam {
+  width: 1px;
+  flex: none;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--hh-metal-rgb) / 0.05),
+    rgb(var(--hh-metal-rgb) / 0.42),
+    rgb(var(--hh-metal-rgb) / 0.05)
+  );
+}
+
+/* ===== RETRO POLYMER — THE CASE, AND HOW EVERYTHING IS FITTED TO IT =====
+   Two machines, one body. The slab is BlackBerry: matte moulded polymer, a fine
+   grain, hard 1px bevels, a steel seam where parts meet. The wheel is iPod: an
+   ivory ring with grey print over a metal centre button. Nothing on this device
+   is glossy — the only sheen anywhere is what a 1px edge catches — and every tone
+   here is a finish token, so the whole case is recast when the finish changes. */
+.hh-chin {
+  background: linear-gradient(180deg, var(--hh-shell-2) 0%, var(--hh-shell-3) 100%);
+  box-shadow:
+    /* the lip at the foot of the glass: a light catch, not a metal one — this line
+       closes the picture's bottom edge and runs out to the case's own corners. */
+    inset 0 1px 0 rgb(var(--hh-ink-rgb) / 0.16),
+    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.08);
+}
+.hh-plate {
+  box-shadow:
+    inset 0 1px 0 var(--hh-shell-spec),
+    inset 0 2px 4px -3px rgba(3, 6, 13, 0.45);
+}
+
+/* The keypad: matte rubberised keys with light legends, the way a thumb knows
+   them, pressed by rolling over their own bevel. */
+.hh-pad-key {
+  background: linear-gradient(180deg, var(--hh-pad-1) 0%, var(--hh-pad-2) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.30),
+    0 1px 0 rgba(3, 6, 13, 0.36),
+    0 2px 5px rgba(3, 6, 13, 0.22);
+}
+.hh-pad-key:active {
+  box-shadow:
+    inset 0 2px 4px rgba(3, 6, 13, 0.44),
+    0 1px 0 rgba(3, 6, 13, 0.26);
+}
+
+/* The wheel: a printed seam circle around the centre button, and nothing else —
+   an iPod wheel is one flat ring of plastic. */
+.hh-wheel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: radial-gradient(
+    circle closest-side at 50% 50%,
+    rgba(255, 255, 255, 0) 0 44%,
+    rgb(var(--hh-ink-rgb) / 0.12) 47%,
+    rgba(255, 255, 255, 0) 54%
+  );
+}
+
+/* The centre, held: a plain printed arc fills inside the button. No glow. */
+.hh-hold-ring {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hh-hold-sweep {
+  animation: hh-hold-sweep var(--hh-hold-ms, 720ms) linear forwards;
+}
+@keyframes hh-hold-sweep {
+  from { stroke-dashoffset: var(--hh-hold-len); }
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hh-hold-sweep {
+    animation: none;
+  }
+}
+
+/* ===== APP OPENING — THE TITLE CARD =====
+   The app opens the way the console powers on. The card plays in the glass on a
+   phone, under the same pane as everything else, and full-frame on a desk. */
+.as-frame {
+  position: fixed;
+  z-index: 46;
+  left: var(--hh-glass-inset, 7px);
+  right: var(--hh-glass-inset, 7px);
+  top: calc(var(--hh-top, 96px) + env(safe-area-inset-top) + 5px);
+  bottom: calc(var(--hh-bottom, 176px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+  border-radius: 8px;
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  .as-frame {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 0;
+    z-index: 80;
+  }
+}
+
+.as-veil {
+  animation: as-veil 0.9s ease both;
+}
+@keyframes as-veil {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.as-rise {
+  animation: as-rise 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes as-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.as-rule {
+  transform-origin: left center;
+  animation: as-rule 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+}
+@keyframes as-rule {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+.as-hair {
+  transform-origin: left center;
+  animation: as-hair linear both;
+}
+@keyframes as-hair {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* The title itself: a film title settling into place out of loose letterspacing. */
+.as-title {
+  animation: as-title 1.15s cubic-bezier(0.22, 1, 0.36, 1) 0.7s both;
+}
+@keyframes as-title {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+    letter-spacing: 0.18em;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    letter-spacing: 0.01em;
+  }
+}
+
+/* The studio mark: held, then handed over. */
+.as-mark {
+  animation: as-mark 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes as-mark {
+  from { opacity: 0; transform: translateY(6px); filter: blur(3px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Departure: the card gives the frame back to the app. */
+/* The cover peels. The card does not dissolve away and does not swing off its
+   edge: it rolls back off the corner the way the whole app turns a page, handing
+   the glass to the surface beneath it. */
+.as-depart {
+  animation: as-depart 0.78s cubic-bezier(0.36, 0, 0.18, 1) forwards;
+}
+@keyframes as-depart {
+  0% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 100% 100%, 0% 100%);
+    opacity: 1;
+  }
+  14% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 100% 100%, 0% 100%);
+    opacity: 1;
+  }
+  100% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%, 0% 100%);
+    opacity: 0;
+  }
+}
+
+/* The dissolve through the app's own cream, like a projector changing reels. */
+.as-handoff {
+  animation: as-handoff 0.5s ease-out forwards;
+}
+@keyframes as-handoff {
+  0% { opacity: 0; }
+  45% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+.as-out {
+  animation: as-out 0.6s ease forwards;
+}
+@keyframes as-out {
+  to { opacity: 0; }
+}
+
+/* ===== THE PAGE TURN — A SHEET ROLLING OFF THE CORNER =====
+   A sheet of paper crosses the picture on every surface change: it lies over the
+   old surface for a beat, then peels back from the bottom-right corner and takes
+   itself away. Three parts of one sheet — the shadow it throws on the page
+   beneath, the stock itself, and the lit roll where it lifts — all riding the
+   same clip-path, driven from pagePeel.js. Clipped to the glass, so the turn
+   reads as the screen being turned, never the hardware. */
+.page-turn-clip {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  overflow: hidden;
+  pointer-events: none;
+}
+.page-cast,
+.page-sheet,
+.page-curl {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  will-change: clip-path, opacity;
+}
+/* The shadow the lip throws past itself, onto the page already turned */
+.page-cast {
+  background: linear-gradient(
+    135deg,
+    rgba(7, 17, 31, 0.34) 0%,
+    rgba(7, 17, 31, 0.12) 52%,
+    rgba(7, 17, 31, 0) 100%
+  );
+}
+/* The stock: warm cream, lit down the side it is rolling towards */
+.page-sheet {
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.88) 0%, rgba(250, 248, 245, 0) 36%),
+    linear-gradient(140deg, #fbf7f0 0%, #faf8f5 46%, #efe4d3 100%);
+}
+/* The roll: white paper turning over into rose gold, then copper in the bend */
+.page-curl {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(240, 226, 202, 0.96) 40%,
+    rgba(201, 168, 124, 0.92) 74%,
+    rgba(184, 115, 51, 0.74) 100%
+  );
+}
+
+@media (max-width: 767px) {
+  .page-turn-clip {
+    left: var(--hh-glass-inset, 7px);
+    right: var(--hh-glass-inset, 7px);
+    top: calc(var(--hh-top, 96px) + env(safe-area-inset-top) + 5px);
+    bottom: calc(var(--hh-bottom, 176px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+    border-radius: 8px;
+  }
+  .page-cast,
+  .page-sheet,
+  .page-curl {
+    border-radius: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .as-veil, .as-rise, .as-rule, .as-out, .as-title, .as-mark, .as-depart {
+    animation: none;
+  }
+  .as-hair {
+    animation: none;
+    transform: scaleX(1);
+  }
+  .as-handoff {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ===== A PANEL OPENED OVER THE PICTURE =====
+   The card's information panel seats itself in the glass the way the app opening
+   does, so the hardware stays in view while it is read: the strip that names where
+   the ring is standing, and the wheel under the thumb doing the walking. On a desk
+   it stays the centred panel it always was. */
+@media (max-width: 767px) {
+  .hh-glass-panel {
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0;
+    top: calc(var(--hh-top, 96px) + var(--hh-nav, 34px) + env(safe-area-inset-top) + 5px);
+    left: var(--hh-glass-inset, 7px);
+    right: var(--hh-glass-inset, 7px);
+    bottom: calc(var(--hh-bottom, 176px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+  }
+  .hh-glass-panel-card {
+    height: 100%;
+    max-height: none;
+    border-radius: 16px;
+  }
+
+  /* A sheet a surface files from — a note to the masthead, a correction proposed against
+     the page — carries fields, so it hugs the foot of the picture rather than filling it:
+     the keyboard rises under it, and the lines being written stay in view above it. */
+  .hh-form-panel {
+    left: var(--hh-glass-inset, 7px);
+    right: var(--hh-glass-inset, 7px);
+    top: auto;
+    bottom: calc(var(--hh-bottom, 176px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+    max-height: calc(100dvh - var(--hh-top, 96px) - var(--hh-nav, 34px) - var(--hh-bottom, 176px) - 22px);
+  }
+}
+
+/* ===== AERO-FRONTIER — THE FIELD'S OWN INSTRUMENTS =====
+   The game is the one surface in the building that does not use the institution's
+   chrome. It reads as warm working equipment: painted plates seated in a well, an
+   amber instrument readout, and gauges that fill like fuel. Every tone is set by
+   the field's palette in aeroConfig, so nothing here borrows a brand token. */
+.af-plate {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(242, 232, 213, 0.22);
+  box-shadow:
+    inset 0 0 0 1px rgba(8, 18, 26, 0.45),
+    0 10px 24px -14px rgba(8, 18, 26, 0.75);
+}
+.af-plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(8, 18, 26, 0.30) 0%, rgba(8, 18, 26, 0) 32%, rgba(8, 18, 26, 0.52) 100%),
+    repeating-linear-gradient(0deg, rgba(8, 18, 26, 0.14) 0 1px, transparent 1px 3px);
+}
+
+.af-readout {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.af-gauge {
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes af-tick {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.af-tick {
+  animation: af-tick 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes af-roll {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.af-roll {
+  animation: af-roll 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .af-tick, .af-roll { animation: none; }
+  .af-gauge { transition: none; }
+}
+
+/* ===== AERO-FRONTIER — HOLLOW FIELD, STAGED =====
+   The game's own presentation: a title card that plays itself out, toasts that
+   arrive and leave on the same beat, and a caret for the line currently being
+   said. Nothing here is timed in JavaScript, so a scene can never wait on a
+   timer that did not fire. */
+.af-card {
+  animation: af-card 2.6s ease both;
+}
+@keyframes af-card {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  78% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.af-toast {
+  animation: af-toast 2.6s ease both;
+}
+@keyframes af-toast {
+  0% { opacity: 0; transform: translateY(5px); }
+  10% { opacity: 1; transform: translateY(0); }
+  84% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-3px); }
+}
+
+.af-caret {
+  animation: af-caret 900ms steps(1) infinite;
+}
+@keyframes af-caret {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.af-bars {
+  animation: af-bars 320ms ease both;
+}
+@keyframes af-bars {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .af-card, .af-toast, .af-caret, .af-bars {
+    animation: none;
+  }
+}
+
+/* ===== FLIGHT DECK — THE DESK MACHINE =====
+   The desktop counterpart of the handheld: one moulding around the whole screen,
+   the instrument bay and the command rail across the head of it, and the surface
+   seated in a cream display in the well below. Every tone here is a finish token,
+   so the desk and the device are one product and are recast together. */
+:root, .dark {
+  --fd-face: #F7F1E6;
+  --fd-face-2: #EDE3D2;
+}
+
+/* The moulding itself: matte polymer, a steel hairline all round, the light caught
+   on the top lip and the shell turning away from it at the foot. */
+.fd-chassis {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0) 14%),
+    linear-gradient(180deg, var(--hh-shell-1) 0%, var(--hh-shell-2) 52%, var(--hh-shell-3) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.30),
+    inset 0 1px 0 var(--hh-shell-spec),
+    inset 0 26px 44px -36px rgba(3, 6, 13, 0.60),
+    inset 0 -30px 46px -36px rgba(3, 6, 13, 0.74);
+}
+
+/* The legend plate across the top: a dark anodised strip cut into the shell. */
+.fd-plate {
+  background: linear-gradient(180deg, var(--hh-recess) 0%, #060C15 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -1px 0 rgb(var(--hh-metal-rgb) / 0.32);
+}
+
+/* The readout strip: text on a recessed dark bar, never moving. */
+.fd-ticker {
+  background: linear-gradient(180deg, #08121D 0%, #0C1826 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgb(var(--hh-metal-rgb) / 0.26);
+}
+
+/* The viewing well: the dark ring the display sits down inside, drawn so the
+   opening reads as a hole — the top lip casting in, the bottom lip catching. */
+.fd-well {
+  background: linear-gradient(180deg, var(--hh-bezel) 0%, var(--hh-recess) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.38),
+    inset 0 7px 13px -9px rgba(3, 6, 13, 0.85),
+    inset 0 -5px 11px -9px rgba(255, 255, 255, 0.14);
+}
+
+/* The picture: rounded glass, a hairline closing the opening, a soft vignette. */
+.fd-screen {
+  border-radius: 9px;
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.14),
+    inset 0 0 30px rgba(3, 6, 13, 0.10);
+}
+
+/* An instrument face: warm ivory, lit from the top. */
+.fd-face {
+  background: radial-gradient(circle at 50% 32%, #FCF8F0 0%, var(--fd-face) 60%, var(--fd-face-2) 100%);
+}
+
+/* The needle settle. Nothing on this deck moves except the hands of the clock. */
+.fd-needle {
+  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* A switch: the recess the handle sits in, and the handle itself. */
+.fd-switch {
+  background: linear-gradient(180deg, var(--hh-pad-2) 0%, var(--hh-well-2) 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(3, 6, 13, 0.55),
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.30);
+}
+.fd-lever {
+  background: linear-gradient(180deg, var(--hh-key-1) 0%, var(--hh-key-3) 100%);
+  box-shadow:
+    inset 0 1px 0 var(--hh-key-spec),
+    0 2px 4px rgba(3, 6, 13, 0.45);
+  transition: transform 160ms ease;
+}
+
+/* A lamp: off is a dead glass bead, on is lit from behind. */
+.fd-lamp {
+  box-shadow: inset 0 0 3px rgba(3, 6, 13, 0.65);
+}
+
+/* A machined seam where two panels meet. */
+.fd-seam {
+  flex: none;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--hh-metal-rgb) / 0.05),
+    rgb(var(--hh-metal-rgb) / 0.45),
+    rgb(var(--hh-metal-rgb) / 0.05)
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fd-needle, .fd-lever {
+    transition: none;
+  }
+}
+
+/* The panel the Flight Deck's instruments sit on, inside the tube. */
+.fd-panel {
+  background: linear-gradient(180deg, var(--hh-shell-2) 0%, var(--hh-shell-3) 100%);
+}
+
+/* ===== THE MENU BAR =====
+   The strip across the head of the picture, cloned from the desk the machine
+   imitates: the way home in faint type at the far left, the surface you are on with
+   its lamp lit, the section in quiet type, and the three status keys at the right.
+   It is one strip on both machines: the head band of the glass, and the bar across
+   the top of the desk's tube. */
+:root, .dark {
+  --mb-ink: #a0a0a0;
+  --mb-ink-soft: rgba(160, 160, 160, 0.55);
+  --mb-ink-strong: #efe9dc;
+  --mb-lamp: #85c1e9;
+}
+
+/* The strip itself is seamless, the way the desk it is cloned from draws it: one
+   continuous band across the head of the picture with no border of its own, no
+   radius, no shadow and no rule between its cells. It carries no tone either — it
+   takes the tone of the surface it is set into (the glass's rail, the desk's
+   blurred seat), so the bar and that surface read as one piece of the machine
+   rather than a framed slab laid on top of it. */
+.mb-bar {
+  display: flex;
+  align-items: stretch;
+  height: 28px;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+}
+.mb-cell {
+  transition: background-color 150ms ease;
+}
+.mb-cell:active {
+  background: rgba(255, 255, 255, 0.06);
+}
+.mb-cell[data-open="true"] {
+  background: rgb(133 193 233 / 0.16);
+}
+.mb-cell:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.8);
+}
+.mb-lamp {
+  background: var(--mb-lamp);
+  box-shadow: 0 0 6px rgb(133 193 233 / 0.75);
+}
+
+/* The seat the desk's bar is set into: cut across the head of the tube, it holds
+   its place while the surface below it scrolls under. */
+.mb-seat {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 7px 9px 6px;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 13, 22, 0.94) 0%,
+    rgba(8, 13, 22, 0.78) 68%,
+    rgba(8, 13, 22, 0) 100%
+  );
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+}
+
+/* The menu, dropped from the bar. */
+.mb-drop {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 9px;
+  width: min(280px, 78vw);
+  max-height: 60vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #1b1f27 0%, #141821 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.55),
+    0 20px 44px -16px rgba(3, 6, 13, 0.78);
+}
+.mb-drop-item {
+  transition: background-color 140ms ease;
+}
+.mb-drop-item:hover,
+.mb-drop-item:focus-visible {
+  background: rgb(133 193 233 / 0.14);
+  outline: none;
+}
+
+/* The glass stops where the page stops. A turn past the top or past the bottom is
+   never handed to the window behind it: the page stays where it is, and the console
+   bumps instead — so the end of a surface is something a hand can feel. */
+.hh-stage,
+.hh-stage [data-handheld-screen] {
+  overscroll-behavior: contain;
+}
+.imac-screen {
+  overscroll-behavior: contain;
+}
+@media (max-width: 767px) {
+  body.hh-shell {
+    overscroll-behavior: none;
+  }
 }

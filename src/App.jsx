@@ -11,6 +11,11 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ErrorBoundary from '@/components/core/ErrorBoundary';
+import HandheldShell from '@/components/handheld/HandheldShell';
+import DesktopShell from '@/components/desktop/DesktopShell';
+import AppSplash from '@/components/core/AppSplash';
+import ConsoleLoading from '@/components/core/ConsoleLoading';
+import PageTurn from '@/components/core/PageTurn';
 
 const DiscoveryQuestionnaire = lazy(() => import('@/pages/DiscoveryQuestionnaire'));
 const OnboardingKickstarter = lazy(() => import('@/pages/OnboardingKickstarter'));
@@ -50,6 +55,7 @@ const NominationForm = lazy(() => import('@/pages/NominationForm'));
 const Hangouts = lazy(() => import('@/pages/Hangouts'));
 const Vision2030 = lazy(() => import('@/pages/Vision2030'));
 const FlightSimulator = lazy(() => import('@/pages/FlightSimulator'));
+const AeroFrontier = lazy(() => import('@/pages/AeroFrontier'));
 const CommonGround = lazy(() => import('@/pages/CommonGround'));
 const CommonGroundSimulator = lazy(() => import('@/pages/CommonGroundSimulator'));
 const SessionPortal = lazy(() => import('@/pages/SessionPortal'));
@@ -77,10 +83,18 @@ const HonoreePublication = lazy(() => import('@/pages/HonoreePublication'));
 const IntelligenceGlobe = lazy(() => import('@/pages/IntelligenceGlobe'));
 const MagazineStudio = lazy(() => import('@/pages/MagazineStudio'));
 const MagazineReader = lazy(() => import('@/pages/MagazineReader'));
+const Women2025Edition = lazy(() => import('@/pages/Women2025Edition'));
 const OgCardTest = lazy(() => import('@/pages/OgCardTest'));
 const OgCardGenerator = lazy(() => import('@/pages/OgCardGenerator'));
 const WomenCollageGenerator = lazy(() => import('@/pages/WomenCollageGenerator'));
 const Top100Women2025DeepLink = lazy(() => import('@/pages/Top100Women2025DeepLink'));
+const TheBoard = lazy(() => import('@/pages/TheBoard'));
+const StartScreen = lazy(() => import('@/pages/StartScreen'));
+const AeroSyncContacts = lazy(() => import('@/pages/AeroSyncContacts'));
+const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
+const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
+const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
+const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -96,11 +110,8 @@ const AuthenticatedApp = () => {
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
-      </div>
-    );
+    // Console first: the device is painted, and the wait happens in its glass.
+    return <ConsoleLoading label="Powering up" />;
   }
 
   // Handle authentication errors
@@ -117,14 +128,16 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
-    <Suspense fallback={
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
-      </div>
-    }>
+    <PageTurn>
+    <Suspense fallback={<ConsoleLoading label="Loading surface" />}>
     <Routes>
-      {/* Logged-in Fellows land on their own profile; visitors get the editorial home */}
-      <Route path="/" element={isAuthenticated ? <Profile /> : <HomeV3 />} />
+      {/* Everything renders inside the device on phones; desktop is untouched. */}
+      <Route element={<HandheldShell />}>
+      {/* A desk is housed in the desk machine: everything below renders inside its tube */}
+      <Route element={<DesktopShell />}>
+      {/* Fellows open on the start screen; visitors get the editorial home */}
+      <Route path="/" element={isAuthenticated ? <StartScreen /> : <HomeV3 />} />
+      <Route path="/start" element={<StartScreen />} />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />
       <Route path="/onboarding-admin" element={<OnboardingAdmin />} />
@@ -205,6 +218,20 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
       } />
       <Route path="/home-v3" element={<HomeV3 />} />
+      {/* The member's map of the platform: four columns across, depth inside each */}
+      <Route path="/board" element={<TheBoard />} />
+      <Route path="/dashboard" element={<TheBoard />} />
+      {/* AeroSync opens on its own title screen, the way the platform does, and the
+          surfaces it lists live beneath it */}
+      <Route path="/aerosync" element={<AeroSyncTitle />} />
+      <Route path="/aerosync/contacts" element={<AeroSyncContacts />} />
+      <Route path="/aerosync/rooms" element={<AeroSyncRooms />} />
+      <Route path="/aerosync/following" element={<AeroSyncFollowing />} />
+      {/* The networking page is retired: its work lives on AeroSync's surfaces now */}
+      <Route path="/networking" element={<Navigate to="/aerosync" replace />} />
+      {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
+      <Route path="/mission-briefing" element={<MissionBriefing />} />
+      <Route path="/the-board" element={<TheBoard />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />
       <Route path="/Home" element={<Navigate to="/" replace />} />
@@ -220,6 +247,8 @@ const AuthenticatedApp = () => {
       <Route path="/moon-joy" element={<Hangouts />} />
       <Route path="/2030-vision" element={<Vision2030 />} />
       <Route path="/play" element={<FlightSimulator />} />
+      {/* Aero-Frontier: the inherited airfield, the airframe, and the first circuit */}
+      <Route path="/aero-frontier" element={<AeroFrontier />} />
       <Route path="/common-ground" element={<CommonGround />} />
       <Route path="/common-ground-sim" element={<CommonGroundSimulator />} />
       <Route path="/session-portal/*" element={<SessionPortal />} />
@@ -256,6 +285,9 @@ const AuthenticatedApp = () => {
       <Route path="/intelligence-globe" element={<IntelligenceGlobe />} />
       <Route path="/magazine-studio" element={<MagazineStudio />} />
       <Route path="/magazine/:issueId" element={<MagazineReader />} />
+      {/* The title screen's TOP 100 Women 2025 key: the edition itself, resolved to the
+          issue bound for it, rather than a page about the edition */}
+      <Route path="/women-2025" element={<Women2025Edition />} />
       <Route path="/og-card-test" element={<OgCardTest />} />
       <Route path="/og-card-generator" element={<OgCardGenerator />} />
       <Route path="/women-collage-generator" element={<WomenCollageGenerator />} />
@@ -284,8 +316,11 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="*" element={<PageNotFound />} />
+      </Route>
+      </Route>
     </Routes>
     </Suspense>
+    </PageTurn>
   );
 };
 
@@ -306,6 +341,8 @@ function App() {
         <QueryClientProvider client={queryClientInstance}>
           <Router>
             <NavigationTracker />
+            {/* The title card plays once per session, over everything */}
+            <AppSplash />
             <AuthenticatedApp />
           </Router>
           <Toaster />

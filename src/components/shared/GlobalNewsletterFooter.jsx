@@ -75,7 +75,7 @@ export default function GlobalNewsletterFooter({ currentPageName, dark = false, 
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 w-full border-t px-4 py-3 flex flex-col sm:flex-row items-center gap-3"
+      className="imac-bar fixed bottom-0 left-0 right-0 z-50 w-full border-t px-4 py-3 flex flex-col sm:flex-row items-center gap-3"
       style={bgStyle}
     >
       <div className="flex items-center gap-2 flex-shrink-0">

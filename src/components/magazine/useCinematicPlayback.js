@@ -1,41 +1,44 @@
 import { useState, useEffect, useRef } from 'react';
 
-// Narrated pacing: compute how long each page should dwell.
-// Text-heavy pages linger so the reader (and screen recorder) can absorb them;
-// visual pages move briskly to keep the film flowing.
+// How long a page is held, so a film of the issue can be read rather than watched.
+//
+// Every page is held for the time its own words take at an average reading pace, on top
+// of the beat its kind of page deserves — a cover needs a look, a divider needs less. A
+// page that runs past the frame is rolled under the reader in that time (see
+// usePageTeleprompter) rather than held still, which is what makes the pace honest.
+const READ_MS_PER_WORD = 260; // ≈ 230 words a minute
+const MAX_DWELL = 90000;      // a very long page still turns
+
+const BASE_DWELL = {
+  cover: 5000,
+  chapter_divider: 3500,
+  colophon: 4500,
+  masthead: 5500,
+  pull_quote: 6500,
+  feature_spread: 5500,
+  profile: 5500,
+  toc: 5000,
+};
+
+const wordsIn = (text) => (text || '').split(/\s+/).filter(Boolean).length;
+
 export function computePageDwell(page) {
   if (!page) return 4000;
   const blocks = page.content_blocks || [];
-  const layout = page.layout_type;
+  let dwell = BASE_DWELL[page.layout_type] || 3500;
 
-  switch (layout) {
-    case 'cover':           return 5000;
-    case 'chapter_divider': return 3500;
-    case 'colophon':        return 4500;
-    case 'masthead':        return 5500;
-    case 'pull_quote':      return 6500;
-    case 'feature_spread':  return 5500;
-    case 'profile':         return 7000;
-    default: break;
-  }
-
-  // Article pages — scale with reading density (~180 wpm, slow and cinematic)
-  let dwell = 3500;
   for (const b of blocks) {
-    if (b.type === 'body') {
-      const words = (b.text || '').split(/\s+/).filter(Boolean).length;
-      dwell += words * 320;
-    } else if (b.type === 'heading') {
-      dwell += 700;
-    } else if (b.type === 'pull_quote') {
-      dwell += 2000;
-    } else if (b.type === 'kicker') {
-      dwell += 400;
-    } else if (b.type === 'byline') {
-      dwell += 300;
+    switch (b.type) {
+      case 'body':       dwell += wordsIn(b.text) * READ_MS_PER_WORD + 600; break;
+      case 'pull_quote': dwell += wordsIn(b.text) * READ_MS_PER_WORD + 1000; break;
+      case 'heading':    dwell += 800; break;
+      case 'kicker':     dwell += 400; break;
+      case 'byline':     dwell += 300; break;
+      default: break;
     }
   }
-  return Math.min(dwell, 16000);
+
+  return Math.min(dwell, MAX_DWELL);
 }
 
 export const PLAYBACK_SPEEDS = [0.5, 1, 1.5, 2];

@@ -1,0 +1,118 @@
+{
+  "name": "ConferenceContact",
+  "type": "object",
+  "properties": {
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the Fellow whose rolodex holds this contact, denormalized for display. Access is anchored on created_by_id."
+    },
+    "full_name": {
+      "type": "string",
+      "description": "The person's name, as it reads on the card"
+    },
+    "first_name": {
+      "type": "string",
+      "description": "First name, split from the full name when it is not printed separately"
+    },
+    "last_name": {
+      "type": "string",
+      "description": "Last name, split from the full name when it is not printed separately"
+    },
+    "role_title": {
+      "type": "string",
+      "description": "Role or title as printed on the card"
+    },
+    "company": {
+      "type": "string",
+      "description": "Organization or unit they stand for"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email address, validated before it is saved"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Telephone number as printed"
+    },
+    "linkedin_url": {
+      "type": "string",
+      "description": "LinkedIn profile URL when one is printed or added by hand"
+    },
+    "website": {
+      "type": "string",
+      "description": "Website or organization page"
+    },
+    "city": {
+      "type": "string",
+      "description": "City they work from"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country they work from"
+    },
+    "conference_name": {
+      "type": "string",
+      "description": "The show the Fellow met them at"
+    },
+    "met_on": {
+      "type": "string",
+      "format": "date",
+      "description": "The day they met"
+    },
+    "met_context": {
+      "type": "string",
+      "description": "Where in the show they met: the hall, the stand, the room, the table"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Relationship notes: what was said, what matters to them, what to remember"
+    },
+    "next_step": {
+      "type": "string",
+      "description": "What was agreed to happen next. The line the follow-up is built from."
+    },
+    "last_touch": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the relationship was last worked. Stamped when a touch is logged."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Free expressive tags. Never governance-bearing; carry zero measurement weight."
+    },
+    "card_file_uri": {
+      "type": "string",
+      "description": "The business card image as captured, stored privately (never a public URL) and read back through a signed URL."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "card",
+        "manual"
+      ],
+      "default": "manual",
+      "description": "How the contact arrived: read from a captured card, or typed in by hand."
+    }
+  },
+  "required": [
+    "full_name"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

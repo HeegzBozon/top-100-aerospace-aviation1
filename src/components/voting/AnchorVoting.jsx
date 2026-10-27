@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { submitAnchorVote } from '@/functions/submitAnchorVote';
@@ -6,11 +6,19 @@ import { awardStardust } from '@/functions/awardStardust';
 import { progressQuest } from '@/functions/progressQuest';
 import { brand } from '@/components/nominate/NominateConfig';
 import {
-  Loader2, Info, ArrowUp, ArrowDown, Check, Undo2, ArrowLeft, Layers,
+  Loader2, Info, ArrowUp, ArrowDown, Check, Undo2, ArrowLeft,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
+import { registerFaceKeys } from '@/components/handheld/handheldKeys';
+import useAnchorPicker from '@/components/voting/useAnchorPicker';
+import VoteMechanicsPopover from '@/components/voting/VoteMechanicsPopover';
+
+// The four candidates stand under the four face keys, in the order the cards are set:
+// X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
+// standing, so the share moves to the ring's play zone for as long as the keys are held.
+const VOTE_KEYS = ['X', 'Y', 'A', 'B'];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -40,10 +48,9 @@ export default function AnchorVoting({ user }) {
   const [bottomId, setBottomId] = useState(null);
   const [panelNominee, setPanelNominee] = useState(null);
   const [panelToken, setPanelToken] = useState('A');
-  const [flippedIds, setFlippedIds] = useState({});
-  const [activeTab, setActiveTab] = useState(null);
   const [sessionCount, setSessionCount] = useState(0);
   const [history, setHistory] = useState([]); // completed sets for review/back
+  const [explainerOpen, setExplainerOpen] = useState(false);
 
   // Load active season + nominee pool once.
   useEffect(() => {
@@ -105,8 +112,6 @@ export default function AnchorVoting({ user }) {
     setTopId(null);
     setBottomId(null);
     setPhase('best');
-    setFlippedIds({});
-    setActiveTab(null);
     setSeenIds((prev) => {
       const next = [...prev, ...(currentSet.map((n) => n.id))];
       // keep only the last 10 seen to avoid starving the pool
@@ -131,8 +136,6 @@ export default function AnchorVoting({ user }) {
     setCurrentSet(last.set);
     setTopId(last.topId);
     setBottomId(last.bottomId);
-    setFlippedIds({});
-    setActiveTab(null);
     setPhase('review');
   }, [history]);
 
@@ -140,8 +143,6 @@ export default function AnchorVoting({ user }) {
     setTopId(null);
     setBottomId(null);
     setPhase('best');
-    setFlippedIds({});
-    setActiveTab(null);
     setCurrentSet(drawSet(pool, seenIds));
   }, [pool, seenIds]);
 
@@ -185,16 +186,42 @@ export default function AnchorVoting({ user }) {
     }
   };
 
-  const flipAll = currentSet.length > 0 && currentSet.every((n) => flippedIds[n.id]);
-  const toggleFlipAll = () => {
-    if (flipAll) {
-      setFlippedIds({});
-    } else {
-      const next = {};
-      currentSet.forEach((n) => { next[n.id] = true; });
-      setFlippedIds(next);
-    }
-  };
+  // The ring walks the same four cards. While a set is standing, a turn of the wheel
+  // moves the cursor across it — the ends hold, so the first and the last card are as
+  // far as it goes — and the centre button votes for the card the cursor has reached.
+  // Reading the explainer suspends the vote: while it is open the ring and the keys
+  // belong to the reader, not to the ballot, so no mark can be made by accident.
+  const standing = (phase === 'best' || phase === 'worst') && !explainerOpen;
+  const setKey = currentSet.map((n) => n.id).join('|');
+  const cursor = useAnchorPicker({
+    count: currentSet.length,
+    labelAt: (i) => currentSet[i]?.name || `Candidate ${String.fromCharCode(65 + i)}`,
+    active: standing,
+    setKey,
+    onChoose: (i) => {
+      const nominee = currentSet[i];
+      if (nominee) handleSelect(nominee);
+    },
+  });
+
+  // While a set is standing, the keypad is the vote: a press puts that key's own card
+  // under the same hand the tap does. Between sets, and once the set is recorded, the
+  // keys go back to the console — A confirm, B back, X sections, Y share.
+  const voteKeys = useRef(null);
+  voteKeys.current =
+    (phase === 'best' || phase === 'worst') && !explainerOpen && currentSet.length === 4
+      ? (key) => {
+          const i = VOTE_KEYS.indexOf(key);
+          if (i < 0 || !currentSet[i]) return false;
+          handleSelect(currentSet[i]);
+          return true;
+        }
+      : null;
+
+  useEffect(() => {
+    if (!voteKeys.current) return undefined;
+    return registerFaceKeys((key) => (voteKeys.current ? voteKeys.current(key) : false));
+  }, [phase, currentSet, explainerOpen]);
 
   if (loading) {
     return (
@@ -221,8 +248,8 @@ export default function AnchorVoting({ user }) {
   }
 
   const prompt =
-    phase === 'best' ? 'Which of these would you advance first?' :
-    phase === 'worst' ? 'And which of these three would you advance last?' :
+    phase === 'best' ? 'Rank 1?' :
+    phase === 'worst' ? 'Rank 4?' :
     phase === 'submitting' ? 'Recording your comparisons…' :
     phase === 'review' ? 'Reviewing your last set.' :
     'Anchored. Drawing the next set.';
@@ -230,24 +257,23 @@ export default function AnchorVoting({ user }) {
   return (
     <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
       {/* Voting surface */}
-      <div className="flex-1 flex flex-col min-w-0 px-4 pt-4 pb-6 lg:px-8">
+      <div className="flex-1 flex flex-col min-w-0 px-3 pt-2.5 pb-4 md:px-4 md:pt-4 md:pb-6 lg:px-8">
         <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
-        {/* Header row */}
-        <div className="flex items-center justify-between mb-1">
+        {/* The console names this panel on its own strip, so on the glass the title
+            stands down and the prompt and the cards take the room. */}
+        <div className="mb-1 hidden md:block">
           <div>
             <h2 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
               Anchor Selection
             </h2>
-            <p className="text-[11px] leading-snug max-w-md" style={{ color: `${brand.navy}60` }}>
+            <p className="hidden text-[11px] leading-snug max-w-md md:block" style={{ color: `${brand.navy}60` }}>
               Two taps. The one you advance first and the one you advance last become anchors — five real comparisons, recorded as observations.
             </p>
           </div>
-          <span className="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full" style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}>
-            {sessionCount} sets
-          </span>
         </div>
 
-        {/* Prompt */}
+        {/* Prompt, with the way into the explainer beside it and the session's tally at
+            the far end of the row. */}
         <AnimatePresence mode="wait">
           <motion.div
             key={prompt}
@@ -255,23 +281,43 @@ export default function AnchorVoting({ user }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
-            className="mt-3 mb-4 flex items-center gap-2"
+            className="mb-1.5 mt-1.5 flex items-center gap-2 md:mb-4 md:mt-3"
           >
-            {phase === 'best' && <ArrowUp className="w-4 h-4 shrink-0" style={{ color: brand.gold }} />}
-            {phase === 'worst' && <ArrowDown className="w-4 h-4 shrink-0" style={{ color: `${brand.navy}70` }} />}
-            <p className="text-sm font-semibold" style={{ color: brand.navy }}>{prompt}</p>
+            {phase === 'best' && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.gold}1F` }}>
+                <ArrowUp className="h-3 w-3" style={{ color: brand.gold }} />
+              </span>
+            )}
+            {phase === 'worst' && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
+                <ArrowDown className="h-3 w-3" style={{ color: `${brand.navy}90` }} />
+              </span>
+            )}
+            {phase === 'submitting' && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
+                <Loader2 className="h-3 w-3 animate-spin" style={{ color: brand.gold }} />
+              </span>
+            )}
+            <p className="whitespace-nowrap font-heading text-[15px] leading-none md:text-[17px]" style={{ color: brand.navy }}>{prompt}</p>
+            <VoteMechanicsPopover open={explainerOpen} onOpenChange={setExplainerOpen} />
+            <span
+              className="ml-auto shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold tabular-nums"
+              style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
+            >
+              {sessionCount} sets
+            </span>
           </motion.div>
         </AnimatePresence>
 
         {/* Controls: undo mid-set / review last set / resume */}
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
+        <div className="mb-1.5 flex flex-wrap items-center gap-1.5 md:mb-3 md:gap-2">
           {phase === 'worst' && (
-            <button onClick={undoFirstPick} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80` }}>
+            <button onClick={undoFirstPick} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <Undo2 className="w-3.5 h-3.5" /> Undo first pick
             </button>
           )}
           {history.length > 0 && (phase === 'best' || phase === 'worst') && (
-            <button onClick={goBack} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80` }}>
+            <button onClick={goBack} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <ArrowLeft className="w-3.5 h-3.5" /> Review last set
             </button>
           )}
@@ -280,19 +326,11 @@ export default function AnchorVoting({ user }) {
               Resume voting
             </button>
           )}
-          {currentSet.length > 0 && phase !== 'submitting' && phase !== 'success' && (
-            <button
-              onClick={toggleFlipAll}
-              className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5"
-              style={{ background: flipAll ? brand.gold : `${brand.navy}06`, color: flipAll ? 'white' : `${brand.navy}80` }}
-            >
-              <Layers className="w-3.5 h-3.5" /> {flipAll ? 'Back to front' : 'Flip all'}
-            </button>
-          )}
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-3 lg:gap-4 flex-1 min-h-0">
+        {/* Four candidates, twice two — on the glass the whole set has to stand in view
+            at once, so the grid takes its rows from the height it is given. */}
+        <div className="grid grid-cols-2 grid-rows-2 gap-2 sm:gap-3 lg:gap-4 flex-1 min-h-0">
           {currentSet.map((nominee, idx) => {
             const isTop = nominee.id === topId;
             const isBottom = nominee.id === bottomId;
@@ -306,17 +344,11 @@ export default function AnchorVoting({ user }) {
                 token={token}
                 isTop={isTop}
                 isBottom={isBottom}
-                selectable={selectable && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
+                selectable={selectable && !explainerOpen && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
+                cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
-                flipped={!!flippedIds[nominee.id]}
-                onFlipToggle={(val) => setFlippedIds((prev) => {
-                  const next = { ...prev };
-                  if (val) next[nominee.id] = true; else delete next[nominee.id];
-                  return next;
-                })}
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
+                keyLabel={VOTE_KEYS[idx]}
               />
             );
           })}
@@ -329,17 +361,17 @@ export default function AnchorVoting({ user }) {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="mt-5 flex items-center justify-center gap-2 text-sm font-bold"
-              style={{ color: brand.gold }}
+              className="mx-auto mt-2 flex items-center justify-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-bold md:mt-5 md:text-xs"
+              style={{ background: `${brand.gold}18`, border: `1px solid ${brand.gold}55`, color: brand.navy }}
             >
-              <Check className="w-4 h-4" /> 5 comparisons recorded
+              <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> 5 comparisons recorded
             </motion.div>
           )}
         </AnimatePresence>
         </div>
       </div>
 
-      {/* Evidence popover (anonymized) */}
+      {/* The card's information panel (anonymized) */}
       <AnimatePresence>
         {panelNominee && (
           <EvidencePopover nominee={panelNominee} token={panelToken} onClose={() => setPanelNominee(null)} />

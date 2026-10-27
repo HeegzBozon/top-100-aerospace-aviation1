@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Download, Settings2 } from 'lucide-react';
+import { BadgeCheck, BookOpen, Camera, Download, Loader2, Settings2, LayoutGrid } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
+import useGlass from '@/hooks/useGlass';
 import HomeDock from '@/components/home-v3/HomeDock';
 import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
@@ -19,6 +21,8 @@ import StoryCreate from '@/components/fellow-home/StoryCreate';
 import AnnouncementBanner from '@/components/home-v3/AnnouncementBanner';
 import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
 import { B, accentValue, accentForDiscipline, orderedModules } from '@/components/fellow-home/fellowHomeConfig';
+import GlassConsole from '@/components/handheld/GlassConsole';
+import StudioPanel from '@/components/profile/StudioPanel';
 import PresentationSettings from '@/components/profile-deck/PresentationSettings';
 
 export default function Profile() {
@@ -29,10 +33,17 @@ export default function Profile() {
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingEightVisibility, setSavingEightVisibility] = useState(false);
   const [saveError, setSaveError] = useState('');
-  const [wizardOpen, setWizardOpen] = useState(false);
+  // The Studio: null is closed; an array of sitting ids opens the wizard on those
+  // sittings (an empty array walks the whole studio from the lobby).
+  const [wizard, setWizard] = useState(null);
+  // The panel the console is holding. Null is the console's own menu.
+  const [openPanel, setOpenPanel] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [presentationOpen, setPresentationOpen] = useState(false);
+  // On the glass the profile is read as a console: a menu of its own panels,
+  // then one panel open at a time on the click wheel.
+  const glass = useGlass();
 
   // Instrument cluster tab persists in the URL so returning Fellows land where they left off.
   const [tab, setTab] = useState(() => new URLSearchParams(window.location.search).get('tab') || 'top100');
@@ -93,7 +104,7 @@ export default function Profile() {
     if (user && new URLSearchParams(window.location.search).get('studio') === 'open') {
       const params = new URLSearchParams(window.location.search);
       const ref = params.get('ref');
-      setWizardOpen(true);
+      setWizard([]);
       if (ref && !user.signup_referrer) {
         base44.auth.updateMe({ signup_referrer: ref }).catch(() => {});
       }
@@ -101,6 +112,19 @@ export default function Profile() {
         const u = new URL(window.location.href);
         u.searchParams.delete('studio');
         u.searchParams.delete('ref');
+        window.history.replaceState({}, '', u);
+      } catch {}
+    }
+  }, [user]);
+
+  // Deep-link from the console's share drawer: land with the presentation
+  // settings open, exactly as if the Fellow pressed Presentation.
+  useEffect(() => {
+    if (user && new URLSearchParams(window.location.search).get('settings') === 'presentation') {
+      setPresentationOpen(true);
+      try {
+        const u = new URL(window.location.href);
+        u.searchParams.delete('settings');
         window.history.replaceState({}, '', u);
       } catch {}
     }
@@ -298,109 +322,153 @@ export default function Profile() {
     />
   );
 
+  // The profile's panels, built once. The desk stacks them down the page; the
+  // glass hands the same panels to the console, which holds them one at a time.
+  const identityNode = (
+    <FellowIdentityHeader
+      user={user}
+      nominee={nominee}
+      accent={accent}
+      isOwner
+      coverKey={settings?.cover_asset_id}
+      sixWordStory={settings?.six_word_story || user?.six_word_story}
+      onEditIdentity={() => setWizard([])}
+      publicPath={publicPath}
+      statusKey={settings?.status_key}
+      savingStatus={savingStatus}
+      onStatusChange={saveStatus}
+      coverContent={
+        <SeasonBand
+          accent={accent}
+          underTally={blurbsContent}
+        />
+      }
+      hasStory={story.hasStory}
+      onAvatarTap={story.onAvatarTap}
+      clusterContent={
+        <InstrumentCluster
+          user={user}
+          nominee={nominee}
+          accent={accent}
+          groups={story.groups}
+          onOpen={story.openViewer}
+          onAdd={story.openCreate}
+          top100={top100.rankings}
+          activeTab={tab}
+          onTabChange={handleTabChange}
+          top100Loading={top100.loading}
+          storiesLoading={story.loading}
+        />
+      }
+    />
+  );
+
+  const boardNode = (
+    // Keyed on the board in the URL: an arriving deep link (the console's own
+    // menu sends them) mounts the cluster fresh so it opens on that board.
+    <BulletinBoardCluster
+      key={new URLSearchParams(window.location.search).get('board') || 'board'}
+      user={user}
+      nominee={nominee}
+      settings={settings}
+      accent={accent}
+      isOwner
+      statusKey={settings?.status_key}
+      savingStatus={savingStatus}
+      onStatusChange={saveStatus}
+      nextMove={{
+        eightCount: top100.rankings.length,
+        hasFlightography: !!(nominee?.career_history?.length || nominee?.education?.length || nominee?.skills?.length || nominee?.bio),
+        hasSixWord: !!(settings?.six_word_story || user?.six_word_story),
+      }}
+      onJumpToEight={jumpToEight}
+      onEditIdentity={() => setWizard([])}
+      wallEntries={entries}
+      onApproveWall={approve}
+      publicPath={publicPath}
+      flightography={fellowModules.flightography}
+      tradingCard={<ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />}
+      personalize={
+        <AccentCoverPicker
+          settings={settings}
+          accent={accent}
+          saving={saving}
+          error={saveError}
+          onChange={savePersonalization}
+        />
+      }
+      clusterOrder={settings?.cluster_module_order}
+      clusterHidden={settings?.cluster_hidden_modules}
+      onSaveLayout={saveClusterLayout}
+      clusterSizes={settings?.cluster_tile_sizes}
+      onSaveSizes={saveClusterSizes}
+    />
+  );
+
+  const accountNode = (
+    <>
+      <Link to="/board" className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
+        <LayoutGrid className="w-3 h-3" /> Dashboard
+      </Link>
+      <button onClick={() => setPresentationOpen(true)} className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
+        <Settings2 className="w-3 h-3" /> Presentation
+      </button>
+      <button
+        onClick={handleExportData}
+        disabled={exporting}
+        className="text-xs text-[var(--muted)] hover:text-[var(--text)] transition-colors flex items-center gap-1.5"
+      >
+        {exporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
+        {exporting ? 'Exporting...' : 'Download my data'}
+      </button>
+    </>
+  );
+
+  // Identity locks to position 1. Flightography and The Studio are the record
+  // itself — the career, and the sittings that write it — so they sit directly
+  // under it, ahead of the boards.
+  const panels = [
+    { key: 'identity', label: 'Identity', hint: 'Masthead, status and the record', icon: BadgeCheck, node: <div className="px-3 pt-3">{identityNode}</div> },
+    { key: 'flightography', label: 'Flightography', hint: 'Career record, schools and skills', icon: BookOpen, node: <div className="px-3 pt-3">{fellowModules.flightography}</div> },
+    { key: 'studio', label: 'The Studio', hint: 'Three sittings, and the post that traveled', icon: Camera, node: <StudioPanel user={user} nominee={nominee} settings={settings} onOpenSitting={setWizard} /> },
+    { key: 'board', label: 'Bulletin Board', hint: 'Instruments, boards and bulletins', icon: LayoutGrid, node: <div className="px-3 pt-3">{boardNode}</div> },
+    { key: 'account', label: 'Account', hint: 'Your card, presentation and data', icon: Settings2, node: <div className="flex flex-wrap items-center gap-x-5 gap-y-3 px-3 py-4">{accountNode}</div> },
+  ];
+
   return (
     <div className="min-h-screen overflow-x-hidden sf-pro" style={{ background: B.cream }}>
       <AnnouncementBanner />
-      <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
-        {/* Position 1 — locked. Identity above credential. */}
-        <FellowIdentityHeader
-          user={user}
-          nominee={nominee}
-          accent={accent}
-          isOwner
-          coverKey={settings?.cover_asset_id}
-          sixWordStory={settings?.six_word_story || user?.six_word_story}
-          onEditIdentity={() => setWizardOpen(true)}
-          publicPath={publicPath}
-          statusKey={settings?.status_key}
-          savingStatus={savingStatus}
-          onStatusChange={saveStatus}
-          coverContent={
-            <SeasonBand
-              accent={accent}
-              underTally={blurbsContent}
-            />
-          }
-          hasStory={story.hasStory}
-          onAvatarTap={story.onAvatarTap}
-          clusterContent={
-            <InstrumentCluster
-              user={user}
-              nominee={nominee}
-              accent={accent}
-              groups={story.groups}
-              onOpen={story.openViewer}
-              onAdd={story.openCreate}
-              top100={top100.rankings}
-              activeTab={tab}
-              onTabChange={handleTabChange}
-              top100Loading={top100.loading}
-              storiesLoading={story.loading}
-            />
-          }
-        />
 
-        {/* Master instrument cluster — the Bulletin Board. Houses everything below the masthead. */}
-        <BulletinBoardCluster
-          user={user}
-          nominee={nominee}
-          settings={settings}
-          accent={accent}
-          isOwner
-          statusKey={settings?.status_key}
-          savingStatus={savingStatus}
-          onStatusChange={saveStatus}
-          nextMove={{
-            eightCount: top100.rankings.length,
-            hasFlightography: !!(nominee?.career_history?.length || nominee?.education?.length || nominee?.skills?.length || nominee?.bio),
-            hasSixWord: !!(settings?.six_word_story || user?.six_word_story),
-          }}
-          onJumpToEight={jumpToEight}
-          onEditIdentity={() => setWizardOpen(true)}
-          wallEntries={entries}
-          onApproveWall={approve}
-          publicPath={publicPath}
-          flightography={fellowModules.flightography}
-          tradingCard={<ShareableProfileCard user={user} nominee={nominee} onUserUpdate={setUser} />}
-          personalize={
-            <AccentCoverPicker
-              settings={settings}
-              accent={accent}
-              saving={saving}
-              error={saveError}
-              onChange={savePersonalization}
-            />
-          }
-          clusterOrder={settings?.cluster_module_order}
-          clusterHidden={settings?.cluster_hidden_modules}
-          onSaveLayout={saveClusterLayout}
-          clusterSizes={settings?.cluster_tile_sizes}
-          onSaveSizes={saveClusterSizes}
+      {glass ? (
+        <GlassConsole
+          kicker="Your profile"
+          panels={panels}
+          openKey={openPanel}
+          onOpen={setOpenPanel}
+          deepLinkParam="board"
         />
+      ) : (
+        <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
+          {/* Position 1 — locked. Identity above credential. */}
+          <div data-hh-module="Identity">{identityNode}</div>
 
-        <div className="mt-8 flex justify-end gap-4">
-          <button onClick={() => setPresentationOpen(true)} className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
-            <Settings2 className="w-3 h-3" /> Presentation
-          </button>
-          <button
-            onClick={handleExportData}
-            disabled={exporting}
-            className="text-xs text-[var(--muted)] hover:text-[var(--text)] transition-colors flex items-center gap-1.5"
-          >
-            {exporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
-            {exporting ? 'Exporting...' : 'Download my data'}
-          </button>
+          {/* Master instrument cluster — the Bulletin Board. Houses everything below the masthead. */}
+          <div data-hh-module="Bulletin Board">{boardNode}</div>
+
+          <div data-hh-module="Presentation" className="mt-8 flex justify-end gap-4">{accountNode}</div>
         </div>
-      </div>
+      )}
 
-      <div className="h-28" />
+      {/* Desktop dock spacing only — the handheld body reserves its own room. */}
+      <div className="hidden h-28 md:block" />
       <HomeDock />
 
-      {wizardOpen && (
+      {wizard && (
         <ProfileWizard
           user={user}
           nominee={nominee}
-          onClose={() => setWizardOpen(false)}
+          openWith={wizard}
+          onClose={() => setWizard(null)}
           onSaved={loadUser}
         />
       )}

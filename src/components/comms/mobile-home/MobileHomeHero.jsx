@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Send, Award, Clock, CalendarDays, CheckCircle2, Circle, Rocket, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import HomeModule from "./HomeModule";
 
 const brand = { navy: '#1e3a5a', gold: '#c9a87c' };
 const cardBg = `linear-gradient(135deg, ${brand.navy} 0%, #0f1f33 100%)`;
@@ -133,7 +134,7 @@ function BackFace({ season, onFlip }) {
   );
 }
 
-export default function MobileHomeHero({ onNominationsClick }) {
+export default function MobileHomeHero({ onNominationsClick, isDarkMode = false }) {
   const [flipped, setFlipped] = useState(false);
   const [selectedSeasonId, setSelectedSeasonId] = useState('');
 
@@ -155,7 +156,8 @@ export default function MobileHomeHero({ onNominationsClick }) {
   if (!activeSeason) return null;
 
   return (
-    <div className="mx-4 mt-4 mb-3 relative" style={{ height: CARD_HEIGHT }}>
+    <HomeModule label="Briefing" isDarkMode={isDarkMode} className="pt-4 mb-3">
+    <div className="relative" style={{ height: CARD_HEIGHT }}>
       <AnimatePresence mode="wait">
         {!flipped ? (
           <motion.div
@@ -190,5 +192,6 @@ export default function MobileHomeHero({ onNominationsClick }) {
         )}
       </AnimatePresence>
     </div>
+    </HomeModule>
   );
 }

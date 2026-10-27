@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Sprint } from '@/entities/Sprint';
 import { Feedback } from '@/entities/Feedback';
@@ -1503,7 +1502,7 @@ ${achievements.length > 0 ? achievements.map(a => `🏆 ${a.title}: ${a.descript
       </div>
 
       {/* Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 z-40"> {/* Adjusted z-index if needed */}
+      <div className="imac-bar fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 z-40"> {/* Adjusted z-index if needed */}
         <div className="max-w-7xl mx-auto flex justify-between">
           <Button 
             variant="outline" 

@@ -167,6 +167,14 @@ export function resetEditionCache() {
   inflight = null;
 }
 
+// The same resolved edition, for callers that are not rendering it — the Magazine
+// Studio's alchemy, which binds the hundred honorees into an issue. One resolver, one
+// order, one set of canonical records: the issue and the page can never disagree.
+export async function loadEditionNominees() {
+  if (cache.status === 'ready') return cache.nominees;
+  return startLoad();
+}
+
 export default function useTop100WomenNominees() {
   const [snapshot, setSnapshot] = useState(cache);
 

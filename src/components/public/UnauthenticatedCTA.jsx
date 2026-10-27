@@ -13,7 +13,7 @@ export default function UnauthenticatedCTA({ user }) {
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-slate-900 to-slate-800 px-4 py-3"
+      className="imac-fall fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-slate-900 to-slate-800 px-4 py-3"
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <p className="text-sm text-white">Sign in to vote and nominate</p>

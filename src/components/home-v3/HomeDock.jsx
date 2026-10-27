@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Shield, CalendarCheck, Users, ShoppingBag, Mail, Home, LogIn, LogOut, User } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const NAV_LINKS = [
   { label: 'Operation: Moon Joy', to: '/moon-joy' },
@@ -21,6 +22,7 @@ const NAV_LINKS = [
 // Single sticky bottom dock that consolidates the old top-center nav, the
 // top-right menu toggle, and the floating RSVP button into one glass bar.
 export default function HomeDock() {
+  const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [authState, setAuthState] = useState('checking');
@@ -39,8 +41,12 @@ export default function HomeDock() {
   // always one tap away.
   const signOut = () => base44.auth.logout(`${window.location.origin}/`);
 
+  // Phones get the device from the app shell, which wraps every surface. The
+  // pill dock below is the desktop navigation.
+  if (isMobile) return null;
+
   return (
-    <div className="fixed bottom-4 left-1/2 z-[100] -translate-x-1/2 px-4">
+    <div className="imac-lift fixed bottom-4 left-1/2 z-[100] -translate-x-1/2 px-4">
       {/* Menu flyout — opens upward from the dock's left edge */}
       {menuOpen && (
         <div

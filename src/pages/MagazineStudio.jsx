@@ -8,6 +8,10 @@ import IssueBlueprint from '@/components/magazine/IssueBlueprint';
 import ArticleInventory from '@/components/magazine/ArticleInventory';
 import PageComposer from '@/components/magazine/PageComposer';
 import PreviewPublish from '@/components/magazine/PreviewPublish';
+import StudioGlass from '@/components/magazine/StudioGlass';
+import { alchemizeTop100Women2025 } from '@/components/magazine/alchemizeEdition';
+import { loadEditionNominees } from '@/components/publication/useTop100WomenNominees';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const TABS = [
   { key: 'blueprint', label: 'Blueprint' },
@@ -27,6 +31,9 @@ export default function MagazineStudio() {
   const [tab, setTab] = useState('blueprint');
   const [authChecked, setAuthChecked] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [error, setError] = useState('');
+  const [alchemizing, setAlchemizing] = useState(false);
+  const isMobile = useIsMobile();
 
   // Admin check
   useEffect(() => {
@@ -41,10 +48,12 @@ export default function MagazineStudio() {
   // Load issues
   const loadIssues = useCallback(async () => {
     setLoading(true);
+    setError('');
     try {
       const res = await base44.entities.MagazineIssue.filter({}, { sort: '-created_date', limit: 50 });
       setIssues(res.items || []);
     } catch (e) {
+      setError('The archive could not be read.');
       toast({ title: 'Error loading issues', variant: 'destructive' });
     } finally {
       setLoading(false);
@@ -89,8 +98,36 @@ export default function MagazineStudio() {
       setSelectedIssue(res);
       setTab('blueprint');
       toast({ title: 'Issue created' });
+      return res;
     } catch (e) {
       toast({ title: 'Error creating issue', variant: 'destructive' });
+      return null;
+    }
+  };
+
+  // The alchemy: the published 2025 edition, bound into an issue — its blueprint, its
+  // articles and its composed pages. It reuses the same resolved edition the published
+  // page reads, so the issue and the page can never disagree about who is in it.
+  const alchemizeIssue = async () => {
+    setAlchemizing(true);
+    try {
+      const nominees = await loadEditionNominees();
+      const { issue, articles: boundArticles, pages: boundPages } = await alchemizeTop100Women2025({ nominees });
+      setIssues([issue, ...issues]);
+      setArticles(boundArticles);
+      setPages(boundPages);
+      setSelectedIssue(issue);
+      setTab('blueprint');
+      toast({
+        title: 'Edition bound',
+        description: `${boundArticles.length} articles and ${boundPages.length} pages composed from the 2025 edition.`,
+      });
+      return issue;
+    } catch (e) {
+      toast({ title: 'Error binding the edition', variant: 'destructive' });
+      return null;
+    } finally {
+      setAlchemizing(false);
     }
   };
 
@@ -377,10 +414,54 @@ export default function MagazineStudio() {
     );
   }
 
-  if (loading) {
+  if (loading && !isMobile) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: P.navyVoid }}>
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: P.gold }} />
+      </div>
+    );
+  }
+
+  // On the handheld the studio is the glass console: one editor, four levels deep,
+  // walked on the ring, with a line being written into handed to the keys. The desk
+  // keeps the tabbed workspace, which is the shape for a pointer.
+  if (isMobile) {
+    return (
+      <div className="min-h-screen" style={{ background: P.cream }}>
+        <StudioGlass
+          issues={issues}
+          selectedIssue={selectedIssue}
+          articles={articles}
+          pages={pages}
+          loading={loading}
+          loadingDetail={loadingDetail}
+          error={error}
+          alchemizing={alchemizing}
+          actions={{
+            selectIssue: (id) => {
+              const found = issues.find((issue) => issue.id === id);
+              if (found) {
+                setSelectedIssue(found);
+                setTab('blueprint');
+              }
+            },
+            backToIssues: () => setSelectedIssue(null),
+            retry: loadIssues,
+            createIssue,
+            alchemizeIssue,
+            updateIssue,
+            deleteIssue,
+            createArticle,
+            updateArticle,
+            deleteArticle,
+            createPage,
+            updatePage,
+            deletePage,
+            generatePages,
+            publish: publishIssue,
+            unpublish: unpublishIssue,
+          }}
+        />
       </div>
     );
   }

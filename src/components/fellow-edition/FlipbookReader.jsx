@@ -79,7 +79,7 @@ export default function FlipbookReader({ pages, accent, editionTitle }) {
       </div>
 
       {/* Bottom nav */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
+      <div className="hh-lift-center fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
         <div
           className="flex items-center gap-2 rounded-full px-3 py-2 shadow-2xl"
           style={{ background: 'rgba(7,17,31,0.92)', border: '1px solid rgba(201,168,124,0.28)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}

@@ -19,9 +19,9 @@ import ShareableCard from '@/components/publication/ShareableCard';
 import CountdownLanding from '@/components/publication/CountdownLanding';
 import UnauthenticatedCTA from '@/components/public/UnauthenticatedCTA';
 import RsvpFloatingButton from '@/components/public/RsvpFloatingButton';
-import AuthenticatedIntelligenceHeader from '@/components/publication/AuthenticatedIntelligenceHeader';
 import EditorialNav from '@/components/publication/EditorialNav';
 import EditorialSection from '@/components/publication/EditorialSection';
+import PublicationConsole from '@/components/publication/PublicationConsole';
 import DiscoveryTracker from '@/components/publication/DiscoveryTracker';
 import EditorialBreak from '@/components/publication/EditorialBreak';
 import useTop100WomenNominees from '@/components/publication/useTop100WomenNominees';
@@ -151,10 +151,183 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
 
   if (loading) return null;
 
+  const nameFor = (id, fallback) => {
+    const section = top100Women2025Config.sections.find((s) => s.id === id);
+    return section ? `${section.label} ${section.name}` : fallback;
+  };
+
+  // The publication, chopped into the sections the glass pages through: the
+  // wheel's back and forward turn the page, play reads a section and then turns
+  // to the next. Desktop renders the same sections as one vertical column.
+  const slides = [
+    {
+      key: 'hero',
+      id: 'hero',
+      label: nameFor('hero', 'Masthead'),
+      content: (
+        <main id="hero">
+          <EditorialMasthead />
+        </main>
+      ),
+    },
+    {
+      key: 'signal-report',
+      id: 'signal-report',
+      label: nameFor('signal-report', 'Signal Report'),
+      content: (
+        <EditorialSection id="signal-report">
+          <section className="py-12 md:py-40 px-4 md:px-12 lg:px-24" style={{ background: 'white' }}>
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className="mb-6 md:mb-16"
+              >
+                <p
+                  className="text-[9px] md:text-[10px] tracking-[0.3em] md:tracking-[0.5em] uppercase mb-2 md:mb-4"
+                  style={{ color: brandColors.skyBlue }}
+                >
+                  Intelligence
+                </p>
+                <h2
+                  className="text-2xl md:text-5xl font-light tracking-tight"
+                  style={{
+                    fontFamily: 'Georgia, "Times New Roman", serif',
+                    color: brandColors.ink
+                  }}
+                >
+                  The Signal Report
+                </h2>
+                <p
+                  className="mt-2 md:mt-4 max-w-xl text-xs md:text-sm leading-relaxed"
+                  style={{ color: `${brandColors.ink}60` }}
+                >
+                  Data-driven intelligence from the selection process.
+                </p>
+              </motion.div>
+              <SignalReport nominees={nominees} />
+            </div>
+          </section>
+        </EditorialSection>
+      ),
+    },
+    {
+      key: 'contents',
+      id: 'contents',
+      label: nameFor('contents', 'Contents'),
+      content: (
+        <EditorialSection id="contents">
+          <EditorialTableOfContents />
+        </EditorialSection>
+      ),
+    },
+    {
+      key: 'manifesto',
+      id: 'manifesto',
+      label: nameFor('manifesto', 'Manifesto'),
+      content: (
+        <EditorialSection id="manifesto">
+          <EditorialManifesto />
+        </EditorialSection>
+      ),
+    },
+    {
+      key: 'portraits',
+      id: 'portraits',
+      label: nameFor('portraits', 'Portraits'),
+      content: (
+        <>
+          <EditorialSection id="portraits">
+            <EditorialPortraits
+              nominees={nominees}
+              onSelectNominee={setSelectedNominee}
+            />
+          </EditorialSection>
+          <EditorialBreak text="One hundred names. Thousands of nominations. Every honoree validated by peers, measured by signal — not by status." />
+        </>
+      ),
+    },
+    {
+      key: 'archive-mid',
+      id: 'archive-mid',
+      label: 'Export',
+      content: (
+        <EditorialSection id="archive-mid">
+          <ArchiveExportSection nominees={nominees} compact />
+        </EditorialSection>
+      ),
+    },
+    {
+      key: 'honorees',
+      id: 'honorees',
+      label: nameFor('honorees', 'Honorees'),
+      content: (
+        <EditorialSection id="honorees">
+          <EditorialLedger
+            nominees={nominees}
+            onSelectNominee={setSelectedNominee}
+            discoveredIds={discoveredIds}
+          />
+          {showExports && <PublicationExportPanel nominees={nominees} user={user} />}
+        </EditorialSection>
+      ),
+    },
+    {
+      key: 'orbital-index',
+      id: 'orbital-index',
+      label: nameFor('orbital-index', 'Orbital Index'),
+      content: (
+        <>
+          <EditorialSection id="orbital-index">
+            <OrbitalIndexComingSoon />
+          </EditorialSection>
+          <EditorialBreak
+            kicker="The Methodology"
+            text="Not a ranking — a record. The verified reputation graph of aerospace & aviation."
+          />
+        </>
+      ),
+    },
+    {
+      key: 'volumes',
+      id: 'volumes',
+      label: 'Volumes',
+      content: (
+        <EditorialSection id="volumes">
+          <ArchiveVolumesSection />
+        </EditorialSection>
+      ),
+    },
+    {
+      key: 'archive',
+      id: 'archive',
+      label: nameFor('archive', 'Archive'),
+      content: (
+        <EditorialSection id="archive">
+          <ArchiveExportSection nominees={nominees} />
+        </EditorialSection>
+      ),
+    },
+    {
+      key: 'closing',
+      id: 'closing',
+      label: nameFor('closing', 'Closing'),
+      content: (
+        <section id="closing">
+          <EditorialClosing />
+        </section>
+      ),
+    },
+  ];
+
   return (
     <div ref={containerRef} className="max-w-[100vw] overflow-x-hidden" style={{ background: brandColors.cream }}>
-      {/* Unauthenticated User CTAs */}
-      <UnauthenticatedCTA user={user} />
+      {/* Unauthenticated User CTAs — a desk band. On the glass the same invitation is a
+          key on the edition's contents, printed where the reader is standing. */}
+      <div className="hidden md:block">
+        <UnauthenticatedCTA user={user} />
+      </div>
 
       {/* RSVP floating button — hidden when a host page renders its own dock */}
       {!suppressFloatingActions && <RsvpFloatingButton />}
@@ -162,13 +335,10 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
       {/* Countdown Landing */}
       {showCountdown && <CountdownLanding onReveal={() => setShowCountdown(false)} />}
 
-      {/* Authenticated Intelligence Header - visible after countdown */}
-      {!showCountdown && user && <AuthenticatedIntelligenceHeader nominees={nominees} onSelectNominee={setSelectedNominee} />}
-
       {/* Progress Bar - hidden during countdown */}
       {!showCountdown && (
         <motion.div
-          className="fixed top-0 left-0 right-0 h-px z-50 origin-left"
+          className="fixed top-0 left-0 right-0 z-50 hidden h-px origin-left md:block"
           style={{
             background: brandColors.goldPrestige,
             scaleX: scrollYProgress
@@ -179,113 +349,23 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
       {/* Navigation - hidden during countdown */}
       {!showCountdown && <EditorialNav activeSection={activeSection} />}
 
-      {/* SECTION 1: Masthead */}
-      <main id="hero">
-        <EditorialMasthead />
-      </main>
-
-      {/* SECTION 2: Signal Report */}
-      <EditorialSection id="signal-report">
-        <section className="py-12 md:py-40 px-4 md:px-12 lg:px-24" style={{ background: 'white' }}>
-          <div className="max-w-6xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="mb-6 md:mb-16"
-            >
-              <p
-                className="text-[9px] md:text-[10px] tracking-[0.3em] md:tracking-[0.5em] uppercase mb-2 md:mb-4"
-                style={{ color: brandColors.skyBlue }}
-              >
-                Intelligence
-              </p>
-              <h2
-                className="text-2xl md:text-5xl font-light tracking-tight"
-                style={{
-                  fontFamily: 'Georgia, "Times New Roman", serif',
-                  color: brandColors.ink
-                }}
-              >
-                The Signal Report
-              </h2>
-              <p
-                className="mt-2 md:mt-4 max-w-xl text-xs md:text-sm leading-relaxed"
-                style={{ color: `${brandColors.ink}60` }}
-              >
-                Data-driven intelligence from the selection process.
-              </p>
-            </motion.div>
-            <SignalReport nominees={nominees} />
-          </div>
-        </section>
-      </EditorialSection>
-
-      {/* SECTION 3: Table of Contents */}
-      <EditorialSection id="contents">
-        <EditorialTableOfContents />
-      </EditorialSection>
-
-      {/* SECTION 4: Manifesto */}
-      <EditorialSection id="manifesto">
-        <EditorialManifesto />
-      </EditorialSection>
-
-      {/* SECTION 4: Featured Portraits */}
-      <EditorialSection id="portraits">
-        <EditorialPortraits
-          nominees={nominees}
-          onSelectNominee={setSelectedNominee}
-        />
-      </EditorialSection>
-
-      {/* SECTION 4.5: Archive & Export (Mid-page) - Hidden on mobile */}
-      <EditorialSection id="archive-mid">
-        <ArchiveExportSection nominees={nominees} compact />
-      </EditorialSection>
-
-      {/* Editorial break */}
-      <EditorialBreak text="One hundred names. Thousands of nominations. Every honoree validated by peers, measured by signal — not by status." />
-
-      {/* SECTION 5: The Index */}
-      <EditorialSection id="honorees">
-        <EditorialLedger
-          nominees={nominees}
-          onSelectNominee={setSelectedNominee}
-          discoveredIds={discoveredIds}
-        />
-        {showExports && <PublicationExportPanel nominees={nominees} user={user} />}
-      </EditorialSection>
-
-      {/* SECTION 6: Orbital Index - Under Construction */}
-      <EditorialSection id="orbital-index">
-        <OrbitalIndexComingSoon />
-      </EditorialSection>
-
-      {/* Editorial break */}
-      <EditorialBreak
-        kicker="The Methodology"
-        text="Not a ranking — a record. The verified reputation graph of aerospace & aviation."
+      {/* The console: the edition's contents on the glass, walked by the ring, and the
+          section it opens read down the picture. A desk gets the same sections in one
+          column. */}
+      <PublicationConsole
+        slides={slides}
+        discovered={discoveredIds.size}
+        total={nominees.length}
+        signedIn={Boolean(user)}
+        onSignIn={() => base44.auth.redirectToLogin()}
       />
 
-      {/* SECTION 7.5: Previous Volumes */}
-      <EditorialSection id="volumes">
-        <ArchiveVolumesSection />
-      </EditorialSection>
-
-      {/* SECTION 8: Archive */}
-      <EditorialSection id="archive">
-        <ArchiveExportSection nominees={nominees} />
-      </EditorialSection>
-
-      {/* SECTION 9: Closing */}
-      <section id="closing">
-        <EditorialClosing />
-      </section>
-
-      {/* Discovery progress tracker */}
+      {/* Discovery progress tracker — a desk chip. The glass prints the same readout on
+          the edition's contents instead of floating it over the picture. */}
       {!showCountdown && !selectedNominee && (
-        <DiscoveryTracker discoveredCount={discoveredIds.size} total={nominees.length} />
+        <div className="hidden md:block">
+          <DiscoveryTracker discoveredCount={discoveredIds.size} total={nominees.length} />
+        </div>
       )}
 
       {/* Profile Panel */}

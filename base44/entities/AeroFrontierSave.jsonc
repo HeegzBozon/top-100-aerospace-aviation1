@@ -1,0 +1,182 @@
+{
+  "name": "AeroFrontierSave",
+  "type": "object",
+  "properties": {
+    "player_email": {
+      "type": "string",
+      "description": "Email of the Fellow who keeps this field. One save per player; the stable key for reads and writes."
+    },
+    "act": {
+      "type": "number",
+      "default": 1,
+      "description": "Act of Aero-Frontier the player has reached. Act I is the only one built."
+    },
+    "day": {
+      "type": "number",
+      "default": 1,
+      "description": "Day count on the field. Sleeping in the bunkhouse banks the next day's light."
+    },
+    "hours": {
+      "type": "number",
+      "default": 8,
+      "description": "Hours of daylight left to spend. Salvage, the bench and the airframe each spend them; walking spends nothing."
+    },
+    "parts": {
+      "type": "number",
+      "default": 0,
+      "description": "Legacy: salvage counted as a single number before the bag existed. Never read by the world now."
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Legacy: ground jobs ticked off before the world was walkable. Never read now."
+    },
+    "system_steps": {
+      "type": "object",
+      "default": {},
+      "description": "Legacy: per-system step counts from the panel-era prototype. Superseded by crafted and installed."
+    },
+    "inventory": {
+      "type": "object",
+      "default": {},
+      "description": "The bag: item key -> count. Salvage gathered from the field, spent at the bench."
+    },
+    "crafted": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Recipe keys built at the bench (panel, spar, loom, carb, tyres)."
+    },
+    "installed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Recipe keys fitted to the monoplane. Its length against the fits wanted is what the airframe is measured by."
+    },
+    "quests": {
+      "type": "object",
+      "default": {},
+      "description": "Quest key -> 'active' | 'done'. Progress is never stored: it is read from the bag, the bench, the airframe and the ground walked."
+    },
+    "met": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Cast keys the player has spoken to. Decides which line a pilot opens with."
+    },
+    "visited": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Places read and flags set: sock, hangar, machine, sign, story, rue_trade, dog_find."
+    },
+    "seen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Scenes already played, so nothing opens twice: intro, chapter_one."
+    },
+    "nodes": {
+      "type": "object",
+      "default": {},
+      "description": "Salvage node key -> day number it was last worked. One-shot nodes carry the day they were emptied; daily nodes reset with the day."
+    },
+    "log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "day": {
+            "type": "number"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "The field log: newest first when rendered, capped at the last 40 entries. Play state only; never read by discovery, ranking, or scoring."
+    },
+    "flights": {
+      "type": "number",
+      "default": 0,
+      "description": "Circuits flown from the strip. Act I, chapter three, and still zero until the airframe is whole."
+    },
+    "best_circuit": {
+      "type": "number",
+      "default": 0,
+      "description": "Best circuit score, 0-100."
+    },
+    "at": {
+      "type": "object",
+      "default": {},
+      "description": "Tile the player was standing on when the field was last left: {x, y}. Keeps a returning session where it stopped."
+    },
+    "last_played": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the field was last worked"
+    }
+  },
+  "required": [
+    "player_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.player_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.player_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.player_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.player_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

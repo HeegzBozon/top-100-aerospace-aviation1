@@ -13,9 +13,10 @@ import HubListTabs from '@/components/my-top100/HubListTabs';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
 import { saveRankedVote } from '@/functions/saveRankedVote';
-import { Loader2, Pencil, Check, Rocket, LogIn } from 'lucide-react';
+import { Loader2, Pencil, Check, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
 import AnchorVoting from '@/components/voting/AnchorVoting';
 import VoteComingSoon from '@/components/my-top100/VoteComingSoon';
+import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
 import NominateViewToggle from '@/components/my-top100/NominateViewToggle';
 import QuickAddBar from '@/components/my-top100/QuickAddBar';
 import MobileNominateView from '@/components/my-top100/MobileNominateView';
@@ -23,6 +24,8 @@ import ContextualTip from '@/components/my-top100/ContextualTip';
 import { loadNomineePool } from '@/components/my-top100/nomineeCategory';
 import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import { useIsMobile } from '@/hooks/use-mobile';
+import useGlass from '@/hooks/useGlass';
+import GlassConsole from '@/components/handheld/GlassConsole';
 
 function generateShareCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -45,6 +48,10 @@ export default function MyTop100() {
   const [hubNominations, setHubNominations] = useState({ women: [], men: [], angels: [] });
   const [listCategory, setListCategory] = useState('all');
   const [activeTab, setActiveTab] = useState(() => {
+    // A deep link names the surface outright — the start screen's Vote now lands
+    // on the ballot, not on the orientation copy in front of it.
+    const requested = new URLSearchParams(window.location.search).get('tab');
+    if (['start', 'nominate', 'vote'].includes(requested)) return requested;
     try {
       const priorVisits = parseInt(localStorage.getItem('hub_visit_count') || '0', 10) || 0;
       // Engaged = already submitted at least one nomination on this device.
@@ -70,6 +77,13 @@ export default function MyTop100() {
   const [loadingPool, setLoadingPool] = useState(true);
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  // On the glass the hub is a console: its three surfaces are the menu, and one
+  // is open at a time. Null is the menu itself.
+  const glass = useGlass();
+  const [glassOpen, setGlassOpen] = useState(() => {
+    const requested = new URLSearchParams(window.location.search).get('tab');
+    return ['start', 'nominate', 'vote'].includes(requested) ? requested : null;
+  });
 
   const openExplorer = () => { setExplorerProfile(null); setExplorerOpen(true); };
   const openProfileFromList = async (item) => {
@@ -446,8 +460,137 @@ export default function MyTop100() {
     </div>
   );
 
+  // Opening a surface: the tab the desk reads, and the panel the console holds.
+  const openTab = (key) => {
+    setActiveTab(key);
+    if (glass) setGlassOpen(key);
+  };
+
+  // The ranked list — the desk's right column and the glass's My List are the
+  // same artifact, so it is written once.
+  const listBlock = (
+    <>
+      <ListNameEditor />
+      <BallotStatusBanner
+        rankings={rankings}
+        ballotLive={ballotLive}
+        votingOpen={votingOpen}
+        votingEndDate={season?.voting_end}
+        saving={saving}
+        syncError={syncError}
+        onShare={handleShare}
+      />
+      <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
+      <ListCanvas
+        rankings={visibleRankings}
+        totalCount={rankings.length}
+        onReorder={handleReorder}
+        readOnly={votingClosed}
+        onRemove={handleRemove}
+        onAddMore={openExplorer}
+        onAdd={handleAdd}
+        addedIds={addedIds}
+        onViewProfile={openProfileFromList}
+      />
+    </>
+  );
+
+  // Nominating on a phone: the flip between the intake and the ranked list.
+  const nominateBody = (
+    <>
+      <NominateViewToggle
+        value={nominateView}
+        onChange={setNominateView}
+        nominateCount={totalNominations}
+        listCount={rankings.length}
+      />
+
+      {nominateView === 'nominate' ? (
+        <MobileNominateView
+          user={user}
+          submittedNominations={hubNominations}
+          onRemoveNomination={removeHubNomination}
+          addedIds={addedIds}
+          onOpenExplorer={openExplorer}
+        />
+      ) : (
+        <div className="px-4 pt-3 pb-28">
+          <div className="mb-3">
+            <ContextualTip userEmail={user?.email} tipKey="nominate_hub_mylist">
+              {votingOpen
+                ? 'This is your ranked Top 100 — it doubles as your ballot while voting is open. Drag to reorder. You rank; the institution measures.'
+                : 'This is your ranked Top 100 — your personal, shareable ranking. Nominations go to our review queue; ballot measurement opens with the voting window.'}
+            </ContextualTip>
+          </div>
+          {listBlock}
+        </div>
+      )}
+    </>
+  );
+
+  const startNode = (
+    <div className="flex-1 overflow-y-auto">
+      <StartHereSplit
+        user={user}
+        hasExisting={totalNominations > 0 || rankings.length > 0}
+        onBegin={() => openTab('nominate')}
+        onVote={() => openTab('vote')}
+        onSaved={(c) => setUser((u) => ({ ...u, aerospace_connection: c }))}
+        onOpenOS={() => setShowOS(true)}
+      />
+    </div>
+  );
+
+  const chamberNode = user?.role === 'admin' ? <AnchorVoting user={user} /> : <VoteComingSoon />;
+
+  const voteNode = <div className="flex-1 flex flex-col overflow-hidden">{chamberNode}</div>;
+
+  // On the glass the ballot is read the way the title screen is read: the surfaces the
+  // vote tab reaches are drawn as keys and walked by the wheel — the ballot itself,
+  // the window it counts in, and the chamber — and B unwinds them a level at a time.
+  const glassVoteNode = (
+    <GlassVoteSurface
+      user={user}
+      status={{
+        open: votingOpen,
+        closed: votingClosed,
+        endLabel: season?.voting_end
+          ? new Date(season.voting_end).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+          : null,
+        ranked: rankings.length,
+        minimum: 3,
+      }}
+      ballotNode={<div className="px-3 pb-28">{listBlock}</div>}
+      chamberNode={chamberNode}
+      onExit={() => setGlassOpen(null)}
+    />
+  );
+
+  // The three surfaces the console holds. The desk reads them as tabs; the glass
+  // reads them as the cartridge menu.
+  const consolePanels = [
+    { key: 'start', label: 'Start Here', hint: 'Why this is here, and where to begin', icon: Rocket, node: startNode },
+    { key: 'nominate', label: 'Nominate', hint: `${totalNominations} nominated · ${rankings.length} on your list`, icon: Sparkles, node: <div className="pb-3">{nominateBody}</div> },
+    { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — your list is your ballot' : 'Your ranked ballot', icon: ListOrdered, node: glassVoteNode },
+  ];
+
+  const shownTab = glass ? glassOpen : activeTab;
+
   return (
     <div className="min-h-screen flex flex-col relative" style={{ background: brand.cream }}>
+      {glass ? (
+        <GlassConsole
+          kicker="Selection Committee"
+          panels={consolePanels}
+          openKey={glassOpen}
+          onOpen={(key) => {
+            setGlassOpen(key);
+            if (key) setActiveTab(key);
+          }}
+          deepLinkParam="tab"
+        />
+      ) : (
+        <>
       <ListBuilderHeader
         listName={listName}
         count={rankings.length}
@@ -464,18 +607,7 @@ export default function MyTop100() {
       />
 
       {/* ── START HERE TAB ── */}
-      {activeTab === 'start' && (
-        <div className="flex-1 overflow-y-auto">
-          <StartHereSplit
-            user={user}
-            hasExisting={totalNominations > 0 || rankings.length > 0}
-            onBegin={() => setActiveTab('nominate')}
-            onVote={() => setActiveTab('vote')}
-            onSaved={(c) => setUser((u) => ({ ...u, aerospace_connection: c }))}
-            onOpenOS={() => setShowOS(true)}
-          />
-        </div>
-      )}
+      {activeTab === 'start' && startNode}
 
       {/* ── NOMINATE TAB (split: intake on the left, ranked list on the right) ── */}
       {activeTab === 'nominate' && (
@@ -502,90 +634,20 @@ export default function MyTop100() {
             </div>
             {/* Right: Top 100 ranked list */}
             <div className="flex-1 min-w-0 max-w-xl flex flex-col overflow-hidden">
-              {ListNameEditor}
-              <BallotStatusBanner
-                rankings={rankings}
-                ballotLive={ballotLive}
-                votingOpen={votingOpen}
-                votingEndDate={season?.voting_end}
-                saving={saving}
-                syncError={syncError}
-                onShare={handleShare}
-              />
-              <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
-              <ListCanvas
-                rankings={visibleRankings}
-                totalCount={rankings.length}
-                onReorder={handleReorder}
-                readOnly={votingClosed}
-                onRemove={handleRemove}
-                onAddMore={openExplorer}
-                onAdd={handleAdd}
-                addedIds={addedIds}
-                onViewProfile={openProfileFromList}
-              />
+              {listBlock}
             </div>
           </div>
 
           {/* Mobile: in-tab toggle between Nominate and My List */}
           <div className="lg:hidden flex flex-col flex-1 overflow-y-auto">
-            <NominateViewToggle
-              value={nominateView}
-              onChange={setNominateView}
-              nominateCount={totalNominations}
-              listCount={rankings.length}
-            />
-
-            {nominateView === 'nominate' ? (
-              <MobileNominateView
-                user={user}
-                submittedNominations={hubNominations}
-                onRemoveNomination={removeHubNomination}
-                addedIds={addedIds}
-                onOpenExplorer={openExplorer}
-              />
-            ) : (
-              <div className="px-4 pt-3 pb-28">
-                <div className="mb-3">
-                  <ContextualTip userEmail={user?.email} tipKey="nominate_hub_mylist">
-                    {votingOpen
-                      ? 'This is your ranked Top 100 — it doubles as your ballot while voting is open. Drag to reorder. You rank; the institution measures.'
-                      : 'This is your ranked Top 100 — your personal, shareable ranking. Nominations go to our review queue; ballot measurement opens with the voting window.'}
-                  </ContextualTip>
-                </div>
-                {ListNameEditor}
-                <BallotStatusBanner
-                  rankings={rankings}
-                  ballotLive={ballotLive}
-                  votingOpen={votingOpen}
-                  votingEndDate={season?.voting_end}
-                  saving={saving}
-                  syncError={syncError}
-                  onShare={handleShare}
-                />
-                <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />
-                <ListCanvas
-                  rankings={visibleRankings}
-                  totalCount={rankings.length}
-                  onReorder={handleReorder}
-                  readOnly={votingClosed}
-                  onRemove={handleRemove}
-                  onAddMore={openExplorer}
-                  onAdd={handleAdd}
-                  addedIds={addedIds}
-                  onViewProfile={openProfileFromList}
-                />
-              </div>
-            )}
+            {nominateBody}
           </div>
         </div>
       )}
 
       {/* ── VOTE TAB (anchor selection — admins only; teaser for everyone else) ── */}
-      {activeTab === 'vote' && (
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {user?.role === 'admin' ? <AnchorVoting user={user} /> : <VoteComingSoon />}
-        </div>
+      {activeTab === 'vote' && voteNode}
+        </>
       )}
 
       <NomineeExplorerPopover
@@ -601,7 +663,7 @@ export default function MyTop100() {
 
       <QuickAddBar
         onClick={openQuickAdd}
-        hidden={!isMobile || activeTab !== 'nominate' || mobilePopoverOpen || explorerOpen}
+        hidden={!isMobile || shownTab !== 'nominate' || mobilePopoverOpen || explorerOpen}
       />
       {isMobile && mobilePopoverOpen && (
         <HubNominationPopover

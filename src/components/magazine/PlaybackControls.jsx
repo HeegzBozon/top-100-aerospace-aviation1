@@ -74,7 +74,7 @@ export function PlaybackProgress({ progress, active }) {
   if (!active) return null;
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-30 h-[3px] pointer-events-none"
+      className="imac-bar fixed bottom-0 left-0 right-0 z-30 h-[3px] pointer-events-none"
       style={{ background: 'rgba(201,168,124,0.08)' }}
     >
       <div
