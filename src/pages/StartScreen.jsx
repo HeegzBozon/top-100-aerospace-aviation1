@@ -13,7 +13,7 @@ import StartSeasonLine from '@/components/start/StartSeasonLine';
 import PublicationCountdown from '@/components/start/PublicationCountdown';
 import StartTitleActions from '@/components/start/StartTitleActions';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
-import { NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
+import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 
@@ -30,15 +30,21 @@ const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 export default function StartScreen() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const signedIn = !!user;
   const [phase] = useState(() => hourPhase());
   const [status, setStatus] = useState({ loading: true, votingEnd: null, failed: false });
   const [attempt, setAttempt] = useState(0);
   const [cursorKey, setCursorKey] = useState(START_MENU[0].key);
   const [notifyOpen, setNotifyOpen] = useState(false);
 
-  // The menu is the platform's, not the operator's: the surfaces a Fellow meets, and —
-  // for the few who run it — one extra key at the end of the row.
-  const menuItems = useMemo(() => startMenuFor(user?.role === "admin"), [user?.role]);
+  // The menu is the platform's, not the operator's: the surfaces whoever is standing here
+  // is entitled to — reading, nominating and the published edition for anyone at all, the
+  // ballot and a Fellow's own surfaces for a Fellow — and, for the few who run it, one
+  // extra key at the end of the row.
+  const menuItems = useMemo(
+    () => startMenuFor({ isAdmin: user?.role === 'admin', isSignedIn: signedIn }),
+    [user?.role, signedIn],
+  );
 
   useEffect(() => {
     let alive = true;
@@ -66,15 +72,21 @@ export default function StartScreen() {
   // The ballot is offered only while its countdown is still running, so neither
   // the button nor the cursor can land on an action that has already closed.
   const vote = useCountdown(status.votingEnd);
-  const voteLive = !status.loading && !status.failed && !!status.votingEnd && !vote.done;
+  // Measuring is a Fellow's work: the ballot is drawn for one, and a visitor is offered
+  // the way in where it would stand.
+  const voteLive = signedIn && !status.loading && !status.failed && !!status.votingEnd && !vote.done;
 
   // What the ring walks, top to bottom: the two things the title screen is asking
-  // for — the ballot while its cycle is running, and the publishing alert for a
-  // reader who will not be watching on the day — then the surfaces, in the order the
-  // grid draws them.
+  // for — the ballot while its cycle is running, or the way in for whoever has no
+  // account yet — then the publishing alert for a reader who will not be watching on the
+  // day, then the surfaces, in the order the grid draws them.
   const options = useMemo(
-    () => (voteLive ? [VOTE_OPTION, NOTIFY_OPTION, ...menuItems] : [NOTIFY_OPTION, ...menuItems]),
-    [voteLive, menuItems],
+    () => [
+      ...(signedIn ? (voteLive ? [VOTE_OPTION] : []) : ACCOUNT_KEYS),
+      NOTIFY_OPTION,
+      ...menuItems,
+    ],
+    [signedIn, voteLive, menuItems],
   );
 
   const optionsRef = useRef(options);
@@ -117,6 +129,12 @@ export default function StartScreen() {
         // The alert is not a cartridge: the ring opens its field where you stand.
         if (option.key === NOTIFY_OPTION.key) {
           setNotifyOpen(true);
+          return true;
+        }
+        // Nor is the way in: it is the platform's own door, which signs a Fellow in and
+        // opens the account a visitor has not made yet, and it comes back to this screen.
+        if (option.action) {
+          base44.auth.redirectToLogin(window.location.href);
           return true;
         }
         if (!option.to) return false;
@@ -167,8 +185,9 @@ export default function StartScreen() {
               <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
               <PublicationCountdown />
               <StartTitleActions
+                signedIn={signedIn}
                 voteLive={voteLive}
-                voteSelected={cursorKey === VOTE_OPTION.key}
+                selectedKey={cursorKey}
                 notifyOpen={notifyOpen}
                 onNotifyChange={setNotifyOpen}
                 notifySelected={cursorKey === NOTIFY_OPTION.key}

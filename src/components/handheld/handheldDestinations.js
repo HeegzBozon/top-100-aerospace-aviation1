@@ -1,7 +1,7 @@
 import {
   MessageCircle, Trophy, Award, Users, Calendar, Rocket, Send, Briefcase,
   GraduationCap, Network, Radar, LayoutGrid, Globe2, Compass, Newspaper,
-  ShoppingBag, Mail, CalendarCheck, Shield, LogIn, LogOut,
+  ShoppingBag, Mail, CalendarCheck, Shield, LogIn, LogOut, UserPlus,
   Scissors, Layers, BookOpen, Gamepad2, Heart,
 } from "lucide-react";
 import { createPageUrl } from "@/utils";
@@ -11,10 +11,17 @@ import { iconMap, DefaultIcon } from "@/components/icons";
 // The handheld's destination model. ADMIN-owned rail items stay the command
 // rail (the D-pad cycles them); the curated groups below give every surface a
 // home in the journey map. Boards deep-link into the Bulletin Board cluster.
+// The journey map, as it is walked. The platform reads the same for everyone; what
+// changes for a visitor is only what is drawn in it. A group marked membersOnly is a
+// Fellow's own record — their dashboard, their bulletins, their availability — and is
+// simply not there for someone who has no record yet, while the platform's published
+// work (the edition, the archive, the chamber) is offered to both, so a newcomer walks
+// the same machine a Fellow does and is offered the way in at the end of it.
 export const NAVIGATOR_GROUPS = [
   {
     key: "identity",
     label: "Identity",
+    membersOnly: true,
     items: [
       { label: "Dashboard", to: "/board", icon: LayoutGrid },
       { label: "The Bulletin", to: "/Profile?board=fellow", icon: LayoutGrid },
@@ -36,6 +43,7 @@ export const NAVIGATOR_GROUPS = [
   {
     key: "availability",
     label: "Availability",
+    membersOnly: true,
     items: [
       { label: "Introductions", to: "/Profile?board=intros", icon: Send },
       { label: "Job Board", to: "/Profile?board=jobs", icon: Briefcase },
@@ -47,9 +55,9 @@ export const NAVIGATOR_GROUPS = [
     key: "community",
     label: "Community",
     items: [
-      { label: "Comms", to: "/Comms", icon: MessageCircle },
+      { label: "Comms", to: "/Comms", icon: MessageCircle, membersOnly: true },
       { label: "Calendar", to: "/events", icon: Calendar },
-      { label: "AeroSync CRM", to: "/aerosync", icon: Users },
+      { label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
       { label: "Operation Moon Joy", to: "/hangouts", icon: Rocket },
       { label: "Local Legends", to: "/local-legends", icon: Users },
     ],
@@ -60,7 +68,7 @@ export const NAVIGATOR_GROUPS = [
     items: [
       { label: "Intelligence Globe", to: "/intelligence-globe", icon: Globe2 },
       { label: "Global Intelligence", to: "/GlobalIntelligence", icon: Compass },
-      { label: "Magazine Studio", to: "/magazine-studio", icon: BookOpen },
+      { label: "Magazine Studio", to: "/magazine-studio", icon: BookOpen, membersOnly: true },
       { label: "Platform Board", to: "/platform-board", icon: Layers },
     ],
   },
@@ -71,7 +79,10 @@ export const NAVIGATOR_GROUPS = [
       { label: "Shop", to: "/Shop", icon: ShoppingBag },
       { label: "Subscribe", to: "/subscribe", icon: Mail },
       { label: "RSVP", to: "/rsvp", icon: CalendarCheck },
-      { label: "Sign in", action: "signin", icon: LogIn, visitorsOnly: true },
+      // The way in, in both readings — signing in, and making the account a visitor has
+      // not got yet — standing where a member finds the way out.
+      { label: "Log in", action: "signin", icon: LogIn, visitorsOnly: true },
+      { label: "Join", action: "join", icon: UserPlus, visitorsOnly: true },
       { label: "Log out", action: "logout", icon: LogOut, membersOnly: true },
       { label: "Admin Portal", to: "/Admin", icon: Shield, adminOnly: true },
     ],
@@ -121,7 +132,15 @@ export function buildGroups({ rail, more, isSignedIn, isAdmin }) {
     items: rail.filter(visible),
   };
 
-  const groups = [railGroup, ...NAVIGATOR_GROUPS.map((g) => ({ ...g, items: g.items.filter(visible) }))];
+  // A group that belongs to a Fellow's own record goes whole: the flag stands on the
+  // group rather than being repeated on every entry inside it.
+  const groups = [
+    railGroup,
+    ...NAVIGATOR_GROUPS.filter((g) => !g.membersOnly || isSignedIn).map((g) => ({
+      ...g,
+      items: g.items.filter(visible),
+    })),
+  ];
 
   if (more.length) {
     groups.push({ key: "more", label: "More", items: more.filter(visible) });

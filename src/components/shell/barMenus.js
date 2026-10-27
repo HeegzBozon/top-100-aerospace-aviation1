@@ -1,5 +1,5 @@
 import {
-  Briefcase, Home, LayoutGrid, ListChecks, LogIn, Radar, Send, Shield, UserCog,
+  Briefcase, Home, LayoutGrid, ListChecks, LogIn, Radar, Send, Shield, UserCog, UserPlus,
 } from "lucide-react";
 import { START_MENU } from "@/components/start/startMenuConfig";
 
@@ -20,7 +20,9 @@ export const FILE_GROUPS = [
   {
     key: "surfaces",
     label: "Surfaces",
-    items: START_MENU.map(({ label, to, icon }) => ({ label, to, icon })),
+    // The surfaces carry the title screen's own flags, so a visitor is offered the
+    // platform's public work here and nothing that would ask them for an account.
+    items: START_MENU.map(({ label, to, icon, membersOnly }) => ({ label, to, icon, membersOnly })),
   },
 ];
 
@@ -41,7 +43,10 @@ export const EDIT_GROUPS = [
     key: "account",
     label: "Account",
     items: [
-      { label: "Sign in", action: "signin", icon: LogIn, visitorsOnly: true },
+      // The way in, in both of its readings: the returning Fellow signing in, and the
+      // visitor making the account they do not have yet.
+      { label: "Log in", action: "signin", icon: LogIn, visitorsOnly: true },
+      { label: "Join", action: "join", icon: UserPlus, visitorsOnly: true },
       { label: "Admin portal", to: "/Admin", icon: Shield, adminOnly: true },
     ],
   },

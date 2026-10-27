@@ -1,4 +1,4 @@
-import { Award, BookOpen, LayoutGrid, ListChecks, Plane, Shield, Trophy, Users } from "lucide-react";
+import { Award, BookOpen, LayoutGrid, ListChecks, LogIn, Plane, Shield, Trophy, UserPlus, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -13,12 +13,16 @@ import { Award, BookOpen, LayoutGrid, ListChecks, Plane, Shield, Trophy, Users }
 //
 // The game stands at the end of the row on purpose: it is the one surface built
 // for play, and it belongs beside the institution's work rather than inside it.
+// Reading, nominating and the published edition are the platform's public work: anyone
+// may do them. Measuring is a Fellow's — the ballot needs an account — and so are the
+// surfaces that hold a person's own record, so they carry the member flag and are simply
+// not drawn for a visitor.
 export const START_MENU = [
   { key: "read", index: "00", label: "Read", to: "/mission-briefing", icon: BookOpen },
   { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
-  { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks },
-  { key: "networking", index: "03", label: "AeroSync CRM", to: "/aerosync", icon: Users },
-  { key: "dashboard", index: "04", label: "Dashboard", to: "/board", icon: LayoutGrid },
+  { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
+  { key: "networking", index: "03", label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
+  { key: "dashboard", index: "04", label: "Dashboard", to: "/board", icon: LayoutGrid, membersOnly: true },
   { key: "results", index: "05", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
   { key: "frontier", index: "06", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
 ];
@@ -34,8 +38,23 @@ export const ADMIN_MENU = {
   icon: Shield,
 };
 
-// The row as it is drawn for whoever is reading it.
-export const startMenuFor = (isAdmin) => (isAdmin ? [...START_MENU, ADMIN_MENU] : START_MENU);
+// The row as it is drawn for whoever is reading it: what they are entitled to, and the
+// administration held at the end for the few who run it.
+export const startMenuFor = ({ isAdmin = false, isSignedIn = false } = {}) => [
+  ...START_MENU.filter((item) => !item.membersOnly || isSignedIn),
+  ...(isAdmin ? [ADMIN_MENU] : []),
+];
+
+// The two ways in, offered to a visitor where a member is offered the ballot — the title
+// screen's own row — and again in the machine's drawers, so the door is never further
+// than one press from anywhere in the building. Both are the platform's own door: it
+// signs a Fellow in and opens the account a visitor has not made yet.
+export const ACCOUNT_KEYS = [
+  { key: "login", label: "Log in", action: "signin", icon: LogIn, visitorsOnly: true },
+  { key: "join", label: "Join", action: "join", icon: UserPlus, visitorsOnly: true },
+];
+
+export const accountKeysFor = (isSignedIn) => (isSignedIn ? [] : ACCOUNT_KEYS);
 
 // The ballot: the one action the cycle is asking for, offered beside the
 // countdown so the closing date and the way to vote are read in one line.

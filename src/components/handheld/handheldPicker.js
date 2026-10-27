@@ -20,9 +20,12 @@ import { useEffect, useState } from "react";
 // A page of prose registers a deck instead (see handheldDeck). A surface that
 // registers a picker answers four questions:
 //   labels / index / goTo — what the rail and the masthead read
-//   step  — a turn of the ring. Returning null declines the turn, and the
-//           console scrolls the glass instead, which is how an open panel is
-//           read down the page.
+//   step  — a turn of the ring. A label is taken as a turn that has something
+//           to say and the console says it. Returning true is a turn the surface
+//           answers for itself and the console takes silently — the ring is
+//           rolling a page the surface has already named. Returning null
+//           declines the turn, and the console scrolls the glass instead, which
+//           is how an open panel is read down the page.
 //   page  — back and forward on the ring: the neighbour
 //   enter — the confirm key. Returning false hands the key back, so a surface
 //           with nothing to open leaves A doing what it always did.

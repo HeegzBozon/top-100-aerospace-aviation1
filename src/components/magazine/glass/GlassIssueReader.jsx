@@ -81,10 +81,33 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   // The film: paced by the page it is holding, and it stops at the colophon. The turn
   // reads the standing page off the ref, because the console's own hands hold this
   // function long after the render that made it.
-  const turn = (direction) => {
+  // What the page's own roll is written into: the well the page opens for its own
+  // length (see pageTeleprompter). One page stands on the glass at a time, so the ring
+  // reads it by the mark the page already carries rather than threading a ref down.
+  const pageScroller = () => getStage()?.querySelector('[data-page-scroll]');
+
+  // One detent's worth of the page under the ring, and whether it moved at all. A page
+  // with nothing to roll — a cover, a full-bleed spread — says so at once.
+  const rollPage = (direction) => {
+    const el = pageScroller();
+    if (!el || el.scrollHeight <= el.clientHeight + 4) return false;
+    const before = el.scrollTop;
+    el.scrollTop = before + direction * 48;
+    return el.scrollTop !== before;
+  };
+
+  const turn = (direction, atFoot = false) => {
     const next = positionRef.current + direction;
     if (next < 1 || next > total) return null;
     setPosition(next);
+    // Entered from below, a page opens at its foot, so the reading carries on the way the
+    // reader was walking instead of starting the page over.
+    if (atFoot) {
+      requestAnimationFrame(() => {
+        const el = pageScroller();
+        if (el) el.scrollTop = el.scrollHeight;
+      });
+    }
     return isPdf ? `Page ${String(next).padStart(2, '0')}` : foldLabel(pages[next - 1], next, total);
   };
 
@@ -182,11 +205,15 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
         ? [foldRef.current]
         : listRef.current.map((entry) => entry.label)),
       index: () => (viewRef.current === 'page' ? 0 : cursorRef.current),
-      // Rotation walks the contents. On a page it declines, so the glass takes the
-      // turn and scrolls the page under the thumb.
+      // Rotation walks the contents. On a page it rolls the page under the ring, and the
+      // roll carries on: past the foot of one page the turn is handed to the next, past
+      // the head of it to the one before. So the wheel alone reads the issue through a
+      // page at a time — while ◀▶ still steps between pages and the contents are the
+      // sections, walked on the same ring.
       step: (direction) => {
-        if (viewRef.current === 'page') return null;
-        return land(cursorRef.current + direction);
+        if (viewRef.current !== 'page') return land(cursorRef.current + direction);
+        if (rollPage(direction)) return true;
+        return turn(direction, direction < 0);
       },
       // Back and forward on the ring turn the pages.
       page: (direction) => {

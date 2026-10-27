@@ -74,18 +74,6 @@ export default function MagazineReader() {
     if (issueId) load();
   }, [issueId]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    if (!opened) return;
-    const handler = (e) => {
-      if (e.key === 'ArrowLeft') {
-        // handled by flipbook/single-page internally
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [opened]);
-
   // The issue's File menu on a desk: the machine's own list carries the issue while a desk
   // reader is open — the PDF a reader keeps, and the link to hand out — reported in the
   // machine's notices. On the handheld the glass reader registers the fuller list, with the
@@ -114,6 +102,18 @@ export default function MagazineReader() {
     articles,
     enabled: !isMobile && opened,
   });
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!opened) return;
+    const handler = (e) => {
+      if (e.key === 'ArrowLeft') {
+        // handled by flipbook/single-page internally
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [opened]);
 
   if (loading) {
     return (

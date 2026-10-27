@@ -298,7 +298,11 @@ export default function HandheldDeck() {
 
       // Not a cartridge: the hardware drawer opens where you stand.
       if (destination.action === "finish") return openFinish();
-      if (destination.action === "signin") return base44.auth.redirectToLogin(window.location.href);
+      // The way in, on the platform's own door: one page both signs a Fellow in and
+      // opens the account a visitor does not have yet.
+      if (destination.action === "signin" || destination.action === "join") {
+        return base44.auth.redirectToLogin(window.location.href);
+      }
       if (destination.action === "logout") return base44.auth.logout(`${window.location.origin}/`);
       // A surface's own File entry does its work where it stands: the drawer goes down on
       // the press, and the surface reports in the glass what came of it.
@@ -432,6 +436,10 @@ export default function HandheldDeck() {
       // takes, which is how an open panel is read down.
       if (picker) {
         const label = picker.step(step);
+        // A turn a surface answers for itself and has nothing to name — the ring
+        // rolling a page it has already announced — is still a turn the console must
+        // not hand on to the glass.
+        if (label === true) return;
         if (label) {
           announce(label);
           return;

@@ -135,8 +135,9 @@ const AuthenticatedApp = () => {
       <Route element={<HandheldShell />}>
       {/* A desk is housed in the desk machine: everything below renders inside its tube */}
       <Route element={<DesktopShell />}>
-      {/* Fellows open on the start screen; visitors get the editorial home */}
-      <Route path="/" element={isAuthenticated ? <StartScreen /> : <HomeV3 />} />
+      {/* Everyone opens on the start screen: the surfaces a Fellow is entitled to, and
+          the way in for whoever is not one yet — the same machine either way. */}
+      <Route path="/" element={<StartScreen />} />
       <Route path="/start" element={<StartScreen />} />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />

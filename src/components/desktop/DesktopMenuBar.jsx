@@ -48,7 +48,7 @@ export default function DesktopMenuBar() {
   const go = (item) => {
     setOpen(null);
     if (!item) return;
-    if (item.action === "signin") return toLogin();
+    if (item.action === "signin" || item.action === "join") return toLogin();
     if (item.action === "logout") return base44.auth.logout(`${window.location.origin}/`);
     // A surface's own File entry does its work where it stands: the drawer goes down on the
     // press and the surface reports what came of it.
