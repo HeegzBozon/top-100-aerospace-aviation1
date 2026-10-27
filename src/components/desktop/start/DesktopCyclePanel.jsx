@@ -23,18 +23,14 @@ const SECONDARY_STYLE = {
   borderColor: "rgb(var(--editorial-gold-rgb) / 0.45)",
   color: "rgb(var(--editorial-gold-rgb) / 0.95)",
 };
-const COPPER_LABEL = "text-[9px] font-bold uppercase tracking-[0.3em] text-editorial-copper";
+/* Small caps on the navy plate take rose gold, never copper: rose gold carries AA
+   there where the burnished copper is reserved for cream surfaces. */
+const LABEL = "text-[9px] font-bold uppercase tracking-[0.3em] text-editorial-gold/85";
 
-function Figure({ label, parts, note, emphasis = false }) {
+function Figure({ label, parts, note }) {
   return (
     <div className="min-w-[150px]">
-      <p
-        className={`text-[9px] font-bold uppercase tracking-[0.3em] ${
-          emphasis ? "text-editorial-gold" : "text-editorial-copper"
-        }`}
-      >
-        {label}
-      </p>
+      <p className={LABEL}>{label}</p>
 
       {note ? (
         <p className="mt-2 font-heading text-[21px] leading-none text-editorial-cream/75">{note}</p>
@@ -88,7 +84,7 @@ export default function DesktopCyclePanel({
         <div className="flex flex-wrap items-end gap-x-14 gap-y-8">
           {status.failed ? (
             <div className="min-w-[150px]">
-              <p className={COPPER_LABEL}>Voting closes</p>
+              <p className={LABEL}>Voting closes</p>
               <button
                 type="button"
                 onClick={onRetry}
@@ -99,17 +95,17 @@ export default function DesktopCyclePanel({
             </div>
           ) : status.loading ? (
             <div className="min-w-[150px]">
-              <p className={COPPER_LABEL}>Voting closes</p>
+              <p className={LABEL}>Voting closes</p>
               <p className="mt-2 font-heading text-[21px] leading-none text-editorial-cream/45">
                 Reading the season…
               </p>
             </div>
           ) : vote.done ? (
-            <Figure label="Voting closes" note="Closed" emphasis />
+            <Figure label="Voting closes" note="Closed" />
           ) : status.votingEnd ? (
-            <Figure label="Voting closes" parts={voteParts} emphasis />
+            <Figure label="Voting closes" parts={voteParts} />
           ) : (
-            <Figure label="Voting closes" note="No season on the calendar" emphasis />
+            <Figure label="Voting closes" note="No season on the calendar" />
           )}
 
           <Figure
