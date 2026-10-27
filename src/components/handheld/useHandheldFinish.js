@@ -1,12 +1,19 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { DEFAULT_FINISH, FINISH_KEY, FINISHES, finishByKey, isFinish } from "./handheldFinishes";
+import {
+  DEFAULT_FINISH,
+  FINISH_EVENT,
+  FINISH_KEY,
+  FINISHES,
+  finishByKey,
+  isFinish,
+} from "./handheldFinishes";
 
 // Two memories, one device. The Fellow's saved finish travels with the account;
 // this device remembers the last finish put on it. The account wins whenever it
 // has something to say, and until then the device shows its own choice — so a
 // visitor still gets a device they have dressed, not a default.
-const EVENT = "top100:handheld-finish";
+const EVENT = FINISH_EVENT;
 
 export function readLocalFinish() {
   try {

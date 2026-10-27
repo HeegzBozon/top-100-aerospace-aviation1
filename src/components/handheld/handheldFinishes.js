@@ -8,6 +8,10 @@
 
 export const FINISH_KEY = "top100-handheld-finish";
 
+// Raised whenever a finish is put on the device, so everything moulded to match it —
+// the desk machine above all — re-casts the moment the device does.
+export const FINISH_EVENT = "top100:handheld-finish";
+
 export const DEFAULT_FINISH = "navy_copper";
 
 export const FINISHES = [

@@ -35,6 +35,10 @@
   --imac-tube: #0B1119;
   --imac-tube-edge: rgba(2, 5, 10, 0.62);
   --imac-led: #7BE08A;
+
+  /* The rule printed across the lockup: house rose gold, or the machine's own metal
+     when the desk is moulded to match the handheld. */
+  --imac-rule: rgba(201, 168, 124, 0.9);
 }
 
 @media (min-width: 768px) {
@@ -173,6 +177,33 @@
 .imac-screw {
   background: radial-gradient(circle at 34% 28%, var(--imac-steel-1) 0%, var(--imac-steel-2) 66%, var(--imac-steel-3) 100%);
   box-shadow: inset 0 0 0 1px rgba(3, 6, 13, 0.26), 0 1px 1px rgba(255, 255, 255, 0.30);
+}
+
+/* The pack keys: printed on the chin, lit when their pack is the one in the mould. */
+.imac-packkey {
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--imac-ink-soft);
+  box-shadow: inset 0 0 0 1px rgb(var(--imac-ink-rgb) / 0.24);
+  transition: color 140ms ease, box-shadow 140ms ease;
+}
+.imac-packkey:hover {
+  color: var(--imac-ink);
+}
+.imac-packkey[data-on="true"] {
+  color: var(--imac-ink);
+  background: rgba(3, 6, 13, 0.20);
+  box-shadow:
+    inset 0 1px 3px rgba(3, 6, 13, 0.50),
+    inset 0 0 0 1px rgb(var(--imac-ink-rgb) / 0.30);
+}
+.imac-packkey:focus-visible {
+  outline: 2px solid var(--imac-rule);
+  outline-offset: 2px;
 }
 
 /* The colour the resin is moulded in: a swatch, and the ring on the one worn. */

@@ -10,7 +10,7 @@ import "./imac.css";
 // so the shell and the loading chassis are literally the same machine — a surface
 // never arrives in a different computer than the one it left.
 export default function ImacHousing({ children }) {
-  const { finishKey, finish, finishes, chooseFinish } = useImacFinish();
+  const { finishKey, finish, pack, packs, options, chooseFinish, choosePack } = useImacFinish();
 
   useEffect(() => {
     document.body.classList.add("imac-shell");
@@ -36,9 +36,12 @@ export default function ImacHousing({ children }) {
       <div className="imac-glass" aria-hidden="true" />
       <ImacChin
         finish={finish}
-        finishes={finishes}
+        pack={pack}
+        packs={packs}
+        options={options}
         finishKey={finishKey}
         onChoose={chooseFinish}
+        onChoosePack={choosePack}
       />
     </div>
   );

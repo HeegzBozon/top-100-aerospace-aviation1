@@ -1,11 +1,20 @@
 import { Power } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ImacColourRack from "./ImacColourRack";
 
-// The machine's chin: the slot-loading tray, the printed lockup, the colour the
-// resin is moulded in, and the power key. Every control on it is real — the key
-// takes the desk to the platform's front door, and a colour re-casts the whole
-// machine, because the resin is the housing.
-export default function ImacChin({ finish, finishes, finishKey, onChoose }) {
+// The machine's chin: the slot-loading tray, the printed lockup, the colour the resin
+// is moulded in, and the power key. Every control on it is real — the key takes the
+// desk to the platform's front door, and a colour re-casts the whole machine, because
+// the resin is the housing.
+export default function ImacChin({
+  finish,
+  pack,
+  packs,
+  options,
+  finishKey,
+  onChoose,
+  onChoosePack,
+}) {
   const navigate = useNavigate();
 
   return (
@@ -17,8 +26,7 @@ export default function ImacChin({ finish, finishes, finishKey, onChoose }) {
         <span
           className="h-[16px] w-px flex-none"
           style={{
-            background:
-              "linear-gradient(180deg, rgba(201,168,124,0.15), rgba(201,168,124,0.95), rgba(201,168,124,0.15))",
+            background: "linear-gradient(180deg, transparent, var(--imac-rule), transparent)",
           }}
           aria-hidden="true"
         />
@@ -30,27 +38,21 @@ export default function ImacChin({ finish, finishes, finishKey, onChoose }) {
         </p>
       </div>
 
-      <div className="ml-auto flex items-center gap-2.5">
+      <div className="ml-auto flex items-center gap-3">
         <span
           className="text-[7px] font-bold uppercase tracking-[0.28em]"
           style={{ color: "var(--imac-ink-soft)" }}
         >
           {finish.label}
         </span>
-        {finishes.map((option) => (
-          <button
-            key={option.key}
-            type="button"
-            onClick={() => onChoose(option.key)}
-            data-on={option.key === finishKey}
-            aria-label={`Mould the machine in ${option.label}`}
-            title={option.label}
-            className="imac-colour"
-            style={{
-              background: `linear-gradient(150deg, ${option.swatch[0]} 0%, ${option.swatch[1]} 100%)`,
-            }}
-          />
-        ))}
+        <ImacColourRack
+          pack={pack}
+          packs={packs}
+          options={options}
+          finishKey={finishKey}
+          onChoose={onChoose}
+          onChoosePack={onChoosePack}
+        />
       </div>
 
       <span
