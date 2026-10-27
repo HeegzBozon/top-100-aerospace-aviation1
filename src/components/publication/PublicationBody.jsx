@@ -19,7 +19,6 @@ import ShareableCard from '@/components/publication/ShareableCard';
 import CountdownLanding from '@/components/publication/CountdownLanding';
 import UnauthenticatedCTA from '@/components/public/UnauthenticatedCTA';
 import RsvpFloatingButton from '@/components/public/RsvpFloatingButton';
-import AuthenticatedIntelligenceHeader from '@/components/publication/AuthenticatedIntelligenceHeader';
 import EditorialNav from '@/components/publication/EditorialNav';
 import EditorialSection from '@/components/publication/EditorialSection';
 import PublicationConsole from '@/components/publication/PublicationConsole';
@@ -335,9 +334,6 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
 
       {/* Countdown Landing */}
       {showCountdown && <CountdownLanding onReveal={() => setShowCountdown(false)} />}
-
-      {/* Authenticated Intelligence Header - visible after countdown */}
-      {!showCountdown && user && <AuthenticatedIntelligenceHeader nominees={nominees} onSelectNominee={setSelectedNominee} />}
 
       {/* Progress Bar - hidden during countdown */}
       {!showCountdown && (
