@@ -27,7 +27,6 @@ export default function FellowLeftRail({
   statusKey,
   savingStatus,
   onStatusChange,
-  viewCount,
   endorsementCount,
   wallEntries,
   onApproveWall,
@@ -71,7 +70,6 @@ export default function FellowLeftRail({
         <FellowStatsBox
           user={user}
           nominee={nominee}
-          viewCount={viewCount}
           endorsementCount={endorsementCount}
           accent={accent}
         />

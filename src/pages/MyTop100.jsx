@@ -12,7 +12,8 @@ import NominateIntakePanel from '@/components/my-top100/NominateIntakePanel';
 import HubListTabs from '@/components/my-top100/HubListTabs';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
-import { saveRankedVote } from '@/functions/saveRankedVote';
+// No ballot writer here: the list is a publication, the ballot is a vote. They are
+// separate acts now, so publishing this list can never cast or mirror a ranking.
 import { Loader2, Pencil, Check, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
 import AnchorVoting from '@/components/voting/AnchorVoting';
 import VoteComingSoon from '@/components/my-top100/VoteComingSoon';
@@ -41,7 +42,7 @@ export default function MyTop100() {
   const [season, setSeason] = useState(null);
   const [votingActive, setVotingActive] = useState(false);
   const [profileId, setProfileId] = useState(null);
-  const [syncError, setSyncError] = useState('');
+  const [saveError, setSaveError] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveTimer, setSaveTimer] = useState(null);
@@ -249,7 +250,6 @@ export default function MyTop100() {
     ['review', 'completed', 'archived'].includes(season.status) ||
     (season.voting_end && new Date(season.voting_end) < now)
   );
-  const ballotLive = votingOpen && rankings.length >= 3;
   // The personal list is public (shareable) once non-empty; decoupled from ballot measurement.
   const isPublished = rankings.length > 0;
   const profileUrl = profileId
@@ -286,7 +286,6 @@ export default function MyTop100() {
     if (!user) return;
     setSaving(true);
 
-    const isLive = votingOpen && updatedRankings.length >= 3;
     const payload = {
       user_email: user.email,
       user_name: user.full_name,
@@ -294,10 +293,12 @@ export default function MyTop100() {
       rankings: updatedRankings.map((r, i) => ({ ...r, rank: i + 1 })),
       is_published: updatedRankings.length > 0,
       share_code: shareCode,
-      ballot_submitted: isLive,
-      ...(isLive ? { ballot_submitted_at: new Date().toISOString() } : {}),
     };
 
+    // Writing this list no longer casts, updates or mirrors a ballot. The Eight is a
+    // public, ordinal publication; the ballot is a private vote, and deriving one
+    // from the other is what let a reader reconstruct a Fellow's ranking from their
+    // profile. Ballots are cast on the ballot surface alone.
     try {
       if (myList?.id) {
         await base44.entities.UserTop100List.update(myList.id, payload);
@@ -305,19 +306,12 @@ export default function MyTop100() {
         const created = await base44.entities.UserTop100List.create(payload);
         setMyList(created);
       }
-    } catch { /* persist error — surfaced via syncError if ballot also fails */ }
-
-    // Auto-sync the ranked ballot only while the season voting window is open.
-    // Below the 3-nominee threshold the ballot is cleared (not counted) rather
-    // than stored, so a sub-threshold list never registers as a live ballot.
-    if (votingOpen && season?.id) {
-      try {
-        const ballot = updatedRankings.length >= 3 ? updatedRankings.map((r) => r.nominee_id) : [];
-        await saveRankedVote({ season_id: season.id, ballot });
-        setSyncError('');
-      } catch {
-        setSyncError("Ballot sync failed — your list is saved. We'll retry on your next change.");
-      }
+      setSaveError('');
+    } catch (e) {
+      // A failed write is reported, never swallowed.
+      setSaveError(e?.message
+        ? `Your list could not be saved — ${e.message}`
+        : 'Your list could not be saved.');
     }
 
     setSaving(false);
@@ -372,7 +366,7 @@ export default function MyTop100() {
     scheduleSave(newRankings, listName);
   };
 
-  // Publish & Save Draft removed — the ballot auto-syncs via persistAndSync
+  // Publish & Save Draft removed — the list persists via persistAndSync
   // above, and the Share CTA on the status band replaces the publish button.
 
   const addedIds = new Set(rankings.map(r => r.nominee_id));
@@ -473,11 +467,10 @@ export default function MyTop100() {
       <ListNameEditor />
       <BallotStatusBanner
         rankings={rankings}
-        ballotLive={ballotLive}
         votingOpen={votingOpen}
         votingEndDate={season?.voting_end}
         saving={saving}
-        syncError={syncError}
+        errorMessage={saveError}
         onShare={handleShare}
       />
       <ListCategoryTabs activeTab={listCategory} onTabChange={setListCategory} counts={listCategoryCounts} />

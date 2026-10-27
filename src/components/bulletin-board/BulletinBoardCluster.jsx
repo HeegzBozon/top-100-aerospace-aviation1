@@ -110,7 +110,7 @@ export default function BulletinBoardCluster({
     { key: 'flightography', label: 'Flightography', icon: Plane, frame: false, size: '1x2', node: flightography },
     { key: 'card', label: 'Card', icon: CreditCard, frame: false, size: '1x1', node: tradingCard },
     { key: 'record', label: 'The record', icon: BarChart3, frame: true, size: '1x1', node: (
-      <FellowStatsBox user={user} nominee={nominee} viewCount={settings?.profile_view_count || 0} endorsementCount={approvedEndorsements} accent={accent} />
+      <FellowStatsBox user={user} nominee={nominee} endorsementCount={approvedEndorsements} accent={accent} />
     )},
     { key: 'network', label: 'Your network', icon: Users, frame: true, size: '1x1', node: (
       <ConnectionsRail user={user} accent={accent} bare />

@@ -162,11 +162,14 @@ export default function ProfileWizard({ user, nominee, onClose, onSaved, openWit
 
       // Mirror the editorial answers onto the nominee record so public profiles match
       if (nominee?.id) {
+        // No swallowed failure here: if the mirror onto the canonical record does not
+        // land, the Studio says so rather than leaving the Fellow believing their
+        // profile was updated.
         await base44.entities.Nominee.update(nominee.id, {
           six_word_story: form.six_word_story,
           bio: form.bio,
           avatar_url: form.avatar_url,
-        }).catch(() => {});
+        });
       }
 
       // Send a copy of the Top Viral Post submission to the email address used in it.

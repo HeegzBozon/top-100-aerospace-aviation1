@@ -47,19 +47,18 @@ export default function IndexLanding() {
 
         const { data: standingsData } = await getStandingsData({ season: selectedSeasonId, sort: 'aura', dir: 'desc', page: 1, limit: 1000 });
         const standingsRows = standingsData?.standings?.rows || [];
-        const rankedVotes = await base44.entities.RankedVote.filter({ season_id: selectedSeasonId });
+        // Sealed ballots: the fold happens on the server and only totals come back.
+        const tallyResponse = await base44.functions.invoke('getBordaTally', { season_id: selectedSeasonId }).catch(() => null);
+        const tally = tallyResponse?.data || tallyResponse || {};
 
         const scoreMap = {};
         standingsRows.forEach(n => { scoreMap[n.nomineeId] = { nomineeId: n.nomineeId, bordaScore: 0, totalVotes: 0, firstChoiceVotes: 0 }; });
-        rankedVotes.forEach(vote => {
-          if (!vote.ballot || !Array.isArray(vote.ballot)) return;
-          vote.ballot.forEach((nomineeId, position) => {
-            if (scoreMap[nomineeId]) {
-              scoreMap[nomineeId].bordaScore += 100 - position;
-              scoreMap[nomineeId].totalVotes += 1;
-              if (position === 0) scoreMap[nomineeId].firstChoiceVotes += 1;
-            }
-          });
+        (tally.rows || []).forEach(row => {
+          const entry = scoreMap[row.nominee_id];
+          if (!entry) return;
+          entry.bordaScore += row.borda_score || 0;
+          entry.totalVotes += row.total_votes || 0;
+          entry.firstChoiceVotes += row.first_choice_votes || 0;
         });
 
         const rcvResults = Object.values(scoreMap).filter(n => n.totalVotes > 0).sort((a, b) => b.bordaScore - a.bordaScore).map((n, idx) => ({ ...n, rcvRank: idx + 1 }));

@@ -33,14 +33,19 @@ async function loadEdition() {
 
   if (!seasonId) return { nominees: [] };
 
-  const [pool, rankedVotes] = await Promise.all([
+  // Ballots are sealed — they are never read in a browser. The tally arrives as
+  // aggregate rows (points, appearances, first choices per nominee) computed over
+  // the ballots on the server, so nothing here can show who voted for whom. The
+  // arithmetic below is unchanged, so the published order cannot move.
+  const [pool, tallyResponse] = await Promise.all([
     base44.entities.Nominee.filter(
       { $or: [{ season_ids: seasonId }, { season_id: seasonId }], status: 'active' },
       '-updated_date',
       1000,
     ),
-    base44.entities.RankedVote.filter({ season_id: seasonId }, '-created_date', 10000),
+    base44.functions.invoke('getBordaTally', { season_id: seasonId }).catch(() => null),
   ]);
+  const tally = tallyResponse?.data || tallyResponse || {};
 
   const standingsRows = deriveStandingsRows(pool);
   const scoreMap = {};
@@ -54,14 +59,12 @@ async function loadEdition() {
     };
   });
 
-  (rankedVotes || []).forEach((vote) => {
-    if (!Array.isArray(vote.ballot)) return;
-    vote.ballot.forEach((nomineeId, position) => {
-      if (!scoreMap[nomineeId]) return;
-      scoreMap[nomineeId].bordaScore += 100 - position;
-      scoreMap[nomineeId].totalVotes += 1;
-      if (position === 0) scoreMap[nomineeId].firstChoiceVotes += 1;
-    });
+  (tally.rows || []).forEach((row) => {
+    const entry = scoreMap[row.nominee_id];
+    if (!entry) return;
+    entry.bordaScore += row.borda_score || 0;
+    entry.totalVotes += row.total_votes || 0;
+    entry.firstChoiceVotes += row.first_choice_votes || 0;
   });
 
   const rcvResults = Object.values(scoreMap)

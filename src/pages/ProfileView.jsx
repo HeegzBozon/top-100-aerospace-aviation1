@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useParams, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -148,17 +148,8 @@ export default function ProfileView({ userId: propUserId = null }) {
     });
     const featuredViral = publicViralPost?.featured ? publicViralPost : null;
 
-    // Count a visit once per mount, and only from another member. Owner-visible only.
-    const counted = useRef(false);
-    useEffect(() => {
-        if (counted.current) return;
-        if (!viewer?.email || !wallEmail || viewer.email === wallEmail) return;
-        if (!ownerSettings?.id) return;
-        counted.current = true;
-        base44.entities.FellowProfileSettings.update(ownerSettings.id, {
-            profile_view_count: (ownerSettings.profile_view_count || 0) + 1,
-        }).catch(() => {});
-    }, [viewer?.email, wallEmail, ownerSettings]);
+    // Profile view counts are deliberately absent: they sit on the never-implement
+    // list, so this surface neither counts a visit nor stores one.
 
     return (
         <div className="min-h-screen relative sf-pro" style={{ background: B.cream }}>

@@ -126,11 +126,6 @@
       "default": true,
       "description": "Whether the Fellow's My TOP 100 positions render on their public profile."
     },
-    "profile_view_count": {
-      "type": "number",
-      "default": 0,
-      "description": "Count of visits to this Fellow's public profile by other members. Owner-visible only."
-    },
     "activity_seen_at": {
       "type": "string",
       "format": "date-time",

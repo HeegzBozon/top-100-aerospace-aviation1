@@ -21,7 +21,7 @@ const RailLink = ({ to, icon: Icon, children }) => (
 // Act I — the compass. The Fellow's arrival state: who am I here, what's the deadline.
 // Order: Record → Network → Pinned → Newsletter → View my → Mail → URL.
 // (Status + Compose live in the BulletinComposeRail above this rail.)
-export default function CompassRail({ user, nominee, accent, viewCount, endorsementCount, publicPath }) {
+export default function CompassRail({ user, nominee, accent, endorsementCount, publicPath }) {
   const [copied, setCopied] = useState(false);
   const publicUrl = `${window.location.origin}${publicPath}`;
 
@@ -37,7 +37,6 @@ export default function CompassRail({ user, nominee, accent, viewCount, endorsem
         <FellowStatsBox
           user={user}
           nominee={nominee}
-          viewCount={viewCount}
           endorsementCount={endorsementCount}
           accent={accent}
         />

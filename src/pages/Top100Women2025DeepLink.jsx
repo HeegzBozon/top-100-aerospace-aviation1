@@ -24,11 +24,14 @@ export default function Top100Women2025DeepLink() {
       try {
         const res = await base44.entities.Nominee.filter(
           { public_slug: slug },
-          { limit: 1, fields: ['id', 'name', 'description', 'og_card_url', 'avatar_url', 'title', 'company', 'country', 'raw_nomination_data'] }
+          { limit: 5, fields: ['id', 'name', 'description', 'og_card_url', 'avatar_url', 'title', 'company', 'country', 'raw_nomination_data'] }
         );
-        // A superseded row resolves to its canonical master so a cached or legacy
-        // share link never renders the retired duplicate's content.
-        let found = res?.items?.[0] || null;
+        // A slug can sit on more than one row while a duplicate pair is being folded,
+        // and a superseded row resolves to its canonical master — so a cached or
+        // legacy share link always lands on the current record, never on the retired
+        // duplicate's content.
+        const rows = res?.items || [];
+        let found = rows.find((r) => !mergedIntoId(r)) || rows[0] || null;
         const masterId = mergedIntoId(found);
         if (masterId) found = await base44.entities.Nominee.get(masterId).catch(() => found);
         if (!cancelled && found) setNominee(found);

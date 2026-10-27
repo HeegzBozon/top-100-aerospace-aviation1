@@ -25,9 +25,11 @@ export default async function (req: Request): Promise<Response> {
 
     const { items } = await base44.asServiceRole.entities.Nominee.filter(
       { public_slug: slug },
-      { limit: 1, fields: ["id", "name", "description", "og_card_url", "avatar_url", "title", "professional_role", "company", "organization", "country", "status", "raw_nomination_data"] }
+      { limit: 5, fields: ["id", "name", "description", "og_card_url", "avatar_url", "title", "professional_role", "company", "organization", "country", "status", "raw_nomination_data"] }
     );
-    const found = items?.[0];
+    // A slug may sit on more than one row while a duplicate pair is being folded: the
+    // canonical row wins, so the preview always describes the current record.
+    const found = (items || []).find((r: any) => !r?.raw_nomination_data?.merged_into) || items?.[0];
     if (!found) return new Response("Not found", { status: 404 });
     // A superseded row resolves to its canonical master: the share preview and the
     // canonical link must describe the current record, never a retired duplicate.
