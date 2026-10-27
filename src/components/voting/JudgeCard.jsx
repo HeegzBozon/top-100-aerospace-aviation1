@@ -24,12 +24,13 @@ function initials(name) {
 // nothing else: everything the institution holds on the candidate is read in the
 // card's own information panel. On the glass that door is a labelled key at the foot
 // of the card, where a thumb finds it — a corner circle is neither found nor read as
-// "information" — and on the desk it is the circle in the corner it always was.
+// "information" — and on the desk it is the circle in the corner it always was. Beside
+// the door on the glass sits the face key that votes for this card.
 //
 // The card fills the box it is given. On the glass that box is measured for it (see
 // GlassVoteSurface), so the four candidates stand in a 2x2 with nothing to scroll;
 // on the desk the grid rows already have a height of their own.
-export default function JudgeCard({ nominee, token, isTop, isBottom, selectable, onInfo, onSelect }) {
+export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, selectable, onInfo, onSelect }) {
 
   const name = nominee.name || 'Unnamed nominee';
   const photo = nominee.avatar_url || nominee.photo_url || '';
@@ -110,16 +111,27 @@ export default function JudgeCard({ nominee, token, isTop, isBottom, selectable,
           <p className="hidden text-xs leading-relaxed line-clamp-2 md:block lg:text-sm lg:line-clamp-3" style={{ color: `${brand.navy}70` }}>{bio}</p>
         )}
 
-        {/* The one door. */}
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onInfo(); }}
-          aria-label={`Information about ${name}`}
-          className="mt-auto flex min-h-[38px] w-full items-center justify-center gap-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.12em] transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 md:hidden"
-          style={{ background: brand.navy, color: 'white' }}
-        >
-          <Info className="h-3.5 w-3.5" /> Info
-        </button>
+        {/* The foot of the card on the glass: the key that votes for it, printed the way
+            the device prints its own legends, and the card's one door beside it. */}
+        <div className="mt-auto flex items-center gap-1.5 md:hidden">
+          <span
+            aria-hidden="true"
+            title={`${keyLabel} votes for ${name}`}
+            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-xl text-[11px] font-bold"
+            style={{ background: `${brand.gold}1A`, border: `1px solid ${brand.gold}70`, color: brand.navy }}
+          >
+            {keyLabel}
+          </span>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onInfo(); }}
+            aria-label={`Information about ${name}`}
+            className="flex min-h-[38px] flex-1 items-center justify-center gap-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.12em] transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110"
+            style={{ background: brand.navy, color: 'white' }}
+          >
+            <Info className="h-3.5 w-3.5" /> Info
+          </button>
+        </div>
       </motion.div>
     </div>
   );

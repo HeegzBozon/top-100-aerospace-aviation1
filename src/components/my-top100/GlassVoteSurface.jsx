@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ChevronLeft, Clock, ListOrdered, Lock, Award } from 'lucide-react';
+import { Clock, ListOrdered, Lock, Award } from 'lucide-react';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { brand } from '@/components/nominate/NominateConfig';
 import GlassVoteWindow from '@/components/my-top100/GlassVoteWindow';
@@ -239,40 +239,12 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
     );
   }
 
+  // An open card goes straight to the glass, with no bar across its head: the way back
+  // is the console's own, which reports every press to the picker this surface hands it
+  // (the ring's menu and back zones), so a printed strip here would only cost the card a
+  // row of its own height.
   return (
     <div className="pb-5">
-      <div
-        className="sticky top-0 z-10 flex items-center gap-2 px-3 py-2"
-        style={{
-          background: 'rgba(250,248,245,0.95)',
-          borderBottom: `1px solid ${brand.navy}12`,
-          backdropFilter: 'blur(6px)',
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => setOpenKey(null)}
-          className="flex shrink-0 items-center gap-0.5 text-[9px] font-bold uppercase tracking-[0.16em] transition-opacity active:opacity-60"
-          style={{ color: brand.gold }}
-        >
-          <ChevronLeft className="h-[11px] w-[11px]" /> Cards
-        </button>
-
-        <span
-          className="min-w-0 flex-1 truncate text-right font-heading text-[12px]"
-          style={{ color: brand.navy }}
-        >
-          {openCard.label}
-        </span>
-
-        <span
-          className="shrink-0 text-[8px] font-bold uppercase tracking-[0.2em]"
-          style={{ color: `${brand.navy}50` }}
-        >
-          {cards.findIndex((card) => card.key === openCard.key) + 1} / {cards.length}
-        </span>
-      </div>
-
       <div
         ref={panelRef}
         className={openCard.fill ? 'flex flex-col overflow-y-auto' : undefined}

@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Palette } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
+import { pressFaceKey } from "./handheldKeys";
 import ScreenTopBar from "./ScreenTopBar";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldBody from "./HandheldBody";
@@ -524,6 +525,19 @@ export default function HandheldDeck() {
     else closeMenu();
   }, [finishBoot, menuMode, sectionItems, finishItems, cursor, jumpToModule, applyFinish, announce, menuOpen, openMenu, flat, go, closeMenu, picker]);
 
+  // A surface with four things standing under the hand — the chamber's candidates —
+  // answers the face keys first: Y, B, X and A read clockwise from the top of the
+  // keypad, which is the same walk as the 2x2 grid they are drawn in. Everything else
+  // keeps the keypad it always had.
+  const faceKey = useCallback((name, run) => {
+    if (pressFaceKey(name)) {
+      blip("select");
+      buzz();
+      return;
+    }
+    run();
+  }, []);
+
   const back = useCallback(() => {
     blip("back");
     buzz();
@@ -672,10 +686,10 @@ export default function HandheldDeck() {
           </div>
 
           <FaceButtons
-            onConfirm={select}
-            onBack={back}
-            onSections={openSections}
-            onShare={share}
+            onConfirm={() => faceKey("A", select)}
+            onBack={() => faceKey("B", back)}
+            onSections={() => faceKey("X", openSections)}
+            onShare={() => faceKey("Y", share)}
           />
         </div>
 

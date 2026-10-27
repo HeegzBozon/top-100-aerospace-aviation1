@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { submitAnchorVote } from '@/functions/submitAnchorVote';
@@ -11,6 +11,13 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
+import { registerFaceKeys } from '@/components/handheld/handheldKeys';
+
+// The four candidates stand under the four face keys. The keypad is a diamond — Y
+// above, X left, B right, A below — and read clockwise from the top it is the same
+// walk as the 2x2 grid the cards are drawn in, so every key's card is on the side its
+// key sits on: Y top-left, B top-right, A bottom-right, X bottom-left.
+const VOTE_KEYS = ['Y', 'B', 'X', 'A'];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -177,6 +184,25 @@ export default function AnchorVoting({ user }) {
     }
   };
 
+  // While a set is standing, the keypad is the vote: a press puts that key's own card
+  // under the same hand the tap does. Between sets, and once the set is recorded, the
+  // keys go back to the console — A confirm, B back, X sections, Y share.
+  const voteKeys = useRef(null);
+  voteKeys.current =
+    (phase === 'best' || phase === 'worst') && currentSet.length === 4
+      ? (key) => {
+          const i = VOTE_KEYS.indexOf(key);
+          if (i < 0 || !currentSet[i]) return false;
+          handleSelect(currentSet[i]);
+          return true;
+        }
+      : null;
+
+  useEffect(() => {
+    if (!voteKeys.current) return undefined;
+    return registerFaceKeys((key) => (voteKeys.current ? voteKeys.current(key) : false));
+  }, [phase, currentSet]);
+
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center py-20">
@@ -211,10 +237,11 @@ export default function AnchorVoting({ user }) {
   return (
     <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
       {/* Voting surface */}
-      <div className="flex-1 flex flex-col min-w-0 px-4 pt-4 pb-6 lg:px-8">
+      <div className="flex-1 flex flex-col min-w-0 px-3 pt-2.5 pb-4 md:px-4 md:pt-4 md:pb-6 lg:px-8">
         <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
-        {/* Header row */}
-        <div className="flex items-center justify-between mb-1">
+        {/* The console names this panel on its own strip, so on the glass the title and
+            the set count stand down and the cards take the room. */}
+        <div className="hidden items-center justify-between mb-1 md:flex">
           <div>
             <h2 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
               Anchor Selection
@@ -236,16 +263,16 @@ export default function AnchorVoting({ user }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
-            className="mt-2 mb-2.5 flex items-center gap-2 md:mt-3 md:mb-4"
+            className="flex items-center gap-2 mb-1.5 md:mt-3 md:mb-4"
           >
             {phase === 'best' && <ArrowUp className="w-4 h-4 shrink-0" style={{ color: brand.gold }} />}
             {phase === 'worst' && <ArrowDown className="w-4 h-4 shrink-0" style={{ color: `${brand.navy}70` }} />}
-            <p className="text-sm font-semibold" style={{ color: brand.navy }}>{prompt}</p>
+            <p className="text-[12.5px] font-semibold md:text-sm" style={{ color: brand.navy }}>{prompt}</p>
           </motion.div>
         </AnimatePresence>
 
         {/* Controls: undo mid-set / review last set / resume */}
-        <div className="mb-2 flex flex-wrap items-center gap-2 md:mb-3">
+        <div className="mb-1.5 flex flex-wrap items-center gap-1.5 md:mb-3 md:gap-2">
           {phase === 'worst' && (
             <button onClick={undoFirstPick} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80` }}>
               <Undo2 className="w-3.5 h-3.5" /> Undo first pick
@@ -282,6 +309,7 @@ export default function AnchorVoting({ user }) {
                 selectable={selectable && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
+                keyLabel={VOTE_KEYS[idx]}
               />
             );
           })}

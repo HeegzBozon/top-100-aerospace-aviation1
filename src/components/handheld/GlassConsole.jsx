@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
 import { registerPicker, touchPicker } from "@/components/handheld/handheldPicker";
 import { B } from "@/components/fellow-home/fellowHomeConfig";
 
@@ -195,36 +194,8 @@ export default function GlassConsole({ kicker, panels, openKey = null, onOpen, d
     );
   }
 
-  return (
-    <div className="pb-5">
-      <div
-        className="sticky top-0 z-10 flex items-center gap-2 px-3 py-2"
-        style={{
-          background: "rgba(250,248,245,0.95)",
-          borderBottom: `1px solid ${B.border}`,
-          backdropFilter: "blur(6px)",
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => onOpen?.(null)}
-          aria-label={`Back to the ${kicker} menu`}
-          className="flex shrink-0 items-center gap-0.5 text-[9px] font-bold uppercase tracking-[0.16em] transition-opacity active:opacity-60"
-          style={{ color: B.copper }}
-        >
-          <ChevronLeft className="h-[11px] w-[11px]" /> Menu
-        </button>
-
-        <span className="min-w-0 flex-1 truncate text-right font-heading text-[12px]" style={{ color: B.navy }}>
-          {openPanel.label}
-        </span>
-
-        <span className="shrink-0 text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: B.muted }}>
-          {openIndex + 1} / {panels.length}
-        </span>
-      </div>
-
-      <div>{openPanel.node}</div>
-    </div>
-  );
+  // An open panel goes straight to the glass, with no bar across its head: the way back
+  // is the console's own — B, and the ring's back zone, report to the picker this console
+  // registers — so a printed strip here would only cost the panel a row of its height.
+  return <div className="pb-5">{openPanel.node}</div>;
 }
