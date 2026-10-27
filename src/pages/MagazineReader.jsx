@@ -7,9 +7,13 @@ import IssueOpening from '@/components/magazine/IssueOpening';
 import CinematicFlipbook from '@/components/magazine/CinematicFlipbook';
 import SinglePageReader from '@/components/magazine/SinglePageReader';
 import PdfViewer from '@/components/magazine/PdfViewer';
+import GlassIssueOpening from '@/components/magazine/glass/GlassIssueOpening';
+import GlassIssueReader from '@/components/magazine/glass/GlassIssueReader';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function MagazineReader() {
   const { issueId } = useParams();
+  const isMobile = useIsMobile();
   const [issue, setIssue] = useState(null);
   const [pages, setPages] = useState([]);
   const [articles, setArticles] = useState([]);
@@ -100,18 +104,37 @@ export default function MagazineReader() {
     );
   }
 
-  // Cinematic opening
+  // Cinematic opening. On the handheld it plays inside the glass, seated in the device
+  // rather than over it, with both ways in walked on the ring.
   if (!opened) {
-    return (
-      <IssueOpening
-        issue={issue}
-        onBegin={() => setOpened(true)}
-        onAutoPlay={() => { setOpened(true); setIsPlaying(true); }}
-      />
-    );
+    const opening = {
+      issue,
+      onBegin: () => setOpened(true),
+      onAutoPlay: () => { setOpened(true); setIsPlaying(true); },
+    };
+    return isMobile ? <GlassIssueOpening {...opening} /> : <IssueOpening {...opening} />;
   }
 
   const isPdf = issue.assembly_mode === 'pdf';
+
+  // On the handheld the issue is read on the glass: the contents walked on the ring,
+  // one page standing open at a time, and the film started and stopped from the same
+  // hand. The desk keeps the flipbook, which is the shape for a pointer and a wide
+  // picture.
+  if (isMobile) {
+    return (
+      <GlassIssueReader
+        issue={issue}
+        pages={pages}
+        articles={articles}
+        signedUrl={pdfSignedUrl}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        speed={playbackSpeed}
+        setSpeed={setPlaybackSpeed}
+      />
+    );
+  }
 
   return (
     <div className="relative">
