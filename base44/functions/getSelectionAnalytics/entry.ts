@@ -33,8 +33,45 @@ export default async function (req) {
     const service = base44.asServiceRole;
     const { cohorts, groups, open } = await resolveCohorts(service);
 
-    const scopedIds = requested.length ? requested : cohorts.map((c) => c.id);
+    // With no scope named, "every cohort" means every cohort that could be counting: the
+    // open ones, or — before anything opens — the current ones. Archived editions hold
+    // their own immutable pools and never weigh into a live total.
+    const liveIds = (open.length ? open : cohorts.filter((c) => c.status !== 'archived')).map((c) => c.id);
+    const scopedIds = requested.length ? requested : liveIds;
     const seasonQuery = { season_id: { $in: scopedIds } };
+
+    // One row per cohort — the honest denominator. Counted where the ballot counts it
+    // (link-model membership or the legacy pointer, never rejected), because the
+    // standings page below is a top slice and cannot stand in for a pool size.
+    const scopedCohorts = cohorts.filter((c) => scopedIds.includes(c.id));
+    const labelById: Record<string, string> = {};
+    cohorts.forEach((c) => { labelById[c.id] = c.cohort_label || c.name; });
+
+    const cohortStats = await Promise.all(
+      scopedCohorts.map(async (c) => {
+        const [pool, ballotsCast, marks, fellows] = await Promise.all([
+          service.entities.Nominee
+            .count({ status: { $in: VOTABLE }, $or: [{ season_ids: c.id }, { season_id: c.id }] })
+            .catch(() => 0),
+          service.entities.RankedVote.count({ season_id: c.id }).catch(() => 0),
+          service.entities.PairwiseVote.count({ season_id: c.id }).catch(() => 0),
+          service.entities.VotingContribution.count({ season_id: c.id }).catch(() => 0),
+        ]);
+        return {
+          season_id: c.id,
+          label: c.cohort_label || c.name,
+          status: c.status,
+          open: c.open,
+          within_window: c.within_window,
+          voting_start: c.voting_start,
+          voting_end: c.voting_end,
+          pool,
+          ballots: ballotsCast,
+          comparisons: marks,
+          contributors: fellows,
+        };
+      })
+    );
 
     // ── The tallies ──────────────────────────────────────────────────────────────
     const [
@@ -59,18 +96,22 @@ export default async function (req) {
         .filter(seasonQuery, '-created_date', 25)
         .catch(() => []),
       service.entities.Nominee
-        .filter({ status: { $in: VOTABLE } }, '-elo_rating', 250)
+        .filter(
+          {
+            status: { $in: VOTABLE },
+            $or: scopedIds.flatMap((id) => [{ season_ids: id }, { season_id: id }]),
+          },
+          '-elo_rating',
+          250
+        )
         .catch(() => []),
     ]);
 
     // ── Live standings ───────────────────────────────────────────────────────────
-    const scoped = requested.length
-      ? nominees.filter((n) => {
-          const ids = [n.season_id, ...(n.season_ids || [])].filter(Boolean);
-          return ids.some((id) => scopedIds.includes(id)) ||
-            Array.isArray(n.raw_nomination_data?.season_participation);
-        })
-      : nominees;
+    const scoped = nominees.filter((n) => {
+      const ids = [n.season_id, ...(n.season_ids || [])].filter(Boolean);
+      return ids.some((id) => scopedIds.includes(id));
+    });
 
     const rows = scoped.map((n) => ({
       id: n.id,
@@ -78,6 +119,7 @@ export default async function (req) {
       title: n.title || n.professional_role || null,
       company: n.company || n.organization || null,
       cohort: n.season_id || null,
+      cohort_label: labelById[n.season_id] || null,
       avatar_url: n.avatar_url || n.photo_url || null,
       elo: n.elo_rating || 1200,
       borda: n.borda_score || 0,
@@ -121,6 +163,7 @@ export default async function (req) {
       voter_email: x.voter_email,
       voter_name: names[x.voter_email] || x.voter_email,
       season_id: x.season_id,
+      cohort: labelById[x.season_id] || null,
       length: Array.isArray(x.ballot) ? x.ballot.length : 0,
       submitted_at: x.created_date,
       updated_at: x.updated_date,
@@ -147,6 +190,7 @@ export default async function (req) {
       winner: nomineeNames[v.winner_nominee_id] || 'Deleted nominee',
       loser: nomineeNames[v.loser_nominee_id] || 'Deleted nominee',
       season_id: v.season_id,
+      cohort: labelById[v.season_id] || null,
     }));
 
     // ── Contribution ladder ──────────────────────────────────────────────────────
@@ -176,6 +220,7 @@ export default async function (req) {
       scope: { season_ids: scopedIds, requested },
       cohorts,
       groups,
+      cohort_stats: cohortStats,
       open_count: open.length,
       totals: {
         cohorts: cohorts.length,
@@ -183,7 +228,7 @@ export default async function (req) {
         comparisons,
         contributors: contributorCount,
         ballots: ballotCount,
-        pool: rows.length,
+        pool: cohortStats.reduce((n, c) => n + c.pool, 0),
         votes_per_contributor:
           contributorCount > 0 ? Math.round((comparisons / contributorCount) * 10) / 10 : 0,
       },
