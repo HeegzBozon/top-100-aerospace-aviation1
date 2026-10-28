@@ -67,22 +67,62 @@ export function SpeedSelector({ speed, onChange, theme = 'dark' }) {
   );
 }
 
-// Thin progress bar fixed at the bottom of the screen.
-// Fills 0→1 over the current page's dwell time. Pointer-events disabled so
-// it never interferes with page interaction or screen recording.
-export function PlaybackProgress({ progress, active }) {
-  if (!active) return null;
+// The film's rule, cut across the foot of the picture — inside the tube, under the page
+// being read, never on the glass below the machine.
+//
+// It reads two things at once: how much of the issue has gone by, and the beat the page
+// now held has left to run. The lead edge is the frame about to be reached, so a glance
+// says where the film stands without a number being read.
+export function PlaybackProgress({ progress = 0, active = false, currentPage = 0, totalPages = 1 }) {
+  const pages = Math.max(totalPages || 1, 1);
+  const held = active ? Math.min(Math.max(progress, 0), 1) : 0;
+  const read = Math.min((currentPage + held) / pages, 1);
+
   return (
     <div
-      className="imac-bar fixed bottom-0 left-0 right-0 z-30 h-[3px] pointer-events-none"
-      style={{ background: 'rgba(201,168,124,0.08)' }}
+      className="relative w-full flex-none overflow-hidden"
+      role="progressbar"
+      aria-label="Issue progress"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(read * 100)}
+      style={{
+        height: 7,
+        // A perforated track, the way a strip of film is: the rule is printed, not painted.
+        background:
+          'repeating-linear-gradient(90deg, rgba(250,248,245,0.055) 0 1px, transparent 1px 7px), rgba(4,10,20,0.94)',
+        borderTop: '1px solid rgba(201,168,124,0.22)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+      }}
     >
+      {/* What has been read */}
       <div
-        className="h-full"
+        className="absolute inset-y-0 left-0"
         style={{
-          width: `${Math.min(progress * 100, 100)}%`,
-          background: `linear-gradient(90deg, ${P.gold}, ${P.copper})`,
-          boxShadow: '0 0 10px rgba(201,168,124,0.6)',
+          width: `${read * 100}%`,
+          background: `linear-gradient(90deg, ${P.copper} 0%, ${P.gold} 62%, #F2E2C4 100%)`,
+          boxShadow: '0 0 14px rgba(201,168,124,0.6)',
+        }}
+      />
+      {/* The beat left on the page being held, riding the same rule */}
+      {active && held > 0 && (
+        <div
+          className="absolute top-0 h-[2px]"
+          style={{
+            left: `${(currentPage / pages) * 100}%`,
+            width: `${held * (100 / pages)}%`,
+            background: `linear-gradient(90deg, ${P.cream}, ${P.gold})`,
+            boxShadow: '0 0 8px rgba(250,248,245,0.7)',
+          }}
+        />
+      )}
+      {/* The lead edge */}
+      <div
+        className={`absolute inset-y-0 w-[2px] ${active ? 'animate-pulse' : ''}`}
+        style={{
+          left: `calc(${read * 100}% - 2px)`,
+          background: P.cream,
+          boxShadow: '0 0 10px rgba(250,248,245,0.85)',
         }}
       />
     </div>

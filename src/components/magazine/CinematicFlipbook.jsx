@@ -114,6 +114,14 @@ export default function CinematicFlipbook({
     setShowContents(false);
   }, []);
 
+  // The spread standing open: the cover alone, then the pair held wide beside it. Both
+  // pages of the pair are the page being read, so both roll under the film while it plays
+  // — including the right-hand page, which a single index would have left standing still.
+  const holdsPage = useCallback(
+    (i) => i === currentPage || (currentPage > 0 && i === currentPage + 1),
+    [currentPage]
+  );
+
   const share = useCallback(() => {
     if (navigator.share) navigator.share({ title: issue.title, url: window.location.href });
     else navigator.clipboard?.writeText(window.location.href);
@@ -201,21 +209,24 @@ export default function CinematicFlipbook({
             startPage={currentPage}
             mobileScrollSupport={false}
           >
-            {pages.map((page, i) => (
-              <div key={page.id || i} style={{ height: '100%', overflow: 'hidden' }}>
-                <FlipPage>
-                  <PageRenderer
-                    page={page}
-                    issue={issue}
-                    articles={articles}
-                    pageNumber={i + 1}
-                    totalPages={totalPages}
-                    playing={isPlaying && currentPage === i}
-                    progress={currentPage === i ? progress : 0}
-                  />
-                </FlipPage>
-              </div>
-            ))}
+            {pages.map((page, i) => {
+              const open = holdsPage(i);
+              return (
+                <div key={page.id || i} style={{ height: '100%', overflow: 'hidden' }}>
+                  <FlipPage>
+                    <PageRenderer
+                      page={page}
+                      issue={issue}
+                      articles={articles}
+                      pageNumber={i + 1}
+                      totalPages={totalPages}
+                      playing={isPlaying && open}
+                      progress={open ? progress : 0}
+                    />
+                  </FlipPage>
+                </div>
+              );
+            })}
           </HTMLFlipBook>
         )}
       </div>
@@ -258,8 +269,13 @@ export default function CinematicFlipbook({
         </button>
       </footer>
 
-      {/* Cinematic progress bar */}
-      <PlaybackProgress progress={progress} active={isPlaying} />
+      {/* The film's rule, closing the foot of the picture inside the tube */}
+      <PlaybackProgress
+        progress={progress}
+        active={isPlaying}
+        currentPage={currentPage}
+        totalPages={totalPages}
+      />
 
       {/* Contents panel */}
       {showContents && (
