@@ -4,30 +4,23 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 //
 // A page is read, not flashed: when it runs past the frame, the page itself rolls under
 // the reader at reading pace and comes to rest on its last line rather than waiting for a
-// hand. Two things drive that roll, and only ever one at a time:
-//
-//   • while the film is playing, the film's own progress drives it — the same value that
-//     fills the rule on the glass — so the page and the rule can never disagree, and the
-//     speed selector changes both together;
-//   • read by hand, the page walks itself as a teleprompter does, at an average reading
-//     pace taken from the words on the page. A hand on the page takes the roll back.
+// hand. The roll keeps its own clock — the words on the page at an average reading pace —
+// so it runs whether the issue is playing as a film or being read by hand, and the film's
+// speed multiplier scales it with the pace the pages are turning at. A hand on the page
+// takes the roll back for that page.
 //
 // The attribute is how the page's own head finds the thing that scrolls it, so the head
 // can tell when it has been pinned (see PinnedPageHead).
 export const PAGE_SCROLL_ATTR = 'data-page-scroll';
 
-// The roll while the film holds the page spends the first 88% of the hold; the rest is
-// the beat spent on the last line.
-const ROLL_PORTION = 0.88;
-
-// Average reading pace for the self-driven roll — the pace the film's dwell is reckoned
-// from as well, so a page walks at the speed it is meant to be read at either way.
+// Average reading pace — the same pace the film's dwell is reckoned from, so a page walks
+// at the speed it is meant to be read at, whether the film is running or not.
 const WORDS_PER_MINUTE = 230;
 const MIN_ROLL_MS = 9000;
 
 const wordsInPage = (el) => (el?.textContent || '').trim().split(/\s+/).filter(Boolean).length;
 
-export function usePageTeleprompter({ playing, progress, pageKey, autoscroll = false }) {
+export function usePageTeleprompter({ pageKey, autoscroll = false, playing = false, speed = 1 }) {
   const ref = useRef(null);
   const [overflow, setOverflow] = useState(0);
   // The hand wins: a reader who scrolls the page themselves stops the teleprompter for
@@ -60,24 +53,19 @@ export function usePageTeleprompter({ playing, progress, pageKey, autoscroll = f
     setHandled(false);
   }, [pageKey]);
 
-  // The film's roll, and only while the film is playing: its progress is the page's place.
+  // The roll: from where the page stands now to its last line, in the time its words take.
+  // It restarts whenever the film starts or stops, so a resumed page picks up where the
+  // reading left off rather than jumping back to its head.
   useEffect(() => {
     const el = ref.current;
-    if (!el || !playing || overflow <= 0) return;
-    const rolled = Math.min(Math.max(progress || 0, 0) / ROLL_PORTION, 1);
-    el.scrollTop = rolled * overflow;
-  }, [playing, progress, overflow, pageKey]);
-
-  // The teleprompter, for a page read by hand: it walks from where the page is now to its
-  // last line in the time the words on it take at an average reading pace.
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || !autoscroll || playing || handled || overflow <= 0) return undefined;
+    if (!el || !autoscroll || handled || overflow <= 0) return undefined;
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
 
     const words = wordsInPage(el);
     if (words < 40) return undefined;
-    const duration = Math.max((words / WORDS_PER_MINUTE) * 60000, MIN_ROLL_MS);
+
+    const pace = speed > 0 ? speed : 1;
+    const duration = Math.max((words / WORDS_PER_MINUTE) * 60000, MIN_ROLL_MS) / pace;
     const from = Math.min(el.scrollTop, overflow);
     const start = Date.now();
     let raf;
@@ -100,7 +88,7 @@ export function usePageTeleprompter({ playing, progress, pageKey, autoscroll = f
       el.removeEventListener('touchstart', yieldToHand);
       el.removeEventListener('pointerdown', yieldToHand);
     };
-  }, [autoscroll, playing, handled, overflow, pageKey]);
+  }, [autoscroll, playing, speed, handled, overflow, pageKey]);
 
   return { ref, overflow };
 }

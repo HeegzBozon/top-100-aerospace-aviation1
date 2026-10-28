@@ -9,15 +9,15 @@ const HEAD_TYPES = ['kicker', 'heading', 'byline'];
 
 // Renders a single magazine page's content based on its layout type and blocks.
 // Used by both the flipbook and single-page reader.
-export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, progress = 0, autoscroll = false }) {
-  // A page that runs past its frame rolls under the reader: with the film while it plays,
-  // and as a teleprompter at reading pace when it is being read by hand. The hook is called
-  // here, once, for every layout — a page with nothing to scroll simply never takes the ref.
+export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1 }) {
+  // A page that runs past its frame rolls under the reader as a teleprompter at reading
+  // pace — while the issue plays as a film and while it is read by hand. The hook is called
+  // here, once, for every layout; a page with nothing to scroll never takes the ref.
   const { ref: scrollRef } = usePageTeleprompter({
     playing,
-    progress,
     pageKey: page?.id || pageNumber,
     autoscroll,
+    speed,
   });
   const blocks = page.content_blocks || [];
   const bg = page.background_image_url;
