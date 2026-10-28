@@ -84,6 +84,20 @@ export function saveIssueProgress(issueId, { page = 0, total = 0, title = '' } =
   return asProgress(store[issueId]);
 }
 
+// A pass wiped: the reader is reading it again from the front, so the place and the tallies
+// go with it and the issue reads as one never opened.
+export function clearIssueProgress(issueId) {
+  if (!issueId) return;
+  const store = readStore();
+  if (!(issueId in store)) return;
+  delete store[issueId];
+  try {
+    window.localStorage.setItem(STORE_KEY, JSON.stringify(store));
+  } catch {
+    // A blocked store simply keeps the old record; nothing else depends on the write.
+  }
+}
+
 // How an issue has been gone through: not begun, being read, and once it is finished
 // whether most of it was skimmed or actually read.
 export function issueStatus(progress) {

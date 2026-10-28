@@ -62,8 +62,13 @@ export default function StartScreen() {
             progress: progress || null,
             status,
             // A reader who has begun the issue is taken to the issue itself rather than
-            // through the route that resolves one.
-            to: progress ? `/magazine/${womenIssue.id}` : item.to,
+            // through the route that resolves one — and Read again opens it at its front,
+            // with this reader's pass on it wiped, so the second reading starts clean.
+            to: !progress
+              ? item.to
+              : status.finished
+                ? `/magazine/${womenIssue.id}?restart=1`
+                : `/magazine/${womenIssue.id}`,
           }
           : {}),
       };

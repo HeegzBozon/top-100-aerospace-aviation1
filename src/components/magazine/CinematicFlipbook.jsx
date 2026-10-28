@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import HTMLFlipBook from 'react-pageflip';
-import { LogOut, ChevronLeft, ChevronRight, Share2, List, X } from 'lucide-react';
+import { LogOut, BookOpen, ChevronLeft, ChevronRight, ChevronsLeft, Share2, List, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
@@ -9,7 +9,7 @@ import ReaderModeToggle from '@/components/magazine/ReaderModeToggle';
 import { useCinematicPlayback } from '@/components/magazine/useCinematicPlayback';
 import { PlayPauseButton, SpeedSelector, PlaybackProgress } from '@/components/magazine/PlaybackControls';
 import ReadProgressMeter from '@/components/magazine/ReadProgressMeter';
-import { readIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
+import { clearIssueProgress, readIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
 
 // The open issue on a desk: two pages held wide, turned by hand or rolled as a film.
 //
@@ -32,9 +32,13 @@ export default function CinematicFlipbook({
   const bookRef = useRef(null);
   const rootRef = useRef(null);
   const stageRef = useRef(null);
+  // Read again arrives with `restart`: the issue opens at its front, whatever place the
+  // last pass left it at.
+  const restart = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('restart');
   // The place is read back where the reader left it, so the issue reopens on the spread
   // they were reading rather than on the cover for the second time.
   const [currentPage, setCurrentPage] = useState(() => {
+    if (restart) return 0;
     const place = readIssueProgress(issue?.id)?.page || 0;
     return Math.min(place, Math.max(pages.length - 1, 0));
   });
@@ -119,7 +123,12 @@ export default function CinematicFlipbook({
   }, [stage]);
 
   const goToPage = useCallback((idx) => {
-    bookRef.current?.pageFlip()?.flip(idx, 'top');
+    const flip = bookRef.current?.pageFlip();
+    // A jump of any length — back to the cover, or into another chapter — is a turn to a
+    // page, not a walk to it: the book lands on it rather than flicking past the pages in
+    // between.
+    if (flip?.turnToPage) flip.turnToPage(idx);
+    else flip?.flip(idx, 'top');
     setShowContents(false);
   }, []);
 
@@ -130,6 +139,12 @@ export default function CinematicFlipbook({
     (i) => i === currentPage || (currentPage > 0 && i === currentPage + 1),
     [currentPage]
   );
+
+  // Reading it again: this reader's pass on this issue is wiped as the issue opens, so the
+  // title screen reads Start again rather than the pass just finished.
+  useEffect(() => {
+    if (restart && issue?.id) clearIssueProgress(issue.id);
+  }, [restart, issue?.id]);
 
   // The place is written as the page turns, so it always holds. The Save control below is
   // the reader putting the issue down on purpose — nothing has to be pressed for the place
@@ -162,6 +177,15 @@ export default function CinematicFlipbook({
       .map((p, i) => ({ page: p, index: i }))
       .filter(({ page }) => page.layout_type === 'chapter_divider' || page.layout_type === 'cover');
   }, [pages]);
+
+  // The chapter the open spread stands in: the last one the reader has passed.
+  const activeChapter = useMemo(() => {
+    let at = -1;
+    chapterIndex.forEach((entry, i) => {
+      if (entry.index <= currentPage) at = i;
+    });
+    return at;
+  }, [chapterIndex, currentPage]);
 
   if (!pages.length) {
     return (
@@ -268,6 +292,16 @@ export default function CinematicFlipbook({
         style={{ background: 'rgba(7,15,31,0.72)', borderTop: '1px solid rgba(201,168,124,0.18)' }}
       >
         <button
+          onClick={() => goToPage(0)}
+          disabled={currentPage === 0}
+          className="flex h-9 w-9 items-center justify-center rounded-full transition-all hover:bg-white/10 disabled:opacity-25"
+          style={{ color: P.cream }}
+          aria-label="Back to the front of the issue"
+          title="Back to the front"
+        >
+          <ChevronsLeft className="h-5 w-5" />
+        </button>
+        <button
           onClick={flipPrev}
           disabled={currentPage === 0}
           className="flex h-9 w-9 items-center justify-center rounded-full transition-all hover:bg-white/10 disabled:opacity-25"
@@ -302,6 +336,17 @@ export default function CinematicFlipbook({
         >
           <ChevronRight className="h-5 w-5" />
         </button>
+        {/* The issue by its parts: the chapters, read in one list and stepped into
+            whole rather than a page at a time */}
+        <button
+          onClick={() => setShowContents(true)}
+          className="ml-1 flex h-9 items-center gap-1.5 rounded-full px-3 text-[9px] font-bold uppercase tracking-[0.18em] transition-all hover:bg-white/10"
+          style={{ color: 'rgba(250,248,245,0.62)' }}
+          aria-label="Chapters"
+        >
+          <BookOpen className="h-4 w-4" />
+          <span className="hidden sm:inline">Chapters</span>
+        </button>
         <button
           onClick={saveAndExit}
           className="ml-2 flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[9px] font-bold uppercase tracking-[0.18em] transition-all hover:bg-white/10"
@@ -321,26 +366,35 @@ export default function CinematicFlipbook({
         <div className="fixed inset-0 z-30 flex justify-end" style={{ background: 'rgba(7,15,31,0.6)' }} onClick={() => setShowContents(false)}>
           <div className="h-full w-full max-w-xs overflow-y-auto p-6" style={{ background: P.navy }} onClick={(e) => e.stopPropagation()}>
             <div className="mb-6 flex items-center justify-between">
-              <h3 className="font-serif text-lg" style={{ color: P.cream }}>Contents</h3>
-              <button onClick={() => setShowContents(false)} className="rounded-full p-1 hover:bg-white/10" aria-label="Close contents">
+              <h3 className="font-serif text-lg" style={{ color: P.cream }}>Chapters</h3>
+              <button onClick={() => setShowContents(false)} className="rounded-full p-1 hover:bg-white/10" aria-label="Close chapters">
                 <X className="h-4 w-4" style={{ color: P.cream }} />
               </button>
             </div>
             <div className="space-y-1">
-              {chapterIndex.map(({ page, index }) => (
+              {chapterIndex.map(({ page, index }, i) => (
                 <button
                   key={page.id || index}
                   onClick={() => goToPage(index)}
-                  className="w-full rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-white/5"
+                  aria-current={i === activeChapter ? 'true' : undefined}
+                  className={`w-full rounded-lg px-3 py-2.5 text-left transition-colors ${
+                    i === activeChapter ? 'bg-white/[0.08]' : 'hover:bg-white/5'
+                  }`}
                 >
-                  <p className="text-sm" style={{ color: P.cream }}>
+                  <p className="text-sm" style={{ color: i === activeChapter ? P.gold : P.cream }}>
                     {page.layout_type === 'cover' ? 'Cover' : page.chapter_label || 'Section'}
                   </p>
                   <p className="mt-0.5 text-[10px]" style={{ color: 'rgba(250,248,245,0.4)' }}>
+                    {page.chapter_number ? `Chapter ${page.chapter_number} · ` : ''}
                     Page {String(index + 1).padStart(2, '0')}
                   </p>
                 </button>
               ))}
+              {chapterIndex.length === 0 && (
+                <p className="text-xs leading-relaxed" style={{ color: 'rgba(250,248,245,0.45)' }}>
+                  This issue carries no chapter marks yet. Turn the pages to read it.
+                </p>
+              )}
             </div>
           </div>
         </div>
