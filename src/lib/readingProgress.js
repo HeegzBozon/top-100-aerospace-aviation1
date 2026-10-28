@@ -10,6 +10,12 @@
 
 const STORE_KEY = 'top100:issue-progress';
 
+// A page turned faster than this was walked past, not read. The film's Skim setting holds
+// every page for 1.6s, so a skimmed pass counts as turned; a page read at any honest pace
+// takes longer than this, and is counted as read. Two tallies per issue, and whichever
+// dominates says how the issue was gone through.
+const SKIM_PAGE_MS = 2600;
+
 const readStore = () => {
   if (typeof window === 'undefined') return {};
   try {
@@ -39,11 +45,36 @@ export function readIssueProgress(issueId) {
 export function saveIssueProgress(issueId, { page = 0, total = 0, title = '' } = {}) {
   if (!issueId || total < 1) return null;
   const store = readStore();
+  const prev = store[issueId];
+  const next = Math.min(Math.max(page, 0), total - 1);
+  const now = Date.now();
+
+  let skimPages = prev?.skimPages || 0;
+  let readPages = prev?.readPages || 0;
+
+  if (prev && next < prev.page && next <= 1) {
+    // Back to the beginning: this is a new pass, so what the last one counted no longer
+    // describes it.
+    skimPages = 0;
+    readPages = 0;
+  } else if (prev && next > prev.page && prev.updatedAt) {
+    // How long each page of this stretch was actually given. The readers write as the page
+    // turns, so the span between two writes is the time spent on the pages in between.
+    const turned = next - prev.page;
+    const perPage = (now - Date.parse(prev.updatedAt)) / turned;
+    if (Number.isFinite(perPage) && perPage >= 0) {
+      if (perPage < SKIM_PAGE_MS) skimPages += turned;
+      else readPages += turned;
+    }
+  }
+
   store[issueId] = {
-    page: Math.min(Math.max(page, 0), total - 1),
+    page: next,
     total,
     title,
-    updatedAt: new Date().toISOString(),
+    skimPages,
+    readPages,
+    updatedAt: new Date(now).toISOString(),
   };
   try {
     window.localStorage.setItem(STORE_KEY, JSON.stringify(store));
@@ -53,8 +84,25 @@ export function saveIssueProgress(issueId, { page = 0, total = 0, title = '' } =
   return asProgress(store[issueId]);
 }
 
-// The one word the title screen puts on the edition: not begun, part-read, or finished.
+// How an issue has been gone through: not begun, being read, and once it is finished
+// whether most of it was skimmed or actually read.
+export function issueStatus(progress) {
+  if (!progress) return { key: 'unread', label: 'Not begun', finished: false, skimmed: false };
+  const finished = progress.percent >= 100;
+  const skimmed = (progress.skimPages || 0) > (progress.readPages || 0);
+  if (!finished) {
+    return { key: 'reading', label: progress.page === 0 ? 'Not begun' : 'In progress', finished, skimmed };
+  }
+  return skimmed
+    ? { key: 'skimmed', label: 'Skimmed', finished, skimmed }
+    : { key: 'read', label: 'Read', finished, skimmed };
+}
+
+// The one word the title screen puts on the edition: not begun, part-read, or finished —
+// and a finished pass, read or skimmed, invites the reader back into it.
 export function progressCta(progress) {
-  if (!progress || progress.page === 0) return 'Start';
-  return progress.percent >= 100 ? 'Read' : 'Resume';
+  const status = issueStatus(progress);
+  if (status.key === 'reading' && progress?.page > 0) return 'Resume';
+  if (status.finished) return 'Read again';
+  return 'Start';
 }

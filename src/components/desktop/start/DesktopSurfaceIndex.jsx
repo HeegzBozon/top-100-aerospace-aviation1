@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import ShareProgramButton from "@/components/start/ShareProgramButton";
 
 // The surfaces, drawn as modules rather than as a contents page.
 //
@@ -29,26 +30,42 @@ export default function DesktopSurfaceIndex({ items }) {
         {items.map((item) => {
           const Icon = item.icon;
           return (
-            <Link
+            <div
               key={item.key}
-              to={item.to}
-              data-hh-key={item.key}
-              aria-label={`Open ${item.label}`}
-              className="ds-module group relative flex min-h-[136px] flex-col justify-between rounded-[14px] p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-editorial-gold/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              className="ds-module group relative flex min-h-[136px] flex-col justify-between rounded-[14px] p-4"
             >
               {/* The plate itself: stock, edge and shadow, all behind the content. */}
               <span aria-hidden="true" className="ds-module-face absolute inset-0 rounded-[14px]" />
 
-              <span className="relative flex items-start justify-between">
-                <span className="ds-module-well flex h-10 w-10 shrink-0 items-center justify-center rounded-[9px]">
-                  <Icon className="h-[17px] w-[17px] text-editorial-gold" strokeWidth={1.7} />
-                </span>
-                <span className="font-heading text-[10px] leading-none tracking-[0.18em] text-editorial-copper/80">
-                  {item.index}
+              {/* The whole plate is the target, so the link lies over it and the one
+                  control that must not open the program — the share — sits above both. */}
+              <Link
+                to={item.to}
+                data-hh-key={item.key}
+                aria-label={`Open ${item.label}`}
+                className="absolute inset-0 rounded-[14px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-editorial-copper/70"
+              />
+
+              <span className="pointer-events-none relative flex items-start justify-between gap-2">
+                <span className="flex items-center gap-2.5">
+                  <span className="ds-module-well flex h-10 w-10 shrink-0 items-center justify-center rounded-[9px]">
+                    <Icon className="h-[17px] w-[17px] text-editorial-gold" strokeWidth={1.7} />
+                  </span>
+                  <span className="font-heading text-[10px] leading-none tracking-[0.18em] text-editorial-copper/80">
+                    {item.index}
+                  </span>
                 </span>
               </span>
 
-              <span className="relative mt-4 block">
+              {item.shareUrl && (
+                <ShareProgramButton
+                  label={item.label}
+                  url={item.shareUrl}
+                  className="absolute right-3 top-3"
+                />
+              )}
+
+              <span className="pointer-events-none relative mt-4 block">
                 <span className="block font-heading text-[clamp(0.95rem,1.05vw,1.12rem)] leading-[1.15] text-editorial-navy">
                   {item.label}
                 </span>
@@ -58,7 +75,10 @@ export default function DesktopSurfaceIndex({ items }) {
                     <ArrowUpRight className="h-3 w-3 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </span>
                   {item.progress && (
-                    <span className="text-[8px] font-bold tabular-nums tracking-[0.14em] text-editorial-copper/75">
+                    /* How the issue was gone through, read out beside how far: Read or
+                       Skimmed once it is finished, and the reader's place while it is not. */
+                    <span className="text-[8px] font-bold uppercase tabular-nums tracking-[0.14em] text-editorial-copper/75">
+                      {item.status?.finished ? `${item.status.label} · ` : ''}
                       {item.progress.percent}%
                     </span>
                   )}
@@ -76,7 +96,7 @@ export default function DesktopSurfaceIndex({ items }) {
                   </span>
                 )}
               </span>
-            </Link>
+            </div>
           );
         })}
       </div>

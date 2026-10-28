@@ -14,7 +14,7 @@ import StartTitleActions from '@/components/start/StartTitleActions';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
 import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
 import { loadWomenIssue } from '@/components/magazine/womenEdition';
-import { progressCta, readIssueProgress } from '@/lib/readingProgress';
+import { issueStatus, progressCta, readIssueProgress } from '@/lib/readingProgress';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 
@@ -45,20 +45,29 @@ export default function StartScreen() {
   // extra key at the end of the row.
   const menuItems = useMemo(() => {
     const progress = readIssueProgress(womenIssue?.id);
-    return startMenuFor({ isAdmin: user?.role === 'admin', isSignedIn: signedIn }).map((item) =>
-      item.key !== 'results' || !womenIssue
-        ? item
-        : {
-          ...item,
-          // The edition reports the reader's own place in it, and is worded for it:
-          // Start before it is begun, Resume while it is being read, Read once it is done.
-          cta: progressCta(progress),
-          progress: progress || null,
-          // A reader who has begun the issue is taken to the issue itself rather than
-          // through the route that resolves one.
-          to: progress ? `/magazine/${womenIssue.id}` : item.to,
-        },
-    );
+    const status = issueStatus(progress);
+    return startMenuFor({ isAdmin: user?.role === 'admin', isSignedIn: signedIn }).map((item) => {
+      if (item.key !== 'results') return item;
+      return {
+        ...item,
+        // The edition can be handed on from its own card whether or not this machine can
+        // reach the issue record itself.
+        shareUrl: `${window.location.origin}/women-2025`,
+        ...(womenIssue
+          ? {
+            // The edition reports the reader's own place in it, and how it was gone
+            // through: Start before it is begun, Resume while it is being read, and
+            // Read again once it is finished — read or skimmed either way.
+            cta: progressCta(progress),
+            progress: progress || null,
+            status,
+            // A reader who has begun the issue is taken to the issue itself rather than
+            // through the route that resolves one.
+            to: progress ? `/magazine/${womenIssue.id}` : item.to,
+          }
+          : {}),
+      };
+    });
   }, [user?.role, signedIn, womenIssue]);
 
   // Which issue the edition stands for, so its key can report the reader's place in it.
