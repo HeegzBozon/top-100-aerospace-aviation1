@@ -17,6 +17,15 @@
     "season_id": {
       "type": "string",
       "description": "The season in which the vote was cast"
+    },
+    "voter_role": {
+      "type": "string",
+      "description": "Role the voter held when the ballot was cast: 'admin' or 'user'. Recorded at write time so a ballot can be filtered by who cast it without reading the User record later."
+    },
+    "is_test": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when the ballot was cast by an administrator walking the voting flow. Test ballots are recorded rather than refused, and can be excluded from measurement and reporting by filtering on this flag."
     }
   },
   "required": [

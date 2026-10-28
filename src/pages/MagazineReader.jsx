@@ -169,41 +169,15 @@ export default function MagazineReader() {
     );
   }
 
+  // Both ways of reading an issue carry the same switch between them, in their own head
+  // band — the reader wears its controls rather than having a control laid over the page.
+  const modeProps = isPdf
+    ? {}
+    : { mode, onModeChange: pages.length > 0 ? setMode : undefined };
+
   return (
     <>
     <div className="relative">
-      {/* Mode toggle */}
-      {!isPdf && pages.length > 0 && (
-        <div className="fixed top-3 left-1/2 -translate-x-1/2 z-30">
-          <div
-            className="flex items-center rounded-full p-1 shadow-xl"
-            style={{ background: 'rgba(7,15,31,0.85)', border: '1px solid rgba(201,168,124,0.25)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
-          >
-            <button
-              onClick={() => setMode('flipbook')}
-              className="px-4 py-1.5 text-xs font-medium rounded-full transition-all"
-              style={{
-                background: mode === 'flipbook' ? P.gold : 'transparent',
-                color: mode === 'flipbook' ? P.navyVoid : P.cream,
-              }}
-            >
-              Flipbook
-            </button>
-            <button
-              onClick={() => setMode('single')}
-              className="px-4 py-1.5 text-xs font-medium rounded-full transition-all"
-              style={{
-                background: mode === 'single' ? P.gold : 'transparent',
-                color: mode === 'single' ? P.navyVoid : P.cream,
-              }}
-            >
-              Single Page
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Reader content */}
       {isPdf ? (
         <PdfViewer issue={issue} signedUrl={pdfSignedUrl} mode={mode} />
       ) : mode === 'flipbook' ? (
@@ -215,12 +189,14 @@ export default function MagazineReader() {
           setIsPlaying={setIsPlaying}
           speed={playbackSpeed}
           setSpeed={setPlaybackSpeed}
+          {...modeProps}
         />
       ) : (
         <SinglePageReader
           pages={pages}
           articles={articles}
           issue={issue}
+          {...modeProps}
         />
       )}
     </div>

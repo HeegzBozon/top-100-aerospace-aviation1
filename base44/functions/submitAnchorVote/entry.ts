@@ -78,22 +78,33 @@ export default async function(req) {
     apply(top_nominee_id, bottom_nominee_id);
     neutrals.forEach((nid) => apply(nid, bottom_nominee_id));
 
+    // A ballot cast by an administrator is a test of the flow, not a judgement of the
+    // field. It is still recorded — the walkthrough has to work end to end — and it is
+    // stamped as such, so test sets can be filtered out of measurement and reporting.
+    const isTest = user.role === 'admin';
     const voteRecords = comparisons.map(([w, l]) => ({
       voter_email: user.email,
       winner_nominee_id: w,
       loser_nominee_id: l,
       season_id,
+      voter_role: user.role || 'user',
+      is_test: isTest,
     }));
 
+    // A test set is recorded and stops there: it does not move the field's ratings and it
+    // does not climb the tester's ladder. The walkthrough is complete — the surface
+    // answers exactly as it does for a Fellow — but the measurement stays the Fellows'.
     await Promise.all([
       service.entities.PairwiseVote.bulkCreate(voteRecords),
-      ...ids.map((id) => service.entities.Nominee.update(id, {
-        elo_rating: elo[id],
-        aura_score: elo[id],
-        total_wins: wins[id],
-        total_losses: losses[id],
-        pairwise_appearance_count: apps[id],
-      })),
+      ...(isTest
+        ? []
+        : ids.map((id) => service.entities.Nominee.update(id, {
+            elo_rating: elo[id],
+            aura_score: elo[id],
+            total_wins: wins[id],
+            total_losses: losses[id],
+            pairwise_appearance_count: apps[id],
+          }))),
     ]);
 
     const ratings = {};
@@ -101,18 +112,21 @@ export default async function(req) {
 
     // The vote is written; only now does the Fellow's ladder move. Bookkeeping failure
     // never undoes a recorded ballot.
-    const progress = await recordContribution(service, {
-      fellow_email: user.email,
-      fellow_name: user.full_name || null,
-      season_id,
-      cohort_key: gate.season?.cohort_key || null,
-      action: 'anchor_set',
-    }).catch(() => null);
+    const progress = isTest
+      ? null
+      : await recordContribution(service, {
+          fellow_email: user.email,
+          fellow_name: user.full_name || null,
+          season_id,
+          cohort_key: gate.season?.cohort_key || null,
+          action: 'anchor_set',
+        }).catch(() => null);
 
     return Response.json({
       success: true,
       comparisons: comparisons.length,
       ratings,
+      is_test: isTest,
       progress,
     });
   } catch (error) {

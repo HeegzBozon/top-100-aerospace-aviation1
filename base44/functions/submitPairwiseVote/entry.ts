@@ -53,6 +53,10 @@ Deno.serve(async (req) => {
         const winnerNewElo = winnerOldElo + winnerChange;
         const loserNewElo = loserOldElo + loserChange;
 
+        // An administrator casting a ballot is testing the flow: the record is kept and
+        // stamped, but the test does not move the field's ratings.
+        const isTest = user.role === 'admin';
+
         // Atomically update records and create vote record
         await Promise.all([
             service.entities.PairwiseVote.create({
@@ -60,23 +64,27 @@ Deno.serve(async (req) => {
                 winner_nominee_id,
                 loser_nominee_id,
                 season_id,
+                voter_role: user.role || 'user',
+                is_test: isTest,
             }),
-            service.entities.Nominee.update(winner_nominee_id, {
-                elo_rating: winnerNewElo,
-                aura_score: winnerNewElo, // Sync Aura score
-                total_wins: (winner.total_wins || 0) + 1,
-                pairwise_appearance_count: (winner.pairwise_appearance_count || 0) + 1,
-            }),
-            service.entities.Nominee.update(loser_nominee_id, {
-                elo_rating: loserNewElo,
-                aura_score: loserNewElo, // Sync Aura score
-                total_losses: (loser.total_losses || 0) + 1,
-                pairwise_appearance_count: (loser.pairwise_appearance_count || 0) + 1,
-            })
+            ...(isTest ? [] : [
+                service.entities.Nominee.update(winner_nominee_id, {
+                    elo_rating: winnerNewElo,
+                    aura_score: winnerNewElo, // Sync Aura score
+                    total_wins: (winner.total_wins || 0) + 1,
+                    pairwise_appearance_count: (winner.pairwise_appearance_count || 0) + 1,
+                }),
+                service.entities.Nominee.update(loser_nominee_id, {
+                    elo_rating: loserNewElo,
+                    aura_score: loserNewElo, // Sync Aura score
+                    total_losses: (loser.total_losses || 0) + 1,
+                    pairwise_appearance_count: (loser.pairwise_appearance_count || 0) + 1,
+                }),
+            ]),
         ]);
 
         // Notify all admins about the new perception vote
-        try {
+        if (!isTest) try {
             const admins = await service.entities.User.filter({ role: 'admin' });
             await Promise.all(admins.map(admin => 
                 service.entities.Notification.create({
