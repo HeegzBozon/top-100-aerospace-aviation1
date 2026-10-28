@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { BookX, Loader2 } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
+import { chooseWomenIssue } from '@/components/magazine/womenEdition';
 
 // The title screen's TOP 100 Women 2025 key opens the edition itself rather than a page
 // about the edition.
@@ -11,20 +12,6 @@ import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 // of any kind where none is published — and the reader's own route takes it from there, so
 // the surface is one key, the issue is one address, and the reader keeps every state it
 // already has (the opening, the contents, the register, the film).
-const isWomenEdition = (issue) =>
-  /women/i.test(issue?.title || '') || /women/i.test(issue?.cover_kicker || '') || /women/i.test(issue?.subtitle || '');
-
-function chooseIssue(issues = []) {
-  const women = issues.filter(isWomenEdition);
-  const pool = women.length ? women : issues;
-  return (
-    pool.find((issue) => issue.status === 'published') ||
-    pool.find((issue) => issue.status === 'archived') ||
-    pool[0] ||
-    null
-  );
-}
-
 export default function Women2025Edition() {
   const [state, setState] = useState({ loading: true, issue: null, failed: false });
 
@@ -33,7 +20,7 @@ export default function Women2025Edition() {
     base44.entities.MagazineIssue.filter({}, { sort: '-created_date', limit: 50 })
       .then((page) => {
         if (!alive) return;
-        setState({ loading: false, issue: chooseIssue(page?.items || []), failed: false });
+        setState({ loading: false, issue: chooseWomenIssue(page?.items || []), failed: false });
       })
       .catch(() => alive && setState({ loading: false, issue: null, failed: true }));
     return () => {

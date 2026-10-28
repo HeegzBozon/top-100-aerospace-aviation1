@@ -10,6 +10,7 @@ import useIssueEditMenu from '@/components/magazine/glass/useIssueEditMenu';
 import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
 
 import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
+import { saveIssueProgress } from '@/lib/readingProgress';
 
 const getStage = () => document.querySelector('[data-handheld-screen]') || document.querySelector('.hh-stage');
 
@@ -48,6 +49,13 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   // The register of names: the issue's own honorees, numbered as they stand in it, read
   // from the portraits the issue already carries.
   const nameIndex = useMemo(() => (isPdf ? [] : buildNameIndex(pages, articles)), [isPdf, pages, articles]);
+
+  // The place is kept as the page turns, on the glass as on the desk, so the title screen
+  // reports one reading whichever machine it was read on.
+  useEffect(() => {
+    if (!issue?.id || total < 1) return;
+    saveIssueProgress(issue.id, { page: position - 1, total, title: issue.title });
+  }, [issue?.id, issue?.title, position, total]);
 
   // What has been opened in this sitting. Kept on the glass and nowhere else: it is the
   // record of one reading, not a property of the issue.

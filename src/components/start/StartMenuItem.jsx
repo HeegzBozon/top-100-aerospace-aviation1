@@ -44,8 +44,17 @@ export default function StartMenuItem({ item, selected }) {
         </span>
       </span>
 
-      <span className="relative font-heading text-[11px] font-semibold leading-[1.12] tracking-[0.01em] text-editorial-cream md:text-[14.5px]">
-        {item.label}
+      <span className="relative">
+        <span className="block font-heading text-[11px] font-semibold leading-[1.12] tracking-[0.01em] text-editorial-cream md:text-[14.5px]">
+          {item.label}
+        </span>
+        {/* A program that holds the reader's place says so on its own key */}
+        {item.cta && (
+          <span className="mt-1 block text-[8px] font-bold uppercase tracking-[0.18em] text-editorial-gold/85">
+            {item.cta}
+            {item.progress ? ` · ${item.progress.percent}%` : ''}
+          </span>
+        )}
       </span>
     </Link>
   );

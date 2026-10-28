@@ -11,10 +11,10 @@ import { Link } from "react-router-dom";
 // walking the console's ring onto it with the keys, does the same thing.
 export default function DesktopSurfaceIndex({ items }) {
   return (
-    <section className="ds-rise mt-11" style={{ animationDelay: "380ms" }} aria-label="Surfaces">
+    <section className="ds-rise mt-11" style={{ animationDelay: "380ms" }} aria-label="Programs">
       <div className="flex items-center gap-4">
         <p className="text-[9px] font-bold uppercase tracking-[0.36em] text-editorial-gold/85">
-          Surfaces
+          Programs
         </p>
         <span
           className="h-px flex-1"
@@ -52,10 +52,29 @@ export default function DesktopSurfaceIndex({ items }) {
                 <span className="block font-heading text-[clamp(0.95rem,1.05vw,1.12rem)] leading-[1.15] text-editorial-navy">
                   {item.label}
                 </span>
-                <span className="mt-2 flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-[0.24em] text-editorial-copper">
-                  Open
-                  <ArrowUpRight className="h-3 w-3 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <span className="mt-2 flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-[0.24em] text-editorial-copper">
+                    {item.cta || "Open"}
+                    <ArrowUpRight className="h-3 w-3 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </span>
+                  {item.progress && (
+                    <span className="text-[8px] font-bold tabular-nums tracking-[0.14em] text-editorial-copper/75">
+                      {item.progress.percent}%
+                    </span>
+                  )}
                 </span>
+                {/* The reader's own place in the program, where the program keeps one */}
+                {item.progress && (
+                  <span
+                    aria-hidden="true"
+                    className="mt-2 block h-[2px] w-full overflow-hidden rounded-full bg-editorial-navy/[0.12]"
+                  >
+                    <span
+                      className="block h-full rounded-full bg-editorial-copper"
+                      style={{ width: `${item.progress.percent}%` }}
+                    />
+                  </span>
+                )}
               </span>
             </Link>
           );
