@@ -13,6 +13,34 @@ const fmtDate = (value) => {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
+// The seasons the app can read still open the ballot when the context endpoint is not
+// answering: the counting cohort is whichever one is marked open or stands inside its
+// own voting dates. The window itself is enforced where a vote is written, never here.
+async function resolveOpenCohort() {
+  const seasons = await base44.entities.Season.list('-created_date', 100);
+  const now = Date.now();
+  const counting = seasons.filter((s) => {
+    if (s.status === 'voting_open') return true;
+    if (!s.voting_start || !s.voting_end) return false;
+    const start = new Date(s.voting_start).getTime();
+    const end = new Date(s.voting_end).getTime() + 86400000;
+    return start <= now && now <= end;
+  });
+  return {
+    open: counting.length > 0,
+    target: counting[0] || null,
+    progress: null,
+    cohorts: seasons.map((s) => ({
+      id: s.id,
+      name: s.name,
+      cohort_label: s.cohort_label,
+      status: s.status,
+      voting_start: s.voting_start,
+      voting_end: s.voting_end,
+    })),
+  };
+}
+
 // The ballot, open to every Fellow. One call opens it — which cohort is counting,
 // where its window stands, and the ladder already climbed — and the weighing itself
 // is the anchor surface, unchanged.
@@ -27,10 +55,15 @@ export default function VoteSurface({ user }) {
     setError(null);
     try {
       const res = await base44.functions.invoke('getVotingContext', {});
-      if (res?.data?.success) setContext(res.data);
-      else setError(res?.data?.error || 'The ballot could not be opened.');
+      if (res?.data?.success) {
+        setContext(res.data);
+        return;
+      }
+      setError(res?.data?.error || 'The ballot could not be opened.');
     } catch (e) {
-      setError(e?.response?.data?.error || e.message || 'The ballot could not be opened.');
+      const fallback = await resolveOpenCohort().catch(() => null);
+      if (fallback) setContext(fallback);
+      else setError(e?.response?.data?.error || e.message || 'The ballot could not be opened.');
     } finally {
       setLoading(false);
     }
