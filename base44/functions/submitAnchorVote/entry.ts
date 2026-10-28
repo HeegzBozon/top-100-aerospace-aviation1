@@ -1,4 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { assertVotingOpen } from '../../shared/votingWindow.ts';
+import { recordContribution } from '../../shared/votingProgress.ts';
 
 // Standard ELO expected score (zero-sum per comparison).
 function expectedScore(ra, rb) {
@@ -31,6 +33,13 @@ export default async function(req) {
     }
 
     const service = base44.asServiceRole;
+
+    // The window is enforced here, not in the surface: a ballot can never be written
+    // against a cohort whose voting has closed, whatever the client still believes.
+    const gate = await assertVotingOpen(service, season_id);
+    if (!gate.ok) {
+      return Response.json({ error: gate.reason, code: 'voting_closed' }, { status: gate.code || 409 });
+    }
     const fetched = await Promise.all(ids.map((id) => service.entities.Nominee.get(id)));
     const nominees = {};
     fetched.forEach((n, i) => { nominees[ids[i]] = n; });
@@ -90,7 +99,22 @@ export default async function(req) {
     const ratings = {};
     ids.forEach((id) => { ratings[id] = elo[id]; });
 
-    return Response.json({ success: true, comparisons: comparisons.length, ratings });
+    // The vote is written; only now does the Fellow's ladder move. Bookkeeping failure
+    // never undoes a recorded ballot.
+    const progress = await recordContribution(service, {
+      fellow_email: user.email,
+      fellow_name: user.full_name || null,
+      season_id,
+      cohort_key: gate.season?.cohort_key || null,
+      action: 'anchor_set',
+    }).catch(() => null);
+
+    return Response.json({
+      success: true,
+      comparisons: comparisons.length,
+      ratings,
+      progress,
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

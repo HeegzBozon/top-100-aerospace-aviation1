@@ -1,4 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.5.0';
+import { assertVotingOpen } from '../../shared/votingWindow.ts';
+import { recordContribution } from '../../shared/votingProgress.ts';
 
 Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
@@ -26,6 +28,22 @@ Deno.serve(async (req) => {
 
         // Remove empty entries and ensure we have valid nominee IDs
         const cleanBallot = ballot.filter(id => id && typeof id === 'string');
+
+        // A ballot is only written into a window that is open. Clearing a ballot stays
+        // allowed at any time — withdrawing your own ranking is never a vote.
+        if (cleanBallot.length > 0) {
+            const gate = await assertVotingOpen(base44.asServiceRole, season_id);
+            if (!gate.ok) {
+                return new Response(JSON.stringify({
+                    success: false,
+                    error: gate.reason,
+                    code: 'voting_closed',
+                }), {
+                    status: gate.code || 409,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+        }
         
         // Check if user already has a ranked vote for this season
         const existingVote = await base44.entities.RankedVote.filter({ 
@@ -59,6 +77,7 @@ Deno.serve(async (req) => {
         }
 
         const isNewVote = existingVote.length === 0;
+        const priorLength = existingVote[0]?.ballot?.length || 0;
         
         if (existingVote.length > 0) {
             // Update existing vote
@@ -95,7 +114,16 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ 
             success: true, 
             message: 'Ranked vote saved successfully',
-            ballot_length: cleanBallot.length
+            ballot_length: cleanBallot.length,
+            progress: (isNewVote || cleanBallot.length > priorLength)
+                ? await recordContribution(base44.asServiceRole, {
+                    fellow_email: user.email,
+                    fellow_name: user.full_name || null,
+                    season_id,
+                    cohort_key: null,
+                    action: 'ranked_ballot',
+                }).catch(() => null)
+                : null
         }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }

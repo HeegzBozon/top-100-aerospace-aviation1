@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.5.0';
+import { assertVotingOpen } from '../../shared/votingWindow.ts';
 
 // ELO calculation logic
 function calculateEloChange(winnerRating, loserRating, kFactor = 32) {
@@ -25,6 +26,15 @@ Deno.serve(async (req) => {
     }
 
     try {
+        // A comparison is only recorded while the cohort is counting.
+        const gate = await assertVotingOpen(service, season_id);
+        if (!gate.ok) {
+            return new Response(JSON.stringify({ success: false, error: gate.reason, code: 'voting_closed' }), {
+                status: gate.code || 409,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+
         // Fetch winner and loser nominees in parallel
         const [winner, loser] = await Promise.all([
             service.entities.Nominee.get(winner_nominee_id),

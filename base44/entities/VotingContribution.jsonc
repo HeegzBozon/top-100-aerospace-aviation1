@@ -1,0 +1,114 @@
+{
+  "name": "VotingContribution",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow whose contribution this is. Stable key across sessions and devices."
+    },
+    "fellow_name": {
+      "type": "string",
+      "description": "Display name, denormalized"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "Season this contribution is counted against. One record per Fellow per season."
+    },
+    "cohort_keys": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Every cohort the Fellow has contributed in this season, e.g. women, men, angels."
+    },
+    "xp": {
+      "type": "number",
+      "default": 0,
+      "description": "Contribution experience earned from accepted voting actions. Progress feedback only; never read by discovery, ranking, or scoring."
+    },
+    "level": {
+      "type": "number",
+      "default": 1,
+      "description": "Contribution level derived from xp. Progress feedback only; never read by discovery, ranking, or scoring."
+    },
+    "level_name": {
+      "type": "string",
+      "description": "Name of the current contribution level, denormalized for display"
+    },
+    "sets_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Anchor sets recorded (four names weighed, five comparisons each)."
+    },
+    "ballots_saved": {
+      "type": "number",
+      "default": 0,
+      "description": "Ranked ballots submitted."
+    },
+    "comparisons_recorded": {
+      "type": "number",
+      "default": 0,
+      "description": "Pairwise comparisons this Fellow's votes have written."
+    },
+    "milestones": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Milestone keys earned, e.g. sets_1, sets_5, sets_15, ballot_saved."
+    },
+    "last_action": {
+      "type": "string",
+      "enum": [
+        "anchor_set",
+        "ranked_ballot"
+      ],
+      "description": "The contribution action most recently recorded"
+    },
+    "last_action_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the most recent contribution was recorded"
+    }
+  },
+  "required": [
+    "fellow_email",
+    "season_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
