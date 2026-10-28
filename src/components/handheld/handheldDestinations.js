@@ -37,7 +37,7 @@ export const MORE_FALLBACK = [
 // A surface the platform has renamed: the bar names what the platform calls it, not
 // the route it happens to live on.
 const SURFACE_NAMES = {
-  "/mission-briefing": "Read",
+  "/mission-briefing": "Orientation",
 };
 
 const pathOf = (to = "") => to.split("?")[0];

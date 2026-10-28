@@ -1,6 +1,7 @@
 import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import HTMLFlipBook from 'react-pageflip';
-import { Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, Share2, List, X } from 'lucide-react';
+import { LogOut, ChevronLeft, ChevronRight, Share2, List, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
 import FlipPage, { PAGE_RATIO } from '@/components/magazine/FlipPage';
@@ -39,7 +40,7 @@ export default function CinematicFlipbook({
   });
   const [totalPages, setTotalPages] = useState(pages.length);
   const [showContents, setShowContents] = useState(false);
-  const [savedFlash, setSavedFlash] = useState(false);
+  const navigate = useNavigate();
   const [frameHeight, setFrameHeight] = useState(null);
   const [stage, setStage] = useState({ width: 0, height: 0 });
 
@@ -138,16 +139,12 @@ export default function CinematicFlipbook({
     saveIssueProgress(issue.id, { page: currentPage, total: totalPages, title: issue.title });
   }, [issue?.id, issue?.title, currentPage, totalPages]);
 
-  const saveNow = useCallback(() => {
+  // Putting the issue down on purpose: the place is written and the reader is handed back
+  // to the title screen, where the edition key reads Resume.
+  const saveAndExit = useCallback(() => {
     saveIssueProgress(issue.id, { page: currentPage, total: totalPages, title: issue.title });
-    setSavedFlash(true);
-  }, [issue.id, issue.title, currentPage, totalPages]);
-
-  useEffect(() => {
-    if (!savedFlash) return undefined;
-    const settle = setTimeout(() => setSavedFlash(false), 2200);
-    return () => clearTimeout(settle);
-  }, [savedFlash]);
+    navigate('/');
+  }, [issue.id, issue.title, currentPage, totalPages, navigate]);
 
   // How much of the issue has gone by — the head band's measure, not the foot's.
   const issuePercent = totalPages > 1
@@ -255,6 +252,7 @@ export default function CinematicFlipbook({
                       totalPages={totalPages}
                       playing={isPlaying && open}
                       progress={open ? progress : 0}
+                      autoscroll={open}
                     />
                   </FlipPage>
                 </div>
@@ -305,13 +303,13 @@ export default function CinematicFlipbook({
           <ChevronRight className="h-5 w-5" />
         </button>
         <button
-          onClick={saveNow}
-          className="ml-2 flex h-9 items-center gap-1.5 rounded-full px-3 text-[9px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-white/10"
-          style={{ color: savedFlash ? P.gold : 'rgba(250,248,245,0.62)' }}
-          aria-label={savedFlash ? 'Your place is saved' : 'Save my place'}
+          onClick={saveAndExit}
+          className="ml-2 flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[9px] font-bold uppercase tracking-[0.18em] transition-all hover:bg-white/10"
+          style={{ color: 'rgba(250,248,245,0.62)' }}
+          aria-label="Save my place and leave the issue"
         >
-          {savedFlash ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
-          {savedFlash ? 'Saved' : 'Save'}
+          <LogOut className="h-3.5 w-3.5" />
+          Save &amp; Exit
         </button>
       </footer>
 

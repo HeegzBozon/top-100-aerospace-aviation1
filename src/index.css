@@ -1244,6 +1244,25 @@ button:focus-visible {
   }
 }
 
+/* ===== THE ISSUE'S MEASURE — THE READING BAR =====
+   The metal in the head band's track: one slow sheen crossing the copper-into-rose-gold
+   fill, so the measure reads as a live instrument rather than a printed rule. Nothing
+   moves but the light. */
+@keyframes rpm-sheen-k {
+  0% { transform: translateX(-130%); }
+  100% { transform: translateX(230%); }
+}
+.rpm-sheen {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: rpm-sheen-k 2.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rpm-sheen {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* The panel the Flight Deck's instruments sit on, inside the tube. */
 .fd-panel {
   background: linear-gradient(180deg, var(--hh-shell-2) 0%, var(--hh-shell-3) 100%);

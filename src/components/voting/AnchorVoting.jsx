@@ -54,10 +54,20 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const [explainerOpen, setExplainerOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
 
-  // A voter is walked through the guide on the first ballot they open on this device.
-  // Afterwards it is one press away from the prompt. Keyed to the voter, so a second
-  // Fellow on the same machine is not skipped.
+  // A voter is walked through the guide once, on the first ballot they open on this device.
+  // Afterwards it is one press away from the prompt. Keyed to the voter, so a second Fellow
+  // on the same machine is not skipped. The visit is recorded the moment the guide is shown,
+  // not when it is dismissed — a voter who walks away mid-read, turns to another surface or
+  // closes the tab is still one ballot in, and is not walked through it again.
   const guideKey = `top100.voterGuide.v1:${(user?.email || 'guest').toLowerCase()}`;
+  const markGuideSeen = useCallback(() => {
+    try {
+      window.localStorage.setItem(guideKey, new Date().toISOString());
+    } catch {
+      // Nothing to record; a browser that keeps no storage sees the guide again.
+    }
+  }, [guideKey]);
+
   useEffect(() => {
     if (loading || pool.length < 4) return;
     let seen = null;
@@ -66,17 +76,15 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     } catch {
       // A browser that keeps no storage simply sees the guide again.
     }
-    if (!seen) setGuideOpen(true);
-  }, [loading, pool.length, guideKey]);
+    if (seen) return;
+    setGuideOpen(true);
+    markGuideSeen();
+  }, [loading, pool.length, guideKey, markGuideSeen]);
 
   const closeGuide = useCallback(() => {
     setGuideOpen(false);
-    try {
-      window.localStorage.setItem(guideKey, new Date().toISOString());
-    } catch {
-      // Nothing to record; the guide opens again next time.
-    }
-  }, [guideKey]);
+    markGuideSeen();
+  }, [markGuideSeen]);
 
   // Load active season + nominee pool once.
   useEffect(() => {

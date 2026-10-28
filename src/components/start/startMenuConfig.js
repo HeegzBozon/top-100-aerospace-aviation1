@@ -1,4 +1,4 @@
-import { Award, BookOpen, LayoutGrid, ListChecks, LogIn, Plane, Shield, Trophy, UserPlus, Users } from "lucide-react";
+import { Award, BookOpen, LayoutGrid, ListChecks, LogIn, Shield, Trophy, UserPlus, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -11,20 +11,17 @@ import { Award, BookOpen, LayoutGrid, ListChecks, LogIn, Plane, Shield, Trophy, 
 // inside the hub itself — the tab is the deep link, so neither waits behind the
 // title card in front of it.
 //
-// The game stands at the end of the row on purpose: it is the one surface built
-// for play, and it belongs beside the institution's work rather than inside it.
-// Reading, nominating and the published edition are the platform's public work: anyone
+// Orientation, nominating and the published edition are the platform's public work: anyone
 // may do them. Measuring is a Fellow's — the ballot needs an account — and so are the
 // surfaces that hold a person's own record, so they carry the member flag and are simply
 // not drawn for a visitor.
 export const START_MENU = [
-  { key: "read", index: "00", label: "Read", to: "/mission-briefing", icon: BookOpen },
+  { key: "read", index: "00", label: "Orientation", to: "/mission-briefing", icon: BookOpen },
   { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
   { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
   { key: "networking", index: "03", label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
   { key: "dashboard", index: "04", label: "Dashboard", to: "/board", icon: LayoutGrid, membersOnly: true },
   { key: "results", index: "05", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
-  { key: "frontier", index: "06", label: "Aero-Frontier", to: "/aero-frontier", icon: Plane },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
