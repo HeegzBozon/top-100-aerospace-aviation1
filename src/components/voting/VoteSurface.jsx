@@ -19,13 +19,15 @@ const fmtDate = (value) => {
 async function resolveOpenCohort() {
   const seasons = await base44.entities.Season.list('-created_date', 100);
   const now = Date.now();
-  const counting = seasons.filter((s) => {
-    if (s.status === 'voting_open') return true;
+  const isOpen = (s) => s.status === 'voting_open';
+  const inDates = (s) => {
     if (!s.voting_start || !s.voting_end) return false;
-    const start = new Date(s.voting_start).getTime();
-    const end = new Date(s.voting_end).getTime() + 86400000;
-    return start <= now && now <= end;
-  });
+    return new Date(s.voting_start).getTime() <= now && now <= new Date(s.voting_end).getTime() + 86400000;
+  };
+  // A group season holds cohorts, never nominees, so it can never be the ballot's own.
+  const counting = seasons
+    .filter((s) => !s.is_group && (isOpen(s) || inDates(s)))
+    .sort((a, b) => (isOpen(b) - isOpen(a)) || new Date(a.voting_end) - new Date(b.voting_end));
   return {
     open: counting.length > 0,
     target: counting[0] || null,
