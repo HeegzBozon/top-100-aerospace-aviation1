@@ -41,7 +41,28 @@ export function computePageDwell(page) {
   return Math.min(dwell, MAX_DWELL);
 }
 
-export const PLAYBACK_SPEEDS = [0.5, 1, 1.5, 2];
+// Skim: the issue walked through rather than read — every page held for the same short
+// beat whatever it carries, so a reader can look the volume over and stop where it earns
+// their time.
+export const SKIM_SPEED = 'skim';
+const SKIM_DWELL = 1600;
+
+// The paces on offer, fastest last. A number is a multiplier on the reading pace; skim is
+// its own setting, because it is not a pace of reading at all.
+export const PLAYBACK_OPTIONS = [
+  { value: 0.5, label: '0.5×' },
+  { value: 1, label: '1×' },
+  { value: 1.5, label: '1.5×' },
+  { value: 2, label: '2×' },
+  { value: 3, label: '3×' },
+  { value: 4, label: '4×' },
+  { value: SKIM_SPEED, label: 'Skim' },
+];
+
+export const PLAYBACK_SPEEDS = PLAYBACK_OPTIONS.map((o) => o.value);
+
+export const speedLabel = (speed) =>
+  PLAYBACK_OPTIONS.find((o) => o.value === speed)?.label ?? `${speed}×`;
 
 /**
  * Cinematic autoplay hook. Drives a single `goNext` callback on a per-page
@@ -63,7 +84,8 @@ export function useCinematicPlayback({ currentPageIndex, totalPages, goNext, pag
 
   const page = pages?.[currentPageIndex];
   const baseDwell = computePageDwell(page);
-  const adjustedDwell = baseDwell / (speed || 1);
+  // A skimmed page is not read, so it is not held for its words: one short beat each.
+  const adjustedDwell = speed === SKIM_SPEED ? SKIM_DWELL : baseDwell / (speed || 1);
 
   useEffect(() => {
     setProgress(0);

@@ -252,7 +252,7 @@ export default function CinematicFlipbook({
                       totalPages={totalPages}
                       playing={isPlaying && open}
                       autoscroll={open}
-                      speed={speed}
+                      speed={typeof speed === 'number' ? speed : 1}
                     />
                   </FlipPage>
                 </div>

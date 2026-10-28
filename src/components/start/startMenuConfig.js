@@ -1,4 +1,4 @@
-import { Award, BookOpen, LayoutGrid, ListChecks, LogIn, Shield, Trophy, UserPlus, Users } from "lucide-react";
+import { Archive, Award, BookOpen, LayoutGrid, ListChecks, LogIn, Shield, Trophy, UserPlus, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -22,6 +22,9 @@ export const START_MENU = [
   { key: "networking", index: "03", label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
   { key: "dashboard", index: "04", label: "Dashboard", to: "/board", icon: LayoutGrid, membersOnly: true },
   { key: "results", index: "05", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
+  // The volumes already closed, open to anyone: the record of previous cycles reads as
+  // the archive it is, and every volume in it is reachable from the one it opens on.
+  { key: "archive", index: "06", label: "Archive", to: "/archive/6a6b70136ccb7c358f77dd7f", icon: Archive },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform

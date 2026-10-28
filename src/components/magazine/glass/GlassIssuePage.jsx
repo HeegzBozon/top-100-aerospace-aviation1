@@ -2,6 +2,7 @@ import { BookOpen, ChevronLeft, ChevronsRight, Gauge, Loader2, Pause, Play, Skip
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
 import { foldLabel } from '@/components/magazine/glass/glassIssueEntries';
+import { speedLabel } from '@/components/magazine/useCinematicPlayback';
 
 // One page of an issue, read on the glass.
 //
@@ -142,7 +143,7 @@ export default function GlassIssuePage({
           className="flex h-7 flex-none items-center gap-1 rounded-full px-2 font-mono text-[9px] tabular-nums"
           style={chrome}
         >
-          <Gauge className="h-3 w-3" /> {speed}×
+          <Gauge className="h-3 w-3" /> {speedLabel(speed)}
         </button>
 
         <div className="flex flex-none items-center gap-1.5">

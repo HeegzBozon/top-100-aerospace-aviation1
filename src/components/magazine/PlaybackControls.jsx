@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Play, Pause, Gauge } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
-import { PLAYBACK_SPEEDS } from '@/components/magazine/useCinematicPlayback';
+import { PLAYBACK_OPTIONS, speedLabel } from '@/components/magazine/useCinematicPlayback';
 
 // Play / pause button — drops into any nav bar.
 export function PlayPauseButton({ isPlaying, onToggle, disabled, theme = 'dark' }) {
@@ -33,13 +33,13 @@ export function SpeedSelector({ speed, onChange, theme = 'dark' }) {
         aria-label="Playback speed"
       >
         <Gauge className="h-3.5 w-3.5" />
-        {speed}×
+        {speedLabel(speed)}
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div
-            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 rounded-xl p-1 min-w-[76px] shadow-2xl"
+            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 rounded-xl p-1 min-w-[86px] shadow-2xl"
             style={{
               background: 'rgba(7,15,31,0.95)',
               border: '1px solid rgba(201,168,124,0.25)',
@@ -47,17 +47,17 @@ export function SpeedSelector({ speed, onChange, theme = 'dark' }) {
               WebkitBackdropFilter: 'blur(20px)',
             }}
           >
-            {PLAYBACK_SPEEDS.map(s => (
+            {PLAYBACK_OPTIONS.map(({ value, label }) => (
               <button
-                key={s}
-                onClick={() => { onChange(s); setOpen(false); }}
+                key={value}
+                onClick={() => { onChange(value); setOpen(false); }}
                 className="w-full text-center px-3 py-1.5 rounded-lg text-xs font-medium tabular-nums transition-all hover:bg-white/10"
                 style={{
-                  background: speed === s ? P.gold : 'transparent',
-                  color: speed === s ? P.navyVoid : P.cream,
+                  background: speed === value ? P.gold : 'transparent',
+                  color: speed === value ? P.navyVoid : P.cream,
                 }}
               >
-                {s}×
+                {label}
               </button>
             ))}
           </div>
