@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Clock, ListOrdered, Lock, Award } from 'lucide-react';
+import { Clock, ListOrdered, Award } from 'lucide-react';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { brand } from '@/components/nominate/NominateConfig';
 import GlassVoteWindow from '@/components/my-top100/GlassVoteWindow';
@@ -36,9 +36,9 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
     },
     {
       key: 'chamber',
-      label: user?.role === 'admin' ? 'Anchor voting' : 'The chamber',
-      hint: user?.role === 'admin' ? 'Weigh nominees head to head' : 'Unlocks next season',
-      icon: user?.role === 'admin' ? Award : Lock,
+      label: 'Anchor voting',
+      hint: 'Weigh nominees head to head',
+      icon: Award,
       node: chamberNode,
       // The one card that must fit the glass whole: it draws four candidates and wants
       // them all in view, twice two, with nothing to scroll.

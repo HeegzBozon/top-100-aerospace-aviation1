@@ -25,6 +25,7 @@ import {
     ClipboardList,
     MapPin,
     TrendingUp,
+    Activity,
 } from 'lucide-react';
 
 /**
@@ -54,6 +55,7 @@ export const ADMIN_SECTIONS = [
         icon: BarChart3,
         tabs: [
             { id: 'workspace-selection', label: 'Cohort Workspace', icon: LayoutDashboard, component: 'CohortWorkspace' },
+            { id: 'selection-monitor', label: 'Live Monitor', icon: Activity, component: 'SelectionMonitor' },
         ],
     },
     {

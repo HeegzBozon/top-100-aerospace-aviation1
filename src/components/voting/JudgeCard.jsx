@@ -135,14 +135,6 @@ export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, s
                 <ArrowDown className="w-3 h-3" /> Last
               </span>
             )}
-            <button
-              onClick={(e) => { e.stopPropagation(); onInfo(); }}
-              className="hidden h-7 w-7 items-center justify-center rounded-full transition-colors md:flex"
-              style={{ background: `${brand.navy}06`, border: `1px solid ${brand.navy}12` }}
-              aria-label={`Information about ${name}`}
-            >
-              <Info className="w-3.5 h-3.5" style={{ color: `${brand.navy}60` }} />
-            </button>
           </div>
         </div>
 
@@ -165,11 +157,11 @@ export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, s
 
         {/* The foot of the card on the glass: the key that votes for it, printed the way
             the device prints its own legends, and the card's one door beside it. */}
-        <div className="mt-auto flex items-center gap-1.5 md:hidden">
+        <div className="mt-auto flex items-center gap-1.5 pt-0.5">
           <span
             aria-hidden="true"
             title={`${keyLabel} votes for ${name}`}
-            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[11px] text-[12px] font-heading"
+            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[11px] font-heading text-[12px] md:h-9 md:w-9 md:text-[11px]"
             style={{
               background: 'linear-gradient(180deg, #FDFBF6 0%, #EFE7D8 100%)',
               color: brand.navy,
@@ -181,15 +173,16 @@ export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, s
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onInfo(); }}
-            aria-label={`Information about ${name}`}
-            className="flex min-h-[38px] flex-1 items-center justify-center gap-1.5 rounded-[11px] text-[10px] font-bold uppercase tracking-[0.12em] transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110"
+            aria-label={`More information about ${name}`}
+            aria-keyshortcuts="I"
+            className="flex min-h-[38px] flex-1 items-center justify-center gap-1.5 rounded-[11px] text-[10px] font-bold uppercase tracking-[0.12em] transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 md:min-h-[34px] md:text-[9.5px]"
             style={{
               background: `linear-gradient(180deg, #26486E, ${brand.navy})`,
               color: '#F4F0E7',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20), 0 2px 5px -3px rgba(7,17,31,0.7)',
             }}
           >
-            <Info className="h-3.5 w-3.5" /> Info
+            <Info className="h-3.5 w-3.5" /> More info
           </button>
         </div>
       </motion.div>

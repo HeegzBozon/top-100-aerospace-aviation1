@@ -16,6 +16,7 @@ const AdminCommandCenter        = lazy(() => import('@/components/admin/AdminCom
 const SeasonManager             = lazy(() => import('@/components/admin/SeasonManager'));
 const SeasonViewModal           = lazy(() => import('@/components/admin/SeasonViewModal'));
 const CohortWorkspace           = lazy(() => import('@/components/admin/cohort-workspace/CohortWorkspace'));
+const SelectionMonitor          = lazy(() => import('@/components/admin/selection/SelectionMonitor'));
 const MediaSurface              = lazy(() => import('@/components/admin/editorial/MediaSurface'));
 const SocialCardsPanel          = lazy(() => import('@/components/admin/editorial/SocialCardsPanel'));
 const ProviderReviewManager     = lazy(() => import('@/components/admin/ProviderReviewManager'));
@@ -231,6 +232,8 @@ export default function Admin() {
         return <CohortWorkspace phase="nominate" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
       case 'workspace-selection':
         return <CohortWorkspace phase="selection" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
+      case 'selection-monitor':
+        return <SelectionMonitor />;
       case 'workspace-editorial':
         return <CohortWorkspace phase="editorial" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
       case 'surveys':
