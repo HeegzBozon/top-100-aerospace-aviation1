@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Clock, Lock, RefreshCw } from 'lucide-react';
-import { getVotingContext } from '@/functions/getVotingContext';
+import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import AnchorVoting from '@/components/voting/AnchorVoting';
 import VotingProgressPanel from '@/components/voting/VotingProgressPanel';
@@ -26,7 +26,7 @@ export default function VoteSurface({ user }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await getVotingContext({});
+      const res = await base44.functions.invoke('getVotingContext', {});
       if (res?.data?.success) setContext(res.data);
       else setError(res?.data?.error || 'The ballot could not be opened.');
     } catch (e) {
