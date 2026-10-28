@@ -15,8 +15,7 @@ import StartHereSplit from '@/components/my-top100/StartHereSplit';
 // No ballot writer here: the list is a publication, the ballot is a vote. They are
 // separate acts now, so publishing this list can never cast or mirror a ranking.
 import { Loader2, Pencil, Check, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
-import AnchorVoting from '@/components/voting/AnchorVoting';
-import VoteComingSoon from '@/components/my-top100/VoteComingSoon';
+import VoteSurface from '@/components/voting/VoteSurface';
 import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
 import NominateViewToggle from '@/components/my-top100/NominateViewToggle';
 import QuickAddBar from '@/components/my-top100/QuickAddBar';
@@ -533,7 +532,9 @@ export default function MyTop100() {
     </div>
   );
 
-  const chamberNode = user?.role === 'admin' ? <AnchorVoting user={user} /> : <VoteComingSoon />;
+  // The ballot is open to the whole committee now, not to admins alone: the surface
+  // resolves the counting cohort and carries the ladder beside the weighing.
+  const chamberNode = <VoteSurface user={user} />;
 
   const voteNode = <div className="flex-1 flex flex-col overflow-hidden">{chamberNode}</div>;
 

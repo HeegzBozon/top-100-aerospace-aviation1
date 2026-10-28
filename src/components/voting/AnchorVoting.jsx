@@ -36,7 +36,7 @@ function drawSet(pool, exclude = []) {
   return shuffle(src).slice(0, 4);
 }
 
-export default function AnchorVoting({ user }) {
+export default function AnchorVoting({ user, activeSeason: resolvedSeason = null, onRecorded = null }) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [pool, setPool] = useState([]);
@@ -57,14 +57,19 @@ export default function AnchorVoting({ user }) {
     let active = true;
     (async () => {
       try {
-        const seasons = await base44.entities.Season.list('-created_date', 100);
-        const activeSeason =
-          seasons.find((s) => s.status === 'voting_open') ||
-          seasons.find((s) => s.status === 'nominations_open') ||
-          seasons.find((s) => s.status === 'rollover') ||
-          seasons.find((s) => s.status !== 'archived') ||
-          seasons[0] ||
-          null;
+        // A caller that has already resolved the cohort counting right now hands it in,
+        // so the ballot never guesses at a season the window has closed.
+        let activeSeason = resolvedSeason;
+        if (!activeSeason) {
+          const seasons = await base44.entities.Season.list('-created_date', 100);
+          activeSeason =
+            seasons.find((s) => s.status === 'voting_open') ||
+            seasons.find((s) => s.status === 'nominations_open') ||
+            seasons.find((s) => s.status === 'rollover') ||
+            seasons.find((s) => s.status !== 'archived') ||
+            seasons[0] ||
+            null;
+        }
         if (!activeSeason) {
           toast({ variant: 'destructive', title: 'No active season', description: 'Voting is not open right now.' });
           setLoading(false);
@@ -176,10 +181,16 @@ export default function AnchorVoting({ user }) {
         // Non-blocking rewards, mirroring the pairwise flow.
         Promise.all([awardStardust({ action_type: 'vote' }), progressQuest({ action: 'anchor_vote' })]).catch(() => {});
 
+        onRecorded?.(res.data.progress);
+
         setPhase('success');
         setTimeout(() => advance(), 750);
       } catch (e) {
-        toast({ variant: 'destructive', title: 'Vote failed', description: e.message });
+        toast({
+          variant: 'destructive',
+          title: 'Vote failed',
+          description: e?.response?.data?.error || e.message,
+        });
         setBottomId(null);
         setPhase('worst');
       }
