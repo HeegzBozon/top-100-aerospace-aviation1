@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 import { resolveCohorts } from '../../shared/votingWindow.ts';
 import { LEVELS, ALL_MILESTONES } from '../../shared/votingProgress.ts';
 
-// Selection analytics, across every cohort at once.
+// Selection analytics, across every cohort at once, read-only.
 //
 // Admin only, and deliberately so: this is the ledger of who weighed whom, alongside
 // the tallies those weights produced. Detail at this grain never reaches a Fellow's

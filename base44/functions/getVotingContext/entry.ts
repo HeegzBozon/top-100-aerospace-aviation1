@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 import { resolveCohorts, windowState } from '../../shared/votingWindow.ts';
 import { levelFor, ALL_MILESTONES } from '../../shared/votingProgress.ts';
 
-// Everything the ballot needs to open, in one call: which cohorts are counting, where
+// Everything the ballot needs to open, in one call: which cohorts are counting, and where
 // the window stands, the Fellow's saved ballot, and the contribution ladder they have
 // already climbed.
 export default async function (req) {
