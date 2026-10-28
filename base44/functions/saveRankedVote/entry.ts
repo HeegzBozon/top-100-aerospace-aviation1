@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.5.0';
-import { assertVotingOpen } from '../../shared/votingWindow.ts';
+import { assertVotingOpen, resolveRecordingSeason } from '../../shared/votingWindow.ts';
 import { recordContribution } from '../../shared/votingProgress.ts';
 
 Deno.serve(async (req) => {
@@ -29,10 +29,17 @@ Deno.serve(async (req) => {
         // Remove empty entries and ensure we have valid nominee IDs
         const cleanBallot = ballot.filter(id => id && typeof id === 'string');
 
+        // The ballot is recorded against the cohort that is counting, not against a group
+        // wrapper that holds no nominees. Resolved once, so the save, the clear and the
+        // contribution that follows all name the same season.
+        const recordedSeasonId =
+            (await resolveRecordingSeason(base44.asServiceRole, season_id, { nomineeIds: cleanBallot })) ||
+            season_id;
+
         // A ballot is only written into a window that is open. Clearing a ballot stays
         // allowed at any time — withdrawing your own ranking is never a vote.
         if (cleanBallot.length > 0) {
-            const gate = await assertVotingOpen(base44.asServiceRole, season_id);
+            const gate = await assertVotingOpen(base44.asServiceRole, recordedSeasonId);
             if (!gate.ok) {
                 return new Response(JSON.stringify({
                     success: false,
@@ -47,7 +54,7 @@ Deno.serve(async (req) => {
         
         // Check if user already has a ranked vote for this season
         const existingVote = await base44.entities.RankedVote.filter({ 
-            season_id, 
+            season_id: recordedSeasonId, 
             voter_email: user.email 
         });
 
@@ -87,7 +94,7 @@ Deno.serve(async (req) => {
         } else {
             // Create new vote
             await base44.entities.RankedVote.create({
-                season_id,
+                season_id: recordedSeasonId,
                 voter_email: user.email,
                 ballot: cleanBallot
             });
@@ -119,7 +126,7 @@ Deno.serve(async (req) => {
                 ? await recordContribution(base44.asServiceRole, {
                     fellow_email: user.email,
                     fellow_name: user.full_name || null,
-                    season_id,
+                    season_id: recordedSeasonId,
                     cohort_key: null,
                     action: 'ranked_ballot',
                 }).catch(() => null)

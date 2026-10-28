@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.5.0';
-import { assertVotingOpen } from '../../shared/votingWindow.ts';
+import { assertVotingOpen, resolveRecordingSeason } from '../../shared/votingWindow.ts';
 
 // ELO calculation logic
 function calculateEloChange(winnerRating, loserRating, kFactor = 32) {
@@ -26,8 +26,14 @@ Deno.serve(async (req) => {
     }
 
     try {
+        // The comparison is recorded against the cohort that is counting, never against a
+        // group wrapper: a vote filed on a group belongs to no ballot at all.
+        const recordedSeasonId =
+            (await resolveRecordingSeason(service, season_id, { nomineeIds: [winner_nominee_id, loser_nominee_id] })) ||
+            season_id;
+
         // A comparison is only recorded while the cohort is counting.
-        const gate = await assertVotingOpen(service, season_id);
+        const gate = await assertVotingOpen(service, recordedSeasonId);
         if (!gate.ok) {
             return new Response(JSON.stringify({ success: false, error: gate.reason, code: 'voting_closed' }), {
                 status: gate.code || 409,
@@ -63,7 +69,7 @@ Deno.serve(async (req) => {
                 voter_email: user.email,
                 winner_nominee_id,
                 loser_nominee_id,
-                season_id,
+                season_id: recordedSeasonId,
                 voter_role: user.role || 'user',
                 is_test: isTest,
             }),

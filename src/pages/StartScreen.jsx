@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import { hourPhase } from '@/components/core/appOpening';
@@ -30,6 +30,7 @@ const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 // alert stands next to it, the ring opening its field where the key would.
 export default function StartScreen() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { user } = useAuth();
   const signedIn = !!user;
   const [phase] = useState(() => hourPhase());
@@ -117,6 +118,15 @@ export default function StartScreen() {
   // the way in where it would stand.
   const voteLive = signedIn && !status.loading && !status.failed && !!status.votingEnd && !vote.done;
 
+  // The front door leads straight to the ballot while the cycle is counting: a campaign
+  // brings people to the work, not to a menu. The title screen stays the surface at
+  // /start, so it is never more than one address away.
+  useEffect(() => {
+    if (pathname === '/' && voteLive) {
+      navigate('/selection-committee?tab=vote', { replace: true });
+    }
+  }, [pathname, voteLive, navigate]);
+
   // What the ring walks, top to bottom: the two things the title screen is asking
   // for — the ballot while its cycle is running, or the way in for whoever has no
   // account yet — then the publishing alert for a reader who will not be watching on the
@@ -132,6 +142,10 @@ export default function StartScreen() {
 
   const optionsRef = useRef(options);
   optionsRef.current = options;
+  // The console's handle is built once, so the live state it reads is held in a ref
+  // beside it rather than captured on the render it was made on.
+  const voteLiveRef = useRef(voteLive);
+  voteLiveRef.current = voteLive;
   const cursorRef = useRef(cursorKey);
   cursorRef.current = cursorKey;
   const notifyRef = useRef(notifyOpen);
@@ -173,11 +187,11 @@ export default function StartScreen() {
           return true;
         }
         // Nor is the way in: it is the platform's own door, which signs a Fellow in and
-        // opens the account a visitor has not made yet. Whoever walks through it is taken
-        // to their own profile — the home surface — rather than back to this screen, so
-        // signing in visibly arrives somewhere.
+        // opens the account a visitor has not made yet. Whoever walks through it during a
+        // live cycle is taken to the ballot rather than back to this screen — the work the
+        // campaign is asking for is the first thing they are given.
         if (option.action) {
-          base44.auth.redirectToLogin('/Profile');
+          base44.auth.redirectToLogin(voteLiveRef.current ? '/selection-committee?tab=vote' : '/Profile');
           return true;
         }
         if (!option.to) return false;

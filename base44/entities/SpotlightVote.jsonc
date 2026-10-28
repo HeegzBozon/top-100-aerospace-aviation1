@@ -39,5 +39,32 @@
     "voter_email",
     "category",
     "season_id"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.voter_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.voter_email": "{{user.email}}"
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }
