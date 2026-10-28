@@ -38,6 +38,29 @@ export default function StartScreen() {
   const [cursorKey, setCursorKey] = useState(START_MENU[0].key);
   const [notifyOpen, setNotifyOpen] = useState(false);
   const [womenIssue, setWomenIssue] = useState(null);
+  // The Fellow's own ballot, as it stands: the program's key reports it, so the card that
+  // asks for a hundred names says how many of them are already in order.
+  const [ballotCount, setBallotCount] = useState(null);
+
+  useEffect(() => {
+    if (!signedIn) {
+      setBallotCount(null);
+      return undefined;
+    }
+    let alive = true;
+    base44.entities.UserTop100List.filter({ user_email: user.email }, { limit: 1 })
+      .then((page) => {
+        if (!alive) return;
+        const list = (page?.items || [])[0];
+        setBallotCount((list?.rankings || []).length);
+      })
+      .catch(() => {
+        if (alive) setBallotCount(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [signedIn, user?.email]);
 
   // The menu is the platform's, not the operator's: the surfaces whoever is standing here
   // is entitled to — reading, nominating and the published edition for anyone at all, the
@@ -47,6 +70,10 @@ export default function StartScreen() {
     const progress = readIssueProgress(womenIssue?.id);
     const status = issueStatus(progress);
     return startMenuFor({ isAdmin: user?.role === 'admin', isSignedIn: signedIn }).map((item) => {
+      // The ballot's key carries the ballot's own progress — x of the hundred it asks for.
+      if (item.key === 'nominate') {
+        return ballotCount === null ? item : { ...item, progressLabel: `${ballotCount}/100` };
+      }
       if (item.key !== 'results') return item;
       return {
         ...item,
@@ -73,7 +100,7 @@ export default function StartScreen() {
           : {}),
       };
     });
-  }, [user?.role, signedIn, womenIssue]);
+  }, [user?.role, signedIn, womenIssue, ballotCount]);
 
   // Which issue the edition stands for, so its key can report the reader's place in it.
   // A title screen that cannot reach the issue still draws, worded plainly as a way in.

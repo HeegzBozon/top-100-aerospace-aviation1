@@ -23,7 +23,7 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
     {
       key: 'ballot',
       label: 'Your ballot',
-      hint: status.ranked >= status.minimum ? `${status.ranked} ranked · counting` : 'Rank three names',
+      hint: status.ranked >= status.minimum ? `${status.ranked}/100 ranked · counting` : 'Rank one name',
       icon: ListOrdered,
       node: ballotNode,
     },
@@ -156,7 +156,7 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
     ? `Voting is open${status.endLabel ? ` · closes ${status.endLabel}` : ''} · ${
         status.ranked >= status.minimum
           ? `${status.ranked} ranked, counting as your ballot`
-          : `rank ${status.minimum} names to open your ballot`
+          : `add ${status.minimum === 1 ? 'a name' : `${status.minimum} names`} to open your ballot`
       }`
     : status.closed
       ? `Voting has closed for this cycle · your list of ${status.ranked} stays on your profile`

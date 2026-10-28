@@ -26,7 +26,7 @@ export default function BallotBuilderPanel({
   loadingPool,
   addedIds,
   rankingsCount,
-  ballotMinimum = 3,
+  ballotMinimum = 1,
   onAdd,
   onViewProfile,
   onOpenExplorer,
@@ -63,7 +63,7 @@ export default function BallotBuilderPanel({
     <div className="pb-4">
       <SectionLabel>Selection Committee · Ballot</SectionLabel>
       <h2 className="mt-1 font-heading text-[22px] leading-tight" style={{ color: brand.navy }}>
-        Finalize your ballot
+        Finalize your TOP 100
       </h2>
       <p className="mt-1 text-[11px] leading-relaxed" style={{ color: `${brand.navy}60` }}>
         Position one reads as position one. Arrange the order below, and the surface keeps it
@@ -81,7 +81,7 @@ export default function BallotBuilderPanel({
             <span className="font-normal" style={{ color: `${brand.navy}50` }}> of 100</span>
           </p>
           <p className="text-[10px]" style={{ color: remaining ? `${brand.navy}60` : '#2d8a4f' }}>
-            {remaining ? `${remaining} more to open the ballot` : 'Counting — your ballot holds three or more'}
+            {remaining ? `${remaining} more to open the ballot` : 'Counting — your ballot is open'}
           </p>
         </div>
         <button

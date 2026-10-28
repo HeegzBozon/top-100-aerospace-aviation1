@@ -74,6 +74,12 @@ export default function DesktopSurfaceIndex({ items }) {
                     {item.cta || "Open"}
                     <ArrowUpRight className="h-3 w-3 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </span>
+                  {item.progressLabel && (
+                    /* The program's own count, read out beside the way in. */
+                    <span className="text-[8px] font-bold uppercase tabular-nums tracking-[0.14em] text-editorial-copper/75">
+                      {item.progressLabel}
+                    </span>
+                  )}
                   {item.progress && (
                     /* How the issue was gone through, read out beside how far: Read or
                        Skimmed once it is finished, and the reader's place while it is not. */

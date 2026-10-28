@@ -478,7 +478,7 @@ export default function MyTop100() {
       loadingPool={loadingPool}
       addedIds={addedIds}
       rankingsCount={rankings.length}
-      ballotMinimum={3}
+      ballotMinimum={1}
       onAdd={(person) => handleAdd(person, {
         nomination_category: getNomineeCategory(person, seasonCategory) || 'women',
       })}
@@ -521,7 +521,7 @@ export default function MyTop100() {
           ? new Date(season.voting_end).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
           : null,
         ranked: rankings.length,
-        minimum: 3,
+        minimum: 1,
       }}
       ballotNode={<div className="px-3 pb-28">{listBlock}</div>}
       chamberNode={chamberNode}
@@ -533,7 +533,7 @@ export default function MyTop100() {
   // reads them as the cartridge menu.
   const consolePanels = [
     { key: 'start', label: 'Start Here', hint: 'Why this is here, and where to begin', icon: Rocket, node: startNode },
-    { key: 'nominate', label: 'Finalize Ballot', hint: `${rankings.length} ranked · three to count`, icon: Sparkles, node: <div className="px-3 pb-3">{builderPanel}<div className="mt-3">{listBlock}</div></div> },
+    { key: 'nominate', label: 'Finalize Your TOP 100', hint: `${rankings.length}/100 ranked`, icon: Sparkles, node: <div className="px-3 pb-3">{builderPanel}<div className="mt-3">{listBlock}</div></div> },
     { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — cast your ballot' : 'Your ranked ballot', icon: ListOrdered, node: glassVoteNode },
   ];
 

@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { brand } from '@/components/nominate/NominateConfig';
 
 // The guide to the ranked ballot, walked in order for a voter arranging one for the first
-// time. It states the mechanics only: an order is a preference, three names is the floor,
+// time. It states the mechanics only: an order is a preference, one name is the floor,
 // suggestions are never placements. No weight is named — bands are visible, weights are not.
 const STEPS = [
   {
@@ -20,10 +20,10 @@ const STEPS = [
   },
   {
     kicker: 'The floor',
-    title: 'Three names is where it begins to count.',
+    title: 'One name is where it begins to count.',
     body: (
       <p>
-        The surface asks for three names before it treats a ballot as a ballot. From there you
+        The surface asks for one name before it treats a ballot as a ballot. From there you
         may rank as many as a hundred — the length of the list is yours to decide.
       </p>
     ),

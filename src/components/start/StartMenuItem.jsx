@@ -50,6 +50,13 @@ export default function StartMenuItem({ item, selected }) {
           <span className="block font-heading text-[11px] font-semibold leading-[1.12] tracking-[0.01em] text-editorial-cream md:text-[14.5px]">
             {item.label}
           </span>
+          {/* A program with a count of its own reads it out on the key: the ballot says
+              how many of its hundred names are already in order. */}
+          {item.progressLabel && (
+            <span className="mt-1 block pr-5 text-[8px] font-bold uppercase tabular-nums tracking-[0.18em] text-editorial-gold/85">
+              {item.progressLabel}
+            </span>
+          )}
           {/* A program that holds the reader's place says so on its own key — and how it
               was gone through: Read, or Skimmed, once it is finished. */}
           {item.cta && (

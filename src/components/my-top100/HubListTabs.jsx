@@ -5,7 +5,7 @@ import { brand } from '@/components/nominate/NominateConfig';
 export default function HubListTabs({ activeTab, onTabChange, nominationCount, listCount }) {
   const tabs = [
     { key: 'start', label: 'Start Here', icon: Rocket },
-    { key: 'nominate', label: 'Finalize Ballot', icon: Sparkles, badge: listCount },
+    { key: 'nominate', label: 'Finalize Your TOP 100', icon: Sparkles, badge: `${listCount}/100` },
     { key: 'vote', label: 'Vote', icon: ListOrdered },
   ];
 
@@ -36,7 +36,7 @@ export default function HubListTabs({ activeTab, onTabChange, nominationCount, l
               <span className="relative flex items-center gap-2">
                 <Icon className="w-4 h-4" style={{ color: isActive ? brand.gold : `${brand.navy}40` }} />
                 {tab.label}
-                {tab.badge > 0 && (
+                {tab.badge && (
                   <span
                     className="ml-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-[10px] font-bold"
                     style={{
