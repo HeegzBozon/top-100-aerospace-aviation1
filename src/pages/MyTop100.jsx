@@ -8,8 +8,8 @@ import BallotStatusBanner from '@/components/my-top100/BallotStatusBanner';
 import { useToast } from '@/components/ui/use-toast';
 import NomineeExplorerPopover from '@/components/my-top100/NomineeExplorerPopover';
 import Top100OSModal from '@/components/my-top100/Top100OSModal';
-import NominateIntakePanel from '@/components/my-top100/NominateIntakePanel';
 import HubListTabs from '@/components/my-top100/HubListTabs';
+import BallotBuilderPanel from '@/components/my-top100/BallotBuilderPanel';
 import ListCategoryTabs from '@/components/my-top100/ListCategoryTabs';
 import StartHereSplit from '@/components/my-top100/StartHereSplit';
 // No ballot writer here: the list is a publication, the ballot is a vote. They are
@@ -17,11 +17,8 @@ import StartHereSplit from '@/components/my-top100/StartHereSplit';
 import { Loader2, Pencil, Check, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
 import VoteSurface from '@/components/voting/VoteSurface';
 import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
-import NominateViewToggle from '@/components/my-top100/NominateViewToggle';
 import QuickAddBar from '@/components/my-top100/QuickAddBar';
-import MobileNominateView from '@/components/my-top100/MobileNominateView';
-import ContextualTip from '@/components/my-top100/ContextualTip';
-import { loadNomineePool } from '@/components/my-top100/nomineeCategory';
+import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
 import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import { useIsMobile } from '@/hooks/use-mobile';
 import useGlass from '@/hooks/useGlass';
@@ -70,9 +67,9 @@ export default function MyTop100() {
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [explorerProfile, setExplorerProfile] = useState(null);
   const [showOS, setShowOS] = useState(false);
-  const [nominateView, setNominateView] = useState('nominate');
   const [mobilePopoverOpen, setMobilePopoverOpen] = useState(false);
   const [pool, setPool] = useState([]);
+  const [seasonCategory, setSeasonCategory] = useState({});
   const [poolTotal, setPoolTotal] = useState(0);
   const [loadingPool, setLoadingPool] = useState(true);
   const isMobile = useIsMobile();
@@ -173,9 +170,10 @@ export default function MyTop100() {
   useEffect(() => {
     let active = true;
     loadNomineePool()
-      .then(({ pool }) => {
+      .then(({ pool, seasonCategory: bySeason }) => {
         if (!active) return;
         setPool(pool);
+        setSeasonCategory(bySeason || {});
         setPoolTotal(pool.length);
         setLoadingPool(false);
       })
@@ -186,22 +184,6 @@ export default function MyTop100() {
       active = false;
     };
   }, []);
-
-  // Remember the last-used side of the in-tab toggle, per Fellow.
-  useEffect(() => {
-    if (!user) return;
-    try {
-      const v = localStorage.getItem(`nominate_view_${user.email}`);
-      if (v === 'nominate' || v === 'mylist') setNominateView(v);
-    } catch { /* ignore */ }
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) return;
-    try {
-      localStorage.setItem(`nominate_view_${user.email}`, nominateView);
-    } catch { /* ignore */ }
-  }, [nominateView, user]);
 
   // Count hub sessions per device. After a Fellow has opened the hub a few
   // times, the Nominate tab becomes the default landing — they've graduated
@@ -486,37 +468,25 @@ export default function MyTop100() {
     </>
   );
 
-  // Nominating on a phone: the flip between the intake and the ranked list.
-  const nominateBody = (
-    <>
-      <NominateViewToggle
-        value={nominateView}
-        onChange={setNominateView}
-        nominateCount={totalNominations}
-        listCount={rankings.length}
-      />
-
-      {nominateView === 'nominate' ? (
-        <MobileNominateView
-          user={user}
-          submittedNominations={hubNominations}
-          onRemoveNomination={removeHubNomination}
-          addedIds={addedIds}
-          onOpenExplorer={openExplorer}
-        />
-      ) : (
-        <div className="px-4 pt-3 pb-28">
-          <div className="mb-3">
-            <ContextualTip userEmail={user?.email} tipKey="nominate_hub_mylist">
-              {votingOpen
-                ? 'This is your ranked Top 100 — your personal, shareable list. Drag to reorder. You rank; the institution measures.'
-                : 'This is your ranked Top 100 — your personal, shareable ranking. Nominations go to our review queue; ballot measurement opens with the voting window.'}
-            </ContextualTip>
-          </div>
-          {listBlock}
-        </div>
-      )}
-    </>
+  // The organizing column of the ballot: the guide to the order, where the ballot stands, and
+  // the profiles drawn from this Fellow's own judging. Every act in it is theirs — a
+  // suggestion is opened, followed, or added by hand, never placed for them.
+  const builderPanel = (
+    <BallotBuilderPanel
+      user={user}
+      pool={pool}
+      loadingPool={loadingPool}
+      addedIds={addedIds}
+      rankingsCount={rankings.length}
+      ballotMinimum={3}
+      onAdd={(person) => handleAdd(person, {
+        nomination_category: getNomineeCategory(person, seasonCategory) || 'women',
+      })}
+      onViewProfile={(person) => { setExplorerProfile(person); setExplorerOpen(true); }}
+      onOpenExplorer={openExplorer}
+      onNominate={() => setMobilePopoverOpen(true)}
+      onOpenVote={() => openTab('vote')}
+    />
   );
 
   const startNode = (
@@ -563,7 +533,7 @@ export default function MyTop100() {
   // reads them as the cartridge menu.
   const consolePanels = [
     { key: 'start', label: 'Start Here', hint: 'Why this is here, and where to begin', icon: Rocket, node: startNode },
-    { key: 'nominate', label: 'Nominate', hint: `${totalNominations} nominated · ${rankings.length} on your list`, icon: Sparkles, node: <div className="pb-3">{nominateBody}</div> },
+    { key: 'nominate', label: 'Finalize Ballot', hint: `${rankings.length} ranked · three to count`, icon: Sparkles, node: <div className="px-3 pb-3">{builderPanel}<div className="mt-3">{listBlock}</div></div> },
     { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — cast your ballot' : 'Your ranked ballot', icon: ListOrdered, node: glassVoteNode },
   ];
 
@@ -602,38 +572,18 @@ export default function MyTop100() {
       {/* ── START HERE TAB ── */}
       {activeTab === 'start' && startNode}
 
-      {/* ── NOMINATE TAB (split: intake on the left, ranked list on the right) ── */}
+      {/* ── FINALIZE BALLOT TAB (the organizing column, then the order itself) ── */}
       {activeTab === 'nominate' && (
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Desktop: two-column split */}
-          <div className="hidden lg:flex flex-1 gap-6 px-6 pb-6 max-w-7xl mx-auto w-full overflow-hidden">
-            {/* Left: nominate intake (search-first) */}
-            <div className="flex-1 min-w-0 sticky top-[60px] self-start overflow-y-auto" style={{ maxHeight: 'calc(100vh - 80px)' }}>
-              <NominateIntakePanel
-                submittedNominations={hubNominations}
-                onAddNomination={addHubNomination}
-                onRemoveNomination={removeHubNomination}
-                onAddExisting={(nominee, meta) => {
-                  addExistingToHub(meta.category, nominee, meta.also_angels);
-                  handleAdd(nominee, { nomination_category: meta.category, also_angels: meta.also_angels });
-                }}
-                nominator={user}
-                addedIds={addedIds}
-                onOpenExplorer={openExplorer}
-                pool={pool}
-                poolTotal={poolTotal}
-                loadingPool={loadingPool}
-              />
+        <div className="flex-1 overflow-y-auto">
+          <div className="mx-auto w-full max-w-7xl px-4 pb-28 lg:px-6 lg:pb-10">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:gap-8">
+              <div className="lg:sticky lg:top-[68px] lg:w-[350px] lg:shrink-0">
+                {builderPanel}
+              </div>
+              <div className="min-w-0 flex-1 lg:max-w-2xl">
+                {listBlock}
+              </div>
             </div>
-            {/* Right: Top 100 ranked list */}
-            <div className="flex-1 min-w-0 max-w-xl flex flex-col overflow-hidden">
-              {listBlock}
-            </div>
-          </div>
-
-          {/* Mobile: in-tab toggle between Nominate and My List */}
-          <div className="lg:hidden flex flex-col flex-1 overflow-y-auto">
-            {nominateBody}
           </div>
         </div>
       )}
@@ -658,7 +608,9 @@ export default function MyTop100() {
         onClick={openQuickAdd}
         hidden={!isMobile || shownTab !== 'nominate' || mobilePopoverOpen || explorerOpen}
       />
-      {isMobile && mobilePopoverOpen && (
+      {/* The intake is one door on both machines: the organizing column opens it, and so
+          does the phone's quick-add bar. */}
+      {mobilePopoverOpen && (
         <HubNominationPopover
           nominees={pool}
           nominator={user}

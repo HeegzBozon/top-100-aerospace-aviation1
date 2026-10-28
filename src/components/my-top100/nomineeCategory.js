@@ -67,7 +67,7 @@ export async function loadNomineePool() {
           'id', 'name', 'title', 'professional_role', 'company', 'organization',
           'avatar_url', 'photo_url', 'discipline', 'description', 'industry',
           'category', 'country', 'season_id', 'season_ids', 'status',
-          'linkedin_profile_url',
+          'linkedin_profile_url', 'nominee_email',
         ],
       }
     ),

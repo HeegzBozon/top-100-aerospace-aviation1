@@ -17,7 +17,10 @@ import { Archive, Award, BookOpen, LayoutGrid, ListChecks, LogIn, Shield, Trophy
 // not drawn for a visitor.
 export const START_MENU = [
   { key: "read", index: "00", label: "Orientation", to: "/mission-briefing", icon: BookOpen },
-  { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
+  // The committee's second act is the ballot itself: a Fellow arrives here to put their
+  // own hundred in order, not to file a nomination — that lives inside the surface. The
+  // key is named for the work it opens.
+  { key: "nominate", index: "01", label: "Finalize Ballot", to: "/selection-committee?tab=nominate", icon: Award },
   { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
   { key: "networking", index: "03", label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
   { key: "dashboard", index: "04", label: "Dashboard", to: "/board", icon: LayoutGrid, membersOnly: true },

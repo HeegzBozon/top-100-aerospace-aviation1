@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import { hourPhase } from '@/components/core/appOpening';
@@ -30,7 +30,6 @@ const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 // alert stands next to it, the ring opening its field where the key would.
 export default function StartScreen() {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
   const { user } = useAuth();
   const signedIn = !!user;
   const [phase] = useState(() => hourPhase());
@@ -118,14 +117,11 @@ export default function StartScreen() {
   // the way in where it would stand.
   const voteLive = signedIn && !status.loading && !status.failed && !!status.votingEnd && !vote.done;
 
-  // The front door leads straight to the ballot while the cycle is counting: a campaign
-  // brings people to the work, not to a menu. The title screen stays the surface at
-  // /start, so it is never more than one address away.
-  useEffect(() => {
-    if (pathname === '/' && voteLive) {
-      navigate('/selection-committee?tab=vote', { replace: true });
-    }
-  }, [pathname, voteLive, navigate]);
+  // The front door is a menu, never a gate. The ballot is offered on it — first in the row
+  // while its cycle is counting — but arriving at the title screen must land on the title
+  // screen: a redirect from here made Home unreachable, because Home is this surface, and
+  // every press of it bounced straight back into the ballot. The way in from a campaign is
+  // the door itself: signing in during a live cycle lands on the ballot, once.
 
   // What the ring walks, top to bottom: the two things the title screen is asking
   // for — the ballot while its cycle is running, or the way in for whoever has no
