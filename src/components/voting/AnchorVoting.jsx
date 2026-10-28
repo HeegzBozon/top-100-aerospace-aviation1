@@ -14,6 +14,7 @@ import EvidencePopover from '@/components/voting/EvidencePopover';
 import { registerFaceKeys } from '@/components/handheld/handheldKeys';
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
 import VoteMechanicsPopover from '@/components/voting/VoteMechanicsPopover';
+import VoterGuide from '@/components/voting/VoterGuide';
 
 // The four candidates stand under the four face keys, in the order the cards are set:
 // X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
@@ -51,6 +52,31 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const [sessionCount, setSessionCount] = useState(0);
   const [history, setHistory] = useState([]); // completed sets for review/back
   const [explainerOpen, setExplainerOpen] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+
+  // A voter is walked through the guide on the first ballot they open on this device.
+  // Afterwards it is one press away from the prompt. Keyed to the voter, so a second
+  // Fellow on the same machine is not skipped.
+  const guideKey = `top100.voterGuide.v1:${(user?.email || 'guest').toLowerCase()}`;
+  useEffect(() => {
+    if (loading || pool.length < 4) return;
+    let seen = null;
+    try {
+      seen = window.localStorage.getItem(guideKey);
+    } catch {
+      // A browser that keeps no storage simply sees the guide again.
+    }
+    if (!seen) setGuideOpen(true);
+  }, [loading, pool.length, guideKey]);
+
+  const closeGuide = useCallback(() => {
+    setGuideOpen(false);
+    try {
+      window.localStorage.setItem(guideKey, new Date().toISOString());
+    } catch {
+      // Nothing to record; the guide opens again next time.
+    }
+  }, [guideKey]);
 
   // Load active season + nominee pool once.
   useEffect(() => {
@@ -200,9 +226,11 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // The ring walks the same four cards. While a set is standing, a turn of the wheel
   // moves the cursor across it — the ends hold, so the first and the last card are as
   // far as it goes — and the centre button votes for the card the cursor has reached.
-  // Reading the explainer suspends the vote: while it is open the ring and the keys
-  // belong to the reader, not to the ballot, so no mark can be made by accident.
-  const standing = (phase === 'best' || phase === 'worst') && !explainerOpen;
+  // Reading suspends the vote: while the explainer, the guide or a candidate's file is
+  // open, the ring and the keys belong to the reader, not to the ballot, so no mark can
+  // be made by accident.
+  const reading = explainerOpen || guideOpen || Boolean(panelNominee);
+  const standing = (phase === 'best' || phase === 'worst') && !reading;
   const setKey = currentSet.map((n) => n.id).join('|');
   const cursor = useAnchorPicker({
     count: currentSet.length,
@@ -213,6 +241,12 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       const nominee = currentSet[i];
       if (nominee) handleSelect(nominee);
     },
+    onInfo: (i) => {
+      const nominee = currentSet[i];
+      if (!nominee) return;
+      setPanelNominee(nominee);
+      setPanelToken(String.fromCharCode(65 + i));
+    },
   });
 
   // While a set is standing, the keypad is the vote: a press puts that key's own card
@@ -220,7 +254,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // keys go back to the console — A confirm, B back, X sections, Y share.
   const voteKeys = useRef(null);
   voteKeys.current =
-    (phase === 'best' || phase === 'worst') && !explainerOpen && currentSet.length === 4
+    (phase === 'best' || phase === 'worst') && !reading && currentSet.length === 4
       ? (key) => {
           const i = VOTE_KEYS.indexOf(key);
           if (i < 0 || !currentSet[i]) return false;
@@ -232,7 +266,24 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   useEffect(() => {
     if (!voteKeys.current) return undefined;
     return registerFaceKeys((key) => (voteKeys.current ? voteKeys.current(key) : false));
-  }, [phase, currentSet, explainerOpen]);
+  }, [phase, currentSet, reading]);
+
+  // The desk's own keyboard answers the same way: X, Y, A and B vote for the four
+  // faces exactly as the console's keys do, so the legends printed on the cards hold
+  // on a laptop. A field being written into keeps its letters.
+  useEffect(() => {
+    if (!voteKeys.current) return undefined;
+    const onKeyDown = (event) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target;
+      if (target && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
+      const key = String(event.key || '').toUpperCase();
+      if (!VOTE_KEYS.includes(key)) return;
+      if (voteKeys.current && voteKeys.current(key)) event.preventDefault();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [phase, currentSet, reading]);
 
   if (loading) {
     return (
@@ -311,6 +362,14 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             )}
             <p className="whitespace-nowrap font-heading text-[15px] leading-none md:text-[17px]" style={{ color: brand.navy }}>{prompt}</p>
             <VoteMechanicsPopover open={explainerOpen} onOpenChange={setExplainerOpen} />
+            <button
+              type="button"
+              onClick={() => setGuideOpen(true)}
+              className="shrink-0 rounded-full px-2.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.14em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+              style={{ background: `${brand.gold}1F`, border: `1px solid ${brand.gold}66`, color: brand.navy }}
+            >
+              Voter guide
+            </button>
             <span
               className="ml-auto shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold tabular-nums"
               style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
@@ -319,6 +378,27 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             </span>
           </motion.div>
         </AnimatePresence>
+
+        {/* What the keys do, printed on the desk where the console prints its own
+            legends. The glass carries the same marks on the cards themselves. */}
+        <div className="mb-2 hidden flex-wrap items-center gap-x-2.5 gap-y-1 md:flex">
+          {[
+            ['\u2190 \u2192', 'walk the set'],
+            ['Enter', 'mark'],
+            ['X Y A B', 'vote'],
+            ['I', 'info'],
+          ].map(([key, text]) => (
+            <span key={key} className="inline-flex items-center gap-1.5 text-[10px]" style={{ color: `${brand.navy}55` }}>
+              <span
+                className="rounded-md px-1.5 py-[1px] text-[9px] font-semibold"
+                style={{ background: `${brand.navy}06`, border: `1px solid ${brand.navy}16`, color: `${brand.navy}80` }}
+              >
+                {key}
+              </span>
+              {text}
+            </span>
+          ))}
+        </div>
 
         {/* Controls: undo mid-set / review last set / resume */}
         <div className="mb-1.5 flex flex-wrap items-center gap-1.5 md:mb-3 md:gap-2">
@@ -355,7 +435,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 token={token}
                 isTop={isTop}
                 isBottom={isBottom}
-                selectable={selectable && !explainerOpen && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
+                selectable={selectable && !reading && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
@@ -381,6 +461,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         </AnimatePresence>
         </div>
       </div>
+
+      {/* The voter guide: how a set works, walked in order for a first ballot. */}
+      <VoterGuide open={guideOpen} onOpenChange={(next) => (next ? setGuideOpen(true) : closeGuide())} />
 
       {/* The card's information panel (anonymized) */}
       <AnimatePresence>

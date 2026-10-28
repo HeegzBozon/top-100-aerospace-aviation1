@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Loader2, Clock, Lock, RefreshCw } from 'lucide-react';
+import { Loader2, Lock, RefreshCw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import AnchorVoting from '@/components/voting/AnchorVoting';
@@ -171,8 +171,6 @@ export default function VoteSurface({ user }) {
     );
   }
 
-  const closes = fmtDate(target.voting_end);
-
   return (
     <div className="flex flex-1 flex-col overflow-y-auto lg:overflow-hidden">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 pt-3 md:px-5 lg:flex-1 lg:flex-row lg:items-start lg:gap-6 lg:pt-5">
@@ -180,26 +178,11 @@ export default function VoteSurface({ user }) {
           <AnchorVoting user={user} activeSeason={target} onRecorded={onRecorded} />
         </div>
 
-        <aside className="flex shrink-0 flex-col gap-3 lg:w-[290px] lg:overflow-y-auto lg:pb-6">
-          <div
-            className="rounded-xl px-3.5 py-3"
-            style={{ background: 'rgba(255,255,255,0.62)', border: `1px solid ${brand.navy}14` }}
-          >
-            <p className="text-[8.5px] font-bold uppercase tracking-[0.3em]" style={{ color: brand.gold }}>
-              Counting now
-            </p>
-            <p className="mt-1 font-heading text-[15px] leading-tight" style={{ color: brand.navy }}>
-              {target.cohort_label || target.name}
-            </p>
-            {closes && (
-              <p className="mt-1 inline-flex items-center gap-1 text-[10px]" style={{ color: `${brand.navy}60` }}>
-                <Clock className="h-3 w-3" /> Closes {closes}
-              </p>
-            )}
-          </div>
-
-          <VotingProgressPanel progress={context.progress} />
-        </aside>
+        {context.progress && (
+          <aside className="flex shrink-0 flex-col gap-3 lg:w-[290px] lg:overflow-y-auto lg:pb-6">
+            <VotingProgressPanel progress={context.progress} />
+          </aside>
+        )}
       </div>
     </div>
   );
