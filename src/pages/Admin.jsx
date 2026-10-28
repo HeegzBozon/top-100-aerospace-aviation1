@@ -54,13 +54,16 @@ export default function Admin() {
   // ── State ──
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window !== 'undefined') {
-      // Support URL params: ?tab=nominees — and resolve any legacy tab id to its canonical target
+      // An explicit ?tab= wins — a link into a section always opens that section, and any
+      // legacy tab id resolves to its canonical target.
       const params = new URLSearchParams(window.location.search);
       const urlTab = params.get('tab');
-      const stored = localStorage.getItem('adminActiveTab') || 'dashboard';
-      return resolveTabId(urlTab || stored);
+      if (urlTab) return resolveTabId(urlTab);
     }
-    return 'dashboard';
+    // Mission Control opens on the live monitor: while a cycle is counting, the running
+    // tally of ballots is the first thing to be read, so a tab remembered from an earlier
+    // visit never stands in front of it.
+    return 'selection-monitor';
   });
 
   const [workspaceSeasonId, setWorkspaceSeasonId] = useState(() => {
