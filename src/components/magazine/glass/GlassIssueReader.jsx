@@ -70,6 +70,12 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     [isPdf, pages, articles, rankById],
   );
 
+  // An issue with no readable pages has no page to stand on: the reader falls back to the
+  // contents, which says what is missing, rather than holding a page that is not there.
+  useEffect(() => {
+    if (total < 1 && view === 'page') setView('contents');
+  }, [total, view]);
+
   // Read again opens the issue at its front with this reader's pass on it wiped, so the
   // title screen reads Start again rather than the pass just finished.
   useEffect(() => {
