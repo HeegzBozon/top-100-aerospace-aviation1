@@ -144,18 +144,9 @@ export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, s
             position open on the chip itself. */}
         {honoreeVolumes.length > 0 && (
           <div className="flex flex-wrap items-center gap-1">
-            {honoreeVolumes.slice(0, 2).map((volume) => (
+            {honoreeVolumes.map((volume) => (
               <HonoreeChip key={volume.seasonId} volume={volume} />
             ))}
-            {honoreeVolumes.length > 2 && (
-              <span
-                title={honoreeVolumes.map((v) => v.year).join(' · ')}
-                className="text-[7.5px] font-bold uppercase tracking-[0.12em] md:text-[8.5px]"
-                style={{ color: `${brand.navy}55` }}
-              >
-                +{honoreeVolumes.length - 2}
-              </span>
-            )}
           </div>
         )}
 

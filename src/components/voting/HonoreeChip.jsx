@@ -34,12 +34,15 @@ export default function HonoreeChip({ volume }) {
             e.stopPropagation();
             openNow();
           }}
-          aria-label={`${volume.year} honoree. Show the volume and the recorded position.`}
-          className="inline-flex items-center gap-1 rounded-full px-1.5 py-[1px] text-[7.5px] font-bold leading-tight tracking-[0.12em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 md:text-[8.5px]"
+          aria-label={`${volume.year} honoree${volume.rank != null ? `, measured at number ${volume.rank}` : ''}. Show the volume and the archived record.`}
+          className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-1.5 py-[1px] text-[7.5px] font-bold leading-tight tracking-[0.12em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 md:text-[8.5px]"
           style={{ background: `${brand.gold}1F`, border: `1px solid ${brand.gold}80`, color: brand.navy }}
         >
           <Award className="h-2.5 w-2.5" style={{ color: brand.gold }} aria-hidden />
           {volume.year}
+          {volume.rank != null && (
+            <span style={{ color: '#8F5C2C' }}>No.&nbsp;{volume.rank}</span>
+          )}
         </button>
       </PopoverTrigger>
 
