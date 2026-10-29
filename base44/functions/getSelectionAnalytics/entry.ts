@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 import { resolveCohorts } from '../../shared/votingWindow.ts';
 import { LEVELS, ALL_MILESTONES } from '../../shared/votingProgress.ts';
+import { resolveSeededBallots } from '../../shared/ballotSeed.ts';
 
 // Selection analytics, across every cohort at once, read-only.
 //
@@ -19,6 +20,49 @@ function normalise(values) {
   if (!nums.length) return { min: 0, max: 0 };
   return { min: Math.min(...nums), max: Math.max(...nums) };
 }
+
+// The whole pool, not a page of it. A single filter call answers a capped slice, which
+// silently hides the back of the field from the operator who is meant to be watching it.
+async function listPool(service, scopedIds) {
+  const query = {
+    status: { $in: VOTABLE },
+    $or: scopedIds.flatMap((id) => [{ season_ids: id }, { season_id: id }]),
+  };
+  const all = [];
+  let cursor = null;
+  let rounds = 0;
+  while (rounds !== 40) {
+    rounds += 1;
+    const options = { sort: '-elo_rating', limit: 500 };
+    if (cursor) options.cursor = cursor;
+    const page = await service.entities.Nominee.filter(query, options).catch(() => null);
+    const items = page?.items || (Array.isArray(page) ? page : []);
+    all.push(...items);
+    if (!page?.has_more || !page?.next_cursor) break;
+    cursor = page.next_cursor;
+  }
+  return all;
+}
+
+// Saved ballots, read to their end so the ledger can name every voter who cast one.
+async function listSavedBallots(service, seasonQuery) {
+  const all = [];
+  let cursor = null;
+  let rounds = 0;
+  while (rounds !== 25) {
+    rounds += 1;
+    const options = { sort: '-created_date', limit: 200 };
+    if (cursor) options.cursor = cursor;
+    const page = await service.entities.RankedVote.filter(seasonQuery, options).catch(() => null);
+    const items = page?.items || (Array.isArray(page) ? page : []);
+    all.push(...items);
+    if (!page?.has_more || !page?.next_cursor) break;
+    cursor = page.next_cursor;
+  }
+  return all;
+}
+
+const voterKey = (email, seasonId) => `${String(email || '').trim().toLowerCase()}|${seasonId}`;
 
 export default async function (req) {
   try {
@@ -47,13 +91,19 @@ export default async function (req) {
     const labelById: Record<string, string> = {};
     cohorts.forEach((c) => { labelById[c.id] = c.cohort_label || c.name; });
 
+    // The ballots already in the record, and the drafts the nominations hold beside them.
+    // Both are read here so a cohort line and the ledger beneath it never disagree.
+    const savedBallots = await listSavedBallots(service, seasonQuery);
+    const savedKeys = new Set(savedBallots.map((b) => voterKey(b.voter_email, b.season_id)));
+    const seededBallots = await resolveSeededBallots(service, scopedCohorts).catch(() => []);
+    const openDrafts = seededBallots.filter((d) => !savedKeys.has(voterKey(d.voter_email, d.season_id)));
+
     const cohortStats = await Promise.all(
       scopedCohorts.map(async (c) => {
-        const [pool, ballotsCast, marks, fellows] = await Promise.all([
+        const [pool, marks, fellows] = await Promise.all([
           service.entities.Nominee
             .count({ status: { $in: VOTABLE }, $or: [{ season_ids: c.id }, { season_id: c.id }] })
             .catch(() => 0),
-          service.entities.RankedVote.count({ season_id: c.id }).catch(() => 0),
           service.entities.PairwiseVote.count({ season_id: c.id }).catch(() => 0),
           service.entities.VotingContribution.count({ season_id: c.id }).catch(() => 0),
         ]);
@@ -66,7 +116,8 @@ export default async function (req) {
           voting_start: c.voting_start,
           voting_end: c.voting_end,
           pool,
-          ballots: ballotsCast,
+          ballots: savedBallots.filter((b) => b.season_id === c.id).length,
+          seeded: openDrafts.filter((d) => d.season_id === c.id).length,
           comparisons: marks,
           contributors: fellows,
         };
@@ -74,38 +125,20 @@ export default async function (req) {
     );
 
     // ── The tallies ──────────────────────────────────────────────────────────────
-    const [
-      comparisons,
-      contributorCount,
-      ballotCount,
-      contributions,
-      ballots,
-      ledger,
-      nominees,
-    ] = await Promise.all([
+    const [comparisons, contributorCount, contributions, ledger, nominees] = await Promise.all([
       service.entities.PairwiseVote.count(seasonQuery).catch(() => 0),
       service.entities.VotingContribution.count({ season_id: { $in: scopedIds } }).catch(() => 0),
-      service.entities.RankedVote.count({ season_id: { $in: scopedIds } }).catch(() => 0),
       service.entities.VotingContribution
         .filter({ season_id: { $in: scopedIds } }, '-xp', 60)
         .catch(() => []),
-      service.entities.RankedVote
-        .filter({ season_id: { $in: scopedIds } }, '-created_date', 60)
-        .catch(() => []),
       service.entities.PairwiseVote
-        .filter(seasonQuery, '-created_date', 25)
+        .filter(seasonQuery, '-created_date', 60)
         .catch(() => []),
-      service.entities.Nominee
-        .filter(
-          {
-            status: { $in: VOTABLE },
-            $or: scopedIds.flatMap((id) => [{ season_ids: id }, { season_id: id }]),
-          },
-          '-elo_rating',
-          250
-        )
-        .catch(() => []),
+      listPool(service, scopedIds),
     ]);
+
+    const ballots = savedBallots;
+    const ballotCount = savedBallots.length;
 
     // ── Live standings ───────────────────────────────────────────────────────────
     const scoped = nominees.filter((n) => {
@@ -143,31 +176,61 @@ export default async function (req) {
         return { ...r, combined_index: Math.round(index * 10) / 10 };
       })
       .sort((x, y) => y.combined_index - x.combined_index)
-      .slice(0, 50)
       .map((r, i) => ({ ...r, position: i + 1 }));
 
     // ── Ballot tracking ──────────────────────────────────────────────────────────
-    const ballotEmails = Array.from(new Set(ballots.map((x) => x.voter_email).filter(Boolean)));
-    const voters = ballotEmails.length
+    // Every voter identity on record, resolved once: the ballots, the drafts standing
+    // from nominations, and the voter named against each pairwise mark.
+    const voterEmails = Array.from(
+      new Set(
+        [
+          ...ballots.map((x) => x.voter_email),
+          ...openDrafts.map((x) => x.voter_email),
+          ...ledger.map((x) => x.voter_email),
+        ].filter(Boolean)
+      )
+    );
+    const voters = voterEmails.length
       ? await service.entities.User
-          .filter({ email: { $in: ballotEmails } })
+          .filter({ email: { $in: voterEmails } })
           .catch(() => [])
       : [];
-    const names = voters.reduce((acc, u) => {
-      acc[u.email] = u.full_name || u.email;
-      return acc;
-    }, {});
+    const names: Record<string, string> = {};
+    voters.forEach((u) => {
+      if (u.email) names[String(u.email).toLowerCase()] = u.full_name || u.email;
+    });
+    const nameOf = (email) => names[String(email || '').toLowerCase()] || email || 'Unknown voter';
 
-    const ballotTracking = ballots.map((x) => ({
-      id: x.id,
-      voter_email: x.voter_email,
-      voter_name: names[x.voter_email] || x.voter_email,
-      season_id: x.season_id,
-      cohort: labelById[x.season_id] || null,
-      length: Array.isArray(x.ballot) ? x.ballot.length : 0,
-      submitted_at: x.created_date,
-      updated_at: x.updated_date,
-    }));
+    const ballotTracking = [
+      ...ballots.map((x) => ({
+        id: x.id,
+        voter_email: x.voter_email,
+        voter_name: nameOf(x.voter_email),
+        season_id: x.season_id,
+        cohort: labelById[x.season_id] || null,
+        length: Array.isArray(x.ballot) ? x.ballot.length : 0,
+        state: 'Cast',
+        source: 'saved',
+        submitted_at: x.created_date,
+        updated_at: x.updated_date,
+      })),
+      ...openDrafts.map((x) => ({
+        id: `seed:${x.voter_email}:${x.season_id}`,
+        voter_email: x.voter_email,
+        voter_name: nameOf(x.voter_email),
+        season_id: x.season_id,
+        cohort: x.cohort || labelById[x.season_id] || null,
+        length: x.count,
+        state: 'Seeded',
+        source: 'nominations',
+        submitted_at: null,
+        updated_at: null,
+        nominated_at: x.last_at || x.first_at || null,
+      })),
+    ].sort((a, b) => {
+      const at = (row) => new Date(row.submitted_at || row.nominated_at || 0).getTime();
+      return at(b) - at(a);
+    });
 
     // ── The pairwise ledger ──────────────────────────────────────────────────────
     const nominatedIds = Array.from(
@@ -187,6 +250,7 @@ export default async function (req) {
       id: v.id,
       at: v.created_date,
       voter_email: v.voter_email,
+      voter_name: nameOf(v.voter_email),
       winner: nomineeNames[v.winner_nominee_id] || 'Deleted nominee',
       loser: nomineeNames[v.loser_nominee_id] || 'Deleted nominee',
       season_id: v.season_id,
@@ -228,6 +292,8 @@ export default async function (req) {
         comparisons,
         contributors: contributorCount,
         ballots: ballotCount,
+        seeded: openDrafts.length,
+        ballots_on_record: ballotCount + openDrafts.length,
         pool: cohortStats.reduce((n, c) => n + c.pool, 0),
         votes_per_contributor:
           contributorCount > 0 ? Math.round((comparisons / contributorCount) * 10) / 10 : 0,

@@ -8,16 +8,25 @@ import { Input } from '@/components/ui/input';
 const BALLOT_COLUMNS = [
   { key: 'voter_name', label: 'Voter' },
   { key: 'cohort', label: 'Cohort' },
+  { key: 'state', label: 'State' },
   { key: 'length', label: 'Choices', numeric: true },
   { key: 'submitted_at', label: 'Submitted', numeric: true },
 ];
 
 const MARK_COLUMNS = [
+  { key: 'voter_name', label: 'Voter' },
   { key: 'winner', label: 'Preferred' },
   { key: 'loser', label: 'Over' },
   { key: 'cohort', label: 'Cohort' },
   { key: 'at', label: 'Cast', numeric: true },
 ];
+
+// A ballot cast is a vote; a ballot seeded is a draft standing from the Fellow's own
+// nominations, waiting on them to save it. The two are never counted as one.
+const STATE_TONE = {
+  Cast: { color: '#2E7D5B', label: 'Cast' },
+  Seeded: { color: '#8F5C2C', label: 'Seeded' },
+};
 
 function when(value) {
   if (!value) return '—';
@@ -37,7 +46,7 @@ export default function BallotLedger({ kind = 'ballots', ballots = [], marks = [
     const needle = query.trim().toLowerCase();
     const filtered = needle
       ? rows.filter((r) =>
-          [r.voter_name, r.voter_email, r.winner, r.loser, r.cohort].some((v) =>
+          [r.voter_name, r.voter_email, r.winner, r.loser, r.cohort, r.state].some((v) =>
             String(v || '').toLowerCase().includes(needle)
           )
         )
@@ -47,7 +56,8 @@ export default function BallotLedger({ kind = 'ballots', ballots = [], marks = [
       const x = a[sort.key];
       const y = b[sort.key];
       if (sort.key.endsWith('_at') || sort.key === 'at') {
-        return ((new Date(x || 0)).getTime() - (new Date(y || 0)).getTime()) * dir;
+        const at = (row) => new Date(row[sort.key] || row.nominated_at || 0).getTime();
+        return (at(a) - at(b)) * dir;
       }
       if (typeof x === 'number' && typeof y === 'number') return (x - y) * dir;
       return String(x ?? '').localeCompare(String(y ?? '')) * dir;
@@ -110,14 +120,26 @@ export default function BallotLedger({ kind = 'ballots', ballots = [], marks = [
                     <td className="whitespace-nowrap px-2.5 py-1.5 text-[10.5px] uppercase tracking-[0.12em] text-editorial-navy/60">
                       {row.cohort || '—'}
                     </td>
+                    <td className="whitespace-nowrap px-2.5 py-1.5">
+                      <span
+                        className="text-[9px] font-bold uppercase tracking-[0.16em]"
+                        style={{ color: (STATE_TONE[row.state] || STATE_TONE.Cast).color }}
+                      >
+                        {(STATE_TONE[row.state] || STATE_TONE.Cast).label}
+                      </span>
+                    </td>
                     <td className="px-2.5 py-1.5 text-right text-[11.5px] tabular-nums text-editorial-navy">{row.length}</td>
                     <td className="whitespace-nowrap px-2.5 py-1.5 text-right text-[11px] tabular-nums text-editorial-navy/60">
-                      {when(row.submitted_at)}
+                      {row.submitted_at ? when(row.submitted_at) : row.nominated_at ? `nominated ${when(row.nominated_at)}` : '—'}
                     </td>
                   </tr>
                 ))
               : visible.map((row) => (
                   <tr key={row.id} className="border-t border-editorial-navy/10 hover:bg-editorial-cream/70">
+                    <td className="px-2.5 py-1.5">
+                      <p className="text-[12px] font-semibold leading-tight text-editorial-navy">{row.voter_name}</p>
+                      <p className="text-[10px] leading-tight text-editorial-navy/45">{row.voter_email}</p>
+                    </td>
                     <td className="px-2.5 py-1.5 text-[12px] font-semibold text-editorial-navy">{row.winner}</td>
                     <td className="px-2.5 py-1.5 text-[12px] text-editorial-navy/70">{row.loser}</td>
                     <td className="whitespace-nowrap px-2.5 py-1.5 text-[10.5px] uppercase tracking-[0.12em] text-editorial-navy/60">
@@ -141,7 +163,9 @@ export default function BallotLedger({ kind = 'ballots', ballots = [], marks = [
         </table>
       </div>
       <p className="text-[10px] text-editorial-navy/45">
-        Sealed ballots: the ordering a voter saved is never shown here, only that it was cast.
+        {kind === 'ballots'
+          ? 'Sealed ballots: the ordering a voter saved is never shown here, only that it was cast. Seeded ballots are drafts standing from a voter’s own nominations — they are not votes until the voter saves them.'
+          : 'Every mark is recorded against the voter who cast it; the ballot behind it stays sealed.'}
       </p>
     </div>
   );

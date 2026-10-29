@@ -1,4 +1,4 @@
-import { Radio, Users, Layers, Scale, Gauge } from 'lucide-react';
+import { Radio, Users, Layers, Scale, Gauge, ClipboardList } from 'lucide-react';
 
 // The head of the monitor: what the platform is counting right now, and the window each
 // cohort is counting inside. Every number here is a count, never a projection.
@@ -6,6 +6,7 @@ import { Radio, Users, Layers, Scale, Gauge } from 'lucide-react';
 const TILES = [
   { key: 'pool', label: 'Standing', hint: 'in the ballot', icon: Users },
   { key: 'ballots', label: 'Ballots', hint: 'ranked lists saved', icon: Layers },
+  { key: 'seeded', label: 'Seeded', hint: 'from nominations', icon: ClipboardList },
   { key: 'comparisons', label: 'Marks', hint: 'pairwise weights', icon: Scale },
   { key: 'contributors', label: 'Community', hint: 'weighing', icon: Gauge },
   { key: 'votes_per_contributor', label: 'Marks each', hint: 'average', icon: Radio },
@@ -29,7 +30,7 @@ function WindowLine({ cohort }) {
     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 border-t border-editorial-navy/10 px-3 py-2 first:border-t-0">
       <span className="font-heading text-[13px] text-editorial-navy">{cohort.label}</span>
       <span className="text-[11px] tabular-nums text-editorial-navy/55">
-        {fmt(cohort.pool)} standing · {fmt(cohort.ballots)} ballots · {fmt(cohort.comparisons)} marks
+        {fmt(cohort.pool)} standing · {fmt(cohort.ballots)} ballots · {fmt(cohort.seeded)} seeded · {fmt(cohort.comparisons)} marks
       </span>
       <span className="ml-auto text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: state.tone }}>
         {state.text}
