@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import HTMLFlipBook from 'react-pageflip';
-import { LogOut, BookOpen, ChevronLeft, ChevronRight, ChevronsLeft, Share2, List, X } from 'lucide-react';
+import { LogOut, BookOpen, ChevronLeft, ChevronRight, ChevronsLeft, Share2, List, X, Play, Pause } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
@@ -47,6 +47,18 @@ export default function CinematicFlipbook({
   const navigate = useNavigate();
   const [frameHeight, setFrameHeight] = useState(null);
   const [stage, setStage] = useState({ width: 0, height: 0 });
+  // The roll belongs to the page, not to the book: a spread can hold one page that runs
+  // past its frame and one that does not, and either can be put on hold by itself.
+  const [pausedPages, setPausedPages] = useState({});
+  const [rollable, setRollable] = useState({});
+
+  const reportOverflow = useCallback((key, hasOverflow) => {
+    setRollable((prev) => (Boolean(prev[key]) === hasOverflow ? prev : { ...prev, [key]: hasOverflow }));
+  }, []);
+
+  const togglePageRoll = useCallback((key) => {
+    setPausedPages((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
 
   const onFlip = useCallback((e) => setCurrentPage(e.data), []);
   const onInit = useCallback(() => {
@@ -265,8 +277,10 @@ export default function CinematicFlipbook({
           >
             {pages.map((page, i) => {
               const open = holdsPage(i);
+              const key = page.id || i + 1;
+              const paused = Boolean(pausedPages[key]);
               return (
-                <div key={page.id || i} style={{ height: '100%', overflow: 'hidden' }}>
+                <div key={page.id || i} className="group relative" style={{ height: '100%', overflow: 'hidden' }}>
                   <FlipPage>
                     <PageRenderer
                       page={page}
@@ -277,8 +291,33 @@ export default function CinematicFlipbook({
                       playing={isPlaying && open}
                       autoscroll={open}
                       speed={typeof speed === 'number' ? speed : 1}
+                      paused={paused}
+                      onOverflow={reportOverflow}
                     />
                   </FlipPage>
+                  {/* A page long enough to roll wears its own hold, on the page itself and
+                      only under a pointer — one per page, so the left and the right of a
+                      spread are started and stopped independently. */}
+                  {open && rollable[key] && (
+                    <button
+                      onClick={(event) => { event.stopPropagation(); togglePageRoll(key); }}
+                      onMouseDown={(event) => event.stopPropagation()}
+                      className={`absolute right-2.5 top-2.5 z-20 flex h-8 w-8 items-center justify-center rounded-full shadow-lg transition-opacity duration-200 group-hover:opacity-100 focus-visible:opacity-100 ${
+                        paused ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      style={{
+                        background: 'rgba(7,15,31,0.74)',
+                        border: `1px solid ${P.gold}66`,
+                        color: P.cream,
+                        backdropFilter: 'blur(6px)',
+                        WebkitBackdropFilter: 'blur(6px)',
+                      }}
+                      aria-label={paused ? 'Resume this page' : 'Pause this page'}
+                      title={paused ? 'Roll this page' : 'Hold this page'}
+                    >
+                      {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+                    </button>
+                  )}
                 </div>
               );
             })}

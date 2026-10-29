@@ -366,7 +366,7 @@ export function firstThreeArticle(nominee, rank) {
 
   return {
     title: clean(nominee.name) || 'Unnamed honoree',
-    subtitle: `No. ${rank}${stand ? ` · ${stand}` : ''}`,
+    subtitle: stand || where,
     teaser: where || stand,
     article_type: 'feature',
     status: 'ready',
@@ -486,14 +486,11 @@ export function editionArticles(nominees = []) {
     if (section.id !== HONOREES_SECTION_ID) return;
 
     // The index runs as the measure placed it: first to last, and by nothing else. The
-    // three at the front carry a breakaway page of their own words beside the portrait.
+    // first three are not repeated here — they have already been given their spreads in
+    // the opening section, and the book does not print a woman twice.
     ranked.forEach((nominee, i) => {
-      const article = honoreeArticle(nominee);
-      if (standingOf(nominee, i) <= 3) {
-        article.pull_quote = voiceOf(nominee) || clean(nominee.description, 220);
-        article.pull_quote_attribution = clean(nominee.name);
-      }
-      push(article);
+      if (standingOf(nominee, i) <= 3) return;
+      push(honoreeArticle(nominee));
     });
   });
 

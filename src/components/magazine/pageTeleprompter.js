@@ -20,7 +20,7 @@ const MIN_ROLL_MS = 9000;
 
 const wordsInPage = (el) => (el?.textContent || '').trim().split(/\s+/).filter(Boolean).length;
 
-export function usePageTeleprompter({ pageKey, autoscroll = false, playing = false, speed = 1 }) {
+export function usePageTeleprompter({ pageKey, autoscroll = false, playing = false, speed = 1, paused = false }) {
   const ref = useRef(null);
   const [overflow, setOverflow] = useState(0);
   // The hand wins: a reader who scrolls the page themselves stops the teleprompter for
@@ -58,7 +58,9 @@ export function usePageTeleprompter({ pageKey, autoscroll = false, playing = fal
   // reading left off rather than jumping back to its head.
   useEffect(() => {
     const el = ref.current;
-    if (!el || !autoscroll || handled || overflow <= 0) return undefined;
+    // A page put on hold keeps its place: the roll stands exactly where it was left, and
+    // picks up from there when the reader hands it back.
+    if (!el || !autoscroll || handled || paused || overflow <= 0) return undefined;
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
 
     const words = wordsInPage(el);
@@ -88,7 +90,7 @@ export function usePageTeleprompter({ pageKey, autoscroll = false, playing = fal
       el.removeEventListener('touchstart', yieldToHand);
       el.removeEventListener('pointerdown', yieldToHand);
     };
-  }, [autoscroll, playing, speed, handled, overflow, pageKey]);
+  }, [autoscroll, playing, speed, handled, overflow, pageKey, paused]);
 
   return { ref, overflow };
 }

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { MAGAZINE_PALETTE as P, PORTRAIT_FOCUS } from '@/components/magazine/magazineConfig';
 import PinnedPageHead from '@/components/magazine/PinnedPageHead';
+import PortraitPlate from '@/components/magazine/PortraitPlate';
+import FaceSpread from '@/components/magazine/FaceSpread';
 import { usePageTeleprompter, PAGE_SCROLL_ATTR } from '@/components/magazine/pageTeleprompter';
 
 // The blocks that make up a page's head: what pins to the top of the frame while the body
@@ -9,16 +11,24 @@ const HEAD_TYPES = ['kicker', 'heading', 'byline'];
 
 // Renders a single magazine page's content based on its layout type and blocks.
 // Used by both the flipbook and single-page reader.
-export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1 }) {
+export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, onOverflow }) {
   // A page that runs past its frame rolls under the reader as a teleprompter at reading
-  // pace — while the issue plays as a film and while it is read by hand. The hook is called
-  // here, once, for every layout; a page with nothing to scroll never takes the ref.
-  const { ref: scrollRef } = usePageTeleprompter({
+  // pace — while the issue plays as a film and while it is read by hand. A page can be put
+  // on hold on its own: the roll of the left-hand page has nothing to do with the right's.
+  const { ref: scrollRef, overflow } = usePageTeleprompter({
     playing,
     pageKey: page?.id || pageNumber,
     autoscroll,
     speed,
+    paused,
   });
+  // The reader only offers a hold to a page that actually runs past its frame, so the
+  // page tells the book whether it has anything to roll.
+  const rollKey = page?.id || pageNumber;
+  useEffect(() => {
+    onOverflow?.(rollKey, overflow > 0);
+  }, [onOverflow, rollKey, overflow]);
+
   const blocks = page.content_blocks || [];
   const bg = page.background_image_url;
   const credits = issue.cover_credits || {};
@@ -142,7 +152,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
                         {section.directory.length} honorees, in full
                       </p>
                       <p className="text-[10px] mt-0.5 leading-tight" style={{ color: 'rgba(30,58,90,0.5)' }}>
-                        Listed by region · pages {folios(section.from, section.to)}
+                        In measured order · pages {folios(section.from, section.to)}
                       </p>
                     </div>
                   </div>
@@ -187,36 +197,66 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     );
   }
 
-  // Pull quote (full-bleed)
+  // Pull quote: her voice at the size of the paper. When the page carries the read as
+  // well, the quote is the plate at its head and the body runs beneath it — and the page
+  // rolls, so it is read rather than flashed.
   if (page.layout_type === 'pull_quote') {
     const quoteBlock = blocks.find((b) => b.type === 'pull_quote') || {};
+    const kicker = blocks.find((b) => b.type === 'kicker');
+    const read = blocks.filter((b) => b.type === 'body');
+
+    if (!read.length) {
+      return (
+        <div className="relative w-full h-full flex flex-col items-center justify-center p-10 text-center" style={{ background: P.cream }}>
+          <div className="text-6xl font-serif leading-none mb-4" style={{ color: P.gold, opacity: 0.3 }}>“</div>
+          <p className="font-serif text-lg sm:text-xl leading-relaxed ppc-rise" style={{ color: P.navy }}>
+            {quoteBlock.text || 'A pull quote will appear here.'}
+          </p>
+          {quoteBlock.attribution && (
+            <p className="text-xs mt-6 ppc-rise" style={{ color: P.copper, animationDelay: '0.2s' }}>— {quoteBlock.attribution}</p>
+          )}
+        </div>
+      );
+    }
+
     return (
-      <div className="relative w-full h-full flex flex-col items-center justify-center p-10 text-center" style={{ background: P.cream }}>
-        <div className="text-6xl font-serif leading-none mb-4" style={{ color: P.gold, opacity: 0.3 }}>“</div>
-        <p className="font-serif text-lg sm:text-xl leading-relaxed ppc-rise" style={{ color: P.navy }}>
-          {quoteBlock.text || 'A pull quote will appear here.'}
-        </p>
-        {quoteBlock.attribution && (
-          <p className="text-xs mt-6 ppc-rise" style={{ color: P.copper, animationDelay: '0.2s' }}>— {quoteBlock.attribution}</p>
-        )}
+      <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
+        <div className="flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+          <div className="px-6 pb-6 pt-7 sm:px-8">
+            {kicker?.text && (
+              <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.4em]" style={{ color: P.copper }}>{kicker.text}</p>
+            )}
+            <div className="font-serif text-5xl leading-none mb-3" style={{ color: P.gold, opacity: 0.32 }}>“</div>
+            <p className="font-serif text-xl leading-snug sm:text-2xl" style={{ color: P.navy }}>
+              {quoteBlock.text || 'A pull quote will appear here.'}
+            </p>
+            {quoteBlock.attribution && (
+              <p className="mt-5 text-[10px] uppercase tracking-[0.24em]" style={{ color: P.copper }}>
+                — {quoteBlock.attribution}
+              </p>
+            )}
+            <div className="my-5 h-px w-12" style={{ background: `${P.copper}66` }} />
+            {read.map((block, i) => <BlockRenderer key={i} block={block} lead={i === 0} />)}
+          </div>
+        </div>
+        <div className="flex-shrink-0 px-6 py-1 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
+          <span className="text-[10px] font-mono" style={{ color: 'rgba(30,58,90,0.3)' }}>
+            {String(pageNumber).padStart(2, '0')} <span style={{ opacity: 0.5 }}>/ {String(totalPages).padStart(2, '0')}</span>
+          </span>
+        </div>
       </div>
     );
   }
 
-  // Feature spread (full-bleed image with text)
+  // The face page of a spread: the portrait to the trim, her standing and name over it.
   if (page.layout_type === 'feature_spread') {
     return (
-      <div className="relative w-full h-full overflow-hidden">
-        {bg && <img src={bg} alt="" className="absolute inset-0 w-full h-full object-cover" />}
-        <div className="absolute inset-0 flex flex-col justify-end p-6" style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(7,15,31,0.85) 100%)' }}>
-          {blocks.filter((b) => b.type === 'heading').map((b, i) => (
-            <h2 key={i} className="font-serif text-lg leading-tight mb-2" style={{ color: P.cream }}>{b.text}</h2>
-          ))}
-          {blocks.filter((b) => b.type === 'body').slice(0, 1).map((b, i) => (
-            <p key={i} className="text-xs leading-relaxed line-clamp-3" style={{ color: 'rgba(250,248,245,0.8)' }}>{b.text}</p>
-          ))}
-        </div>
-      </div>
+      <FaceSpread
+        blocks={blocks}
+        imageUrl={bg}
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+      />
     );
   }
 
@@ -266,7 +306,14 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
         <div className="flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
           {image?.url ? (
             <figure className="relative">
-              <img src={image.url} alt={heading?.text || ''} className="w-full h-60 sm:h-80 object-cover" style={PORTRAIT_FOCUS} />
+              {/* The crop steps from side to side down the run, so a wall of portraits
+                  never reads as the same photograph a hundred times over. */}
+              <img
+                src={image.url}
+                alt={heading?.text || ''}
+                className="w-full h-60 sm:h-80 object-cover"
+                style={{ ...PORTRAIT_FOCUS, objectPosition: pageNumber % 2 ? '46% 24%' : '54% 18%' }}
+              />
               {image.caption && (
                 <figcaption
                   className="absolute bottom-0 left-0 right-0 px-4 py-2.5 text-[8.5px] font-bold uppercase tracking-[0.24em]"
@@ -300,6 +347,27 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
           </span>
         </div>
       </div>
+    );
+  }
+
+  // A plate: two faces or more held on one page, each with the standing it holds. The page
+  // carries photographs and nothing to read, so it never rolls — it is looked at.
+  // A tile is a photograph the composer gave a name and a standing to — which is how a
+  // plate is told apart from an article that happens to carry pictures.
+  const plateTiles = blocks.filter((b) => b.type === 'image' && b.text && b.attribution);
+  if (plateTiles.length >= 2) {
+    return (
+      <PortraitPlate
+        label={blocks.find((b) => b.type === 'kicker')?.text}
+        tiles={plateTiles.map((tile) => ({
+          url: tile.url,
+          name: tile.text,
+          line: tile.caption,
+          standing: tile.attribution,
+        }))}
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+      />
     );
   }
 

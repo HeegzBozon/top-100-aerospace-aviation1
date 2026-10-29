@@ -20,7 +20,7 @@ export default function GlassNameIndexTools({ order, onOrder, query, onQuery }) 
           type="search"
           value={query}
           onChange={(e) => onQuery(e.target.value)}
-          placeholder="Search names, regions"
+          placeholder="Search names, standing"
           aria-label="Search the index of names"
           className="min-w-0 flex-1 bg-transparent outline-none placeholder:opacity-50"
           style={{ color: P.navy }}
