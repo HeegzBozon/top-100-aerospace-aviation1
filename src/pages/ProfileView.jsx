@@ -28,6 +28,7 @@ import IdentitySlide from '@/components/profile-deck/slides/IdentitySlide';
 import VerificationSlide from '@/components/profile-deck/slides/VerificationSlide';
 import BlurbSlide from '@/components/profile-deck/slides/BlurbSlide';
 import DocumentsSlide from '@/components/profile-deck/slides/DocumentsSlide';
+import AvailabilitySlide from '@/components/profile-deck/slides/AvailabilitySlide';
 import EightSlide from '@/components/profile-deck/slides/EightSlide';
 import FlightographySlide from '@/components/profile-deck/slides/FlightographySlide';
 import ConferencesSlide from '@/components/profile-deck/slides/ConferencesSlide';
@@ -206,6 +207,11 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onR
                 break;
             case 'documents':
                 entry = { key, label: 'Documents', content: <DocumentsSlide user={user} accent={ownerAccent} /> };
+                break;
+            case 'availability':
+                entry = { key, label: 'Availability', content: (
+                    <AvailabilitySlide user={user} nominee={nominee} accent={ownerAccent} />
+                )};
                 break;
             case 'eight':
                 // Respect the Fellow's visibility toggle — hidden lists never render publicly.

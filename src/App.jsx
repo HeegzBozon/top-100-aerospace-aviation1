@@ -98,6 +98,7 @@ const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
 const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
+const CareerCopilot = lazy(() => import('@/pages/CareerCopilot'));
 
 
 // Every surface is an application the machine runs: the shell draws the chrome and
@@ -262,6 +263,9 @@ const AuthenticatedApp = () => {
        <Route path="/profiles/:id" element={<ProfileView />} />
        <Route path="/editions/:id" element={<FellowEdition />} />
        <Route path="/platform-board" element={<PlatformDevelopmentBoard />} />
+      {/* The Career Copilot: a goal-specific pitch composed from the Fellow's own
+          record, reviewed and approved before anything is applied. */}
+      <Route path="/career-copilot" element={<CareerCopilot />} />
       <Route path="/meetups" element={<Meetups />} />
       <Route path="/meetups/:eventId" element={<MeetupInvite />} />
 

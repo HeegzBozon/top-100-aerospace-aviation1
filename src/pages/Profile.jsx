@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { BadgeCheck, BookOpen, Camera, Download, Loader2, Settings2, LayoutGrid } from 'lucide-react';
+import { BadgeCheck, BookOpen, Camera, Download, Loader2, Settings2, LayoutGrid, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import useGlass from '@/hooks/useGlass';
@@ -420,6 +420,9 @@ export default function Profile() {
       <button onClick={() => setPresentationOpen(true)} className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
         <Settings2 className="w-3 h-3" /> Presentation
       </button>
+      <Link to="/career-copilot" className="text-xs font-semibold uppercase tracking-[0.14em] hover:opacity-70 transition-opacity flex items-center gap-1.5" style={{ color: B.navy }}>
+        <Sparkles className="w-3 h-3" /> Career Copilot
+      </Link>
       <button
         onClick={handleExportData}
         disabled={exporting}
