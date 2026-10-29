@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import { registerFaceKeys } from '@/components/handheld/handheldKeys';
+import { buildHonoreeYearIndex, honoreeYears } from '@/components/voting/honoreeYears';
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
 import VoteMechanicsPopover from '@/components/voting/VoteMechanicsPopover';
 import VoterGuide from '@/components/voting/VoterGuide';
@@ -42,6 +43,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const [loading, setLoading] = useState(true);
   const [pool, setPool] = useState([]);
   const [season, setSeason] = useState(null);
+  // Closed volumes, mapped to the year they are remembered by: what makes a candidate
+  // on the card a returning honoree rather than a first-time nominee.
+  const [honoreeIndex, setHonoreeIndex] = useState(() => new Map());
   const [currentSet, setCurrentSet] = useState([]);
   const [seenIds, setSeenIds] = useState([]);
   const [phase, setPhase] = useState('best'); // best | worst | submitting | success
@@ -94,8 +98,10 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         // A caller that has already resolved the cohort counting right now hands it in,
         // so the ballot never guesses at a season the window has closed.
         let activeSeason = resolvedSeason;
+        // The whole calendar is read either way: the closed volumes are what the cards
+        // read a returning honoree from.
+        const seasons = await base44.entities.Season.list('-created_date', 100);
         if (!activeSeason) {
-          const seasons = await base44.entities.Season.list('-created_date', 100);
           activeSeason =
             seasons.find((s) => s.status === 'voting_open') ||
             seasons.find((s) => s.status === 'nominations_open') ||
@@ -133,6 +139,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           return activeSeason && n.season_id === activeSeason.id && VOTABLE.includes(n.status);
         });
         if (!active) return;
+        setHonoreeIndex(buildHonoreeYearIndex(seasons, activeSeason.id));
         setSeason(activeSeason);
         setPool(prepared);
         if (prepared.length >= 4) setCurrentSet(drawSet(prepared, []));
@@ -443,6 +450,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 token={token}
                 isTop={isTop}
                 isBottom={isBottom}
+                honoreeYears={honoreeYears(nominee, honoreeIndex)}
                 selectable={selectable && !reading && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
