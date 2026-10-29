@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { BadgeCheck, CalendarClock, FileText, Loader2, Mail, Newspaper, Settings2 } from 'lucide-react';
+import { CalendarClock, FileText, FolderOpen, Loader2, Mail, Settings2 } from 'lucide-react';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import useGlass from '@/hooks/useGlass';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
@@ -10,9 +10,9 @@ import InquiryDeskPanel from '@/components/profile/intent/InquiryDeskPanel';
 import GlassConsole from '@/components/handheld/GlassConsole';
 import ProfileHero from '@/components/profile/essentials/ProfileHero';
 import ProfileVerification from '@/components/profile/essentials/ProfileVerification';
-import ProfileBio from '@/components/profile/essentials/ProfileBio';
-import ProfileResume from '@/components/profile/essentials/ProfileResume';
 import ProfileDossierRight from '@/components/profile/essentials/ProfileDossierRight';
+import ProfileDossier from '@/components/profile/dossier/ProfileDossier';
+import PortfolioPanel from '@/components/profile/dossier/PortfolioPanel';
 import ProfileAccountRow from '@/components/profile/essentials/ProfileAccountRow';
 import { B, accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
 import { preferredNominee, mergedIntoId } from '@/lib/nomineeMerge';
@@ -127,6 +127,22 @@ export default function Profile() {
     }
   };
 
+  // One line of the dossier, written where it is read. The account carries the
+  // Fellow's own words, and the two the public record reads — the story and the bio —
+  // are mirrored onto the canonical record so both surfaces say the same thing.
+  const saveDossierField = async (field, value) => {
+    await base44.auth.updateMe({ [field]: value });
+    setUser((u) => ({ ...u, [field]: value }));
+    if (nominee?.id && (field === 'bio' || field === 'six_word_story')) {
+      await base44.entities.Nominee.update(nominee.id, { [field]: value });
+      setNominee((n) => ({ ...n, [field]: value }));
+    }
+    if (field === 'six_word_story') {
+      await saveProfileSettings({ six_word_story: value });
+      setSettings((s) => ({ ...s, six_word_story: value }));
+    }
+  };
+
   // Slide deck configuration — slide order, hidden slides, autoplay behavior.
   // Expression only; locked positions enforced client-side via resolveSlideOrder.
   const saveSlideConfig = async (patch) => {
@@ -192,29 +208,34 @@ export default function Profile() {
       <ProfileVerification nominee={nominee} claimStatus={nominee?.claim_status} />
       <div className="grid grid-cols-1 gap-10 px-6 pt-10 lg:grid-cols-[2fr_1fr] lg:gap-20 lg:px-40 lg:pt-[40px]">
         <div>
-          <ProfileBio nominee={nominee} />
-          <ProfileResume nominee={nominee} />
+          <ProfileDossier
+            user={user}
+            nominee={nominee}
+            settings={settings}
+            accent={accent}
+            saving={saving}
+            saveError={saveError}
+            onSaveField={saveDossierField}
+            onSaveSettings={savePersonalization}
+            onOpenStudio={() => setWizard([])}
+          />
         </div>
         <ProfileDossierRight nominee={nominee} />
       </div>
     </>
   );
 
-  /* The two member surfaces the record carries: what the Fellow is open to, and who
-     has written to them. Neither is scored, ordered, or featured. */
-  const coverStory = (
+  /* Portfolio: the documents the Fellow brings, held on the account so they are
+     uploaded once and reused everywhere the platform needs them. */
+  const portfolio = (
     <section className="pd-sec">
-      <h2 className="pd-label mb-6">Cover story</h2>
-      <IntentStudioPanel
-        part="pitch"
-        settings={settings}
-        accent={accent}
-        onSave={savePersonalization}
-        saving={saving}
-        error={saveError}
-      />
+      <h2 className="pd-label mb-6">Portfolio</h2>
+      <PortfolioPanel user={user} accent={accent} onUserUpdate={setUser} />
     </section>
   );
+
+  /* The two member surfaces the record carries: what the Fellow is open to, and who
+     has written to them. Neither is scored, ordered, or featured. */
 
   const availability = (
     <section className="pd-sec">
@@ -248,38 +269,20 @@ export default function Profile() {
 
   const panels = [
     {
-      key: 'bio',
-      label: 'Bio',
-      hint: 'Your photo, name and verification',
-      icon: BadgeCheck,
+      key: 'dossier',
+      label: 'Dossier',
+      hint: 'Your record, edited in place',
+      icon: FileText,
       node: record,
     },
     {
-      key: 'resume',
-      label: 'Resume',
-      hint: 'Work history, study and skills',
-      icon: FileText,
+      key: 'portfolio',
+      label: 'Portfolio',
+      hint: 'Resume, cover letter and links',
+      icon: FolderOpen,
       node: (
         <div className="px-6 pt-3">
-          <ProfileResume nominee={nominee} />
-        </div>
-      ),
-    },
-    {
-      key: 'cover',
-      label: 'Cover story',
-      hint: 'What you want next',
-      icon: Newspaper,
-      node: (
-        <div className="px-3 pt-3">
-          <IntentStudioPanel
-            part="pitch"
-            settings={settings}
-            accent={accent}
-            onSave={savePersonalization}
-            saving={saving}
-            error={saveError}
-          />
+          <PortfolioPanel user={user} accent={accent} onUserUpdate={setUser} />
         </div>
       ),
     },
@@ -334,7 +337,7 @@ export default function Profile() {
         <>
           {record}
           <div className="px-6 lg:px-40">
-            {coverStory}
+            {portfolio}
             {availability}
             {inbox}
           </div>

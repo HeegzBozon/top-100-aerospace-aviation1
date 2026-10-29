@@ -10,7 +10,7 @@ const PORTRAIT =
 
 export default function ProfileHero({ user, nominee, settings, verificationLabel }) {
   const name = nominee?.name || user?.full_name || 'Your record';
-  const role = nominee?.title || nominee?.professional_role || '';
+  const role = user?.headline || nominee?.title || nominee?.professional_role || '';
   const org = nominee?.company || nominee?.organization || '';
   const place = nominee?.country || nominee?.location || '';
   const portrait = nominee?.avatar_url || nominee?.photo_url || PORTRAIT;

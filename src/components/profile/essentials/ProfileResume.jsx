@@ -29,12 +29,12 @@ const Entry = ({ plate, title, line, note }) => (
   </div>
 );
 
-export default function ProfileResume({ nominee }) {
+export default function ProfileResume({ nominee, bare = false }) {
   const career = Array.isArray(nominee?.career_history) ? nominee.career_history : [];
   const education = Array.isArray(nominee?.education) ? nominee.education : [];
 
-  return (
-    <DossierSection label="Resume" delay={0.55}>
+  const body = (
+    <>
       <h3 className="pd-label mb-5">Experience</h3>
       {career.length === 0 && <DossierEmpty>No work history yet.</DossierEmpty>}
       {career.map((entry, index) => (
@@ -57,6 +57,10 @@ export default function ProfileResume({ nominee }) {
           line={[entry.degree, entry.field_of_study].filter(Boolean).join(' · ')}
         />
       ))}
-    </DossierSection>
+    </>
   );
+
+  // Inside the Dossier the resume reads as one part of a longer column, so it is
+  // rendered bare; on its own it keeps its own ruled heading.
+  return bare ? body : <DossierSection label="Resume" delay={0.55}>{body}</DossierSection>;
 }
