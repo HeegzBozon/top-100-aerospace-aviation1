@@ -305,7 +305,9 @@ export function editionSectionBlocks(nominees = []) {
   );
 }
 
-// The regions the index is read in, largest first, with a country the platform's own
+const rankOf = (nominee) => (Number.isFinite(nominee?.finalRank) ? nominee.finalRank : Number.MAX_SAFE_INTEGER);
+
+// The regions the index is read in, by the standing of the best-placed name in each, with a country the platform's own
 // map does not carry reported as such rather than guessed at.
 export function regionPackages(nominees = []) {
   const byRegion = new Map();
@@ -325,9 +327,12 @@ export function regionPackages(nominees = []) {
         line: `${plural(names.length, 'name')} · ${plural(countries.length, 'country')}`,
       };
     })
+    .map((pkg) => ({ ...pkg, names: [...pkg.names].sort((a, b) => rankOf(a) - rankOf(b)) }))
     .sort((a, b) => {
+      // The region holding the edition's highest-standing name opens the index, then the
+      // next, and so on; a country the map does not carry closes it.
       const beyond = (pkg) => (pkg.region === 'Beyond the Map' ? 1 : 0);
-      return beyond(a) - beyond(b) || b.names.length - a.names.length || a.region.localeCompare(b.region);
+      return beyond(a) - beyond(b) || rankOf(a.names[0]) - rankOf(b.names[0]) || a.region.localeCompare(b.region);
     });
 }
 

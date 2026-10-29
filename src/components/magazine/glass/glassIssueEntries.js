@@ -39,7 +39,7 @@ export function buildIssueContents(pages = []) {
 // The register behind the issue: every honoree in it, numbered in the order she stands in
 // the book, with the letter her surname falls under and the folio her portrait prints. Read
 // from the portraits themselves, so a register can never disagree with the issue it indexes.
-export function buildNameIndex(pages = [], articles = []) {
+export function buildNameIndex(pages = [], articles = [], rankById = null) {
   const entries = [];
   // The issue's portraits and its articles are one honoree twice over: the page carries the
   // picture and the stand, the article carries the record she came from. The register needs
@@ -68,6 +68,7 @@ export function buildNameIndex(pages = [], articles = []) {
       stand: blocks.find((block) => block.type === 'byline' && block.text)?.text || article?.subtitle || '',
       portrait: blocks.find((block) => block.type === 'image' && block.url)?.url || article?.hero_image_url || '',
       nomineeId: article?.nominee_id || '',
+      rank: rankById?.get(article?.nominee_id) ?? null,
       pageNumber: page.page_number || index + 1,
       position: index + 1,
     });

@@ -9,6 +9,7 @@ import GlassNameIndex from '@/components/magazine/glass/GlassNameIndex';
 import useIssueEditMenu from '@/components/magazine/glass/useIssueEditMenu';
 import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
 
+import { loadEditionNominees } from '@/components/publication/useTop100WomenNominees';
 import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
 import { clearIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
 
@@ -30,7 +31,9 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   const isPdf = issue.assembly_mode === 'pdf';
   const total = isPdf ? (issue.cover_pdf_page_count || 0) : pages.length;
 
-  const [view, setView] = useState('contents');
+  // Play as film arrives with the film already running, so it opens on the page rather
+  // than on the contents.
+  const [view, setView] = useState(() => (isPlaying ? 'page' : 'contents'));
   const [position, setPosition] = useState(1);
   const [cursor, setCursor] = useState(0);
 
@@ -48,7 +51,24 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
 
   // The register of names: the issue's own honorees, numbered as they stand in it, read
   // from the portraits the issue already carries.
-  const nameIndex = useMemo(() => (isPdf ? [] : buildNameIndex(pages, articles)), [isPdf, pages, articles]);
+  // Each name's standing in the edition comes from the same resolved edition the issue
+  // was bound from, so the register's order is the edition's order.
+  const [rankById, setRankById] = useState(null);
+  useEffect(() => {
+    if (isPdf) return undefined;
+    let alive = true;
+    loadEditionNominees()
+      .then((nominees) => {
+        if (alive) setRankById(new Map(nominees.map((nominee) => [nominee.id, nominee.finalRank])));
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [isPdf]);
+
+  const nameIndex = useMemo(
+    () => (isPdf ? [] : buildNameIndex(pages, articles, rankById)),
+    [isPdf, pages, articles, rankById],
+  );
 
   // Read again opens the issue at its front with this reader's pass on it wiped, so the
   // title screen reads Start again rather than the pass just finished.
