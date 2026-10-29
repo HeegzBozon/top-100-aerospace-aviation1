@@ -14,7 +14,7 @@ export default function ProfileAccountRow({ onOpenStudio, onOpenPresentation, on
         <Settings2 className="h-3.5 w-3.5" /> Presentation
       </button>
       <button type="button" onClick={onOpenStudio} className="pd-acct-link">
-        <PenLine className="h-3.5 w-3.5" /> Update record
+        <PenLine className="h-3.5 w-3.5" /> Edit profile
       </button>
       <button type="button" onClick={onExport} disabled={exporting} className="pd-acct-link">
         {exporting ? (

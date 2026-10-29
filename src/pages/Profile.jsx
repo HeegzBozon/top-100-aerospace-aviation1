@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { BadgeCheck, DoorOpen, Loader2, Mail, Settings2 } from 'lucide-react';
+import { BadgeCheck, FileText, Loader2, Mail, Newspaper, Settings2 } from 'lucide-react';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import useGlass from '@/hooks/useGlass';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
@@ -10,7 +10,8 @@ import InquiryDeskPanel from '@/components/profile/intent/InquiryDeskPanel';
 import GlassConsole from '@/components/handheld/GlassConsole';
 import ProfileHero from '@/components/profile/essentials/ProfileHero';
 import ProfileVerification from '@/components/profile/essentials/ProfileVerification';
-import ProfileDossierLeft from '@/components/profile/essentials/ProfileDossierLeft';
+import ProfileBio from '@/components/profile/essentials/ProfileBio';
+import ProfileResume from '@/components/profile/essentials/ProfileResume';
 import ProfileDossierRight from '@/components/profile/essentials/ProfileDossierRight';
 import ProfileAccountRow from '@/components/profile/essentials/ProfileAccountRow';
 import { B, accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
@@ -190,29 +191,35 @@ export default function Profile() {
       />
       <ProfileVerification nominee={nominee} claimStatus={nominee?.claim_status} />
       <div className="grid grid-cols-1 gap-10 px-6 pt-10 lg:grid-cols-[2fr_1fr] lg:gap-20 lg:px-40 lg:pt-[40px]">
-        <ProfileDossierLeft nominee={nominee} />
+        <div>
+          <ProfileBio nominee={nominee} />
+          <ProfileResume nominee={nominee} />
+        </div>
         <ProfileDossierRight nominee={nominee} />
       </div>
-
-      {/* The two member surfaces the record carries: what the Fellow is open to,
-          and who has written to them. Neither is scored, ordered, or featured. */}
-      <div className="px-6 lg:px-40">
-        <section className="pd-sec">
-          <h2 className="pd-label mb-6">Availability</h2>
-          <IntentStudioPanel
-            settings={settings}
-            accent={accent}
-            onSave={savePersonalization}
-            saving={saving}
-            error={saveError}
-          />
-        </section>
-        <section className="pd-sec">
-          <h2 className="pd-label mb-6">Enquiries</h2>
-          <InquiryDeskPanel user={user} accent={accent} />
-        </section>
-      </div>
     </>
+  );
+
+  /* The two member surfaces the record carries: what the Fellow is open to, and who
+     has written to them. Neither is scored, ordered, or featured. */
+  const coverStory = (
+    <section className="pd-sec">
+      <h2 className="pd-label mb-6">Cover story</h2>
+      <IntentStudioPanel
+        settings={settings}
+        accent={accent}
+        onSave={savePersonalization}
+        saving={saving}
+        error={saveError}
+      />
+    </section>
+  );
+
+  const inbox = (
+    <section className="pd-sec">
+      <h2 className="pd-label mb-6">Inbox</h2>
+      <InquiryDeskPanel user={user} accent={accent} />
+    </section>
   );
 
   const accountRow = (
@@ -226,17 +233,28 @@ export default function Profile() {
 
   const panels = [
     {
-      key: 'record',
-      label: 'Record',
-      hint: 'Masthead, verification and the dossier',
+      key: 'bio',
+      label: 'Bio',
+      hint: 'Your photo, name and verification',
       icon: BadgeCheck,
       node: record,
     },
     {
-      key: 'door',
-      label: 'The Door',
+      key: 'resume',
+      label: 'Resume',
+      hint: 'Work history, study and skills',
+      icon: FileText,
+      node: (
+        <div className="px-6 pt-3">
+          <ProfileResume nominee={nominee} />
+        </div>
+      ),
+    },
+    {
+      key: 'cover',
+      label: 'Cover story',
       hint: 'What you are open to',
-      icon: DoorOpen,
+      icon: Newspaper,
       node: (
         <div className="px-3 pt-3">
           <IntentStudioPanel
@@ -250,8 +268,8 @@ export default function Profile() {
       ),
     },
     {
-      key: 'desk',
-      label: 'The Desk',
+      key: 'inbox',
+      label: 'Inbox',
       hint: 'Who has written to you',
       icon: Mail,
       node: (
@@ -263,7 +281,7 @@ export default function Profile() {
     {
       key: 'account',
       label: 'Account',
-      hint: 'Presentation and your data',
+      hint: 'Settings and your data',
       icon: Settings2,
       node: accountRow,
     },
@@ -281,6 +299,10 @@ export default function Profile() {
       ) : (
         <>
           {record}
+          <div className="px-6 lg:px-40">
+            {coverStory}
+            {inbox}
+          </div>
           {accountRow}
         </>
       )}

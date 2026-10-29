@@ -1,14 +1,11 @@
 import { Globe, Instagram, Linkedin, Youtube } from 'lucide-react';
 import DossierSection from './DossierSection';
+import DossierEmpty from './DossierEmpty';
 
 // The right column: the plate image, then the shorter facts — competencies,
 // affiliations, and the keys out to where the Fellow publishes.
 const PLATE =
   'https://media.base44.com/images/public/68996845be6727838fdb822e/6611efc20_generated_78a71ceb.jpg';
-
-const Empty = ({ children }) => (
-  <p className="font-body text-sm italic text-editorial-navy/50">{children}</p>
-);
 
 export default function ProfileDossierRight({ nominee }) {
   const skills = Array.isArray(nominee?.skills) ? nominee.skills.filter(Boolean) : [];
@@ -32,9 +29,9 @@ export default function ProfileDossierRight({ nominee }) {
         className="pd-pic mb-14 h-[240px] w-full object-cover lg:h-[340px]"
       />
 
-      <DossierSection label="Competencies" delay={0.55}>
+      <DossierSection label="Skills" delay={0.55}>
         {skills.length === 0 ? (
-          <Empty>No competencies listed yet.</Empty>
+          <DossierEmpty>No skills listed yet.</DossierEmpty>
         ) : (
           <div className="flex flex-wrap gap-3.5">
             {skills.map((skill) => (
@@ -46,9 +43,9 @@ export default function ProfileDossierRight({ nominee }) {
         )}
       </DossierSection>
 
-      <DossierSection label="Affiliations" delay={0.7}>
+      <DossierSection label="Memberships" delay={0.7}>
         {affiliations.length === 0 ? (
-          <Empty>No affiliations on record yet.</Empty>
+          <DossierEmpty>No memberships on record yet.</DossierEmpty>
         ) : (
           <ul className="space-y-3">
             {affiliations.map((item) => (
@@ -65,7 +62,7 @@ export default function ProfileDossierRight({ nominee }) {
 
       <DossierSection label="Links" delay={0.85}>
         {keys.length === 0 ? (
-          <Empty>No links on record yet.</Empty>
+          <DossierEmpty>No links on record yet.</DossierEmpty>
         ) : (
           <div className="flex gap-[18px]">
             {keys.map(({ href, label, Icon }) => (
