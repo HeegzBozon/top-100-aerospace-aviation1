@@ -13,12 +13,14 @@ import { accentValue, accentForDiscipline } from '@/components/fellow-home/fello
 import { enabledModes, MODES } from '@/components/profile/intent/intentConfig';
 import InquirySheet from '@/components/profile/intent/InquirySheet';
 import { exportProfileDossier } from '@/lib/profileDossier';
-import PublicProfileHero from '@/components/profile/public/PublicProfileHero';
-import CredentialBand from '@/components/profile/public/CredentialBand';
-import PublicProfileBody from '@/components/profile/public/PublicProfileBody';
-import DocumentaryModeSwitch from '@/components/profile/documentary/DocumentaryModeSwitch';
 import DocumentaryStage from '@/components/profile/documentary/DocumentaryStage';
 import { buildDocumentary } from '@/components/profile/documentary/documentaryChapters';
+import ProfileBook from '@/components/profile/book/ProfileBook';
+import ProfileReader from '@/components/profile/book/ProfileReader';
+import ProfileBookBar from '@/components/profile/book/ProfileBookBar';
+import { buildProfileBook } from '@/components/profile/book/profileBookPages';
+import useEpisodeIntake from '@/components/episode/useEpisodeIntake';
+import EpisodeSheet from '@/components/episode/EpisodeSheet';
 
 const NAVY_DEEP = '#16293f';
 
@@ -79,8 +81,15 @@ export default function ProfileView({ userId: propUserId = null }) {
     const [inquiry, setInquiry] = useState(null);
     const openEnquiry = (mode, requestType) => setInquiry({ mode, requestType });
 
-    // Read the dossier, or watch the film. Deep-linked with ?mode=watch.
-    const [mode, setMode] = useState(() => (params.get('mode') === 'watch' ? 'watch' : 'read'));
+    // The record opens as a book. Read is the plain page reader, Watch is the
+    // documentary cut from the same record. Deep-linked with ?mode=.
+    const [mode, setMode] = useState(() => {
+        const requested = params.get('mode');
+        return ['book', 'read', 'watch'].includes(requested) ? requested : 'book';
+    });
+
+    // The Fellow's own episode, and the sheet they open it from.
+    const [episodeOpen, setEpisodeOpen] = useState(false);
 
     // Cinematic entrance — fades the navy veil out on mount.
     const [entered, setEntered] = useState(false);
@@ -117,6 +126,20 @@ export default function ProfileView({ userId: propUserId = null }) {
 
     const top100 = useMyTop100(fellowEmail);
 
+    const episode = useEpisodeIntake(fellowEmail);
+
+    // Mission Rooms declarations, read as one small page of the record rather than
+    // by mounting the whole room surface inside a page.
+    const { data: conferences } = useQuery({
+        queryKey: ['fellowConferences', fellowEmail],
+        enabled: !!fellowEmail,
+        queryFn: () =>
+            base44.entities.ConferenceRsvp
+                .filter({ fellow_email: fellowEmail }, { sort: '-declared_at', limit: 6 })
+                .then((r) => r?.items || (Array.isArray(r) ? r : []))
+                .catch(() => []),
+    });
+
     // Featured Top Viral Post — public read through a backend function so signed-out
     // visitors can see it; only the public viral-post fields are surfaced.
     const nomineeId = profiles?.nominee?.id;
@@ -150,8 +173,31 @@ export default function ProfileView({ userId: propUserId = null }) {
         [profiles, ownerSettings, top100.rankings]
     );
 
+    // The book is composed from the same record the film is cut from: identity first,
+    // the credential second, then the Fellow's own order, and the episode last. A
+    // page with nothing in it is never printed.
+    const book = useMemo(
+        () =>
+            buildProfileBook({
+                user: profiles?.user,
+                nominee: profiles?.nominee,
+                settings: ownerSettings,
+                rankings: top100.rankings,
+                featuredViral,
+                conferences,
+                episode: episode.intake,
+                accent,
+            }),
+        [profiles, ownerSettings, top100.rankings, featuredViral, conferences, episode.intake, accent]
+    );
+
     const isOwner = !!viewer?.email && !!fellowEmail && viewer.email === fellowEmail;
-    const view = mode === 'watch' && documentary.chapters.length > 0 ? 'watch' : 'read';
+    const canWatch = documentary.chapters.length > 0;
+    const view = mode === 'watch' && !canWatch ? 'book' : mode;
+    const openEpisode = isOwner ? () => setEpisodeOpen(true) : null;
+    const enquire = primaryMode
+        ? () => openEnquiry(primaryMode, primaryMode === 'hire' ? 'role_conversation' : 'introduction')
+        : null;
 
     // Profile view counts are deliberately absent: they sit on the never-implement
     // list, so this surface neither counts a visit nor stores one.
@@ -173,13 +219,22 @@ export default function ProfileView({ userId: propUserId = null }) {
                         <NomineeClaimPanel nominee={profiles.nominee} viewer={viewer} onResolved={refetchProfile} />
                     )}
 
-                    {documentary.chapters.length > 0 && (
-                        <DocumentaryModeSwitch
-                            mode={view}
-                            onChange={setMode}
-                            chapterCount={documentary.chapters.length}
-                        />
-                    )}
+                    <ProfileBookBar
+                        mode={view}
+                        onChange={setMode}
+                        pageCount={book.pages.length}
+                        canWatch={canWatch}
+                        episodeStatus={episode.intake?.status}
+                        onDossier={
+                            ownerSettings?.dossier_enabled !== false && profiles?.nominee
+                                ? () =>
+                                      exportProfileDossier({
+                                          nominee: profiles.nominee,
+                                          settings: ownerSettings,
+                                      })
+                                : null
+                        }
+                    />
 
                     {view === 'watch' ? (
                         <DocumentaryStage
@@ -194,57 +249,24 @@ export default function ProfileView({ userId: propUserId = null }) {
                                     queryKey: ['fellowProfileSettings', fellowEmail],
                                 })
                             }
-                            onSwitchToRead={() => setMode('read')}
+                            onSwitchToRead={() => setMode('book')}
                             enquiryLabel={primaryMode ? MODES[primaryMode].cta : ''}
-                            onEnquire={
-                                primaryMode
-                                    ? () =>
-                                          openEnquiry(
-                                              primaryMode,
-                                              primaryMode === 'hire' ? 'role_conversation' : 'introduction'
-                                          )
-                                    : null
-                            }
+                            onEnquire={enquire}
+                        />
+                    ) : view === 'read' ? (
+                        <ProfileReader
+                            pages={book.pages}
+                            isOwner={isOwner}
+                            onEnquire={enquire}
+                            onOpenEpisode={openEpisode}
                         />
                     ) : (
-                        <>
-                            <PublicProfileHero
-                                user={profiles.user}
-                                nominee={profiles.nominee}
-                                settings={ownerSettings}
-                                accent={accent}
-                                enquiryLabel={primaryMode ? MODES[primaryMode].cta : ''}
-                                onEnquire={
-                                    primaryMode
-                                        ? () =>
-                                              openEnquiry(
-                                                  primaryMode,
-                                                  primaryMode === 'hire'
-                                                      ? 'role_conversation'
-                                                      : 'introduction'
-                                              )
-                                        : null
-                                }
-                            />
-
-                            <CredentialBand nominee={profiles.nominee} />
-
-                            <PublicProfileBody
-                                profiles={profiles}
-                                settings={ownerSettings}
-                                accent={accent}
-                                viewer={viewer}
-                                top100={top100}
-                                featuredViral={featuredViral}
-                                onEnquire={openEnquiry}
-                                onDossier={() =>
-                                    exportProfileDossier({
-                                        nominee: profiles.nominee,
-                                        settings: ownerSettings,
-                                    })
-                                }
-                            />
-                        </>
+                        <ProfileBook
+                            pages={book.pages}
+                            isOwner={isOwner}
+                            onEnquire={enquire}
+                            onOpenEpisode={openEpisode}
+                        />
                     )}
 
                     {profiles.nominee && <ProfileNeighborsRail nominee={profiles.nominee} />}
@@ -257,6 +279,18 @@ export default function ProfileView({ userId: propUserId = null }) {
                     mode={inquiry.mode}
                     requestType={inquiry.requestType}
                     onClose={() => setInquiry(null)}
+                />
+            )}
+
+            {episodeOpen && (
+                <EpisodeSheet
+                    open={episodeOpen}
+                    onClose={() => setEpisodeOpen(false)}
+                    intake={episode.intake}
+                    fellowEmail={fellowEmail}
+                    fellowId={profiles?.nominee?.id}
+                    profileName={profiles?.nominee?.name || profiles?.user?.full_name}
+                    onSaved={episode.reload}
                 />
             )}
         </div>

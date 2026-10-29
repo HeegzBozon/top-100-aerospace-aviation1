@@ -1622,3 +1622,56 @@ button:focus-visible {
     animation: none;
   }
 }
+
+/* ===== THE FELLOW'S BOOK =====
+   The public record, held as a book. Pages are composed at one design size and
+   scaled to whatever the spread gives them, so type stays vector-sharp and the
+   rhythm of a cover, a credential and a portrait is identical page to page. The
+   only movement is the sheet being turned: nothing here animates on its own. */
+.pb-page {
+  background-color: #faf8f5;
+  /* A faint laid-paper tooth. It reads as stock at close range and disappears at
+     any distance, so the page never looks printed with a pattern. */
+  background-image: radial-gradient(rgba(30, 58, 90, 0.035) 0.5px, transparent 0.6px);
+  background-size: 4px 4px;
+}
+
+.pb-leaf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(112deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 248, 245, 0) 42%),
+    linear-gradient(140deg, #fbf7f0 0%, #faf8f5 48%, #efe4d3 100%);
+  box-shadow: 0 24px 50px -24px rgba(3, 8, 15, 0.85);
+  backface-visibility: hidden;
+}
+
+.pb-leaf-next {
+  transform-origin: left center;
+  animation: pb-leaf-next 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes pb-leaf-next {
+  0% { transform: rotateY(0deg); opacity: 1; }
+  55% { opacity: 0.95; }
+  100% { transform: rotateY(-104deg); opacity: 0; }
+}
+
+.pb-leaf-prev {
+  transform-origin: right center;
+  animation: pb-leaf-prev 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes pb-leaf-prev {
+  0% { transform: rotateY(0deg); opacity: 1; }
+  55% { opacity: 0.95; }
+  100% { transform: rotateY(104deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-leaf-next,
+  .pb-leaf-prev {
+    animation: none;
+    opacity: 0;
+  }
+}
