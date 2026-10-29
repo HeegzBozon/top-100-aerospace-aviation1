@@ -189,7 +189,10 @@ export default function ProfileBook({ pages, isOwner, onEnquire, onOpenEpisode }
               <div
                 aria-hidden="true"
                 className={`pb-leaf pb-leaf-${turning}`}
-                style={{ width: view.length > 1 ? dims.pageW : '100%' }}
+                style={{
+                  left: turning === 'next' && view.length > 1 ? dims.pageW : 0,
+                  width: view.length > 1 ? dims.pageW : '100%',
+                }}
               />
             )}
           </div>
