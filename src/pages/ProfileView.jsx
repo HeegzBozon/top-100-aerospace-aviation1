@@ -37,6 +37,10 @@ import SlideErrorBoundary from '@/components/profile-deck/SlideErrorBoundary';
 import NomineeClaimPanel from '@/components/claim/NomineeClaimPanel';
 import useProfileSeo from '@/components/profile/useProfileSeo';
 import ProfileNeighborsRail from '@/components/profile/ProfileNeighborsRail';
+import OpportunitySlide from '@/components/profile/intent/OpportunitySlide';
+import InquirySheet from '@/components/profile/intent/InquirySheet';
+import { hasIntent, enabledModes, MODES } from '@/components/profile/intent/intentConfig';
+import { exportProfileDossier } from '@/lib/profileDossier';
 
 const B = {
     navyDeep: '#16293f',
@@ -183,6 +187,9 @@ export default function ProfileView({ userId: propUserId = null }) {
 function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onResolved, featuredViral }) {
     const { user, nominee } = profiles;
     const fellowEmail = user?.email || nominee?.nominee_email;
+    // The door a visitor is writing through: null is closed, an object is the sheet.
+    const [inquiry, setInquiry] = useState(null);
+    const openEnquiry = (mode, requestType) => setInquiry({ mode, requestType });
 
     // Resolve the Fellow's configured slide order. Locked positions 1 and 2
     // (identity, verification) are always present; hidden slides are excluded.
@@ -239,6 +246,34 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onR
         return { ...entry, content: <SlideErrorBoundary label={entry.label}>{entry.content}</SlideErrorBoundary> };
     }).filter(Boolean);
 
+    // The opportunity spread sits directly behind the credential: identity, then
+    // verification, then the offer itself. It is the conversion module of the deck,
+    // so it is placed rather than configured — a visitor meets the offer before the
+    // record unfolds, and the Fellow's own slide order still governs everything after.
+    const intentOpen = hasIntent(ownerSettings);
+    const primaryMode = enabledModes(ownerSettings)[0];
+    const slidesWithOffer = intentOpen
+        ? [
+              ...slides.slice(0, 2),
+              {
+                  key: 'opportunity',
+                  label: 'Opportunity',
+                  content: (
+                      <SlideErrorBoundary label="Opportunity">
+                          <OpportunitySlide
+                              nominee={nominee}
+                              settings={ownerSettings}
+                              accent={ownerAccent}
+                              onEnquire={openEnquiry}
+                              onDossier={() => exportProfileDossier({ nominee, settings: ownerSettings })}
+                          />
+                      </SlideErrorBoundary>
+                  ),
+              },
+              ...slides.slice(2),
+          ]
+        : slides;
+
     return (
         <div className="min-h-screen" style={{ background: B.navyDeep }}>
             {nominee && (
@@ -251,11 +286,33 @@ function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onR
             {featuredViral && (
                 <ViralPostSlide user={featuredViral} accent={ownerAccent} />
             )}
-            <ProfileDeck slides={slides} settings={ownerSettings} accent={ownerAccent} />
+            <ProfileDeck
+                slides={slidesWithOffer}
+                settings={ownerSettings}
+                accent={ownerAccent}
+                enquire={
+                    intentOpen
+                        ? {
+                              label: MODES[primaryMode]?.cta || 'Enquire',
+                              onClick: () =>
+                                  openEnquiry(primaryMode, primaryMode === 'hire' ? 'role_conversation' : 'introduction'),
+                          }
+                        : null
+                }
+            />
 
             {/* Internal-linking rail — indexable <a> links between profile pages,
                 scoped to the same discipline for topical clustering. */}
             {nominee && <ProfileNeighborsRail nominee={nominee} />}
+
+            {inquiry && nominee && (
+                <InquirySheet
+                    nominee={nominee}
+                    mode={inquiry.mode}
+                    requestType={inquiry.requestType}
+                    onClose={() => setInquiry(null)}
+                />
+            )}
         </div>
     );
 }
