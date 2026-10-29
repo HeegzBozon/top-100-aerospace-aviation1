@@ -5,12 +5,14 @@ import ResearchStatsCard from '@/components/profile/ResearchStatsCard';
 import FlightographyAttendance from './FlightographyAttendance';
 
 // The credential. Foundation, not headline — renders below the fold.
-export default function FlightographyModule({ nominee, user, accent, onNomineeUpdate, onUserUpdate }) {
+export default function FlightographyModule({ nominee, user, accent, onNomineeUpdate, onUserUpdate, hideLabel = false }) {
   return (
     <section className="space-y-4">
-      <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: accent }}>
-        Flightography
-      </p>
+      {!hideLabel && (
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: accent }}>
+          Flightography
+        </p>
+      )}
 
       {!nominee ? (
         <div className="rounded-2xl px-5 py-6" style={{ background: '#fff', border: `1px dashed ${B.border}` }}>

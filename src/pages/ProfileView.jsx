@@ -3,93 +3,62 @@ import { useLocation, useParams, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useProfileResolution } from '@/hooks/useProfileResolution';
-import { Crown, Briefcase, Building, Linkedin, Trophy, Globe, Award, Quote, Pencil } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
+import { Trophy, ArrowUpRight } from 'lucide-react';
 
-import NomineeCareerHistorySection from '@/components/profile/NomineeCareerHistorySection';
-import NomineeContributionsSection from '@/components/profile/NomineeContributionsSection';
-import NomineeNewsSection from '@/components/profile/NomineeNewsSection';
-import StartupPitch from '@/components/profile/StartupPitch';
-import ProviderServicesList from '@/components/profile/ProviderServicesList';
-import ShareableProfileCard from '@/components/profile/ShareableProfileCard';
-import ProfileSocialLinks from '@/components/profile/ProfileSocialLinks';
-import ProfileExpertiseTags from '@/components/profile/ProfileExpertiseTags';
-import LaurelAvatar from '@/components/profile/LaurelAvatar';
-import EndorsementWall from '@/components/fellow-home/EndorsementWall';
-import useEndorsementWall from '@/components/fellow-home/useEndorsementWall';
-import ConnectButton from '@/components/fellow-home/ConnectButton';
-import FollowButton from '@/components/fellow-home/FollowButton';
-import { accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
-import { statusByKey } from '@/components/fellow-home/fellowStatuses';
-import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
-import ProfileDeck from '@/components/profile-deck/ProfileDeck';
-import IdentitySlide from '@/components/profile-deck/slides/IdentitySlide';
-import VerificationSlide from '@/components/profile-deck/slides/VerificationSlide';
-import BlurbSlide from '@/components/profile-deck/slides/BlurbSlide';
-import DocumentsSlide from '@/components/profile-deck/slides/DocumentsSlide';
-import EightSlide from '@/components/profile-deck/slides/EightSlide';
-import FlightographySlide from '@/components/profile-deck/slides/FlightographySlide';
-import ConferencesSlide from '@/components/profile-deck/slides/ConferencesSlide';
-import ViralPostSlide from '@/components/profile-deck/slides/ViralPostSlide';
-import { resolveSlideOrder } from '@/components/profile-deck/slideDeckConfig';
-import SlideErrorBoundary from '@/components/profile-deck/SlideErrorBoundary';
 import NomineeClaimPanel from '@/components/claim/NomineeClaimPanel';
-import useProfileSeo from '@/components/profile/useProfileSeo';
 import ProfileNeighborsRail from '@/components/profile/ProfileNeighborsRail';
-import OpportunitySlide from '@/components/profile/intent/OpportunitySlide';
+import useProfileSeo from '@/components/profile/useProfileSeo';
+import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
+import { accentValue, accentForDiscipline } from '@/components/fellow-home/fellowHomeConfig';
+import { enabledModes, MODES } from '@/components/profile/intent/intentConfig';
 import InquirySheet from '@/components/profile/intent/InquirySheet';
-import { hasIntent, enabledModes, MODES } from '@/components/profile/intent/intentConfig';
 import { exportProfileDossier } from '@/lib/profileDossier';
+import PublicProfileHero from '@/components/profile/public/PublicProfileHero';
+import CredentialBand from '@/components/profile/public/CredentialBand';
+import PublicProfileBody from '@/components/profile/public/PublicProfileBody';
 
-const B = {
-    navyDeep: '#16293f',
-    navy: '#1e3a5a',
-    skyBlue: '#4a90b8',
-    gold: '#c9a87c',
-    cream: '#faf8f5',
-    sand: '#efe7dc',
-};
+const NAVY_DEEP = '#16293f';
 
-// Material-style info row
-function InfoRow({ icon: Icon, label, children }) {
+// The page opens as the console does: a navy plate, held for a beat, then handed
+// over to the record.
+function ProfileLoader() {
     return (
-        <div className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${B.gold}15` }}>
-                <Icon className="w-4 h-4" style={{ color: B.gold }} />
-            </div>
-            <div className="flex-1 min-w-0">
-                <div className="text-[10px] uppercase tracking-wider text-gray-400 mb-0.5">{label}</div>
-                <div className="text-sm md:text-base text-gray-800 sf-pro">{children}</div>
-            </div>
-        </div>
-    );
-}
-
-// Cinematic loading surface — navy, gold spinner, on-brand. Seamless under the entrance fade.
-function CinematicLoader() {
-    return (
-        <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: B.navyDeep }}>
-            <div className="relative w-14 h-14">
+        <div className="flex min-h-screen flex-col items-center justify-center" style={{ background: NAVY_DEEP }}>
+            <div className="relative h-14 w-14">
                 <div className="absolute inset-0 rounded-full border-2 border-white/10" />
-                <div className="absolute inset-0 rounded-full border-2 border-transparent animate-spin" style={{ borderTopColor: B.gold }} />
+                <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent" style={{ borderTopColor: '#b87333' }} />
             </div>
-            <span className="mt-5 text-[10px] font-semibold uppercase tracking-[0.3em]" style={{ color: `${B.gold}cc` }}>
-                Loading Profile
+            <span className="mt-5 font-body text-[10px] font-semibold uppercase tracking-[0.3em] text-editorial-gold/80">
+                Opening the record
             </span>
         </div>
     );
 }
 
 function NotFound() {
+    useEffect(() => {
+        const meta = document.createElement('meta');
+        meta.name = 'prerender-status-code';
+        meta.content = '404';
+        document.head.appendChild(meta);
+        return () => document.head.removeChild(meta);
+    }, []);
+
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ background: B.navyDeep }}>
-            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ border: `1px solid ${B.gold}33` }}>
-                <Trophy className="w-9 h-9" style={{ color: `${B.gold}99` }} />
+        <div className="flex min-h-screen flex-col items-center justify-center px-6" style={{ background: NAVY_DEEP }}>
+            <div className="flex h-20 w-20 items-center justify-center rounded-full border border-editorial-copper/40">
+                <Trophy className="h-8 w-8 text-editorial-gold/80" strokeWidth={1.6} />
             </div>
-            <h1 className="text-2xl font-bold mb-2" style={{ color: '#fff', fontFamily: "'Playfair Display', serif" }}>Profile Not Found</h1>
-            <p className="mb-6 text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>We couldn't locate this footprint in the ecosystem.</p>
-            <Link to="/" className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: B.gold }}>Return Home</Link>
+            <h1 className="mt-6 font-heading text-[28px] text-editorial-cream">Profile not found</h1>
+            <p className="mt-2 max-w-sm text-center font-body text-[12.5px] leading-relaxed text-editorial-cream/55">
+                We could not locate this record in the ecosystem. It may have been merged into a canonical profile.
+            </p>
+            <Link
+                to="/Top100Women2025"
+                className="mt-6 inline-flex items-center gap-1.5 font-body text-[10px] font-bold uppercase tracking-[0.2em] text-editorial-gold"
+            >
+                Open the directory <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
         </div>
     );
 }
@@ -103,7 +72,11 @@ export default function ProfileView({ userId: propUserId = null }) {
     const queryClient = useQueryClient();
     const refetchProfile = () => queryClient.invalidateQueries({ queryKey: ['unified-profile'] });
 
-    // Cinematic entrance — fades the navy veil out on mount, bridging "See full profile" → page.
+    // The door a visitor is writing through: null is closed, an object is the sheet.
+    const [inquiry, setInquiry] = useState(null);
+    const openEnquiry = (mode, requestType) => setInquiry({ mode, requestType });
+
+    // Cinematic entrance — fades the navy veil out on mount.
     const [entered, setEntered] = useState(false);
     useEffect(() => {
         const r = requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true)));
@@ -117,27 +90,29 @@ export default function ProfileView({ userId: propUserId = null }) {
 
     const { data: profiles, isLoading } = useProfileResolution(targetId, targetEmail);
 
-    // Inject dynamic <title>, meta, canonical, OG/Twitter, and Person +
-    // BreadcrumbList JSON-LD for the canonical public profile route.
+    // Dynamic <title>, meta, canonical, and Person + BreadcrumbList JSON-LD for
+    // the canonical public profile route.
     useProfileSeo(profiles);
 
-    const wallEmail = profiles?.user?.email || profiles?.nominee?.nominee_email;
-    const { entries: wallEntries, submit: submitWallEntry, approve: approveWallEntry } = useEndorsementWall(wallEmail, profiles?.nominee?.id);
+    const fellowEmail = profiles?.user?.email || profiles?.nominee?.nominee_email;
 
-    // Visitors see the owner's governed accent. No edit affordance is derived from it.
+    // Visitors see the Fellow's governed accent. No edit affordance is derived from it.
     const { data: ownerSettings } = useQuery({
-        queryKey: ['fellowProfileSettings', wallEmail],
-        enabled: !!wallEmail,
-        queryFn: () => base44.entities.FellowProfileSettings.filter({ fellow_email: wallEmail }).then((r) => r?.[0] || null).catch(() => null),
+        queryKey: ['fellowProfileSettings', fellowEmail],
+        enabled: !!fellowEmail,
+        queryFn: () =>
+            base44.entities.FellowProfileSettings.filter({ fellow_email: fellowEmail })
+                .then((r) => r?.[0] || null)
+                .catch(() => null),
     });
-    const ownerAccent = accentValue(ownerSettings?.domain_accent || accentForDiscipline(profiles?.nominee?.discipline));
-    const ownerStatus = statusByKey(ownerSettings?.status_key);
-    const top100 = useMyTop100(wallEmail);
+    const accent = accentValue(
+        ownerSettings?.domain_accent || accentForDiscipline(profiles?.nominee?.discipline)
+    );
 
-    // Featured Top Viral Post — public read via a backend function so signed-out
-    // visitors can see it. The User entity is admin-only for client reads, so
-    // the deck can't resolve `user` for unauthenticated viewers; this surfaces
-    // only the public viral-post fields, server-side.
+    const top100 = useMyTop100(fellowEmail);
+
+    // Featured Top Viral Post — public read through a backend function so signed-out
+    // visitors can see it; only the public viral-post fields are surfaced.
     const nomineeId = profiles?.nominee?.id;
     const { data: publicViralPost } = useQuery({
         queryKey: ['publicViralPost', nomineeId],
@@ -146,168 +121,73 @@ export default function ProfileView({ userId: propUserId = null }) {
             try {
                 const r = await base44.functions.invoke('getPublicViralPost', { nominee_id: nomineeId });
                 return r && typeof r === 'object' && 'data' in r ? r.data : r;
-            } catch { return null; }
+            } catch {
+                return null;
+            }
         },
     });
     const featuredViral = publicViralPost?.featured ? publicViralPost : null;
+
+    const primaryMode = enabledModes(ownerSettings)[0];
+    const hasRecord = !!profiles && (profiles.user || profiles.nominee || profiles.startup || profiles.provider);
 
     // Profile view counts are deliberately absent: they sit on the never-implement
     // list, so this surface neither counts a visit nor stores one.
 
     return (
-        <div className="min-h-screen relative sf-pro" style={{ background: B.cream }}>
-            {/* Cinematic entrance veil — navy, fades out to reveal the page */}
+        <div className="relative min-h-screen bg-editorial-cream">
             <div
-                className="fixed inset-0 z-[300] pointer-events-none transition-opacity duration-[800ms] ease-in-out"
-                style={{ background: B.navyDeep, opacity: entered ? 0 : 1 }}
+                className="pointer-events-none fixed inset-0 z-[300] transition-opacity duration-700 ease-in-out"
+                style={{ background: NAVY_DEEP, opacity: entered ? 0 : 1 }}
             />
 
             {isLoading ? (
-                <CinematicLoader />
-            ) : !profiles || (!profiles.user && !profiles.nominee && !profiles.startup && !profiles.provider) ? (
+                <ProfileLoader />
+            ) : !hasRecord ? (
                 <NotFound />
-            ) : null}
+            ) : (
+                <>
+                    {profiles.nominee && (
+                        <NomineeClaimPanel nominee={profiles.nominee} viewer={viewer} onResolved={refetchProfile} />
+                    )}
 
-            {profiles && (profiles.user || profiles.nominee || profiles.startup || profiles.provider) && !isLoading && (
-                <ProfileBody
-                    profiles={profiles}
-                    ownerAccent={ownerAccent}
-                    ownerSettings={ownerSettings}
-                    top100={top100}
-                    viewer={viewer}
-                    onResolved={refetchProfile}
-                    featuredViral={featuredViral}
-                />
+                    <PublicProfileHero
+                        user={profiles.user}
+                        nominee={profiles.nominee}
+                        settings={ownerSettings}
+                        accent={accent}
+                        enquiryLabel={primaryMode ? MODES[primaryMode].cta : ''}
+                        onEnquire={
+                            primaryMode
+                                ? () =>
+                                      openEnquiry(
+                                          primaryMode,
+                                          primaryMode === 'hire' ? 'role_conversation' : 'introduction'
+                                      )
+                                : null
+                        }
+                    />
+
+                    <CredentialBand nominee={profiles.nominee} />
+
+                    <PublicProfileBody
+                        profiles={profiles}
+                        settings={ownerSettings}
+                        accent={accent}
+                        viewer={viewer}
+                        top100={top100}
+                        featuredViral={featuredViral}
+                        onEnquire={openEnquiry}
+                        onDossier={() => exportProfileDossier({ nominee: profiles.nominee, settings: ownerSettings })}
+                    />
+
+                    {profiles.nominee && <ProfileNeighborsRail nominee={profiles.nominee} />}
+                </>
             )}
 
-        </div>
-    );
-}
-
-function ProfileBody({ profiles, ownerAccent, ownerSettings, top100, viewer, onResolved, featuredViral }) {
-    const { user, nominee } = profiles;
-    const fellowEmail = user?.email || nominee?.nominee_email;
-    // The door a visitor is writing through: null is closed, an object is the sheet.
-    const [inquiry, setInquiry] = useState(null);
-    const openEnquiry = (mode, requestType) => setInquiry({ mode, requestType });
-
-    // Resolve the Fellow's configured slide order. Locked positions 1 and 2
-    // (identity, verification) are always present; hidden slides are excluded.
-    const slideOrder = resolveSlideOrder(ownerSettings);
-
-    const slides = slideOrder.map((key) => {
-        let entry = null;
-        switch (key) {
-            case 'identity':
-                entry = { key, label: 'Identity', content: (
-                    <IdentitySlide user={user} nominee={nominee} accent={ownerAccent} coverKey={ownerSettings?.cover_asset_id} />
-                )};
-                break;
-            case 'verification':
-                entry = { key, label: 'Credential', content: <VerificationSlide nominee={nominee} accent={ownerAccent} /> };
-                break;
-            case 'blurb':
-                entry = { key, label: 'Editorial', content: (
-                    <BlurbSlide user={user} settings={ownerSettings} accent={ownerAccent} readOnly />
-                )};
-                break;
-            case 'documents':
-                entry = { key, label: 'Documents', content: <DocumentsSlide user={user} accent={ownerAccent} /> };
-                break;
-            case 'eight':
-                // Respect the Fellow's visibility toggle — hidden lists never render publicly.
-                // Gate on ownerSettings having resolved so a hidden Eight never flashes
-                // during the settings-loading window (undefined === false is false).
-                if (ownerSettings && ownerSettings.eight_public !== false) {
-                    entry = { key, label: 'The Eight', content: (
-                        <EightSlide rankings={top100.rankings} isOwner={false} accent={ownerAccent} isPublic loading={top100.loading} />
-                    )};
-                }
-                break;
-            case 'viral_post':
-                // Featured Top Viral Post now renders as a hero above the deck
-                // (see featuredViral), so it's visible to signed-out visitors
-                // without advancing the deck. Skip it here to avoid duplication.
-                break;
-            case 'flightography':
-                entry = { key, label: 'Flightography', content: (
-                    <FlightographySlide nominee={nominee} user={user} accent={ownerAccent} />
-                )};
-                break;
-            case 'conferences':
-                entry = { key, label: 'Mission Rooms', content: (
-                    <ConferencesSlide user={user} nominee={nominee} viewer={viewer} accent={ownerAccent} />
-                )};
-                break;
-            default:
-                break;
-        }
-        if (!entry) return null;
-        return { ...entry, content: <SlideErrorBoundary label={entry.label}>{entry.content}</SlideErrorBoundary> };
-    }).filter(Boolean);
-
-    // The opportunity spread sits directly behind the credential: identity, then
-    // verification, then the offer itself. It is the conversion module of the deck,
-    // so it is placed rather than configured — a visitor meets the offer before the
-    // record unfolds, and the Fellow's own slide order still governs everything after.
-    const intentOpen = hasIntent(ownerSettings);
-    const primaryMode = enabledModes(ownerSettings)[0];
-    const slidesWithOffer = intentOpen
-        ? [
-              ...slides.slice(0, 2),
-              {
-                  key: 'opportunity',
-                  label: 'Opportunity',
-                  content: (
-                      <SlideErrorBoundary label="Opportunity">
-                          <OpportunitySlide
-                              nominee={nominee}
-                              settings={ownerSettings}
-                              accent={ownerAccent}
-                              onEnquire={openEnquiry}
-                              onDossier={() => exportProfileDossier({ nominee, settings: ownerSettings })}
-                          />
-                      </SlideErrorBoundary>
-                  ),
-              },
-              ...slides.slice(2),
-          ]
-        : slides;
-
-    return (
-        <div className="min-h-screen" style={{ background: B.navyDeep }}>
-            {nominee && (
-                <NomineeClaimPanel
-                    nominee={nominee}
-                    viewer={viewer}
-                    onResolved={onResolved}
-                />
-            )}
-            {featuredViral && (
-                <ViralPostSlide user={featuredViral} accent={ownerAccent} />
-            )}
-            <ProfileDeck
-                slides={slidesWithOffer}
-                settings={ownerSettings}
-                accent={ownerAccent}
-                enquire={
-                    intentOpen
-                        ? {
-                              label: MODES[primaryMode]?.cta || 'Enquire',
-                              onClick: () =>
-                                  openEnquiry(primaryMode, primaryMode === 'hire' ? 'role_conversation' : 'introduction'),
-                          }
-                        : null
-                }
-            />
-
-            {/* Internal-linking rail — indexable <a> links between profile pages,
-                scoped to the same discipline for topical clustering. */}
-            {nominee && <ProfileNeighborsRail nominee={nominee} />}
-
-            {inquiry && nominee && (
+            {inquiry && profiles?.nominee && (
                 <InquirySheet
-                    nominee={nominee}
+                    nominee={profiles.nominee}
                     mode={inquiry.mode}
                     requestType={inquiry.requestType}
                     onClose={() => setInquiry(null)}

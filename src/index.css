@@ -183,10 +183,12 @@ button:focus-visible {
   --editorial-cream: #FAF8F5;
   --editorial-gold: #C9A87C;
   --editorial-copper: #B87333;
+  --editorial-sand: #EFE7DC;
   --editorial-navy-rgb: 30 58 90;
   --editorial-cream-rgb: 250 248 245;
   --editorial-gold-rgb: 201 168 124;
   --editorial-copper-rgb: 184 115 51;
+  --editorial-sand-rgb: 239 231 220;
   /* The label ink. Rose gold is the accent on the navy plates, where it carries AA
      (5.19:1). On cream it does not — 2.11:1 — so a small-caps label takes this
      burnished copper instead: 5.3:1 on cream, 5.6:1 on white. One tone cannot serve
