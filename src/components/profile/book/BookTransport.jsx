@@ -54,7 +54,7 @@ export default function BookTransport({
 
   return (
     <div
-      className="px-3 pb-2.5 pt-2 sm:px-8"
+      className="px-3 pb-2 pt-1.5 sm:px-8 sm:pb-2.5 sm:pt-2"
       style={{ borderTop: '1px solid rgba(201,168,124,0.18)' }}
     >
       <div className="mb-2 flex items-center gap-1" role="group" aria-label="Jump to a page">

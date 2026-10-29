@@ -84,7 +84,10 @@ export default function ProfileBook({
     const chrome = avail.glass ? 168 : 210;
     const availH = Math.max(340, Math.min(avail.h - chrome, 780));
     const maxW = wide ? (stageWidth - 56) / 2 : stageWidth - 28;
-    const pageW = Math.max(148, Math.min(maxW, availH / PAGE_RATIO));
+    // On a phone the page is never set below the width its type needs: a slightly
+    // taller reading window is the better trade for a page you can actually read.
+    const floor = wide ? 0 : 280;
+    const pageW = Math.max(148, Math.min(maxW, Math.max(availH / PAGE_RATIO, floor)));
     return { wide, perView, pageW, pageH: pageW * PAGE_RATIO };
   }, [stageWidth, avail]);
 
@@ -231,7 +234,7 @@ export default function ProfileBook({
       {/* The stage the book stands on */}
       <div
         ref={stageRef}
-        className="relative flex items-center justify-center px-3 py-5 sm:px-7 sm:py-8"
+        className="relative flex items-center justify-center px-3 py-3 sm:px-7 sm:py-8"
         style={{ perspective: '2200px' }}
       >
         {dims && (
