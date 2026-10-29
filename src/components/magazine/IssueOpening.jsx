@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Play } from 'lucide-react';
+import { BookOpen, Play, RotateCcw } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
+import { readIssueProgress } from '@/lib/readingProgress';
 
 // Cinematic opening sequence. Dark void → title reveal → cover image → "Begin Reading".
 // Offers a passive "Play" path that starts narrated autoplay from the first page.
 export default function IssueOpening({ issue, onBegin, onAutoPlay }) {
   const [stage, setStage] = useState(0); // 0=void, 1=kicker, 2=title, 3=cover, 4=button
+
+  // Where this machine left the issue. The film does not open on the cover for a reader
+  // who is halfway through it: the key says Resume, and it picks the film up where it was
+  // put down. Start over sits under it for the reader who wants the cover after all.
+  const progress = readIssueProgress(issue?.id);
+  const place = progress?.page || 0;
+  const resuming = place > 0 && (progress?.percent ?? 0) < 100;
+  const finished = (progress?.percent ?? 0) >= 100;
+  const filmLabel = resuming ? 'Resume' : finished ? 'Watch again' : 'Watch';
 
   useEffect(() => {
     const timers = [
@@ -105,7 +115,7 @@ export default function IssueOpening({ issue, onBegin, onAutoPlay }) {
             </button>
             {onAutoPlay && (
               <button
-                onClick={(e) => { e.stopPropagation(); onAutoPlay(); }}
+                onClick={(e) => { e.stopPropagation(); onAutoPlay({ restart: !resuming }); }}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-medium transition-all hover:scale-105"
                 style={{
                   background: `linear-gradient(135deg, ${P.gold}, ${P.copper})`,
@@ -113,9 +123,26 @@ export default function IssueOpening({ issue, onBegin, onAutoPlay }) {
                   boxShadow: '0 4px 20px rgba(201,168,124,0.3)',
                 }}
               >
-                <Play className="w-3.5 h-3.5" />
-                <span className="uppercase tracking-[0.15em]">Watch</span>
+                {finished ? <RotateCcw className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                <span className="uppercase tracking-[0.15em]">{filmLabel}</span>
               </button>
+            )}
+            {/* The film was put down part-read: carry on from the spread it stopped on, or
+                begin the issue again from its cover. */}
+            {resuming && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onAutoPlay({ restart: true }); }}
+                className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.22em] transition-colors"
+                style={{ color: 'rgba(250,248,245,0.5)' }}
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Start over</span>
+              </button>
+            )}
+            {resuming && (
+              <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: 'rgba(250,248,245,0.32)' }}>
+                Left off on page {String(place + 1).padStart(2, '0')} of {String(progress.total).padStart(2, '0')}
+              </p>
             )}
           </div>
         </div>

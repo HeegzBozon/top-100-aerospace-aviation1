@@ -1244,6 +1244,21 @@ button:focus-visible {
   }
 }
 
+/* ===== THE PAGE'S OWN SCROLL BARS, RETIRED =====
+   A magazine page is paper, not a window: the browser's grey trough printed down the trim
+   of every page that ran past its frame. The page carries its own measure instead — the
+   copper rule drawn by PageScrollRail — so the native bar is taken out of the composition
+   and the roll is left to the wheel, a thumb and the film. */
+.page-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.page-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 /* ===== THE ISSUE'S MEASURE — THE READING BAR =====
    The metal in the head band's track: one slow sheen crossing the copper-into-rose-gold
    fill, so the measure reads as a live instrument rather than a printed rule. Nothing

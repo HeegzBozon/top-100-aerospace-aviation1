@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { BookOpen, Play } from 'lucide-react';
+import { BookOpen, Play, RotateCcw } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import { readIssueProgress } from '@/lib/readingProgress';
 
 // An issue's opening, played in the glass.
 //
@@ -10,16 +11,25 @@ import { registerPicker, touchPicker } from '@/components/handheld/handheldPicke
 // while the issue arrives. The reveal runs on its own timers, and the two ways in —
 // reading it, or letting it play as a film — are walked on the ring as well as
 // tapped.
-const OPTIONS = [
-  { key: 'read', label: 'Read', icon: BookOpen },
-  { key: 'film', label: 'Watch', icon: Play },
-];
-
 export default function GlassIssueOpening({ issue, onBegin, onAutoPlay }) {
   const [stage, setStage] = useState(0);
   const [cursor, setCursor] = useState(0);
   const cursorRef = useRef(0);
   cursorRef.current = cursor;
+
+  // Where this issue was left. A part-read issue gives the ring Resume at the place it
+  // stopped, and Start over beside it for the reader who wants the cover again.
+  const progress = readIssueProgress(issue?.id);
+  const place = progress?.page || 0;
+  const resuming = place > 0 && (progress?.percent ?? 0) < 100;
+  const finished = (progress?.percent ?? 0) >= 100;
+  const options = [
+    { key: 'read', label: 'Read', icon: BookOpen },
+    { key: 'film', label: resuming ? 'Resume' : finished ? 'Watch again' : 'Watch', icon: Play },
+    ...(resuming ? [{ key: 'restart', label: 'Start over', icon: RotateCcw }] : []),
+  ];
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   useEffect(() => {
     const timers = [
@@ -32,27 +42,28 @@ export default function GlassIssueOpening({ issue, onBegin, onAutoPlay }) {
   }, []);
 
   const choose = (index) => {
-    const option = OPTIONS[index];
+    const option = optionsRef.current[index];
     if (!option) return;
-    if (option.key === 'film') onAutoPlay?.();
+    if (option.key === 'film') onAutoPlay?.({ restart: !resuming });
+    else if (option.key === 'restart') onAutoPlay?.({ restart: true });
     else onBegin?.();
   };
 
   const api = useRef(null);
   if (!api.current) {
     api.current = {
-      labels: () => OPTIONS.map((option) => option.label),
+      labels: () => optionsRef.current.map((option) => option.label),
       index: () => cursorRef.current,
       step: (direction) => {
         const next = cursorRef.current + direction;
-        if (next < 0 || next >= OPTIONS.length) return null;
+        if (next < 0 || next >= optionsRef.current.length) return null;
         setCursor(next);
-        return OPTIONS[next].label;
+        return optionsRef.current[next].label;
       },
       goTo: (index) => {
-        if (index < 0 || index >= OPTIONS.length) return null;
+        if (index < 0 || index >= optionsRef.current.length) return null;
         setCursor(index);
-        return OPTIONS[index].label;
+        return optionsRef.current[index].label;
       },
       enter: () => {
         choose(cursorRef.current);
@@ -126,7 +137,7 @@ export default function GlassIssueOpening({ issue, onBegin, onAutoPlay }) {
           className="mt-5 w-full space-y-1.5 transition-opacity duration-700"
           style={{ opacity: stage >= 4 ? 1 : 0 }}
         >
-          {OPTIONS.map((option, i) => {
+          {options.map((option, i) => {
             const Icon = option.icon;
             const active = i === cursor;
             return (
@@ -148,6 +159,12 @@ export default function GlassIssueOpening({ issue, onBegin, onAutoPlay }) {
             );
           })}
         </div>
+
+        {resuming && (
+          <p className="mt-2 text-[7.5px] uppercase tracking-[0.16em]" style={{ color: 'rgba(250,248,245,0.3)' }}>
+            Left off on page {String(place + 1).padStart(2, '0')} of {String(progress.total).padStart(2, '0')}
+          </p>
+        )}
 
         <p className="mt-3 text-[7.5px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(250,248,245,0.34)' }}>
           ◀▶ Walk · A Take

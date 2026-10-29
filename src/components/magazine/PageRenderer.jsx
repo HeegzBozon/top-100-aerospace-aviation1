@@ -125,7 +125,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
 
     return (
       <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
-        <div className="flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+        <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
           <PinnedPageHead className="px-6 sm:px-8">
             <p className="text-[10px] font-bold uppercase tracking-[0.4em] mb-2" style={{ color: P.gold }}>Contents</p>
             <h2 className="font-serif text-xl sm:text-2xl" style={{ color: P.navy }}>{issue.title}</h2>
@@ -236,7 +236,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
 
     return (
       <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
-        <div className="flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+        <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
           <div className="px-6 pb-6 pt-7 sm:px-8">
             {kicker?.text && (
               <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.4em]" style={{ color: P.copper }}>{kicker.text}</p>
@@ -322,7 +322,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
 
     return (
       <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
-        <div className="flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+        <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
           {image?.url ? (
             <figure className="relative">
               {/* The crop steps from side to side down the run, so a wall of portraits
@@ -402,7 +402,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
 
   return (
     <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
-      <div className="flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+      <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
         {headEnd > 0 && (
           <PinnedPageHead className="px-6 sm:px-8">
             {blocks.slice(0, headEnd).map((block, i) => <BlockRenderer key={i} block={block} />)}
