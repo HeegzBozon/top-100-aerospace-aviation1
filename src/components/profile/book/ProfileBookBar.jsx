@@ -1,26 +1,23 @@
-import { BookOpen, Clapperboard, BookMarked, Download } from 'lucide-react';
+import { BookOpen, BookMarked, Download } from 'lucide-react';
 import { stageLabel } from '@/components/episode/episodeStages';
 
 const NAVY = '#132539';
 
+// Two presentations of one record: the book (which plays) and the plain reader.
 const MODES = [
   { key: 'book', label: 'Book', Icon: BookMarked },
   { key: 'read', label: 'Read', Icon: BookOpen },
-  { key: 'watch', label: 'Watch', Icon: Clapperboard },
 ];
 
 // One strip above the record: how it is presented, and where the episode stands.
-// The record is the same in all three — a book, a plain page reader, or the film
-// cut from it.
 export default function ProfileBookBar({
   mode,
   onChange,
   pageCount,
-  canWatch,
   episodeStatus,
   onDossier,
 }) {
-  const options = MODES.filter((m) => m.key !== 'watch' || canWatch);
+  const options = MODES;
 
   return (
     <div style={{ background: NAVY, borderBottom: '1px solid rgba(201,168,124,0.25)' }}>

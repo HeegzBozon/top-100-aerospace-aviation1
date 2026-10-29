@@ -1,28 +1,41 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, ChevronsLeft, X } from 'lucide-react';
+import { Pause, Play, X } from 'lucide-react';
 import FlipPage, { PAGE_RATIO } from '@/components/magazine/FlipPage';
 import ProfilePageSheet from './ProfilePageSheet';
+import BookTransport from './BookTransport';
+import useProfileWheel from './useProfileWheel';
 
 const NAVY_DEEP = '#0B1826';
 const GOLD = '#C9A87C';
 const CREAM = '#FAF8F5';
+const COPPER = '#B87333';
 
-// The record, held as a book.
+// The record, held as a book — and played as one.
 //
-// A desk holds the spread wide — two pages, turned by hand. A handheld holds one
-// page at a time, because the glass is one page wide. Both read the very same
-// pages: this is a presentation of the record, not a second copy of it.
-export default function ProfileBook({ pages, isOwner, onEnquire, onOpenEpisode }) {
+// A desk holds the spread wide and turns it by hand; a handheld holds one page at a
+// time and turns it with the ring. Play reads the same pages the film was cut from:
+// each spread held for its dwell, then turned, looping or stopping at the end as the
+// Fellow's own settings say. Nothing is composed a second time for playback.
+export default function ProfileBook({
+  pages,
+  isOwner,
+  onEnquire,
+  onOpenEpisode,
+  autoplayMode = 'loop',
+  dwellSeconds = 7,
+}) {
   const stageRef = useRef(null);
-  const timers = useRef([]);
+  const turnTimer = useRef(0);
 
   const [stageWidth, setStageWidth] = useState(0);
-  const [viewportH, setViewportH] = useState(() =>
-    typeof window === 'undefined' ? 800 : window.innerHeight
-  );
+  const [avail, setAvail] = useState(() => ({
+    h: typeof window === 'undefined' ? 800 : window.innerHeight,
+    glass: false,
+  }));
   const [index, setIndex] = useState(0);
   const [turning, setTurning] = useState(null);
   const [contentsOpen, setContentsOpen] = useState(false);
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const el = stageRef.current;
@@ -34,23 +47,36 @@ export default function ProfileBook({ pages, isOwner, onEnquire, onOpenEpisode }
     return () => observer.disconnect();
   }, []);
 
+  // The page is measured against the picture it is actually printed in: on the
+  // handheld that is the glass, not the window, so the foot of the page never runs
+  // under the chin.
   useEffect(() => {
-    const read = () => setViewportH(window.innerHeight);
+    const read = () => {
+      const glass = document.querySelector('[data-handheld-screen]');
+      const glassH = glass?.clientHeight || 0;
+      setAvail({ h: glassH || window.innerHeight, glass: glassH > 0 });
+    };
+    read();
+    const settle = window.setTimeout(read, 320);
     window.addEventListener('resize', read);
-    return () => window.removeEventListener('resize', read);
+    return () => {
+      clearTimeout(settle);
+      window.removeEventListener('resize', read);
+    };
   }, []);
 
-  useEffect(() => () => timers.current.forEach(window.clearTimeout), []);
+  useEffect(() => () => clearTimeout(turnTimer.current), []);
 
   const dims = useMemo(() => {
     if (!stageWidth) return null;
     const wide = stageWidth >= 700;
     const perView = wide ? 2 : 1;
-    const availH = Math.max(360, Math.min(viewportH - 210, 780));
+    const chrome = avail.glass ? 168 : 210;
+    const availH = Math.max(340, Math.min(avail.h - chrome, 780));
     const maxW = wide ? (stageWidth - 56) / 2 : stageWidth - 28;
     const pageW = Math.max(148, Math.min(maxW, availH / PAGE_RATIO));
     return { wide, perView, pageW, pageH: pageW * PAGE_RATIO };
-  }, [stageWidth, viewportH]);
+  }, [stageWidth, avail]);
 
   const perView = dims?.perView || 1;
   const maxStart = Math.max(pages.length - perView, 0);
@@ -61,28 +87,48 @@ export default function ProfileBook({ pages, isOwner, onEnquire, onOpenEpisode }
 
   const go = useCallback(
     (dir) => {
-      if (!dims || turning) return;
+      if (!dims) return null;
       const target =
         dir === 'next'
           ? Math.min(index + dims.perView, maxStart)
           : Math.max(index - dims.perView, 0);
-      if (target === index) return;
+      if (target === index) return null;
+      setIndex(target);
       setTurning(dir);
-      timers.current.push(window.setTimeout(() => setIndex(target), 190));
-      timers.current.push(window.setTimeout(() => setTurning(null), 620));
+      clearTimeout(turnTimer.current);
+      turnTimer.current = window.setTimeout(() => setTurning(null), 620);
+      return pages[target]?.label || null;
     },
-    [dims, turning, index, maxStart]
+    [dims, index, maxStart, pages]
   );
 
   const jump = useCallback(
     (pageIndex) => {
-      if (!dims) return;
-      const start = Math.floor(pageIndex / dims.perView) * dims.perView;
-      setIndex(Math.min(start, maxStart));
+      if (!dims) return null;
+      setIndex(Math.min(Math.floor(pageIndex / dims.perView) * dims.perView, maxStart));
       setContentsOpen(false);
+      return null;
     },
     [dims, maxStart]
   );
+
+  const togglePlay = useCallback(() => setPlaying((p) => !p), []);
+
+  // Play reads the record the way the film did: one spread, held for its dwell, then
+  // turned. A record that reaches its last spread either starts again or settles.
+  useEffect(() => {
+    if (!playing || !pages.length || !dims) return undefined;
+    const dwell = Math.max(3, Number(dwellSeconds) || 7) * 1000;
+    const id = window.setTimeout(() => {
+      const next = index + dims.perView;
+      if (next <= maxStart) setIndex(next);
+      else if (autoplayMode === 'loop') setIndex(0);
+      else setPlaying(false);
+    }, dwell);
+    return () => clearTimeout(id);
+  }, [playing, index, dims, maxStart, autoplayMode, dwellSeconds, pages.length]);
+
+  const view = useMemo(() => pages.slice(index, index + perView), [pages, index, perView]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -93,47 +139,86 @@ export default function ProfileBook({ pages, isOwner, onEnquire, onOpenEpisode }
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
         go('prev');
+      } else if (e.key === ' ' && !contentsOpen) {
+        e.preventDefault();
+        togglePlay();
       } else if (e.key === 'Escape' && contentsOpen) {
         setContentsOpen(false);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [go, contentsOpen]);
+  }, [go, contentsOpen, togglePlay]);
 
-  const view = useMemo(
-    () => pages.slice(index, index + perView),
-    [pages, index, perView]
-  );
+  // The ring drives the book the same way the arrows do: a detent turns a page, the
+  // centre plays and pauses, back closes the contents and otherwise leaves the page.
+  useProfileWheel({
+    labels: () => view.map((page) => page.label),
+    index: () => 0,
+    turn: go,
+    jump,
+    enter: () => {
+      togglePlay();
+      return true;
+    },
+    back: () => {
+      if (contentsOpen) {
+        setContentsOpen(false);
+        return true;
+      }
+      return false;
+    },
+  });
 
   const atStart = index <= 0;
   const atEnd = index >= maxStart;
 
   return (
     <div style={{ background: NAVY_DEEP }} className="relative">
-      {/* Head band: what is being read, and how far through it the reader is */}
+      {/* Head band: what is being read, and the way into it playing itself */}
       <div
         className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-8"
-        style={{ borderBottom: `1px solid rgba(201,168,124,0.18)` }}
+        style={{ borderBottom: '1px solid rgba(201,168,124,0.18)' }}
       >
         <p
           className="font-body text-[9.5px] font-semibold uppercase tracking-[0.28em]"
           style={{ color: 'rgba(201,168,124,0.8)' }}
         >
           The record · {pages.length} {pages.length === 1 ? 'page' : 'pages'}
+          {playing ? ` · playing ${String(index + 1).padStart(2, '0')}` : ''}
         </p>
-        <p
-          className="font-body text-[9px] uppercase tracking-[0.22em]"
-          style={{ color: 'rgba(250,248,245,0.42)' }}
-        >
-          {dims?.wide ? 'Spread · turn with the arrows' : 'Turn with the arrows'}
-        </p>
+
+        <div className="flex items-center gap-2">
+          <span
+            className="hidden font-body text-[9px] uppercase tracking-[0.22em] sm:inline"
+            style={{ color: 'rgba(250,248,245,0.42)' }}
+          >
+            {dims?.wide ? 'Spread' : 'Turn with the arrows'}
+          </span>
+          <button
+            type="button"
+            onClick={togglePlay}
+            aria-pressed={playing}
+            aria-label={playing ? 'Pause the record' : 'Play the record'}
+            className="flex items-center gap-2 rounded-full px-3.5 py-1.5 transition-colors"
+            style={{
+              background: playing ? 'rgba(184,115,51,0.22)' : COPPER,
+              border: `1px solid ${playing ? 'rgba(184,115,51,0.7)' : COPPER}`,
+              color: CREAM,
+            }}
+          >
+            {playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+            <span className="font-body text-[9.5px] font-bold uppercase tracking-[0.2em]">
+              {playing ? 'Pause' : 'Play'}
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* The stage the book stands on */}
       <div
         ref={stageRef}
-        className="relative flex items-center justify-center px-3 py-6 sm:px-7 sm:py-9"
+        className="relative flex items-center justify-center px-3 py-5 sm:px-7 sm:py-8"
         style={{ perspective: '2200px' }}
       >
         {dims && (
@@ -199,66 +284,24 @@ export default function ProfileBook({ pages, isOwner, onEnquire, onOpenEpisode }
         )}
       </div>
 
-      {/* Foot band: the turn, the place, the contents */}
-      <div
-        className="flex items-center justify-center gap-1 px-4 py-2.5"
-        style={{ borderTop: `1px solid rgba(201,168,124,0.18)` }}
-      >
-        <button
-          type="button"
-          onClick={() => setIndex(0)}
-          disabled={atStart}
-          aria-label="Back to the cover"
-          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-white/10 disabled:opacity-25"
-          style={{ color: CREAM }}
-        >
-          <ChevronsLeft className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => go('prev')}
-          disabled={atStart}
-          aria-label="Previous page"
-          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-white/10 disabled:opacity-25"
-          style={{ color: CREAM }}
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
+      {/* Foot: the transport — the measure of the record, played or turned */}
+      <BookTransport
+        labels={pages.map((page) => page.label)}
+        index={index}
+        visibleCount={view.length}
+        playing={playing}
+        onFirst={() => setIndex(0)}
+        onPrev={() => go('prev')}
+        onNext={() => go('next')}
+        onTogglePlay={togglePlay}
+        onJump={jump}
+        onContents={() => setContentsOpen(true)}
+      />
 
-        <span
-          className="px-2 text-[13px] tabular-nums"
-          style={{ fontFamily: 'var(--font-heading)', color: CREAM }}
-          aria-live="polite"
-        >
-          {String(index + 1).padStart(2, '0')}
-          <span style={{ color: 'rgba(250,248,245,0.35)' }}>
-            {view.length > 1
-              ? `–${String(Math.min(index + view.length, pages.length)).padStart(2, '0')}`
-              : ''}{' '}
-            / {String(pages.length).padStart(2, '0')}
-          </span>
-        </span>
-
-        <button
-          type="button"
-          onClick={() => go('next')}
-          disabled={atEnd}
-          aria-label="Next page"
-          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-white/10 disabled:opacity-25"
-          style={{ color: CREAM }}
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setContentsOpen(true)}
-          className="ml-2 rounded-full px-3 py-2 font-body text-[9px] font-bold uppercase tracking-[0.18em] transition-colors hover:bg-white/10"
-          style={{ color: 'rgba(250,248,245,0.6)' }}
-        >
-          Contents
-        </button>
-      </div>
+      {/* A page that will not turn is a page that has arrived: nothing else. */}
+      <span className="sr-only" aria-live="polite">
+        {`Page ${index + 1} of ${pages.length}`}
+      </span>
 
       {contentsOpen && (
         <div

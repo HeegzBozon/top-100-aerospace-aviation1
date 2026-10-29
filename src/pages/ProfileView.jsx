@@ -13,9 +13,9 @@ import { accentValue, accentForDiscipline } from '@/components/fellow-home/fello
 import { enabledModes, MODES } from '@/components/profile/intent/intentConfig';
 import InquirySheet from '@/components/profile/intent/InquirySheet';
 import { exportProfileDossier } from '@/lib/profileDossier';
-import DocumentaryStage from '@/components/profile/documentary/DocumentaryStage';
-import { buildDocumentary } from '@/components/profile/documentary/documentaryChapters';
 import ProfileBook from '@/components/profile/book/ProfileBook';
+import OwnerRecordBand from '@/components/profile/book/OwnerRecordBand';
+import useProfileEditMenu from '@/components/profile/book/useProfileEditMenu';
 import ProfileReader from '@/components/profile/book/ProfileReader';
 import ProfileBookBar from '@/components/profile/book/ProfileBookBar';
 import { buildProfileBook } from '@/components/profile/book/profileBookPages';
@@ -85,7 +85,9 @@ export default function ProfileView({ userId: propUserId = null }) {
     // documentary cut from the same record. Deep-linked with ?mode=.
     const [mode, setMode] = useState(() => {
         const requested = params.get('mode');
-        return ['book', 'read', 'watch'].includes(requested) ? requested : 'book';
+        // Watch is absorbed into the book: the record plays where it is read.
+        if (requested === 'watch') return 'book';
+        return ['book', 'read'].includes(requested) ? requested : 'book';
     });
 
     // The Fellow's own episode, and the sheet they open it from.
@@ -160,19 +162,6 @@ export default function ProfileView({ userId: propUserId = null }) {
     const primaryMode = enabledModes(ownerSettings)[0];
     const hasRecord = !!profiles && (profiles.user || profiles.nominee || profiles.startup || profiles.provider);
 
-    // The film is composed on every load from whatever the record actually holds,
-    // so a thin profile is a short film rather than a broken one.
-    const documentary = useMemo(
-        () =>
-            buildDocumentary({
-                user: profiles?.user,
-                nominee: profiles?.nominee,
-                settings: ownerSettings,
-                rankings: top100.rankings,
-            }),
-        [profiles, ownerSettings, top100.rankings]
-    );
-
     // The book is composed from the same record the film is cut from: identity first,
     // the credential second, then the Fellow's own order, and the episode last. A
     // page with nothing in it is never printed.
@@ -192,12 +181,38 @@ export default function ProfileView({ userId: propUserId = null }) {
     );
 
     const isOwner = !!viewer?.email && !!fellowEmail && viewer.email === fellowEmail;
-    const canWatch = documentary.chapters.length > 0;
-    const view = mode === 'watch' && !canWatch ? 'book' : mode;
     const openEpisode = isOwner ? () => setEpisodeOpen(true) : null;
     const enquire = primaryMode
         ? () => openEnquiry(primaryMode, primaryMode === 'hire' ? 'role_conversation' : 'introduction')
         : null;
+
+    // The standardized one-page dossier, composed from the public record.
+    const dossier =
+        ownerSettings?.dossier_enabled !== false && profiles?.nominee
+            ? () =>
+                  exportProfileDossier({
+                      nominee: profiles.nominee,
+                      settings: ownerSettings,
+                  })
+            : null;
+
+    // The claim band is seated in the book, so "claim this record" walks the reader
+    // to it rather than opening a second surface for the same decision.
+    const revealClaim = () =>
+        document.getElementById('record-claim')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // The record's own Edit menu: the way back into the editor for the Fellow, and
+    // the two things a record is for — writing to the person, claiming it — for
+    // everyone else.
+    useProfileEditMenu({
+        enabled: hasRecord,
+        isOwner,
+        onOpenEpisode: openEpisode,
+        onDossier: dossier,
+        onEnquire: enquire,
+        onRevealClaim: revealClaim,
+        claimable: !!profiles?.nominee && !isOwner,
+    });
 
     // Profile view counts are deliberately absent: they sit on the never-implement
     // list, so this surface neither counts a visit nor stores one.
@@ -215,45 +230,31 @@ export default function ProfileView({ userId: propUserId = null }) {
                 <NotFound />
             ) : (
                 <>
-                    {profiles.nominee && (
-                        <NomineeClaimPanel nominee={profiles.nominee} viewer={viewer} onResolved={refetchProfile} />
-                    )}
-
                     <ProfileBookBar
-                        mode={view}
+                        mode={mode}
                         onChange={setMode}
                         pageCount={book.pages.length}
-                        canWatch={canWatch}
                         episodeStatus={episode.intake?.status}
-                        onDossier={
-                            ownerSettings?.dossier_enabled !== false && profiles?.nominee
-                                ? () =>
-                                      exportProfileDossier({
-                                          nominee: profiles.nominee,
-                                          settings: ownerSettings,
-                                      })
-                                : null
-                        }
+                        onDossier={dossier}
                     />
 
-                    {view === 'watch' ? (
-                        <DocumentaryStage
-                            chapters={documentary.chapters}
-                            name={profiles.nominee?.name || profiles.user?.full_name}
-                            isOwner={isOwner}
-                            settings={ownerSettings}
-                            fellowEmail={fellowEmail}
-                            openPrompts={documentary.openPrompts}
-                            onSaved={() =>
-                                queryClient.invalidateQueries({
-                                    queryKey: ['fellowProfileSettings', fellowEmail],
-                                })
-                            }
-                            onSwitchToRead={() => setMode('book')}
-                            enquiryLabel={primaryMode ? MODES[primaryMode].cta : ''}
-                            onEnquire={enquire}
-                        />
-                    ) : view === 'read' ? (
+                    {/* Who may take this record, seated in the book's own frame rather
+                        than floating over the page being read: a claim, a review in
+                        progress, or the way into the editor when it is already yours. */}
+                    {profiles.nominee ? (
+                        <div id="record-claim">
+                            <NomineeClaimPanel
+                                nominee={profiles.nominee}
+                                viewer={viewer}
+                                onResolved={refetchProfile}
+                                variant="seated"
+                            />
+                        </div>
+                    ) : isOwner ? (
+                        <OwnerRecordBand />
+                    ) : null}
+
+                    {mode === 'read' ? (
                         <ProfileReader
                             pages={book.pages}
                             isOwner={isOwner}
@@ -266,6 +267,8 @@ export default function ProfileView({ userId: propUserId = null }) {
                             isOwner={isOwner}
                             onEnquire={enquire}
                             onOpenEpisode={openEpisode}
+                            autoplayMode={ownerSettings?.autoplay_mode || 'loop'}
+                            dwellSeconds={ownerSettings?.dwell_seconds || 7}
                         />
                     )}
 
