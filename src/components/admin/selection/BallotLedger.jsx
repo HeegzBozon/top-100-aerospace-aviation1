@@ -80,7 +80,7 @@ export default function BallotLedger({ kind = 'ballots', ballots = [], marks = [
           />
         </div>
         <p className="shrink-0 text-[10px] uppercase tracking-[0.16em] text-editorial-navy/45">
-          {visible.length} of {rows.length} on record
+          {visible.length} of {rows.length} shown
         </p>
       </div>
 
