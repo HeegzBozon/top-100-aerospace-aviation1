@@ -76,19 +76,6 @@ export default function IssueOpening({ issue, onBegin, onAutoPlay }) {
           </h1>
         </div>
 
-        {/* Subtitle */}
-        {issue.subtitle && (
-          <div
-            className="transition-all duration-700 mt-3"
-            style={{
-              opacity: stage >= 3 ? 1 : 0,
-              transform: stage >= 3 ? 'translateY(0)' : 'translateY(10px)',
-            }}
-          >
-            <p className="text-sm" style={{ color: 'rgba(250,248,245,0.6)' }}>{issue.subtitle}</p>
-          </div>
-        )}
-
         {/* Gold rule */}
         <div
           className="transition-all duration-700 mt-8"
@@ -108,10 +95,14 @@ export default function IssueOpening({ issue, onBegin, onAutoPlay }) {
           }}
         >
           <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center gap-2 text-xs font-medium" style={{ color: P.gold }}>
-              <BookOpen className="w-4 h-4" />
-              <span className="uppercase tracking-[0.2em]">Begin Reading</span>
-            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); onBegin?.(); }}
+              className="flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-medium transition-all hover:scale-105"
+              style={{ background: 'rgba(201,168,124,0.14)', border: `1px solid ${P.gold}`, color: P.gold }}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span className="uppercase tracking-[0.15em]">Read</span>
+            </button>
             {onAutoPlay && (
               <button
                 onClick={(e) => { e.stopPropagation(); onAutoPlay(); }}
@@ -123,10 +114,9 @@ export default function IssueOpening({ issue, onBegin, onAutoPlay }) {
                 }}
               >
                 <Play className="w-3.5 h-3.5" />
-                <span className="uppercase tracking-[0.15em]">Play as Film</span>
+                <span className="uppercase tracking-[0.15em]">Watch</span>
               </button>
             )}
-            <p className="text-[10px]" style={{ color: 'rgba(250,248,245,0.3)' }}>Tap anywhere to open</p>
           </div>
         </div>
       </div>

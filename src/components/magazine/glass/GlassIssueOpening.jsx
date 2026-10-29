@@ -11,8 +11,8 @@ import { registerPicker, touchPicker } from '@/components/handheld/handheldPicke
 // reading it, or letting it play as a film — are walked on the ring as well as
 // tapped.
 const OPTIONS = [
-  { key: 'read', label: 'Begin reading', hint: 'Open the issue at its cover', icon: BookOpen },
-  { key: 'film', label: 'Play as film', hint: 'Paced page by page, hands free', icon: Play },
+  { key: 'read', label: 'Read', icon: BookOpen },
+  { key: 'film', label: 'Watch', icon: Play },
 ];
 
 export default function GlassIssueOpening({ issue, onBegin, onAutoPlay }) {
@@ -116,15 +116,6 @@ export default function GlassIssueOpening({ issue, onBegin, onAutoPlay }) {
           {issue.title}
         </h1>
 
-        {issue.subtitle && (
-          <p
-            className="mt-2 text-[11px] leading-relaxed transition-opacity duration-700"
-            style={{ color: 'rgba(250,248,245,0.62)', opacity: stage >= 3 ? 1 : 0 }}
-          >
-            {issue.subtitle}
-          </p>
-        )}
-
         <div
           className="mt-5 h-px transition-all duration-700"
           style={{ width: stage >= 3 ? 44 : 0, background: P.gold }}
@@ -150,13 +141,8 @@ export default function GlassIssueOpening({ issue, onBegin, onAutoPlay }) {
                 }}
               >
                 <Icon className="h-3.5 w-3.5 flex-none" style={{ color: P.gold }} />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[12px] font-medium" style={{ color: P.cream }}>
-                    {option.label}
-                  </span>
-                  <span className="mt-0.5 block truncate text-[9.5px]" style={{ color: 'rgba(250,248,245,0.5)' }}>
-                    {option.hint}
-                  </span>
+                <span className="min-w-0 flex-1 truncate text-[12px] font-medium" style={{ color: P.cream }}>
+                  {option.label}
                 </span>
               </button>
             );

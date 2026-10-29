@@ -52,11 +52,11 @@ function sectionBlocks(article, section, blockMap) {
 // most honorees, and they are the one thing a page of this kind can print that a
 // directory cannot — and the institutional read follows, set as paragraphs rather
 // than as one wall of text.
-function portraitBlocks(article, region) {
+function portraitBlocks(article, standing) {
   const blocks = [];
   const name = clean(article.title) || 'Honoree';
 
-  if (region) blocks.push({ type: 'kicker', text: region });
+  if (standing) blocks.push({ type: 'kicker', text: standing });
   blocks.push({ type: 'heading', text: name });
   if (article.subtitle) blocks.push({ type: 'byline', text: article.subtitle });
   if (article.hero_image_url) {
@@ -116,13 +116,9 @@ export function buildEditionPages(issue, articles, blockMap) {
   let number = 1;
   let region = 1;
 
-  // The region a portrait is indexed under is carried by the opening spread that
-  // precedes it, so the composer walks the index the way a reader does.
-  let currentRegion = '';
-  articles.forEach((article) => {
-    if (isPackageOpener(article)) currentRegion = article.title;
-    else article.region = currentRegion;
-  });
+  // The portraits are numbered as the composer walks them, so the standing printed on a
+  // page is the standing the book actually runs in: the measure, first to last.
+  let standing = 0;
 
   const page = (spec) => {
     const placed = { ...spec, page_number: number++ };
@@ -224,12 +220,13 @@ export function buildEditionPages(issue, articles, blockMap) {
           }
 
           const portrait = article.article_type === 'profile';
+          if (portrait) standing += 1;
           const placed = page({
             layout_type: layoutFor(article),
             article_id: article.id,
             section_id: section.id,
             status: 'draft',
-            content_blocks: portrait ? portraitBlocks(article, article.region || '') : sectionBlocks(article, section, blockMap),
+            content_blocks: portrait ? portraitBlocks(article, `No. ${standing}`) : sectionBlocks(article, section, blockMap),
             background_image_url: portrait ? '' : article.hero_image_url || '',
           });
           article.page_number = placed.page_number;

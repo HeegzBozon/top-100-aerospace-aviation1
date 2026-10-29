@@ -11,6 +11,7 @@ import EditorialLedger from '@/components/publication/EditorialLedger';
 import PublicationExportPanel from '@/components/publication/PublicationExportPanel';
 import SignalReport from '@/components/publication/SignalReport';
 import PublicationSectionBoundary from '@/components/publication/PublicationSectionBoundary';
+import RosterNote from '@/components/publication/RosterNote';
 import PublicationUnavailable from '@/components/publication/PublicationUnavailable';
 import { resetEditionCache } from '@/components/publication/useTop100WomenNominees';
 import OrbitalIndexComingSoon from '@/components/publication/OrbitalIndexComingSoon';
@@ -380,6 +381,13 @@ export default function PublicationBody({ suppressFloatingActions = false, initi
       {!showCountdown && (
         <PublicationSectionBoundary name="navigation">
           <EditorialNav activeSection={activeSection} />
+        </PublicationSectionBoundary>
+      )}
+
+      {/* The roster, as the count is met: one hundred names, one asterisk, one line. */}
+      {!showCountdown && (
+        <PublicationSectionBoundary name="roster-note">
+          <RosterNote />
         </PublicationSectionBoundary>
       )}
 
