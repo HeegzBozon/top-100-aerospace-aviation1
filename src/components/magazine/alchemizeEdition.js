@@ -6,6 +6,7 @@ import {
   editionSectionBlocks,
 } from '@/components/magazine/top100WomenEdition';
 import { buildEditionPages } from '@/components/magazine/editionPages';
+import { editionFieldMap } from '@/components/magazine/editionBands';
 
 // Rebinding: the same alchemy, applied to a copy of the edition that already exists.
 //
@@ -30,7 +31,12 @@ export async function rebindEdition({ issueId, nominees = [] }) {
   const articles = Array.isArray(createdArticles) ? createdArticles : createdArticles?.records || [];
   const articleList = [...articles].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  const pages = buildEditionPages({ ...issue, sections: EDITION_SECTIONS.map((section) => ({ ...section })) }, articleList, blockMap);
+  const pages = buildEditionPages(
+    { ...issue, sections: EDITION_SECTIONS.map((section) => ({ ...section })) },
+    articleList,
+    blockMap,
+    editionFieldMap(nominees),
+  );
 
   const createdPages = await base44.entities.MagazinePage.bulkCreate(
     pages.map((p) => ({ ...p, issue_id: issueId, status: live ? 'published' : 'draft' })),
@@ -100,7 +106,7 @@ export async function alchemizeTop100Women2025({ nominees = [] } = {}) {
 
   const articleList = [...articles].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  const pages = buildEditionPages(issue, articleList, blockMap);
+  const pages = buildEditionPages(issue, articleList, blockMap, editionFieldMap(nominees));
 
   const createdPages = await base44.entities.MagazinePage.bulkCreate(
     pages.map((p) => ({ ...p, issue_id: issue.id })),

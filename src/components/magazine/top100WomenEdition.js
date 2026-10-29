@@ -1,3 +1,4 @@
+import { OPENING_BAND, SPREADS_IN_OPENING } from '@/components/magazine/editionBands';
 import {
   clean,
   countryOf,
@@ -20,9 +21,10 @@ import {
 
 export const HONOREES_SECTION_ID = 'sec-honorees';
 export const NAME_INDEX_SECTION_ID = 'sec-name-index';
-// The measure's own opening feature: the three names that stand first, opened ahead of
-// the run of the hundred with the room a first place earns.
-export const FIRST_THREE_SECTION_ID = 'sec-first-three';
+// The measure's own opening: the ten names that stand first, opened ahead of the run of
+// the hundred — the first three at the length a first place earns, the next seven on a
+// page each. Everything after No. 10 is read by field (see editionBands).
+export const OPENING_SECTION_ID = 'sec-opening-ten';
 
 // The eleven parts of the book, in the order it prints them. The contents is a page,
 // not a chapter: a magazine's contents is furniture, and giving it a section of its
@@ -38,7 +40,7 @@ export const EDITION_SECTIONS = [
   { id: 'sec-numbers', name: 'By the Numbers', section_type: 'evergreen', section_group: 'front_of_book' },
   { id: 'sec-manifesto', name: 'The Manifesto', section_type: 'feature', section_group: 'front_of_book' },
   { id: 'sec-voices', name: 'Voices', section_type: 'evergreen', section_group: 'front_of_book' },
-  { id: FIRST_THREE_SECTION_ID, name: 'The First Three', section_type: 'feature', section_group: 'front_of_book' },
+  { id: OPENING_SECTION_ID, name: 'The Opening Ten', section_type: 'feature', section_group: 'front_of_book' },
   { id: 'sec-portraits', name: 'Featured Portraits', section_type: 'feature', section_group: 'well' },
   { id: HONOREES_SECTION_ID, name: 'The Index', section_type: 'profile', section_group: 'well' },
   { id: 'sec-orbital-index', name: 'Connections', section_type: 'evergreen', section_group: 'back_of_book' },
@@ -198,14 +200,23 @@ const SECTION_EDITORIAL = {
   // The opening feature: the three names the measure placed first, and why a book of a
   // hundred opens on three. No authored blocks here — each of the three carries its own
   // spread (see firstThreeArticle) and the composer lays it out from the article itself.
-  [FIRST_THREE_SECTION_ID]: {
-    title: 'The First Three',
-    subtitle: 'Where the measure lands first.',
+  [OPENING_SECTION_ID]: {
+    title: 'The Opening Ten',
+    subtitle: 'Where the measure lands first, and the field the hundred runs in after it.',
     writer_credit: 'The Editors',
     body: [
-      'A hundred names, and a first place among them. The measure placed three at the front of this edition; each is opened here at the length that standing earns, and met again in The Index with the rest of the hundred.',
+      'A hundred names, and a first place among them. The measure placed ten at the front of this edition: the three who stand first are opened at the length that standing earns, the next seven on a page each.',
+      'From No. 11 the edition changes how it is read, not what it measured: the same standings are grouped by field, so a reader can follow one discipline through the book.',
       ROSTER_NOTE,
     ].join('\n\n'),
+    blocks: [
+      { type: 'kicker', text: 'The Measure — Opening' },
+      { type: 'heading', text: 'The Opening Ten' },
+      { type: 'byline', text: 'By The Editors' },
+      { type: 'body', text: 'A hundred names, and a first place among them. The measure placed ten at the front of this edition: the three who stand first are opened at the length that standing earns, the next seven on a page each.' },
+      { type: 'body', text: 'From No. 11 the edition changes how it is read, not what it measured: the same standings are grouped by field, so a reader can follow one discipline through the book.' },
+      { type: 'byline', text: ROSTER_NOTE },
+    ],
   },
 
   'sec-portraits': {
@@ -235,7 +246,7 @@ const SECTION_EDITORIAL = {
     writer_credit: 'The Editors',
     body: [
       `${ROSTER_LABEL} names, resolved from the 2025 pool. Every honoree validated by peers, measured by signal, never by status.`,
-      `The index runs in the order the measure placed these names: first to last, and by nothing else.`,
+      'The ten who stand first were opened at the front of this book in measured order. The rest are set here by field, so a reader can follow one discipline through the edition; the standing printed on every entry is still the measurement, and the whole measure is listed in one order at the close of this section.',
       'Each entry that follows is one honoree of the edition as the directory prints her — her stand, her country, her own words where the record kept them, and the read the institution keeps.',
     ].join('\n\n'),
     blocks: [
@@ -243,7 +254,7 @@ const SECTION_EDITORIAL = {
       { type: 'heading', text: 'The Index' },
       { type: 'byline', text: `By The Editors · ${ROSTER_LABEL} names` },
       { type: 'body', text: `${ROSTER_LABEL} names, resolved from the 2025 pool. Every honoree validated by peers, measured by signal, never by status.` },
-      { type: 'body', text: 'The index runs in the order the measure placed these names: first to last, and by nothing else.' },
+      { type: 'body', text: 'The ten who stand first were opened at the front of this book in measured order. The rest are set by field, so a reader can follow one discipline through the edition; the standing printed on every entry is still the measurement.' },
     ],
   }),
 
@@ -370,7 +381,7 @@ export function firstThreeArticle(nominee, rank) {
     teaser: where || stand,
     article_type: 'feature',
     status: 'ready',
-    section_id: FIRST_THREE_SECTION_ID,
+    section_id: OPENING_SECTION_ID,
     nominee_id: nominee.id,
     hero_image_url: clean(nominee.avatar_url || nominee.photo_url),
     writer_credit: 'The Editors',
@@ -478,18 +489,22 @@ export function editionArticles(nominees = []) {
       pull_quote_attribution: resolved.pull_quote_attribution || '',
     });
 
-    // The first three carry the opening: one spread each, ahead of the run of the hundred.
-    if (section.id === FIRST_THREE_SECTION_ID) {
-      ranked.slice(0, 3).forEach((nominee, i) => push(firstThreeArticle(nominee, standingOf(nominee, i))));
+    // The opening ten carry the front of the book: the three who stand first at the
+    // length their standing earns, the next seven on a page each — all in measured order.
+    if (section.id === OPENING_SECTION_ID) {
+      ranked.slice(0, SPREADS_IN_OPENING).forEach((nominee, i) => push(firstThreeArticle(nominee, standingOf(nominee, i))));
+      ranked
+        .slice(SPREADS_IN_OPENING, OPENING_BAND)
+        .forEach((nominee) => push({ ...honoreeArticle(nominee), section_id: OPENING_SECTION_ID }));
     }
 
     if (section.id !== HONOREES_SECTION_ID) return;
 
-    // The index runs as the measure placed it: first to last, and by nothing else. The
-    // first three are not repeated here — they have already been given their spreads in
-    // the opening section, and the book does not print a woman twice.
+    // The rest of the hundred, in measured order. The composer groups these by field for
+    // reading (see editionBands); the standing each one holds is printed unchanged. The
+    // opening ten are not repeated here — the book does not print a woman twice.
     ranked.forEach((nominee, i) => {
-      if (standingOf(nominee, i) <= 3) return;
+      if (standingOf(nominee, i) <= OPENING_BAND) return;
       push(honoreeArticle(nominee));
     });
   });

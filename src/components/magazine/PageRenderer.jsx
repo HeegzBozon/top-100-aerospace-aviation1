@@ -4,6 +4,9 @@ import PinnedPageHead from '@/components/magazine/PinnedPageHead';
 import PortraitPlate from '@/components/magazine/PortraitPlate';
 import FaceSpread from '@/components/magazine/FaceSpread';
 import PageImageBand from '@/components/magazine/PageImageBand';
+import Centerfold from '@/components/magazine/Centerfold';
+import HouseAdPage from '@/components/magazine/HouseAdPage';
+import { CENTERFOLD_LABEL, HOUSE_AD_LABEL, PATRON_LABEL } from '@/components/magazine/editionBands';
 import { usePageTeleprompter, PAGE_SCROLL_ATTR } from '@/components/magazine/pageTeleprompter';
 
 // The blocks that make up a page's head: what pins to the top of the frame while the body
@@ -33,6 +36,17 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   const blocks = page.content_blocks || [];
   const bg = page.background_image_url;
   const credits = issue.cover_credits || {};
+
+  // The pages the edition places rather than measures, marked in their own first line: a
+  // centerfold, and the two labelled placements — the house's own advertisement, and the
+  // patron's slot. They are drawn in their own frames so neither reads as editorial.
+  const pageMark = blocks[0]?.type === 'kicker' ? String(blocks[0].text || '') : '';
+  if (pageMark.startsWith(CENTERFOLD_LABEL)) {
+    return <Centerfold blocks={blocks} imageUrl={bg} pageNumber={pageNumber} totalPages={totalPages} />;
+  }
+  if (pageMark === HOUSE_AD_LABEL || pageMark === PATRON_LABEL) {
+    return <HouseAdPage blocks={blocks} label={pageMark} pageNumber={pageNumber} totalPages={totalPages} />;
+  }
 
   // Cover page. A cover with a photograph is led by it; a cover without one is set in
   // type — the masthead mark, the issue, the rule, and the credit stack — which is how
@@ -153,7 +167,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
                         {section.directory.length} honorees, in full
                       </p>
                       <p className="text-[10px] mt-0.5 leading-tight" style={{ color: 'rgba(30,58,90,0.5)' }}>
-                        In measured order · pages {folios(section.from, section.to)}
+                        {section.section_type === 'profile' ? 'Grouped by field, in measured order' : 'In measured order'} · pages {folios(section.from, section.to)}
                       </p>
                     </div>
                   </div>
