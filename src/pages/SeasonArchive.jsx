@@ -35,10 +35,15 @@ export default function SeasonArchive() {
         .filter((n) => n.season_id === seasonId || getArchiveAppearance(n, seasonId))
         .map((n) => {
           const app = getArchiveAppearance(n, seasonId);
-          const rank = app?.rank ?? n.raw_nomination_data?.rank ?? 9999;
+          // A volume's positions live on the record as finalized ranks. Where a volume
+          // carries none (a season never finalized into the archive), the honoree has no
+          // position to print — it is left empty and seated at the tail, never numbered.
+          const rank = Number.isFinite(app?.rank)
+            ? app.rank
+            : (Number.isFinite(n.raw_nomination_data?.rank) ? n.raw_nomination_data.rank : null);
           return { ...n, _archiveRank: rank, _archiveVolume: volLabel ?? app?.volume ?? n.raw_nomination_data?.volume };
         })
-        .sort((a, b) => (a._archiveRank ?? 9999) - (b._archiveRank ?? 9999));
+        .sort((a, b) => (a._archiveRank ?? Number.MAX_SAFE_INTEGER) - (b._archiveRank ?? Number.MAX_SAFE_INTEGER));
       setNominees(list);
       setLoading(false);
     })();

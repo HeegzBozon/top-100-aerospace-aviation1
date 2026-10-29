@@ -48,7 +48,8 @@ export default function ArchiveHonoreeDetail({ nominee, onClose }) {
                 )}
                 <div className="min-w-0">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: gold }}>
-                    Rank #{nominee.raw_nomination_data?.rank} · {nominee.raw_nomination_data?.volume || 'Volume I'}
+                    {Number.isFinite(nominee.raw_nomination_data?.rank) ? `Rank #${nominee.raw_nomination_data.rank} · ` : ''}
+                    {nominee.raw_nomination_data?.volume || 'Volume I'}
                   </p>
                   <h2 className="text-xl font-semibold truncate" style={{ color: navy, fontFamily: 'Playfair Display, Georgia, serif' }}>
                     {nominee.name}
