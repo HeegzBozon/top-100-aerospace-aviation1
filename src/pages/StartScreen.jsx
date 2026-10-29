@@ -12,6 +12,8 @@ import StartSeasonLine from '@/components/start/StartSeasonLine';
 import PublicationCountdown from '@/components/start/PublicationCountdown';
 import StartTitleActions from '@/components/start/StartTitleActions';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
+import StartRecordBand from '@/components/start/StartRecordBand';
+import useRecordChecklist from '@/components/record/useRecordChecklist';
 import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
 import { loadWomenIssue } from '@/components/magazine/womenEdition';
 import { issueStatus, progressCta, readIssueProgress } from '@/lib/readingProgress';
@@ -41,6 +43,9 @@ export default function StartScreen() {
   // The Fellow's own ballot, as it stands: the program's key reports it, so the card that
   // asks for a hundred names says how many of them are already in order.
   const [ballotCount, setBallotCount] = useState(null);
+  // The Fellow's own record, read once here and handed to both machines: the six keys
+  // beneath the programs report how much of each checklist is already in place.
+  const record = useRecordChecklist();
 
   useEffect(() => {
     if (!signedIn) {
@@ -252,6 +257,7 @@ export default function StartScreen() {
           vote={vote}
           notifyOpen={notifyOpen}
           onNotifyChange={setNotifyOpen}
+          record={record}
         />
       </div>
 
@@ -295,6 +301,14 @@ export default function StartScreen() {
               </div>
 
               <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />
+
+              {signedIn && (
+                <StartRecordBand
+                  surfaces={record.surfaces}
+                  overall={record.overall}
+                  loading={record.loading}
+                />
+              )}
             </div>
           </div>
         </div>

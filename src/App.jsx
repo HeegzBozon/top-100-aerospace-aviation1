@@ -71,6 +71,7 @@ const Shop = lazy(() => import('@/pages/Shop'));
 const Membership = lazy(() => import('@/pages/Membership'));
 const Subscribe = lazy(() => import('@/pages/Subscribe'));
 const Profile = lazy(() => import('@/pages/Profile'));
+const RecordWorkspace = lazy(() => import('@/pages/RecordWorkspace'));
 const Rsvp = lazy(() => import('@/pages/Rsvp'));
 const PlatformDevelopmentBoard = lazy(() => import('@/pages/PlatformDevelopmentBoard'));
 const Meetups = lazy(() => import('@/pages/Meetups'));
@@ -227,6 +228,9 @@ const AuthenticatedApp = () => {
       <Route path="/Membership" element={<Membership />} />
       <Route path="/subscribe" element={<Subscribe />} />
       <Route path="/Profile" element={<Profile />} />
+      {/* The Fellow's record as six checklists: View, Business Card, Data Room,
+          Availability, Inbox, Account. The surface is the deep link. */}
+      <Route path="/record" element={<RecordWorkspace />} />
       <Route path="/rsvp" element={<Rsvp />} />
       <Route path="/volume-one" element={<Navigate to="/archive/696aec2d99297cdbe96ee71e" replace />} />
       <Route path="/volume-one-men" element={<Navigate to="/archive/6a6b699d7b16a7017ce0c3c0" replace />} />

@@ -4,6 +4,7 @@ import DesktopStartRail from "./DesktopStartRail";
 import DesktopStartHero from "./DesktopStartHero";
 import DesktopCyclePanel from "./DesktopCyclePanel";
 import DesktopSurfaceIndex from "./DesktopSurfaceIndex";
+import StartRecordBand from "@/components/start/StartRecordBand";
 import "../deskTitle.css";
 
 // What a desk opens on. The phone gets the machine's keypad; the desk gets the cover:
@@ -21,6 +22,7 @@ export default function DesktopStartScreen({
   vote,
   notifyOpen,
   onNotifyChange,
+  record,
 }) {
   return (
     /* The plate is measured against the tube rather than the window: the cover fills
@@ -47,6 +49,16 @@ export default function DesktopStartScreen({
           />
         </div>
         <DesktopSurfaceIndex items={menuItems} />
+
+        {/* A Fellow's own record, offered as six keys beneath the programs — each
+            one a checklist of its own. */}
+        {signedIn && record && (
+          <StartRecordBand
+            surfaces={record.surfaces}
+            overall={record.overall}
+            loading={record.loading}
+          />
+        )}
 
         <div className="mt-auto pt-14">
           <StartMetaRow />
