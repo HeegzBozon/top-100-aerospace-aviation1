@@ -98,6 +98,7 @@ const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
 const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
+const TalentDesk = lazy(() => import('@/pages/TalentDesk'));
 
 
 // Every surface is an application the machine runs: the shell draws the chrome and
@@ -185,6 +186,9 @@ const AuthenticatedApp = () => {
       <Route path="/networking" element={<Navigate to="/aerosync" replace />} />
       {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
       <Route path="/mission-briefing" element={<MissionBriefing />} />
+      {/* The desk: who has a door open. Public and alphabetical — never ordered by
+          availability, intent, or anything commercial. */}
+      <Route path="/talent-desk" element={<TalentDesk />} />
       <Route path="/the-board" element={<TheBoard />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />

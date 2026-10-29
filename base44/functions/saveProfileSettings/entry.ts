@@ -166,6 +166,9 @@ export default async function (req) {
         module_order: patch.module_order || REORDERABLE,
         six_word_story: patch.six_word_story || '',
         activity_seen_at: patch.activity_seen_at,
+        // The intent layer is written with the row on first save too, so a Fellow's
+        // first opening or closing of a door is never quietly dropped.
+        ...patch,
       });
     }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { BadgeCheck, BookOpen, Camera, Download, Loader2, Settings2, LayoutGrid } from 'lucide-react';
+import { BadgeCheck, BookOpen, Camera, DoorOpen, Download, Loader2, Settings2, LayoutGrid, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import useGlass from '@/hooks/useGlass';
@@ -24,6 +24,8 @@ import { preferredNominee, mergedIntoId } from '@/lib/nomineeMerge';
 import { ensureFellowSettings } from '@/lib/ensureFellowSettings';
 import GlassConsole from '@/components/handheld/GlassConsole';
 import StudioPanel from '@/components/profile/StudioPanel';
+import IntentStudioPanel from '@/components/profile/intent/IntentStudioPanel';
+import InquiryDeskPanel from '@/components/profile/intent/InquiryDeskPanel';
 import PresentationSettings from '@/components/profile-deck/PresentationSettings';
 
 export default function Profile() {
@@ -436,6 +438,10 @@ export default function Profile() {
   // under it, ahead of the boards.
   const panels = [
     { key: 'identity', label: 'Identity', hint: 'Masthead, status and the record', icon: BadgeCheck, node: <div className="px-3 pt-3">{identityNode}</div> },
+    // The two doors and the desk they feed. Opening either is the Fellow's alone;
+    // nothing here is scored or ordered.
+    { key: 'door', label: 'The Door', hint: 'What you are open to', icon: DoorOpen, node: <IntentStudioPanel settings={settings} accent={accent} onSave={savePersonalization} saving={saving} error={saveError} /> },
+    { key: 'desk', label: 'The Desk', hint: 'Who has written to you', icon: Mail, node: <InquiryDeskPanel user={user} accent={accent} /> },
     { key: 'flightography', label: 'Flightography', hint: 'Career record, schools and skills', icon: BookOpen, node: <div className="px-3 pt-3">{fellowModules.flightography}</div> },
     { key: 'studio', label: 'The Studio', hint: 'Three sittings, and the post that traveled', icon: Camera, node: <StudioPanel user={user} nominee={nominee} settings={settings} onOpenSitting={setWizard} /> },
     { key: 'board', label: 'Bulletin Board', hint: 'Instruments, boards and bulletins', icon: LayoutGrid, node: <div className="px-3 pt-3">{boardNode}</div> },
@@ -458,6 +464,18 @@ export default function Profile() {
         <div className="px-3 md:px-6 lg:px-8 py-4 md:py-6 max-w-6xl mx-auto space-y-5">
           {/* Position 1 — locked. Identity above credential. */}
           <div data-hh-module="Identity">{identityNode}</div>
+
+          {/* The doors, and the desk they feed — read on the desk as well as the glass. */}
+          <div data-hh-module="The Door" className="overflow-hidden rounded-2xl" style={{ background: 'rgba(255,255,255,0.45)', border: `1px solid ${B.border}` }}>
+            <IntentStudioPanel
+              settings={settings}
+              accent={accent}
+              onSave={savePersonalization}
+              saving={saving}
+              error={saveError}
+            />
+            <InquiryDeskPanel user={user} accent={accent} />
+          </div>
 
           {/* Master instrument cluster — the Bulletin Board. Houses everything below the masthead. */}
           <div data-hh-module="Bulletin Board">{boardNode}</div>

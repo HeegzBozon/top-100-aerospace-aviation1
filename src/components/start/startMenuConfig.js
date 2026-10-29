@@ -1,4 +1,4 @@
-import { Archive, Award, BookOpen, LayoutGrid, ListChecks, LogIn, Shield, Trophy, UserPlus, Users } from "lucide-react";
+import { Archive, Award, BookOpen, Briefcase, LayoutGrid, ListChecks, LogIn, Shield, Trophy, UserPlus, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -28,6 +28,8 @@ export const START_MENU = [
   // The volumes already closed, open to anyone: the record of previous cycles reads as
   // the archive it is, and every volume in it is reachable from the one it opens on.
   { key: "archive", index: "06", label: "Archive", to: "/archive/6a6b70136ccb7c358f77dd7f", icon: Archive },
+  // The desk is public: a Fellow opens their own door, and anyone may read who has.
+  { key: "talent-desk", index: "07", label: "Talent Desk", to: "/talent-desk", icon: Briefcase },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -35,7 +37,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "07",
+  index: "08",
   label: "Admin",
   to: "/Admin",
   icon: Shield,
