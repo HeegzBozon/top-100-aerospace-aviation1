@@ -53,8 +53,18 @@ export default function ProfileBook({
   useEffect(() => {
     const read = () => {
       const glass = document.querySelector('[data-handheld-screen]');
-      const glassH = glass?.clientHeight || 0;
-      setAvail({ h: glassH || window.innerHeight, glass: glassH > 0 });
+      if (!glass) {
+        setAvail({ h: window.innerHeight, glass: false });
+        return;
+      }
+      const stageEl = stageRef.current;
+      const top = stageEl
+        ? stageEl.getBoundingClientRect().top -
+          glass.getBoundingClientRect().top +
+          glass.scrollTop
+        : 0;
+      // The transport under the page, and the stage's own air.
+      setAvail({ h: glass.clientHeight - Math.max(0, top) - 104, glass: true });
     };
     read();
     const settle = window.setTimeout(read, 320);
@@ -105,11 +115,12 @@ export default function ProfileBook({
   const jump = useCallback(
     (pageIndex) => {
       if (!dims) return null;
-      setIndex(Math.min(Math.floor(pageIndex / dims.perView) * dims.perView, maxStart));
+      const target = Math.min(Math.floor(pageIndex / dims.perView) * dims.perView, maxStart);
+      setIndex(target);
       setContentsOpen(false);
-      return null;
+      return pages[target]?.label || null;
     },
-    [dims, maxStart]
+    [dims, maxStart, pages]
   );
 
   const togglePlay = useCallback(() => setPlaying((p) => !p), []);
@@ -153,8 +164,8 @@ export default function ProfileBook({
   // The ring drives the book the same way the arrows do: a detent turns a page, the
   // centre plays and pauses, back closes the contents and otherwise leaves the page.
   useProfileWheel({
-    labels: () => view.map((page) => page.label),
-    index: () => 0,
+    labels: () => pages.map((page) => page.label),
+    index: () => Math.min(index, Math.max(pages.length - 1, 0)),
     turn: go,
     jump,
     enter: () => {
@@ -168,6 +179,8 @@ export default function ProfileBook({
       }
       return false;
     },
+    play: togglePlay,
+    isPlaying: () => playing,
   });
 
   const atStart = index <= 0;

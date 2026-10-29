@@ -81,8 +81,8 @@ export default function ProfileView({ userId: propUserId = null }) {
     const [inquiry, setInquiry] = useState(null);
     const openEnquiry = (mode, requestType) => setInquiry({ mode, requestType });
 
-    // The record opens as a book. Read is the plain page reader, Watch is the
-    // documentary cut from the same record. Deep-linked with ?mode=.
+    // The record opens as a book, and the book plays: the film is absorbed into the
+    // pages it was cut from. Read is the plain page reader. Deep-linked with ?mode=.
     const [mode, setMode] = useState(() => {
         const requested = params.get('mode');
         // Watch is absorbed into the book: the record plays where it is read.
