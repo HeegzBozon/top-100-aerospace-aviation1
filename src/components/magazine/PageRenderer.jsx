@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { MAGAZINE_PALETTE as P, PORTRAIT_FOCUS } from '@/components/magazine/magazineConfig';
 import PinnedPageHead from '@/components/magazine/PinnedPageHead';
 import PortraitPlate from '@/components/magazine/PortraitPlate';
 import FaceSpread from '@/components/magazine/FaceSpread';
+import PageImageBand from '@/components/magazine/PageImageBand';
 import { usePageTeleprompter, PAGE_SCROLL_ATTR } from '@/components/magazine/pageTeleprompter';
 
 // The blocks that make up a page's head: what pins to the top of the frame while the body
@@ -298,7 +299,11 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     // The head — the region she is indexed under, her name, her stand — is the page's own
     // plate, so the body picks up with what follows it. The portrait is the banner above
     // the plate, not a block of the body.
-    const rest = blocks.filter((b) => !['image', 'kicker', 'heading', 'byline'].includes(b.type));
+    // The lead portrait is the banner above her plate. Any further photograph the editor
+    // sets on the page runs with the body, so a second plate is composed into the read
+    // instead of being dropped.
+    const leadImageIndex = blocks.findIndex((b) => b.type === 'image');
+    const rest = blocks.filter((b, i) => i !== leadImageIndex && !['kicker', 'heading', 'byline'].includes(b.type));
     const firstBody = rest.findIndex((b) => b.type === 'body');
 
     return (
@@ -338,7 +343,11 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
           </PinnedPageHead>
           <div className="px-5 pb-6 pt-4 sm:px-7">
             <div className="w-10 h-px mb-4" style={{ background: `${P.copper}66` }} />
-            {rest.map((block, i) => <BlockRenderer key={i} block={block} lead={i === firstBody} />)}
+            {rest.map((block, i) => (
+              block.type === 'image'
+                ? <PageImageBand key={i} block={block} />
+                : <BlockRenderer key={i} block={block} lead={i === firstBody} />
+            ))}
           </div>
         </div>
         <div className="flex-shrink-0 px-6 py-1 text-center" style={{ borderTop: `1px solid ${P.gold}20` }}>
