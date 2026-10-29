@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { BadgeCheck, FileText, Loader2, Mail, Newspaper, Settings2 } from 'lucide-react';
+import { BadgeCheck, CalendarClock, FileText, Loader2, Mail, Newspaper, Settings2 } from 'lucide-react';
 import { saveProfileSettings } from '@/functions/saveProfileSettings';
 import useGlass from '@/hooks/useGlass';
 import ProfileWizard from '@/components/profile/wizard/ProfileWizard';
@@ -206,6 +206,21 @@ export default function Profile() {
     <section className="pd-sec">
       <h2 className="pd-label mb-6">Cover story</h2>
       <IntentStudioPanel
+        part="pitch"
+        settings={settings}
+        accent={accent}
+        onSave={savePersonalization}
+        saving={saving}
+        error={saveError}
+      />
+    </section>
+  );
+
+  const availability = (
+    <section className="pd-sec">
+      <h2 className="pd-label mb-6">Availability</h2>
+      <IntentStudioPanel
+        part="availability"
         settings={settings}
         accent={accent}
         onSave={savePersonalization}
@@ -253,11 +268,30 @@ export default function Profile() {
     {
       key: 'cover',
       label: 'Cover story',
-      hint: 'What you are open to',
+      hint: 'What you want next',
       icon: Newspaper,
       node: (
         <div className="px-3 pt-3">
           <IntentStudioPanel
+            part="pitch"
+            settings={settings}
+            accent={accent}
+            onSave={savePersonalization}
+            saving={saving}
+            error={saveError}
+          />
+        </div>
+      ),
+    },
+    {
+      key: 'availability',
+      label: 'Availability',
+      hint: 'What you are open to',
+      icon: CalendarClock,
+      node: (
+        <div className="px-3 pt-3">
+          <IntentStudioPanel
+            part="availability"
             settings={settings}
             accent={accent}
             onSave={savePersonalization}
@@ -301,6 +335,7 @@ export default function Profile() {
           {record}
           <div className="px-6 lg:px-40">
             {coverStory}
+            {availability}
             {inbox}
           </div>
           {accountRow}

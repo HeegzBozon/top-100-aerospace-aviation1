@@ -39,7 +39,11 @@ const pick = (settings) => {
 // The two doors, held independently. A Fellow opens either, both, or neither; each
 // carries its own curated fields. Nothing here is published until the change is
 // written, and nothing written here is ever read by discovery, measurement or scoring.
-export default function IntentStudioPanel({ settings, accent, onSave, saving, error }) {
+// `part` renders one half of the panel: the offer itself ("pitch") or how people
+// reach the Fellow ("availability"). Both edit the same record.
+export default function IntentStudioPanel({ settings, accent, onSave, saving, error, part = 'all' }) {
+  const showPitch = part !== 'availability';
+  const showReach = part !== 'pitch';
   const [draft, setDraft] = useState(() => pick(settings));
 
   // A settings record that arrives after first paint (or is replaced by the server
@@ -59,19 +63,19 @@ export default function IntentStudioPanel({ settings, accent, onSave, saving, er
   return (
     <section className="px-3 pb-4 pt-3">
       <p className="text-[8.5px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-        The Door
+        {showReach ? 'Availability' : 'Cover story'}
       </p>
       <h2 className="mt-1.5 font-heading text-[19px] font-semibold leading-tight" style={{ color: B.navy }}>
-        What you&rsquo;re open to.
+        {showReach ? 'Availability' : 'Cover story'}
       </h2>
       <p className="mt-1 text-[11.5px] leading-relaxed" style={{ color: B.muted }}>
-        Two independent doors. Open the one you want a conversation through — a career
-        conversation, a commercial engagement, or both. Visitors write privately; your
-        address is never shown.
+        {showReach
+          ? 'What you are open to right now — a career conversation, a commercial engagement, or both. Visitors write privately; your address is never shown.'
+          : 'The two lines that introduce you: what you want next, and what you can be engaged to do. Both are optional and independent of each other.'}
       </p>
 
       <div className="mt-3 space-y-2.5">
-        {MODE_ORDER.map((mode) => (
+        {showPitch && MODE_ORDER.map((mode) => (
           <IntentModeCard
             key={mode}
             mode={mode}
@@ -82,6 +86,7 @@ export default function IntentStudioPanel({ settings, accent, onSave, saving, er
           />
         ))}
 
+        {showReach && (
         <div className="rounded-2xl p-4" style={{ background: 'rgba(255,255,255,0.86)', border: `1px solid ${B.border}` }}>
           <p className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: B.copper }}>
             How people reach you
@@ -111,6 +116,7 @@ export default function IntentStudioPanel({ settings, accent, onSave, saving, er
             />
           </div>
         </div>
+        )}
       </div>
 
       {error && (
@@ -128,13 +134,13 @@ export default function IntentStudioPanel({ settings, accent, onSave, saving, er
           style={{ background: B.navy, color: '#fff' }}
         >
           {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          {saving ? 'Saving' : dirty ? 'Publish the door' : 'Published'}
+          {saving ? 'Saving' : dirty ? 'Save' : 'Saved'}
         </button>
       </div>
       <p className="mt-2 text-center text-[10px] leading-relaxed" style={{ color: B.muted }}>
         {open.length
           ? `Open now: ${open.map((mode) => MODES[mode].label).join(' and ')}.`
-          : 'Both doors are closed. No offer and no inquiry form appear on your profile.'}
+          : 'Nothing open right now. No offer and no inquiry form appear on your profile.'}
       </p>
     </section>
   );
