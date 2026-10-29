@@ -43,7 +43,7 @@ function WindowLine({ cohort }) {
 export default function MonitorTotals({ totals, cohortStats }) {
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
         {TILES.map(({ key, label, hint, icon: Icon }) => (
           <div key={key} className="rounded-lg border border-editorial-navy/10 bg-white px-3 py-2.5 shadow-sm">
             <div className="flex items-center gap-1.5 text-editorial-navy/50">
