@@ -89,8 +89,8 @@ export default function DesktopDock() {
   };
 
   return (
-    <div className="imac-lift fixed bottom-4 left-1/2 z-[100] -translate-x-1/2 px-4">
-      <div className="relative">
+    <div className="relative flex min-w-0 max-w-full justify-center">
+      <div className="relative min-w-0">
         {/* Anything pressed outside the shelf puts the drawer down. It stands behind the
             shelf itself, so a tile is always still the thing a press lands on. */}
         {open ? <div className="fixed inset-0" onClick={close} aria-hidden="true" /> : null}
@@ -118,7 +118,10 @@ export default function DesktopDock() {
           <Seam />
 
           {hosted ? (
-            <div className="flex items-center gap-1 px-1" style={{ width: "min(580px, 44vw)" }}>
+            <div
+              className="flex min-w-0 items-center gap-1 overflow-hidden px-1"
+              style={{ width: "clamp(320px, 40vw, 560px)" }}
+            >
               <div className="flex min-w-0 flex-1 items-center">
                 {slots["record-transport"]}
               </div>

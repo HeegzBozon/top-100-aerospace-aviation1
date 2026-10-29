@@ -90,6 +90,19 @@ function coverPage({ user, nominee, settings, accent }) {
     cover: coverUrl(settings?.cover_asset_id || user?.cover_key),
     accent: accent || null,
     lines: lines(nominee?.description).slice(0, 2),
+    // The Fellow's own line, editable on the page it prints on.
+    edit: {
+      fields: [
+        {
+          key: 'six_word_story',
+          label: 'Six-word story',
+          value: six,
+          max: 60,
+          rows: 2,
+          hint: 'Printed under your name on the cover.',
+        },
+      ],
+    },
   };
 }
 
@@ -182,6 +195,19 @@ function wordsPage({ settings, nominee }) {
     lines: text.slice(0, 3),
     quotes: quotes.slice(0, 2),
     note: quotes.length ? 'The documentary record, in the Fellow\u2019s own telling.' : '',
+    // Written here, on the page that prints it.
+    edit: {
+      fields: [
+        { key: 'about_me', label: 'About me', value: about, max: 600, rows: 5 },
+        {
+          key: 'who_id_like_to_meet',
+          label: "Who I'd like to meet",
+          value: meet,
+          max: 600,
+          rows: 4,
+        },
+      ],
+    },
   };
 }
 

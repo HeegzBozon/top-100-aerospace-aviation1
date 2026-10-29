@@ -202,6 +202,19 @@ export default function ProfileView({ userId: propUserId = null }) {
                   })
             : null;
 
+    // A line written on the page it prints on goes straight to the record that page was
+    // composed from, and the book is recomposed from what came back — never held in the
+    // book itself, so what the Fellow reads is always what the record says.
+    const savePageFields = async (patch) => {
+        if (!viewer?.email || viewer.email !== fellowEmail) return;
+        if (ownerSettings?.id) {
+            await base44.entities.FellowProfileSettings.update(ownerSettings.id, patch);
+        } else {
+            await base44.entities.FellowProfileSettings.create({ fellow_email: fellowEmail, ...patch });
+        }
+        await queryClient.invalidateQueries({ queryKey: ['fellowProfileSettings', fellowEmail] });
+    };
+
     // The claim band is seated in the book, so "claim this record" walks the reader
     // to it rather than opening a second surface for the same decision.
     const revealClaim = () =>
@@ -278,8 +291,11 @@ export default function ProfileView({ userId: propUserId = null }) {
     // Profile view counts are deliberately absent: they sit on the never-implement
     // list, so this surface neither counts a visit nor stores one.
 
+    // The record is one surface edge to edge: on a desk the tube is filled with the
+    // book's own navy, so no cream band is left standing around the pages or under them
+    // where the shelf stands.
     return (
-        <div className="relative min-h-screen bg-editorial-cream md:min-h-full">
+        <div className="relative min-h-screen bg-editorial-cream md:min-h-full md:bg-[#0B1826]">
             <div
                 className="pointer-events-none fixed inset-0 z-[300] transition-opacity duration-700 ease-in-out"
                 style={{ background: NAVY_DEEP, opacity: entered ? 0 : 1 }}
@@ -331,6 +347,7 @@ export default function ProfileView({ userId: propUserId = null }) {
                             onOpenEpisode={openEpisode}
                             autoplayMode={ownerSettings?.autoplay_mode || 'loop'}
                             dwellSeconds={ownerSettings?.dwell_seconds || 7}
+                            onSaveFields={isOwner ? savePageFields : null}
                         />
                     )}
 

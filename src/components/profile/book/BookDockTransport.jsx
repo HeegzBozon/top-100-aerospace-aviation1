@@ -19,6 +19,11 @@ const GOLD = '#C9A87C';
 // the readout, the pace and the contents. It is the book's own transport laid along the
 // machine's shelf, so the record is driven from the hardware rather than from a strip
 // covering the page.
+//
+// Every key here is a fixed size and the row never wraps: the shelf is a moulded part
+// with a fixed width, so the transport shrinks with it rather than spilling over the
+// seams and the account key at its ends. The pace is one key that cycles, printing the
+// pace it is set to, because four printed keys were the widest thing on the shelf.
 function Key({ onClick, disabled, label, children, primary }) {
   return (
     <button
@@ -28,7 +33,7 @@ function Key({ onClick, disabled, label, children, primary }) {
       aria-label={label}
       title={label}
       className={`flex shrink-0 items-center justify-center rounded-full transition-colors disabled:opacity-25 ${
-        primary ? 'h-9 w-9' : 'h-8 w-8 hover:bg-white/10'
+        primary ? 'h-8 w-8' : 'h-7 w-7 hover:bg-white/10'
       }`}
       style={
         primary
@@ -58,6 +63,13 @@ export default function BookDockTransport({
   const pageCount = labels.length;
   if (!pageCount) return null;
 
+  const paceIndex = Math.max(
+    0,
+    READ_PACES.findIndex((p) => p.key === pace)
+  );
+  const current = READ_PACES[paceIndex] || READ_PACES[0];
+  const nextPace = READ_PACES[(paceIndex + 1) % READ_PACES.length];
+
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-1">
       {/* The measure: every page a segment, and a way to it */}
@@ -67,7 +79,7 @@ export default function BookDockTransport({
         aria-label="Jump to a page"
       >
         {labels.map((label, i) => {
-          const current = i >= index && i < index + visibleCount;
+          const active = i >= index && i < index + visibleCount;
           const read = i < index;
           return (
             <button
@@ -75,37 +87,41 @@ export default function BookDockTransport({
               type="button"
               onClick={() => onJump?.(i)}
               aria-label={`Page ${i + 1}: ${label}`}
-              aria-current={current ? 'page' : undefined}
+              aria-current={active ? 'page' : undefined}
               className="h-[3px] min-w-0 flex-1 rounded-full transition-colors hover:opacity-80"
               style={{
-                background: current
+                background: active
                   ? COPPER
                   : read
                     ? 'rgba(201,168,124,0.55)'
                     : 'rgba(250,248,245,0.18)',
-                boxShadow: current ? `0 0 8px ${COPPER}` : 'none',
+                boxShadow: active ? `0 0 8px ${COPPER}` : 'none',
               }}
             />
           );
         })}
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex min-w-0 items-center gap-1">
         <Key onClick={onFirst} disabled={index <= 0} label="Back to the cover">
-          <ChevronsLeft className="h-3.5 w-3.5" />
+          <ChevronsLeft className="h-3 w-3" />
         </Key>
         <Key onClick={onPrev} disabled={index <= 0} label="Previous page">
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-3.5 w-3.5" />
         </Key>
         <Key onClick={onTogglePlay} label={playing ? 'Pause the record' : 'Play the record'} primary>
-          {playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+          {playing ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
         </Key>
-        <Key onClick={onNext} disabled={index >= pageCount - 1} label="Next page">
-          <ChevronRight className="h-4 w-4" />
+        <Key
+          onClick={onNext}
+          disabled={index + visibleCount >= pageCount}
+          label="Next page"
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
         </Key>
 
         <span
-          className="shrink-0 px-1.5 text-[12px] tabular-nums"
+          className="shrink-0 px-1 text-[11px] tabular-nums"
           style={{ fontFamily: 'var(--font-heading)', color: CREAM }}
           aria-live="polite"
         >
@@ -118,48 +134,30 @@ export default function BookDockTransport({
           </span>
         </span>
 
-        <div
-          className="ml-1 flex items-center gap-0.5"
-          role="group"
-          aria-label="Playback pace"
+        <button
+          type="button"
+          onClick={() => onPace?.(nextPace.key)}
+          aria-label={`Playback pace: ${current.label}. Change to ${nextPace.label}`}
+          title={`Pace · ${current.label}`}
+          className="shrink-0 rounded-full px-2 py-1 font-body text-[8px] font-bold uppercase tracking-[0.16em] transition-colors"
+          style={{
+            border: '1px solid rgba(184,115,51,0.6)',
+            background: 'rgba(184,115,51,0.16)',
+            color: GOLD,
+          }}
         >
-          {READ_PACES.map(({ key, label }) => {
-            const active = pace === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => onPace?.(key)}
-                aria-pressed={active}
-                className="rounded-full px-2 py-1 font-body text-[8.5px] font-bold uppercase tracking-[0.16em] transition-colors"
-                style={
-                  active
-                    ? {
-                        background: 'rgba(184,115,51,0.24)',
-                        border: '1px solid rgba(184,115,51,0.75)',
-                        color: GOLD,
-                      }
-                    : {
-                        border: '1px solid rgba(250,248,245,0.14)',
-                        color: 'rgba(250,248,245,0.52)',
-                      }
-                }
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
+          {current.label}
+        </button>
 
         <button
           type="button"
           onClick={onContents}
           aria-label="Contents"
           title="Contents"
-          className="ml-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white/10"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white/10"
           style={{ color: 'rgba(250,248,245,0.62)' }}
         >
-          <List className="h-3.5 w-3.5" style={{ color: GOLD }} />
+          <List className="h-3 w-3" style={{ color: GOLD }} />
         </button>
       </div>
     </div>

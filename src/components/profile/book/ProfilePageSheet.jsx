@@ -1,4 +1,4 @@
-import { ArrowUpRight, BadgeCheck, FileText, Mic, Play } from 'lucide-react';
+import { ArrowUpRight, BadgeCheck, FileText, Mic, Pencil, Play } from 'lucide-react';
 import { EPISODE_TRACK, trackIndex, stageLabel } from '@/components/episode/episodeStages';
 
 const NAVY = '#1E3A5A';
@@ -135,7 +135,7 @@ function FactRows({ facts }) {
 }
 
 // ── The cover ────────────────────────────────────────────────────────────────
-function CoverPage({ page }) {
+function CoverPage({ page, editKey = null }) {
   return (
     <div style={{ position: 'relative', height: '100%', overflow: 'hidden', background: NAVY }}>
       {page.cover && (
@@ -188,6 +188,10 @@ function CoverPage({ page }) {
             {page.number}
           </span>
         </div>
+
+        {editKey ? (
+          <div style={{ position: 'absolute', bottom: 18, right: 22 }}>{editKey}</div>
+        ) : null}
 
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
           {page.portrait && (
@@ -847,8 +851,42 @@ function EpisodePage({ page, isOwner, onOpenEpisode }) {
 // One page of the Fellow's book, composed at the design size the spread scales
 // from. Every kind is drawn here so the flipbook and the accessible reader can
 // never render the same page two different ways.
-export default function ProfilePageSheet({ page, isOwner, onEnquire, onOpenEpisode }) {
-  if (page.kind === 'cover') return <CoverPage page={page} />;
+// Writing to the record from the page that prints it. Only the Fellow sees it, and only
+// on a page composed from something they write themselves — a measure is never editable.
+function EditPageKey({ onClick, dark }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="Edit this page"
+      className="inline-flex items-center gap-1"
+      style={{
+        fontFamily: 'var(--font-body)',
+        fontSize: 6.5,
+        fontWeight: 700,
+        letterSpacing: '0.18em',
+        textTransform: 'uppercase',
+        color: dark ? GOLD : LABEL,
+        background: 'transparent',
+        border: `1px solid ${dark ? 'rgba(201,168,124,0.55)' : 'rgba(143,92,44,0.45)'}`,
+        borderRadius: 2,
+        padding: '3px 6px',
+        cursor: 'pointer',
+      }}
+    >
+      <Pencil style={{ width: 7, height: 7 }} />
+      Edit page
+    </button>
+  );
+}
+
+export default function ProfilePageSheet({ page, isOwner, onEnquire, onOpenEpisode, onEditPage }) {
+  const editKey =
+    isOwner && page.edit && onEditPage ? (
+      <EditPageKey dark={page.kind === 'cover'} onClick={() => onEditPage(page)} />
+    ) : null;
+
+  if (page.kind === 'cover') return <CoverPage page={page} editKey={editKey} />;
 
   const dark = page.kind === 'viral';
 
@@ -904,9 +942,12 @@ export default function ProfilePageSheet({ page, isOwner, onEnquire, onOpenEpiso
         >
           TOP 100 Aerospace &amp; Aviation
         </span>
-        <span style={{ fontFamily: 'var(--font-body)', fontSize: 6.5, letterSpacing: '0.2em', color: 'rgba(30,58,90,0.35)' }}>
-          {page.number}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {editKey}
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 6.5, letterSpacing: '0.2em', color: 'rgba(30,58,90,0.35)' }}>
+            {page.number}
+          </span>
+        </div>
       </footer>
     </div>
   );

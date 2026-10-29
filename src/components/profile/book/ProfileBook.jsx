@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import FlipPage, { PAGE_RATIO } from '@/components/magazine/FlipPage';
 import ProfilePageSheet from './ProfilePageSheet';
+import PageEditor from './PageEditor';
 import BookTransport, { PACE_SCALE } from './BookTransport';
 import BookDockTransport from './BookDockTransport';
 import useProfileWheel from './useProfileWheel';
@@ -26,6 +27,7 @@ export default function ProfileBook({
   onOpenEpisode,
   autoplayMode = 'loop',
   dwellSeconds = 7,
+  onSaveFields = null,
 }) {
   const stageRef = useRef(null);
   const turnTimer = useRef(0);
@@ -43,6 +45,9 @@ export default function ProfileBook({
   const [contentsOpen, setContentsOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [pace, setPace] = useState('normal');
+  // The page being written to, if any. Writing happens on the page itself, so playback
+  // holds while a line is being corrected and the page never turns out from under it.
+  const [editing, setEditing] = useState(null);
 
   useEffect(() => {
     const el = stageRef.current;
@@ -116,6 +121,7 @@ export default function ProfileBook({
           ? Math.min(index + dims.perView, maxStart)
           : Math.max(index - dims.perView, 0);
       if (target === index) return null;
+      setEditing(null);
       setIndex(target);
       setTurning(dir);
       clearTimeout(turnTimer.current);
@@ -129,6 +135,7 @@ export default function ProfileBook({
     (pageIndex) => {
       if (!dims) return null;
       const target = Math.min(Math.floor(pageIndex / dims.perView) * dims.perView, maxStart);
+      setEditing(null);
       setIndex(target);
       setContentsOpen(false);
       return pages[target]?.label || null;
@@ -141,7 +148,7 @@ export default function ProfileBook({
   // Play reads the record the way the film did: one spread, held for its dwell, then
   // turned. A record that reaches its last spread either starts again or settles.
   useEffect(() => {
-    if (!playing || !pages.length || !dims) return undefined;
+    if (!playing || editing || !pages.length || !dims) return undefined;
     const base = Math.max(3, Number(dwellSeconds) || 7) * 1000;
     const dwell = Math.max(1200, base * (PACE_SCALE[pace] || 1));
     const id = window.setTimeout(() => {
@@ -151,7 +158,7 @@ export default function ProfileBook({
       else setPlaying(false);
     }, dwell);
     return () => clearTimeout(id);
-  }, [playing, pace, index, dims, maxStart, autoplayMode, dwellSeconds, pages.length]);
+  }, [playing, pace, index, dims, maxStart, autoplayMode, dwellSeconds, pages.length, editing]);
 
   const view = useMemo(() => pages.slice(index, index + perView), [pages, index, perView]);
 
@@ -167,13 +174,14 @@ export default function ProfileBook({
       } else if (e.key === ' ' && !contentsOpen) {
         e.preventDefault();
         togglePlay();
-      } else if (e.key === 'Escape' && contentsOpen) {
-        setContentsOpen(false);
+      } else if (e.key === 'Escape') {
+        if (editing) setEditing(null);
+        else if (contentsOpen) setContentsOpen(false);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [go, contentsOpen, togglePlay]);
+  }, [go, contentsOpen, togglePlay, editing]);
 
   // The ring drives the book the same way the arrows do: a detent turns a page, the
   // centre plays and pauses, back closes the contents and otherwise leaves the page.
@@ -257,8 +265,23 @@ export default function ProfileBook({
                       isOwner={isOwner}
                       onEnquire={onEnquire}
                       onOpenEpisode={onOpenEpisode}
+                      onEditPage={onSaveFields ? setEditing : null}
                     />
                   </FlipPage>
+
+                  {/* The line being written, on the page that prints it. Drawn beside
+                      the scaled sheet rather than inside it, so the field is a field's
+                      size whatever the spread is scaled to. */}
+                  {editing && editing.key === page.key ? (
+                    <PageEditor
+                      fields={editing.edit.fields}
+                      onCancel={() => setEditing(null)}
+                      onSave={async (patch) => {
+                        await onSaveFields(patch);
+                        setEditing(null);
+                      }}
+                    />
+                  ) : null}
                 </div>
               ))}
             </div>

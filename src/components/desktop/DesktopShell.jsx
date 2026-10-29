@@ -27,10 +27,9 @@ export default function DesktopShell() {
 
   return (
     <>
-      <ImacHousing>
+      <ImacHousing shelf={bare ? null : <DesktopDock />}>
         <Outlet />
       </ImacHousing>
-      {bare ? null : <DesktopDock />}
     </>
   );
 }
