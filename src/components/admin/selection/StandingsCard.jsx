@@ -2,7 +2,8 @@ import StandingMovement from './StandingMovement';
 
 // One nominee in one column: where they stand, which way they moved, and the figure that
 // column is ordered by. The measure's own note sits under it, so a dash is never mistaken
-// for a zero and a projection never mistaken for a cast ballot.
+// for a zero and a projection never mistaken for a cast ballot. The whole card opens the
+// nominee's full reading.
 
 function measureFor(column, row) {
   if (column.key === 'borda') {
@@ -26,33 +27,44 @@ function edgeTone(move) {
   return 'bg-transparent';
 }
 
-export default function StandingsCard({ row, rank, move = {}, since, column }) {
+export default function StandingsCard({ row, rank, move = {}, since, column, onOpen }) {
   const measure = measureFor(column, row);
 
   return (
-    <div className="relative overflow-hidden rounded-md border border-editorial-navy/10 bg-white px-2.5 py-1.5 shadow-sm">
+    <button
+      type="button"
+      onClick={() => onOpen?.({ row, rank, move, column })}
+      title={`Open ${row.name}'s full reading`}
+      className="relative block w-full overflow-hidden rounded-md border border-editorial-navy/10 bg-white px-2.5 py-1.5 text-left shadow-sm transition hover:border-editorial-copper/50 hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-editorial-copper/60"
+    >
       <span className={`absolute inset-y-0 left-0 w-[2px] ${edgeTone(move)}`} aria-hidden="true" />
 
-      <div className="flex items-center gap-1.5">
+      <span className="flex items-center gap-1.5">
         <span className="font-heading text-[11px] tabular-nums text-editorial-navy/40">{rank}</span>
         <StandingMovement delta={move.delta} isNew={move.isNew} since={since} />
         <span className="ml-auto truncate text-[9px] uppercase tracking-[0.14em] text-editorial-navy/35">
           {row.cohort_label || ''}
         </span>
-      </div>
+      </span>
 
-      <div className="mt-0.5 flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate text-[12px] font-semibold leading-tight text-editorial-navy">{row.name}</p>
-          <p className="truncate text-[10px] leading-tight text-editorial-navy/50">
+      <span className="mt-0.5 flex items-start justify-between gap-2">
+        <span className="min-w-0">
+          <span className="block truncate text-[12px] font-semibold leading-tight text-editorial-navy">
+            {row.name}
+          </span>
+          <span className="block truncate text-[10px] leading-tight text-editorial-navy/50">
             {[row.title, row.company].filter(Boolean).join(' · ') || '—'}
-          </p>
-        </div>
-        <div className="shrink-0 text-right">
-          <p className="font-heading text-[13px] leading-none tabular-nums text-editorial-navy">{measure.value}</p>
-          <p className="mt-0.5 text-[8.5px] uppercase tracking-[0.12em] text-editorial-navy/40">{measure.note}</p>
-        </div>
-      </div>
-    </div>
+          </span>
+        </span>
+        <span className="shrink-0 text-right">
+          <span className="block font-heading text-[13px] leading-none tabular-nums text-editorial-navy">
+            {measure.value}
+          </span>
+          <span className="mt-0.5 block text-[8.5px] uppercase tracking-[0.12em] text-editorial-navy/40">
+            {measure.note}
+          </span>
+        </span>
+      </span>
+    </button>
   );
 }

@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { STANDING_COLUMNS, orderFor } from './standingsOrder';
 import useStandingsMovement from './useStandingsMovement';
 import StandingsColumn from './StandingsColumn';
+import StandingDetailDialog from './StandingDetailDialog';
 
 // The standings as a board: the same pool ordered three ways, read side by side. Borda,
 // Elo and the combined hint each get their own column, so a nominee can be followed down
@@ -11,6 +12,8 @@ import StandingsColumn from './StandingsColumn';
 // board, not a slice of itself.
 export default function StandingsBoard({ rows = [], seeded = 0, castBallots = 0, scopeKey = 'all' }) {
   const [query, setQuery] = useState('');
+  // The nominee whose full reading is open, with the column it was opened from.
+  const [selected, setSelected] = useState(null);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -70,6 +73,7 @@ export default function StandingsBoard({ rows = [], seeded = 0, castBallots = 0,
             moves={moves[column.key]}
             since={since}
             resetKey={query}
+            onOpen={setSelected}
           />
         ))}
       </div>
@@ -78,6 +82,8 @@ export default function StandingsBoard({ rows = [], seeded = 0, castBallots = 0,
         Borda from ranked lists · Elo from pairwise marks · Combined is an ordering hint for review only — no weight of it
         leaves the platform.
       </p>
+
+      <StandingDetailDialog entry={selected} since={since} onClose={() => setSelected(null)} />
     </div>
   );
 }
