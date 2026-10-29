@@ -12,7 +12,6 @@ import StartSeasonLine from '@/components/start/StartSeasonLine';
 import PublicationCountdown from '@/components/start/PublicationCountdown';
 import StartTitleActions from '@/components/start/StartTitleActions';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
-import StartRecordBand from '@/components/start/StartRecordBand';
 import useRecordChecklist from '@/components/record/useRecordChecklist';
 import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
 import { loadWomenIssue } from '@/components/magazine/womenEdition';
@@ -79,6 +78,11 @@ export default function StartScreen() {
       if (item.key === 'nominate') {
         return ballotCount === null ? item : { ...item, progressLabel: `${ballotCount}/100` };
       }
+      // The record's own key reports how much of the record is already in place, so the
+      // six checklists behind it are read as one figure on the title screen.
+      if (item.key === 'record') {
+        return record.loading ? item : { ...item, progressLabel: `${record.overall?.percent ?? 0}%` };
+      }
       if (item.key !== 'results') return item;
       return {
         ...item,
@@ -105,7 +109,7 @@ export default function StartScreen() {
           : {}),
       };
     });
-  }, [user?.role, signedIn, womenIssue, ballotCount]);
+  }, [user?.role, signedIn, womenIssue, ballotCount, record.loading, record.overall]);
 
   // Which issue the edition stands for, so its key can report the reader's place in it.
   // A title screen that cannot reach the issue still draws, worded plainly as a way in.
@@ -257,7 +261,6 @@ export default function StartScreen() {
           vote={vote}
           notifyOpen={notifyOpen}
           onNotifyChange={setNotifyOpen}
-          record={record}
         />
       </div>
 
@@ -301,14 +304,6 @@ export default function StartScreen() {
               </div>
 
               <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />
-
-              {signedIn && (
-                <StartRecordBand
-                  surfaces={record.surfaces}
-                  overall={record.overall}
-                  loading={record.loading}
-                />
-              )}
             </div>
           </div>
         </div>
