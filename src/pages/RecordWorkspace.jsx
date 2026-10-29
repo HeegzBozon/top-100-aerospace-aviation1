@@ -1,13 +1,13 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowUpRight, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { B } from '@/components/fellow-home/fellowHomeConfig';
+import { B, accentValue } from '@/components/fellow-home/fellowHomeConfig';
 import { RECORD_SURFACES } from '@/components/record/recordMenu';
 import useRecordChecklist from '@/components/record/useRecordChecklist';
 import RecordChecklist from '@/components/record/RecordChecklist';
-import BusinessCardPanel from '@/components/record/BusinessCardPanel';
+import RecordSurface from '@/components/record/surfaces/RecordSurface';
 
 // The Fellow's record as a working checklist: six surfaces, each one the lines it
 // needs and a way to add them. The record is the only thing measured here — nothing
@@ -17,11 +17,26 @@ export default function RecordWorkspace() {
   const [params, setParams] = useSearchParams();
   const record = useRecordChecklist();
 
-  const surfaceKey = params.get('surface') || 'view';
+  // A deep link that names a tool opens the surface the tool stands on.
+  const tool =
+    params.get('studio') === 'open'
+      ? 'studio'
+      : params.get('settings') === 'presentation'
+        ? 'presentation'
+        : null;
+  const surfaceKey = params.get('surface') || (tool ? 'account' : 'view');
   const surface = useMemo(
     () => record.surfaces.find((entry) => entry.key === surfaceKey) || record.surfaces[0],
     [record.surfaces, surfaceKey],
   );
+
+  // Acquisition attribution: a Fellow arriving from another publication's call to
+  // action stamps the referrer once, and never overwrites one already held.
+  useEffect(() => {
+    const ref = params.get('ref');
+    if (!user?.email || !ref || user.signup_referrer) return;
+    base44.auth.updateMe({ signup_referrer: ref }).catch(() => {});
+  }, [user?.email, user?.signup_referrer, params]);
 
   const onSave = (editor, value) => {
     const patch = { [editor.field]: value };
@@ -58,6 +73,7 @@ export default function RecordWorkspace() {
 
   const overall = record.overall;
   const publicId = record.nominee?.id;
+  const accent = accentValue(record.settings?.domain_accent);
 
   return (
     <div className="min-h-screen overflow-x-hidden" style={{ background: B.cream, color: B.navy }}>
@@ -134,27 +150,26 @@ export default function RecordWorkspace() {
         </nav>
 
         <main className="min-w-0">
-          {surface?.key === 'card' && (
-            <BusinessCardPanel
-              account={record.account}
-              card={record.card}
-              nominee={record.nominee}
-              onChange={record.saveCard}
-            />
-          )}
-
           {surface && <RecordChecklist surface={surface} onSave={onSave} />}
 
-          {surface?.key === 'account' && (
-            <div className="mt-6 flex flex-wrap gap-2.5">
-              <Link to="/Profile" className="pd-acct-link !py-2.5">
-                Edit your record
-              </Link>
-              <Link to="/Profile?settings=presentation" className="pd-acct-link !py-2.5">
-                Presentation settings
-              </Link>
-            </div>
-          )}
+          {/* The editor for the surface, under its own checklist: the six together are
+              the profile page, and every line is written where it is counted. */}
+          <div id={`record-editor-${surface?.key}`}>
+            <RecordSurface
+              surfaceKey={surface?.key}
+              account={record.account || user}
+              nominee={record.nominee}
+              settings={record.settings}
+              card={record.card}
+              accent={accent}
+              onSaveCard={record.saveCard}
+              onSaveDossier={record.saveDossier}
+              onSaveSettings={record.saveSettings}
+              onOpenStudio={() => setParams({ surface: 'account', studio: 'open' }, { replace: true })}
+              onReload={record.reload}
+              tool={tool}
+            />
+          </div>
 
           <p className="mt-8 max-w-lg font-body text-[11.5px] leading-relaxed text-editorial-navy/55">
             The count is your own record and nothing else. It is never read by

@@ -134,5 +134,8 @@ export default function useRecordChecklist() {
     saveDossier,
     saveSettings,
     saveCard,
+    // One more reading of the record, for the tools that write it whole — the Studio,
+    // the presentation row, an upload that lands on the account.
+    reload: () => load(record.account || user),
   };
 }

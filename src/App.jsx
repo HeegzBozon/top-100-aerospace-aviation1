@@ -70,7 +70,6 @@ const GroundControl = lazy(() => import('@/pages/GroundControl'));
 const Shop = lazy(() => import('@/pages/Shop'));
 const Membership = lazy(() => import('@/pages/Membership'));
 const Subscribe = lazy(() => import('@/pages/Subscribe'));
-const Profile = lazy(() => import('@/pages/Profile'));
 const RecordWorkspace = lazy(() => import('@/pages/RecordWorkspace'));
 const Rsvp = lazy(() => import('@/pages/Rsvp'));
 const PlatformDevelopmentBoard = lazy(() => import('@/pages/PlatformDevelopmentBoard'));
@@ -227,9 +226,10 @@ const AuthenticatedApp = () => {
       <Route path="/Shop" element={<Shop />} />
       <Route path="/Membership" element={<Membership />} />
       <Route path="/subscribe" element={<Subscribe />} />
-      <Route path="/Profile" element={<Profile />} />
-      {/* The Fellow's record as six checklists: View, Business Card, Data Room,
-          Availability, Inbox, Account. The surface is the deep link. */}
+      {/* The profile page IS the record as six checklists: View, Business Card, Data
+          Room, Availability, Inbox, Account. The surface is the deep link, and both
+          addresses open the same workspace. */}
+      <Route path="/Profile" element={<RecordWorkspace />} />
       <Route path="/record" element={<RecordWorkspace />} />
       <Route path="/rsvp" element={<Rsvp />} />
       <Route path="/volume-one" element={<Navigate to="/archive/696aec2d99297cdbe96ee71e" replace />} />

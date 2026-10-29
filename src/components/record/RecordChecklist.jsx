@@ -1,6 +1,10 @@
 import { ArrowUpRight, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ChecklistField from './ChecklistField';
+import { recordUrl } from './recordMenu';
+
+const ADD_LINK =
+  'mt-2 inline-flex items-center gap-1.5 font-body text-[10px] font-semibold uppercase tracking-[0.16em] text-editorial-copper transition-colors hover:text-editorial-navy';
 
 // One surface of the record, as a checklist. The measure is the surface's own: how
 // many lines of it are in place, never how it compares with another Fellow's.
@@ -82,15 +86,19 @@ export default function RecordChecklist({ surface, onSave }) {
                 <p className="mt-1 font-body text-[13px] capitalize text-editorial-navy/70">{entry.value}</p>
               ) : null}
 
-              {!entry.done && !entry.editor && entry.to && (
-                <Link
-                  to={entry.to}
-                  className="mt-2 inline-flex items-center gap-1.5 font-body text-[10px] font-semibold uppercase tracking-[0.16em] text-editorial-copper transition-colors hover:text-editorial-navy"
-                >
+              {!entry.done && !entry.editor && entry.to && (entry.to === recordUrl(surface.key) ? (
+                /* The editor for this line stands on this surface, under the list:
+                   the key takes the reader down to it rather than off the page. */
+                <a href={`#record-editor-${surface.key}`} className={ADD_LINK}>
+                  Add it
+                  <ArrowUpRight className="h-3 w-3" />
+                </a>
+              ) : (
+                <Link to={entry.to} className={ADD_LINK}>
                   Add it
                   <ArrowUpRight className="h-3 w-3" />
                 </Link>
-              )}
+              ))}
             </div>
           </li>
         ))}

@@ -1,4 +1,14 @@
-import { RECORD_SURFACES } from './recordMenu';
+import { RECORD_SURFACES, recordUrl } from './recordMenu';
+
+// Where the line is actually written. The profile page is this workspace now, so a row
+// that pointed at the old editor points at the surface holding the field it names.
+const EDITOR_HOME = {
+  view: 'dataroom',
+  dataroom: 'dataroom',
+  availability: 'availability',
+  inbox: 'availability',
+  account: 'account',
+};
 
 const text = (value) => String(value ?? '').trim();
 const has = (value) => (Array.isArray(value) ? value.length > 0 : !!text(value));
@@ -171,7 +181,7 @@ export function buildRecordSurfaces({ user, nominee, settings, card, counts = {}
         label: 'Pitch deck',
         hint: 'The slide order and pace your record opens at.',
         done: (config.slide_order?.length || 0) > 0 || !!config.autoplay_mode,
-        to: '/Profile?settings=presentation',
+        to: recordUrl('account'),
       }),
       item({
         key: 'cover',
@@ -251,7 +261,11 @@ export function buildRecordSurfaces({ user, nominee, settings, card, counts = {}
   };
 
   return RECORD_SURFACES.map((surface) => {
-    const items = rows[surface.key] || [];
+    const items = (rows[surface.key] || []).map((entry) =>
+      entry.to === '/Profile'
+        ? { ...entry, to: recordUrl(EDITOR_HOME[surface.key] || surface.key) }
+        : entry,
+    );
     const done = items.filter((entry) => entry.done).length;
     const total = items.length;
     return {
