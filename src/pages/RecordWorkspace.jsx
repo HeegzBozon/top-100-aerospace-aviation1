@@ -4,7 +4,6 @@ import { ArrowUpRight, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import { B, accentValue } from '@/components/fellow-home/fellowHomeConfig';
-import { RECORD_SURFACES } from '@/components/record/recordMenu';
 import useRecordChecklist from '@/components/record/useRecordChecklist';
 import RecordChecklist from '@/components/record/RecordChecklist';
 import RecordSurface from '@/components/record/surfaces/RecordSurface';
