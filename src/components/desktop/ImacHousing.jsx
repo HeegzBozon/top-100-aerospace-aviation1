@@ -40,6 +40,7 @@ export default function ImacHousing({ children }) {
         tabIndex={0}
         role="region"
         aria-label="Machine screen"
+        data-desk-tube=""
       >
         <DesktopMenuBar />
         {children}

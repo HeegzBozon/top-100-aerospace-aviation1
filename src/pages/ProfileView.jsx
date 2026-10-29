@@ -3,7 +3,7 @@ import { useLocation, useParams, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useProfileResolution } from '@/hooks/useProfileResolution';
-import { Trophy, ArrowUpRight } from 'lucide-react';
+import { Trophy, ArrowUpRight, BookMarked, BookOpen, Download } from 'lucide-react';
 
 import NomineeClaimPanel from '@/components/claim/NomineeClaimPanel';
 import ProfileNeighborsRail from '@/components/profile/ProfileNeighborsRail';
@@ -14,15 +14,21 @@ import { enabledModes, MODES } from '@/components/profile/intent/intentConfig';
 import InquirySheet from '@/components/profile/intent/InquirySheet';
 import { exportProfileDossier } from '@/lib/profileDossier';
 import ProfileBook from '@/components/profile/book/ProfileBook';
-import OwnerRecordBand from '@/components/profile/book/OwnerRecordBand';
 import useProfileEditMenu from '@/components/profile/book/useProfileEditMenu';
 import ProfileReader from '@/components/profile/book/ProfileReader';
-import ProfileBookBar from '@/components/profile/book/ProfileBookBar';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useDeskDockSlot } from '@/components/desktop/deskDockSlots';
 import { buildProfileBook } from '@/components/profile/book/profileBookPages';
 import useEpisodeIntake from '@/components/episode/useEpisodeIntake';
 import EpisodeSheet from '@/components/episode/EpisodeSheet';
 
 const NAVY_DEEP = '#16293f';
+
+// Two presentations of one record: the book (which plays) and the plain reader.
+const RECORD_MODES = [
+    { key: 'book', label: 'Book', Icon: BookMarked },
+    { key: 'read', label: 'Read', Icon: BookOpen },
+];
 
 // The page opens as the console does: a navy plate, held for a beat, then handed
 // over to the record.
@@ -201,6 +207,61 @@ export default function ProfileView({ userId: propUserId = null }) {
     const revealClaim = () =>
         document.getElementById('record-claim')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
+    // How the record is presented, and the way out of it as a document. One group of
+    // keys: on a desk it stands on the machine's shelf with the transport, on the glass
+    // in the record's own frame — there is no second bar above the page.
+    const isMobile = useIsMobile();
+    const recordViewKeys = useMemo(
+        () => (
+            <div className="flex items-center gap-1">
+                <div
+                    role="group"
+                    aria-label="How to view this record"
+                    className="flex items-center gap-0.5 rounded-full p-0.5"
+                    style={{ border: '1px solid rgb(var(--hh-metal-rgb) / 0.4)' }}
+                >
+                    {RECORD_MODES.map(({ key, label, Icon }) => {
+                        const active = mode === key;
+                        return (
+                            <button
+                                key={key}
+                                type="button"
+                                onClick={() => setMode(key)}
+                                aria-pressed={active}
+                                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-colors"
+                                style={
+                                    active
+                                        ? { background: '#B87333', color: '#FAF8F5' }
+                                        : { color: 'var(--mb-ink)' }
+                                }
+                            >
+                                <Icon className="h-3.5 w-3.5" />
+                                <span className="font-body text-[9px] font-bold uppercase tracking-[0.2em]">
+                                    {label}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {dossier ? (
+                    <button
+                        type="button"
+                        onClick={dossier}
+                        aria-label="Download the dossier"
+                        title="Dossier"
+                        className="ds-tile flex h-9 w-9 items-center justify-center rounded-full"
+                        style={{ color: '#C9A87C' }}
+                    >
+                        <Download className="h-3.5 w-3.5" />
+                    </button>
+                ) : null}
+            </div>
+        ),
+        [mode, dossier]
+    );
+    useDeskDockSlot('record-view', isMobile ? null : recordViewKeys, 1);
+
     // The record's own Edit menu: the way back into the editor for the Fellow, and
     // the two things a record is for — writing to the person, claiming it — for
     // everyone else.
@@ -218,7 +279,7 @@ export default function ProfileView({ userId: propUserId = null }) {
     // list, so this surface neither counts a visit nor stores one.
 
     return (
-        <div className="relative min-h-screen bg-editorial-cream">
+        <div className="relative min-h-screen bg-editorial-cream md:min-h-full">
             <div
                 className="pointer-events-none fixed inset-0 z-[300] transition-opacity duration-700 ease-in-out"
                 style={{ background: NAVY_DEEP, opacity: entered ? 0 : 1 }}
@@ -230,18 +291,21 @@ export default function ProfileView({ userId: propUserId = null }) {
                 <NotFound />
             ) : (
                 <>
-                    <ProfileBookBar
-                        mode={mode}
-                        onChange={setMode}
-                        pageCount={book.pages.length}
-                        episodeStatus={episode.intake?.status}
-                        onDossier={dossier}
-                    />
+                    {/* On the glass there is no shelf to carry the view keys, so they ride
+                        in the record's own frame. On a desk they are on the shelf. */}
+                    {isMobile && (
+                        <div
+                            className="flex items-center justify-end px-4 py-1.5"
+                            style={{ background: '#132539', borderBottom: '1px solid rgba(201,168,124,0.25)' }}
+                        >
+                            {recordViewKeys}
+                        </div>
+                    )}
 
                     {/* Who may take this record, seated in the book's own frame rather
-                        than floating over the page being read: a claim, a review in
-                        progress, or the way into the editor when it is already yours. */}
-                    {profiles.nominee ? (
+                        than floating over the page being read. The owner needs no band:
+                        their way back into the editor is the machine's own Edit menu. */}
+                    {profiles.nominee && !isOwner ? (
                         <div id="record-claim">
                             <NomineeClaimPanel
                                 nominee={profiles.nominee}
@@ -250,8 +314,6 @@ export default function ProfileView({ userId: propUserId = null }) {
                                 variant="seated"
                             />
                         </div>
-                    ) : isOwner ? (
-                        <OwnerRecordBand />
                     ) : null}
 
                     {mode === 'read' ? (

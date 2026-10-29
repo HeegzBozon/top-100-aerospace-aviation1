@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pause, Play, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import FlipPage, { PAGE_RATIO } from '@/components/magazine/FlipPage';
 import ProfilePageSheet from './ProfilePageSheet';
 import BookTransport, { PACE_SCALE } from './BookTransport';
+import BookDockTransport from './BookDockTransport';
 import useProfileWheel from './useProfileWheel';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useDeskDockSlot } from '@/components/desktop/deskDockSlots';
 
 const NAVY_DEEP = '#0B1826';
 const GOLD = '#C9A87C';
@@ -26,6 +29,9 @@ export default function ProfileBook({
 }) {
   const stageRef = useRef(null);
   const turnTimer = useRef(0);
+  // On a phone the transport stands under the page, inside the glass. On a desk the
+  // shelf carries it, so the picture keeps the whole tube and no key covers the page.
+  const isMobile = useIsMobile();
 
   const [stageWidth, setStageWidth] = useState(0);
   const [avail, setAvail] = useState(() => ({
@@ -48,24 +54,27 @@ export default function ProfileBook({
     return () => observer.disconnect();
   }, []);
 
-  // The page is measured against the picture it is actually printed in: on the
-  // handheld that is the glass, not the window, so the foot of the page never runs
-  // under the chin.
+  // The page is measured against the picture it is actually printed in — the glass on
+  // the handheld, the tube on the desk — so the whole spread stands in view the moment
+  // the record opens, without a scroll, and never runs under the chin or the shelf.
   useEffect(() => {
     const read = () => {
       const glass = document.querySelector('[data-handheld-screen]');
-      if (!glass) {
+      const tube = glass || document.querySelector('[data-desk-tube]');
+      if (!tube) {
         setAvail({ h: window.innerHeight, glass: false });
         return;
       }
       const stageEl = stageRef.current;
       const top = stageEl
         ? stageEl.getBoundingClientRect().top -
-          glass.getBoundingClientRect().top +
-          glass.scrollTop
+          tube.getBoundingClientRect().top +
+          tube.scrollTop
         : 0;
-      // The transport under the page, and the stage's own air.
-      setAvail({ h: glass.clientHeight - Math.max(0, top) - 104, glass: true });
+      // What the chrome takes below the page: the transport under the glass on a phone,
+      // and the shelf standing over the foot of the tube on a desk.
+      const reserve = glass ? 104 : 96;
+      setAvail({ h: tube.clientHeight - Math.max(0, top) - reserve, glass: !!glass });
     };
     read();
     const settle = window.setTimeout(read, 320);
@@ -82,7 +91,7 @@ export default function ProfileBook({
     if (!stageWidth) return null;
     const wide = stageWidth >= 700;
     const perView = wide ? 2 : 1;
-    const chrome = avail.glass ? 168 : 210;
+    const chrome = avail.glass ? 168 : 56;
     const availH = Math.max(340, Math.min(avail.h - chrome, 780));
     const maxW = wide ? (stageWidth - 56) / 2 : stageWidth - 28;
     // On a phone the page is never set below the width its type needs: a slightly
@@ -188,55 +197,36 @@ export default function ProfileBook({
     isPlaying: () => playing,
   });
 
-  const atStart = index <= 0;
-  const atEnd = index >= maxStart;
+  // The shelf's transport, rebuilt as the reader moves it: the dock carries the record's
+  // own controls instead of the tiles while the record is open.
+  const dockTransport = useMemo(
+    () => (
+      <BookDockTransport
+        labels={pages.map((page) => page.label)}
+        index={index}
+        visibleCount={view.length}
+        playing={playing}
+        pace={pace}
+        onFirst={() => setIndex(0)}
+        onPrev={() => go('prev')}
+        onNext={() => go('next')}
+        onTogglePlay={togglePlay}
+        onJump={jump}
+        onContents={() => setContentsOpen(true)}
+        onPace={setPace}
+      />
+    ),
+    [pages, index, view.length, playing, pace, go, jump, togglePlay]
+  );
+  useDeskDockSlot('record-transport', isMobile ? null : dockTransport, 0);
 
   return (
     <div style={{ background: NAVY_DEEP }} className="relative">
-      {/* Head band: what is being read, and the way into it playing itself */}
-      <div
-        className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-8"
-        style={{ borderBottom: '1px solid rgba(201,168,124,0.18)' }}
-      >
-        <p
-          className="font-body text-[9.5px] font-semibold uppercase tracking-[0.28em]"
-          style={{ color: 'rgba(201,168,124,0.8)' }}
-        >
-          The record · {pages.length} {pages.length === 1 ? 'page' : 'pages'}
-          {playing ? ` · playing ${String(index + 1).padStart(2, '0')}` : ''}
-        </p>
-
-        <div className="flex items-center gap-2">
-          <span
-            className="hidden font-body text-[9px] uppercase tracking-[0.22em] sm:inline"
-            style={{ color: 'rgba(250,248,245,0.42)' }}
-          >
-            {dims?.wide ? 'Spread' : 'Turn with the arrows'}
-          </span>
-          <button
-            type="button"
-            onClick={togglePlay}
-            aria-pressed={playing}
-            aria-label={playing ? 'Pause the record' : 'Play the record'}
-            className="flex items-center gap-2 rounded-full px-3.5 py-1.5 transition-colors"
-            style={{
-              background: playing ? 'rgba(184,115,51,0.22)' : COPPER,
-              border: `1px solid ${playing ? 'rgba(184,115,51,0.7)' : COPPER}`,
-              color: CREAM,
-            }}
-          >
-            {playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-            <span className="font-body text-[9.5px] font-bold uppercase tracking-[0.2em]">
-              {playing ? 'Pause' : 'Play'}
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* The stage the book stands on */}
+      {/* The stage the book stands on — nothing above it: the record opens on the page
+          itself, and its controls stand on the machine's shelf below. */}
       <div
         ref={stageRef}
-        className="relative flex items-center justify-center px-3 py-3 sm:px-7 sm:py-8"
+        className="relative flex items-center justify-center px-3 py-3 sm:px-7 sm:py-4"
         style={{ perspective: '2200px' }}
       >
         {dims && (
@@ -302,21 +292,24 @@ export default function ProfileBook({
         )}
       </div>
 
-      {/* Foot: the transport — the measure of the record, played or turned */}
-      <BookTransport
-        labels={pages.map((page) => page.label)}
-        index={index}
-        visibleCount={view.length}
-        playing={playing}
-        onFirst={() => setIndex(0)}
-        onPrev={() => go('prev')}
-        onNext={() => go('next')}
-        onTogglePlay={togglePlay}
-        onJump={jump}
-        onContents={() => setContentsOpen(true)}
-        pace={pace}
-        onPace={setPace}
-      />
+      {/* Foot: only the glass needs a transport of its own — a desk drives the record
+          from its shelf. */}
+      {isMobile && (
+        <BookTransport
+          labels={pages.map((page) => page.label)}
+          index={index}
+          visibleCount={view.length}
+          playing={playing}
+          onFirst={() => setIndex(0)}
+          onPrev={() => go('prev')}
+          onNext={() => go('next')}
+          onTogglePlay={togglePlay}
+          onJump={jump}
+          onContents={() => setContentsOpen(true)}
+          pace={pace}
+          onPace={setPace}
+        />
+      )}
 
       {/* A page that will not turn is a page that has arrived: nothing else. */}
       <span className="sr-only" aria-live="polite">

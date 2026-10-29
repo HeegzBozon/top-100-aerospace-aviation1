@@ -22,6 +22,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { isViewingAsVisitor } from "@/lib/viewerPreview";
 import { INDEX_GROUPS, SHELF } from "@/components/shell/appRegistry";
+import { useDeskDockSlots } from "./deskDockSlots";
 import "./deskDock.css";
 
 // The desk's shelf: the row of things a hand reaches for without opening a menu.
@@ -42,6 +43,10 @@ export default function DesktopDock() {
   const [open, setOpen] = useState(null);
   const [user, setUser] = useState(null);
   const [authState, setAuthState] = useState("checking");
+  // A surface may borrow the shelf for its own controls. While it does, the shelf
+  // carries those instead of the tiles — the dock adjusts to the surface it stands under.
+  const slots = useDeskDockSlots();
+  const hosted = Object.keys(slots).length > 0;
 
   useEffect(() => {
     // The operator's preview answers here the way it answers everywhere: standing in a
@@ -112,6 +117,16 @@ export default function DesktopDock() {
 
           <Seam />
 
+          {hosted ? (
+            <div className="flex items-center gap-1 px-1" style={{ width: "min(580px, 44vw)" }}>
+              <div className="flex min-w-0 flex-1 items-center">
+                {slots["record-transport"]}
+              </div>
+              {slots["record-view"] ? <Seam /> : null}
+              {slots["record-view"]}
+            </div>
+          ) : (
+          <>
           {SHELF.map((item) => (
             <Tile
               key={item.to}
@@ -160,6 +175,8 @@ export default function DesktopDock() {
             <CalendarCheck className="h-4 w-4" strokeWidth={2} />
             RSVP
           </Link>
+          </>
+          )}
 
           <Seam />
 
