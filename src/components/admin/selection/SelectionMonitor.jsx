@@ -125,7 +125,11 @@ export default function SelectionMonitor() {
           <TabsTrigger value="contributors">Community</TabsTrigger>
         </TabsList>
         <TabsContent value="standings" className="mt-4">
-          <StandingsTable rows={data?.standings || []} />
+          <StandingsTable
+            rows={data?.standings || []}
+            seeded={data?.totals?.seeded || 0}
+            scopeKey={scope}
+          />
         </TabsContent>
         <TabsContent value="ballots" className="mt-4">
           <BallotLedger kind="ballots" ballots={data?.ballot_tracking || []} />
