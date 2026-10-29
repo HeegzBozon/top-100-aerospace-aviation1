@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { ArrowUp, ArrowDown, Info, Award } from 'lucide-react';
+import { ArrowUp, ArrowDown, Info } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
+import HonoreeChip from '@/components/voting/HonoreeChip';
 import { DISCIPLINE_LABELS } from '@/components/voting/anonymize';
 
 // Career-stage broad bands — never a job title. The institution measures;
@@ -38,7 +39,7 @@ function initials(name) {
 //
 // The ring walks these cards while a set is standing: the card the cursor is on
 // carries a copper ring, so where the wheel is pointing is legible on the glass.
-export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, selectable, cursor = false, honoreeYears = [], onInfo, onSelect }) {
+export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, selectable, cursor = false, honoreeVolumes = [], onInfo, onSelect }) {
 
   const name = nominee.name || 'Unnamed nominee';
   const photo = nominee.avatar_url || nominee.photo_url || '';
@@ -139,26 +140,20 @@ export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, s
         </div>
 
         {/* A returning honoree: the archive already carries them, so the card says so
-            before the story is read. One badge per closed volume, the latest first. */}
-        {honoreeYears.length > 0 && (
+            before the story is read. The year rides the card; the volume and the recorded
+            position open on the chip itself. */}
+        {honoreeVolumes.length > 0 && (
           <div className="flex flex-wrap items-center gap-1">
-            {honoreeYears.slice(0, 2).map((year) => (
-              <span
-                key={year}
-                title={`Honoree of the ${year} volume`}
-                className="inline-flex items-center gap-1 rounded-full px-1.5 py-[1px] text-[7.5px] font-bold uppercase leading-tight tracking-[0.12em] md:text-[8.5px]"
-                style={{ background: `${brand.gold}1F`, border: `1px solid ${brand.gold}80`, color: brand.navy }}
-              >
-                <Award className="h-2.5 w-2.5" style={{ color: brand.gold }} aria-hidden />
-                {year} Honoree
-              </span>
+            {honoreeVolumes.slice(0, 2).map((volume) => (
+              <HonoreeChip key={volume.seasonId} volume={volume} />
             ))}
-            {honoreeYears.length > 2 && (
+            {honoreeVolumes.length > 2 && (
               <span
+                title={honoreeVolumes.map((v) => v.year).join(' · ')}
                 className="text-[7.5px] font-bold uppercase tracking-[0.12em] md:text-[8.5px]"
                 style={{ color: `${brand.navy}55` }}
               >
-                +{honoreeYears.length - 2}
+                +{honoreeVolumes.length - 2}
               </span>
             )}
           </div>

@@ -12,7 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import { registerFaceKeys } from '@/components/handheld/handheldKeys';
-import { buildHonoreeYearIndex, honoreeYears } from '@/components/voting/honoreeYears';
+import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honoreeYears';
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
 import VoteMechanicsPopover from '@/components/voting/VoteMechanicsPopover';
 import VoterGuide from '@/components/voting/VoterGuide';
@@ -450,7 +450,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 token={token}
                 isTop={isTop}
                 isBottom={isBottom}
-                honoreeYears={honoreeYears(nominee, honoreeIndex)}
+                honoreeVolumes={honoreeVolumes(nominee, honoreeIndex)}
                 selectable={selectable && !reading && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}

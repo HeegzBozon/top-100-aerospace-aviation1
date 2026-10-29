@@ -1,7 +1,7 @@
 // A candidate who has already stood in a closed volume is a returning honoree, and the
 // institution's own record says so: the archive. Nothing here is a hand-kept flag — the
-// badge is read from the seasons a person is a member of, and only the volumes whose
-// windows have already closed count. The cohort counting now never badges.
+// badge is read from the volumes a person is a member of, and only volumes whose windows
+// have already closed count. The cohort counting now never badges.
 
 function seasonYear(season) {
   const name = String(season?.name || '');
@@ -15,7 +15,7 @@ function seasonYear(season) {
   return '';
 }
 
-// Map of closed season id → the year it is remembered by.
+// Map of closed season id → the year and name it is remembered by.
 export function buildHonoreeYearIndex(seasons = [], activeSeasonId = '') {
   const index = new Map();
   const now = Date.now();
@@ -26,31 +26,59 @@ export function buildHonoreeYearIndex(seasons = [], activeSeasonId = '') {
     const closed = ended || ['archived', 'completed', 'rollover'].includes(season.status);
     if (!closed) continue;
     const year = seasonYear(season);
-    if (year) index.set(season.id, year);
+    if (year) index.set(season.id, { year, name: season.name || '' });
   }
   return index;
 }
 
-// The years a candidate has already been honoured in, most recent first.
-export function honoreeYears(nominee, yearIndex) {
+// Every closed volume a candidate appears in, most recent first, carrying the recorded
+// position where the archive holds one — the volume, its position, and the season the
+// archive route is filed under.
+export function honoreeVolumes(nominee, yearIndex) {
   if (!yearIndex || yearIndex.size === 0) return [];
-  const seasonIds = new Set();
-  if (nominee?.season_id) seasonIds.add(nominee.season_id);
-  for (const id of nominee?.season_ids || []) if (id) seasonIds.add(id);
-  // The master record keeps its membership index and archive appearances beside the
-  // flat fields; a person whose volumes were merged in is only legible through them.
+
   const raw = nominee?.raw_nomination_data || {};
-  for (const entry of raw.season_participation || []) {
-    if (entry?.season_id && entry.status !== 'rejected') seasonIds.add(entry.season_id);
-  }
+  const filed = new Map();
+
+  // The appearances index holds the volume's own title and the measured position.
   for (const entry of raw.archive_appearances || []) {
-    if (entry?.season_id) seasonIds.add(entry.season_id);
+    if (!entry?.season_id) continue;
+    filed.set(entry.season_id, {
+      rank: typeof entry.rank === 'number' ? entry.rank : null,
+      artifact: entry.artifact || '',
+      volume: entry.volume || '',
+      seasonName: entry.season_name || '',
+    });
   }
 
-  const years = new Set();
-  for (const id of seasonIds) {
-    const year = yearIndex.get(id);
-    if (year) years.add(year);
+  // Membership index: a volume without an appearance entry still counts as stood in.
+  for (const entry of raw.season_participation || []) {
+    if (!entry?.season_id || entry.status === 'rejected') continue;
+    const known = filed.get(entry.season_id) || {};
+    if (known.rank == null && typeof entry.rank === 'number') {
+      filed.set(entry.season_id, { ...known, rank: entry.rank });
+    } else if (!filed.has(entry.season_id)) {
+      filed.set(entry.season_id, known);
+    }
   }
-  return [...years].sort().reverse();
+
+  const seasonIds = new Set([nominee?.season_id, ...(nominee?.season_ids || []), ...filed.keys()].filter(Boolean));
+
+  const volumes = [];
+  for (const seasonId of seasonIds) {
+    const season = yearIndex.get(seasonId);
+    if (!season) continue;
+    const detail = filed.get(seasonId) || {};
+    volumes.push({
+      seasonId,
+      year: season.year,
+      seasonName: detail.seasonName || season.name,
+      artifact: detail.artifact || '',
+      volume: detail.volume || '',
+      rank: detail.rank ?? null,
+    });
+  }
+
+  volumes.sort((a, b) => b.year.localeCompare(a.year));
+  return volumes;
 }
