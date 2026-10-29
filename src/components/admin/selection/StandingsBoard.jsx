@@ -10,7 +10,13 @@ import StandingDetailDialog from './StandingDetailDialog';
 // Elo and the combined hint each get their own column, so a nominee can be followed down
 // one measure without the other two standing in for it — and the whole field is on the
 // board, not a slice of itself.
-export default function StandingsBoard({ rows = [], seeded = 0, castBallots = 0, scopeKey = 'all' }) {
+export default function StandingsBoard({
+  rows = [],
+  seeded = 0,
+  castBallots = 0,
+  mode = 'live',
+  scopeKey = 'all',
+}) {
   const [query, setQuery] = useState('');
   // The nominee whose full reading is open, with the column it was opened from.
   const [selected, setSelected] = useState(null);
@@ -58,11 +64,22 @@ export default function StandingsBoard({ rows = [], seeded = 0, castBallots = 0,
       </div>
 
       <p className="rounded-md border-l-2 border-editorial-copper bg-editorial-cream/70 px-3 py-2 text-[11px] leading-relaxed text-editorial-navy/70">
-        <span className="font-semibold text-editorial-navy">Borda and Combined are projected.</span>{' '}
-        {castBallots} ballot{castBallots === 1 ? '' : 's'} cast and {seeded} draft{seeded === 1 ? '' : 's'} seeded from
-        nominations, read here as if cast. Nothing is written, and no projected figure reaches a Fellow's surface. Elo is
-        unaffected: it moves on real marks only, and a test set cast by an administrator is stamped and never scored — so
-        a walkthrough leaves every rating where it stood.
+        {mode === 'internal' ? (
+          <>
+            <span className="font-semibold text-editorial-navy">This is the internal record.</span> Every mark in view was
+            cast by an administrator and stamped at the moment it was written. None of it is scored or published: the Elo
+            column is recomputed from these sets alone, so the platform can read a baseline of its own beside the
+            community's. The recorded rating on each record is untouched.
+          </>
+        ) : (
+          <>
+            <span className="font-semibold text-editorial-navy">Borda and Combined are projected.</span> {castBallots}{' '}
+            ballot{castBallots === 1 ? '' : 's'} cast and {seeded} draft{seeded === 1 ? '' : 's'} seeded from nominations,
+            read here as if cast. Nothing is written, and no projected figure reaches a Fellow's surface. Elo is scored
+            from this view's marks alone: an administrator's set is stamped and never scored, so a review leaves no mark
+            on the community's rating.
+          </>
+        )}
       </p>
 
       <div className="grid gap-2 md:grid-cols-3">
@@ -80,8 +97,9 @@ export default function StandingsBoard({ rows = [], seeded = 0, castBallots = 0,
       </div>
 
       <p className="text-[10px] text-editorial-navy/45">
-        Borda from ranked lists · Elo from pairwise marks · Combined is an ordering hint for review only — no weight of it
-        leaves the platform.
+        {mode === 'internal'
+          ? 'Borda from ranked lists · Elo recomputed from the internal sets in view · Combined is an ordering hint for review only.'
+          : 'Borda from ranked lists · Elo recomputed from the community marks in view · Combined is an ordering hint for review only. No weight of it leaves the platform.'}
       </p>
 
       <StandingDetailDialog entry={selected} since={since} onClose={() => setSelected(null)} />

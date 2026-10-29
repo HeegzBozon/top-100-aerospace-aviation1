@@ -4,6 +4,7 @@ import { Loader2, RefreshCw, AlertTriangle, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import ReadingModeTabs from './ReadingModeTabs';
 import MonitorTotals from './MonitorTotals';
 import StandingsBoard from './StandingsBoard';
 import BallotLedger from './BallotLedger';
@@ -18,6 +19,8 @@ const REFRESH_MS = 60000;
 
 export default function SelectionMonitor() {
   const [scope, setScope] = useState('all');
+  // Which ledger is being read: the community's record, or the internal review sets.
+  const [mode, setMode] = useState('live');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -28,7 +31,7 @@ export default function SelectionMonitor() {
       quiet ? setRefreshing(true) : setLoading(true);
       setError(null);
       try {
-        const payload = scope === 'all' ? {} : { season_ids: [scope] };
+        const payload = { mode, ...(scope === 'all' ? {} : { season_ids: [scope] }) };
         const res = await base44.functions.invoke('getSelectionAnalytics', payload);
         if (res?.data?.error) throw new Error(res.data.error);
         setData(res.data);
@@ -40,7 +43,7 @@ export default function SelectionMonitor() {
         setRefreshing(false);
       }
     },
-    [scope]
+    [scope, mode]
   );
 
   useEffect(() => {
@@ -89,13 +92,24 @@ export default function SelectionMonitor() {
             <Activity className="h-4 w-4 text-editorial-gold" />
             <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-editorial-label">Selection</p>
           </div>
-          <h2 className="mt-0.5 font-heading text-2xl leading-tight text-editorial-navy">Live monitor</h2>
-          <p className="text-xs text-editorial-navy/55">
-            Every cohort's ballot, its standings, and the marks behind them. {stamp && `Read at ${stamp}.`}
+          <h2 className="mt-0.5 font-heading text-2xl leading-tight text-editorial-navy">
+            {mode === 'internal' ? 'Internal review' : 'Live monitor'}
+          </h2>
+          <p className="max-w-xl text-xs text-editorial-navy/55">
+            {mode === 'internal'
+              ? 'The sets an administrator cast, read apart from the community so the platform can keep a baseline of its own. Nothing here is scored or published.'
+              : "Every cohort's ballot, its standings, and the marks behind them."}{' '}
+            {stamp && `Read at ${stamp}.`}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <ReadingModeTabs
+            mode={mode}
+            onChange={setMode}
+            live={data?.totals?.comparisons_live || 0}
+            internal={data?.totals?.comparisons_test || 0}
+          />
           <Select value={scope} onValueChange={setScope}>
             <SelectTrigger className="h-8 w-[220px] text-xs">
               <SelectValue placeholder="All cohorts" />
@@ -116,7 +130,7 @@ export default function SelectionMonitor() {
         </div>
       </div>
 
-      <MonitorTotals totals={data?.totals} cohortStats={data?.cohort_stats} />
+      <MonitorTotals totals={data?.totals} cohortStats={data?.cohort_stats} mode={mode} />
 
       <Tabs defaultValue="standings">
         <TabsList className="bg-editorial-cream">
@@ -130,7 +144,8 @@ export default function SelectionMonitor() {
             rows={data?.standings || []}
             seeded={data?.totals?.seeded || 0}
             castBallots={data?.totals?.ballots || 0}
-            scopeKey={scope}
+            mode={mode}
+            scopeKey={`${scope}:${mode}`}
           />
         </TabsContent>
         <TabsContent value="ballots" className="mt-4">

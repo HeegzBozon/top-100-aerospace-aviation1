@@ -30,6 +30,7 @@ export default function MarkSetsLedger({ marks = [] }) {
           at: row.at,
           cohort: row.cohort,
           is_test: !!row.is_test,
+          voter_role: row.voter_role || null,
           pairs: [],
         });
       }
@@ -114,9 +115,9 @@ export default function MarkSetsLedger({ marks = [] }) {
                       <span className="text-[11px] tabular-nums text-editorial-navy">
                         {set.pairs.length} {set.pairs.length === 1 ? 'pair' : 'pairs'}
                       </span>
-                      {set.is_test && (
+                      {(set.voter_role === 'admin' || set.is_test) && (
                         <span className="ml-2 rounded-sm bg-editorial-copper/15 px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-[0.14em] text-editorial-label">
-                          Test
+                          {set.voter_role === 'admin' ? 'Admin' : 'Test'}
                         </span>
                       )}
                     </td>
@@ -145,9 +146,11 @@ export default function MarkSetsLedger({ marks = [] }) {
                             </li>
                           ))}
                         </ul>
-                        {set.is_test && (
+                        {(set.voter_role === 'admin' || set.is_test) && (
                           <p className="mt-1.5 text-[10px] uppercase tracking-[0.12em] text-editorial-label/80">
-                            Test set — recorded, never scored
+                            {set.voter_role === 'admin'
+                              ? 'Admin review set · recorded, never scored'
+                              : 'Test set · recorded, never scored'}
                           </p>
                         )}
                       </td>

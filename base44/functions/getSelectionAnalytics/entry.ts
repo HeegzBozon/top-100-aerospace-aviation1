@@ -64,6 +64,55 @@ async function listSavedBallots(service, seasonQuery) {
 
 const voterKey = (email, seasonId) => `${String(email || '').trim().toLowerCase()}|${seasonId}`;
 
+// Every mark in the view, not a page of them. The baseline below is recomputed from the
+// whole set, and a capped slice would score a different field than the one being watched.
+async function listMarks(service, query) {
+  const all = [];
+  let cursor = null;
+  let rounds = 0;
+  while (rounds !== 8) {
+    rounds += 1;
+    const options = { sort: '-created_date', limit: 500 };
+    if (cursor) options.cursor = cursor;
+    const page = await service.entities.PairwiseVote.filter(query, options).catch(() => null);
+    const items = page?.items || (Array.isArray(page) ? page : []);
+    all.push(...items);
+    if (!page?.has_more || !page?.next_cursor) break;
+    cursor = page.next_cursor;
+  }
+  return all;
+}
+
+// Elo recomputed from the marks of one view alone, oldest first, everyone starting level.
+// It is a reading, never a write: the internal view is the operator's own baseline, and
+// no figure from it reaches a Fellow's record, a ladder, or a published number.
+function eloFromMarks(marks) {
+  const order = [...marks].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+  const ratings = new Map();
+  const tally = new Map();
+  const current = (id) => (ratings.has(id) ? ratings.get(id) : 1200);
+  const bump = (id, won) => {
+    const row = tally.get(id) || { wins: 0, losses: 0, appearances: 0 };
+    row.appearances += 1;
+    won ? (row.wins += 1) : (row.losses += 1);
+    tally.set(id, row);
+  };
+  order.forEach((m) => {
+    const w = m.winner_nominee_id;
+    const l = m.loser_nominee_id;
+    if (!w || !l) return;
+    const rw = current(w);
+    const rl = current(l);
+    const expected = 1 / (1 + Math.pow(10, (rl - rw) / 400));
+    const delta = Math.round(24 * (1 - expected));
+    ratings.set(w, rw + delta);
+    ratings.set(l, rl - delta);
+    bump(w, true);
+    bump(l, false);
+  });
+  return { ratings, tally };
+}
+
 export default async function (req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -73,6 +122,10 @@ export default async function (req) {
 
     const body = await req.json().catch(() => ({}));
     const requested = Array.isArray(body?.season_ids) ? body.season_ids.filter(Boolean) : [];
+    // Two readings of the same ledger: the community's own record, or the internal
+    // review sets an administrator cast. They are never mixed in one view, because a
+    // baseline is only a baseline if nothing else is weighing inside it.
+    const mode = body?.mode === 'internal' ? 'internal' : 'live';
 
     const service = base44.asServiceRole;
     const { cohorts, groups, open } = await resolveCohorts(service);
@@ -124,7 +177,8 @@ export default async function (req) {
           pool,
           ballots: savedBallots.filter((b) => b.season_id === c.id).length,
           seeded: openDrafts.filter((d) => d.season_id === c.id).length,
-          comparisons: marks,
+          comparisons: mode === 'internal' ? testMarks : marks,
+          comparisons_live: marks,
           comparisons_test: testMarks,
           contributors: fellows,
         };
@@ -132,20 +186,26 @@ export default async function (req) {
     );
 
     // ── The tallies ──────────────────────────────────────────────────────────────
-    const [comparisons, testComparisons, contributorCount, contributions, ledger, nominees] = await Promise.all([
-      service.entities.PairwiseVote.count({ ...seasonQuery, is_test: { $ne: true } }).catch(() => 0),
-      service.entities.PairwiseVote.count({ ...seasonQuery, is_test: true }).catch(() => 0),
+    const liveMarkQuery = { ...seasonQuery, is_test: { $ne: true } };
+    const internalMarkQuery = { ...seasonQuery, is_test: true };
+    const markQuery = mode === 'internal' ? internalMarkQuery : liveMarkQuery;
+
+    const [liveMarkCount, internalMarkCount, contributorCount, contributions, marks, nominees] = await Promise.all([
+      service.entities.PairwiseVote.count(liveMarkQuery).catch(() => 0),
+      service.entities.PairwiseVote.count(internalMarkQuery).catch(() => 0),
       service.entities.VotingContribution.count({ season_id: { $in: scopedIds } }).catch(() => 0),
       service.entities.VotingContribution
         .filter({ season_id: { $in: scopedIds } }, '-xp', 60)
         .catch(() => []),
-      // Read deeper than the visible page: one anchor set files five to seven marks in a
-      // single write, and a set split across the limit would read as two sets.
-      service.entities.PairwiseVote
-        .filter(seasonQuery, '-created_date', 240)
-        .catch(() => []),
+      // Every mark of this view: the baseline is scored from the whole set, and the ledger
+      // prints its most recent page of them.
+      listMarks(service, markQuery),
       listPool(service, scopedIds),
     ]);
+
+    const comparisons = mode === 'internal' ? internalMarkCount : liveMarkCount;
+    const ledger = marks.slice(0, 240);
+    const baseline = eloFromMarks(marks);
 
     const ballots = savedBallots;
     const ballotCount = savedBallots.length;
@@ -184,14 +244,17 @@ export default async function (req) {
       cohort: n.season_id || null,
       cohort_label: labelById[n.season_id] || null,
       avatar_url: n.avatar_url || n.photo_url || null,
-      elo: n.elo_rating || 1200,
+      // The Elo column is scored from this view's marks alone, so the two readings can be
+      // compared like for like. The recorded rating travels beside it for reference.
+      elo: baseline.ratings.get(n.id) || 1200,
+      elo_recorded: n.elo_rating || 1200,
       borda: n.borda_score || 0,
       borda_cast: castBorda.get(n.id) || 0,
       borda_projected: projectedBorda.get(n.id) || 0,
       holistic: n.holistic_score || 0,
-      wins: n.total_wins || 0,
-      losses: n.total_losses || 0,
-      appearances: n.pairwise_appearance_count || 0,
+      wins: baseline.tally.get(n.id)?.wins || 0,
+      losses: baseline.tally.get(n.id)?.losses || 0,
+      appearances: baseline.tally.get(n.id)?.appearances || 0,
       claimed: n.claim_status === 'approved',
     }));
 
@@ -288,6 +351,7 @@ export default async function (req) {
       at: v.created_date,
       set_key: `${String(v.voter_email || '').toLowerCase()}|${v.created_date}`,
       is_test: !!v.is_test,
+      voter_role: v.voter_role || null,
       voter_email: v.voter_email,
       voter_name: nameOf(v.voter_email),
       winner: nomineeNames[v.winner_nominee_id] || 'Deleted nominee',
@@ -320,6 +384,7 @@ export default async function (req) {
     return Response.json({
       success: true,
       generated_at: new Date().toISOString(),
+      mode,
       scope: { season_ids: scopedIds, requested },
       cohorts,
       groups,
@@ -329,7 +394,8 @@ export default async function (req) {
         cohorts: cohorts.length,
         open_cohorts: open.length,
         comparisons,
-        comparisons_test: testComparisons,
+        comparisons_live: liveMarkCount,
+        comparisons_test: internalMarkCount,
         contributors: contributorCount,
         ballots: ballotCount,
         seeded: openDrafts.length,

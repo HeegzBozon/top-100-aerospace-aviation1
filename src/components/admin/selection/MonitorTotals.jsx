@@ -50,7 +50,7 @@ function CohortLine({ cohort }) {
   );
 }
 
-export default function MonitorTotals({ totals, cohortStats }) {
+export default function MonitorTotals({ totals, cohortStats, mode = 'live' }) {
   const sets = useMemo(() => {
     const map = new Map();
     (cohortStats || []).forEach((cohort) => {
@@ -128,7 +128,7 @@ export default function MonitorTotals({ totals, cohortStats }) {
                     {fmt(set.pool)} standing · {fmt(set.ballots)} ballots · {fmt(set.seeded)} seeded ·{' '}
                     {fmt(set.comparisons)} marks
                   </span>
-                  {set.comparisons_test > 0 && (
+                  {mode !== 'internal' && set.comparisons_test > 0 && (
                     <span className="text-[10px] tabular-nums uppercase tracking-[0.12em] text-editorial-label/80">
                       + {fmt(set.comparisons_test)} test
                     </span>
@@ -150,9 +150,21 @@ export default function MonitorTotals({ totals, cohortStats }) {
 
       {testMarks > 0 && (
         <p className="rounded-md border-l-2 border-editorial-copper bg-editorial-cream/70 px-3 py-2 text-[10.5px] leading-relaxed text-editorial-navy/65">
-          <span className="font-semibold text-editorial-navy">{fmt(testMarks)} marks are test sets.</span> They are
-          recorded so a walkthrough works end to end, stamped at the moment they are cast, and never scored: they do not
-          move a rating, an appearance count or a contributor's ladder. Only real marks appear in the tiles above.
+          {mode === 'internal' ? (
+            <>
+              <span className="font-semibold text-editorial-navy">
+                {fmt(totals?.comparisons)} marks are internal sets.
+              </span>{' '}
+              Cast by administrators, stamped as they were written, and never scored: they move no rating, no appearance
+              count and no contributor's ladder. This reading exists so the platform can keep a baseline of its own.
+            </>
+          ) : (
+            <>
+              <span className="font-semibold text-editorial-navy">{fmt(testMarks)} marks are test sets.</span> They are
+              recorded so a walkthrough works end to end, stamped at the moment they are cast, and never scored: they do
+              not move a rating, an appearance count or a contributor's ladder. Only real marks appear in the tiles above.
+            </>
+          )}
         </p>
       )}
     </div>

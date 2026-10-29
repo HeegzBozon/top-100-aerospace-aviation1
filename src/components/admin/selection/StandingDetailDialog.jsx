@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { ArrowUpRight } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import StandingMovement from './StandingMovement';
 
@@ -41,7 +43,8 @@ export default function StandingDetailDialog({ entry, since, onClose }) {
     { label: 'Borda · cast', value: Math.round(row.borda_cast || 0) },
     { label: 'Borda · projected', value: Math.round(row.borda_projected || 0) },
     { label: 'Borda · recorded', value: Math.round(row.borda || 0) },
-    { label: 'Elo', value: row.appearances > 0 || row.elo !== 1200 ? Math.round(row.elo) : '—' },
+    { label: 'Elo · this view', value: row.appearances > 0 || row.elo !== 1200 ? Math.round(row.elo) : '—' },
+    { label: 'Elo · recorded', value: Math.round(row.elo_recorded || 0) },
     { label: 'Holistic', value: row.holistic ? Math.round(row.holistic) : '—' },
     { label: 'Combined index', value: row.combined_index ?? '—' },
     { label: 'Pairwise marks', value: row.appearances || 0 },
@@ -108,6 +111,13 @@ export default function StandingDetailDialog({ entry, since, onClose }) {
             </div>
           ))}
         </div>
+
+        <Link
+          to={`/profiles/${row.id}`}
+          className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-editorial-label hover:text-editorial-copper"
+        >
+          Review the full profile <ArrowUpRight className="h-3 w-3" />
+        </Link>
 
         <p className="text-[10px] leading-relaxed text-editorial-navy/50">
           Read from the current pool and the ballots on file. Projected figures include drafts seeded from nominations
