@@ -45,7 +45,7 @@ export default function StartRecordBand({ surfaces, overall, loading }) {
               </span>
               <span
                 aria-hidden="true"
-                className="block h-[2px] w-full overflow-hidden rounded-full bg-editorial-cream/12"
+                className="block h-[2px] w-full overflow-hidden rounded-full bg-editorial-cream/10"
               >
                 <span
                   className="block h-full rounded-full bg-editorial-gold transition-[width] duration-700"
