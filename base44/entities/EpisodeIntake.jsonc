@@ -30,6 +30,24 @@
       "default": [],
       "description": "The subjects the Fellow would want covered, in the order they would tell them"
     },
+    "chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The chapter's own title, in the Fellow's phrasing"
+          },
+          "body": {
+            "type": "string",
+            "description": "What the chapter holds, written by the Fellow"
+          }
+        }
+      },
+      "default": [],
+      "description": "The Fellow's own arc, up to 22 chapters. Order is the reading order: the book plays them in exactly this sequence. Chapters are the Fellow's writing, shown as their own pages within the episode's run of the record."
+    },
     "format": {
       "type": "string",
       "enum": [

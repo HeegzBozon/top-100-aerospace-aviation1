@@ -11,6 +11,7 @@ import {
 import { STORY_PROMPTS } from '@/components/profile/documentary/documentaryChapters';
 import { coverUrl } from '@/components/fellow-home/fellowHomeConfig';
 import { stageLabel, stageNote } from '@/components/episode/episodeStages';
+import { normalizeChapters } from '@/components/episode/episodeChapters';
 
 // One record, cut into pages.
 //
@@ -349,6 +350,22 @@ function episodePage({ episode, nominee }) {
   };
 }
 
+// ── The episode's own arc ────────────────────────────────────────────────────
+// The Fellow's chapters, printed in their own order. Position is meaning here, so
+// nothing is re-sorted: the book plays them exactly as they were written.
+function chapterPages({ episode }) {
+  return normalizeChapters(episode?.chapters).map((chapter, i) => {
+    const label = `Chapter ${String(i + 1).padStart(2, '0')}`;
+    return {
+      key: `episode_chapter_${i}`,
+      kind: 'chapter',
+      label,
+      title: chapter.title || label,
+      lines: lines(chapter.body).slice(0, 8),
+    };
+  });
+}
+
 const MODULE_BUILDERS = {
   viral_post: viralPage,
   blurb: wordsPage,
@@ -383,6 +400,7 @@ export function buildProfileBook({
     hasIntent(settings) ? availabilityPage(ctx) : null,
     ...ordered,
     episodePage(ctx),
+    ...chapterPages(ctx),
   ].filter(Boolean);
 
   const answered = STORY_PROMPTS.filter((p) =>

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pause, Play, X } from 'lucide-react';
 import FlipPage, { PAGE_RATIO } from '@/components/magazine/FlipPage';
 import ProfilePageSheet from './ProfilePageSheet';
-import BookTransport from './BookTransport';
+import BookTransport, { PACE_SCALE } from './BookTransport';
 import useProfileWheel from './useProfileWheel';
 
 const NAVY_DEEP = '#0B1826';
@@ -36,6 +36,7 @@ export default function ProfileBook({
   const [turning, setTurning] = useState(null);
   const [contentsOpen, setContentsOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [pace, setPace] = useState('normal');
 
   useEffect(() => {
     const el = stageRef.current;
@@ -132,15 +133,16 @@ export default function ProfileBook({
   // turned. A record that reaches its last spread either starts again or settles.
   useEffect(() => {
     if (!playing || !pages.length || !dims) return undefined;
-    const dwell = Math.max(3, Number(dwellSeconds) || 7) * 1000;
+    const base = Math.max(3, Number(dwellSeconds) || 7) * 1000;
+    const dwell = Math.max(1200, base * (PACE_SCALE[pace] || 1));
     const id = window.setTimeout(() => {
       const next = index + dims.perView;
       if (next <= maxStart) setIndex(next);
-      else if (autoplayMode === 'loop') setIndex(0);
+      else if (autoplayMode === 'loop' && pace !== 'skim') setIndex(0);
       else setPlaying(false);
     }, dwell);
     return () => clearTimeout(id);
-  }, [playing, index, dims, maxStart, autoplayMode, dwellSeconds, pages.length]);
+  }, [playing, pace, index, dims, maxStart, autoplayMode, dwellSeconds, pages.length]);
 
   const view = useMemo(() => pages.slice(index, index + perView), [pages, index, perView]);
 
@@ -312,6 +314,8 @@ export default function ProfileBook({
         onTogglePlay={togglePlay}
         onJump={jump}
         onContents={() => setContentsOpen(true)}
+        pace={pace}
+        onPace={setPace}
       />
 
       {/* A page that will not turn is a page that has arrived: nothing else. */}

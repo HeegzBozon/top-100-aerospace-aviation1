@@ -3,6 +3,8 @@ import { Loader2, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { EPISODE_FORMATS, EPISODE_SETTINGS, stageNote, stageLabel } from './episodeStages';
 import EpisodeStatusTrack from './EpisodeStatusTrack';
+import EpisodeChaptersEditor from './EpisodeChaptersEditor';
+import { normalizeChapters } from './episodeChapters';
 
 const NAVY = '#1E3A5A';
 const CREAM = '#FAF8F5';
@@ -13,6 +15,7 @@ const emptyForm = (fellowEmail, profileName) => ({
   headline: '',
   angle: '',
   topics_text: '',
+  chapters: [],
   format: 'audio',
   interview_setting: 'either',
   location: '',
@@ -27,6 +30,7 @@ const fromIntake = (intake, fellowEmail, profileName) => ({
   ...emptyForm(fellowEmail, profileName),
   ...(intake || {}),
   topics_text: (intake?.topics || []).join('\n'),
+  chapters: normalizeChapters(intake?.chapters).map((chapter) => ({ ...chapter })),
 });
 
 const Field = ({ label, hint, children }) => (
@@ -119,6 +123,7 @@ export default function EpisodeSheet({
       headline: form.headline.trim().slice(0, 160),
       angle: form.angle.trim().slice(0, 1200),
       topics,
+      chapters: normalizeChapters(form.chapters),
       format: form.format,
       interview_setting: form.interview_setting,
       location: form.location.trim().slice(0, 120),
@@ -263,6 +268,11 @@ export default function EpisodeSheet({
                 style={inputStyle}
               />
             </Field>
+
+            <EpisodeChaptersEditor
+              chapters={form.chapters}
+              onChange={(chapters) => setForm((f) => ({ ...f, chapters }))}
+            />
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Format">

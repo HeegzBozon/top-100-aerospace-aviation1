@@ -83,15 +83,17 @@ export default function NomineeClaimPanel({ nominee, viewer, onResolved, variant
     );
   }
 
-  // Already the owner.
+  // Already the owner: one key, straight into the editor. The record is theirs, so
+  // it needs no band explaining that to them.
   if (owner) {
     return (
       <ClaimShell
         icon={CheckCircle2}
         seated={seated}
+        compact
         title="You own this profile"
-        body="This footprint is verified to you. Open your profile editor to keep it current."
-        actionLabel="Open your profile"
+        body="Open your profile editor to keep it current."
+        actionLabel="Edit profile"
         onAction={() => navigate('/Profile')}
         accent="gold"
       />
@@ -226,11 +228,50 @@ function ClaimShell({
   muted,
   accent,
   seated,
+  compact,
   error,
 }) {
   const [dismissed, setDismissed] = useState(false);
   if (dismissed) return null;
   const isGold = accent === 'gold';
+
+  // The owner's key alone, seated in the record's frame: a button, not a band.
+  if (seated && compact) {
+    return (
+      <div
+        className="flex items-center justify-end gap-1 px-4 py-1.5 sm:px-8"
+        style={{
+          background: isGold ? '#173049' : '#132539',
+          borderBottom: '1px solid rgba(201,168,124,0.28)',
+        }}
+      >
+        <button
+          type="button"
+          onClick={onAction}
+          disabled={busy}
+          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-body text-[9.5px] font-bold uppercase tracking-[0.18em] disabled:opacity-50"
+          style={{
+            background: isGold ? B.gold : 'rgba(250,248,245,0.10)',
+            color: isGold ? B.navyDeep : '#fff',
+            border: `1px solid ${isGold ? B.gold : 'rgba(201,168,124,0.4)'}`,
+          }}
+        >
+          {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <Icon className="h-3 w-3" />}
+          {actionLabel}
+          {!busy && <ArrowRight className="h-3 w-3" />}
+        </button>
+        <button
+          type="button"
+          onClick={() => setDismissed(true)}
+          aria-label="Dismiss"
+          className="rounded-full p-1 transition-colors hover:bg-white/10"
+          style={{ color: 'rgba(250,248,245,0.5)' }}
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    );
+  }
 
   // Seated in the record's own frame: a band under the book's bar, printed on the
   // same navy as the page it belongs to — never a card laid over the reading.

@@ -723,6 +723,28 @@ function ConferencesPage({ page }) {
   );
 }
 
+// ── One chapter of the Fellow's arc ──────────────────────────────────────────
+function ChapterPage({ page }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {page.lines.map((line, i) => (
+        <p
+          key={i}
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 10.5,
+            lineHeight: 1.78,
+            color: 'rgba(30,58,90,0.86)',
+            margin: 0,
+          }}
+        >
+          {line}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 // ── The episode ──────────────────────────────────────────────────────────────
 function EpisodePage({ page, isOwner, onOpenEpisode }) {
   const at = trackIndex(page.status);
@@ -854,6 +876,7 @@ export default function ProfilePageSheet({ page, isOwner, onEnquire, onOpenEpiso
         {page.kind === 'flightography' && <FlightographyPage page={page} />}
         {page.kind === 'viral' && <ViralPage page={page} />}
         {page.kind === 'conferences' && <ConferencesPage page={page} />}
+        {page.kind === 'chapter' && <ChapterPage page={page} />}
         {page.kind === 'episode' && (
           <EpisodePage page={page} isOwner={isOwner} onOpenEpisode={onOpenEpisode} />
         )}

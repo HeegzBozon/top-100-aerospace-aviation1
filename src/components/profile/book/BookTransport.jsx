@@ -11,6 +11,17 @@ const CREAM = '#FAF8F5';
 const COPPER = '#B87333';
 const GOLD = '#C9A87C';
 
+// How the record plays. Slower and faster scale the dwell each spread is held
+// for; skim is one quick pass that settles at the end instead of looping.
+export const READ_PACES = [
+  { key: 'slower', label: 'Slower' },
+  { key: 'normal', label: 'Normal' },
+  { key: 'faster', label: 'Faster' },
+  { key: 'skim', label: 'Skim' },
+];
+
+export const PACE_SCALE = { slower: 1.6, normal: 1, faster: 0.55, skim: 0.25 };
+
 const Key = ({ onClick, disabled, label, children, primary }) => (
   <button
     type="button"
@@ -48,15 +59,49 @@ export default function BookTransport({
   onTogglePlay,
   onJump,
   onContents,
+  pace = 'normal',
+  onPace,
 }) {
   const pageCount = labels.length;
   if (!pageCount) return null;
+
+  const percent = Math.max(
+    0,
+    Math.min(100, Math.round(((index + visibleCount) / pageCount) * 100))
+  );
 
   return (
     <div
       className="px-3 pb-2 pt-1.5 sm:px-8 sm:pb-2.5 sm:pt-2"
       style={{ borderTop: '1px solid rgba(201,168,124,0.18)' }}
     >
+      {/* How far through the record the reader is, as one running measure */}
+      <div className="mb-2 flex items-center gap-2.5">
+        <div
+          role="progressbar"
+          aria-label="Progress through the record"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={percent}
+          className="h-[3px] flex-1 overflow-hidden rounded-full"
+          style={{ background: 'rgba(250,248,245,0.14)' }}
+        >
+          <span
+            className="block h-full rounded-full transition-[width] duration-500 ease-out"
+            style={{
+              width: `${percent}%`,
+              background: `linear-gradient(90deg, ${COPPER}, ${GOLD})`,
+            }}
+          />
+        </div>
+        <span
+          className="font-body text-[9px] font-semibold tabular-nums tracking-[0.16em]"
+          style={{ color: 'rgba(250,248,245,0.48)' }}
+        >
+          {percent}%
+        </span>
+      </div>
+
       <div className="mb-2 flex items-center gap-1" role="group" aria-label="Jump to a page">
         {labels.map((label, i) => {
           const current = i >= index && i < index + visibleCount;
@@ -125,6 +170,33 @@ export default function BookTransport({
           <List className="h-3.5 w-3.5" style={{ color: GOLD }} />
           Contents
         </button>
+      </div>
+
+      {/* Pace: three speeds of the same reading, and skim for a quick pass */}
+      <div
+        className="mt-1.5 flex items-center justify-center gap-0.5"
+        role="group"
+        aria-label="Playback pace"
+      >
+        {READ_PACES.map(({ key, label }) => {
+          const active = pace === key;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onPace?.(key)}
+              aria-pressed={active}
+              className="rounded-full px-2.5 py-1 font-body text-[9px] font-bold uppercase tracking-[0.18em] transition-colors"
+              style={
+                active
+                  ? { background: 'rgba(184,115,51,0.22)', border: `1px solid rgba(184,115,51,0.75)`, color: GOLD }
+                  : { border: '1px solid rgba(250,248,245,0.14)', color: 'rgba(250,248,245,0.52)' }
+              }
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
