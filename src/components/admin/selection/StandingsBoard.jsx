@@ -61,7 +61,8 @@ export default function StandingsBoard({ rows = [], seeded = 0, castBallots = 0,
         <span className="font-semibold text-editorial-navy">Borda and Combined are projected.</span>{' '}
         {castBallots} ballot{castBallots === 1 ? '' : 's'} cast and {seeded} draft{seeded === 1 ? '' : 's'} seeded from
         nominations, read here as if cast. Nothing is written, and no projected figure reaches a Fellow's surface. Elo is
-        unaffected.
+        unaffected: it moves on real marks only, and a test set cast by an administrator is stamped and never scored — so
+        a walkthrough leaves every rating where it stood.
       </p>
 
       <div className="grid gap-2 md:grid-cols-3">

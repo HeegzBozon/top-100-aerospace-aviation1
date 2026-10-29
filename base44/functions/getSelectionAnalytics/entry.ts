@@ -100,16 +100,22 @@ export default async function (req) {
 
     const cohortStats = await Promise.all(
       scopedCohorts.map(async (c) => {
-        const [pool, marks, fellows] = await Promise.all([
+        // Marks are counted twice over: the ones the community cast, and the ones an
+        // administrator cast walking the flow. A test set is recorded but never scored, so
+        // it is counted apart rather than folded into the cohort's weight.
+        const [pool, marks, testMarks, fellows] = await Promise.all([
           service.entities.Nominee
             .count({ status: { $in: VOTABLE }, $or: [{ season_ids: c.id }, { season_id: c.id }] })
             .catch(() => 0),
-          service.entities.PairwiseVote.count({ season_id: c.id }).catch(() => 0),
+          service.entities.PairwiseVote.count({ season_id: c.id, is_test: { $ne: true } }).catch(() => 0),
+          service.entities.PairwiseVote.count({ season_id: c.id, is_test: true }).catch(() => 0),
           service.entities.VotingContribution.count({ season_id: c.id }).catch(() => 0),
         ]);
         return {
           season_id: c.id,
           label: c.cohort_label || c.name,
+          set_id: c.parent_season_id || c.id,
+          set_name: c.parent_name || c.cohort_label || c.name,
           status: c.status,
           open: c.open,
           within_window: c.within_window,
@@ -119,20 +125,24 @@ export default async function (req) {
           ballots: savedBallots.filter((b) => b.season_id === c.id).length,
           seeded: openDrafts.filter((d) => d.season_id === c.id).length,
           comparisons: marks,
+          comparisons_test: testMarks,
           contributors: fellows,
         };
       })
     );
 
     // ── The tallies ──────────────────────────────────────────────────────────────
-    const [comparisons, contributorCount, contributions, ledger, nominees] = await Promise.all([
-      service.entities.PairwiseVote.count(seasonQuery).catch(() => 0),
+    const [comparisons, testComparisons, contributorCount, contributions, ledger, nominees] = await Promise.all([
+      service.entities.PairwiseVote.count({ ...seasonQuery, is_test: { $ne: true } }).catch(() => 0),
+      service.entities.PairwiseVote.count({ ...seasonQuery, is_test: true }).catch(() => 0),
       service.entities.VotingContribution.count({ season_id: { $in: scopedIds } }).catch(() => 0),
       service.entities.VotingContribution
         .filter({ season_id: { $in: scopedIds } }, '-xp', 60)
         .catch(() => []),
+      // Read deeper than the visible page: one anchor set files five to seven marks in a
+      // single write, and a set split across the limit would read as two sets.
       service.entities.PairwiseVote
-        .filter(seasonQuery, '-created_date', 60)
+        .filter(seasonQuery, '-created_date', 240)
         .catch(() => []),
       listPool(service, scopedIds),
     ]);
@@ -270,9 +280,14 @@ export default async function (req) {
       return acc;
     }, {});
 
+    // One anchor set is five to seven marks written at the same instant by one voter, so
+    // the voter and the write time name the set: the ledger is read set by set, not mark
+    // by mark, because that is the unit a Fellow actually cast.
     const ledgerRows = ledger.map((v) => ({
       id: v.id,
       at: v.created_date,
+      set_key: `${String(v.voter_email || '').toLowerCase()}|${v.created_date}`,
+      is_test: !!v.is_test,
       voter_email: v.voter_email,
       voter_name: nameOf(v.voter_email),
       winner: nomineeNames[v.winner_nominee_id] || 'Deleted nominee',
@@ -314,6 +329,7 @@ export default async function (req) {
         cohorts: cohorts.length,
         open_cohorts: open.length,
         comparisons,
+        comparisons_test: testComparisons,
         contributors: contributorCount,
         ballots: ballotCount,
         seeded: openDrafts.length,

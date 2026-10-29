@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import MonitorTotals from './MonitorTotals';
 import StandingsBoard from './StandingsBoard';
 import BallotLedger from './BallotLedger';
+import MarkSetsLedger from './MarkSetsLedger';
 import ContributorTable from './ContributorTable';
 
 // The selection monitor: every cohort's ballot in one room. Read-only, admin only — the
@@ -133,10 +134,10 @@ export default function SelectionMonitor() {
           />
         </TabsContent>
         <TabsContent value="ballots" className="mt-4">
-          <BallotLedger kind="ballots" ballots={data?.ballot_tracking || []} />
+          <BallotLedger ballots={data?.ballot_tracking || []} />
         </TabsContent>
         <TabsContent value="marks" className="mt-4">
-          <BallotLedger kind="marks" marks={data?.ledger || []} />
+          <MarkSetsLedger marks={data?.ledger || []} />
         </TabsContent>
         <TabsContent value="contributors" className="mt-4">
           <ContributorTable rows={data?.contributors || []} />
