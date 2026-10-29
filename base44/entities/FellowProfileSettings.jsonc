@@ -231,6 +231,47 @@
       "type": "string",
       "format": "date-time",
       "description": "Last time the Fellow opened their enquiry desk"
+    },
+    "documentary_prompts": {
+      "type": "object",
+      "default": {},
+      "description": "The Fellow's own answers to the documentary story prompts, keyed by prompt key (first_light, turning_point, hardest_problem, what_next). Each answer renders as an interview excerpt in the matching chapter of their documentary record. Display only; never read by discovery, ranking, scoring, or measurement."
+    },
+    "documentary_media": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Stable key for the contribution"
+          },
+          "chapter": {
+            "type": "string",
+            "description": "Chapter key the contribution is cut into (opening, credential, work, route, contributions, words, eight, next)"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "photo",
+              "clip",
+              "recording",
+              "document"
+            ],
+            "description": "What the contribution is: a still, a moving image, an interview recording, or a supporting document"
+          },
+          "url": {
+            "type": "string",
+            "description": "Public file URL for the contribution"
+          },
+          "caption": {
+            "type": "string",
+            "description": "Caption or credit printed under the contribution"
+          }
+        }
+      },
+      "default": [],
+      "description": "Stills, clips, interview recordings and documents the Fellow has contributed to their documentary record. Display only; never read by discovery, ranking, scoring, or measurement."
     }
   },
   "required": [

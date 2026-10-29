@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -16,6 +16,9 @@ import { exportProfileDossier } from '@/lib/profileDossier';
 import PublicProfileHero from '@/components/profile/public/PublicProfileHero';
 import CredentialBand from '@/components/profile/public/CredentialBand';
 import PublicProfileBody from '@/components/profile/public/PublicProfileBody';
+import DocumentaryModeSwitch from '@/components/profile/documentary/DocumentaryModeSwitch';
+import DocumentaryStage from '@/components/profile/documentary/DocumentaryStage';
+import { buildDocumentary } from '@/components/profile/documentary/documentaryChapters';
 
 const NAVY_DEEP = '#16293f';
 
@@ -76,6 +79,9 @@ export default function ProfileView({ userId: propUserId = null }) {
     const [inquiry, setInquiry] = useState(null);
     const openEnquiry = (mode, requestType) => setInquiry({ mode, requestType });
 
+    // Read the dossier, or watch the film. Deep-linked with ?mode=watch.
+    const [mode, setMode] = useState(() => (params.get('mode') === 'watch' ? 'watch' : 'read'));
+
     // Cinematic entrance — fades the navy veil out on mount.
     const [entered, setEntered] = useState(false);
     useEffect(() => {
@@ -131,6 +137,22 @@ export default function ProfileView({ userId: propUserId = null }) {
     const primaryMode = enabledModes(ownerSettings)[0];
     const hasRecord = !!profiles && (profiles.user || profiles.nominee || profiles.startup || profiles.provider);
 
+    // The film is composed on every load from whatever the record actually holds,
+    // so a thin profile is a short film rather than a broken one.
+    const documentary = useMemo(
+        () =>
+            buildDocumentary({
+                user: profiles?.user,
+                nominee: profiles?.nominee,
+                settings: ownerSettings,
+                rankings: top100.rankings,
+            }),
+        [profiles, ownerSettings, top100.rankings]
+    );
+
+    const isOwner = !!viewer?.email && !!fellowEmail && viewer.email === fellowEmail;
+    const view = mode === 'watch' && documentary.chapters.length > 0 ? 'watch' : 'read';
+
     // Profile view counts are deliberately absent: they sit on the never-implement
     // list, so this surface neither counts a visit nor stores one.
 
@@ -151,35 +173,79 @@ export default function ProfileView({ userId: propUserId = null }) {
                         <NomineeClaimPanel nominee={profiles.nominee} viewer={viewer} onResolved={refetchProfile} />
                     )}
 
-                    <PublicProfileHero
-                        user={profiles.user}
-                        nominee={profiles.nominee}
-                        settings={ownerSettings}
-                        accent={accent}
-                        enquiryLabel={primaryMode ? MODES[primaryMode].cta : ''}
-                        onEnquire={
-                            primaryMode
-                                ? () =>
-                                      openEnquiry(
-                                          primaryMode,
-                                          primaryMode === 'hire' ? 'role_conversation' : 'introduction'
-                                      )
-                                : null
-                        }
-                    />
+                    {documentary.chapters.length > 0 && (
+                        <DocumentaryModeSwitch
+                            mode={view}
+                            onChange={setMode}
+                            chapterCount={documentary.chapters.length}
+                        />
+                    )}
 
-                    <CredentialBand nominee={profiles.nominee} />
+                    {view === 'watch' ? (
+                        <DocumentaryStage
+                            chapters={documentary.chapters}
+                            name={profiles.nominee?.name || profiles.user?.full_name}
+                            isOwner={isOwner}
+                            settings={ownerSettings}
+                            fellowEmail={fellowEmail}
+                            openPrompts={documentary.openPrompts}
+                            onSaved={() =>
+                                queryClient.invalidateQueries({
+                                    queryKey: ['fellowProfileSettings', fellowEmail],
+                                })
+                            }
+                            onSwitchToRead={() => setMode('read')}
+                            enquiryLabel={primaryMode ? MODES[primaryMode].cta : ''}
+                            onEnquire={
+                                primaryMode
+                                    ? () =>
+                                          openEnquiry(
+                                              primaryMode,
+                                              primaryMode === 'hire' ? 'role_conversation' : 'introduction'
+                                          )
+                                    : null
+                            }
+                        />
+                    ) : (
+                        <>
+                            <PublicProfileHero
+                                user={profiles.user}
+                                nominee={profiles.nominee}
+                                settings={ownerSettings}
+                                accent={accent}
+                                enquiryLabel={primaryMode ? MODES[primaryMode].cta : ''}
+                                onEnquire={
+                                    primaryMode
+                                        ? () =>
+                                              openEnquiry(
+                                                  primaryMode,
+                                                  primaryMode === 'hire'
+                                                      ? 'role_conversation'
+                                                      : 'introduction'
+                                              )
+                                        : null
+                                }
+                            />
 
-                    <PublicProfileBody
-                        profiles={profiles}
-                        settings={ownerSettings}
-                        accent={accent}
-                        viewer={viewer}
-                        top100={top100}
-                        featuredViral={featuredViral}
-                        onEnquire={openEnquiry}
-                        onDossier={() => exportProfileDossier({ nominee: profiles.nominee, settings: ownerSettings })}
-                    />
+                            <CredentialBand nominee={profiles.nominee} />
+
+                            <PublicProfileBody
+                                profiles={profiles}
+                                settings={ownerSettings}
+                                accent={accent}
+                                viewer={viewer}
+                                top100={top100}
+                                featuredViral={featuredViral}
+                                onEnquire={openEnquiry}
+                                onDossier={() =>
+                                    exportProfileDossier({
+                                        nominee: profiles.nominee,
+                                        settings: ownerSettings,
+                                    })
+                                }
+                            />
+                        </>
+                    )}
 
                     {profiles.nominee && <ProfileNeighborsRail nominee={profiles.nominee} />}
                 </>
