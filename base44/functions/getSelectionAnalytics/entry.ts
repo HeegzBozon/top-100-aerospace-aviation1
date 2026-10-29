@@ -146,6 +146,26 @@ export default async function (req) {
       return ids.some((id) => scopedIds.includes(id));
     });
 
+    // Borda, read two ways. The recorded score is whatever the last scoring run wrote; the
+    // projection is tallied here from the ballots in hand — the ones cast and the ones
+    // seeded from nominations, read as if cast. A draft is never a vote: nothing below is
+    // written anywhere, and no projection reaches a Fellow's surface or a published figure.
+    const tallyBorda = (lists) => {
+      const scores = new Map();
+      lists.forEach((list) => {
+        (Array.isArray(list) ? list : []).forEach((id, index) => {
+          const points = Math.max(0, 100 - index);
+          if (points > 0) scores.set(id, (scores.get(id) || 0) + points);
+        });
+      });
+      return scores;
+    };
+    const castBorda = tallyBorda(ballots.map((b) => b.ballot));
+    const projectedBorda = tallyBorda([
+      ...ballots.map((b) => b.ballot),
+      ...openDrafts.map((d) => d.nominee_ids),
+    ]);
+
     const rows = scoped.map((n) => ({
       id: n.id,
       name: n.name,
@@ -156,6 +176,8 @@ export default async function (req) {
       avatar_url: n.avatar_url || n.photo_url || null,
       elo: n.elo_rating || 1200,
       borda: n.borda_score || 0,
+      borda_cast: castBorda.get(n.id) || 0,
+      borda_projected: projectedBorda.get(n.id) || 0,
       holistic: n.holistic_score || 0,
       wins: n.total_wins || 0,
       losses: n.total_losses || 0,
@@ -164,7 +186,9 @@ export default async function (req) {
     }));
 
     const e = normalise(rows.map((r) => r.elo));
-    const b = normalise(rows.map((r) => r.borda));
+    // The hint reads the projected Borda, so the board is meaningful before the first
+    // ballot is filed. It stays a projection: an ordering to review, never a result.
+    const b = normalise(rows.map((r) => r.borda_projected));
     const h = normalise(rows.map((r) => r.holistic));
     const norm = (v, range) =>
       range.max === range.min ? 0 : (v - range.min) / (range.max - range.min);
@@ -172,7 +196,7 @@ export default async function (req) {
     const standings = rows
       .map((r) => {
         const index =
-          (0.4 * norm(r.elo, e) + 0.35 * norm(r.borda, b) + 0.25 * norm(r.holistic, h)) * 100;
+          (0.4 * norm(r.elo, e) + 0.35 * norm(r.borda_projected, b) + 0.25 * norm(r.holistic, h)) * 100;
         return { ...r, combined_index: Math.round(index * 10) / 10 };
       })
       .sort((x, y) => y.combined_index - x.combined_index)

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import MonitorTotals from './MonitorTotals';
-import StandingsTable from './StandingsTable';
+import StandingsBoard from './StandingsBoard';
 import BallotLedger from './BallotLedger';
 import ContributorTable from './ContributorTable';
 
@@ -125,9 +125,10 @@ export default function SelectionMonitor() {
           <TabsTrigger value="contributors">Community</TabsTrigger>
         </TabsList>
         <TabsContent value="standings" className="mt-4">
-          <StandingsTable
+          <StandingsBoard
             rows={data?.standings || []}
             seeded={data?.totals?.seeded || 0}
+            castBallots={data?.totals?.ballots || 0}
             scopeKey={scope}
           />
         </TabsContent>
