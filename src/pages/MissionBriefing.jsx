@@ -1,176 +1,284 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRight, LayoutGrid } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
+import HubRow, { RowCta } from '@/components/faq/HubRow';
+import KbArticle from '@/components/faq/KbArticle';
+import SectionKeys from '@/components/faq/SectionKeys';
 import CourseRail from '@/components/mission/CourseRail';
-import CourseChapter from '@/components/mission/CourseChapter';
-import CourseModule from '@/components/mission/CourseModule';
-import BriefingWhen from '@/components/mission/BriefingWhen';
-import TheRecord from '@/components/mission/TheRecord';
-import useActiveStep from '@/components/mission/useActiveStep';
 import useCourseProgress from '@/components/mission/useCourseProgress';
-import { COURSE } from '@/components/mission/courseConfig';
+import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import revealCursor from '@/components/handheld/revealCursor';
+import { HUB_SECTIONS, KB_CHAPTERS, KB_ROWS, rowsFor } from '@/components/faq/faqConfig';
 
-const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
-const NEXT_STEPS = [
-  { label: 'Your dashboard', to: '/board' },
-  { label: 'The methodology', to: '/Top100OS' },
-  { label: 'Sit on the committee', to: '/selection-committee' },
-];
+// FAQ · Knowledge base · Support — the hub.
+//
+// It replaces the read-only course page with the same knowledge, laid out so a wheel can
+// drive it. Two levels, which is all a ring and a confirm key can hold: three sections,
+// then the rows inside one. A turn walks, # opens, the back key leaves a section. The
+// keypad's figures press the number printed on the row, so on the radio face the same
+// list is reachable without the wheel.
+//
+// Opening a knowledge base article is reading it: the record is written as you open, and
+// the rail above the list counts what has been read.
+const keyFor = (section, level, index) => {
+  if (level === 'sections') return `section-${HUB_SECTIONS[index]?.key || HUB_SECTIONS[0].key}`;
+  const row = rowsFor(section)[index];
+  return row ? `row-${section}-${row.key}` : null;
+};
 
-// Read — the course. Chapter zero is the onboarding: the origin story, the mission
-// and the vision, the values, then the six questions — who, what, when, where, why,
-// how. After it come the record behind the institution, the cycle running now, and
-// what it is pointed at next. It is an ongoing course, so chapters are published as
-// the institution takes on new work, and the reader's place is kept: reaching a
-// module is reading it, and the rail counts what has been read.
-export default function MissionBriefing() {
-  const [state, setState] = useState({ loading: true, failed: false });
-  const [data, setData] = useState({ seasons: [] });
-  const [attempt, setAttempt] = useState(0);
-
-  // The whole course, flat, in the order it is read — the order the wheel walks.
-  const flat = useMemo(
-    () => COURSE.flatMap((chapter) => chapter.modules.map((module) => ({ ...module, chapterKey: chapter.key }))),
-    [],
-  );
-  const { refs, active, goTo } = useActiveStep(flat.length);
+export default function FaqHub() {
+  const navigate = useNavigate();
   const { read, markRead } = useCourseProgress();
 
-  useEffect(() => {
-    let alive = true;
-    setState({ loading: true, failed: false });
+  const [section, setSection] = useState('faq');
+  const [level, setLevel] = useState('sections');
+  const [cursor, setCursor] = useState(0);
+  const [openKey, setOpenKey] = useState(null);
 
-    base44.entities.Season
-      .list('-start_date', 24)
-      .then((result) => {
-        if (!alive) return;
-        const seasons = Array.isArray(result) ? result : result?.items || [];
-        setData({ seasons });
-        setState({ loading: false, failed: false });
-      })
-      .catch(() => {
-        if (alive) setState({ loading: false, failed: true });
-      });
+  const sectionRef = useRef(section);
+  sectionRef.current = section;
+  const levelRef = useRef(level);
+  levelRef.current = level;
+  const cursorRef = useRef(cursor);
+  cursorRef.current = cursor;
 
-    return () => {
-      alive = false;
-    };
-  }, [attempt]);
+  const readSet = new Set(read);
+  const rows = rowsFor(section);
+  const activeSection = HUB_SECTIONS.find((item) => item.key === section) || HUB_SECTIONS[0];
+  const readCount = KB_ROWS.filter((row) => readSet.has(row.key)).length;
 
-  // Where the rail already says the reader is standing is where the reading is
-  // banked: one effect, so the course's memory is never a second act of its own.
-  useEffect(() => {
-    const module = flat[active];
-    if (module) markRead(module.key);
-  }, [active, flat, markRead]);
+  const openSection = useCallback((key) => {
+    setSection(key);
+    setLevel('rows');
+    setCursor(0);
+    cursorRef.current = 0;
+    setOpenKey(null);
+  }, []);
 
-  const seasons = data.seasons || [];
-  const current = seasons.find((season) => LIVE_PHASES.includes(season.status)) || seasons[0] || null;
-  const retry = () => setAttempt((n) => n + 1);
+  const backToSections = useCallback(() => {
+    const at = HUB_SECTIONS.findIndex((item) => item.key === sectionRef.current);
+    setLevel('sections');
+    setCursor(at < 0 ? 0 : at);
+    cursorRef.current = at < 0 ? 0 : at;
+    setOpenKey(null);
+  }, []);
 
-  const readIn = (chapter) => chapter.modules.filter((module) => read.includes(module.key)).length;
-  const known = useMemo(() => new Set(flat.map((module) => module.key)), [flat]);
-  const readCount = read.filter((key) => known.has(key)).length;
-  const activeChapter = Math.max(
-    0,
-    COURSE.findIndex((chapter) => chapter.key === flat[active]?.chapterKey),
+  const openRow = useCallback(
+    (row) => {
+      if (!row) return;
+      if (row.to) {
+        navigate(row.to);
+        return;
+      }
+      if (sectionRef.current === 'kb') markRead(row.key);
+      setOpenKey((prev) => (prev === row.key ? null : row.key));
+    },
+    [navigate, markRead],
   );
-  const chapterStart = (i) => COURSE.slice(0, i).reduce((n, chapter) => n + chapter.modules.length, 0);
 
-  const extraFor = (module) => {
-    if (module.extra === 'season') {
-      return (
-        <BriefingWhen season={current} loading={state.loading} failed={state.failed} onRetry={retry} />
-      );
-    }
-    if (module.extra === 'record') {
-      return <TheRecord seasons={seasons} loading={state.loading} failed={state.failed} onRetry={retry} />;
-    }
-    return null;
+  // The wheel's own arithmetic: a turn lands on the neighbour inside the level it is on,
+  // and declines at the ends so the console hands the turn to the glass and the page
+  // reads on.
+  const land = useCallback((target) => {
+    const list = levelRef.current === 'sections' ? HUB_SECTIONS : rowsFor(sectionRef.current);
+    if (target < 0 || target >= list.length) return null;
+    cursorRef.current = target;
+    setCursor(target);
+    return list[target].label;
+  }, []);
+
+  const actions = useRef(null);
+  actions.current = {
+    enter: () => {
+      if (levelRef.current === 'sections') {
+        openSection(HUB_SECTIONS[cursorRef.current].key);
+        return true;
+      }
+      openRow(rowsFor(sectionRef.current)[cursorRef.current]);
+      return true;
+    },
+    back: () => {
+      if (levelRef.current === 'rows') {
+        backToSections();
+        return true;
+      }
+      return false;
+    },
   };
 
+  const api = useRef(null);
+  if (!api.current) {
+    api.current = {
+      labels: () =>
+        (levelRef.current === 'sections' ? HUB_SECTIONS : rowsFor(sectionRef.current)).map((item) => item.label),
+      index: () => cursorRef.current,
+      step: (direction) => land(cursorRef.current + direction),
+      page: (direction) => land(cursorRef.current + direction),
+      goTo: (i) => land(i),
+      code: () => {
+        if (levelRef.current === 'sections') return HUB_SECTIONS[cursorRef.current]?.index || null;
+        return String(cursorRef.current + 1);
+      },
+      goToCode: (code) => {
+        const list = levelRef.current === 'sections' ? HUB_SECTIONS : rowsFor(sectionRef.current);
+        const target =
+          levelRef.current === 'sections'
+            ? list.findIndex((item) => item.index === String(code))
+            : Number(code) - 1;
+        if (target < 0 || target >= list.length) return null;
+        const label = land(target);
+        if (label) actions.current.enter();
+        return label;
+      },
+      enter: () => actions.current.enter(),
+      back: () => actions.current.back(),
+    };
+  }
+
+  useEffect(() => registerPicker(api.current), []);
+
+  useEffect(() => {
+    touchPicker();
+  }, [section, level, cursor, openKey, readCount]);
+
+  useEffect(() => {
+    revealCursor(keyFor(section, level, cursor));
+  }, [section, level, cursor]);
+
+  const jumpToChapter = (chapterIndex) => {
+    const chapter = KB_CHAPTERS[chapterIndex];
+    if (!chapter) return;
+    const target = KB_ROWS.findIndex((row) => row.chapterKey === chapter.key);
+    if (target < 0) return;
+    cursorRef.current = target;
+    setCursor(target);
+  };
+
+  const chaptersForRail = KB_CHAPTERS.map((chapter) => ({
+    ...chapter,
+    readCount: chapter.modules.filter((module) => readSet.has(module.key)).length,
+  }));
+
   return (
-    <div className="min-h-screen" style={{ background: B.cream }}>
-      <div className="mx-auto w-full max-w-3xl px-4 py-8 md:px-8 md:py-14">
-        <header>
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-            Read · The course
-          </p>
-          <h1 className="mt-2 font-heading text-[2rem] leading-tight md:text-5xl" style={{ color: B.navy }}>
-            Who we are, and what we measure.
-          </h1>
-          <p className="mt-3 max-w-2xl text-[13px] leading-relaxed" style={{ color: B.muted }}>
-            Chapter zero is the onboarding: the origin story, the mission and the vision, the values, and
-            the six questions — who, what, when, where, why, how. Then the record behind the institution,
-            the cycle running now, and what comes next. Read it in one sitting or a module at a time; your
-            place is kept.
-          </p>
-        </header>
+    <div className="hh-slide-window hh-scroll-window relative flex flex-col md:block md:h-auto md:min-h-screen">
+      <div
+        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden md:min-h-screen"
+        style={{ background: B.cream }}
+      >
+        <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-4 pb-4 pt-5 md:mx-auto md:w-full md:max-w-3xl md:px-8 md:pb-16 md:pt-12">
+          <header className="shrink-0">
+            <p className="text-[8.5px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
+              FAQ &middot; Knowledge base &middot; Support
+            </p>
+            <h1
+              className="mt-1.5 font-heading text-[1.85rem] leading-[1.05] md:text-5xl"
+              style={{ color: B.navy }}
+            >
+              Answers, the record, and a way to reach us.
+            </h1>
+            <p className="mt-2 max-w-xl text-[11.5px] leading-relaxed md:text-[13px]" style={{ color: B.muted }}>
+              The FAQ answers what people ask first. The knowledge base is the institution written
+              down. Support is where a correction, a claim or a fault goes. Turn the ring to walk, #
+              to open.
+            </p>
+          </header>
 
-        <CourseRail
-          chapters={COURSE.map((chapter) => ({ ...chapter, readCount: readIn(chapter) }))}
-          activeChapter={activeChapter}
-          readCount={readCount}
-          total={flat.length}
-          onJump={(i) => goTo(chapterStart(i))}
-        />
-
-        <div className="mt-6 space-y-8 md:space-y-12">
-          {COURSE.map((chapter) => (
-            <section key={chapter.key}>
-              <CourseChapter chapter={chapter} readCount={readIn(chapter)} />
-
-              <div className="mt-5 space-y-7 md:space-y-10">
-                {chapter.modules.map((module) => {
-                  const i = flat.findIndex((item) => item.key === module.key);
-                  return (
-                    <div
-                      key={module.key}
-                      ref={(node) => {
-                        refs.current[i] = node;
-                      }}
-                    >
-                      <CourseModule step={module} read={read.includes(module.key)}>
-                        {extraFor(module)}
-                      </CourseModule>
-                    </div>
-                  );
-                })}
+          {level === 'sections' ? (
+            <div className="mt-4 md:mt-8">
+              <SectionKeys
+                sections={HUB_SECTIONS}
+                cursorIndex={cursor}
+                onOpen={openSection}
+                counts={{ faq: rowsFor('faq').length, kb: rowsFor('kb').length, support: rowsFor('support').length }}
+              />
+            </div>
+          ) : (
+            <>
+              <div className="mt-4 flex shrink-0 items-center gap-2 md:mt-6">
+                <button
+                  type="button"
+                  onClick={backToSections}
+                  className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.2em]"
+                  style={{ borderColor: 'rgba(30,58,90,0.24)', color: B.navy }}
+                >
+                  <ArrowLeft className="h-2.5 w-2.5" />
+                  Sections
+                </button>
+                <span
+                  className="text-[8px] font-bold uppercase tracking-[0.24em]"
+                  style={{ color: 'rgba(30,58,90,0.45)' }}
+                >
+                  {activeSection.index} · {activeSection.label}
+                </span>
               </div>
-            </section>
-          ))}
-        </div>
 
-        <section className="mt-10 rounded-2xl p-5 md:p-7" style={{ background: B.navy }}>
-          <p className="text-[8.5px] font-bold uppercase tracking-[0.3em]" style={{ color: B.gold }}>
-            Where to go next
-          </p>
-          <h2 className="mt-2 font-heading text-xl text-editorial-cream md:text-2xl">
-            The course is the map. The board is the work.
-          </h2>
-          <div className="mt-4 flex flex-wrap gap-2.5">
-            {NEXT_STEPS.map((item, i) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="group inline-flex items-center gap-2 rounded-full px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em]"
-                style={
-                  i === 0
-                    ? { background: B.gold, color: B.navy }
-                    : { background: 'rgba(250,248,245,0.12)', color: B.cream, border: '1px solid rgba(250,248,245,0.28)' }
-                }
-              >
-                {i === 0 ? <LayoutGrid className="h-3 w-3" /> : null}
-                {item.label}
-                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            ))}
+              <p className="mt-2 text-[11px] leading-relaxed md:text-[12.5px]" style={{ color: B.muted }}>
+                {activeSection.lede}
+              </p>
+
+              {section === 'kb' ? (
+                <CourseRail
+                  chapters={chaptersForRail}
+                  activeChapter={Math.max(
+                    0,
+                    KB_CHAPTERS.findIndex((chapter) => chapter.key === rows[cursor]?.chapterKey),
+                  )}
+                  readCount={readCount}
+                  total={KB_ROWS.length}
+                  onJump={jumpToChapter}
+                />
+              ) : null}
+
+              <div className="mt-2">
+                {rows.map((row, i) => (
+                  <HubRow
+                    key={row.key}
+                    hhKey={`row-${section}-${row.key}`}
+                    index={i + 1}
+                    label={row.label}
+                    kicker={row.kicker}
+                    open={openKey === row.key}
+                    active={cursor === i}
+                    hint={row.to ? 'Press # to open' : null}
+                    onClick={() => {
+                      cursorRef.current = i;
+                      setCursor(i);
+                      openRow(row);
+                    }}
+                  >
+                    {section === 'kb' ? <KbArticle module={row.module} /> : null}
+
+                    {section !== 'kb'
+                      ? row.body?.map((para) => (
+                          <p
+                            key={para.slice(0, 24)}
+                            className="mt-2 max-w-2xl text-[11.5px] leading-relaxed md:text-[12.5px]"
+                            style={{ color: B.muted }}
+                          >
+                            {para}
+                          </p>
+                        ))
+                      : null}
+
+                    {row.cta ? <RowCta label={row.cta.label} to={row.cta.to} /> : null}
+                  </HubRow>
+                ))}
+              </div>
+            </>
+          )}
+
+          <div
+            className="mt-4 flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 text-[7.5px] font-bold uppercase tracking-[0.22em]"
+            style={{ color: 'rgba(30,58,90,0.4)' }}
+          >
+            <span>Turn to walk</span>
+            <span style={{ color: 'rgba(30,58,90,0.22)' }}>/</span>
+            <span># to open</span>
+            <span style={{ color: 'rgba(30,58,90,0.22)' }}>/</span>
+            <span>Back to leave a section</span>
           </div>
-        </section>
-
-        <div className="h-24" />
+        </div>
       </div>
     </div>
   );

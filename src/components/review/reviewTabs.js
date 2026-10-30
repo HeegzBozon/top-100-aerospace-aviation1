@@ -15,7 +15,7 @@ export const REVIEW_TABS = [
     key: "faq",
     index: "1",
     label: "FAQ",
-    blurb: "How the platform runs: the cycle, how names are measured, and what a Fellow is asked for.",
+    blurb: "The FAQ, the knowledge base behind the record, and the way to reach the desk.",
     to: "/mission-briefing",
     icon: Info,
   },
