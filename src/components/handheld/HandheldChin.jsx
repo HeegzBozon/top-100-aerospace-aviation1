@@ -6,7 +6,7 @@ import { DECK_CLEARANCE, FRAME_GUTTER } from "./handheldGeometry";
 //
 // A load paints the case first and the controls last, so between those two beats
 // the device is whole but unlit: the same casting as the real chin — the same
-// height, the same corner screws, the same speaker well and footer plate — with the
+// height, the same corner screws, the same legend band and speaker well — with the
 // wheel seated in its well and the keys drawn flat, and the viewer's own foot band
 // standing at the bottom of the glass (see ViewerFoot). Every footprint below is
 // taken from the live control it stands in for, so nothing shifts when the controls
@@ -29,6 +29,9 @@ export default function HandheldChin() {
       >
         <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, left: 5 }} />
         <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, right: 5 }} />
+
+        {/* The legend band, seated but unlit until the console's own bar comes up. */}
+        <div className="mx-3 h-[26px] rounded-[4px]" style={{ background: "var(--hh-recess)", opacity: 0.55 }} />
 
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pt-1.5">
           {/* The speaker well: punched and waiting for its control. */}
@@ -74,27 +77,6 @@ export default function HandheldChin() {
               />
             ))}
           </div>
-        </div>
-
-        {/* The footer plate, in the same three columns the live one holds — the finish
-            key at the left, the face key on the centre line, the holder at the right — so
-            nothing shifts when the real controls come up over it. */}
-        <div className="hh-footer relative mt-2 grid h-[24px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-2.5">
-          <span
-            className="hh-pad-key flex h-[19px] w-[96px] items-center rounded-[9px]"
-            style={{ opacity: 0.5 }}
-          />
-          <span
-            className="hh-pad-key h-[19px] w-[62px] rounded-[9px]"
-            style={{ opacity: 0.5 }}
-          />
-          <span
-            className="hh-engrave flex min-w-0 items-center justify-end gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
-            style={{ color: "var(--hh-ink-soft)" }}
-          >
-            <span className="hh-footer-led" />
-            Standby
-          </span>
         </div>
       </div>
 

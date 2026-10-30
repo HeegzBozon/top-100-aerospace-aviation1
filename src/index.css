@@ -427,6 +427,9 @@ button:focus-visible {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  /* Nothing is cut across the head of the picture any more, so the window takes the
+     glass's own curve at its top corners and clips the surface to it. */
+  border-radius: 8px 8px 0 0;
 }
 
 /* A deck fills the glass exactly: one slide per screen, each scrolling inside
