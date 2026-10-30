@@ -31,6 +31,7 @@ const RADIO_SURFACES = [
   { match: (path) => path.startsWith("/viralpost"), reason: "a series, in order" },
   { match: (path) => path.startsWith("/top100-list"), reason: "a numbered list" },
   { match: (path) => path.startsWith("/editions/"), reason: "a numbered edition" },
+  { match: (path) => path.startsWith("/classifieds"), reason: "a numbered board" },
 ];
 
 export function autoModeFor(pathname = "/") {

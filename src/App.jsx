@@ -99,7 +99,7 @@ const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
 const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
-const TalentDesk = lazy(() => import('@/pages/TalentDesk'));
+const Classifieds = lazy(() => import('@/pages/Classifieds'));
 const Review = lazy(() => import('@/pages/Review'));
 
 
@@ -195,9 +195,10 @@ const AuthenticatedApp = () => {
       <Route path="/networking" element={<Navigate to="/aerosync" replace />} />
       {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
       <Route path="/mission-briefing" element={<MissionBriefing />} />
-      {/* The desk: who has a door open. Public and alphabetical — never ordered by
-          availability, intent, or anything commercial. */}
-      <Route path="/talent-desk" element={<TalentDesk />} />
+      {/* The board: positions, mandates and the open desk, put up by Fellows. Read as a
+          classified page — the old desk's address lands on it. */}
+      <Route path="/classifieds" element={<Classifieds />} />
+      <Route path="/talent-desk" element={<Navigate to="/classifieds" replace />} />
       <Route path="/the-board" element={<TheBoard />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />

@@ -1,0 +1,89 @@
+{
+  "name": "Classified",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The notice's headline, as it prints on the board."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "collaboration",
+        "resource",
+        "event",
+        "opportunity",
+        "other"
+      ],
+      "default": "other",
+      "description": "The kind of notice. Open-ended by design: anything a Fellow puts on the board that is not a role and not a mandate."
+    },
+    "summary": {
+      "type": "string",
+      "description": "One line printed under the headline on the board. Never a price."
+    },
+    "body": {
+      "type": "string",
+      "description": "The notice itself, in the Fellow's own words."
+    },
+    "place": {
+      "type": "string",
+      "description": "Where the notice stands \u2014 a city, a site, or 'anywhere'."
+    },
+    "link": {
+      "type": "string",
+      "description": "Where a reader goes to answer the notice. Optional."
+    },
+    "posted_by_email": {
+      "type": "string",
+      "description": "Email of the Fellow who put the notice up. Ownership key for writes; never rendered on the board."
+    },
+    "posted_by_name": {
+      "type": "string",
+      "description": "Display name of the Fellow who put the notice up, denormalized."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "description": "Open notices print on the board; closed ones come off it."
+    }
+  },
+  "required": [
+    "title",
+    "posted_by_email"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "data.posted_by_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

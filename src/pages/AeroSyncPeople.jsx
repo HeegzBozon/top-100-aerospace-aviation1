@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ContactRolodex from '@/components/crm/ContactRolodex';
 import useConferenceContacts from '@/components/crm/useConferenceContacts';
 import FollowingLedger from '@/components/following/FollowingLedger';
-import TalentDesk from '@/pages/TalentDesk';
+import Classifieds from '@/pages/Classifieds';
 import { C } from '@/components/crm/crmConfig';
 
 const TABS = [
@@ -27,7 +27,7 @@ export default function AeroSyncPeople() {
   });
 
   const readout = useMemo(() => {
-    if (tab === 'desk') return 'Who has a door open · listed alphabetically';
+    if (tab === 'desk') return 'Three desks · positions, mandates, notices';
     if (crm.state.loading) return 'Reading your people';
     return `${crm.total} contact${crm.total === 1 ? '' : 's'} kept · private to you`;
   }, [tab, crm.state.loading, crm.total]);
@@ -77,7 +77,7 @@ export default function AeroSyncPeople() {
           ) : tab === 'following' ? (
             <FollowingLedger />
           ) : (
-            <TalentDesk embedded />
+            <Classifieds embedded />
           )}
         </div>
 
