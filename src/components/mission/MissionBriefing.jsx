@@ -7,6 +7,10 @@ import { brand } from '@/components/nominate/NominateConfig';
 // ballot's mechanics and read as instructions — with the work itself stated first, so a
 // new Fellow knows what the two surfaces are FOR before being told how to hold the keys.
 // It opens once, on the first pass through either surface, and is one press away after.
+//
+// A surface asks for its own briefing — `section="vote"`, `section="nominate"` — and is
+// given that surface's objective alone. Nobody reading the vote is handed the nominating
+// ladder, and nobody filing a nomination is handed the ballot's.
 const BRIEFINGS = [
   {
     key: 'nominate',
@@ -32,7 +36,42 @@ const BRIEFINGS = [
   },
 ];
 
-export default function MissionBriefing({ open, onOpenChange }) {
+function KeyResults({ kicker, results }) {
+  return (
+    <>
+      <p className="mt-3 text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: `${brand.navy}45` }}>
+        Key results
+      </p>
+      <ul aria-label={`${kicker} key results`} className="mt-1">
+        {results.map((result, i) => (
+          <li
+            key={result}
+            className="flex items-center gap-2.5 border-b py-[5px] last:border-b-0"
+            style={{ borderColor: `${brand.navy}0F` }}
+          >
+            <span className="w-4 shrink-0 text-[9.5px] font-bold tabular-nums" style={{ color: '#B87333' }}>
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <span className="text-[11.5px] font-medium" style={{ color: `${brand.navy}CC` }}>
+              {result}
+            </span>
+            <span
+              className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full"
+              style={{ border: `1px solid ${brand.navy}33` }}
+              aria-hidden
+            />
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+export default function MissionBriefing({ open, onOpenChange, section = null }) {
+  // A surface's own briefing, or the whole committee's when none is named.
+  const briefs = section ? BRIEFINGS.filter((brief) => brief.key === section) : BRIEFINGS;
+  const single = briefs.length === 1 ? briefs[0] : null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -49,70 +88,48 @@ export default function MissionBriefing({ open, onOpenChange }) {
 
         <div className="max-h-[76vh] overflow-y-auto p-5">
           <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: '#8F5C2C' }}>
-            Mission briefing · objectives &amp; key results
+            Mission briefing &middot; objectives &amp; key results
           </p>
           <DialogTitle className="mt-1 font-heading text-[21px] leading-tight" style={{ color: brand.navy }}>
-            Two surfaces, one committee.
+            {single ? single.objective : 'Two surfaces, one committee.'}
           </DialogTitle>
           <p className="mt-1.5 text-[11.5px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
-            Each surface has a single objective. The key results are the ladder that says you have
-            reached it.
+            {single
+              ? single.body
+              : 'Each surface has a single objective. The key results are the ladder that says you have reached it.'}
           </p>
 
-          {BRIEFINGS.map((brief) => (
+          {briefs.map((brief) => (
             <section key={brief.key} className="mt-4 border-t pt-3" style={{ borderColor: `${brand.navy}14` }}>
-              <div className="flex items-baseline justify-between gap-3">
-                <h3
-                  className="text-[9.5px] font-bold uppercase tracking-[0.2em]"
-                  style={{ color: brand.navy }}
-                >
-                  {brief.kicker}
-                </h3>
-                <span
-                  className="text-[8px] font-bold uppercase tracking-[0.18em]"
-                  style={{ color: `${brand.navy}45` }}
-                >
-                  Objective
-                </span>
-              </div>
-
-              <p className="mt-1 font-heading text-[16px] leading-snug" style={{ color: brand.navy }}>
-                {brief.objective}
-              </p>
-              <p className="mt-1 text-[11.5px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
-                {brief.body}
-              </p>
-
-              <p
-                className="mt-3 text-[8px] font-bold uppercase tracking-[0.2em]"
-                style={{ color: `${brand.navy}45` }}
-              >
-                Key results
-              </p>
-              <ul aria-label={`${brief.kicker} key results`} className="mt-1">
-                {brief.results.map((result, i) => (
-                  <li
-                    key={result}
-                    className="flex items-center gap-2.5 border-b py-[5px] last:border-b-0"
-                    style={{ borderColor: `${brand.navy}0F` }}
-                  >
-                    <span
-                      className="w-4 shrink-0 text-[9.5px] font-bold tabular-nums"
-                      style={{ color: '#B87333' }}
+              {single ? (
+                <KeyResults kicker={brief.kicker} results={brief.results} />
+              ) : (
+                <>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <h3
+                      className="text-[9.5px] font-bold uppercase tracking-[0.2em]"
+                      style={{ color: brand.navy }}
                     >
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span className="text-[11.5px] font-medium" style={{ color: `${brand.navy}CC` }}>
-                      {result}
-                    </span>
+                      {brief.kicker}
+                    </h3>
                     <span
-                      className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full"
-                      style={{ border: `1px solid ${brand.navy}33` }}
-                      aria-hidden
-                    />
-                  </li>
-                ))}
-              </ul>
+                      className="text-[8px] font-bold uppercase tracking-[0.18em]"
+                      style={{ color: `${brand.navy}45` }}
+                    >
+                      Objective
+                    </span>
+                  </div>
+
+                  <p className="mt-1 font-heading text-[16px] leading-snug" style={{ color: brand.navy }}>
+                    {brief.objective}
+                  </p>
+                  <p className="mt-1 text-[11.5px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
+                    {brief.body}
+                  </p>
+
+                  <KeyResults kicker={brief.kicker} results={brief.results} />
+                </>
+              )}
             </section>
           ))}
         </div>

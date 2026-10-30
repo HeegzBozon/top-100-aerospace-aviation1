@@ -453,6 +453,7 @@ export default function NominationForm({ isPreview = false } = {}) {
     <MissionBriefing
       open={briefing.open}
       onOpenChange={(next) => (next ? briefing.setOpen(true) : briefing.close())}
+      section="nominate"
     />
     </>
   );

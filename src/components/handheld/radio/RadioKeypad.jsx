@@ -35,7 +35,7 @@ export default function RadioKeypad({ onDigit, onScan, onEnter }) {
               label={key.label}
               sub={key.sub}
               onPress={onScan}
-              ariaLabel="Scan — search the machine"
+              ariaLabel="Scan — search the machine, or read a code"
             />
           );
         }

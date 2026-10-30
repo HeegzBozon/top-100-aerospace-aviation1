@@ -15,7 +15,6 @@ import { registerDigits, registerFaceKeys } from '@/components/handheld/handheld
 import { useConsoleFace } from '@/components/handheld/consoleMode';
 import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honoreeYears';
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
-import VoteMechanicsPopover from '@/components/voting/VoteMechanicsPopover';
 import MissionBriefing from '@/components/mission/MissionBriefing';
 
 // The four candidates stand under the four face keys, in the order the cards are set:
@@ -59,9 +58,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const [panelToken, setPanelToken] = useState('A');
   const [sessionCount, setSessionCount] = useState(0);
   const [history, setHistory] = useState([]); // completed sets for review/back
-  const [explainerOpen, setExplainerOpen] = useState(false);
   // The briefing opens itself once, from the hub, on the Fellow's first pass through the
-  // committee — this surface only offers it again from the prompt.
+  // committee — this surface only offers it again from the info key beside the prompt.
+  // One key, one panel: the info button IS the briefing, and it carries the vote alone.
   const [guideOpen, setGuideOpen] = useState(false);
 
   // Load active season + nominee pool once.
@@ -216,14 +215,15 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // The ring walks the same four cards. While a set is standing, a turn of the wheel
   // moves the cursor across it — the ends hold, so the first and the last card are as
   // far as it goes — and the centre button votes for the card the cursor has reached.
-  // Reading suspends the vote: while the explainer, the guide or a candidate's file is
-  // open, the ring and the keys belong to the reader, not to the ballot, so no mark can
-  // be made by accident.
-  const reading = explainerOpen || guideOpen || Boolean(panelNominee);
+  // Reading suspends the vote: while the briefing or a candidate's file is open, the ring
+  // and the keys belong to the reader, not to the ballot, so no mark can be made by
+  // accident.
+  const reading = guideOpen || Boolean(panelNominee);
   const standing = (phase === 'best' || phase === 'worst') && !reading;
   // Which face the case is wearing. The chamber is voted from the hardware either way,
-  // but the radio has no X, Y, A or B to press: its candidates stand under pairs of
-  // digits — vote, then file — and each card prints the pair that is on the case.
+  // but the radio has no X, Y, A or B to press: its candidates stand on the digits in
+  // reading order — 1–4 vote, 5–8 open the same four files — and each card prints both
+  // of its own numbers.
   const radio = useConsoleFace() === 'radio';
   const setKey = currentSet.map((n) => n.id).join('|');
   const cursor = useAnchorPicker({
@@ -262,22 +262,25 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     return registerFaceKeys((key) => (voteKeys.current ? voteKeys.current(key) : false));
   }, [phase, currentSet, reading]);
 
-  // The radio's half of the same claim: each card stands under a pair of digits — the
-  // first votes for it, the second opens its file — so a whole set is worked from the
-  // keypad, and the console takes the press before it can tune or walk, exactly as it
-  // does for X, Y, A and B on the wheel.
+  // The radio's half of the same claim. The digits stand in the order the cards are set:
+  // 1–4 sit on the cards themselves and vote for the one they are on, and the same four
+  // cards' information doors are the next four keys — 5 opens the first card's file, 6
+  // the second's, and so on. The console takes the press before the pad can tune or walk,
+  // exactly as it does for X, Y, A and B on the wheel.
   useEffect(() => {
     if (!radio || !voteKeys.current) return undefined;
     return registerDigits((digit) => {
       const n = Number(digit);
-      const i = Math.floor((n - 1) / 2);
+      const count = currentSet.length;
+      const info = n > count;
+      const i = info ? n - count - 1 : n - 1;
       const nominee = currentSet[i];
-      if (!(n >= 1 && n <= currentSet.length * 2) || !nominee) return false;
-      if (n % 2 === 1) {
-        handleSelect(nominee);
-      } else {
+      if (!(i >= 0 && i < count) || !nominee) return false;
+      if (info) {
         setPanelNominee(nominee);
         setPanelToken(String.fromCharCode(65 + i));
+      } else {
+        handleSelect(nominee);
       }
       return true;
     });
@@ -382,14 +385,18 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
               </span>
             )}
             <p className="min-w-0 truncate font-heading text-[14px] leading-none md:text-[17px]" style={{ color: brand.navy }}>{prompt}</p>
-            <VoteMechanicsPopover open={explainerOpen} onOpenChange={setExplainerOpen} />
+            {/* The one way in: the info key opens the briefing — the vote's own objective
+                and the ladder that says it has been reached, and nothing from the other
+                surface. */}
             <button
               type="button"
               onClick={() => setGuideOpen(true)}
-              className="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 md:px-2.5 md:py-1 md:text-[9.5px]"
-              style={{ background: `${brand.gold}1F`, border: `1px solid ${brand.gold}66`, color: brand.navy }}
+              aria-label="Mission briefing — the vote's objective and key results"
+              title="Mission briefing"
+              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+              style={{ background: `${brand.navy}0A`, border: `1px solid ${brand.navy}1A`, color: `${brand.navy}70` }}
             >
-              Briefing
+              <Info className="h-3 w-3" />
             </button>
             <span
               className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-[9.5px] font-semibold tabular-nums md:px-2.5 md:py-1 md:text-[10px]"
@@ -461,8 +468,8 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
-                keyLabel={radio ? String(idx * 2 + 1) : VOTE_KEYS[idx]}
-                infoKeyLabel={radio ? String(idx * 2 + 2) : null}
+                keyLabel={radio ? String(idx + 1) : VOTE_KEYS[idx]}
+                infoKeyLabel={radio ? String(idx + 1 + currentSet.length) : null}
                 dense={radio}
               />
             );
@@ -487,7 +494,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       </div>
 
       {/* The briefing: what the two surfaces are for, and the ladder each one is measured by. */}
-      <MissionBriefing open={guideOpen} onOpenChange={setGuideOpen} />
+      <MissionBriefing open={guideOpen} onOpenChange={setGuideOpen} section="vote" />
 
       {/* The card's information panel (anonymized) */}
       <AnimatePresence>

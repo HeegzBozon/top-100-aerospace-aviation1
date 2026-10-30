@@ -608,9 +608,12 @@ export default function MyTop100() {
 
       <Top100OSModal isOpen={showOS} onClose={() => setShowOS(false)} />
 
+      {/* The briefing the hub opens belongs to the surface it opens on: the ballot's
+          ladder when the committee is standing on Vote, the field's when it is nominating. */}
       <MissionBriefing
         open={briefing.open}
         onOpenChange={(next) => (next ? briefing.setOpen(true) : briefing.close())}
+        section={shownTab === 'nominate' ? 'nominate' : 'vote'}
       />
 
       <QuickAddBar
