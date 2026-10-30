@@ -1,6 +1,6 @@
 import { base44 } from '@/api/base44Client';
 import { preferredNominee, mergedIntoId } from '@/lib/nomineeMerge';
-import { ACCENTS } from '@/components/fellow-home/fellowHomeConfig';
+import { DISCIPLINES } from '@/components/conference-room/conferenceRoomConfig';
 
 // The kit is seeded from the Fellow's own record and never from anywhere else: the
 // name, the standing line, the summary and the portrait come from the Nominee record
@@ -10,7 +10,7 @@ import { ACCENTS } from '@/components/fellow-home/fellowHomeConfig';
 const clean = (value) => (typeof value === 'string' ? value.trim() : '');
 
 export function disciplineLabel(key) {
-  return ACCENTS.find((accent) => accent.key === key)?.label || '';
+  return DISCIPLINES.find((discipline) => discipline.key === key)?.label || '';
 }
 
 function yearsFor(role) {

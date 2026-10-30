@@ -1,4 +1,4 @@
-import { Archive, Award, Briefcase, Info, LayoutGrid, ListChecks, LogIn, PenLine, Shield, Trophy, UserPlus, Users } from "lucide-react";
+import { Archive, Award, Briefcase, Info, LayoutGrid, ListChecks, LogIn, PenLine, Shield, Store, Trophy, UserPlus, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -33,9 +33,12 @@ export const START_MENU = [
   { key: "archive", index: "07", label: "Archive", to: "/archive/6a6b70136ccb7c358f77dd7f", icon: Archive },
   // The desk is public: a Fellow opens their own door, and anyone may read who has.
   { key: "talent-desk", index: "08", label: "Talent Desk", to: "/talent-desk", icon: Briefcase },
+  // The shelf of micro-tools. Public: every artifact is composed from the reader's own
+  // record, so there is nothing behind this key a visitor cannot be shown.
+  { key: "app-store", index: "09", label: "App Store", to: "/app-store", icon: Store },
   // Orientation closes the row, marked with the information key rather than a program:
   // it explains the platform, it does not open a piece of work.
-  { key: "read", index: "09", label: "Orientation", to: "/mission-briefing", icon: Info },
+  { key: "read", index: "10", label: "Orientation", to: "/mission-briefing", icon: Info },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -43,7 +46,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "10",
+  index: "11",
   label: "Admin",
   to: "/Admin",
   icon: Shield,

@@ -1,5 +1,5 @@
 import { B } from '@/components/fellow-home/fellowHomeConfig';
-import { ACCENTS } from '@/components/fellow-home/fellowHomeConfig';
+import { DISCIPLINES } from '@/components/conference-room/conferenceRoomConfig';
 import KitField, { kitInputClass } from './KitField';
 import KitEvidenceEditor from './KitEvidenceEditor';
 import KitLinksEditor from './KitLinksEditor';
@@ -55,9 +55,9 @@ export default function KitComposer({ draft, onChange }) {
             style={inputStyle}
           >
             <option value="">Not stated</option>
-            {ACCENTS.map((accent) => (
-              <option key={accent.key} value={accent.key}>
-                {accent.label}
+            {DISCIPLINES.map((discipline) => (
+              <option key={discipline.key} value={discipline.key}>
+                {discipline.label}
               </option>
             ))}
           </select>

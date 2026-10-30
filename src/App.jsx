@@ -99,6 +99,9 @@ const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
 const TalentDesk = lazy(() => import('@/pages/TalentDesk'));
+const AppStore = lazy(() => import('@/pages/AppStore'));
+const PressKitStudio = lazy(() => import('@/pages/PressKitStudio'));
+const PressKitPublic = lazy(() => import('@/pages/PressKitPublic'));
 
 
 // Every surface is an application the machine runs: the shell draws the chrome and
@@ -189,6 +192,10 @@ const AuthenticatedApp = () => {
       {/* The desk: who has a door open. Public and alphabetical — never ordered by
           availability, intent, or anything commercial. */}
       <Route path="/talent-desk" element={<TalentDesk />} />
+      {/* The App Store: micro-tools, each doing one job and handing back an artifact */}
+      <Route path="/app-store" element={<AppStore />} />
+      <Route path="/press-kit" element={<PressKitStudio />} />
+      <Route path="/press-kit/:shareCode" element={<PressKitPublic />} />
       <Route path="/the-board" element={<TheBoard />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />
