@@ -21,7 +21,7 @@ export const MENU_CELL = 50;
 // A key rather than a word: the way home at one end of the strip, notifications at
 // the other. Both are the same width, so the words between them are measured from a
 // fixed line.
-export const KEY_CELL = 33;
+export const KEY_CELL = 44;
 
 // Each word carries, small and beside it, the key the control centre does the same thing
 // with: X lists the sections the File cell holds, Y opens the Edit drawer. On a desk there
