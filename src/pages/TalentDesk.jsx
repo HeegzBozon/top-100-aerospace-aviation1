@@ -13,7 +13,7 @@ const MODE_FILTERS = [
 
 // The Talent Desk: who has a door open. Public, alphabetical, and informational only.
 // Availability state and intent are shown; they never order, weight or feature anyone.
-export default function TalentDesk() {
+export default function TalentDesk({ embedded = false }) {
   const [mode, setMode] = useState('all');
   const [discipline, setDiscipline] = useState('');
   const [search, setSearch] = useState('');
@@ -51,16 +51,22 @@ export default function TalentDesk() {
   const reload = useCallback(() => setReloadKey((key) => key + 1), []);
   const disciplineKeys = Object.keys(facets);
 
+  // Embedded, the desk is one tab of People rather than a page of its own: the shell and the
+  // masthead belong to that surface, so only the reading itself is drawn here.
   return (
-    <div className="min-h-screen" style={{ background: B.cream }}>
-      <div className="mx-auto max-w-6xl px-3 pb-16 pt-6 md:px-6 lg:px-8">
+    <div className={embedded ? '' : 'min-h-screen'} style={embedded ? undefined : { background: B.cream }}>
+      <div className={embedded ? '' : 'mx-auto max-w-6xl px-3 pb-16 pt-6 md:px-6 lg:px-8'}>
         <header>
-          <p className="text-[8.5px] font-bold uppercase tracking-[0.34em]" style={{ color: B.copper }}>
-            The Talent Desk
-          </p>
-          <h1 className="mt-2 font-heading text-[28px] font-semibold leading-[1.1] md:text-[38px]" style={{ color: B.navy }}>
-            Who is open to a conversation.
-          </h1>
+          {!embedded && (
+            <>
+              <p className="text-[8.5px] font-bold uppercase tracking-[0.34em]" style={{ color: B.copper }}>
+                The Talent Desk
+              </p>
+              <h1 className="mt-2 font-heading text-[28px] font-semibold leading-[1.1] md:text-[38px]" style={{ color: B.navy }}>
+                Who is open to a conversation.
+              </h1>
+            </>
+          )}
           <p className="mt-2 max-w-2xl text-[12.5px] leading-relaxed md:text-[13.5px]" style={{ color: B.muted }}>
             Fellows who have opened a door on their record. Listed alphabetically, always — the
             desk carries no ranking, no featured place and no paid position. Each introduction is

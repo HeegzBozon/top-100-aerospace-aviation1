@@ -3,28 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import ContactRolodex from '@/components/crm/ContactRolodex';
 import useConferenceContacts from '@/components/crm/useConferenceContacts';
 import FollowingLedger from '@/components/following/FollowingLedger';
+import TalentDesk from '@/pages/TalentDesk';
 import { C } from '@/components/crm/crmConfig';
 
 const TABS = [
   { key: 'cards', label: 'Cards' },
   { key: 'following', label: 'Following' },
+  { key: 'desk', label: 'Talent Desk' },
 ];
 
-// AeroSync's People: the cards a Fellow captured and the names they follow, read as one
-// surface. Both are the same work — knowing who matters and holding a way to reach them — so
-// they are two tabs on one page rather than two keys on the title screen. Scanning lives on
+const TAB_KEYS = TABS.map((item) => item.key);
+
+// AeroSync's People: the cards a Fellow captured, the names they follow, and the desk of who
+// has a door open — read as one surface. All three are the same work, knowing who matters, so
+// they are three tabs on one page rather than three keys on the title screen. Scanning lives on
 // its own surface; every way into it from here leads there.
 export default function AeroSyncPeople() {
   const navigate = useNavigate();
   const crm = useConferenceContacts();
-  const [tab, setTab] = useState(() =>
-    new URLSearchParams(window.location.search).get('tab') === 'following' ? 'following' : 'cards',
-  );
+  const [tab, setTab] = useState(() => {
+    const asked = new URLSearchParams(window.location.search).get('tab');
+    return TAB_KEYS.includes(asked) ? asked : 'cards';
+  });
 
   const readout = useMemo(() => {
+    if (tab === 'desk') return 'Who has a door open · listed alphabetically';
     if (crm.state.loading) return 'Reading your people';
     return `${crm.total} contact${crm.total === 1 ? '' : 's'} kept · private to you`;
-  }, [crm.state.loading, crm.total]);
+  }, [tab, crm.state.loading, crm.total]);
 
   return (
     <div className="min-h-screen" style={{ background: C.cream }}>
@@ -44,7 +50,7 @@ export default function AeroSyncPeople() {
         <div
           role="tablist"
           aria-label="People"
-          className="mt-5 flex items-center gap-1"
+          className="mt-5 flex flex-wrap items-center gap-1"
           style={{ borderBottom: `1px solid ${C.border}` }}
         >
           {TABS.map((item) => {
@@ -68,8 +74,10 @@ export default function AeroSyncPeople() {
         <div className="mt-3">
           {tab === 'cards' ? (
             <ContactRolodex crm={crm} onCapture={() => navigate('/aerosync/scan')} />
-          ) : (
+          ) : tab === 'following' ? (
             <FollowingLedger />
+          ) : (
+            <TalentDesk embedded />
           )}
         </div>
 
