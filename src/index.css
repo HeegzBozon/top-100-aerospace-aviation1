@@ -416,14 +416,23 @@ button:focus-visible {
    square hole. The foot is set square on purpose: the picture ends above the readout
    band, where the glass is still straight. */
 .hh-stage {
+  /* The picture's two edges, named once so the pane and the keyboard answer from the
+     same numbers. They are zero where no hardware is drawn — which is every handset —
+     and they stay published for the surfaces that measure their own bars off them. */
+  --hh-stage-top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top));
+  --hh-stage-bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom));
   position: fixed;
   left: var(--hh-glass-inset);
   right: var(--hh-glass-inset);
-  top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top));
-  bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom));
+  top: var(--hh-stage-top);
+  /* Measured against the dynamic viewport rather than pinned to the bottom of the
+     layout one: a phone's browser chrome grows and shrinks as a thumb scrolls, and the
+     foot of the pane has to travel with the toolbar it is actually sitting above. */
+  height: calc(100dvh - var(--hh-stage-top) - var(--hh-stage-bottom));
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 /* A deck fills the glass exactly: one slide per screen, each scrolling inside
@@ -455,7 +464,7 @@ button:focus-visible {
      nothing added, because the height the keys report already carries the strip under
      them. The chin's clearance is spent on the glass instead of held back from it. */
   body.hh-keyboard .hh-stage {
-    bottom: var(--hh-keyboard, 0px);
+    --hh-stage-bottom: var(--hh-keyboard, 0px);
   }
 
   body.hh-keyboard .hh-chin {

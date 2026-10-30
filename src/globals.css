@@ -155,6 +155,15 @@ section, article, main, aside, nav, header, footer {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ===== TOUCH TARGETS ===== */
+/* A fingertip is 44 by 44 (WCAG 2.1, 2.5.5). The console that rides over the picture
+   is cut to that measure itself; this is the same guarantee for any control a surface
+   hands to a thumb. */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
 /* ===== SAFE AREAS ===== */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .safe-area-bottom {

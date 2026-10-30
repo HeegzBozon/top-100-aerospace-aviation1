@@ -1,45 +1,30 @@
-// The device's geometry, in one place.
+// The handset's geometry, in one place.
 //
-// index.css consumes these as custom properties to inset every surface, so the
-// hardware is never hidden behind content — and because the console and the
-// loading chassis apply the same numbers, the picture never shifts as the console
-// takes over from a load.
+// The moulding is a desk machine now. A phone has no room to give half its width to
+// a case, so the picture takes the whole viewport and the controls ride over it as a
+// floating console (see TouchConsole, and the deck that draws it). Every inset here is
+// therefore zero — and it stays published, because the surfaces built for the glass
+// read these properties for their own bars, panels, drawers and page turns: a zero
+// hands those surfaces the full screen instead of a framed window, without any of them
+// needing to know which machine they are on.
 //
-// Above the glass, on the case itself: the shell's top edge, then the moulding —
-// and the picture opens below both. Nothing is printed on the case, so the device
-// starts at the same slim margin as its sides and the glass opens as high as the
-// hardware allows: every pixel the old band held is the picture's now.
-const FRAME_GUTTER = 14; // the desk margin: how much surface shows around the shell
-// The moulding drawn back out around the glass. It is set deeper than the steps
-// themselves need: a wider case around a smaller picture is what gives the opening
-// its depth, and the shell's corner grows with it so the bezel keeps one width as it
-// turns (see HandheldBody and HandheldScreenFrame).
-const BEZEL_WIDTH = 14;
-
-// Inside the glass: the strip cut across its head, and the air it leaves under it.
-const NAV_CLEARANCE = 34;
-
-// Inside the glass, at its foot: the readout band — the cycle's stamp. It is the glass's
-// own footer rather than a strip added below the picture: taken from the pane's bottom
-// edge, so the pane keeps its full width and everything that lives on the picture is
-// inset above the band instead of running under it.
-const FOOT_CLEARANCE = 32;
-
-// Below the glass: the chin, carrying the wheel, the keys, the speaker and the plate.
-// The chin is three bands: the controls (the wheel's own height, which out-measures
-// both the key cluster and the speaker), the groove under them, and the footer plate —
-// under which the case runs on a little, so the plate is set into the moulding rather
-// than bleeding off its bottom edge. The count below is what those add up to, plus a
-// hair of slack — the live chin is measured from its content, so this has to stay
-// at or above it or the case would sit on the bottom of the picture.
-const DECK_CLEARANCE = 158;
+// The values are still applied through the same counted holders, so a loading chassis
+// handing the picture to the app never adds or takes away an edge.
+const FRAME_GUTTER = 0;
+const BEZEL_WIDTH = 0;
+// The strip that used to be cut across the head of the glass is now a drawer over the
+// picture, so the glass owes it no clearance at all.
+const NAV_CLEARANCE = 0;
+// Nor the readout band that rode the foot of the glass.
+const FOOT_CLEARANCE = 0;
+// Nor the chin: the wheel, the keys and the plate stand in the console overlay.
+const DECK_CLEARANCE = 0;
 
 export { NAV_CLEARANCE, DECK_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH };
 
-// Whoever is painting the hardware puts its space on the document. The count is
-// the point: a loading chassis handing the device to the console must not take
-// the insets away in the frame between them, and the console must not lose them
-// when the shell is told to put the device away.
+// Whoever is painting the picture puts its edges on the document. The count is the
+// point: a loading chassis handing over to the app must not take the edges away in the
+// frame between them.
 let holders = 0;
 
 export function applyShellVars() {
@@ -49,9 +34,6 @@ export function applyShellVars() {
   root.setProperty("--hh-shell-top", `${FRAME_GUTTER}px`);
   root.setProperty("--hh-top", `${FRAME_GUTTER + BEZEL_WIDTH}px`);
   root.setProperty("--hh-nav", `${NAV_CLEARANCE}px`);
-  // The picture opens straight onto the chin: no band of moulding is held below the
-  // pane, so the glass's bottom edge IS the chin's top edge and the readout band inside
-  // it is the lowest part of the picture.
   root.setProperty("--hh-bottom", `${DECK_CLEARANCE + FRAME_GUTTER}px`);
   root.setProperty("--hh-foot", `${FOOT_CLEARANCE}px`);
   root.setProperty("--hh-frame", `${FRAME_GUTTER}px`);

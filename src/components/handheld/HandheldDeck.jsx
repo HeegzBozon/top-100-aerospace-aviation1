@@ -1,18 +1,24 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Palette } from "lucide-react";
+import {
+  Bell,
+  Eye as EyeIcon,
+  FolderOpen,
+  Home as HomeIcon,
+  List as ListIcon,
+  Palette,
+  PencilLine,
+  Search,
+  Share2,
+} from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
-import { pressFaceKey } from "./handheldKeys";
-import ScreenTopBar from "./ScreenTopBar";
-import ViewerFoot from "./ViewerFoot";
-import HandheldScreenFrame from "./HandheldScreenFrame";
-import HandheldBody from "./HandheldBody";
+import { pressFaceKey, useFaceKeysClaimed } from "./handheldKeys";
+import TouchConsole from "./TouchConsole";
 import HandheldMenu from "./HandheldMenu";
 import HandheldSearch from "./HandheldSearch";
 import HandheldBoot from "./HandheldBoot";
-import ModuleRail from "./ModuleRail";
 import useHandheldDestinations from "./useHandheldDestinations";
 import useModuleNavigation, { getStage } from "./useModuleNavigation";
 import { useHandheldDeck, getDeck } from "./handheldDeck";
@@ -20,7 +26,6 @@ import { useHandheldPicker } from "./handheldPicker";
 import HandheldNotifications from "./HandheldNotifications";
 import HandheldShareSheet from "./HandheldShareSheet";
 import HandheldSpeaker from "./HandheldSpeaker";
-import HandheldPlate from "./HandheldPlate";
 import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
 import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
@@ -28,7 +33,9 @@ import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMe
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, persistSound } from "./handheldSound";
 import { openingPlaysNow } from "@/components/core/appOpening";
-import { applyShellVars, DECK_CLEARANCE, releaseShellVars } from "./handheldGeometry";
+import { applyShellVars, releaseShellVars } from "./handheldGeometry";
+import { useAuth } from "@/lib/AuthContext";
+import { toggleViewingAsVisitor } from "@/lib/viewerPreview";
 
 // The device's space is measured in handheldGeometry — one set of numbers, applied
 // by the console and by the loading chassis alike, so the hardware is never hidden
@@ -83,6 +90,13 @@ export default function HandheldDeck() {
   });
 
   const { finishKey, finish, finishes, chooseFinish } = useHandheldFinish();
+  const { realUser, viewingAsVisitor } = useAuth();
+  // The controls stand over the picture now: one panel a hand opens when it wants the
+  // machine, closed the rest of the time so the page keeps the whole screen.
+  const [consoleOpen, setConsoleOpen] = useState(false);
+  // While a surface holds the four face keys — the chamber's candidates — those keys
+  // are put under the thumb instead of waiting in the panel.
+  const keysClaimed = useFaceKeysClaimed();
 
   const menuGroups = useMemo(
     () => [
@@ -204,6 +218,12 @@ export default function HandheldDeck() {
   // Putting the console away stops its music: the speaker key is gone once the
   // device is off the glass, so the loop must not keep playing with no hand on it.
   useEffect(() => () => stopPlaylist(), []);
+
+  // A list opening over the picture puts the console away: the drawer is what the hand
+  // is reading, and two panels over one another would leave neither of them whole.
+  useEffect(() => {
+    if (menuOpen || searchOpen || notificationsOpen || shareOpen) setConsoleOpen(false);
+  }, [menuOpen, searchOpen, notificationsOpen, shareOpen]);
 
   // The read-along: the wheel's play zone walks the page down the glass until
   // the bottom arrives or the reader takes over.
@@ -658,42 +678,109 @@ export default function HandheldDeck() {
   }, [booting, finishBoot, menuOpen, notificationsOpen, shareOpen, navigate, picker]);
   backRef.current = back;
 
+  // The handle at the foot of the screen.
+  const toggleConsole = useCallback(() => {
+    finishBoot();
+    blip(consoleOpen ? "back" : "open");
+    buzz();
+    setConsoleOpen(!consoleOpen);
+  }, [consoleOpen, finishBoot]);
+
+  // The panel's own keys. Everything the case used to print is here, and each one steps
+  // the panel aside first so the list it opens is the only thing over the picture.
+  const fromConsole = (fn) => () => {
+    setConsoleOpen(false);
+    fn();
+  };
+
+  const consoleActions = [
+    { key: "home", label: "Home", Icon: HomeIcon, onSelect: fromConsole(goHome) },
+    { key: "menu", label: "Menu", Icon: ListIcon, onSelect: fromConsole(upOneLevel) },
+    { key: "file", label: "File", Icon: FolderOpen, onSelect: fromConsole(() => openBarDrawer("file")) },
+    { key: "edit", label: "Edit", Icon: PencilLine, onSelect: fromConsole(() => openBarDrawer("edit")) },
+    { key: "inbox", label: "Inbox", Icon: Bell, onSelect: fromConsole(openNotifications) },
+    { key: "search", label: "Search", Icon: Search, onSelect: fromConsole(openSearch) },
+    { key: "share", label: "Share", Icon: Share2, onSelect: fromConsole(toggleShare) },
+    { key: "skin", label: "Customize", Icon: Palette, onSelect: fromConsole(openFinish) },
+  ];
+
+  // The operator's lens: on a desk it is a cell of the bar; over the picture it is one
+  // more key, and only for an admin.
+  if (realUser?.role === "admin") {
+    consoleActions.push({
+      key: "lens",
+      label: viewingAsVisitor ? "Member view" : "Visitor view",
+      Icon: EyeIcon,
+      onSelect: fromConsole(toggleViewingAsVisitor),
+    });
+  }
+
   return (
     <>
-      {/* One moulding behind everything: the display, the bezel and the deck are
-          all set into the same body. */}
-      <HandheldBody />
-
-      <HandheldScreenFrame />
-
-      {/* The strip across the head of the glass: where you are, and the controls. */}
-      <ScreenTopBar
+      {/* The console, carried over the picture rather than built around it: a handle at
+          the foot of the screen, one panel holding everything the case used to print,
+          and — while a surface holds the four face keys — those keys under the thumb. */}
+      <TouchConsole
+        open={consoleOpen}
+        onToggle={toggleConsole}
         surface={surface}
         module={modules[moduleIndex]?.label}
-        menuOpen={menuOpen && menuMode !== "file" && menuMode !== "edit"}
-        fileOpen={menuMode === "file"}
-        editOpen={menuMode === "edit"}
-        onHome={goHome}
-        onMenu={upOneLevel}
-        onFile={() => openBarDrawer("file")}
-        onEdit={() => openBarDrawer("edit")}
-        onNotifications={openNotifications}
+        actions={consoleActions}
+        sections={modules.length > 1 ? modules : []}
+        activeSection={moduleIndex}
+        onJump={(i) => {
+          setConsoleOpen(false);
+          jumpToModule(i);
+        }}
+        faceKeys={
+          keysClaimed
+            ? {
+                onConfirm: () => faceKey("A", select),
+                onBack: () => faceKey("B", back),
+                onFile: () => faceKey("X", () => openBarDrawer("file")),
+                onEdit: () => faceKey("Y", () => openBarDrawer("edit")),
+              }
+            : null
+        }
+        speaker={<HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />}
+        wheel={
+          <ClickWheel
+            size={132}
+            onRotate={rotate}
+            onMenu={steering ? null : upOneLevel}
+            onPrev={steering ? null : () => stepSection(-1)}
+            onNext={steering ? null : () => stepSection(1)}
+            playing={playing || !!picker?.isPlaying?.()}
+            onSearch={steering ? null : openSearch}
+            onPlay={steering ? null : togglePlay}
+            onSelect={select}
+            onHome={goHome}
+            steer={!!steering}
+            onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}
+            prints={steering?.prints}
+          />
+        }
+        keypad={
+          <FaceButtons
+            keyW={46}
+            keyH={44}
+            gap={6}
+            onConfirm={() => faceKey("A", select)}
+            onBack={() => faceKey("B", back)}
+            onFile={() => faceKey("X", () => openBarDrawer("file"))}
+            onEdit={() => faceKey("Y", () => openBarDrawer("edit"))}
+          />
+        }
       />
-
-      {/* The glass's footer: the share at its left, the device's readout at its right,
-          cut across the foot of the picture. */}
-      <ViewerFoot shareOpen={shareOpen} onShare={toggleShare} />
-
-      <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
 
       {/* Section announcement — the page reports where the wheel just landed */}
       {flash && (
         <div
           className="pointer-events-none fixed left-1/2 z-30 -translate-x-1/2 md:hidden"
-          style={{ bottom: "calc(var(--hh-bottom, 176px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 10px)" }}
+          style={{ bottom: "calc(env(safe-area-inset-bottom) + 78px)" }}
         >
           <span
-            className="hh-flash flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[8px] font-bold uppercase tracking-[0.2em] text-[#FAF8F5]"
+            className="hh-flash flex items-center gap-1.5 rounded-full px-3.5 py-[7px] text-[10px] font-bold uppercase tracking-[0.18em] text-[#FAF8F5]"
             style={{ background: "rgba(7,17,31,0.88)", boxShadow: "0 4px 14px rgba(7,17,31,0.42)" }}
           >
             <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-[#B87333]" />
@@ -755,69 +842,6 @@ export default function HandheldDeck() {
         onClose={() => setShareOpen(false)}
       />
 
-      <nav
-        aria-label="Handheld console controls"
-        className="hh-chin fixed z-40 select-none md:hidden"
-        style={{
-          left: "var(--hh-frame, 0px)",
-          right: "var(--hh-frame, 0px)",
-          bottom: "var(--hh-frame, 0px)",
-          /* Measured, not grown: the chin is one band of a fixed depth, so its top edge
-             lands exactly on the glass's own foot whatever the case is wearing. A chin
-             sized by its content can creep up over the pane and take the readout band
-             with it. */
-          height: `calc(${DECK_CLEARANCE}px + env(safe-area-inset-bottom))`,
-          /* Square where it meets the glass, and the body's own corner at the foot:
-             the same 22 the moulding carries, so the case turns one corner, not two. */
-          borderRadius: "0 0 22px 22px",
-          paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
-        }}
-      >
-        {/* The chin is pinned like a real moulding: a screw at each corner. */}
-        <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, left: 5 }} aria-hidden="true" />
-        <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, right: 5 }} aria-hidden="true" />
-
-        {/* The controls, spaced so a thumb never has to guess: the speaker on the
-            left, the wheel on the centre line, the keypad on the right. The two sides
-            are the same width, so the wheel sits dead centre whatever either of them
-            measures. */}
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pt-1.5">
-          {/* The left column: the case speaker with the console's record on it. The
-              Share pill that stood under it rides the readout band now, at the left of
-              the foot of the glass (see ViewerFoot). */}
-          <div className="flex items-center justify-center">
-            <HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />
-          </div>
-
-          <ClickWheel
-            size={104}
-            onRotate={rotate}
-            onMenu={steering ? null : upOneLevel}
-            onPrev={steering ? null : () => stepSection(-1)}
-            onNext={steering ? null : () => stepSection(1)}
-            playing={playing || !!picker?.isPlaying?.()}
-            onSearch={steering ? null : openSearch}
-            onPlay={steering ? null : togglePlay}
-            onSelect={select}
-            onHome={goHome}
-            steer={!!steering}
-            onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}
-            prints={steering?.prints}
-          />
-
-          <div className="flex justify-end">
-            <FaceButtons
-              onConfirm={() => faceKey("A", select)}
-              onBack={() => faceKey("B", back)}
-              onFile={() => faceKey("X", () => openBarDrawer("file"))}
-              onEdit={() => faceKey("Y", () => openBarDrawer("edit"))}
-            />
-          </div>
-        </div>
-
-        {/* The maker's plate, fitted into the foot of the case. */}
-        <HandheldPlate finish={finish} isSignedIn={isSignedIn} onCustomize={openFinish} />
-      </nav>
     </>
   );
 }

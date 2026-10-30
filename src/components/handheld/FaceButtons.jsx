@@ -31,20 +31,28 @@ const OFFSET_X = (BOX_W - KEY_W) / 2;
 const OFFSET_Y = (BOX_H - KEY_H) / 2;
 
 const cap =
-  "hh-pad-key absolute flex items-center justify-center rounded-[9px] text-[12px] font-bold transition-transform active:translate-y-[1px]";
+  "hh-pad-key absolute flex items-center justify-center rounded-[9px] font-bold transition-transform active:translate-y-[1px]";
 
-export default function FaceButtons({ onConfirm, onBack, onFile, onEdit }) {
-  const legend = { color: "var(--hh-pad-ink)" };
+// The keys are cut to a size the caller asks for: the case prints them at a stylus'
+// width, and the console panel over a phone cuts them to a fingertip — never under the
+// 44 by 44 a thumb needs to land on a vote.
+export default function FaceButtons({ onConfirm, onBack, onFile, onEdit, keyW = KEY_W, keyH = KEY_H, gap = GAP }) {
+  const legend = { color: "var(--hh-pad-ink)", width: keyW, height: keyH };
   const keysClaimed = useFaceKeysClaimed();
+  const boxW = keyW * 3 + gap * 2;
+  const boxH = keyH * 3 + gap * 2;
+  const offsetX = (boxW - keyW) / 2;
+  const offsetY = (boxH - keyH) / 2;
+  const legendType = { fontSize: keyH >= 40 ? 14 : 12 };
 
   return (
-    <div className="relative shrink-0" style={{ width: BOX_W, height: BOX_H }}>
+    <div className="relative shrink-0" style={{ width: boxW, height: boxH }}>
       <button
         type="button"
         onClick={onEdit}
         aria-label={keysClaimed ? "Y — vote on this set" : "Y — Edit menu"}
         className={cap}
-        style={{ ...legend, width: KEY_W, height: KEY_H, top: 0, left: OFFSET_X }}
+        style={{ ...legend, ...legendType, top: 0, left: offsetX }}
       >
         Y
       </button>
@@ -54,7 +62,7 @@ export default function FaceButtons({ onConfirm, onBack, onFile, onEdit }) {
         onClick={onFile}
         aria-label="X — File menu"
         className={cap}
-        style={{ ...legend, width: KEY_W, height: KEY_H, top: OFFSET_Y, left: 0 }}
+        style={{ ...legend, ...legendType, top: offsetY, left: 0 }}
       >
         X
       </button>
@@ -64,7 +72,7 @@ export default function FaceButtons({ onConfirm, onBack, onFile, onEdit }) {
         onClick={onBack}
         aria-label="B — back"
         className={cap}
-        style={{ ...legend, width: KEY_W, height: KEY_H, top: OFFSET_Y, right: 0 }}
+        style={{ ...legend, ...legendType, top: offsetY, right: 0 }}
       >
         B
       </button>
@@ -74,7 +82,7 @@ export default function FaceButtons({ onConfirm, onBack, onFile, onEdit }) {
         onClick={onConfirm}
         aria-label="A — confirm"
         className={cap}
-        style={{ ...legend, width: KEY_W, height: KEY_H, bottom: 0, left: OFFSET_X }}
+        style={{ ...legend, ...legendType, bottom: 0, left: offsetX }}
       >
         A
       </button>
