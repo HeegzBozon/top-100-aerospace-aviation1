@@ -60,7 +60,7 @@ export default function TalentDesk({ embedded = false }) {
           {!embedded && (
             <>
               <p className="text-[8.5px] font-bold uppercase tracking-[0.34em]" style={{ color: B.copper }}>
-                The Talent Desk
+                Classifieds
               </p>
               <h1 className="mt-2 font-heading text-[28px] font-semibold leading-[1.1] md:text-[38px]" style={{ color: B.navy }}>
                 Who is open to a conversation.

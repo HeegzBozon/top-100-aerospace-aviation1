@@ -7,9 +7,9 @@ import TalentDesk from '@/pages/TalentDesk';
 import { C } from '@/components/crm/crmConfig';
 
 const TABS = [
-  { key: 'cards', label: 'Cards' },
+  { key: 'cards', label: 'My Network' },
   { key: 'following', label: 'Following' },
-  { key: 'desk', label: 'Talent Desk' },
+  { key: 'desk', label: 'Classifieds' },
 ];
 
 const TAB_KEYS = TABS.map((item) => item.key);
@@ -65,7 +65,7 @@ export default function AeroSyncPeople() {
                 className="rounded-t-lg px-3 py-2 text-[9.5px] font-bold uppercase tracking-[0.16em]"
                 style={active ? { color: C.navy, boxShadow: `inset 0 -2px 0 ${C.copper}` } : { color: C.muted }}
               >
-                {item.key === 'cards' ? `Cards (${crm.total})` : item.label}
+                {item.key === 'cards' ? `My Network (${crm.total})` : item.label}
               </button>
             );
           })}
