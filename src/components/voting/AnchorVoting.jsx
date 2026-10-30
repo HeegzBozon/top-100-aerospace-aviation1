@@ -15,7 +15,7 @@ import { registerFaceKeys } from '@/components/handheld/handheldKeys';
 import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honoreeYears';
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
 import VoteMechanicsPopover from '@/components/voting/VoteMechanicsPopover';
-import VoterGuide from '@/components/voting/VoterGuide';
+import MissionBriefing from '@/components/mission/MissionBriefing';
 
 // The four candidates stand under the four face keys, in the order the cards are set:
 // X and Y across the top row, A and B across the bottom. Y is a vote key while a set is
@@ -59,39 +59,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const [sessionCount, setSessionCount] = useState(0);
   const [history, setHistory] = useState([]); // completed sets for review/back
   const [explainerOpen, setExplainerOpen] = useState(false);
+  // The briefing opens itself once, from the hub, on the Fellow's first pass through the
+  // committee — this surface only offers it again from the prompt.
   const [guideOpen, setGuideOpen] = useState(false);
-
-  // A voter is walked through the guide once, on the first ballot they open on this device.
-  // Afterwards it is one press away from the prompt. Keyed to the voter, so a second Fellow
-  // on the same machine is not skipped. The visit is recorded the moment the guide is shown,
-  // not when it is dismissed — a voter who walks away mid-read, turns to another surface or
-  // closes the tab is still one ballot in, and is not walked through it again.
-  const guideKey = `top100.voterGuide.v1:${(user?.email || 'guest').toLowerCase()}`;
-  const markGuideSeen = useCallback(() => {
-    try {
-      window.localStorage.setItem(guideKey, new Date().toISOString());
-    } catch {
-      // Nothing to record; a browser that keeps no storage sees the guide again.
-    }
-  }, [guideKey]);
-
-  useEffect(() => {
-    if (loading || pool.length < 4) return;
-    let seen = null;
-    try {
-      seen = window.localStorage.getItem(guideKey);
-    } catch {
-      // A browser that keeps no storage simply sees the guide again.
-    }
-    if (seen) return;
-    setGuideOpen(true);
-    markGuideSeen();
-  }, [loading, pool.length, guideKey, markGuideSeen]);
-
-  const closeGuide = useCallback(() => {
-    setGuideOpen(false);
-    markGuideSeen();
-  }, [markGuideSeen]);
 
   // Load active season + nominee pool once.
   useEffect(() => {
@@ -387,7 +357,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
               className="shrink-0 rounded-full px-2.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.14em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
               style={{ background: `${brand.gold}1F`, border: `1px solid ${brand.gold}66`, color: brand.navy }}
             >
-              Voter guide
+              Briefing
             </button>
             <span
               className="ml-auto shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold tabular-nums"
@@ -482,8 +452,8 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         </div>
       </div>
 
-      {/* The voter guide: how a set works, walked in order for a first ballot. */}
-      <VoterGuide open={guideOpen} onOpenChange={(next) => (next ? setGuideOpen(true) : closeGuide())} />
+      {/* The briefing: what the two surfaces are for, and the ladder each one is measured by. */}
+      <MissionBriefing open={guideOpen} onOpenChange={setGuideOpen} />
 
       {/* The card's information panel (anonymized) */}
       <AnimatePresence>

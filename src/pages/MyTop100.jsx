@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import ListBuilderHeader from '@/components/my-top100/ListBuilderHeader';
@@ -23,6 +22,8 @@ import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import { useIsMobile } from '@/hooks/use-mobile';
 import useGlass from '@/hooks/useGlass';
 import GlassConsole from '@/components/handheld/GlassConsole';
+import MissionBriefing from '@/components/mission/MissionBriefing';
+import useMissionBriefing from '@/components/mission/useMissionBriefing';
 
 function generateShareCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -77,6 +78,9 @@ export default function MyTop100() {
   // On the glass the hub is a console: its three surfaces are the menu, and one
   // is open at a time. Null is the menu itself.
   const glass = useGlass();
+  // The committee's briefing is read once: on the first pass through the hub, whichever
+  // surface it lands on. Afterwards both surfaces keep it one press away.
+  const briefing = useMissionBriefing(user?.email, !loading && !!user?.email);
   const [glassOpen, setGlassOpen] = useState(() => {
     const requested = new URLSearchParams(window.location.search).get('tab');
     return ['start', 'nominate', 'vote'].includes(requested) ? requested : null;
@@ -603,6 +607,11 @@ export default function MyTop100() {
       />
 
       <Top100OSModal isOpen={showOS} onClose={() => setShowOS(false)} />
+
+      <MissionBriefing
+        open={briefing.open}
+        onOpenChange={(next) => (next ? briefing.setOpen(true) : briefing.close())}
+      />
 
       <QuickAddBar
         onClick={openQuickAdd}
