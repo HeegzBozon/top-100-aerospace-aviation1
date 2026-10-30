@@ -3,6 +3,7 @@ import { Clock, ListOrdered, Award } from 'lucide-react';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { brand } from '@/components/nominate/NominateConfig';
 import GlassVoteWindow from '@/components/my-top100/GlassVoteWindow';
+import { useNavHint } from '@/components/handheld/faceHint';
 
 const getStage = () => document.querySelector('[data-handheld-screen]');
 
@@ -18,6 +19,8 @@ const getStage = () => document.querySelector('[data-handheld-screen]');
 export default function GlassVoteSurface({ user, status, ballotNode, chamberNode, onExit }) {
   const [cursor, setCursor] = useState(0);
   const [openKey, setOpenKey] = useState(null);
+  // The keys this menu is walked with, printed for the face on the case.
+  const keyHint = useNavHint();
 
   const cards = [
     {
@@ -176,7 +179,7 @@ export default function GlassVoteSurface({ user, status, ballotNode, chamberNode
             className="text-[7.5px] font-bold uppercase tracking-[0.16em]"
             style={{ color: `${brand.navy}50` }}
           >
-            ◀▶ Walk · A Open
+            {keyHint({ walk: 'Walk' })}
           </p>
         </div>
 

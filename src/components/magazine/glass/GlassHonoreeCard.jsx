@@ -3,6 +3,7 @@ import { BookOpen, Check, Heart, ListPlus, LogIn, Users } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
+import { useNavHint } from '@/components/handheld/faceHint';
 
 // One honoree, held under the ring.
 //
@@ -28,6 +29,7 @@ export default function GlassHonoreeCard({
   onSignIn,
   onClose,
 }) {
+  const keyHint = useNavHint();
   const [cursor, setCursor] = useState(0);
   const cursorRef = useRef(0);
   cursorRef.current = cursor;
@@ -180,7 +182,7 @@ export default function GlassHonoreeCard({
   return (
     <GlassStudioList
       kicker={`Index of Names · No. ${String(entry.number || 0).padStart(3, '0')}`}
-      hint="◀▶ Walk · A Select"
+      hint={keyHint({ open: 'Select' })}
       note={note}
       entries={actions.map((action) => ({
         key: action.key,

@@ -8,6 +8,7 @@ import GlassHonoreeCard from '@/components/magazine/glass/GlassHonoreeCard';
 import GlassNameIndexTools from '@/components/magazine/glass/GlassNameIndexTools';
 import GlassNameIndexRow from '@/components/magazine/glass/GlassNameIndexRow';
 import useFollowing from '@/components/following/useFollowing';
+import { useNavHint } from '@/components/handheld/faceHint';
 import useListEntry from '@/components/following/useListEntry';
 import { personKey } from '@/components/following/honoreeRecord';
 import { reasonLine } from '@/components/following/followingCopy';
@@ -39,6 +40,7 @@ const matches = (entry, query) => {
 // it happens. That is a record of one sitting on one glass, and is kept nowhere else.
 export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onBack }) {
   const navigate = useNavigate();
+  const keyHint = useNavHint();
   const [order, setOrder] = useState('rank');
   const [query, setQuery] = useState('');
   const [cursor, setCursor] = useState(0);
@@ -178,7 +180,7 @@ export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onB
         </p>
         <div className="flex items-center gap-2">
           <p className="text-[7.5px] font-bold uppercase tracking-[0.16em]" style={{ color: 'rgba(30,58,90,0.5)' }}>
-            ◀▶ Walk · A Open
+            {keyHint({ walk: 'Walk' })}
           </p>
           <button
             type="button"

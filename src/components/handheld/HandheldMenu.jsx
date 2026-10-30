@@ -14,7 +14,7 @@ export default function HandheldMenu({
   cursor,
   locationKey,
   unit = "cartridges",
-  hint = "◀▶ Group · ● Load · B Back",
+  hint,
   onActivate,
   onJump,
   onClose,

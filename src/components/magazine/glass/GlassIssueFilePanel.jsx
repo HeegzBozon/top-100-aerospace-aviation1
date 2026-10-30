@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
+import { useNavHint } from '@/components/handheld/faceHint';
 
 // What a File action reports, standing in the glass where the issue is being read.
 //
@@ -11,6 +12,7 @@ import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
 // could not be taken is explained rather than swallowed. It is walked on the ring like
 // everything else on this device, so the hand never leaves the wheel.
 export default function GlassIssueFilePanel({ kicker = 'File', title, message, tone = 'working', actions = [], onClose }) {
+  const keyHint = useNavHint();
   const [cursor, setCursor] = useState(0);
   const cursorRef = useRef(0);
   cursorRef.current = cursor;
@@ -93,7 +95,7 @@ export default function GlassIssueFilePanel({ kicker = 'File', title, message, t
       >
         <GlassStudioList
           kicker={kicker}
-          hint="◀▶ Walk · A Select"
+          hint={keyHint({ open: 'Select' })}
           note={note}
           entries={actions.map((action) => ({
             key: action.key,

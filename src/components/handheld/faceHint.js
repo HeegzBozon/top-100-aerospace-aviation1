@@ -1,4 +1,4 @@
-import { RADIO } from "./consoleMode";
+import { useConsoleFace, RADIO } from "./consoleMode";
 
 // The line of keys a surface prints above its own options.
 //
@@ -17,3 +17,10 @@ export const drawerHint = (face, { move = "Move", run = "Go", back = "Back" } = 
   face === RADIO
     ? `▲▼ ${move} · # ${run} · BACK ${back}`
     : `◀▶ ${move} · ● ${run} · B ${back}`;
+
+// For a surface that only needs to print the line: call this once at the top of the
+// component and hand it the verbs.
+export const useNavHint = () => {
+  const face = useConsoleFace();
+  return (options) => navHint(face, options);
+};

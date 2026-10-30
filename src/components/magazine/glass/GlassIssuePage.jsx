@@ -3,6 +3,8 @@ import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
 import { foldLabel } from '@/components/magazine/glass/glassIssueEntries';
 import { speedLabel } from '@/components/magazine/useCinematicPlayback';
+import { useNavHint } from '@/components/handheld/faceHint';
+import { useConsoleFace } from '@/components/handheld/consoleMode';
 
 // One page of an issue, read on the glass.
 //
@@ -29,6 +31,8 @@ export default function GlassIssuePage({
   nextSection,
   onBack,
 }) {
+  const keyHint = useNavHint();
+  const radio = useConsoleFace() === 'radio';
   const canPrev = position > 1;
   const canNext = position < total;
   const fold = foldLabel(page, position, total);
@@ -174,7 +178,7 @@ export default function GlassIssuePage({
 
       <p className="pt-1 text-center text-[7.5px] font-bold uppercase tracking-[0.16em]" style={{ color: 'rgba(30,58,90,0.55)' }}>
         <BookOpen className="mr-1 inline h-3 w-3 align-[-2px]" />
-        ◀▶ Turn · A Play · B Contents
+        {keyHint({ walk: 'Turn', open: 'Play' })} · {radio ? 'BACK' : 'B'} Contents
       </p>
     </div>
   );

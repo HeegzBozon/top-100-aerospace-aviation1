@@ -11,6 +11,7 @@ import { BOARD_COLUMNS, BRAND } from '@/components/board/boardConfig';
 import useBoardCards from '@/components/board/useBoardCards';
 import useGlass from '@/hooks/useGlass';
 import { Loader2, RotateCcw } from 'lucide-react';
+import { useNavHint } from '@/components/handheld/faceHint';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 const CLOSED_PHASES = ['completed', 'archived'];
@@ -25,6 +26,7 @@ const statLine = (value, suffix) => (value === null ? null : `${value} ${suffix}
 // each scrollable all the way down for depth. The console's ring crosses the
 // columns; rotation moves inside one.
 export default function TheBoard() {
+  const keyHint = useNavHint();
   const [data, setData] = useState(null);
   const [state, setState] = useState({ loading: true, failed: false });
   const [attempt, setAttempt] = useState(0);
@@ -190,7 +192,7 @@ export default function TheBoard() {
           className="text-[7.5px] font-bold uppercase tracking-[0.26em]"
           style={{ color: 'rgba(30,58,90,0.45)' }}
         >
-          ◀▶ Columns · ▼ Depth
+          {keyHint({ walk: 'Columns', open: 'Depth' })}
         </span>
       </div>
 
