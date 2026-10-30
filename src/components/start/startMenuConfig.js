@@ -27,7 +27,9 @@ export const START_MENU = [
   { key: "review", index: "03", label: "Review", to: "/review", icon: BookOpen },
   // The CRM is one cartridge with its own title screen, and the two surfaces a Fellow
   // opens beside their contacts — the dashboard and the desk — are keys inside it now.
-  { key: "networking", index: "04", label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
+  // The title screen calls the cartridge by what a Fellow does with it; the machine it
+  // opens still names itself AeroSync once you are inside.
+  { key: "networking", index: "04", label: "Connect", to: "/aerosync", icon: Users, membersOnly: true },
   { key: "results", index: "05", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
 ];
 
