@@ -1,10 +1,12 @@
+import { ArrowUpRight } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, PORTRAIT_FOCUS } from '@/components/magazine/magazineConfig';
+import HonoreeLink from '@/components/magazine/HonoreeLink';
 
 // The face page: a portrait let out to the trim, her name set over it in the paper's own
 // voice, the standing she holds above it. It is one half of a spread — the words page
 // beside it carries her voice — and it is the only place in the book a face takes the
 // whole page.
-export default function FaceSpread({ blocks = [], imageUrl, pageNumber, totalPages }) {
+export default function FaceSpread({ blocks = [], imageUrl, pageNumber, totalPages, nomineeId }) {
   const kicker = blocks.find((b) => b.type === 'kicker');
   const heading = blocks.find((b) => b.type === 'heading');
   const byline = blocks.find((b) => b.type === 'byline');
@@ -45,9 +47,26 @@ export default function FaceSpread({ blocks = [], imageUrl, pageNumber, totalPag
           </p>
         )}
         {heading?.text && (
-          <h2 className="font-serif text-[2rem] leading-[0.95] ppc-rise" style={{ color: P.cream, animationDelay: '0.1s' }}>
-            {heading.text}
-          </h2>
+          <HonoreeLink
+            nomineeId={nomineeId}
+            name={heading.text}
+            className="group block w-fit"
+          >
+            <h2
+              className="font-serif text-[2rem] leading-[0.95] ppc-rise group-hover:underline decoration-1 underline-offset-4"
+              style={{ color: P.cream, animationDelay: '0.1s', textDecorationColor: `${P.gold}88` }}
+            >
+              {heading.text}
+            </h2>
+            {nomineeId && (
+              <span
+                className="mt-2 inline-flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-[0.28em] opacity-80 transition-opacity group-hover:opacity-100"
+                style={{ color: P.gold }}
+              >
+                Open profile <ArrowUpRight className="h-2.5 w-2.5" aria-hidden="true" />
+              </span>
+            )}
+          </HonoreeLink>
         )}
         {byline?.text && (
           <p className="mt-2 text-[10px] uppercase tracking-[0.2em] ppc-rise" style={{ color: 'rgba(250,248,245,0.72)', animationDelay: '0.18s' }}>

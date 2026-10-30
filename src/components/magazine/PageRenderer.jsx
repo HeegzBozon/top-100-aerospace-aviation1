@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, PORTRAIT_FOCUS } from '@/components/magazine/magazineConfig';
 import PinnedPageHead from '@/components/magazine/PinnedPageHead';
 import PortraitPlate from '@/components/magazine/PortraitPlate';
@@ -7,6 +8,7 @@ import PageImageBand from '@/components/magazine/PageImageBand';
 import Centerfold from '@/components/magazine/Centerfold';
 import HouseAdPage from '@/components/magazine/HouseAdPage';
 import { CENTERFOLD_LABEL, HOUSE_AD_LABEL, PATRON_LABEL } from '@/components/magazine/editionBands';
+import HonoreeLink, { nomineeIndex, resolveNomineeId } from '@/components/magazine/HonoreeLink';
 import { usePageTeleprompter, PAGE_SCROLL_ATTR } from '@/components/magazine/pageTeleprompter';
 
 // The blocks that make up a page's head: what pins to the top of the frame while the body
@@ -36,6 +38,11 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   const blocks = page.content_blocks || [];
   const bg = page.background_image_url;
   const credits = issue.cover_credits || {};
+  // The people this page is about, resolved once: a page stores names, the profile is
+  // keyed by id. An edition page points at its article, a plate tile at its own name.
+  const nomineeByTitle = nomineeIndex(articles);
+  const pageNomineeId =
+    page.nominee_id || articles.find((article) => article.id === page.article_id)?.nominee_id || null;
 
   // The pages the edition places rather than measures, marked in their own first line: a
   // centerfold, and the two labelled placements — the house's own advertisement, and the
@@ -271,6 +278,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
         imageUrl={bg}
         pageNumber={pageNumber}
         totalPages={totalPages}
+        nomineeId={pageNomineeId}
       />
     );
   }
@@ -352,8 +360,31 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
             {kicker?.text && (
               <p className="text-[9px] font-bold uppercase tracking-[0.32em] mb-2" style={{ color: P.gold }}>{kicker.text}</p>
             )}
-            <h2 className="font-serif text-2xl sm:text-3xl leading-tight" style={{ color: P.navy }}>{heading?.text}</h2>
+            {heading?.text && (
+              <HonoreeLink
+                nomineeId={pageNomineeId}
+                name={heading.text}
+                className="group block w-fit"
+              >
+                <h2
+                  className="font-serif text-2xl sm:text-3xl leading-tight group-hover:underline decoration-1 underline-offset-4"
+                  style={{ color: P.navy, textDecorationColor: `${P.copper}88` }}
+                >
+                  {heading.text}
+                </h2>
+              </HonoreeLink>
+            )}
             {byline?.text && <p className="text-[11px] mt-2 leading-relaxed" style={{ color: P.copper }}>{byline.text}</p>}
+            {pageNomineeId && (
+              <HonoreeLink
+                nomineeId={pageNomineeId}
+                name={heading?.text}
+                className="mt-2 flex w-fit items-center gap-1 text-[8px] font-bold uppercase tracking-[0.26em]"
+                style={{ color: P.copper }}
+              >
+                Open profile <ArrowUpRight className="h-2.5 w-2.5" aria-hidden="true" />
+              </HonoreeLink>
+            )}
           </PinnedPageHead>
           <div className="px-5 pb-6 pt-4 sm:px-7">
             <div className="w-10 h-px mb-4" style={{ background: `${P.copper}66` }} />
@@ -387,6 +418,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
           name: tile.text,
           line: tile.caption,
           standing: tile.attribution,
+          nomineeId: resolveNomineeId(tile.nominee_id, tile.text, nomineeByTitle),
         }))}
         pageNumber={pageNumber}
         totalPages={totalPages}
