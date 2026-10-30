@@ -1,6 +1,7 @@
 import { Plus, UserRound } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 import FollowButton from '@/components/fellow-home/FollowButton';
+import HonoreeChips from '@/components/voting/HonoreeChips';
 
 // One suggested profile. It offers three acts and ranks none of them into anything: add it
 // to the ballot, open the record, or follow the person in AeroSync. The portrait is the
@@ -30,6 +31,7 @@ export default function BallotSuggestionCard({ person, viewer, onAdd, onView }) 
               {[role, org].filter(Boolean).join(' · ')}
             </p>
           )}
+          <HonoreeChips nominee={person} max={1} className="mt-1" />
           <p className="mt-1 text-[10px] leading-snug" style={{ color: brand.gold }}>{person.reason}</p>
         </div>
       </div>

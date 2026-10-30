@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import NomineeProfilePanel from '@/components/my-top100/NomineeProfilePanel';
+import HonoreeChips from '@/components/voting/HonoreeChips';
 import { matchDiscipline, stableShuffle } from '@/components/my-top100/disciplineMatch';
 import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
 
@@ -290,6 +291,9 @@ export default function NomineeExplorerPopover({ isOpen, onClose, addedIds, onAd
                             <p className="text-[10px] truncate" style={{ color: `${brand.navy}55` }}>
                               {nominee.title || nominee.professional_role}{nominee.company ? ` · ${nominee.company}` : ''}
                             </p>
+                            {/* The record rides the row: a returning honoree is not
+                                listed as if this were their first cycle. */}
+                            <HonoreeChips nominee={nominee} max={1} className="mt-1" />
                           </div>
 
                           <ChevronRight className="w-4 h-4 shrink-0" style={{ color: `${brand.navy}30` }} />
