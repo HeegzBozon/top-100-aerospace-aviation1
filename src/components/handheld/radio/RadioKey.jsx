@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 // One key of the radio face.
@@ -47,16 +48,54 @@ export default function RadioKey({
   glyph: Glyph = null,
   skin = "pad",
   onPress,
+  onHold = null,
+  holdMs = 420,
   ariaLabel,
   pressed = false,
   className = "",
 }) {
   const tone = SKINS[skin] || SKINS.pad;
+  // A cap that does something else when it is held — ▲ and ▼ run to the end of what
+  // they are walking. The press stays the cap's own click, so a tap is one step and the
+  // hold never counts twice: a cap that has already run takes the click it was holding
+  // with it.
+  const timer = useRef(0);
+  const held = useRef(false);
+  const stopHold = useCallback(() => {
+    if (timer.current) {
+      clearTimeout(timer.current);
+      timer.current = 0;
+    }
+  }, []);
+  const startHold = useCallback(() => {
+    if (!onHold) return;
+    held.current = false;
+    stopHold();
+    timer.current = setTimeout(() => {
+      timer.current = 0;
+      held.current = true;
+      onHold();
+    }, holdMs);
+  }, [onHold, holdMs, stopHold]);
+  useEffect(() => stopHold, [stopHold]);
+  const press = useCallback(() => {
+    if (held.current) {
+      held.current = false;
+      return;
+    }
+    onPress?.();
+  }, [onPress]);
 
   return (
     <button
       type="button"
-      onClick={onPress}
+      onClick={press}
+      onPointerDown={startHold}
+      onPointerUp={stopHold}
+      onPointerLeave={stopHold}
+      onPointerCancel={stopHold}
+      onBlur={stopHold}
+      onContextMenu={onHold ? (event) => event.preventDefault() : undefined}
       aria-label={ariaLabel || label}
       aria-pressed={pressed || undefined}
       className={cn(

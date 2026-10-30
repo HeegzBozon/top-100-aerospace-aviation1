@@ -514,6 +514,54 @@ export default function HandheldDeck() {
     [menuOpen, menuMode, listFor, cursor, picker, deck, finishBoot, nav, announce, steering],
   );
 
+  // A held ▲ / ▼ runs to the end of what it was walking: the top or the bottom of the
+  // list the cursor stands in — the surface's own options, the deck's slides, the page's
+  // sections — and where the surface has none, the ends of the picture itself. One press
+  // is still one card; holding is how a long strip is crossed without counting.
+  const walkEnd = useCallback(
+    (direction) => {
+      finishBoot();
+      if (steering) return;
+      const top = direction < 0;
+      if (menuOpen) {
+        const list = listFor(menuMode);
+        if (!list.length) return;
+        setCursor(top ? 0 : list.length - 1);
+        blip("move");
+        return;
+      }
+      if (picker) {
+        const labels = picker.labels();
+        if (!labels.length) return;
+        const label = picker.goTo(top ? 0 : labels.length - 1);
+        blip("move");
+        if (label && label !== true) announce(label);
+        return;
+      }
+      if (deck) {
+        const target = top ? 0 : Math.max(0, deck.count() - 1);
+        deck.goTo(target);
+        blip("move");
+        announce(deck.labels()[target]);
+        return;
+      }
+      if (nav.modules.length) {
+        const target = top ? 0 : nav.modules.length - 1;
+        if (nav.goTo(target) !== null) {
+          blip("move");
+          announce(nav.modules[target]?.label);
+          return;
+        }
+      }
+      const stage = getStage();
+      if (!stage) return;
+      stage.scrollTo({ top: top ? 0 : stage.scrollHeight, behavior: "smooth" });
+      blip("move");
+      announce(top ? "Top" : "Bottom");
+    },
+    [menuOpen, menuMode, listFor, picker, deck, nav, finishBoot, announce, steering],
+  );
+
   const jumpGroup = useCallback(
     (step, groups = menuGroups) => {
       const starts = [];
@@ -961,6 +1009,8 @@ export default function HandheldDeck() {
             onEdit={() => openBarDrawer("edit")}
             onUp={() => rotate(-1)}
             onDown={() => rotate(1)}
+            onUpEnd={() => walkEnd(-1)}
+            onDownEnd={() => walkEnd(1)}
             onHome={goHome}
             onBack={back}
             onAnnounce={announce}

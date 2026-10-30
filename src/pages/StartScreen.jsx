@@ -13,7 +13,6 @@ import StartSeasonLine from '@/components/start/StartSeasonLine';
 import PublicationCountdown from '@/components/start/PublicationCountdown';
 import StartTitleActions from '@/components/start/StartTitleActions';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
-import useRecordChecklist from '@/components/record/useRecordChecklist';
 import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
 import { loadWomenIssue } from '@/components/magazine/womenEdition';
 import { issueStatus, progressCta, readIssueProgress } from '@/lib/readingProgress';
@@ -43,9 +42,6 @@ export default function StartScreen() {
   // The Fellow's own ballot, as it stands: the program's key reports it, so the card that
   // asks for a hundred names says how many of them are already in order.
   const [ballotCount, setBallotCount] = useState(null);
-  // The Fellow's own record, read once here and handed to both machines: the six keys
-  // beneath the programs report how much of each checklist is already in place.
-  const record = useRecordChecklist();
 
   useEffect(() => {
     if (!signedIn) {
@@ -79,11 +75,6 @@ export default function StartScreen() {
       if (item.key === 'nominate') {
         return ballotCount === null ? item : { ...item, progressLabel: `${ballotCount}/100` };
       }
-      // The record's own key reports how much of the record is already in place, so the
-      // six checklists behind it are read as one figure on the title screen.
-      if (item.key === 'record') {
-        return record.loading ? item : { ...item, progressLabel: `${record.overall?.percent ?? 0}%` };
-      }
       if (item.key !== 'results') return item;
       return {
         ...item,
@@ -110,7 +101,7 @@ export default function StartScreen() {
           : {}),
       };
     });
-  }, [user?.role, signedIn, womenIssue, ballotCount, record.loading, record.overall]);
+  }, [user?.role, signedIn, womenIssue, ballotCount]);
 
   // Which issue the edition stands for, so its key can report the reader's place in it.
   // A title screen that cannot reach the issue still draws, worded plainly as a way in.

@@ -99,6 +99,7 @@ const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
 const TalentDesk = lazy(() => import('@/pages/TalentDesk'));
+const Review = lazy(() => import('@/pages/Review'));
 
 
 // Every surface is an application the machine runs: the shell draws the chrome and
@@ -141,6 +142,9 @@ const AuthenticatedApp = () => {
           the way in for whoever is not one yet — the same machine either way. */}
       <Route path="/" element={<StartScreen />} />
       <Route path="/start" element={<StartScreen />} />
+      {/* Review: the orientation, a Fellow's own record and the archive, read as one
+          surface with three tabs rather than three keys on the title screen. */}
+      <Route path="/review" element={<Review />} />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />
       <Route path="/onboarding-admin" element={<OnboardingAdmin />} />

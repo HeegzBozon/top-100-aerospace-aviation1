@@ -1,4 +1,4 @@
-import { Archive, Award, Briefcase, Info, LayoutGrid, ListChecks, LogIn, PenLine, Shield, Trophy, UserPlus, Users } from "lucide-react";
+import { Award, BookOpen, ListChecks, LogIn, Shield, Trophy, UserPlus, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -21,21 +21,14 @@ export const START_MENU = [
   // key is named for the work it opens.
   { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
   { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
-  // A Fellow's own record, drawn as one key rather than six. The six checklists that
-  // fill it — View, Business Card, Data Room, Availability, Inbox, Account — live
-  // behind this key, and this is the way in.
-  { key: "record", index: "03", label: "Edit profile", to: "/record", icon: PenLine, membersOnly: true },
+  // Review gathers what a Fellow comes back to look at rather than to do: the
+  // orientation that explains the platform, their own record, and the archive of closed
+  // cycles. It was three keys; it is one surface with three tabs (see pages/Review).
+  { key: "review", index: "03", label: "Review", to: "/review", icon: BookOpen },
+  // The CRM is one cartridge with its own title screen, and the two surfaces a Fellow
+  // opens beside their contacts — the dashboard and the desk — are keys inside it now.
   { key: "networking", index: "04", label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
-  { key: "dashboard", index: "05", label: "Dashboard", to: "/board", icon: LayoutGrid, membersOnly: true },
-  { key: "results", index: "06", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
-  // The volumes already closed, open to anyone: the record of previous cycles reads as
-  // the archive it is, and every volume in it is reachable from the one it opens on.
-  { key: "archive", index: "07", label: "Archive", to: "/archive/6a6b70136ccb7c358f77dd7f", icon: Archive },
-  // The desk is public: a Fellow opens their own door, and anyone may read who has.
-  { key: "talent-desk", index: "08", label: "Talent Desk", to: "/talent-desk", icon: Briefcase },
-  // Orientation closes the row, marked with the information key rather than a program:
-  // it explains the platform, it does not open a piece of work.
-  { key: "read", index: "09", label: "Orientation", to: "/mission-briefing", icon: Info },
+  { key: "results", index: "05", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -43,7 +36,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "10",
+  index: "06",
   label: "Admin",
   to: "/Admin",
   icon: Shield,

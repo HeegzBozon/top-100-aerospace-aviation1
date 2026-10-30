@@ -25,6 +25,8 @@ export default function RadioChin({
   onEdit,
   onUp,
   onDown,
+  onUpEnd,
+  onDownEnd,
   onHome,
   onBack,
   onEnter,
@@ -60,8 +62,8 @@ export default function RadioChin({
           }
         />
         <RadioKey glyph={HomeIcon} sub="HOME" skin="light" onPress={onHome} ariaLabel="Home" />
-        <RadioKey glyph={ChevronUp} sub="UP" skin="light" onPress={onUp} ariaLabel="Up" />
-        <RadioKey glyph={ChevronDown} sub="DOWN" skin="light" onPress={onDown} ariaLabel="Down" />
+        <RadioKey glyph={ChevronUp} sub="UP" skin="light" onPress={onUp} onHold={onUpEnd} ariaLabel="Up — hold to the top" />
+        <RadioKey glyph={ChevronDown} sub="DOWN" skin="light" onPress={onDown} onHold={onDownEnd} ariaLabel="Down — hold to the bottom" />
         <RadioKey glyph={Undo2} sub="BACK" skin="light" onPress={onBack} ariaLabel="Back" />
       </div>
 
