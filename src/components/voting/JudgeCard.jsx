@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowUp, ArrowDown, Info } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
-import HonoreeChip from '@/components/voting/HonoreeChip';
+import HonoreeStack from '@/components/voting/HonoreeStack';
 import { DISCIPLINE_LABELS } from '@/components/voting/anonymize';
 
 // Career-stage broad bands — never a job title. The institution measures;
@@ -156,15 +156,10 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
         </div>
 
         {/* A returning honoree: the archive already carries them, so the card says so
-            before the story is read. The year rides the card; the volume and the recorded
-            position open on the chip itself. */}
-        {honoreeVolumes.length > 0 && (
-          <div className="flex shrink-0 flex-wrap items-center gap-1">
-            {honoreeVolumes.map((volume) => (
-              <HonoreeChip key={volume.seasonId} volume={volume} />
-            ))}
-          </div>
-        )}
+            before the story is read. One line only — the latest distinction on a chip,
+            the rest of the record stacked behind a count — so a candidate six volumes
+            deep costs the plate exactly what a candidate one volume deep costs. */}
+        <HonoreeStack volumes={honoreeVolumes} />
 
         {/* Six word story, set in the display hand under a rose-gold hairline. */}
         {story ? (
