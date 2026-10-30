@@ -292,6 +292,10 @@ button:focus-visible {
      viewport and its bars sit on the bottom of the screen. */
   --hh-top: 0px;
   --hh-shell-top: 0px;
+  /* The desk machine's own bands are retired with it; a surface that still measures
+     itself against them reads a full viewport instead of a framed window. */
+  --imac-top: 0px;
+  --imac-bottom: 0px;
   /* Where the glass opens at its foot: the chin's own top edge. Nothing of the moulding
      is held below the picture, so the whole strip between the pane and the controls is
      the glass's. */
