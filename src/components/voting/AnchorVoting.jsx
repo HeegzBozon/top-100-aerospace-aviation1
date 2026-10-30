@@ -488,7 +488,12 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       {/* The card's information panel (anonymized) */}
       <AnimatePresence>
         {panelNominee && (
-          <EvidencePopover nominee={panelNominee} token={panelToken} onClose={() => setPanelNominee(null)} />
+          <EvidencePopover
+            nominee={panelNominee}
+            token={panelToken}
+            volumes={honoreeVolumes(panelNominee, honoreeIndex, nomineeIndex)}
+            onClose={() => setPanelNominee(null)}
+          />
         )}
       </AnimatePresence>
     </div>

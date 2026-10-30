@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 import { careerTrajectory, metricCounts } from '@/components/voting/anonymize';
+import HonoreeChip from '@/components/voting/HonoreeChip';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 
 // The candidate's own information panel — the card's one door. Everything the
@@ -17,7 +18,7 @@ import { registerPicker, touchPicker } from '@/components/handheld/handheldPicke
 // under the cursor. A turn at either end is kept and spent reading on down the panel,
 // so the wheel is never dead and the picture behind the panel never moves. A is taken
 // and does nothing through the panel; B, or the cross, puts it away.
-export default function EvidencePopover({ nominee, token, onClose }) {
+export default function EvidencePopover({ nominee, token, volumes = [], onClose }) {
   const name = nominee.name || 'Evidence of judgment';
   const story = nominee.six_word_story || '';
   const bio = nominee.bio || '';
@@ -54,8 +55,27 @@ export default function EvidencePopover({ nominee, token, onClose }) {
       label: 'Professional biography',
       body: bio ? <Prose>{bio}</Prose> : <Empty note="Not yet on file — pending backfill." />,
     },
-    ...(contribution
-      ? [{ key: 'impact', label: 'Contribution evidence', body: <Prose>{contribution}</Prose> }]
+    // The volumes this person stood in, badged the way the card badges them: the same
+    // archived record, read wherever the evidence of judgment is read. A candidate with
+    // no contribution text still shows their volume, because the record is the evidence.
+    ...(contribution || volumes.length
+      ? [{
+          key: 'impact',
+          label: 'Contribution evidence',
+          icon: Award,
+          body: (
+            <div className="space-y-2">
+              {volumes.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {volumes.map((volume) => (
+                    <HonoreeChip key={volume.seasonId} volume={volume} size="lg" />
+                  ))}
+                </div>
+              )}
+              {contribution && <Prose>{contribution}</Prose>}
+            </div>
+          ),
+        }]
       : []),
     {
       key: 'flight',
