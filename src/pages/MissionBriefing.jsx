@@ -8,6 +8,7 @@ import SectionKeys from '@/components/faq/SectionKeys';
 import CourseRail from '@/components/mission/CourseRail';
 import useCourseProgress from '@/components/mission/useCourseProgress';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import { getStage } from '@/components/handheld/useModuleNavigation';
 import revealCursor from '@/components/handheld/revealCursor';
 import { HUB_SECTIONS, KB_CHAPTERS, KB_ROWS, rowsFor } from '@/components/faq/faqConfig';
 
@@ -142,6 +143,14 @@ export default function FaqHub() {
     touchPicker();
   }, [section, level, cursor, openKey, readCount]);
 
+  // Opening or leaving a section starts at the head of the page, so the section's own
+  // name is the first thing in the picture; the ring then brings the row it lands on
+  // into view from there.
+  useEffect(() => {
+    const stage = getStage();
+    if (stage) stage.scrollTo({ top: 0, behavior: 'auto' });
+  }, [section, level]);
+
   useEffect(() => {
     revealCursor(keyFor(section, level, cursor));
   }, [section, level, cursor]);
@@ -161,26 +170,26 @@ export default function FaqHub() {
   }));
 
   return (
-    <div className="hh-slide-window hh-scroll-window relative flex flex-col md:block md:h-auto md:min-h-screen">
-      <div
-        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden md:min-h-screen"
-        style={{ background: B.cream }}
-      >
-        <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-4 pb-4 pt-5 md:mx-auto md:w-full md:max-w-3xl md:px-8 md:pb-16 md:pt-12">
+    <div className="relative flex flex-col md:min-h-screen">
+      {/* The page takes its own height and the glass rolls it, rather than being pinned
+          to one screen and clipped: on a phone the three sections fit without a scroll,
+          and a long list of opened articles rolls in the picture like any other page —
+          which is also what lets the ring bring a row it has landed on into view. */}
+      <div className="relative flex flex-1 flex-col" style={{ background: B.cream }}>
+        <div className="relative flex flex-1 flex-col px-4 pb-3 pt-4 md:mx-auto md:w-full md:max-w-3xl md:px-8 md:pb-16 md:pt-12">
           <header className="shrink-0">
-            <p className="text-[8.5px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
+            <p className="text-[8px] font-bold uppercase tracking-[0.28em]" style={{ color: B.copper }}>
               FAQ &middot; Knowledge base &middot; Support
             </p>
             <h1
-              className="mt-1.5 font-heading text-[1.85rem] leading-[1.05] md:text-5xl"
+              className="mt-1 font-heading text-[1.55rem] leading-[1.02] md:mt-1.5 md:text-5xl"
               style={{ color: B.navy }}
             >
               Answers, the record, and a way to reach us.
             </h1>
-            <p className="mt-2 max-w-xl text-[11.5px] leading-relaxed md:text-[13px]" style={{ color: B.muted }}>
-              The FAQ answers what people ask first. The knowledge base is the institution written
-              down. Support is where a correction, a claim or a fault goes. Turn the ring to walk, #
-              to open.
+            <p className="mt-1.5 max-w-xl text-[10.5px] leading-snug md:mt-2 md:text-[13px]" style={{ color: B.muted }}>
+              Short answers, the written record, and the way to reach the desk. Turn the ring to
+              walk, # to open.
             </p>
           </header>
 
