@@ -31,44 +31,55 @@ export function buildHonoreeYearIndex(seasons = [], activeSeasonId = '') {
   return index;
 }
 
-// Every closed volume a candidate appears in, most recent first, carrying the recorded
-// position where the archive holds one — the volume, its position, and the season the
-// archive route is filed under.
-export function honoreeVolumes(nominee, yearIndex) {
+// Every closed volume a candidate is on the record as having stood in, most recent
+// first, carrying the recorded position. A volume only badges once the archive holds an
+// appearance entry for it: standing in a cohort is not the same as standing in the
+// published volume, and a badge that cannot say where someone placed prints exactly
+// that confusion on the card. The archive is the only authority here.
+export function honoreeVolumes(nominee, yearIndex, byId) {
   if (!yearIndex || yearIndex.size === 0) return [];
 
-  const raw = nominee?.raw_nomination_data || {};
-  const filed = new Map();
-
-  // The appearances index holds the volume's own title and the measured position.
-  for (const entry of raw.archive_appearances || []) {
-    if (!entry?.season_id) continue;
-    filed.set(entry.season_id, {
-      rank: typeof entry.rank === 'number' ? entry.rank : null,
-      artifact: entry.artifact || '',
-      volume: entry.volume || '',
-      seasonName: entry.season_name || '',
-    });
+  // The records that stand for this person: the row itself and whichever master it was
+  // folded into. A superseded duplicate still renders as the candidate in the voting
+  // pool, while the archive entry lives on the master, so the chain is read whole.
+  const rows = [];
+  const seen = new Set();
+  let row = nominee;
+  while (row?.id && !seen.has(row.id)) {
+    seen.add(row.id);
+    rows.push(row);
+    const master = row.raw_nomination_data?.merged_into;
+    row = master ? byId?.get(master) || null : null;
   }
 
-  // Membership index: a volume without an appearance entry still counts as stood in.
-  for (const entry of raw.season_participation || []) {
-    if (!entry?.season_id || entry.status === 'rejected') continue;
-    const known = filed.get(entry.season_id) || {};
-    if (known.rank == null && typeof entry.rank === 'number') {
-      filed.set(entry.season_id, { ...known, rank: entry.rank });
-    } else if (!filed.has(entry.season_id)) {
-      filed.set(entry.season_id, known);
+  // The appearances index holds the volume's own title and the measured position.
+  const filed = new Map();
+  for (const source of rows) {
+    for (const entry of source?.raw_nomination_data?.archive_appearances || []) {
+      if (!entry?.season_id || filed.has(entry.season_id)) continue;
+      filed.set(entry.season_id, {
+        rank: typeof entry.rank === 'number' ? entry.rank : null,
+        artifact: entry.artifact || '',
+        volume: entry.volume || '',
+        seasonName: entry.season_name || '',
+      });
     }
   }
 
-  const seasonIds = new Set([nominee?.season_id, ...(nominee?.season_ids || []), ...filed.keys()].filter(Boolean));
+  // A membership entry can supply the position of an appearance filed without one. It
+  // never introduces a volume of its own.
+  for (const source of rows) {
+    for (const entry of source?.raw_nomination_data?.season_participation || []) {
+      const known = entry?.season_id ? filed.get(entry.season_id) : null;
+      if (!known || known.rank != null || entry.status === 'rejected') continue;
+      if (typeof entry.rank === 'number') filed.set(entry.season_id, { ...known, rank: entry.rank });
+    }
+  }
 
   const volumes = [];
-  for (const seasonId of seasonIds) {
+  for (const [seasonId, detail] of filed) {
     const season = yearIndex.get(seasonId);
     if (!season) continue;
-    const detail = filed.get(seasonId) || {};
     volumes.push({
       seasonId,
       year: season.year,

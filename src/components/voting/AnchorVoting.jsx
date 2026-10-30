@@ -46,6 +46,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // Closed volumes, mapped to the year they are remembered by: what makes a candidate
   // on the card a returning honoree rather than a first-time nominee.
   const [honoreeIndex, setHonoreeIndex] = useState(() => new Map());
+  // Every nominee row keyed by id, so a card rendering a superseded duplicate reads the
+  // archived volume through the merge chain its own record points down.
+  const [nomineeIndex, setNomineeIndex] = useState(() => new Map());
   const [currentSet, setCurrentSet] = useState([]);
   const [seenIds, setSeenIds] = useState([]);
   const [phase, setPhase] = useState('best'); // best | worst | submitting | success
@@ -140,6 +143,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         });
         if (!active) return;
         setHonoreeIndex(buildHonoreeYearIndex(seasons, activeSeason.id));
+        setNomineeIndex(new Map(raw.map((n) => [n.id, n])));
         setSeason(activeSeason);
         setPool(prepared);
         if (prepared.length >= 4) setCurrentSet(drawSet(prepared, []));
@@ -450,7 +454,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 token={token}
                 isTop={isTop}
                 isBottom={isBottom}
-                honoreeVolumes={honoreeVolumes(nominee, honoreeIndex)}
+                honoreeVolumes={honoreeVolumes(nominee, honoreeIndex, nomineeIndex)}
                 selectable={selectable && !reading && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
