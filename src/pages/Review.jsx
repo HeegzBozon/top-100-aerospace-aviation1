@@ -9,7 +9,7 @@ import ReviewKeys from '@/components/review/ReviewKeys';
 import { reviewTabsFor } from '@/components/review/reviewTabs';
 
 // Review. One surface where the errands that used to stand as their own keys on the
-// title screen now live as tabs: Orientation, My Network, the Fellow's own record, and
+// title screen now live as tabs: the FAQ, My Network, the Fellow's own record, and
 // the archive of closed cycles.
 //
 // It is a menu with tabs, which is the one shape both controls are good at: the ring
@@ -108,7 +108,7 @@ export default function Review() {
               Review
             </h1>
             <p className="mt-2 text-[8.5px] font-bold uppercase tracking-[0.34em] text-editorial-cream/60 md:text-[11px]">
-              Orientation &middot; My Network &middot; Your record &middot; The archive
+              FAQ &middot; My Network &middot; Your record &middot; The archive
             </p>
           </div>
 

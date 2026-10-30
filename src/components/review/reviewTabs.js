@@ -12,9 +12,9 @@ import { Archive, Info, PenLine, Users } from "lucide-react";
 // Fellow, because there is nothing behind them for anyone else.
 export const REVIEW_TABS = [
   {
-    key: "orientation",
+    key: "faq",
     index: "1",
-    label: "Orientation",
+    label: "FAQ",
     blurb: "How the platform runs: the cycle, how names are measured, and what a Fellow is asked for.",
     to: "/mission-briefing",
     icon: Info,

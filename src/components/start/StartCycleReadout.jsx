@@ -73,8 +73,8 @@ export default function StartCycleReadout({ status, onRetry, vote = null, notify
         {vote ? <div className="mt-1.5 flex">{vote}</div> : null}
       </div>
       {/* The results column carries the one ask that answers it: the publishing alert
-          stands under its own reading, right-aligned on the column, rather than beside
-          the ballot's key where it belonged to neither. */}
+          stands under its own reading, set to the column's own left edge so both asks
+          line up the same way under their countdowns. */}
       <div className="relative min-w-0 border-l border-editorial-gold/20 pl-3">
         <Reading
           label="Results go live"
@@ -82,7 +82,7 @@ export default function StartCycleReadout({ status, onRetry, vote = null, notify
           target={RESULTS_GO_LIVE}
           doneLabel="Live"
         />
-        {notify ? <div className="mt-1.5 flex justify-end">{notify}</div> : null}
+        {notify ? <div className="mt-1.5 flex">{notify}</div> : null}
       </div>
     </div>
   );
