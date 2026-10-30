@@ -5,6 +5,7 @@ import { registerPicker, touchPicker } from '@/components/handheld/handheldPicke
 import { registerDigits, registerDigitLegends } from '@/components/handheld/handheldKeys';
 import { useNavHint } from '@/components/handheld/faceHint';
 import GlassBallotRow from '@/components/my-top100/GlassBallotRow';
+import GlassNomineeExplorer from '@/components/my-top100/GlassNomineeExplorer';
 
 // A page key (the ring's forward/back zones, ▲▼ held on the pad) crosses five positions,
 // which is how far a hand expects a ballot to move at once.
@@ -52,13 +53,21 @@ export default function GlassNominateSurface({
   totalCount = 0,
   counts = {},
   readOnly = false,
+  pool = [],
+  seasonCategory = {},
+  addedIds,
+  loadingPool = false,
   onReorder,
   onRemove,
   onView,
   onNominate,
-  onBrowse,
+  onAdd,
   onBriefing,
 }) {
+  // The directory is a second reading of the same surface, not a dialog laid over it:
+  // opened from the ballot, it takes the glass, the wheel and the pad, and hands them
+  // back when B is pressed.
+  const [browsing, setBrowsing] = useState(false);
   const [cursor, setCursor] = useState(0);
   const [held, setHeld] = useState(null);
   // The figures standing in the pad's buffer, printed in the head while they resolve.
@@ -185,7 +194,7 @@ export default function GlassNominateSurface({
     };
   }
 
-  useEffect(() => registerPicker(api.current), []);
+  useEffect(() => (browsing ? undefined : registerPicker(api.current)), [browsing]);
 
   useEffect(() => {
     touchPicker();
@@ -198,15 +207,17 @@ export default function GlassNominateSurface({
   // The radio's digits, and what the pad reprints while it holds them.
   useEffect(
     () =>
-      registerDigits((digit) => {
-        if (!rowsRef.current.length) return false;
-        pushDigit(digit);
-        return true;
-      }),
-    [pushDigit],
+      browsing
+        ? undefined
+        : registerDigits((digit) => {
+            if (!rowsRef.current.length) return false;
+            pushDigit(digit);
+            return true;
+          }),
+    [browsing, pushDigit],
   );
 
-  useEffect(() => registerDigitLegends(ballotLegend(!!held)), [held]);
+  useEffect(() => (browsing ? undefined : registerDigitLegends(ballotLegend(!!held))), [browsing, held]);
 
   // A buffer left standing when the surface goes takes its timer with it.
   useEffect(() => () => clearTimeout(settleRef.current), []);
@@ -222,6 +233,22 @@ export default function GlassNominateSurface({
       : held
         ? `${keyHint({ walk: 'Carry', open: 'Set' })} · 1–9 rank`
         : `${keyHint({ walk: 'Walk', open: 'Lift' })} · 1–9 go`;
+
+  // The directory takes the glass whole while it is open. The ballot stays mounted
+  // beneath it — the order untouched — and yields the wheel and the pad until it closes.
+  if (browsing) {
+    return (
+      <GlassNomineeExplorer
+        pool={pool}
+        seasonCategory={seasonCategory}
+        addedIds={addedIds}
+        loading={loadingPool}
+        full={totalCount >= 100}
+        onAdd={onAdd}
+        onClose={() => setBrowsing(false)}
+      />
+    );
+  }
 
   return (
     <div className="pb-3">
@@ -355,7 +382,7 @@ export default function GlassNominateSurface({
                 </button>
                 <button
                   type="button"
-                  onClick={onBrowse}
+                  onClick={() => setBrowsing(true)}
                   className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[10px] font-bold"
                   style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}
                 >
@@ -395,12 +422,12 @@ export default function GlassNominateSurface({
             {readOnly ? null : (
               <button
                 type="button"
-                onClick={onBrowse}
+                onClick={() => setBrowsing(true)}
                 className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-[10px] border border-dashed py-2 text-[10px] font-semibold"
                 style={{ borderColor: `${brand.navy}1F`, color: `${brand.navy}60` }}
               >
                 <Search className="h-3 w-3" />
-                {100 - totalCount} slot{100 - totalCount === 1 ? '' : 's'} left · search the directory
+                {100 - totalCount} slot{100 - totalCount === 1 ? '' : 's'} left · explore the directory
               </button>
             )}
           </div>

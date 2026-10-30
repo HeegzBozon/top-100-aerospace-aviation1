@@ -79,13 +79,18 @@ export default function MyTop100() {
   // On the glass the hub is a console: its three surfaces are the menu, and one
   // is open at a time. Null is the menu itself.
   const glass = useGlass();
-  // The committee's briefing is read once: on the first pass through the hub, whichever
-  // surface it lands on. Afterwards both surfaces keep it one press away.
-  const briefing = useMissionBriefing(user?.email, !loading && !!user?.email);
   const [glassOpen, setGlassOpen] = useState(() => {
     const requested = new URLSearchParams(window.location.search).get('tab');
     return ['start', 'nominate', 'vote'].includes(requested) ? requested : null;
   });
+  // The briefing is read once, and it belongs to nominating: it opens the first time a
+  // Fellow stands on the Nominate surface, and never again after that — not on a reload,
+  // not on the Vote surface. Afterwards it is one press away on the ballot's own key.
+  const surfaceTab = glass ? glassOpen : activeTab;
+  const briefing = useMissionBriefing(
+    user?.email,
+    !loading && !!user?.email && surfaceTab === 'nominate',
+  );
 
   const openExplorer = () => { setExplorerProfile(null); setExplorerOpen(true); };
   const openProfileFromList = async (item) => {
@@ -552,11 +557,17 @@ export default function MyTop100() {
       totalCount={rankings.length}
       counts={listCategoryCounts}
       readOnly={votingClosed}
+      pool={pool}
+      seasonCategory={seasonCategory}
+      addedIds={addedIds}
+      loadingPool={loadingPool}
       onReorder={handleReorderAll}
       onRemove={handleRemove}
       onView={openProfileFromList}
       onNominate={openQuickAdd}
-      onBrowse={openExplorer}
+      onAdd={(person) => handleAdd(person, {
+        nomination_category: getNomineeCategory(person, seasonCategory) || 'women',
+      })}
       onBriefing={() => briefing.setOpen(true)}
     />
   );
