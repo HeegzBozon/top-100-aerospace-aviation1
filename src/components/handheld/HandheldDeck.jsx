@@ -28,6 +28,7 @@ import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
 import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, persistSound } from "./handheldSound";
+import { railHiddenOn } from "@/components/shell/immersiveSurfaces";
 import { openingPlaysNow } from "@/components/core/appOpening";
 import {
   applyShellVars,
@@ -911,7 +912,9 @@ export default function HandheldDeck() {
         />
       )}
 
-      <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
+      {!railHiddenOn(location.pathname) && (
+        <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
+      )}
 
       {/* Section announcement — the page reports where the wheel just landed */}
       {flash && (

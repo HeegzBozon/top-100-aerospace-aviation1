@@ -85,28 +85,20 @@ export default function HandheldChin() {
           </div>
         </div>
 
-        {/* The footer plate: the model mark, engraved and unlit, seated inside the
-            case the way the live plate is. */}
-        <div className="hh-footer relative mt-2 flex h-[24px] items-center gap-2.5 px-3">
+        {/* The footer plate, in the same three columns the live one holds — the finish
+            key at the left, the face key on the centre line, the holder at the right — so
+            nothing shifts when the real controls come up over it. */}
+        <div className="hh-footer relative mt-2 grid h-[24px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-2.5">
           <span
-            className="hh-engrave flex shrink-0 items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
-            style={{ color: "var(--hh-ink-soft)" }}
-          >
-            <span className="hh-screw h-[6px] w-[6px] rounded-full" />
-            HW-88
-          </span>
-
-          <span
-            aria-hidden="true"
-            className="h-px min-w-[6px] flex-1"
-            style={{
-              background:
-                "linear-gradient(90deg, rgb(var(--hh-metal-rgb) / 0.04), rgb(var(--hh-metal-rgb) / 0.28))",
-            }}
+            className="hh-pad-key flex h-[19px] w-[96px] items-center rounded-[9px]"
+            style={{ opacity: 0.5 }}
           />
-
           <span
-            className="hh-engrave flex shrink-0 items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
+            className="hh-pad-key h-[19px] w-[62px] rounded-[9px]"
+            style={{ opacity: 0.5 }}
+          />
+          <span
+            className="hh-engrave flex min-w-0 items-center justify-end gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]"
             style={{ color: "var(--hh-ink-soft)" }}
           >
             <span className="hh-footer-led" />
