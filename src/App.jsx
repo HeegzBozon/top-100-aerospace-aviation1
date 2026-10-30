@@ -93,7 +93,8 @@ const WomenCollageGenerator = lazy(() => import('@/pages/WomenCollageGenerator')
 const Top100Women2025DeepLink = lazy(() => import('@/pages/Top100Women2025DeepLink'));
 const TheBoard = lazy(() => import('@/pages/TheBoard'));
 const StartScreen = lazy(() => import('@/pages/StartScreen'));
-const AeroSyncContacts = lazy(() => import('@/pages/AeroSyncContacts'));
+const AeroSyncPeople = lazy(() => import('@/pages/AeroSyncPeople'));
+const AeroSyncScan = lazy(() => import('@/pages/AeroSyncScan'));
 const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
 const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
@@ -183,7 +184,11 @@ const AuthenticatedApp = () => {
       {/* AeroSync opens on its own title screen, the way the platform does, and the
           surfaces it lists live beneath it */}
       <Route path="/aerosync" element={<AeroSyncTitle />} />
-      <Route path="/aerosync/contacts" element={<AeroSyncContacts />} />
+      <Route path="/aerosync/scan" element={<AeroSyncScan />} />
+      <Route path="/aerosync/people" element={<AeroSyncPeople />} />
+      {/* The rolodex and the following ledger are one surface now, and the capture is
+          the Scan surface: the old addresses land on the People they belong to. */}
+      <Route path="/aerosync/contacts" element={<Navigate to="/aerosync/people" replace />} />
       <Route path="/aerosync/rooms" element={<AeroSyncRooms />} />
       <Route path="/aerosync/following" element={<AeroSyncFollowing />} />
       {/* The networking page is retired: its work lives on AeroSync's surfaces now */}
