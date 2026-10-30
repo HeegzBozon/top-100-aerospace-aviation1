@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import AnchorVoting from '@/components/voting/AnchorVoting';
 import VotingProgressPanel from '@/components/voting/VotingProgressPanel';
+import LiveBallotFeed from '@/components/voting/LiveBallotFeed';
 import { useToast } from '@/components/ui/use-toast';
 
 const fmtDate = (value) => {
@@ -51,6 +52,9 @@ export default function VoteSurface({ user }) {
   const [context, setContext] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // Bumped when a set is recorded here, so the monitor beside the ballot redraws at once
+  // rather than waiting for its next poll.
+  const [feedToken, setFeedToken] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -80,6 +84,7 @@ export default function VoteSurface({ user }) {
   const onRecorded = useCallback(
     (result) => {
       if (!result?.recorded) return;
+      setFeedToken((t) => t + 1);
       setContext((prev) =>
         prev
           ? {
@@ -130,6 +135,7 @@ export default function VoteSurface({ user }) {
 
   const target = context?.target;
   const open = Boolean(context?.open && target);
+  const isAdmin = user?.role === 'admin';
 
   if (!open) {
     // The window, not the Fellow, closes the ballot: say which one, and when the next
@@ -178,9 +184,13 @@ export default function VoteSurface({ user }) {
           <AnchorVoting user={user} activeSeason={target} onRecorded={onRecorded} />
         </div>
 
-        {context.progress && (
+        {(context.progress || isAdmin) && (
           <aside className="flex shrink-0 flex-col gap-3 lg:w-[290px] lg:overflow-y-auto lg:pb-6">
-            <VotingProgressPanel progress={context.progress} />
+            {/* The operator watches the field while it is being weighed. A set cast by an
+                admin is a test of the flow, so the monitor stands on its own rather than
+                beside a ladder that does not move. */}
+            {isAdmin && <LiveBallotFeed seasonId={target.id} refreshToken={feedToken} />}
+            {context.progress && <VotingProgressPanel progress={context.progress} />}
           </aside>
         )}
       </div>
