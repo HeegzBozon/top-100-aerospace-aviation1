@@ -1,0 +1,100 @@
+{
+  "name": "FellowBusinessCard",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow who owns this card. Stable key across User and Nominee records."
+    },
+    "card_name": {
+      "type": "string",
+      "description": "The name printed on the card, as the Fellow hands it over."
+    },
+    "role_line": {
+      "type": "string",
+      "description": "The line under the name: role or title."
+    },
+    "organisation": {
+      "type": "string",
+      "description": "Organisation or practice the Fellow represents on the card."
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "The address the Fellow chooses to put on the card. Never the account address by default."
+    },
+    "phone": {
+      "type": "string",
+      "description": "Contact number printed on the card only when the Fellow shows it."
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Website or portfolio address on the card."
+    },
+    "linkedin_url": {
+      "type": "string",
+      "description": "LinkedIn profile address on the card."
+    },
+    "location": {
+      "type": "string",
+      "description": "City or base line on the card."
+    },
+    "tagline": {
+      "type": "string",
+      "description": "One line under the rule: what the Fellow can be reached about."
+    },
+    "show_contact_email": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the contact address is printed on the card and written into the saved contact file."
+    },
+    "show_phone": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the number is printed on the card and written into the saved contact file."
+    }
+  },
+  "required": [
+    "fellow_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

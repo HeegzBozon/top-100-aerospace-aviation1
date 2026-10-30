@@ -556,9 +556,12 @@ export default function HandheldDeck() {
     if (menuOpen || shareOpen || searchOpen || booting) return;
     blip("toggle");
     buzz();
+    // A surface with a transport of its own — the record playing itself page by page —
+    // takes the key, so one press means the same thing on the glass as on the page.
+    if (picker?.play?.()) return;
     setPlaying((prev) => !prev);
     announce(playing ? "Paused" : "Reading");
-  }, [menuOpen, shareOpen, booting, playing, announce]);
+  }, [menuOpen, shareOpen, booting, playing, announce, picker]);
 
   // The wheel's bottom print: the machine's own search, standing in the glass the way
   // the cartridges do. It is reached from the ring alone, so it opens over whatever is
@@ -792,7 +795,7 @@ export default function HandheldDeck() {
             onMenu={steering ? null : upOneLevel}
             onPrev={steering ? null : () => stepSection(-1)}
             onNext={steering ? null : () => stepSection(1)}
-            playing={playing}
+            playing={playing || !!picker?.isPlaying?.()}
             onSearch={steering ? null : openSearch}
             onPlay={steering ? null : togglePlay}
             onSelect={select}

@@ -7,7 +7,7 @@ import DeckControls from './DeckControls';
 // control bar at the bottom drives prev / play-pause / next. Autoplay
 // honors the Fellow's configured mode (loop | stop_at_end | manual) and
 // dwell seconds. Keyboard: ArrowLeft/ArrowRight navigate, Space toggles play.
-export default function ProfileDeck({ slides, settings, accent, isOwner, onOpenPresentation }) {
+export default function ProfileDeck({ slides, settings, accent, isOwner, onOpenPresentation, enquire }) {
   const [current, setCurrent] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [pass, setPass] = useState(0);
@@ -106,6 +106,7 @@ export default function ProfileDeck({ slides, settings, accent, isOwner, onOpenP
         onTogglePlay={togglePlay}
         isOwner={isOwner}
         onOpenPresentation={onOpenPresentation}
+        enquire={enquire}
       />
     </div>
   );

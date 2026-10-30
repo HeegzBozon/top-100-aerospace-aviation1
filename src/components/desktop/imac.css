@@ -286,6 +286,27 @@
     inset 0 -7px 13px -11px rgba(255, 255, 255, 0.10),
     inset 0 0 90px rgba(0, 0, 0, 0.45);
 }
+/* The shelf, seated in the tube.
+   Its foot is measured from the machine's own chin, and its sides from the tube's own
+   margins, so it always stands inside the opening however tall the window is — no
+   viewport arithmetic, nothing left hanging in the room below. It is drawn over the
+   tube rather than inside its scroll window, so a record's pages pass beneath it and
+   the shelf itself never moves. */
+.imac-shelf {
+  position: absolute;
+  left: var(--imac-side);
+  right: var(--imac-side);
+  bottom: calc(var(--imac-chin) + 10px);
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.imac-shelf > * {
+  pointer-events: auto;
+  max-width: 100%;
+}
+
 .imac-screen:focus-visible {
   outline: 2px solid rgba(201, 168, 124, 0.85);
   outline-offset: 2px;

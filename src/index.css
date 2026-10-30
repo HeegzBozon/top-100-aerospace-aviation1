@@ -183,10 +183,12 @@ button:focus-visible {
   --editorial-cream: #FAF8F5;
   --editorial-gold: #C9A87C;
   --editorial-copper: #B87333;
+  --editorial-sand: #EFE7DC;
   --editorial-navy-rgb: 30 58 90;
   --editorial-cream-rgb: 250 248 245;
   --editorial-gold-rgb: 201 168 124;
   --editorial-copper-rgb: 184 115 51;
+  --editorial-sand-rgb: 239 231 220;
   /* The label ink. Rose gold is the accent on the navy plates, where it carries AA
      (5.19:1). On cream it does not — 2.11:1 — so a small-caps label takes this
      burnished copper instead: 5.3:1 on cream, 5.6:1 on white. One tone cannot serve
@@ -1370,3 +1372,306 @@ button:focus-visible {
 }
 
 /* The desk's dock styles live with the dock: see components/desktop/deskDock.css. */
+
+/* ===== PROFILE DOSSIER — THE FELLOW'S OWN RECORD =====
+   The member's profile reads as a printed dossier: a navy masthead carrying the
+   portrait, one copper rule under it, the verification band seated over the seam,
+   and the record set in two columns below. Copper is the structure — every rule,
+   plate and chip edge — and the accent stays on the type. */
+@keyframes pd-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+.pd-rise {
+  animation: pd-rise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.pd-rise-1 { animation-delay: 0.25s; }
+
+/* The structural rule: copper, two pixels, full measure or short. */
+.pd-rule {
+  height: 2px;
+  background: #b87333;
+}
+
+/* The verification band, seated over the foot of the masthead. */
+.pd-band {
+  background: #faf8f5;
+  border: 1px solid #b87333;
+  box-shadow: 0 18px 40px rgba(30, 58, 90, 0.14);
+}
+
+/* A section of the record: closed by a copper rule across its head. */
+.pd-sec {
+  border-top: 2px solid #b87333;
+  padding-top: 26px;
+  margin-bottom: 60px;
+}
+
+/* The small-caps label. Burnished copper on cream carries AA; rose gold does not. */
+.pd-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(var(--editorial-label-rgb));
+}
+
+/* The date plate that opens each career and education entry. */
+.pd-plate {
+  background: #ffffff;
+  border: 1px solid #e6dfd3;
+  box-shadow: 0 8px 20px rgba(30, 58, 90, 0.08);
+}
+
+/* A skill, held as one outlined chip. */
+.pd-chip {
+  border: 1px solid #b87333;
+  background: #ffffff;
+  border-radius: 9999px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: #1e3a5a;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.pd-chip:hover {
+  background: #1e3a5a;
+  color: #faf8f5;
+}
+
+/* The plate image in the second column. */
+.pd-pic {
+  border: 1px solid #e6dfd3;
+  box-shadow: 0 14px 30px rgba(30, 58, 90, 0.14);
+}
+
+/* A social key: one navy disc. */
+.pd-soc {
+  background: #1e3a5a;
+  color: #faf8f5;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.pd-soc:hover {
+  background: #b87333;
+  box-shadow: 0 8px 18px rgba(30, 58, 90, 0.25);
+}
+.pd-soc:focus-visible {
+  outline: 2px solid #b87333;
+  outline-offset: 3px;
+}
+
+/* The account keys at the foot of the record. */
+.pd-acct-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #1e3a5a;
+  padding: 12px 18px;
+  border: 1px solid #1e3a5a;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.pd-acct-link:hover {
+  background: #1e3a5a;
+  color: #faf8f5;
+  box-shadow: 0 8px 18px rgba(30, 58, 90, 0.25);
+}
+.pd-acct-link:active {
+  box-shadow: none;
+}
+.pd-acct-link:focus-visible {
+  outline: 2px solid #b87333;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-rise { animation: none; }
+  .pd-chip, .pd-soc, .pd-acct-link { transition: none; }
+}
+
+/* ===== THE DOCUMENTARY RECORD =====
+   The record as a film: a navy stage, a letterboxed title card, chapter slates in
+   copper, and captions that carry the whole story without sound. Nothing here moves
+   on its own — the stills drift only while a chapter is on screen, and every one of
+   those movements is switched off for a reader who asks for reduced motion. */
+.doc-stage {
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(74, 111, 153, 0.18) 0%, rgba(12, 26, 42, 0) 62%),
+    linear-gradient(180deg, #0e1e30 0%, #0b1826 62%, #091420 100%);
+}
+
+.doc-title-card {
+  position: relative;
+  min-height: 56vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.doc-title-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(184, 115, 51, 0.7), rgba(201, 168, 124, 0.12));
+}
+
+/* The still: one slow push in, so a photograph reads as film rather than a card. */
+.doc-still {
+  animation: doc-ken 24s ease-out both;
+  transform-origin: 50% 38%;
+}
+@keyframes doc-ken {
+  from { transform: scale(1.015); }
+  to { transform: scale(1.075); }
+}
+
+/* A caption arriving under the previous one. */
+.doc-line {
+  animation: doc-line 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes doc-line {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* The chapter itself, cut in. */
+.doc-fade {
+  animation: doc-fade 620ms ease both;
+}
+@keyframes doc-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* The plate a still or a clip sits in: a machined frame, not a rounded card. */
+.doc-plate {
+  border: 1px solid rgba(201, 168, 124, 0.28);
+  background: #0a1624;
+  box-shadow: 0 22px 48px -28px rgba(3, 8, 15, 0.9);
+}
+
+/* The transport keys. */
+.doc-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(239, 233, 220, 0.18);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(239, 233, 220, 0.82);
+  padding: 7px 9px;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.doc-key:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(201, 168, 124, 0.55);
+  color: #efe9dc;
+}
+.doc-key:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.doc-key:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 168, 124, 0.7);
+}
+
+.doc-key-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #b87333;
+  border-radius: 4px;
+  background: #b87333;
+  color: #faf8f5;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.doc-key-primary:hover:not(:disabled) {
+  background: #a3642b;
+  border-color: #a3642b;
+}
+.doc-key-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.doc-key-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 168, 124, 0.8);
+}
+
+/* A prompt sheet in the director's note. */
+.doc-sheet {
+  border: 1px solid rgba(201, 168, 124, 0.22);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-still, .doc-line, .doc-fade {
+    animation: none;
+  }
+}
+
+/* ===== THE FELLOW'S BOOK =====
+   The public record, held as a book. Pages are composed at one design size and
+   scaled to whatever the spread gives them, so type stays vector-sharp and the
+   rhythm of a cover, a credential and a portrait is identical page to page. The
+   only movement is the sheet being turned: nothing here animates on its own. */
+.pb-page {
+  background-color: #faf8f5;
+  /* A faint laid-paper tooth. It reads as stock at close range and disappears at
+     any distance, so the page never looks printed with a pattern. */
+  background-image: radial-gradient(rgba(30, 58, 90, 0.035) 0.5px, transparent 0.6px);
+  background-size: 4px 4px;
+}
+
+.pb-leaf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(112deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 248, 245, 0) 42%),
+    linear-gradient(140deg, #fbf7f0 0%, #faf8f5 48%, #efe4d3 100%);
+  box-shadow: 0 24px 50px -24px rgba(3, 8, 15, 0.85);
+  backface-visibility: hidden;
+}
+
+.pb-leaf-next {
+  transform-origin: left center;
+  animation: pb-leaf-next 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes pb-leaf-next {
+  0% { transform: rotateY(0deg); opacity: 1; }
+  55% { opacity: 0.95; }
+  100% { transform: rotateY(-104deg); opacity: 0; }
+}
+
+.pb-leaf-prev {
+  transform-origin: right center;
+  animation: pb-leaf-prev 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes pb-leaf-prev {
+  0% { transform: rotateY(0deg); opacity: 1; }
+  55% { opacity: 0.95; }
+  100% { transform: rotateY(104deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-leaf-next,
+  .pb-leaf-prev {
+    animation: none;
+    opacity: 0;
+  }
+}

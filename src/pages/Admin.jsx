@@ -45,6 +45,7 @@ const SurveyManager             = lazy(() => import('@/components/admin/SurveyMa
 const BioSubmissionManager      = lazy(() => import('@/components/admin/BioSubmissionManager'));
 const LocalLegendsManager       = lazy(() => import('@/components/admin/LocalLegendsManager'));
 const TopViralPostsManager      = lazy(() => import('@/components/admin/TopViralPostsManager'));
+const EpisodePipeline           = lazy(() => import('@/components/admin/EpisodePipeline'));
 const SeasonalPlanningDashboard = lazy(() => import('@/components/admin/SeasonalPlanningDashboard'));
 import { Award } from 'lucide-react';
 
@@ -239,6 +240,8 @@ export default function Admin() {
         return <SelectionMonitor />;
       case 'workspace-editorial':
         return <CohortWorkspace phase="editorial" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
+      case 'episodes':
+        return <EpisodePipeline />;
       case 'surveys':
         return <SurveyManager />;
       case 'local-legends':

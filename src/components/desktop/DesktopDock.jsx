@@ -22,6 +22,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { isViewingAsVisitor } from "@/lib/viewerPreview";
 import { INDEX_GROUPS, SHELF } from "@/components/shell/appRegistry";
+import { useDeskDockSlots } from "./deskDockSlots";
 import "./deskDock.css";
 
 // The desk's shelf: the row of things a hand reaches for without opening a menu.
@@ -42,6 +43,10 @@ export default function DesktopDock() {
   const [open, setOpen] = useState(null);
   const [user, setUser] = useState(null);
   const [authState, setAuthState] = useState("checking");
+  // A surface may borrow the shelf for its own controls. While it does, the shelf
+  // carries those instead of the tiles — the dock adjusts to the surface it stands under.
+  const slots = useDeskDockSlots();
+  const hosted = Object.keys(slots).length > 0;
 
   useEffect(() => {
     // The operator's preview answers here the way it answers everywhere: standing in a
@@ -84,8 +89,8 @@ export default function DesktopDock() {
   };
 
   return (
-    <div className="imac-lift fixed bottom-4 left-1/2 z-[100] -translate-x-1/2 px-4">
-      <div className="relative">
+    <div className="relative flex min-w-0 max-w-full justify-center">
+      <div className="relative min-w-0">
         {/* Anything pressed outside the shelf puts the drawer down. It stands behind the
             shelf itself, so a tile is always still the thing a press lands on. */}
         {open ? <div className="fixed inset-0" onClick={close} aria-hidden="true" /> : null}
@@ -112,6 +117,19 @@ export default function DesktopDock() {
 
           <Seam />
 
+          {hosted ? (
+            <div
+              className="flex min-w-0 items-center gap-1 overflow-hidden px-1"
+              style={{ width: "clamp(320px, 40vw, 560px)" }}
+            >
+              <div className="flex min-w-0 flex-1 items-center">
+                {slots["record-transport"]}
+              </div>
+              {slots["record-view"] ? <Seam /> : null}
+              {slots["record-view"]}
+            </div>
+          ) : (
+          <>
           {SHELF.map((item) => (
             <Tile
               key={item.to}
@@ -160,6 +178,8 @@ export default function DesktopDock() {
             <CalendarCheck className="h-4 w-4" strokeWidth={2} />
             RSVP
           </Link>
+          </>
+          )}
 
           <Seam />
 

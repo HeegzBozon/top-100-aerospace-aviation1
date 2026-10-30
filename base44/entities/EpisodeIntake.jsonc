@@ -1,0 +1,198 @@
+{
+  "name": "EpisodeIntake",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "Canonical identity of the Fellow whose episode this is. The same stable key used on FellowProfileSettings, so the intake is bound to the record rather than to an account."
+    },
+    "fellow_id": {
+      "type": "string",
+      "description": "Optional Nominee record id for the Fellow, when one exists"
+    },
+    "profile_name": {
+      "type": "string",
+      "description": "Display name of the Fellow, denormalized for the editorial desk"
+    },
+    "headline": {
+      "type": "string",
+      "description": "The working title of the episode, in the Fellow's own phrasing"
+    },
+    "angle": {
+      "type": "string",
+      "description": "What the episode is actually about: the argument, the turn, the story worth an hour"
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "The subjects the Fellow would want covered, in the order they would tell them"
+    },
+    "chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The chapter's own title, in the Fellow's phrasing"
+          },
+          "body": {
+            "type": "string",
+            "description": "What the chapter holds, written by the Fellow"
+          }
+        }
+      },
+      "default": [],
+      "description": "The Fellow's own arc, up to 22 chapters. Order is the reading order: the book plays them in exactly this sequence. Chapters are the Fellow's writing, shown as their own pages within the episode's run of the record."
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "audio",
+        "video",
+        "either"
+      ],
+      "description": "Whether the Fellow would record an audio episode, a filmed one, or either"
+    },
+    "interview_setting": {
+      "type": "string",
+      "enum": [
+        "in_person",
+        "remote",
+        "either"
+      ],
+      "description": "Where the conversation would be recorded"
+    },
+    "location": {
+      "type": "string",
+      "description": "City the Fellow would record in, for in-person sessions"
+    },
+    "availability_window": {
+      "type": "string",
+      "description": "When the Fellow is able to record, in their own words"
+    },
+    "technical_notes": {
+      "type": "string",
+      "description": "Microphone, camera, room, or connection notes the production desk should know"
+    },
+    "consent_to_publish": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the Fellow consents to the finished episode being published as part of their record"
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "The address the production desk should write to. Never rendered on a public surface."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "intake",
+        "in_review",
+        "changes_requested",
+        "approved",
+        "scheduled",
+        "recorded",
+        "edited",
+        "published",
+        "declined"
+      ],
+      "default": "intake",
+      "description": "Where the episode stands in the production pipeline. Intake opens the record; the editorial desk moves it forward."
+    },
+    "reviewer_note": {
+      "type": "string",
+      "description": "The note the editorial desk leaves for the Fellow. Shown to the Fellow when changes are requested; never rendered publicly."
+    },
+    "scheduled_for": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The held recording date, once the episode is scheduled"
+    },
+    "recording_url": {
+      "type": "string",
+      "description": "Where the raw recording lives, once captured. Internal production reference."
+    },
+    "published_url": {
+      "type": "string",
+      "description": "The public address of the finished episode, once published"
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the episode went live"
+    },
+    "status_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Every stage the episode has passed through, in order. The record of the pipeline, not a summary of it."
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Fellow opened their episode"
+    }
+  },
+  "required": [
+    "fellow_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

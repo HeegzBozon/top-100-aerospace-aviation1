@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Play, Pause, ArrowLeft, Settings2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause, ArrowLeft, Settings2, Send } from 'lucide-react';
 
 // Editorial glass pill that floats above the HomeDock. Houses exit, slide
 // navigation, play-pause, and a serif slide counter. Matches the dock's
 // material language — dark glass, gold accent — so the two pills read as
 // a coordinated pair rather than competing bars.
-export default function DeckControls({ current, total, playing, accent, label, onPrev, onNext, onTogglePlay, isOwner, onOpenPresentation }) {
+export default function DeckControls({ current, total, playing, accent, label, onPrev, onNext, onTogglePlay, isOwner, onOpenPresentation, enquire }) {
   const navigate = useNavigate();
 
   return (
@@ -14,6 +14,23 @@ export default function DeckControls({ current, total, playing, accent, label, o
         className="flex items-center gap-1 rounded-full px-2 py-2 shadow-2xl"
         style={{ background: 'rgba(7,17,31,0.92)', border: '1px solid rgba(201,168,124,0.28)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
       >
+        {/* The Fellow's door, held on the bar so it is reachable from every spread.
+            It appears only when the Fellow has opened one. */}
+        {enquire?.onClick && (
+          <>
+            <button
+              onClick={enquire.onClick}
+              className="flex h-10 items-center gap-1.5 rounded-full px-3 text-[11px] font-bold uppercase tracking-[0.14em] transition-all hover:brightness-110"
+              style={{ background: '#b87333', color: '#fff' }}
+              aria-label={enquire.label || 'Enquire'}
+            >
+              <Send className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{enquire.label || 'Enquire'}</span>
+            </button>
+            <Divider />
+          </>
+        )}
+
         {/* Exit / Back */}
         <button
           onClick={() => navigate(-1)}
