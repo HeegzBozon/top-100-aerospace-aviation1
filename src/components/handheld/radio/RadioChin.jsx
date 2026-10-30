@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Home as HomeIcon, Undo2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Home as HomeIcon, Share, Undo2 } from "lucide-react";
 import RadioReadout from "./RadioReadout";
 import RadioKeypad from "./RadioKeypad";
 import RadioSpeaker from "./RadioSpeaker";
@@ -18,7 +18,7 @@ import CustomizeKey from "../CustomizeKey";
 //
 // The foot is the same plate the wheel's face wears (see HandheldPlate): the finish the
 // case is dressed in at the left, the face the machine is wearing pinned centre, and who
-// is holding it at the right. Share is not here — it is the lit corner key on the pad.
+// is holding it at the right. Share is not here — it is the lit key in the cluster.
 export default function RadioChin({
   zone,
   bank,
@@ -71,14 +71,21 @@ export default function RadioChin({
 
       {/* The cluster. The two lit keys are the lists: V for File, A for Edit — the same
           two drawers the strip across the head of the glass prints, lettered with the keys
-          that do the same thing on this face. Then the OK key, which enters what is standing
-          in the display or what the cursor is on — the job the corner key of the pad used to
-          do before it was given over to sharing. The displays and the bank they switch
-          between are up on the readout, pressed where they are printed. */}
+          that do the same thing on this face. Then the Share key, which is the one thing
+          this machine offers that is not navigation; entering lives on the pad's lit corner
+          key below (see RadioKeypad). The displays and the bank they switch between are up
+          on the readout, pressed where they are printed. */}
       <div className="grid h-[28px] shrink-0 grid-cols-7 gap-[3px]">
         <RadioKey label="V" sub="FILE" skin="copper" onPress={onFile} ariaLabel="V — the File list" />
         <RadioKey label="A" sub="EDIT" skin="navy" onPress={onEdit} ariaLabel="A — the Edit list" />
-        <RadioKey label="OK" sub="ENTER" skin="light" onPress={onEnter} ariaLabel="OK — enter or open what is selected" />
+        <RadioKey
+          glyph={Share}
+          sub="SHARE"
+          skin="copper"
+          pressed={shareOpen}
+          onPress={onShare}
+          ariaLabel={shareOpen ? "Close the share drawer" : "Share this page"}
+        />
         <RadioKey glyph={HomeIcon} sub="HOME" skin="light" onPress={onHome} ariaLabel="Home" />
         <RadioKey glyph={ChevronUp} sub="UP" skin="light" onPress={onUp} ariaLabel="Up" />
         <RadioKey glyph={ChevronDown} sub="DOWN" skin="light" onPress={onDown} ariaLabel="Down" />
@@ -89,7 +96,7 @@ export default function RadioChin({
       <span className="hh-grille h-[7px] w-full shrink-0 rounded-[2px]" aria-hidden="true" />
 
       <div className="min-h-0 flex-1">
-        <RadioKeypad onDigit={onDigit} onScan={onScan} onShare={onShare} shareOpen={shareOpen} />
+        <RadioKeypad onDigit={onDigit} onScan={onScan} onEnter={onEnter} />
       </div>
 
       <div className="hh-footer grid h-[20px] shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-1.5 px-2">
