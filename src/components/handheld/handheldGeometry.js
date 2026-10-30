@@ -40,7 +40,7 @@ const DECK_CLEARANCE = 158;
 // them — so the glass opens straight onto whichever face is fitted.
 const RADIO_CLEARANCE = 222;
 
-export { NAV_CLEARANCE, DECK_CLEARANCE, RADIO_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH };
+export { NAV_CLEARANCE, DECK_CLEARANCE, RADIO_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH, FOOT_CLEARANCE };
 
 // Whoever is painting the hardware puts its space on the document. The count is
 // the point: a loading chassis handing the device to the console must not take
@@ -53,7 +53,11 @@ export function setDeckClearance(clearance = DECK_CLEARANCE) {
   document.documentElement.style.setProperty("--hh-bottom", `${clearance + FRAME_GUTTER}px`);
 }
 
-export function applyShellVars(clearance = DECK_CLEARANCE) {
+// The foot is the face's too: the wheel's glass carries the cycle band, and the radio's
+// does not — its own readout across the head of the keypad already prints where the
+// machine is standing, so a second band on the glass would only repeat it and eat the
+// picture. A foot of 0 is the face that needs none.
+export function applyShellVars(clearance = DECK_CLEARANCE, foot = FOOT_CLEARANCE) {
   holders += 1;
   document.body.classList.add("hh-shell");
   const root = document.documentElement.style;
@@ -65,7 +69,7 @@ export function applyShellVars(clearance = DECK_CLEARANCE) {
   // it is the lowest part of the picture. How deep the chin is belongs to the face
   // fitted to it, so it is handed in rather than assumed.
   setDeckClearance(clearance);
-  root.setProperty("--hh-foot", `${FOOT_CLEARANCE}px`);
+  root.setProperty("--hh-foot", `${foot}px`);
   root.setProperty("--hh-frame", `${FRAME_GUTTER}px`);
   root.setProperty("--hh-bezel-w", `${BEZEL_WIDTH}px`);
 }

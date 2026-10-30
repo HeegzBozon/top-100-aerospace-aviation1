@@ -222,8 +222,8 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const reading = explainerOpen || guideOpen || Boolean(panelNominee);
   const standing = (phase === 'best' || phase === 'worst') && !reading;
   // Which face the case is wearing. The chamber is voted from the hardware either way,
-  // but the radio has no X, Y, A or B to press: its four candidates stand under the
-  // four digits, and the cards print the key that is actually on the case.
+  // but the radio has no X, Y, A or B to press: its candidates stand under pairs of
+  // digits — vote, then file — and each card prints the pair that is on the case.
   const radio = useConsoleFace() === 'radio';
   const setKey = currentSet.map((n) => n.id).join('|');
   const cursor = useAnchorPicker({
@@ -262,15 +262,23 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     return registerFaceKeys((key) => (voteKeys.current ? voteKeys.current(key) : false));
   }, [phase, currentSet, reading]);
 
-  // The radio's half of the same claim: digits 1–4 put the four cards under the hand,
-  // so a set is voted on the keypad alone — the console takes the press before it can
-  // tune or walk, exactly as it does for X, Y, A and B on the wheel.
+  // The radio's half of the same claim: each card stands under a pair of digits — the
+  // first votes for it, the second opens its file — so a whole set is worked from the
+  // keypad, and the console takes the press before it can tune or walk, exactly as it
+  // does for X, Y, A and B on the wheel.
   useEffect(() => {
     if (!radio || !voteKeys.current) return undefined;
     return registerDigits((digit) => {
-      const i = Number(digit) - 1;
-      if (!(i >= 0 && i < 4) || !currentSet[i]) return false;
-      handleSelect(currentSet[i]);
+      const n = Number(digit);
+      const i = Math.floor((n - 1) / 2);
+      const nominee = currentSet[i];
+      if (!(n >= 1 && n <= currentSet.length * 2) || !nominee) return false;
+      if (n % 2 === 1) {
+        handleSelect(nominee);
+      } else {
+        setPanelNominee(nominee);
+        setPanelToken(String.fromCharCode(65 + i));
+      }
       return true;
     });
   }, [radio, phase, currentSet, reading]);
@@ -447,7 +455,8 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
-                keyLabel={radio ? String(idx + 1) : VOTE_KEYS[idx]}
+                keyLabel={radio ? String(idx * 2 + 1) : VOTE_KEYS[idx]}
+                infoKeyLabel={radio ? String(idx * 2 + 2) : null}
               />
             );
           })}

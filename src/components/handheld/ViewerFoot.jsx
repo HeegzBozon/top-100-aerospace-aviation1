@@ -67,7 +67,7 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
       )}
 
       {/* The measure: the position of the wheel, ruled and filled */}
-      <span className="hh-foot-seam relative h-px min-w-[10px] flex-1 overflow-hidden" aria-hidden="true">
+      <span className="hh-foot-seam relative h-px min-w-0 flex-1 overflow-hidden" aria-hidden="true">
         {travelled > 0 ? (
           <span
             className="absolute inset-y-0 left-0"
@@ -82,7 +82,7 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
 
       {/* The readout, at the right: the position, the cycle, the seconds turning over */}
       <span
-        className="flex shrink-0 items-baseline gap-1.5 text-[9px] font-bold uppercase tracking-[0.14em]"
+        className="flex min-w-0 items-baseline justify-end gap-1.5 overflow-hidden whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.14em]"
         style={{
           color: "var(--hh-lcd)",
           fontVariantNumeric: "tabular-nums",
@@ -100,7 +100,7 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
             </span>
           </>
         ) : null}
-        <span className="shrink-0">{now.format("ddd D MMM")}</span>
+        <span className="hidden shrink-0 min-[400px]:inline">{now.format("ddd D MMM")}</span>
         <span className="shrink-0" style={{ opacity: 0.6 }}>
           ·
         </span>

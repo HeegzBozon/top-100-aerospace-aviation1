@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Home as HomeIcon, Undo2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Home as HomeIcon, Share, Undo2 } from "lucide-react";
 import RadioReadout from "./RadioReadout";
 import RadioKeypad from "./RadioKeypad";
 import RadioSpeaker from "./RadioSpeaker";
@@ -41,6 +41,8 @@ export default function RadioChin({
   onCycleMode,
   onAnnounce,
   onSoundOn,
+  onShare,
+  shareOpen = false,
 }) {
   const engrave =
     "hh-engrave flex shrink-0 items-center gap-1 text-[6px] font-bold uppercase tracking-[0.22em]";
@@ -86,6 +88,21 @@ export default function RadioChin({
           <span className="hh-screw h-[6px] w-[6px] rounded-full" />
           HW-88 PRO
         </span>
+
+        {/* The share, moved down off the glass: the radio prints the cycle on its own
+            readout, so the band that carried this pill has been handed back to the
+            picture and the pill rides the machine's footer instead. */}
+        <button
+          type="button"
+          onClick={onShare}
+          data-open={shareOpen || undefined}
+          className={engrave}
+          style={{ color: shareOpen ? "var(--hh-lcd-bright)" : "var(--hh-ink-soft)" }}
+          aria-label={shareOpen ? "Close the share drawer" : "Share this page"}
+        >
+          <Share className="h-[7px] w-[7px] shrink-0" />
+          Share
+        </button>
 
         <span
           aria-hidden="true"

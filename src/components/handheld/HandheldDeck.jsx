@@ -227,11 +227,15 @@ export default function HandheldDeck() {
   // belongs to the face fitted: the radio's case is drawn deeper than the wheel's, and
   // every surface on the glass is inset from whichever one is standing.
   const clearance = radio ? RADIO_CLEARANCE : DECK_CLEARANCE;
+  // The radio prints the cycle on its own readout, so the glass keeps no cycle band of
+  // its own: the whole foot is handed back to the picture and the share key moves down
+  // into the machine's footer. The wheel has no readout, so it keeps the band.
+  const foot = radio ? 0 : undefined;
 
   useLayoutEffect(() => {
-    applyShellVars(clearance);
+    applyShellVars(clearance, foot);
     return releaseShellVars;
-  }, [clearance]);
+  }, [clearance, foot]);
 
   useEffect(() => () => clearTimeout(flashTimer.current), []);
 
@@ -899,11 +903,13 @@ export default function HandheldDeck() {
 
       {/* The glass's footer: the share at its left, the measure of where the wheel stands
           ruled through the middle, the device's readout at its right. */}
-      <ViewerFoot
-        shareOpen={shareOpen}
-        onShare={toggleShare}
-        position={radioTotal ? { at: radioAt + 1, total: radioTotal } : null}
-      />
+      {!radio && (
+        <ViewerFoot
+          shareOpen={shareOpen}
+          onShare={toggleShare}
+          position={radioTotal ? { at: radioAt + 1, total: radioTotal } : null}
+        />
+      )}
 
       <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
 
@@ -1030,6 +1036,8 @@ export default function HandheldDeck() {
             onCycleMode={cycleMode}
             onAnnounce={announce}
             onSoundOn={() => persistSound(true)}
+            onShare={toggleShare}
+            shareOpen={shareOpen}
           />
         ) : (
           <>

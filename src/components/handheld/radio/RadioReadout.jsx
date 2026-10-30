@@ -13,9 +13,17 @@
 // display — the surface, or the machine's own drawer — and tapping the bank badge swaps
 // the keys between channels and the surface's numbered options. That leaves both hands'
 // worth of the cluster above free for the drawers.
+import useClock from "@/hooks/useClock";
+
 const BARS = [0, 1, 2, 3, 4];
 
+// The cycle's clock rides the readout: with the glass's own cycle band retired on this
+// face, the machine prints the time here instead of the band's decorative squelch legend,
+// so nothing the band carried is lost when the picture takes its room back.
+
 const pad = (value) => String(value || 0).padStart(2, "0");
+
+
 
 export default function RadioReadout({
   zone,
@@ -28,6 +36,8 @@ export default function RadioReadout({
   onZone,
   onBank,
 }) {
+  const now = useClock();
+
   return (
     <div className="hr-lcd relative flex h-full shrink-0 items-center gap-1.5 px-1.5">
       {/* The two displays, A over B, with the live one lit. Pressing the stack lights
@@ -111,10 +121,10 @@ export default function RadioReadout({
       </span>
 
       <span
-        className="shrink-0 text-[5px] font-bold uppercase tracking-[0.1em]"
-        style={{ color: "var(--hh-lcd-soft)" }}
+        className="shrink-0 text-[5.5px] font-bold uppercase tracking-[0.06em]"
+        style={{ color: "var(--hh-lcd-soft)", fontVariantNumeric: "tabular-nums" }}
       >
-        SQL
+        {now.format("HH:mm:ss")}
       </span>
     </div>
   );

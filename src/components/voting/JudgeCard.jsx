@@ -39,7 +39,7 @@ function initials(name) {
 //
 // The ring walks these cards while a set is standing: the card the cursor is on
 // carries a copper ring, so where the wheel is pointing is legible on the glass.
-export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, selectable, cursor = false, honoreeVolumes = [], onInfo, onSelect }) {
+export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, isTop, isBottom, selectable, cursor = false, honoreeVolumes = [], onInfo, onSelect }) {
 
   const name = nominee.name || 'Unnamed nominee';
   const photo = nominee.avatar_url || nominee.photo_url || '';
@@ -182,19 +182,40 @@ export default function JudgeCard({ nominee, token, keyLabel, isTop, isBottom, s
           >
             {keyLabel}
           </span>
+          <span
+            aria-hidden="true"
+            className="h-px min-w-0 flex-1"
+            style={{ background: `linear-gradient(90deg, ${brand.navy}10, ${brand.gold}66, ${brand.navy}10)` }}
+          />
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onInfo(); }}
-            aria-label={`More information about ${name}`}
-            aria-keyshortcuts="I"
-            className="flex min-h-[38px] flex-1 items-center justify-center gap-1.5 rounded-[11px] text-[10px] font-bold uppercase tracking-[0.12em] transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 md:min-h-[34px] md:text-[9.5px]"
+            aria-label={`More information about ${name}${infoKeyLabel ? ` — key ${infoKeyLabel}` : ""}`}
+            title={infoKeyLabel ? `${infoKeyLabel} opens ${name}` : `More information about ${name}`}
+            className="relative flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[11px] transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 md:h-9 md:w-9"
             style={{
               background: `linear-gradient(180deg, #26486E, ${brand.navy})`,
               color: '#F4F0E7',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20), 0 2px 5px -3px rgba(7,17,31,0.7)',
             }}
           >
-            <Info className="h-3.5 w-3.5" /> More info
+            <Info className="h-4 w-4" />
+            {/* On the radio each card stands under a pair of numbers: the first votes for
+                it, the second opens it. The second is printed where the thumb finds it. */}
+            {infoKeyLabel ? (
+              <span
+                aria-hidden="true"
+                className="absolute -right-1 -top-1 flex h-[15px] min-w-[15px] items-center justify-center rounded-full font-heading text-[9px] font-bold leading-none"
+                style={{
+                  padding: '0 3px',
+                  background: '#FDFBF6',
+                  color: brand.navy,
+                  boxShadow: `0 0 0 1px ${brand.navy}26, 0 1px 2px rgba(7,17,31,0.35)`,
+                }}
+              >
+                {infoKeyLabel}
+              </span>
+            ) : null}
           </button>
         </div>
       </motion.div>
