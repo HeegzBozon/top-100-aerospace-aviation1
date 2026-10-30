@@ -34,7 +34,13 @@ const FOOT_CLEARANCE = 32;
 // at or above it or the case would sit on the bottom of the picture.
 const DECK_CLEARANCE = 158;
 
-export { NAV_CLEARANCE, DECK_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH };
+// The radio face needs more case than the wheel does: a readout band, the cluster and a
+// full keypad are four rows the wheel never had. It is measured the same way — the readout,
+// the walking cluster, the speaker slot, the keypad and the plate, plus the air around
+// them — so the glass opens straight onto whichever face is fitted.
+const RADIO_CLEARANCE = 222;
+
+export { NAV_CLEARANCE, DECK_CLEARANCE, RADIO_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH };
 
 // Whoever is painting the hardware puts its space on the document. The count is
 // the point: a loading chassis handing the device to the console must not take
@@ -42,7 +48,12 @@ export { NAV_CLEARANCE, DECK_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH };
 // when the shell is told to put the device away.
 let holders = 0;
 
-export function applyShellVars() {
+// The chin's depth, for the face that is fitted: the wheel's case or the radio's.
+export function setDeckClearance(clearance = DECK_CLEARANCE) {
+  document.documentElement.style.setProperty("--hh-bottom", `${clearance + FRAME_GUTTER}px`);
+}
+
+export function applyShellVars(clearance = DECK_CLEARANCE) {
   holders += 1;
   document.body.classList.add("hh-shell");
   const root = document.documentElement.style;
@@ -51,8 +62,9 @@ export function applyShellVars() {
   root.setProperty("--hh-nav", `${NAV_CLEARANCE}px`);
   // The picture opens straight onto the chin: no band of moulding is held below the
   // pane, so the glass's bottom edge IS the chin's top edge and the readout band inside
-  // it is the lowest part of the picture.
-  root.setProperty("--hh-bottom", `${DECK_CLEARANCE + FRAME_GUTTER}px`);
+  // it is the lowest part of the picture. How deep the chin is belongs to the face
+  // fitted to it, so it is handed in rather than assumed.
+  setDeckClearance(clearance);
   root.setProperty("--hh-foot", `${FOOT_CLEARANCE}px`);
   root.setProperty("--hh-frame", `${FRAME_GUTTER}px`);
   root.setProperty("--hh-bezel-w", `${BEZEL_WIDTH}px`);

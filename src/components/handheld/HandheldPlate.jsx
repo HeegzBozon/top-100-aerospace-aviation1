@@ -6,7 +6,7 @@ import { Palette } from "lucide-react";
 // finish it is wearing right now — and the right says who is holding the console, with
 // a lamp beside it. The two sides are drawn out to their marks by a machined hairline
 // so the plate reads as one fitted part.
-export default function HandheldPlate({ finish, isSignedIn, onCustomize }) {
+export default function HandheldPlate({ finish, isSignedIn, onCustomize, modeKey = null }) {
   const engrave =
     "hh-engrave flex shrink-0 items-center gap-1.5 text-[6.5px] font-bold uppercase tracking-[0.24em]";
 
@@ -47,6 +47,9 @@ export default function HandheldPlate({ finish, isSignedIn, onCustomize }) {
           ▲
         </span>
       </button>
+
+      {/* Which face the machine is wearing: the wheel below, or the keypad. */}
+      {modeKey}
 
       <span
         aria-hidden="true"

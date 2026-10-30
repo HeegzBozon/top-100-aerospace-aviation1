@@ -28,7 +28,15 @@ import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMe
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, persistSound } from "./handheldSound";
 import { openingPlaysNow } from "@/components/core/appOpening";
-import { applyShellVars, DECK_CLEARANCE, releaseShellVars } from "./handheldGeometry";
+import {
+  applyShellVars,
+  DECK_CLEARANCE,
+  RADIO_CLEARANCE,
+  releaseShellVars,
+} from "./handheldGeometry";
+import useConsoleMode, { RADIO } from "./consoleMode";
+import RadioChin from "./radio/RadioChin";
+import ConsoleModeKey from "./ConsoleModeKey";
 
 // The device's space is measured in handheldGeometry — one set of numbers, applied
 // by the console and by the loading chassis alike, so the hardware is never hidden
@@ -62,6 +70,19 @@ export default function HandheldDeck() {
   const navigate = useNavigate();
   const location = useLocation();
   const { groups, isSignedIn, isAdmin } = useHandheldDestinations();
+
+  // Which face the machine is wearing: the click wheel it was built with, or the radio,
+  // whose keypad walks the same index by number. The surface chooses the face it is
+  // written in; the plate overrules, and the overrule is remembered.
+  const { mode, cycle: cycleMode, legend: modeLegend } = useConsoleMode(location.pathname);
+  const radio = mode === RADIO;
+
+  // The radio's own state: which bank the keys are typing (its channels, or the
+  // surface's own numbered sections), which of its two displays is live — A, the
+  // surface, or B, the machine's drawer — and the number standing in the display.
+  const [bank, setBank] = useState("CH");
+  const [zone, setZone] = useState("A");
+  const [typed, setTyped] = useState("");
 
   const [menuMode, setMenuMode] = useState(null);
   const [cursor, setCursor] = useState(0);
@@ -193,17 +214,31 @@ export default function HandheldDeck() {
   // Reserve the hardware's space, and hand it back when the console is put away
   // (a surface asking for the whole glass). A layout effect, so the hardware is
   // already in place on the frame the console appears in, and the same values the
-  // loading chassis applied — so the hand-over between them is invisible.
+  // loading chassis applied — so the hand-over between them is invisible. The depth
+  // belongs to the face fitted: the radio's case is drawn deeper than the wheel's, and
+  // every surface on the glass is inset from whichever one is standing.
+  const clearance = radio ? RADIO_CLEARANCE : DECK_CLEARANCE;
+
   useLayoutEffect(() => {
-    applyShellVars();
+    applyShellVars(clearance);
     return releaseShellVars;
-  }, []);
+  }, [clearance]);
 
   useEffect(() => () => clearTimeout(flashTimer.current), []);
 
   // Putting the console away stops its music: the speaker key is gone once the
   // device is off the glass, so the loop must not keep playing with no hand on it.
   useEffect(() => () => stopPlaylist(), []);
+
+  // A number typed on one surface means nothing on the next, and a drawer that closes
+  // puts the keys back on the surface.
+  useEffect(() => {
+    setTyped("");
+  }, [locationKey, bank, zone, mode]);
+
+  useEffect(() => {
+    if (!menuOpen && zone === "B") setZone("A");
+  }, [menuOpen, zone]);
 
   // The read-along: the wheel's play zone walks the page down the glass until
   // the bottom arrives or the reader takes over.
@@ -658,6 +693,137 @@ export default function HandheldDeck() {
   }, [booting, finishBoot, menuOpen, notificationsOpen, shareOpen, navigate, picker]);
   backRef.current = back;
 
+  // --- the radio's keys ----------------------------------------------------
+  // A channel is any entry of the machine's own index, numbered in the order the drawer
+  // prints it, so the number on the readout and the number in the drawer are the same
+  // number. The surface's own sections are numbered the same way: that is what V/M
+  // switches the keypad between, and A/B switches between the surface (A) and the
+  // machine's drawer (B).
+  const pad = String(Math.max(flat.length, 1)).length;
+  const channelAt = flat.findIndex((item) => item.to && item.to === locationKey) + 1;
+  const drawerItems = menuOpen ? listFor(menuMode) : [];
+
+  const standing = zone === "B" ? cursor + 1 : bank === "FN" ? moduleIndex + 1 : channelAt;
+  const radioDigits = typed
+    ? typed.padStart(pad, "0")
+    : String(standing || 0).padStart(pad, "0");
+
+  const radioLabel =
+    zone === "B"
+      ? menuOpen
+        ? `${DRAWER_TITLES[menuMode] || "Drawer"} · ${drawerItems[cursor]?.label || ""}`
+        : "Drawer"
+      : bank === "FN"
+        ? modules[moduleIndex]?.label || surface
+        : typed
+          ? flat[Number(typed) - 1]?.label || "No channel"
+          : flat[channelAt - 1]?.label || surface;
+
+  const radioTotal = zone === "B" ? drawerItems.length : modules.length || flat.length;
+  const radioAt = zone === "B" ? cursor : modules.length ? moduleIndex : Math.max(0, channelAt - 1);
+  const radioSignal = radioTotal
+    ? Math.max(1, Math.round(((radioAt + 1) / radioTotal) * 5))
+    : 1;
+
+  // Tuning: the keypad names a channel and the machine goes there, exactly as pressing
+  // that entry in the drawer would.
+  const tuneTo = useCallback(
+    (channel) => {
+      const item = flat[channel - 1];
+      if (!item) {
+        blip("back");
+        announce("No channel");
+        return;
+      }
+      go(item);
+    },
+    [flat, go, announce],
+  );
+
+  const radioDigit = useCallback(
+    (digit) => {
+      finishBoot();
+      // Display B: the keys are the drawer's entries, pressed by their number.
+      if (zone === "B") {
+        const item = digit === "0" ? null : drawerItems[Number(digit) - 1];
+        if (item) go(item);
+        else blip("back");
+        return;
+      }
+      // Display A, in section mode: the keys are the surface's own numbered sections.
+      if (bank === "FN") {
+        if (digit === "0") {
+          setTyped("");
+          select();
+          return;
+        }
+        const target = Number(digit) - 1;
+        if (target >= 0 && target < modules.length) {
+          setTyped("");
+          jumpToModule(target);
+          return;
+        }
+        blip("back");
+        return;
+      }
+      // Display A, in channel mode: the keys type a channel, and the machine tunes the
+      // moment the number is as long as the index can be.
+      const next = `${typed}${digit}`.slice(-pad);
+      setTyped(next);
+      announce(`CH ${next}`);
+      if (next.length === pad) {
+        setTyped("");
+        tuneTo(Number(next));
+      }
+    },
+    [
+      zone,
+      bank,
+      drawerItems,
+      modules.length,
+      typed,
+      pad,
+      announce,
+      tuneTo,
+      finishBoot,
+      select,
+      jumpToModule,
+      go,
+    ],
+  );
+
+  // The bottom right key: enter what was typed, or — with nothing standing in the
+  // display — confirm what the ring would, which is how a surface is opened by keypad.
+  const radioEnter = useCallback(() => {
+    finishBoot();
+    if (typed) {
+      const channel = Number(typed);
+      setTyped("");
+      tuneTo(channel);
+      return;
+    }
+    select();
+  }, [finishBoot, typed, tuneTo, select]);
+
+  const radioBank = useCallback(() => {
+    blip("toggle");
+    buzz();
+    setBank((current) => (current === "CH" ? "FN" : "CH"));
+  }, []);
+
+  const radioZone = useCallback(() => {
+    blip("toggle");
+    buzz();
+    setTyped("");
+    if (zone === "A") {
+      setZone("B");
+      if (!menuOpen) openMenu();
+      return;
+    }
+    setZone("A");
+    if (menuOpen) closeMenu();
+  }, [zone, menuOpen, openMenu, closeMenu]);
+
   return (
     <>
       {/* One moulding behind everything: the display, the bezel and the deck are
@@ -766,57 +932,96 @@ export default function HandheldDeck() {
              lands exactly on the glass's own foot whatever the case is wearing. A chin
              sized by its content can creep up over the pane and take the readout band
              with it. */
-          height: `calc(${DECK_CLEARANCE}px + env(safe-area-inset-bottom))`,
+          height: `calc(${clearance}px + env(safe-area-inset-bottom))`,
           /* Square where it meets the glass, and the body's own corner at the foot:
              the same 22 the moulding carries, so the case turns one corner, not two. */
           borderRadius: "0 0 22px 22px",
-          paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
+          /* Each face sets its own foot: the wheel sits on a deeper plate margin, the
+             radio's keypad runs closer to the edge of the case. */
+          paddingBottom: `calc(${radio ? 8 : 12}px + env(safe-area-inset-bottom))`,
         }}
       >
         {/* The chin is pinned like a real moulding: a screw at each corner. */}
         <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, left: 5 }} aria-hidden="true" />
         <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, right: 5 }} aria-hidden="true" />
 
-        {/* The controls, spaced so a thumb never has to guess: the speaker on the
-            left, the wheel on the centre line, the keypad on the right. The two sides
-            are the same width, so the wheel sits dead centre whatever either of them
-            measures. */}
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pt-1.5">
-          {/* The left column: the case speaker with the console's record on it. The
-              Share pill that stood under it rides the readout band now, at the left of
-              the foot of the glass (see ViewerFoot). */}
-          <div className="flex items-center justify-center">
-            <HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />
-          </div>
-
-          <ClickWheel
-            size={104}
-            onRotate={rotate}
-            onMenu={steering ? null : upOneLevel}
-            onPrev={steering ? null : () => stepSection(-1)}
-            onNext={steering ? null : () => stepSection(1)}
-            playing={playing || !!picker?.isPlaying?.()}
-            onSearch={steering ? null : openSearch}
-            onPlay={steering ? null : togglePlay}
-            onSelect={select}
+        {radio ? (
+          /* The radio face: a backlit readout, the walking cluster, the keypad and the
+             plate. Every key prints the state it is standing in. */
+          <RadioChin
+            zone={zone}
+            bank={bank}
+            digits={radioDigits}
+            label={radioLabel}
+            signal={radioSignal}
+            entering={!!typed}
+            enterHint={typed ? "TUNE" : "MENU"}
+            legend={modeLegend}
+            mode={mode}
+            isSignedIn={isSignedIn}
+            onDigit={radioDigit}
+            onEnter={radioEnter}
+            onScan={openSearch}
+            onBank={radioBank}
+            onZone={radioZone}
+            onUp={() => rotate(-1)}
+            onDown={() => rotate(1)}
             onHome={goHome}
-            steer={!!steering}
-            onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}
-            prints={steering?.prints}
+            onBack={back}
+            onStation={openNotifications}
+            onCycleMode={cycleMode}
+            onAnnounce={announce}
+            onSoundOn={() => persistSound(true)}
           />
+        ) : (
+          <>
+            {/* The controls, spaced so a thumb never has to guess: the speaker on the
+                left, the wheel on the centre line, the keypad on the right. The two sides
+                are the same width, so the wheel sits dead centre whatever either of them
+                measures. */}
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pt-1.5">
+              {/* The left column: the case speaker with the console's record on it. The
+                  Share pill that stood under it rides the readout band now, at the left of
+                  the foot of the glass (see ViewerFoot). */}
+              <div className="flex items-center justify-center">
+                <HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />
+              </div>
 
-          <div className="flex justify-end">
-            <FaceButtons
-              onConfirm={() => faceKey("A", select)}
-              onBack={() => faceKey("B", back)}
-              onFile={() => faceKey("X", () => openBarDrawer("file"))}
-              onEdit={() => faceKey("Y", () => openBarDrawer("edit"))}
+              <ClickWheel
+                size={104}
+                onRotate={rotate}
+                onMenu={steering ? null : upOneLevel}
+                onPrev={steering ? null : () => stepSection(-1)}
+                onNext={steering ? null : () => stepSection(1)}
+                playing={playing || !!picker?.isPlaying?.()}
+                onSearch={steering ? null : openSearch}
+                onPlay={steering ? null : togglePlay}
+                onSelect={select}
+                onHome={goHome}
+                steer={!!steering}
+                onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}
+                prints={steering?.prints}
+              />
+
+              <div className="flex justify-end">
+                <FaceButtons
+                  onConfirm={() => faceKey("A", select)}
+                  onBack={() => faceKey("B", back)}
+                  onFile={() => faceKey("X", () => openBarDrawer("file"))}
+                  onEdit={() => faceKey("Y", () => openBarDrawer("edit"))}
+                />
+              </div>
+            </div>
+
+            {/* The maker's plate, fitted into the foot of the case. */}
+            <HandheldPlate
+              finish={finish}
+              isSignedIn={isSignedIn}
+              onCustomize={openFinish}
+              modeKey={<ConsoleModeKey legend={modeLegend} mode={mode} onCycle={cycleMode} />}
             />
-          </div>
-        </div>
-
-        {/* The maker's plate, fitted into the foot of the case. */}
-        <HandheldPlate finish={finish} isSignedIn={isSignedIn} onCustomize={openFinish} />
+          </>
+        )}
       </nav>
     </>
   );
