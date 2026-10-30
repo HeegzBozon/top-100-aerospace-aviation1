@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 // The machine has two faces.
 //
@@ -22,6 +23,7 @@ const STORAGE_KEY = "top100-console-mode";
 // walked on a numbered keypad; anything read by the screenful is the wheel's.
 const RADIO_SURFACES = [
   { match: (path) => path === "/" || path === "/start", reason: "a numbered key field" },
+  { match: (path) => path.startsWith("/selection-committee"), reason: "a numbered ballot" },
   { match: (path) => path.startsWith("/magazine/"), reason: "an issue is numbered pages" },
   { match: (path) => path.startsWith("/archive"), reason: "numbered volumes" },
   { match: (path) => path.startsWith("/Top100Women2025"), reason: "a numbered roster" },
@@ -55,22 +57,43 @@ export const modeLegend = (chosen, mode) => {
   return mode === RADIO ? "Auto · Radio" : "Auto · Wheel";
 };
 
+// What the reader chose is held here rather than inside one component, because two
+// things read it: the console, which wears the face, and the surface, which prints the
+// keys of the face it is being read on. A press of the MODE key has to reach both in
+// the same frame, or a surface goes on printing the ring's legend under the keypad.
+let choice = read();
+const listeners = new Set();
+const announce = () => listeners.forEach((listener) => listener());
+
+const choose = (next) => {
+  choice = next;
+  try {
+    if (next === AUTO) localStorage.removeItem(STORAGE_KEY);
+    else localStorage.setItem(STORAGE_KEY, next);
+  } catch {
+    // Storage unavailable — the choice simply lasts this visit.
+  }
+  announce();
+};
+
+const useChoice = () => {
+  const [, force] = useState(0);
+  useEffect(() => {
+    const listener = () => force((n) => n + 1);
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+  }, []);
+  return choice;
+};
+
 export default function useConsoleMode(pathname) {
-  const [chosen, setChosen] = useState(read);
+  const chosen = useChoice();
   const automatic = autoModeFor(pathname);
   const mode = chosen === AUTO ? automatic.mode : chosen;
-
-  useEffect(() => {
-    try {
-      if (chosen === AUTO) localStorage.removeItem(STORAGE_KEY);
-      else localStorage.setItem(STORAGE_KEY, chosen);
-    } catch {
-      // Storage unavailable — the choice simply lasts this visit.
-    }
-  }, [chosen]);
-
-  const cycle = () =>
-    setChosen((current) => (current === AUTO ? WHEEL : current === WHEEL ? RADIO : AUTO));
-
+  const cycle = () => choose(chosen === AUTO ? WHEEL : chosen === WHEEL ? RADIO : AUTO);
   return { mode, chosen, automatic, cycle, legend: modeLegend(chosen, mode) };
 }
+
+// The face the machine is wearing right now, for a surface that has to print its own
+// key legends: the radio has no ring and no A, so the wheel's legend is a lie there.
+export const useConsoleFace = () => useConsoleMode(useLocation().pathname).mode;

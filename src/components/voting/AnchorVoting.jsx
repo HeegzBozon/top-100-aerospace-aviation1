@@ -11,7 +11,8 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
-import { registerFaceKeys } from '@/components/handheld/handheldKeys';
+import { registerDigits, registerFaceKeys } from '@/components/handheld/handheldKeys';
+import { useConsoleFace } from '@/components/handheld/consoleMode';
 import { buildHonoreeYearIndex, honoreeVolumes } from '@/components/voting/honoreeYears';
 import useAnchorPicker from '@/components/voting/useAnchorPicker';
 import VoteMechanicsPopover from '@/components/voting/VoteMechanicsPopover';
@@ -220,6 +221,10 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // be made by accident.
   const reading = explainerOpen || guideOpen || Boolean(panelNominee);
   const standing = (phase === 'best' || phase === 'worst') && !reading;
+  // Which face the case is wearing. The chamber is voted from the hardware either way,
+  // but the radio has no X, Y, A or B to press: its four candidates stand under the
+  // four digits, and the cards print the key that is actually on the case.
+  const radio = useConsoleFace() === 'radio';
   const setKey = currentSet.map((n) => n.id).join('|');
   const cursor = useAnchorPicker({
     count: currentSet.length,
@@ -256,6 +261,19 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     if (!voteKeys.current) return undefined;
     return registerFaceKeys((key) => (voteKeys.current ? voteKeys.current(key) : false));
   }, [phase, currentSet, reading]);
+
+  // The radio's half of the same claim: digits 1–4 put the four cards under the hand,
+  // so a set is voted on the keypad alone — the console takes the press before it can
+  // tune or walk, exactly as it does for X, Y, A and B on the wheel.
+  useEffect(() => {
+    if (!radio || !voteKeys.current) return undefined;
+    return registerDigits((digit) => {
+      const i = Number(digit) - 1;
+      if (!(i >= 0 && i < 4) || !currentSet[i]) return false;
+      handleSelect(currentSet[i]);
+      return true;
+    });
+  }, [radio, phase, currentSet, reading]);
 
   // The desk's own keyboard answers the same way: X, Y, A and B vote for the four
   // faces exactly as the console's keys do, so the legends printed on the cards hold

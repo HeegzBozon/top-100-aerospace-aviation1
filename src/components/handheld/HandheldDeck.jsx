@@ -4,7 +4,8 @@ import { base44 } from "@/api/base44Client";
 import { Palette } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
-import { pressFaceKey } from "./handheldKeys";
+import { pressDigit, pressFaceKey } from "./handheldKeys";
+import { drawerHint } from "./faceHint";
 import ScreenTopBar from "./ScreenTopBar";
 import ViewerFoot from "./ViewerFoot";
 import HandheldScreenFrame from "./HandheldScreenFrame";
@@ -76,6 +77,8 @@ export default function HandheldDeck() {
   // written in; the plate overrules, and the overrule is remembered.
   const { mode, cycle: cycleMode, legend: modeLegend } = useConsoleMode(location.pathname);
   const radio = mode === RADIO;
+  // What every legend on this machine is printed in: the face fitted to the case.
+  const face = radio ? RADIO : "wheel";
 
   // The radio's own state: which bank the keys are typing (its channels, or the
   // surface's own numbered sections), which of its two displays is live — A, the
@@ -779,6 +782,14 @@ export default function HandheldDeck() {
       // and where the surface prints a number on each of them, the key printed 03 is
       // typed 3. A surface without numbers has its options counted from the front.
       if (bank === "FN") {
+        // A surface holding the digits answers first: the chamber's four candidates
+        // stand under 1–4, and the press puts the card under the same hand a tap would.
+        if (pressDigit(digit)) {
+          setTyped("");
+          blip("select");
+          buzz();
+          return;
+        }
         if (digit === "0") {
           setTyped("");
           select();
@@ -933,10 +944,10 @@ export default function HandheldDeck() {
           }
           hint={
             menuMode === "sections"
-              ? "◀▶ Move · ● Go · B Back"
+              ? drawerHint(face, { run: "Go" })
               : menuMode === "finish"
-                ? "◀▶ Move · ● Apply · B Back"
-                : undefined
+                ? drawerHint(face, { run: "Apply" })
+                : drawerHint(face, { move: "Group", run: "Load" })
           }
           onActivate={(item) => {
             if (menuMode === "finish") return applyFinish(item);
