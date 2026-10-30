@@ -10,19 +10,19 @@ import ShareProgramButton from "@/components/start/ShareProgramButton";
 // edge warms, the way a cartridge comes up out of its slot, so nothing about it reads as
 // printed matter. The whole plate is the target, and it is a real link: pressing it, or
 // walking the console's ring onto it with the keys, does the same thing.
-export default function DesktopSurfaceIndex({ items }) {
+export default function DesktopSurfaceIndex({ items, eyebrow = "Programs", countLabel }) {
   return (
-    <section className="ds-rise mt-11" style={{ animationDelay: "380ms" }} aria-label="Programs">
+    <section className="ds-rise mt-11" style={{ animationDelay: "380ms" }} aria-label={eyebrow}>
       <div className="flex items-center gap-4">
         <p className="text-[9px] font-bold uppercase tracking-[0.36em] text-editorial-gold/85">
-          Programs
+          {eyebrow}
         </p>
         <span
           className="h-px flex-1"
           style={{ background: "linear-gradient(90deg, rgb(var(--editorial-gold-rgb) / 0.4), transparent)" }}
         />
         <p className="text-[9px] font-bold uppercase tracking-[0.26em] text-editorial-cream/35">
-          {items.length} installed
+          {countLabel || `${items.length} installed`}
         </p>
       </div>
 

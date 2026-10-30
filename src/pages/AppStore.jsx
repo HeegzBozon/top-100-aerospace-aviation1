@@ -1,74 +1,101 @@
-import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import { B } from '@/components/fellow-home/fellowHomeConfig';
-import StoreFeatureCard from '@/components/appstore/StoreFeatureCard';
-import StoreToolCard from '@/components/appstore/StoreToolCard';
-import { availableTools, buildingTools } from '@/components/appstore/storeCatalog';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { hourPhase } from '@/components/core/appOpening';
+import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import StartSky from '@/components/start/StartSky';
+import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
+import AppStoreMark from '@/components/appstore/AppStoreMark';
+import DesktopAppStoreScreen from '@/components/appstore/DesktopAppStoreScreen';
+import { storeCounts, storeMenuItems } from '@/components/appstore/storeMenuConfig';
 
-// The App Store: the shelf of micro-tools the institution hands out. Each one does a single
-// job and returns an artifact the person keeps. One is open; the rest are listed so the
-// shelf reads as a programme rather than a single product, and none of them are pretend.
+// The App Store opens the way the platform opens: the hour's sky, the house's rule in
+// copper, the store's mark, and the tools as keys. The same menu on both machines — the
+// phone walks it with the ring, the desk lists it as modules on the cover.
 export default function AppStore() {
-  const open = availableTools();
-  const building = buildingTools();
+  const navigate = useNavigate();
+  const [phase] = useState(() => hourPhase());
+  const items = useMemo(() => storeMenuItems(), []);
+  const counts = useMemo(() => storeCounts(), []);
+  const [cursorKey, setCursorKey] = useState(items[0].key);
+
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+  const cursorRef = useRef(cursorKey);
+  cursorRef.current = cursorKey;
+
+  // The cursor is held as a key, so the selection survives a re-render of the shelf.
+  const land = useCallback((target) => {
+    const list = itemsRef.current;
+    if (target < 0 || target >= list.length) return null;
+    cursorRef.current = list[target].key;
+    setCursorKey(list[target].key);
+    return list[target].label;
+  }, []);
+
+  const here = useCallback(
+    () => Math.max(0, itemsRef.current.findIndex((item) => item.key === cursorRef.current)),
+    [],
+  );
+
+  const api = useRef(null);
+  if (!api.current) {
+    api.current = {
+      labels: () => itemsRef.current.map((item) => item.label),
+      index: here,
+      step: (direction) => land(here() + direction),
+      page: (direction) => land(here() + direction),
+      goTo: (i) => land(i),
+      enter: () => {
+        const item = itemsRef.current.find((entry) => entry.key === cursorRef.current);
+        if (!item?.to) return false;
+        navigate(item.to);
+        return true;
+      },
+      back: () => false,
+    };
+  }
+
+  useEffect(() => registerPicker(api.current), []);
+
+  useEffect(() => {
+    touchPicker();
+  }, [cursorKey, items.length]);
 
   return (
-    <div className="min-h-screen" style={{ background: B.cream }}>
-      <div className="mx-auto w-full max-w-3xl px-4 py-8 md:px-8 md:py-14">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.22em]"
-          style={{ color: B.muted }}
-        >
-          <ArrowLeft className="h-3 w-3" />
-          Title screen
-        </Link>
-
-        <header className="mt-5">
-          <div
-            className="h-px w-24"
-            style={{ background: 'linear-gradient(90deg, #B87333, #C9A87C 58%, transparent)' }}
-          />
-          <p className="mt-4 text-[9px] font-bold uppercase tracking-[0.32em]" style={{ color: B.copper }}>
-            The App Store
-          </p>
-          <h1 className="mt-2 font-heading text-[2rem] leading-[1.05] md:text-5xl" style={{ color: B.navy }}>
-            Small instruments for a serious career.
-          </h1>
-          <p className="mt-3 max-w-xl text-[13px] leading-relaxed" style={{ color: B.muted }}>
-            Each tool does one job and hands you the artifact. Nothing here measures anyone, and
-            nothing here can be bought.
-          </p>
-        </header>
-
-        <div className="mt-7 space-y-4">
-          {open.map((tool) => (
-            <StoreFeatureCard key={tool.key} tool={tool} />
-          ))}
-        </div>
-
-        <section className="mt-10">
-          <div className="flex items-baseline justify-between">
-            <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: B.copper }}>
-              On the bench
-            </p>
-            <p className="text-[10px]" style={{ color: B.muted }}>
-              {building.length} in build
-            </p>
-          </div>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {building.map((tool) => (
-              <StoreToolCard key={tool.key} tool={tool} />
-            ))}
-          </div>
-          <p className="mt-4 text-[11px] leading-relaxed" style={{ color: B.muted }}>
-            These four are being built. They are listed so you know what is coming, and nothing
-            on this shelf opens what does not exist yet.
-          </p>
-        </section>
-
-        <div className="h-20" />
+    <>
+      <div className="hidden md:block">
+        <DesktopAppStoreScreen phase={phase} items={items} counts={counts} />
       </div>
-    </div>
+
+      <div className="md:hidden">
+        <div className="hh-slide-window hh-scroll-window relative flex flex-col">
+          <div
+            className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden"
+            style={{ background: phase.sky }}
+          >
+            <StartSky phase={phase} />
+
+            <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-3 pt-5">
+              <div className="hh-title-block mt-4 shrink-0">
+                <AppStoreMark />
+                <div className="mt-3 flex items-center gap-2">
+                  <span
+                    className="h-px w-8 shrink-0"
+                    style={{ background: 'linear-gradient(90deg, #B87333, #C9A87C)' }}
+                  />
+                  <p className="text-[8.5px] font-bold uppercase tracking-[0.24em] text-editorial-cream/60">
+                    {counts.open} open
+                    <span className="px-1.5 text-editorial-gold/60">·</span>
+                    {counts.building} on the bench
+                  </p>
+                </div>
+              </div>
+
+              <StartSurfaceKeys items={items} cursorKey={cursorKey} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

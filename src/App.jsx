@@ -100,6 +100,7 @@ const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
 const TalentDesk = lazy(() => import('@/pages/TalentDesk'));
 const AppStore = lazy(() => import('@/pages/AppStore'));
+const AppStoreShelf = lazy(() => import('@/pages/AppStoreShelf'));
 const PressKitStudio = lazy(() => import('@/pages/PressKitStudio'));
 const PressKitPublic = lazy(() => import('@/pages/PressKitPublic'));
 
@@ -194,6 +195,7 @@ const AuthenticatedApp = () => {
       <Route path="/talent-desk" element={<TalentDesk />} />
       {/* The App Store: micro-tools, each doing one job and handing back an artifact */}
       <Route path="/app-store" element={<AppStore />} />
+      <Route path="/app-store/shelf" element={<AppStoreShelf />} />
       <Route path="/press-kit" element={<PressKitStudio />} />
       <Route path="/press-kit/:shareCode" element={<PressKitPublic />} />
       <Route path="/the-board" element={<TheBoard />} />
