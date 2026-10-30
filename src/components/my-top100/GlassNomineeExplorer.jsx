@@ -8,7 +8,7 @@ import { getNomineeCategory } from '@/components/my-top100/nomineeCategory';
 
 // The directory, read on the glass. The desk's explorer is a wide dialog with a pointer
 // in it; here the same pool is one column under the thumb, walked by whichever face the
-// case carries: the ring or ▲▼ moves the cursor, A / OK puts the focused name on the
+// case carries: the ring or ▲▼ moves the cursor, A / # puts the focused name on the
 // ballot, B hands the glass back to the ballot, and 1–4 pick the cohort outright.
 //
 // The pool runs to two thousand names, so only the rows around the cursor are in the
@@ -29,7 +29,7 @@ const browseLegend = () => ({
     digits[String(i + 1)] = { sub: cohort.legend, aria: `Show ${cohort.label}` };
     return digits;
   }, {}),
-  enter: { sub: 'ADD', aria: 'OK — add this name to the ballot' },
+  enter: { sub: 'ADD', aria: '# — add this name to the ballot' },
 });
 
 const roleLine = (n) => [n.title || n.professional_role, n.company || n.organization].filter(Boolean).join(' · ');

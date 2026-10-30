@@ -25,8 +25,8 @@ const ballotLegend = (carried) => {
   return {
     digits,
     enter: carried
-      ? { sub: 'SET', aria: 'OK — set the name down at this rank' }
-      : { sub: 'LIFT', aria: 'OK — lift this name to move it' },
+      ? { sub: 'SET', aria: '# — set the name down at this rank' }
+      : { sub: 'LIFT', aria: '# — lift this name to move it' },
     scan: { sub: 'SRCH', aria: 'Scan — search the directory for a name' },
   };
 };
@@ -41,9 +41,9 @@ const ballotLegend = (carried) => {
 //
 // How the hardware works the order — the same law on both faces, in each one's alphabet:
 //   walk    ring turn / ▲▼        the cursor stands on a position
-//   lift    A / OK (#)            the position comes off the ballot
+//   lift    A / #                 the position comes off the ballot
 //   move    ring turn / ▲▼        it is carried, and the ballot re-reads live beneath it
-//   set     A / OK (#)            it is set down where it stands
+//   set     A / #                 it is set down where it stands
 //   drop    B / BACK              it is let go where it stands
 //   place   1–9                   carried to that rank outright, or jumped to when not held
 // On touch the row's own up, down and remove keys do the same work a thumb's way, so
