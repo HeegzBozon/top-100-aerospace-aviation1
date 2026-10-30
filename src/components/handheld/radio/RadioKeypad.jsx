@@ -1,4 +1,5 @@
 import RadioKey from "./RadioKey";
+import { useDigitLegends } from "@/components/handheld/handheldKeys";
 
 // The keypad: three columns, four rows, the numbers printed the way a transceiver
 // prints them — the figure large, the letters under it where a thumb expects them.
@@ -9,6 +10,10 @@ import RadioKey from "./RadioKey";
 // printed on it — because entering is the move every other key is arranged around, and it
 // has to be findable by a thumb that is not looking. Sharing lives on the cluster above
 // (see RadioChin), beside the two lists.
+//
+// The pad is an instrument, not a fixed keypad: a surface that claims the digits hands over
+// a legend, and every key reprints itself to say what it does in that surface's own grammar
+// — `GO 3` while the cursor is walking a ballot, `TO 3` while a name is being carried.
 const KEYS = [
   { digit: "1", sub: ".?" },
   { digit: "2", sub: "ABC" },
@@ -25,6 +30,8 @@ const KEYS = [
 ];
 
 export default function RadioKeypad({ onDigit, onScan, onEnter }) {
+  const legend = useDigitLegends();
+
   return (
     <div className="grid h-full grid-cols-3 grid-rows-4 gap-[3px]">
       {KEYS.map((key) => {
@@ -33,9 +40,9 @@ export default function RadioKeypad({ onDigit, onScan, onEnter }) {
             <RadioKey
               key="scan"
               label={key.label}
-              sub={key.sub}
+              sub={legend?.scan?.sub || key.sub}
               onPress={onScan}
-              ariaLabel="Scan — search the machine, or read a code"
+              ariaLabel={legend?.scan?.aria || "Scan — search the machine, or read a code"}
             />
           );
         }
@@ -44,20 +51,21 @@ export default function RadioKeypad({ onDigit, onScan, onEnter }) {
             <RadioKey
               key="enter"
               label="OK"
-              sub="ENTER"
+              sub={legend?.enter?.sub || "ENTER"}
               skin="copper"
               onPress={onEnter}
-              ariaLabel="OK — enter or open what is selected"
+              ariaLabel={legend?.enter?.aria || "OK — enter or open what is selected"}
             />
           );
         }
+        const printed = legend?.digits?.[key.digit];
         return (
           <RadioKey
             key={key.digit}
             label={key.digit}
-            sub={key.sub}
+            sub={printed?.sub || key.sub}
             onPress={() => onDigit(key.digit)}
-            ariaLabel={`Key ${key.digit}`}
+            ariaLabel={printed?.aria || `Key ${key.digit}`}
           />
         );
       })}

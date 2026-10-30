@@ -311,6 +311,14 @@ export default function MyTop100() {
     setSaveTimer(timer);
   }, [saveTimer, persistAndSync]);
 
+  // The glass always arranges the whole ballot — the cohorts are counted off that one
+  // order, so there is no filtered subset to merge it back into.
+  const handleReorderAll = (newOrder) => {
+    if (votingClosed) return;
+    setRankings(newOrder);
+    scheduleSave(newOrder, listName);
+  };
+
   const handleReorder = (newFilteredOrder) => {
     if (votingClosed) return;
     let newOrder = newFilteredOrder;
@@ -540,14 +548,11 @@ export default function MyTop100() {
   // bar across the bottom of the picture.
   const glassNominateNode = (
     <GlassNominateSurface
-      rankings={visibleRankings}
+      rankings={rankings}
       totalCount={rankings.length}
-      category={listCategory}
-      onCategory={setListCategory}
       counts={listCategoryCounts}
       readOnly={votingClosed}
-      minimum={1}
-      onReorder={handleReorder}
+      onReorder={handleReorderAll}
       onRemove={handleRemove}
       onView={openProfileFromList}
       onNominate={openQuickAdd}
@@ -560,7 +565,7 @@ export default function MyTop100() {
   // reads them as the cartridge menu.
   const consolePanels = [
     { key: 'start', label: 'Start Here', hint: 'Why this is here, and where to begin', icon: Rocket, node: startNode },
-    { key: 'nominate', label: 'Refine Ballot', hint: `${rankings.length}/100 ranked`, icon: Sparkles, node: glassNominateNode },
+    { key: 'nominate', label: 'Nominate', hint: `${rankings.length}/100 nominated`, icon: Sparkles, node: glassNominateNode },
     { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — cast your ballot' : 'Your ranked ballot', icon: ListOrdered, node: glassVoteNode },
   ];
 

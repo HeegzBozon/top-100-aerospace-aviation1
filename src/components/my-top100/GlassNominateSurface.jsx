@@ -2,21 +2,33 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Info, Lock, Plus, Search, Sparkles } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
-import { registerDigits } from '@/components/handheld/handheldKeys';
+import { registerDigits, registerDigitLegends } from '@/components/handheld/handheldKeys';
 import { useNavHint } from '@/components/handheld/faceHint';
 import GlassBallotRow from '@/components/my-top100/GlassBallotRow';
 
-const getStage = () => document.querySelector('[data-handheld-screen]');
 // A page key (the ring's forward/back zones, ▲▼ held on the pad) crosses five positions,
 // which is how far a hand expects a ballot to move at once.
 const PAGE = 5;
+// A figure typed on the pad resolves once the hand stops — long enough for a second figure
+// to arrive and make it a two-figure rank, short enough to feel immediate on its own.
+const CHANNEL_SETTLE = 900;
 
-const CATEGORIES = [
-  { key: 'all', label: 'All' },
-  { key: 'women', label: 'Women' },
-  { key: 'men', label: 'Men' },
-  { key: 'angels', label: 'Angels' },
-];
+// What the keypad prints while the ballot is holding it.
+const ballotLegend = (carried) => {
+  const digits = {};
+  for (let n = 1; n <= 9; n += 1) {
+    digits[String(n)] = carried
+      ? { sub: `TO ${n}`, aria: `Carry this name to rank ${n}` }
+      : { sub: `GO ${n}`, aria: `Walk to position ${n}` };
+  }
+  return {
+    digits,
+    enter: carried
+      ? { sub: 'SET', aria: 'OK — set the name down at this rank' }
+      : { sub: 'LIFT', aria: 'OK — lift this name to move it' },
+    scan: { sub: 'SRCH', aria: 'Scan — search the directory for a name' },
+  };
+};
 
 // The nominating surface, built for the glass rather than poured into it.
 //
@@ -38,11 +50,8 @@ const CATEGORIES = [
 export default function GlassNominateSurface({
   rankings = [],
   totalCount = 0,
-  category = 'all',
-  onCategory,
   counts = {},
   readOnly = false,
-  minimum = 1,
   onReorder,
   onRemove,
   onView,
@@ -52,6 +61,10 @@ export default function GlassNominateSurface({
 }) {
   const [cursor, setCursor] = useState(0);
   const [held, setHeld] = useState(null);
+  // The figures standing in the pad's buffer, printed in the head while they resolve.
+  const [typed, setTyped] = useState('');
+  const typedRef = useRef('');
+  const settleRef = useRef(null);
   const keyHint = useNavHint();
   const rowRefs = useRef([]);
 
@@ -83,6 +96,42 @@ export default function GlassNominateSurface({
     next.splice(to, 0, item);
     reorderRef.current?.(next);
   }, []);
+
+  // A rank, typed on the pad or carried to by the wheel: one route for both, so a name
+  // lifted by the ring and a name sent by the keys land by the same law.
+  const commitRank = useCallback(
+    (rank) => {
+      clearTimeout(settleRef.current);
+      typedRef.current = '';
+      setTyped('');
+      const rows = rowsRef.current;
+      if (!rank || rank > rows.length) return null;
+      const target = rank - 1;
+      const from = cursorRef.current;
+      const carried = !!heldRef.current;
+      if (carried) moveRow(from, target);
+      setCursor(target);
+      return `${target + 1}. ${carried ? rows[from].nominee_name : rows[target].nominee_name}`;
+    },
+    [moveRow],
+  );
+
+  const pushDigit = useCallback(
+    (digit) => {
+      const next = `${typedRef.current}${digit}`.slice(-2);
+      typedRef.current = next;
+      setTyped(next);
+      clearTimeout(settleRef.current);
+      if (next.length === 2) {
+        commitRank(Number(next));
+        return;
+      }
+      settleRef.current = setTimeout(() => {
+        if (typedRef.current === next) commitRank(Number(next));
+      }, CHANNEL_SETTLE);
+    },
+    [commitRank],
+  );
 
   const walk = useCallback(
     (direction) => {
@@ -146,31 +195,33 @@ export default function GlassNominateSurface({
     rowRefs.current[cursor]?.scrollIntoView({ block: 'nearest' });
   }, [cursor, rankings.length]);
 
-  // The radio's digits. Carrying a position, a digit is where it is being set down;
-  // standing still, a digit is the position to jump to.
+  // The radio's digits, and what the pad reprints while it holds them.
   useEffect(
     () =>
       registerDigits((digit) => {
-        const n = Number(digit);
-        if (!n || !rowsRef.current.length) return false;
-        const target = Math.min(n, rowsRef.current.length) - 1;
-        if (heldRef.current) moveRow(cursorRef.current, target);
-        setCursor(target);
+        if (!rowsRef.current.length) return false;
+        pushDigit(digit);
         return true;
       }),
-    [moveRow],
+    [pushDigit],
   );
 
+  useEffect(() => registerDigitLegends(ballotLegend(!!held)), [held]);
+
+  // A buffer left standing when the surface goes takes its timer with it.
+  useEffect(() => () => clearTimeout(settleRef.current), []);
+
   const open = rankings.length === 0 ? 'empty' : 'list';
-  const remaining = Math.max(0, minimum - totalCount);
   const progress = Math.min(1, totalCount / 100);
 
+  // What the face on the case is carrying, printed where the ballot's head can read it.
   const headHint = readOnly
     ? 'Locked · voting is closed'
-    : keyHint({
-        walk: held ? 'Move' : 'Walk',
-        open: held ? 'Set' : 'Lift',
-      });
+    : typed
+      ? `CH ${typed}`
+      : held
+        ? `${keyHint({ walk: 'Carry', open: 'Set' })} · 1–9 rank`
+        : `${keyHint({ walk: 'Walk', open: 'Lift' })} · 1–9 go`;
 
   return (
     <div className="pb-3">
@@ -188,7 +239,7 @@ export default function GlassNominateSurface({
               className="mt-0.5 font-heading text-[18px] leading-tight"
               style={{ color: brand.navy }}
             >
-              Refine your TOP 100
+              Nominate your TOP 100
             </h2>
           </div>
 
@@ -222,7 +273,7 @@ export default function GlassNominateSurface({
         <div className="mt-1.5 flex items-baseline justify-between gap-2">
           <p className="text-[10.5px] font-bold tabular-nums" style={{ color: brand.navy }}>
             {totalCount}
-            <span className="font-normal" style={{ color: `${brand.navy}50` }}> of 100 ranked</span>
+            <span className="font-normal" style={{ color: `${brand.navy}50` }}> of 100 nominated</span>
           </p>
           <p
             className="text-right text-[7.5px] font-bold uppercase leading-none tracking-[0.14em]"
@@ -247,40 +298,15 @@ export default function GlassNominateSurface({
           />
         </div>
 
-        <p className="mt-1 text-[9.5px]" style={{ color: remaining ? `${brand.navy}60` : '#2d8a4f' }}>
-          {readOnly
-            ? 'Your order stays as it was cast.'
-            : remaining
-              ? `${remaining} more name${remaining === 1 ? '' : 's'} to open the ballot`
-              : 'Counting — your ballot is open'}
-        </p>
-
-        {/* The categories, held to one line so the ballot keeps the glass. */}
+        {/* One order, read three ways: the cohorts are counted off the ballot, never
+            arranged a second time in a list of their own. */}
         {totalCount > 0 && (
-          <div className="mt-2 flex items-center gap-1">
-            {CATEGORIES.map((tab) => {
-              const active = category === tab.key;
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => onCategory?.(tab.key)}
-                  aria-pressed={active}
-                  className="flex-1 rounded-full px-1 py-[3px] text-[8.5px] font-bold uppercase tracking-[0.1em] transition-colors"
-                  style={{
-                    background: active ? brand.navy : 'rgba(255,255,255,0.62)',
-                    color: active ? '#FAF8F5' : `${brand.navy}70`,
-                    border: `1px solid ${active ? brand.navy : `${brand.navy}12`}`,
-                  }}
-                >
-                  {tab.label}
-                  <span className="ml-1 opacity-60" style={{ fontSize: 7.5 }}>
-                    {counts?.[tab.key] ?? 0}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          <p
+            className="mt-1.5 text-[7.5px] font-bold uppercase tracking-[0.16em] tabular-nums"
+            style={{ color: `${brand.navy}45` }}
+          >
+            Women {counts?.women ?? 0} · Men {counts?.men ?? 0} · Angels {counts?.angels ?? 0}
+          </p>
         )}
       </div>
 
