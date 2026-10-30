@@ -1,3 +1,4 @@
+import { OPENING_BAND, SPREADS_IN_OPENING } from '@/components/magazine/editionBands';
 import {
   clean,
   countryOf,
@@ -20,6 +21,10 @@ import {
 
 export const HONOREES_SECTION_ID = 'sec-honorees';
 export const NAME_INDEX_SECTION_ID = 'sec-name-index';
+// The measure's own opening: the ten names that stand first, opened ahead of the run of
+// the hundred — the first three at the length a first place earns, the next seven on a
+// page each. Everything after No. 10 is read by field (see editionBands).
+export const OPENING_SECTION_ID = 'sec-opening-ten';
 
 // The eleven parts of the book, in the order it prints them. The contents is a page,
 // not a chapter: a magazine's contents is furniture, and giving it a section of its
@@ -35,6 +40,7 @@ export const EDITION_SECTIONS = [
   { id: 'sec-numbers', name: 'By the Numbers', section_type: 'evergreen', section_group: 'front_of_book' },
   { id: 'sec-manifesto', name: 'The Manifesto', section_type: 'feature', section_group: 'front_of_book' },
   { id: 'sec-voices', name: 'Voices', section_type: 'evergreen', section_group: 'front_of_book' },
+  { id: OPENING_SECTION_ID, name: 'The Opening Ten', section_type: 'feature', section_group: 'front_of_book' },
   { id: 'sec-portraits', name: 'Featured Portraits', section_type: 'feature', section_group: 'well' },
   { id: HONOREES_SECTION_ID, name: 'The Index', section_type: 'profile', section_group: 'well' },
   { id: 'sec-orbital-index', name: 'Connections', section_type: 'evergreen', section_group: 'back_of_book' },
@@ -46,6 +52,14 @@ export const EDITION_SECTIONS = [
 
 const count = (n) => Number(n || 0).toLocaleString('en-US');
 const plural = (n, word) => `${count(n)} ${word}${n === 1 ? '' : 's'}`;
+
+// The roster is one hundred names, and it is read as one hundred however the resolution
+// lands: where a record is being corrected, reviewed or re-measured, the name still stands
+// in the edition and the count carries the asterisk. No one is dropped from the hundred
+// while their record is being put right.
+export const ROSTER_LABEL = '100*';
+export const ROSTER_NOTE =
+  'One hundred names stand in this edition. The asterisk marks a record being corrected and reviewed; no name has been removed.';
 
 // What the edition measures, read off the records it resolves. Used for the numbers
 // page and for every line of copy that would otherwise have to claim a figure.
@@ -101,14 +115,14 @@ const SECTION_EDITORIAL = {
     writer_credit: 'The Editors',
     body: [
       'Community-nominated. Peer-evaluated. A living index of aerospace excellence.',
-      `${count(m.names)} names, working from ${plural(m.countries.length, 'country')} across ${plural(m.regions.length, 'region')}.`,
+      `${ROSTER_LABEL} names, working from ${plural(m.countries.length, 'country')} across ${plural(m.regions.length, 'region')}.`,
       'This is not a celebration of accomplishment past. It is a record of capability present, and of potential realized.',
     ].join('\n\n'),
     blocks: [
       { type: 'kicker', text: 'Official Publication' },
       { type: 'heading', text: 'The Definitive Index' },
       { type: 'body', text: 'Community-nominated. Peer-evaluated. A living index of aerospace excellence.' },
-      { type: 'body', text: `${count(m.names)} names. ${plural(m.countries.length, 'country')}. ${plural(m.regions.length, 'region')}. One record.` },
+      { type: 'body', text: `${ROSTER_LABEL} names. ${plural(m.countries.length, 'country')}. ${plural(m.regions.length, 'region')}. One record.` },
       { type: 'byline', text: 'The Orbital Edition · Vol I — 2025' },
     ],
   }),
@@ -120,17 +134,19 @@ const SECTION_EDITORIAL = {
     subtitle: 'The 2025 measure, read off the record.',
     writer_credit: 'The Editors',
     body: [
-      `${plural(m.names, 'name')} resolved from the 2025 pool.`,
+      `${ROSTER_LABEL} names resolved from the 2025 pool.`,
       `${plural(m.countries.length, 'country')}. ${plural(m.regions.length, 'region')}.`,
       ...m.fields.slice(0, 5).map(([field, n]) => `${field} — ${count(n)}`),
-      `${count(m.withVoice)} of ${count(m.names)} honorees are heard on these pages in their own words.`,
+      `${count(m.withVoice)} of the ${ROSTER_LABEL} names are heard on these pages in their own words.`,
+      ROSTER_NOTE,
     ].join('\n\n'),
     blocks: [
       { type: 'kicker', text: 'Up Front' },
       { type: 'heading', text: 'By the Numbers' },
-      { type: 'body', text: `${plural(m.names, 'name')} resolved from the 2025 pool.` },
+      { type: 'body', text: `${ROSTER_LABEL} names resolved from the 2025 pool.` },
       { type: 'body', text: `${plural(m.countries.length, 'country')}. ${plural(m.regions.length, 'region')}. One record.` },
       ...m.fields.slice(0, 5).map(([field, n]) => ({ type: 'body', text: `${field} — ${count(n)}` })),
+      { type: 'byline', text: ROSTER_NOTE },
       { type: 'byline', text: `Measured from the published 2025 edition. Personal lists, availability and sponsorship carry no weight in this measure.` },
     ],
   }),
@@ -181,6 +197,28 @@ const SECTION_EDITORIAL = {
     };
   },
 
+  // The opening feature: the three names the measure placed first, and why a book of a
+  // hundred opens on three. No authored blocks here — each of the three carries its own
+  // spread (see firstThreeArticle) and the composer lays it out from the article itself.
+  [OPENING_SECTION_ID]: {
+    title: 'The Opening Ten',
+    subtitle: 'Where the measure lands first, and the field the hundred runs in after it.',
+    writer_credit: 'The Editors',
+    body: [
+      'A hundred names, and a first place among them. The measure placed ten at the front of this edition: the three who stand first are opened at the length that standing earns, the next seven on a page each.',
+      'From No. 11 the edition changes how it is read, not what it measured: the same standings are grouped by field, so a reader can follow one discipline through the book.',
+      ROSTER_NOTE,
+    ].join('\n\n'),
+    blocks: [
+      { type: 'kicker', text: 'The Measure — Opening' },
+      { type: 'heading', text: 'The Opening Ten' },
+      { type: 'byline', text: 'By The Editors' },
+      { type: 'body', text: 'A hundred names, and a first place among them. The measure placed ten at the front of this edition: the three who stand first are opened at the length that standing earns, the next seven on a page each.' },
+      { type: 'body', text: 'From No. 11 the edition changes how it is read, not what it measured: the same standings are grouped by field, so a reader can follow one discipline through the book.' },
+      { type: 'byline', text: ROSTER_NOTE },
+    ],
+  },
+
   'sec-portraits': {
     title: 'Leaders in focus',
     subtitle: 'The portraits.',
@@ -199,24 +237,24 @@ const SECTION_EDITORIAL = {
     ],
   },
 
-  // The index is not a list of names: it is an atlas. Region is read off the country
-  // each honoree works from, and off nothing else — no ranking of nations, and no
-  // ranking of people.
+  // The index is not an atlas: it is the measure, first to last. The count is the roster's
+  // own — one hundred, with the asterisk the front matter explains — and the order is the
+  // order the edition's record placed these names in.
   [HONOREES_SECTION_ID]: (m) => ({
     title: 'The Index',
-    subtitle: `The complete directory of the 2025 edition, in ${plural(m.regions.length, 'region')}.`,
+    subtitle: 'The complete directory of the 2025 edition, in measured order.',
     writer_credit: 'The Editors',
     body: [
-      `${plural(m.names, 'name')}, resolved from the 2025 pool. Every honoree validated by peers, measured by signal, never by status.`,
-      `The index runs by region: the country each honoree works from, and nothing else.`,
+      `${ROSTER_LABEL} names, resolved from the 2025 pool. Every honoree validated by peers, measured by signal, never by status.`,
+      'The ten who stand first were opened at the front of this book in measured order. The rest are set here by field, so a reader can follow one discipline through the edition; the standing printed on every entry is still the measurement, and the whole measure is listed in one order at the close of this section.',
       'Each entry that follows is one honoree of the edition as the directory prints her — her stand, her country, her own words where the record kept them, and the read the institution keeps.',
     ].join('\n\n'),
     blocks: [
       { type: 'kicker', text: 'The Ledger — Index' },
       { type: 'heading', text: 'The Index' },
-      { type: 'byline', text: `By The Editors · ${plural(m.names, 'name')}` },
-      { type: 'body', text: `${plural(m.names, 'name')}, resolved from the 2025 pool. Every honoree validated by peers, measured by signal, never by status.` },
-      { type: 'body', text: 'The index runs by region: the country each honoree works from, and nothing else.' },
+      { type: 'byline', text: `By The Editors · ${ROSTER_LABEL} names` },
+      { type: 'body', text: `${ROSTER_LABEL} names, resolved from the 2025 pool. Every honoree validated by peers, measured by signal, never by status.` },
+      { type: 'body', text: 'The ten who stand first were opened at the front of this book in measured order. The rest are set by field, so a reader can follow one discipline through the edition; the standing printed on every entry is still the measurement.' },
     ],
   }),
 
@@ -226,7 +264,7 @@ const SECTION_EDITORIAL = {
     title: 'Index of Names',
     subtitle: 'Every honoree in this edition, alphabetically, with the page she stands on.',
     writer_credit: 'The Editors',
-    body: 'The names of this edition in one alphabet, each with the page her portrait stands on. The directory runs by region; this index runs by name. Page numbers refer to the portraits in The Index.',
+    body: 'The names of this edition in one alphabet, each with the page her portrait stands on. The Index runs in measured order; this index runs by name. Page numbers refer to the portraits in The Index.',
     blocks: null,
   },
 
@@ -305,7 +343,55 @@ export function editionSectionBlocks(nominees = []) {
   );
 }
 
-// The regions the index is read in, largest first, with a country the platform's own
+const rankOf = (nominee) => (Number.isFinite(nominee?.finalRank) ? nominee.finalRank : Number.MAX_SAFE_INTEGER);
+
+// The standing an entry is printed under: her own measured place where the record holds
+// one, and her place in the run where it does not. A book of a hundred never prints an
+// entry without a number.
+const standingOf = (nominee, index = 0) =>
+  (Number.isFinite(nominee?.finalRank) ? nominee.finalRank : index + 1);
+
+// The order the book is read in: the measure, first to last. Region is still on every
+// record, and still printed on every portrait — it no longer sets the order.
+export function rankedNominees(nominees = []) {
+  return [...nominees].sort(
+    (a, b) => rankOf(a) - rankOf(b) || clean(a.name).localeCompare(clean(b.name)),
+  );
+}
+
+// The three names at the front, opened at length: her own words as a breakaway page, then
+// a spread that carries the record rather than one line of it. This is what gives first,
+// second and third the room the rest of the hundred does not take.
+export function firstThreeArticle(nominee, rank) {
+  const stand = standFrom(nominee);
+  const country = countryOf(nominee);
+  const industry = clean(nominee.industry, 46);
+  const where = [country, industry].filter(Boolean).join(' · ');
+  const body = [
+    clean(nominee.description),
+    clean(nominee.impact_summary),
+    clean(nominee.bio || nominee.bio_extended),
+    clean(nominee.achievements),
+  ].filter(Boolean).join('\n\n');
+  const voice = voiceOf(nominee);
+
+  return {
+    title: clean(nominee.name) || 'Unnamed honoree',
+    subtitle: stand || where,
+    teaser: where || stand,
+    article_type: 'feature',
+    status: 'ready',
+    section_id: OPENING_SECTION_ID,
+    nominee_id: nominee.id,
+    hero_image_url: clean(nominee.avatar_url || nominee.photo_url),
+    writer_credit: 'The Editors',
+    pull_quote: voice || '',
+    pull_quote_attribution: voice ? clean(nominee.name) : '',
+    body,
+  };
+}
+
+// The regions the index is read in, by the standing of the best-placed name in each, with a country the platform's own
 // map does not carry reported as such rather than guessed at.
 export function regionPackages(nominees = []) {
   const byRegion = new Map();
@@ -325,9 +411,12 @@ export function regionPackages(nominees = []) {
         line: `${plural(names.length, 'name')} · ${plural(countries.length, 'country')}`,
       };
     })
+    .map((pkg) => ({ ...pkg, names: [...pkg.names].sort((a, b) => rankOf(a) - rankOf(b)) }))
     .sort((a, b) => {
+      // The region holding the edition's highest-standing name opens the index, then the
+      // next, and so on; a country the map does not carry closes it.
       const beyond = (pkg) => (pkg.region === 'Beyond the Map' ? 1 : 0);
-      return beyond(a) - beyond(b) || b.names.length - a.names.length || a.region.localeCompare(b.region);
+      return beyond(a) - beyond(b) || rankOf(a.names[0]) - rankOf(b.names[0]) || a.region.localeCompare(b.region);
     });
 }
 
@@ -379,6 +468,8 @@ export function editionArticles(nominees = []) {
   const m = measure(nominees);
   const articles = [];
   const push = (article) => articles.push({ ...article, order: articles.length });
+  // The book's order, read once: the measure, first to last.
+  const ranked = rankedNominees(nominees);
 
   EDITION_SECTIONS.forEach((section) => {
     const editorial = SECTION_EDITORIAL[section.id];
@@ -398,10 +489,23 @@ export function editionArticles(nominees = []) {
       pull_quote_attribution: resolved.pull_quote_attribution || '',
     });
 
+    // The opening ten carry the front of the book: the three who stand first at the
+    // length their standing earns, the next seven on a page each — all in measured order.
+    if (section.id === OPENING_SECTION_ID) {
+      ranked.slice(0, SPREADS_IN_OPENING).forEach((nominee, i) => push(firstThreeArticle(nominee, standingOf(nominee, i))));
+      ranked
+        .slice(SPREADS_IN_OPENING, OPENING_BAND)
+        .forEach((nominee) => push({ ...honoreeArticle(nominee), section_id: OPENING_SECTION_ID }));
+    }
+
     if (section.id !== HONOREES_SECTION_ID) return;
-    regionPackages(nominees).forEach((pkg) => {
-      push(packageArticle(pkg));
-      pkg.names.forEach((nominee) => push(honoreeArticle(nominee, pkg.region)));
+
+    // The rest of the hundred, in measured order. The composer groups these by field for
+    // reading (see editionBands); the standing each one holds is printed unchanged. The
+    // opening ten are not repeated here — the book does not print a woman twice.
+    ranked.forEach((nominee, i) => {
+      if (standingOf(nominee, i) <= OPENING_BAND) return;
+      push(honoreeArticle(nominee));
     });
   });
 
@@ -436,8 +540,8 @@ export function editionIssue(nominees = []) {
   const m = measure(nominees);
   return {
     ...TOP100_WOMEN_2025_ISSUE,
-    preface: `The aerospace industry has long been defined by those who look up and reach further. This edition is the record of the ${count(m.names)} women who did: the work they stand for, the country they work from, and the ground they hold for the next generation.`,
-    colophon: `TOP 100 Women in Aerospace & Aviation — The Orbital Edition, Volume I (2025). Assembled from the published 2025 edition: its eleven parts, its editorial copy, and the ${count(m.names)} names it resolves across ${plural(m.countries.length, 'country')}. Measurement only; personal lists, availability and sponsorship carry no weight in this record.`,
+    preface: `The aerospace industry has long been defined by those who look up and reach further. This edition is the record of the ${ROSTER_LABEL} women who did: the work they stand for, the country they work from, and the ground they hold for the next generation. ${ROSTER_NOTE}`,
+    colophon: `TOP 100 Women in Aerospace & Aviation — The Orbital Edition, Volume I (2025). Assembled from the published 2025 edition: its eleven parts, its editorial copy, and the ${ROSTER_LABEL} names it resolves across ${plural(m.countries.length, 'country')}. Measurement only; personal lists, availability and sponsorship carry no weight in this record.`,
     cover_credits: {
       subject: 'The 2025 Edition',
       writer: 'The Editors',

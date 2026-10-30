@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import GlassHonoreeCard from '@/components/magazine/glass/GlassHonoreeCard';
-import GlassNameIndexRail from '@/components/magazine/glass/GlassNameIndexRail';
+import GlassNameIndexTools from '@/components/magazine/glass/GlassNameIndexTools';
 import GlassNameIndexRow from '@/components/magazine/glass/GlassNameIndexRow';
 import useFollowing from '@/components/following/useFollowing';
 import useListEntry from '@/components/following/useListEntry';
@@ -14,10 +14,18 @@ import { reasonLine } from '@/components/following/followingCopy';
 
 const EMPTY = new Set();
 
-// The two orders the register is read in: as the book numbers it, and as an index sets it.
+// The two orders the register is read in: by standing, and as an index sets it. A name
+// without a standing falls after those that have one, in the book's own order.
+const standing = (entry) => (entry.rank == null ? 10000 + entry.number : entry.rank);
 const arrange = (entries, order) => (order === 'name'
   ? [...entries].sort((a, b) => a.indexForm.localeCompare(b.indexForm))
-  : [...entries].sort((a, b) => a.number - b.number));
+  : [...entries].sort((a, b) => standing(a) - standing(b)));
+
+const matches = (entry, query) => {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return [entry.name, entry.indexForm, entry.region, entry.stand].some((v) => (v || '').toLowerCase().includes(q));
+};
 
 // The Index of Names, on the glass.
 //
@@ -31,7 +39,8 @@ const arrange = (entries, order) => (order === 'name'
 // it happens. That is a record of one sitting on one glass, and is kept nowhere else.
 export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onBack }) {
   const navigate = useNavigate();
-  const [order, setOrder] = useState('number');
+  const [order, setOrder] = useState('rank');
+  const [query, setQuery] = useState('');
   const [cursor, setCursor] = useState(0);
   const [card, setCard] = useState(null);
   const [notice, setNotice] = useState('');
@@ -53,15 +62,16 @@ export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onB
   );
   const isFollowed = (entry) => followedNames.has(personKey(entry.name));
 
-  const ordered = useMemo(() => arrange(entries, order), [entries, order]);
+  const ordered = useMemo(
+    () => arrange(entries, order).filter((entry) => matches(entry, query)),
+    [entries, order, query],
+  );
 
-  // The letters the issue actually carries, so the rail can print the whole alphabet.
-  const letters = useMemo(() => {
-    const carried = new Set(entries.map((entry) => entry.letter));
-    return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-      .split('')
-      .map((letter) => ({ letter, present: carried.has(letter) }));
-  }, [entries]);
+  // A new search starts the ring back at the head of what it found.
+  const search = (value) => {
+    setQuery(value);
+    setCursor(0);
+  };
 
   // The console's hands read the register as it stands now, not as it stood when the
   // picker was registered.
@@ -81,17 +91,12 @@ export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onB
 
   // Re-sorting is a different reading of the same register, so the name standing under the
   // ring stays under it.
-  const switchOrder = () => {
-    const standing = listRef.current[cursorRef.current]?.key;
-    const next = order === 'number' ? 'name' : 'number';
-    const spot = arrange(entries, next).findIndex((entry) => entry.key === standing);
+  const switchOrder = (next) => {
+    if (next === order) return;
+    const stands = listRef.current[cursorRef.current]?.key;
+    const spot = arrange(entries, next).filter((entry) => matches(entry, query)).findIndex((entry) => entry.key === stands);
     setOrder(next);
     setCursor(spot >= 0 ? spot : 0);
-  };
-
-  const jumpToLetter = (letter) => {
-    const spot = listRef.current.findIndex((entry) => entry.letter === letter);
-    if (spot >= 0) setCursor(spot);
   };
 
   const api = useRef(null);
@@ -206,24 +211,18 @@ export default function GlassNameIndex({ entries = [], read = EMPTY, onOpen, onB
               {following.rows.length} followed
             </button>
           ) : null}
-          <button
-            type="button"
-            onClick={switchOrder}
-            title={order === 'number' ? 'Numbered as the book numbers them · tap for one alphabet' : 'One alphabet · tap for the book’s numbering'}
-            aria-label={order === 'number' ? 'Sorted by number. Sort by name' : 'Sorted by name. Sort by number'}
-            className="flex-none rounded-full px-2 py-0.5 font-mono text-[9px]"
-            style={{ color: P.navy, background: 'rgba(30,58,90,0.05)', border: '1px solid rgba(30,58,90,0.30)' }}
-          >
-            {order === 'number' ? 'No.' : 'A–Z'}
-          </button>
         </div>
       </div>
 
-      <GlassNameIndexRail letters={letters} onJump={jumpToLetter} />
+      <GlassNameIndexTools order={order} onOrder={switchOrder} query={query} onQuery={search} />
 
       {entries.length === 0 ? (
         <p className="pt-6 text-[10px] leading-relaxed" style={{ color: 'rgba(30,58,90,0.6)' }}>
           This issue carries no portraits to index.
+        </p>
+      ) : ordered.length === 0 ? (
+        <p className="pt-6 text-[10px] leading-relaxed" style={{ color: 'rgba(30,58,90,0.6)' }}>
+          No names match “{query.trim()}”.
         </p>
       ) : (
         <div ref={listEl} className="mt-2 space-y-1.5">

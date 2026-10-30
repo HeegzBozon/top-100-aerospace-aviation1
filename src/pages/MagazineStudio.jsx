@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, BookOpen, Plus, ArrowLeft } from 'lucide-react';
+import { Loader2, BookOpen, Plus, ArrowLeft, RefreshCw } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import IssueList from '@/components/magazine/IssueList';
 import IssueBlueprint from '@/components/magazine/IssueBlueprint';
@@ -9,7 +9,7 @@ import ArticleInventory from '@/components/magazine/ArticleInventory';
 import PageComposer from '@/components/magazine/PageComposer';
 import PreviewPublish from '@/components/magazine/PreviewPublish';
 import StudioGlass from '@/components/magazine/StudioGlass';
-import { alchemizeTop100Women2025 } from '@/components/magazine/alchemizeEdition';
+import { alchemizeTop100Women2025, rebindEdition } from '@/components/magazine/alchemizeEdition';
 import { loadEditionNominees } from '@/components/publication/useTop100WomenNominees';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -126,6 +126,34 @@ export default function MagazineStudio() {
     } catch (e) {
       toast({ title: 'Error binding the edition', variant: 'destructive' });
       return null;
+    } finally {
+      setAlchemizing(false);
+    }
+  };
+
+  // Binding an issue again: the book is composed by code, so an issue bound by an older
+  // composer keeps the older book until it is laid out once more. This rebinds the issue
+  // in place — same id, same link, same status — with the composition as it stands today.
+  const rebindSelectedIssue = async () => {
+    if (!selectedIssue) return;
+    setAlchemizing(true);
+    try {
+      const nominees = await loadEditionNominees();
+      const { issue, articles: boundArticles, pages: boundPages } = await rebindEdition({
+        issueId: selectedIssue.id,
+        nominees,
+      });
+      setIssues(issues.map((i) => (i.id === issue.id ? issue : i)));
+      setSelectedIssue(issue);
+      setArticles(boundArticles);
+      setPages(boundPages);
+      setTab('pages');
+      toast({
+        title: 'Edition rebound',
+        description: `${boundArticles.length} articles and ${boundPages.length} pages, laid out to the current composition.`,
+      });
+    } catch (e) {
+      toast({ title: 'Error rebinding the edition', variant: 'destructive' });
     } finally {
       setAlchemizing(false);
     }
@@ -489,6 +517,16 @@ export default function MagazineStudio() {
           </div>
           {selectedIssue && (
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide">
+              <button
+                onClick={rebindSelectedIssue}
+                disabled={alchemizing}
+                className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-70 disabled:opacity-40"
+                style={{ color: P.navy, border: `1px solid ${P.navy}55` }}
+                title="Lay this issue out again from the current composition"
+              >
+                {alchemizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                Rebind
+              </button>
               {TABS.map((t) => (
                 <button
                   key={t.key}

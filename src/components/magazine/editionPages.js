@@ -1,6 +1,19 @@
 import { sectionGroupLabel } from '@/components/magazine/magazineConfig';
-import { clean, paragraphs, voiceOf } from '@/components/magazine/editionCopy';
-import { HONOREES_SECTION_ID, NAME_INDEX_SECTION_ID } from '@/components/magazine/top100WomenEdition';
+import { clean, paragraphs } from '@/components/magazine/editionCopy';
+import {
+  HONOREES_SECTION_ID,
+  NAME_INDEX_SECTION_ID,
+  OPENING_SECTION_ID,
+  ROSTER_LABEL,
+} from '@/components/magazine/top100WomenEdition';
+import {
+  CENTERFOLD_LABEL,
+  HOUSE_PLACEMENT,
+  PATRON_PLACEMENT,
+  READING_NOTE,
+  SPREADS_IN_OPENING,
+  groupByField,
+} from '@/components/magazine/editionBands';
 
 // The edition's page composer.
 //
@@ -8,18 +21,27 @@ import { HONOREES_SECTION_ID, NAME_INDEX_SECTION_ID } from '@/components/magazin
 // exercised — with nothing but an issue and its articles in hand: the record-writing
 // pass stays in alchemizeEdition, and the grammar of the book lives here.
 //
-// It composes with a magazine's grammar rather than a database's: a section opens
-// with its kicker, its headline and its stand; a portrait opens with the region she is
-// indexed under, her name, her stand, her photograph and her own words before the
-// institutional read; a region opens on a divider that states what it carries; and the
-// name index at the back is composed from the portraits already numbered ahead of it.
+// It composes with a magazine's grammar rather than a database's: a section opens with
+// its kicker, its headline and its stand; the opening ten are measured order at the front
+// of the book — the first three take a face page and a page of her own words, the next
+// seven a page each — then a centerfold and the house's own placement; the index beyond
+// No. 10 is grouped by field so one discipline can be followed through the edition, each
+// chapter running in measured order with four names on a page and the rest set as plates
+// of three, four or two; the whole measure is listed in one order at the close of the
+// index; and the name index at the back is composed from the portraits numbered before it.
 
 const layoutFor = (article) => (article.article_type === 'profile' ? 'profile' : 'article');
 
-// A region's opening spread is an article of the index, and the composer needs to
-// know it when it lays the index out — it is the only thing in the book that both
-// breaks the run of portraits and carries a line of its own.
-const isPackageOpener = (article) => article.article_type === 'feature' && article.section_id === HONOREES_SECTION_ID;
+// The measure's opening: the ten names that stand first, of whom the first three take two
+// pages each rather than one, which is what makes the front of the book feel like a front
+// of the book.
+const isOpeningMember = (article) => article.section_id === OPENING_SECTION_ID && Boolean(article.nominee_id);
+
+// The index's rhythm. A hundred identical pages reads as a spreadsheet with photographs;
+// four pages of one name, then a plate of faces, gives the run a pulse. The plate shapes
+// cycle so no two movements in a row are laid out the same way.
+const SOLOS_PER_MOVEMENT = 4;
+const PLATE_RHYTHM = [[3, 3], [4, 2], [2, 4]];
 
 // The name a reader looks an honoree up by: the last word of the name she is printed
 // under, and never an invention when there is only one word to hold.
@@ -29,6 +51,13 @@ const chunked = (list, size) => {
   const out = [];
   for (let i = 0; i < list.length; i += size) out.push(list.slice(i, i + size));
   return out;
+};
+
+// The page's opening line, used when a record carries no voice of its own to set large.
+const openingOf = (text) => {
+  const [first = ''] = paragraphs(text);
+  const line = clean(first);
+  return line.length > 220 ? `${line.slice(0, 217).trimEnd()}…` : line;
 };
 
 // A section's own pages, composed from the editorial the edition holds for it.
@@ -52,11 +81,11 @@ function sectionBlocks(article, section, blockMap) {
 // most honorees, and they are the one thing a page of this kind can print that a
 // directory cannot — and the institutional read follows, set as paragraphs rather
 // than as one wall of text.
-function portraitBlocks(article, region) {
+function portraitBlocks(article, standing) {
   const blocks = [];
   const name = clean(article.title) || 'Honoree';
 
-  if (region) blocks.push({ type: 'kicker', text: region });
+  if (standing) blocks.push({ type: 'kicker', text: standing });
   blocks.push({ type: 'heading', text: name });
   if (article.subtitle) blocks.push({ type: 'byline', text: article.subtitle });
   if (article.hero_image_url) {
@@ -64,7 +93,7 @@ function portraitBlocks(article, region) {
   }
 
   const [lead = '', ...rest] = String(article.body || '').split('\n\n');
-  const voice = voiceOf({ description: lead });
+  const voice = openingOf(lead);
   if (voice) {
     blocks.push({ type: 'pull_quote', text: voice, attribution: name });
   } else if (clean(lead)) {
@@ -77,6 +106,57 @@ function portraitBlocks(article, region) {
     read.forEach((paragraph) => blocks.push({ type: 'body', text: paragraph }));
   }
   return blocks;
+}
+
+// The face page of a spread: the portrait to the trim, her standing and her name over it.
+function facePage(article, standing) {
+  const name = clean(article.title) || 'Honoree';
+  return {
+    layout_type: 'feature_spread',
+    background_image_url: article.hero_image_url || '',
+    content_blocks: [
+      { type: 'kicker', text: `No. ${standing}` },
+      { type: 'heading', text: name, level: 1 },
+      ...(article.subtitle ? [{ type: 'byline', text: article.subtitle }] : []),
+      ...(article.hero_image_url
+        ? [{ type: 'image', url: article.hero_image_url, caption: article.teaser || '' }]
+        : []),
+    ],
+  };
+}
+
+// The words page beside it: her voice at the size of the paper, and the read beneath.
+function wordsPage(article) {
+  const name = clean(article.title) || 'Honoree';
+  const quote = clean(article.pull_quote) || openingOf(article.body);
+  const read = paragraphs(article.body);
+
+  return {
+    layout_type: 'pull_quote',
+    content_blocks: [
+      { type: 'kicker', text: 'In her own words' },
+      { type: 'pull_quote', text: quote, attribution: name },
+      ...(read.length ? [{ type: 'divider' }, ...read.map((text) => ({ type: 'body', text }))] : []),
+    ],
+  };
+}
+
+// A plate: the faces of a movement, set together, with the standing each one holds.
+function platePage(tiles, label) {
+  return {
+    layout_type: 'article',
+    content_blocks: [
+      { type: 'kicker', text: label },
+      ...tiles.map(({ article, standing }) => ({
+        type: 'image',
+        url: article.hero_image_url || '',
+        text: clean(article.title) || 'Honoree',
+        caption: article.subtitle || article.teaser || '',
+        attribution: `No. ${standing}`,
+        level: standing,
+      })),
+    ],
+  };
 }
 
 // The pages of the name index: the letters each page carries, and the entries under
@@ -106,28 +186,245 @@ function nameIndexBlocks(entries, sectionName) {
   });
 }
 
-// The pages the edition is bound into: cover, masthead, contents, a divider for each
-// part of the book, a divider and an opening spread for each region of the index,
-// then every other section in its place — with pull quotes kept as breakaway pages —
-// the name index composed last of the back matter, and the colophon after it.
-export function buildEditionPages(issue, articles, blockMap) {
+// The measure in one order: the close of the index lists every standing the section holds,
+// four to a line with the page each stands on. The field chapters are a reading path; this
+// page is the record.
+function standingLedgerBlocks(entries, sectionName) {
+  const perPage = Math.max(Math.ceil(entries.length / 2), 1);
+  const sheets = chunked(entries, perPage);
+
+  return sheets.map((chunk, i) => {
+    const blocks = [
+      { type: 'kicker', text: `${sectionName} · The Measured Order` },
+      { type: 'heading', text: `No. ${chunk[0].standing}–${chunk[chunk.length - 1].standing}` },
+    ];
+    chunked(chunk.map((entry) => `No. ${entry.standing} — ${clean(entry.article.title)}, ${entry.article.page_number}`), 4)
+      .forEach((rows) => blocks.push({ type: 'body', text: rows.join(' · ') }));
+    if (i === sheets.length - 1) {
+      blocks.push({ type: 'byline', text: 'The measure, first to last. No. 1–10 are opened at the front of this book; the index of names at the back carries every name with its page.' });
+    }
+    return blocks;
+  });
+}
+
+// The pages the edition is bound into: cover, masthead, contents, a divider for each part
+// of the book, the opening spreads, the index in its movements, then every other section
+// in its place — with pull quotes kept as breakaway pages — the name index composed last
+// of the back matter, and the colophon after it.
+export function buildEditionPages(issue, articles, blockMap, fields = {}) {
   const sections = issue.sections || [];
   const pages = [];
   let number = 1;
-  let region = 1;
 
-  // The region a portrait is indexed under is carried by the opening spread that
-  // precedes it, so the composer walks the index the way a reader does.
-  let currentRegion = '';
-  articles.forEach((article) => {
-    if (isPackageOpener(article)) currentRegion = article.title;
-    else article.region = currentRegion;
-  });
+  // The portraits are numbered as the composer walks them, so the standing printed on a
+  // page is the standing the book actually runs in: the measure, first to last.
+  let standing = 0;
 
   const page = (spec) => {
     const placed = { ...spec, page_number: number++ };
     pages.push(placed);
     return placed;
+  };
+
+  // The plate the edition holds at its centre: one picture let out to the trim, carrying
+  // the opening line of the book rather than a column of type beside it.
+  const composeCenterfold = (list, section) => {
+    const lead = list.find((article) => article.nominee_id && article.hero_image_url);
+    if (!lead) return;
+
+    page({
+      layout_type: 'feature_spread',
+      article_id: lead.id,
+      section_id: section.id,
+      status: 'draft',
+      background_image_url: lead.hero_image_url,
+      content_blocks: [
+        { type: 'kicker', text: `${CENTERFOLD_LABEL} · The Opening Measure` },
+        { type: 'heading', text: clean(lead.title) },
+        ...(lead.subtitle ? [{ type: 'byline', text: lead.subtitle }] : []),
+        { type: 'body', text: `${ROSTER_LABEL} names in this edition. The one who stands first opens it, and the field chapters run after.` },
+        { type: 'image', url: lead.hero_image_url, caption: lead.teaser || '' },
+      ],
+    });
+  };
+
+  // A placed page — the house's own advertisement, or the patron's reserved slot — drawn
+  // in its own frame and saying plainly what it is.
+  const composePlacement = (placement, section) => {
+    page({
+      layout_type: 'article',
+      section_id: section.id,
+      status: 'draft',
+      content_blocks: [
+        { type: 'kicker', text: placement.kicker },
+        { type: 'heading', text: placement.heading },
+        { type: 'body', text: placement.body },
+        { type: 'byline', text: placement.byline },
+      ],
+    });
+  };
+
+  // The opening ten, in measured order: a face page and a page of her own words for the
+  // first three, a page each for the next seven, then the centerfold and the house's page.
+  const composeOpening = (list, section) => {
+    list.forEach((article) => {
+      if (!isOpeningMember(article)) {
+        const placed = page({
+          layout_type: layoutFor(article),
+          article_id: article.id,
+          section_id: section.id,
+          status: 'draft',
+          content_blocks: sectionBlocks(article, section, blockMap),
+          background_image_url: article.hero_image_url || '',
+        });
+        article.page_number = placed.page_number;
+        return;
+      }
+
+      standing += 1;
+
+      if (standing > SPREADS_IN_OPENING) {
+        const placed = page({
+          layout_type: 'profile',
+          article_id: article.id,
+          section_id: section.id,
+          status: 'draft',
+          content_blocks: portraitBlocks(article, `No. ${standing}`),
+        });
+        article.page_number = placed.page_number;
+        return;
+      }
+
+      const face = page({
+        ...facePage(article, standing),
+        article_id: article.id,
+        section_id: section.id,
+        status: 'draft',
+      });
+      article.page_number = face.page_number;
+
+      page({
+        ...wordsPage(article),
+        article_id: article.id,
+        section_id: section.id,
+        status: 'draft',
+      });
+    });
+
+    composeCenterfold(list, section);
+    composePlacement(HOUSE_PLACEMENT, section);
+  };
+
+  // The index from No. 11: the same measured standings, grouped by field so a reader can
+  // follow one discipline through the book. Every chapter runs in measured order, four
+  // names to a page each and the rest set as plates; then the whole measure is listed in
+  // one order at the close of the section.
+  const composeIndex = (list, section, fields) => {
+    // The section's own opening line is not a honoree: it opens The Index, and then the
+    // run of the hundred begins beneath it.
+    const portraits = list.filter((article) => {
+      if (article.nominee_id) return true;
+      const placed = page({
+        layout_type: layoutFor(article),
+        article_id: article.id,
+        section_id: section.id,
+        status: 'draft',
+        content_blocks: sectionBlocks(article, section, blockMap),
+      });
+      article.page_number = placed.page_number;
+      return false;
+    });
+
+    const entries = portraits.map((article) => {
+      standing += 1;
+      return { article, standing };
+    });
+    if (!entries.length) return;
+
+    // What the book is doing, said before it does it: the grouping is a reading path, and
+    // the number on every page is the measurement.
+    page({
+      layout_type: 'chapter_divider',
+      section_id: section.id,
+      status: 'draft',
+      chapter_label: `No. ${entries[0].standing}–${entries[entries.length - 1].standing} · By Field`,
+      content_blocks: [{ type: 'body', text: READING_NOTE }],
+    });
+
+    const chapters = groupByField(
+      entries,
+      (entry) => fields?.[entry.article.nominee_id] || 'The Wider Field',
+    );
+
+    chapters.forEach((chapter, chapterNumber) => {
+      page({
+        layout_type: 'chapter_divider',
+        section_id: section.id,
+        status: 'draft',
+        chapter_label: chapter.field,
+        content_blocks: [
+          {
+            type: 'body',
+            text: `${chapter.entries.length} honorees · No. ${chapter.from}–${chapter.to} · measured order`,
+          },
+        ],
+      });
+
+      let at = 0;
+      let movement = chapterNumber;
+
+      while (at < chapter.entries.length) {
+        const solos = Math.min(SOLOS_PER_MOVEMENT, chapter.entries.length - at);
+        for (let k = 0; k < solos; k += 1) {
+          const entry = chapter.entries[at];
+          const placed = page({
+            layout_type: 'profile',
+            article_id: entry.article.id,
+            section_id: section.id,
+            status: 'draft',
+            content_blocks: portraitBlocks(entry.article, `No. ${entry.standing}`),
+          });
+          entry.article.page_number = placed.page_number;
+          at += 1;
+        }
+
+        const rhythm = PLATE_RHYTHM[movement % PLATE_RHYTHM.length];
+        for (const size of rhythm) {
+          if (at >= chapter.entries.length) break;
+          const take = Math.min(size, chapter.entries.length - at);
+          if (take < 2) break;
+
+          const tiles = chapter.entries.slice(at, at + take).map((entry) => ({
+            article: entry.article,
+            standing: entry.standing,
+          }));
+          const placed = page({
+            ...platePage(tiles, `${chapter.field} · No. ${tiles[0].standing}–${tiles[tiles.length - 1].standing}`),
+            section_id: section.id,
+            status: 'draft',
+          });
+          tiles.forEach(({ article }) => { article.page_number = placed.page_number; });
+          at += take;
+        }
+
+        movement += 1;
+      }
+    });
+
+    // The measure in one order, at the close of the section: what a reader turns to when
+    // they want the standings rather than a field.
+    const indexArticle = list.find((article) => !article.nominee_id);
+    standingLedgerBlocks(entries, section.name).forEach((blocks, i) => {
+      page({
+        layout_type: 'article',
+        article_id: i === 0 ? indexArticle?.id : undefined,
+        section_id: section.id,
+        status: 'draft',
+        content_blocks: blocks,
+      });
+    });
+
+    composePlacement(PATRON_PLACEMENT, section);
   };
 
   page({
@@ -170,11 +467,12 @@ export function buildEditionPages(issue, articles, blockMap) {
     inGroup.forEach((section) => {
       // The name index is composed from the book itself: every portrait is numbered by
       // the time the back of the book is reached, so a reader who knows a name finds
-      // her by her letter rather than by remembering her region.
+      // her by her letter rather than by remembering where she stood in the run.
       if (section.id === NAME_INDEX_SECTION_ID) {
         const article = articles.find((item) => item.section_id === section.id);
         const entries = articles
-          .filter((item) => item.article_type === 'profile' && item.page_number)
+          .filter((item) => item.nominee_id && item.page_number)
+          .filter((item) => item.article_type === 'profile' || item.section_id === OPENING_SECTION_ID)
           .map((item) => ({ name: clean(item.title), page: item.page_number }))
           .sort((a, b) => surnameOf(a.name).localeCompare(surnameOf(b.name)) || a.name.localeCompare(b.name));
         if (!article || !entries.length) return;
@@ -192,48 +490,41 @@ export function buildEditionPages(issue, articles, blockMap) {
         return;
       }
 
-      articles
-        .filter((article) => article.section_id === section.id)
-        .forEach((article) => {
-          // The index opens a region at a time: a divider that says what the region
-          // carries, then the names it carries.
-          if (isPackageOpener(article)) {
-            const placed = page({
-              layout_type: 'chapter_divider',
-              section_id: section.id,
-              article_id: article.id,
-              status: 'draft',
-              chapter_number: region++,
-              chapter_label: article.title,
-              content_blocks: [{ type: 'body', text: article.teaser || '' }],
-            });
-            article.page_number = placed.page_number;
-            return;
-          }
+      const under = articles.filter((article) => article.section_id === section.id);
 
-          if (article.pull_quote) {
-            page({
-              layout_type: 'pull_quote',
-              section_id: section.id,
-              article_id: article.id,
-              status: 'draft',
-              content_blocks: [
-                { type: 'pull_quote', text: article.pull_quote, attribution: article.pull_quote_attribution || '' },
-              ],
-            });
-          }
+      if (section.id === OPENING_SECTION_ID) {
+        composeOpening(under, section);
+        return;
+      }
 
-          const portrait = article.article_type === 'profile';
-          const placed = page({
-            layout_type: layoutFor(article),
-            article_id: article.id,
+      if (section.id === HONOREES_SECTION_ID) {
+        composeIndex(under, section, fields);
+        return;
+      }
+
+      under.forEach((article) => {
+        if (article.pull_quote) {
+          page({
+            layout_type: 'pull_quote',
             section_id: section.id,
+            article_id: article.id,
             status: 'draft',
-            content_blocks: portrait ? portraitBlocks(article, article.region || '') : sectionBlocks(article, section, blockMap),
-            background_image_url: portrait ? '' : article.hero_image_url || '',
+            content_blocks: [
+              { type: 'pull_quote', text: article.pull_quote, attribution: article.pull_quote_attribution || '' },
+            ],
           });
-          article.page_number = placed.page_number;
+        }
+
+        const placed = page({
+          layout_type: layoutFor(article),
+          article_id: article.id,
+          section_id: section.id,
+          status: 'draft',
+          content_blocks: sectionBlocks(article, section, blockMap),
+          background_image_url: article.hero_image_url || '',
         });
+        article.page_number = placed.page_number;
+      });
     });
   });
 

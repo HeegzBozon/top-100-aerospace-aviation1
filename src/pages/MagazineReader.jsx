@@ -24,6 +24,9 @@ export default function MagazineReader() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [opened, setOpened] = useState(false);
+  // The title screen's Start over: the issue opens at its cover with the last pass wiped,
+  // rather than at the spread it was left on.
+  const [restart, setRestart] = useState(false);
   const [mode, setMode] = useState('flipbook'); // flipbook | single
   const [pdfSignedUrl, setPdfSignedUrl] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -142,8 +145,14 @@ export default function MagazineReader() {
   if (!opened) {
     const opening = {
       issue,
-      onBegin: () => setOpened(true),
-      onAutoPlay: () => { setOpened(true); setIsPlaying(true); },
+      onBegin: () => { setRestart(false); setOpened(true); },
+      // The film picks up where this machine left the issue; Start over is the same film
+      // begun again from the cover.
+      onAutoPlay: ({ restart: fromCover = false } = {}) => {
+        setRestart(fromCover);
+        setOpened(true);
+        setIsPlaying(true);
+      },
     };
     return isMobile ? <GlassIssueOpening {...opening} /> : <IssueOpening {...opening} />;
   }
@@ -165,6 +174,7 @@ export default function MagazineReader() {
         setIsPlaying={setIsPlaying}
         speed={playbackSpeed}
         setSpeed={setPlaybackSpeed}
+        restart={restart}
       />
     );
   }
@@ -189,6 +199,7 @@ export default function MagazineReader() {
           setIsPlaying={setIsPlaying}
           speed={playbackSpeed}
           setSpeed={setPlaybackSpeed}
+          restartFromCover={restart}
           {...modeProps}
         />
       ) : (
