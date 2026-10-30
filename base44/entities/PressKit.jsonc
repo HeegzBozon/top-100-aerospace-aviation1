@@ -1,0 +1,149 @@
+{
+  "name": "PressKit",
+  "type": "object",
+  "properties": {
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the Fellow who owns this kit. Stable key: a Fellow has one kit."
+    },
+    "nominee_id": {
+      "type": "string",
+      "description": "The Fellow's Nominee record, when one exists. Read once to seed the kit; the kit then holds the copy the Fellow confirmed."
+    },
+    "full_name": {
+      "type": "string",
+      "description": "The name printed on the kit."
+    },
+    "headline": {
+      "type": "string",
+      "description": "The line beneath the name: role and organisation."
+    },
+    "summary": {
+      "type": "string",
+      "description": "The paragraph the kit opens with, in the Fellow's own words."
+    },
+    "location": {
+      "type": "string",
+      "description": "Where the Fellow is based, as printed on the kit."
+    },
+    "discipline": {
+      "type": "string",
+      "enum": [
+        "space_rd",
+        "commercial_aviation",
+        "defense",
+        "manufacturing",
+        "operations",
+        "engineering",
+        "policy",
+        "entrepreneurship"
+      ],
+      "description": "The Fellow's domain, printed as the discipline line."
+    },
+    "photo_url": {
+      "type": "string",
+      "description": "Portrait carried over from the Fellow's record. Never uploaded here."
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "The address printed on the kit for press enquiries. The Fellow decides whether it appears at all."
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "What the item is: a role, a credential, a contribution."
+          },
+          "detail": {
+            "type": "string",
+            "description": "The evidence itself, in the Fellow's own words."
+          }
+        }
+      },
+      "description": "Ordered evidence items printed under The record. Only what the Fellow has submitted or confirmed; nothing inferred."
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Ordered links printed on the kit: profile, LinkedIn, website, published work."
+    },
+    "share_code": {
+      "type": "string",
+      "description": "Durable code for the public web kit at /press-kit/:shareCode. Set on first publish."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "draft",
+      "description": "A draft is visible only to its owner; a published kit is readable from its share link."
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the kit was first published."
+    }
+  },
+  "required": [
+    "owner_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "published"
+        },
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.owner_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
