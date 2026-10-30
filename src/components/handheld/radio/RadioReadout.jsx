@@ -13,7 +13,10 @@
 // display — the surface, or the machine's own drawer — and tapping the bank badge swaps
 // the keys between channels and the surface's numbered options. That leaves both hands'
 // worth of the cluster above free for the drawers.
-import { Share } from "lucide-react";
+//
+// Sharing is not printed here: it has its own lit key on the pad, where a thumb can find
+// it without reading the glass (see RadioKeypad), so the strip keeps its whole width for
+// the state it is reporting.
 import useClock from "@/hooks/useClock";
 
 const BARS = [0, 1, 2, 3, 4];
@@ -34,10 +37,8 @@ export default function RadioReadout({
   label,
   signal = 3,
   entering = false,
-  shareOpen = false,
   onZone,
   onBank,
-  onShare,
 }) {
   const now = useClock();
 
@@ -129,27 +130,6 @@ export default function RadioReadout({
       >
         {now.format("HH:mm:ss")}
       </span>
-
-      {/* Share, printed as a key on the strip itself. The readout is where this machine
-          states what it is holding, and the page is one of the things it holds: the key
-          stands at the far end of the glass, under the thumb, and lights while its
-          drawer is open. */}
-      <button
-        type="button"
-        onClick={onShare}
-        aria-label={shareOpen ? "Close the share drawer" : "Share this page"}
-        aria-pressed={shareOpen || undefined}
-        className="ml-0.5 flex h-full w-[23px] shrink-0 items-center justify-center rounded-[2px] transition-colors"
-        style={{
-          color: shareOpen ? "var(--hh-lcd-bright)" : "var(--hh-lcd)",
-          background: shareOpen ? "rgb(var(--hh-lcd-rgb) / 0.18)" : "transparent",
-          boxShadow: shareOpen
-            ? "inset 0 0 0 1px rgb(var(--hh-lcd-rgb) / 0.62)"
-            : "inset 0 0 0 1px rgb(var(--hh-lcd-rgb) / 0.24)",
-        }}
-      >
-        <Share className="h-[9px] w-[9px]" strokeWidth={2.4} />
-      </button>
     </div>
   );
 }

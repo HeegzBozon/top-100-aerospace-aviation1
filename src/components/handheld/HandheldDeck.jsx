@@ -1017,10 +1017,11 @@ export default function HandheldDeck() {
             label={radioLabel}
             signal={radioSignal}
             entering={!!typed}
-            enterHint={typed ? "TUNE" : picker ? "OPEN" : "MENU"}
             legend={modeLegend}
             mode={mode}
+            finish={finish}
             isSignedIn={isSignedIn}
+            onCustomize={openFinish}
             onDigit={radioDigit}
             onEnter={radioEnter}
             onScan={openSearch}

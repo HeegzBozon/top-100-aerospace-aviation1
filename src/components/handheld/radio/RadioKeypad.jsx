@@ -1,9 +1,15 @@
+import { Share } from "lucide-react";
 import RadioKey from "./RadioKey";
 
 // The keypad: three columns, four rows, the numbers printed the way a transceiver
 // prints them — the figure large, the letters under it where a thumb expects them.
-// The bottom row is the machine's own three keys: the scan, the zero, and the key that
-// enters what was typed or opens the drawer when nothing was.
+//
+// The bottom row is the machine's own keys: the scan at the left, the zero in the middle,
+// and at the right the corner key that shares what is on the glass. That corner key is the
+// one lit cap in the pad — copper, with its word printed on it — because sharing is the one
+// thing this machine offers that is not navigation, and it must be findable by a thumb that
+// is not looking. Entering what was typed lives on the cluster's OK key above (see
+// RadioChin), so nothing the pad used to do has been given up to make room for it.
 const KEYS = [
   { digit: "1", sub: ".?" },
   { digit: "2", sub: "ABC" },
@@ -16,10 +22,10 @@ const KEYS = [
   { digit: "9", sub: "WXYZ" },
   { action: "scan", label: "✳", sub: "SCAN" },
   { digit: "0", sub: "ENT" },
-  { action: "enter", label: "#", sub: "MENU" },
+  { action: "share" },
 ];
 
-export default function RadioKeypad({ onDigit, onEnter, onScan, enterHint = "MENU" }) {
+export default function RadioKeypad({ onDigit, onScan, onShare, shareOpen = false }) {
   return (
     <div className="grid h-full grid-cols-3 grid-rows-4 gap-[3px]">
       {KEYS.map((key) => {
@@ -34,14 +40,16 @@ export default function RadioKeypad({ onDigit, onEnter, onScan, enterHint = "MEN
             />
           );
         }
-        if (key.action === "enter") {
+        if (key.action === "share") {
           return (
             <RadioKey
-              key="enter"
-              label={key.label}
-              sub={enterHint}
-              onPress={onEnter}
-              ariaLabel={enterHint === "TUNE" ? "Enter — tune to the number typed" : "Enter — open the menu"}
+              key="share"
+              glyph={Share}
+              sub="SHARE"
+              skin="copper"
+              pressed={shareOpen}
+              onPress={onShare}
+              ariaLabel={shareOpen ? "Close the share drawer" : "Share this page"}
             />
           );
         }
