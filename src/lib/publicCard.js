@@ -11,8 +11,8 @@ export const frontDoorUrl = () => `${window.location.origin}/`;
 
 // The QR itself is drawn by the same image service the publication cards already use,
 // so the code is a plain <img> the machine can cache rather than a runtime dependency.
-export const qrSrc = (text, size = 240) =>
-  `https://quickchart.io/qr?text=${encodeURIComponent(text)}&size=${size}&margin=1&dark=1e3a5a&light=ffffff`;
+export const qrSrc = (text, size = 240, margin = 1) =>
+  `https://quickchart.io/qr?text=${encodeURIComponent(text)}&size=${size}&margin=${margin}&dark=1e3a5a&light=ffffff`;
 
 const esc = (value) =>
   String(value || '')

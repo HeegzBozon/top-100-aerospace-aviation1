@@ -1,18 +1,26 @@
-import { useEffect, useState } from 'react';
-import { Check, Copy, QrCode, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { cardUrl, frontDoorUrl, qrSrc } from '@/lib/publicCard';
+import { qrSrc } from '@/lib/publicCard';
+import {
+  availableDestinations,
+  readStoredDestination,
+  resolveDestination,
+  shareUrl,
+  storeDestination,
+} from '@/lib/shareDestinations';
+import QrShareCenter from './QrShareCenter';
 
-// The card code, standing in the corner of the title screen.
+// The code standing on the title screen.
 //
-// A title screen is what a Fellow holds up when they meet someone: the code is their
-// record, and the person opposite scans it. Signed in, the code is that Fellow's card;
-// with no account behind the screen there is no card to hand over, so it opens the
-// platform instead and the account stays the visitor's own choice.
+// It is a badge worn at the masthead, and it is printed at a size a camera reads across a
+// table — the hand-over needs no tap at all. Tapping opens the badge full screen, where
+// the code is larger still and the holder chooses what it opens: their own card, the
+// edition, the record, the archive. That choice is remembered, so the code on the title
+// screen is always the one last set.
 export default function TitleCardQr({ user = null, variant = 'glass', className = '' }) {
   const [open, setOpen] = useState(false);
   const [nominee, setNominee] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const [destination, setDestination] = useState(() => readStoredDestination());
   const signedIn = !!user?.email;
 
   useEffect(() => {
@@ -34,133 +42,82 @@ export default function TitleCardQr({ user = null, variant = 'glass', className 
     };
   }, [signedIn, user?.email]);
 
-  useEffect(() => {
-    if (!open) return undefined;
-    const onKey = (event) => {
-      if (event.key === 'Escape') setOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
-
-  const personal = !!nominee?.id;
-  const link = personal ? cardUrl(nominee.id) : frontDoorUrl();
-  const desk = variant === 'desk';
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(link);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      setCopied(false);
+  // Who the badge is worn for: the Fellow's own record when there is one behind the
+  // screen, and the platform itself when there is not — the code still hands something on.
+  const holder = useMemo(() => {
+    if (nominee?.id) {
+      return {
+        name: nominee.name || user?.full_name || 'A Fellow',
+        role: nominee.title || nominee.professional_role || '',
+        org: nominee.company || nominee.organization || '',
+        cardId: nominee.id,
+      };
     }
+    return {
+      name: signedIn ? user?.full_name || 'A Fellow' : 'TOP 100 Aerospace & Aviation',
+      role: signedIn ? 'Fellow' : 'The platform',
+      org: '',
+      cardId: '',
+    };
+  }, [nominee, signedIn, user?.full_name]);
+
+  const destinations = useMemo(() => availableDestinations(holder), [holder]);
+  // With no account behind the screen there is no card to hand over, so an unset code
+  // opens the platform itself rather than a page the visitor never chose.
+  const chosen = resolveDestination(destination || (signedIn ? '' : 'platform'), holder);
+  const link = shareUrl(chosen.key, holder);
+
+  const choose = (key) => {
+    setDestination(key);
+    storeDestination(key);
   };
 
+  const size = variant === 'desk' ? 132 : 104;
+
   return (
-    <div className={className}>
+    <div className={`shrink-0 ${className}`}>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label={personal ? 'Your card code' : 'The platform code'}
-        className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 ${desk ? 'min-h-[34px]' : 'min-h-[30px]'}`}
-        style={{
-          background: 'rgba(9,18,30,0.44)',
-          border: '1px solid rgb(var(--editorial-gold-rgb) / 0.5)',
-        }}
+        aria-haspopup="dialog"
+        aria-label={`Hand over the code: ${chosen.label}. Scan it, or open it larger.`}
+        className="block text-right transition-transform active:scale-[0.98]"
       >
-        <QrCode className={desk ? 'h-4 w-4' : 'h-3.5 w-3.5'} style={{ color: 'rgb(var(--editorial-gold-rgb))' }} />
         <span
-          className={`font-body font-bold uppercase tracking-[0.18em] text-editorial-gold ${desk ? 'text-[8.5px]' : 'text-[7.5px]'}`}
+          className="block rounded-[7px]"
+          style={{
+            padding: 6,
+            background: '#FFFFFF',
+            border: '1px solid rgb(var(--editorial-gold-rgb) / 0.85)',
+            boxShadow: '0 10px 22px -12px rgba(3,6,13,0.75), inset 0 0 0 1px rgba(30,58,90,0.10)',
+          }}
         >
-          {personal ? 'My card' : 'Scan'}
+          <img
+            src={qrSrc(link, variant === 'desk' ? 400 : 340, 2)}
+            alt=""
+            width={size}
+            height={size}
+            className="block"
+            style={{ width: size, height: size }}
+          />
+        </span>
+        <span
+          className="mt-1 block max-w-full truncate font-body text-[7px] font-bold uppercase tracking-[0.16em]"
+          style={{ color: 'rgb(var(--editorial-gold-rgb) / 0.85)' }}
+        >
+          {chosen.label}
         </span>
       </button>
 
       {open ? (
-        <div
-          className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto px-4 py-8"
-          style={{ background: 'rgba(4,9,17,0.82)' }}
-          onClick={() => setOpen(false)}
-          role="presentation"
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={personal ? 'Your card code' : 'The platform code'}
-            onClick={(event) => event.stopPropagation()}
-            className="w-full max-w-[320px] rounded-xl p-4"
-            style={{
-              background: '#FBF7F0',
-              border: '1px solid rgba(184,115,51,0.55)',
-              boxShadow: '0 28px 60px rgba(3,8,15,0.62)',
-            }}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="font-body text-[8px] font-bold uppercase tracking-[0.24em]" style={{ color: '#B87333' }}>
-                  {personal ? 'Your card' : 'The front door'}
-                </p>
-                <p className="mt-1 truncate font-heading text-[17px] leading-tight" style={{ color: '#1E3A5A' }}>
-                  {personal ? nominee.name : 'TOP 100 Aerospace & Aviation'}
-                </p>
-                {personal ? (
-                  <p className="mt-0.5 truncate font-body text-[10px]" style={{ color: 'rgba(30,58,90,0.6)' }}>
-                    {[nominee.title, nominee.company].filter(Boolean).join(' · ') || 'A verified record'}
-                  </p>
-                ) : null}
-              </div>
-              <button
-                type="button"
-                autoFocus
-                onClick={() => setOpen(false)}
-                aria-label="Close"
-                className="shrink-0 rounded-full p-1.5"
-                style={{ color: 'rgba(30,58,90,0.6)', border: '1px solid rgba(30,58,90,0.18)' }}
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-
-            <div
-              className="mt-3 flex items-center justify-center rounded-lg p-2"
-              style={{ background: '#FFFFFF', border: '1px solid rgba(30,58,90,0.14)' }}
-            >
-              <img src={qrSrc(link, 240)} alt={personal ? `Code for ${nominee.name}'s card` : 'Code for the platform'} width={208} height={208} className="h-[208px] w-[208px]" />
-            </div>
-
-            <p className="mt-2 truncate font-body text-[9.5px] tabular-nums" style={{ color: 'rgba(30,58,90,0.62)' }}>
-              {link}
-            </p>
-
-            <p className="mt-2 font-body text-[10.5px] leading-relaxed" style={{ color: 'rgba(30,58,90,0.72)' }}>
-              {personal
-                ? 'They scan and land on your card: save the contact, connect, follow, or write to you. Saving needs no account — joining is theirs to choose.'
-                : 'They scan and the platform opens: the edition, the record, and the way in. Making an account is theirs to choose.'}
-            </p>
-
-            <div className="mt-3 flex items-center gap-2">
-              <button
-                type="button"
-                onClick={copy}
-                className="inline-flex min-h-[36px] flex-1 items-center justify-center gap-1.5 rounded-full font-body text-[9px] font-bold uppercase tracking-[0.16em]"
-                style={{ background: '#FFFFFF', color: '#1E3A5A', border: '1px solid rgba(30,58,90,0.32)' }}
-              >
-                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                {copied ? 'Copied' : 'Copy link'}
-              </button>
-              {personal ? (
-                <a
-                  href={link}
-                  className="inline-flex min-h-[36px] flex-1 items-center justify-center rounded-full font-body text-[9px] font-bold uppercase tracking-[0.16em]"
-                  style={{ background: '#B87333', color: '#FAF8F5' }}
-                >
-                  Open card
-                </a>
-              ) : null}
-            </div>
-          </div>
-        </div>
+        <QrShareCenter
+          holder={holder}
+          destinations={destinations}
+          destination={chosen.key}
+          onDestination={choose}
+          link={link}
+          onClose={() => setOpen(false)}
+        />
       ) : null}
     </div>
   );

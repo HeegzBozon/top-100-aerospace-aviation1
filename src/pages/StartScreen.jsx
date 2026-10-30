@@ -302,28 +302,29 @@ export default function StartScreen() {
             <StartSky phase={phase} />
 
             <div className="hh-scroll-page relative flex flex-col px-5 pb-6 pt-5">
-              {/* A Fellow's card, held in the corner of the screen for the person standing
-                  opposite: the code is the record, and it is handed over by being scanned. */}
-              <div className="absolute right-5 top-4 z-20">
-                <TitleCardQr user={user} />
-              </div>
-
               {/* The masthead, the cycle read twice on its own two lines, and then the
-                  two keys the title screen asks for standing together in one row. */}
-              <div className="hh-title-block mt-4 shrink-0">
-                <StartMark />
-                <div className="mt-3">
-                  <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
-                  <PublicationCountdown />
-                  <StartTitleActions
-                    signedIn={signedIn}
-                    voteLive={voteLive}
-                    selectedKey={cursorKey}
-                    notifyOpen={notifyOpen}
-                    onNotifyChange={setNotifyOpen}
-                    notifySelected={cursorKey === NOTIFY_OPTION.key}
-                  />
+                  two keys the title screen asks for standing together in one row. The
+                  badge stands beside the masthead, printed at a size a camera reads
+                  across a table — so a card is handed over without a tap at all, and
+                  tapping it opens the badge full screen. */}
+              <div className="hh-title-block mt-4 flex shrink-0 items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <StartMark />
+                  <div className="mt-3">
+                    <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
+                    <PublicationCountdown />
+                    <StartTitleActions
+                      signedIn={signedIn}
+                      voteLive={voteLive}
+                      selectedKey={cursorKey}
+                      notifyOpen={notifyOpen}
+                      onNotifyChange={setNotifyOpen}
+                      notifySelected={cursorKey === NOTIFY_OPTION.key}
+                    />
+                  </div>
                 </div>
+
+                <TitleCardQr user={user} />
               </div>
 
               <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} flow />

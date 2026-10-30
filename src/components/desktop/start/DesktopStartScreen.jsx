@@ -34,12 +34,6 @@ export default function DesktopStartScreen({
     >
       <DesktopStartSky phase={phase} />
 
-      {/* The Fellow's card, printed in the corner of the cover: a hand turns the screen
-          round, and the person opposite scans the record rather than copying a name. */}
-      <div className="absolute right-8 top-7 z-20">
-        <TitleCardQr user={user} variant="desk" />
-      </div>
-
       <div className="relative mx-auto flex min-h-[calc(100vh-var(--imac-top)-var(--imac-bottom))] w-full max-w-[1180px] flex-col px-12 pb-32 pt-9 xl:px-16">
         <DesktopStartRail phase={phase} />
         <DesktopStartHero phase={phase} />
@@ -56,8 +50,14 @@ export default function DesktopStartScreen({
         </div>
         <DesktopSurfaceIndex items={menuItems} />
 
-        <div className="mt-auto pt-14">
-          <StartMetaRow />
+        {/* The badge is pinned at the foot of the cover: printed at a size a camera reads
+            across a desk, so the record is handed over by being scanned rather than by
+            copying a name across. Tapping it opens it full screen. */}
+        <div className="mt-auto flex items-end justify-between gap-8 pt-14">
+          <div className="min-w-0 flex-1">
+            <StartMetaRow />
+          </div>
+          <TitleCardQr user={user} variant="desk" />
         </div>
       </div>
 
