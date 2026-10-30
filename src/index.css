@@ -298,11 +298,14 @@ button:focus-visible {
   --hh-foot: 32px;
 
   /* The desk margin, the moulding around the glass, and the inset every surface
-     on the picture is measured from — the last being the first two added. */
-  --hh-frame: 14px;
-  /* Set deeper than the steps need: the case takes more and the picture gives it up,
-     which is what makes the opening read as a well rather than a frame. */
-  --hh-bezel-w: 14px;
+     on the picture is measured from — the last being the first two added. Held to
+     the width of a seam rather than of a margin: on a phone the case was taking
+     28px down each side of a 372px picture, which is width the surface behind it
+     can never get back. */
+  --hh-frame: 9px;
+  /* Deep enough to read as a well rather than a frame, and no deeper: every pixel
+     here is taken from the picture on both sides at once. */
+  --hh-bezel-w: 9px;
   --hh-glass-inset: calc(var(--hh-frame, 0px) + var(--hh-bezel-w, 0px));
 
   /* The strip cut across the head of the glass, and the air it leaves under
@@ -1277,6 +1280,27 @@ button:focus-visible {
   width: 0;
   height: 0;
   display: none;
+}
+
+/* ===== NO SCROLL CHROME ON THE GLASS =====
+   The device is the frame. A browser's scrollbar drawn inside it takes a strip of the
+   picture on every scrolling surface, and on a dark desk the trough prints as a black
+   band down one edge — the machine appears to have a second, narrower case inside it.
+   So on a phone nothing in the shell shows scroll chrome: the page, the stage, and every
+   container a surface rolls inside itself. The roll is still the wheel, a thumb and the
+   film; where a surface wants to report its own measure it draws it (PageScrollRail). */
+@media (max-width: 767px) {
+  body.hh-shell,
+  body.hh-shell * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  body.hh-shell::-webkit-scrollbar,
+  body.hh-shell *::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
 }
 
 /* ===== THE ISSUE'S MEASURE — THE READING BAR =====
