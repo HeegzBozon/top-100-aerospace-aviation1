@@ -331,10 +331,16 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     phase === 'review' ? 'Reviewing your last set.' :
     'Anchored. Drawing the next set.';
 
+  // Undo, review and resume are offered only when they mean something, and they are the
+  // one row the ballot ever adds: on the glass they are kept off the cards' budget
+  // entirely on the phases that have nothing to offer.
+  const hasControls =
+    phase === 'worst' || phase === 'review' || (history.length > 0 && (phase === 'best' || phase === 'worst'));
+
   return (
     <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
       {/* Voting surface */}
-      <div className="flex-1 flex flex-col min-w-0 px-3 pt-2.5 pb-4 md:px-4 md:pt-4 md:pb-6 lg:px-8">
+      <div className="flex-1 flex flex-col min-w-0 px-2.5 pt-1.5 pb-2 md:px-4 md:pt-4 md:pb-6 lg:px-8">
         <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
         {/* The console names this panel on its own strip, so on the glass the title
             stands down and the prompt and the cards take the room. */}
@@ -358,7 +364,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
-            className="mb-1.5 mt-1.5 flex items-center gap-2 md:mb-4 md:mt-3"
+            className="mb-1 mt-0.5 flex items-center gap-1.5 md:mb-4 md:mt-3 md:gap-2"
           >
             {phase === 'best' && (
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.gold}1F` }}>
@@ -375,18 +381,18 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 <Loader2 className="h-3 w-3 animate-spin" style={{ color: brand.gold }} />
               </span>
             )}
-            <p className="whitespace-nowrap font-heading text-[15px] leading-none md:text-[17px]" style={{ color: brand.navy }}>{prompt}</p>
+            <p className="min-w-0 truncate font-heading text-[14px] leading-none md:text-[17px]" style={{ color: brand.navy }}>{prompt}</p>
             <VoteMechanicsPopover open={explainerOpen} onOpenChange={setExplainerOpen} />
             <button
               type="button"
               onClick={() => setGuideOpen(true)}
-              className="shrink-0 rounded-full px-2.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.14em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+              className="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 md:px-2.5 md:py-1 md:text-[9.5px]"
               style={{ background: `${brand.gold}1F`, border: `1px solid ${brand.gold}66`, color: brand.navy }}
             >
               Briefing
             </button>
             <span
-              className="ml-auto shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold tabular-nums"
+              className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-[9.5px] font-semibold tabular-nums md:px-2.5 md:py-1 md:text-[10px]"
               style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
             >
               {sessionCount} sets
@@ -416,19 +422,19 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         </div>
 
         {/* Controls: undo mid-set / review last set / resume */}
-        <div className="mb-1.5 flex flex-wrap items-center gap-1.5 md:mb-3 md:gap-2">
+        <div className={hasControls ? 'mb-1 flex flex-wrap items-center gap-1.5 md:mb-3 md:gap-2' : 'hidden'}>
           {phase === 'worst' && (
-            <button onClick={undoFirstPick} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+            <button onClick={undoFirstPick} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <Undo2 className="w-3.5 h-3.5" /> Undo first pick
             </button>
           )}
           {history.length > 0 && (phase === 'best' || phase === 'worst') && (
-            <button onClick={goBack} className="text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+            <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <ArrowLeft className="w-3.5 h-3.5" /> Review last set
             </button>
           )}
           {phase === 'review' && (
-            <button onClick={resumeVoting} className="text-[11px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5" style={{ background: brand.gold, color: 'white' }}>
+            <button onClick={resumeVoting} className="text-[11px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: brand.gold, color: 'white' }}>
               Resume voting
             </button>
           )}
@@ -436,7 +442,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
 
         {/* Four candidates, twice two — on the glass the whole set has to stand in view
             at once, so the grid takes its rows from the height it is given. */}
-        <div className="grid grid-cols-2 grid-rows-2 gap-2 sm:gap-3 lg:gap-4 flex-1 min-h-0">
+        <div className="grid grid-cols-2 grid-rows-2 gap-1.5 sm:gap-3 lg:gap-4 flex-1 min-h-0">
           {currentSet.map((nominee, idx) => {
             const isTop = nominee.id === topId;
             const isBottom = nominee.id === bottomId;
@@ -457,6 +463,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 onSelect={() => handleSelect(nominee)}
                 keyLabel={radio ? String(idx * 2 + 1) : VOTE_KEYS[idx]}
                 infoKeyLabel={radio ? String(idx * 2 + 2) : null}
+                dense={radio}
               />
             );
           })}

@@ -39,7 +39,11 @@ function initials(name) {
 //
 // The ring walks these cards while a set is standing: the card the cursor is on
 // carries a copper ring, so where the wheel is pointing is legible on the glass.
-export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, isTop, isBottom, selectable, cursor = false, honoreeVolumes = [], onInfo, onSelect }) {
+// `dense` is the radio's card: the same plate with its stock tightened, so four of them
+// stand in the glass at once with nothing to scroll. Every row that says what the card
+// IS stays — the face, the name, the band, the years, the pair of keys — and the story
+// is the one block given up first when the case is short.
+export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, isTop, isBottom, selectable, cursor = false, dense = false, honoreeVolumes = [], onInfo, onSelect }) {
 
   const name = nominee.name || 'Unnamed nominee';
   const photo = nominee.avatar_url || nominee.photo_url || '';
@@ -65,7 +69,9 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
         onClick={() => selectable && onSelect()}
         role="button"
         tabIndex={selectable ? 0 : -1}
-        className="isolate flex h-full flex-col gap-2 overflow-hidden rounded-[18px] p-2.5 pt-3 md:gap-2.5 md:p-4 md:pt-4"
+        className={`isolate flex h-full min-h-0 flex-col overflow-hidden md:gap-2.5 md:rounded-[18px] md:p-4 md:pt-4 ${
+          dense ? "gap-1.5 rounded-[14px] p-2 pt-2.5" : "gap-2 rounded-[18px] p-2.5 pt-3"
+        }`}
         style={{
           background: isTop
             ? `linear-gradient(180deg, #FFFDF7 0%, ${brand.gold}1F 100%)`
@@ -92,9 +98,11 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
         />
 
         {/* Identity row */}
-        <div className="flex items-start gap-2 md:gap-3">
+        <div className="flex shrink-0 items-start gap-2 md:gap-3">
           <div
-            className="relative h-10 w-10 shrink-0 overflow-hidden rounded-[13px] flex items-center justify-center text-[13px] font-bold md:h-14 md:w-14 md:text-base"
+            className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-[13px] font-bold md:h-14 md:w-14 md:text-base ${
+              dense ? "h-8 w-8 text-[11px]" : "h-10 w-10 text-[13px]"
+            }`}
             style={{
               background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`,
               color: 'white',
@@ -109,11 +117,19 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
           </div>
 
           <div className="flex-1 min-w-0">
-            <p className="truncate font-heading text-[14px] leading-snug md:text-[16px] lg:text-[18px]" style={{ color: brand.navy }}>
+            <p
+              className={`truncate font-heading leading-snug md:text-[16px] lg:text-[18px] ${dense ? "text-[12.5px]" : "text-[14px]"}`}
+              style={{ color: brand.navy }}
+            >
               {name}
             </p>
             {band && (
-              <p className="mt-0.5 truncate text-[8.5px] font-bold uppercase leading-tight tracking-[0.13em] md:mt-1 md:text-[9.5px]" style={{ color: `${brand.navy}5E` }}>
+              <p
+                className={`mt-0.5 truncate font-bold uppercase leading-tight md:mt-1 md:text-[9.5px] ${
+                  dense ? "text-[7.5px] tracking-[0.1em]" : "text-[8.5px] tracking-[0.13em]"
+                }`}
+                style={{ color: `${brand.navy}5E` }}
+              >
                 {band}
               </p>
             )}
@@ -143,7 +159,7 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
             before the story is read. The year rides the card; the volume and the recorded
             position open on the chip itself. */}
         {honoreeVolumes.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1">
+          <div className="flex shrink-0 flex-wrap items-center gap-1">
             {honoreeVolumes.map((volume) => (
               <HonoreeChip key={volume.seasonId} volume={volume} />
             ))}
@@ -152,9 +168,14 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
 
         {/* Six word story, set in the display hand under a rose-gold hairline. */}
         {story ? (
-          <div className="min-w-0">
+          <div className={dense ? 'min-h-0 min-w-0 flex-1 overflow-hidden' : 'min-w-0'}>
             <span aria-hidden className="block h-px w-7" style={{ background: `${brand.gold}99` }} />
-            <p className="mt-1.5 line-clamp-2 font-heading text-[13px] italic leading-snug md:text-[15px] lg:text-[17px]" style={{ color: brand.navy }}>
+            <p
+              className={`mt-1 line-clamp-3 font-heading italic leading-snug md:mt-1.5 md:line-clamp-2 md:text-[15px] lg:text-[17px] ${
+                dense ? "text-[11px]" : "text-[13px]"
+              }`}
+              style={{ color: brand.navy }}
+            >
               <span style={{ color: brand.gold }}>&ldquo;</span>{story}<span style={{ color: brand.gold }}>&rdquo;</span>
             </p>
           </div>
@@ -169,11 +190,13 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
 
         {/* The foot of the card on the glass: the key that votes for it, printed the way
             the device prints its own legends, and the card's one door beside it. */}
-        <div className="mt-auto flex items-center gap-1.5 pt-0.5">
+        <div className="mt-auto flex shrink-0 items-center gap-1.5 pt-0.5">
           <span
             aria-hidden="true"
             title={`${keyLabel} votes for ${name}`}
-            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[11px] font-heading text-[12px] md:h-9 md:w-9 md:text-[11px]"
+            className={`flex shrink-0 items-center justify-center font-heading md:h-9 md:w-9 md:text-[11px] ${
+              dense ? "h-[30px] w-[30px] rounded-[9px] text-[11px]" : "h-[38px] w-[38px] rounded-[11px] text-[12px]"
+            }`}
             style={{
               background: 'linear-gradient(180deg, #FDFBF6 0%, #EFE7D8 100%)',
               color: brand.navy,
@@ -192,14 +215,16 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
             onClick={(e) => { e.stopPropagation(); onInfo(); }}
             aria-label={`More information about ${name}${infoKeyLabel ? ` — key ${infoKeyLabel}` : ""}`}
             title={infoKeyLabel ? `${infoKeyLabel} opens ${name}` : `More information about ${name}`}
-            className="relative flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[11px] transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 md:h-9 md:w-9"
+            className={`relative flex shrink-0 items-center justify-center transition-[filter] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 active:brightness-110 md:h-9 md:w-9 ${
+              dense ? "h-[30px] w-[30px] rounded-[9px]" : "h-[38px] w-[38px] rounded-[11px]"
+            }`}
             style={{
               background: `linear-gradient(180deg, #26486E, ${brand.navy})`,
               color: '#F4F0E7',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20), 0 2px 5px -3px rgba(7,17,31,0.7)',
             }}
           >
-            <Info className="h-4 w-4" />
+            <Info className={dense ? "h-3.5 w-3.5" : "h-4 w-4"} />
             {/* On the radio each card stands under a pair of numbers: the first votes for
                 it, the second opens it. The second is printed where the thumb finds it. */}
             {infoKeyLabel ? (
