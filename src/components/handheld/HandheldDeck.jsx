@@ -715,7 +715,20 @@ export default function HandheldDeck() {
   const channelAt = flat.findIndex((item) => item.to && item.to === locationKey) + 1;
   const drawerItems = menuOpen ? listFor(menuMode) : [];
 
-  const standing = zone === "B" ? cursor + 1 : bank === "FN" ? moduleIndex + 1 : channelAt;
+  // A surface that hands the ring its options can also say which number its own key
+  // prints (the title screen numbers its surfaces 01…12). Where it does, the display
+  // prints that number rather than the option's place in the list, so the figure on the
+  // readout is the figure a hand presses.
+  const pickerCode = picker && typeof picker.code === "function" ? picker.code() : null;
+
+  const standing =
+    zone === "B"
+      ? cursor + 1
+      : bank === "FN"
+        ? pickerCode
+          ? Number(pickerCode)
+          : moduleIndex + 1
+        : channelAt;
   const radioDigits = typed
     ? typed.padStart(pad, "0")
     : String(standing || 0).padStart(pad, "0");
@@ -869,11 +882,17 @@ export default function HandheldDeck() {
         onFile={() => openBarDrawer("file")}
         onEdit={() => openBarDrawer("edit")}
         onNotifications={openNotifications}
+        fileKey={radio ? "V" : "X"}
+        editKey={radio ? "A" : "Y"}
       />
 
-      {/* The glass's footer: the share at its left, the device's readout at its right,
-          cut across the foot of the picture. */}
-      <ViewerFoot shareOpen={shareOpen} onShare={toggleShare} />
+      {/* The glass's footer: the share at its left, the measure of where the wheel stands
+          ruled through the middle, the device's readout at its right. */}
+      <ViewerFoot
+        shareOpen={shareOpen}
+        onShare={toggleShare}
+        position={radioTotal ? { at: radioAt + 1, total: radioTotal } : null}
+      />
 
       <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
 
@@ -977,6 +996,7 @@ export default function HandheldDeck() {
             zone={zone}
             bank={bank}
             digits={radioDigits}
+            total={radioTotal}
             label={radioLabel}
             signal={radioSignal}
             entering={!!typed}
@@ -989,6 +1009,8 @@ export default function HandheldDeck() {
             onScan={openSearch}
             onBank={radioBank}
             onZone={radioZone}
+            onFile={() => openBarDrawer("file")}
+            onEdit={() => openBarDrawer("edit")}
             onUp={() => rotate(-1)}
             onDown={() => rotate(1)}
             onHome={goHome}

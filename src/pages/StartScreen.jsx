@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { hourPhase } from '@/components/core/appOpening';
 import { useCountdown } from '@/components/events/useCountdown';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import revealCursor from '@/components/handheld/revealCursor';
 import DesktopStartScreen from '@/components/desktop/start/DesktopStartScreen';
 import StartSky from '@/components/start/StartSky';
 import StartMark from '@/components/start/StartMark';
@@ -210,6 +211,10 @@ export default function StartScreen() {
       step: (direction) => land(here() + direction),
       page: (direction) => land(here() + direction),
       goTo: (i) => land(i),
+      // The number printed on the key the cursor is standing on — nothing for the two
+      // asks, which print no number — so the radio's display shows the figure a hand
+      // would press rather than the option's place in the list.
+      code: () => optionsRef.current[here()]?.index || null,
       // The number printed on a key is what the console's keypad types: a Fellow reads
       // 03 on the Edit profile key, presses 3, and the cursor goes there.
       goToCode: (code) => {
@@ -251,6 +256,12 @@ export default function StartScreen() {
   useEffect(() => {
     touchPicker();
   }, [cursorKey, options.length]);
+
+  // The ring can land on an ask as easily as on a key, so the reveal is done once for
+  // the whole list: whichever option is lit, the glass brings it into view.
+  useEffect(() => {
+    revealCursor(cursorKey);
+  }, [cursorKey]);
 
   return (
     <>

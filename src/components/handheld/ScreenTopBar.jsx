@@ -36,6 +36,8 @@ export default function ScreenTopBar({
   onFile,
   onEdit,
   onNotifications,
+  fileKey = "X",
+  editKey = "Y",
 }) {
   const keysClaimed = useFaceKeysClaimed();
   // The operator's lens: on the glass it is the same cell the desk machine wears — drawn
@@ -68,8 +70,8 @@ export default function ScreenTopBar({
         showViewAs={realUser?.role === "admin"}
         viewingAsVisitor={viewingAsVisitor}
         onToggleViewAs={toggleViewingAsVisitor}
-        fileHint={keysClaimed ? "" : "X"}
-        editHint={keysClaimed ? "" : "Y"}
+        fileHint={keysClaimed ? "" : fileKey}
+        editHint={keysClaimed ? "" : editKey}
         style={{ height: HEAD_BAND }}
       />
     </div>

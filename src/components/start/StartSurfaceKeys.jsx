@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import StartMenuItem from "./StartMenuItem";
+import revealCursor from "@/components/handheld/revealCursor";
 
 // The surfaces, as keys. Three to a row, on the phone and on the desk — the same
 // panel either way, so the menu is one shape to learn. A key is a key: on the phone
@@ -18,8 +19,7 @@ import StartMenuItem from "./StartMenuItem";
 // cursor is never off the screen.
 export default function StartSurfaceKeys({ items, cursorKey, flow = false }) {
   useEffect(() => {
-    if (!cursorKey) return;
-    document.querySelector(`[data-hh-key="${cursorKey}"]`)?.scrollIntoView({ block: "nearest" });
+    revealCursor(cursorKey);
   }, [cursorKey]);
 
   return (

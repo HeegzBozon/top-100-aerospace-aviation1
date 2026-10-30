@@ -21,6 +21,10 @@ export default function NotifyMe({
   // The desk seats this beside a full-height action, so it takes that action's
   // measure; the phone keeps the small pill it has always worn.
   large = false,
+  // The console walks this key with the rest of the title screen's options, so the
+  // pill carries the same anchor every other lit key does and the glass can bring it
+  // into view when the wheel lands on it.
+  dataKey = null,
 }) {
   const [selfOpen, setSelfOpen] = useState(false);
   const open = openProp ?? selfOpen;
@@ -78,6 +82,7 @@ export default function NotifyMe({
       <button
         type="button"
         onClick={() => setOpen(!open)}
+        data-hh-key={dataKey || undefined}
         aria-expanded={open}
         aria-current={selected ? 'true' : undefined}
         aria-controls="results-notify"

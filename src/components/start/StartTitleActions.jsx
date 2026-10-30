@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import NotifyMe from "./NotifyMe";
-import { ACCOUNT_KEYS, VOTE_OPTION } from "./startMenuConfig";
+import { ACCOUNT_KEYS, NOTIFY_OPTION, VOTE_OPTION } from "./startMenuConfig";
 
 // The two things the title screen asks for, read as one row: the ballot while the cycle
 // is asking for it — or, for whoever has no account yet, the way in — and the publishing
@@ -54,6 +54,7 @@ export default function StartTitleActions({
         ? voteLive && (
           <Link
             to={VOTE_OPTION.to}
+            data-hh-key={VOTE_OPTION.key}
             aria-current={selectedKey === VOTE_OPTION.key ? "true" : undefined}
             className={PILL}
             style={quiet(selectedKey === VOTE_OPTION.key)}
@@ -71,6 +72,7 @@ export default function StartTitleActions({
               key={key.key}
               type="button"
               onClick={toLogin}
+              data-hh-key={key.key}
               aria-current={selected ? "true" : undefined}
               className={PILL}
               style={isAsk ? loud(selected) : quiet(selected)}
@@ -82,7 +84,12 @@ export default function StartTitleActions({
           );
         })}
 
-      <NotifyMe open={notifyOpen} onOpenChange={onNotifyChange} selected={notifySelected} />
+      <NotifyMe
+        open={notifyOpen}
+        onOpenChange={onNotifyChange}
+        selected={notifySelected}
+        dataKey={NOTIFY_OPTION.key}
+      />
     </div>
   );
 }

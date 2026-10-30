@@ -2,17 +2,42 @@
 //
 // A field radio prints its whole state on one strip and nothing else: which of its two
 // displays is live (A or B), whether the keys are typing channels or acting on the
-// surface (CH or FN), the number standing in the display, the name of what that number
-// is, and the signal it is holding. All of it reads from live state — the number is the
-// channel the machine is tuned to, or the section being read, or the entry the cursor is
-// on — so the strip is an instrument rather than a decoration.
+// surface (CH or FN), the number standing in the display, how many there are to stand
+// on, the name of what that number is, and the signal it is holding. All of it reads
+// from live state — the number is the channel the machine is tuned to, or the section
+// being read, or the entry the cursor is on — so the strip is an instrument rather than
+// a decoration.
+//
+// And the strip is also a control: the two displays and the bank badge are pressable,
+// which is where a touchscreen transceiver puts them. Tapping A/B lights the other
+// display — the surface, or the machine's own drawer — and tapping the bank badge swaps
+// the keys between channels and the surface's numbered options. That leaves both hands'
+// worth of the cluster above free for the drawers.
 const BARS = [0, 1, 2, 3, 4];
 
-export default function RadioReadout({ zone, bank, digits, label, signal = 3, entering = false }) {
+const pad = (value) => String(value || 0).padStart(2, "0");
+
+export default function RadioReadout({
+  zone,
+  bank,
+  digits,
+  total,
+  label,
+  signal = 3,
+  entering = false,
+  onZone,
+  onBank,
+}) {
   return (
     <div className="hr-lcd relative flex h-full shrink-0 items-center gap-1.5 px-1.5">
-      {/* The two displays, A over B, with the live one lit. */}
-      <span className="flex shrink-0 flex-col items-center justify-center gap-[1px] leading-none">
+      {/* The two displays, A over B, with the live one lit. Pressing the stack lights
+          the other one. */}
+      <button
+        type="button"
+        onClick={onZone}
+        aria-label={`Display ${zone} live — press for display ${zone === "A" ? "B" : "A"}`}
+        className="flex h-full shrink-0 flex-col items-center justify-center gap-[1px] leading-none"
+      >
         {["A", "B"].map((letter) => (
           <span
             key={letter}
@@ -25,19 +50,24 @@ export default function RadioReadout({ zone, bank, digits, label, signal = 3, en
             {letter}
           </span>
         ))}
-      </span>
+      </button>
 
-      <span
-        className="shrink-0 rounded-[2px] px-[3px] py-[1px] text-[5.5px] font-bold uppercase tracking-[0.12em]"
+      {/* The bank: which set of numbers the keypad is standing on. */}
+      <button
+        type="button"
+        onClick={onBank}
+        aria-label={bank === "FN" ? "Function bank — press for channels" : "Channel bank — press for the surface's options"}
+        className="flex h-full shrink-0 items-center justify-center rounded-[2px] px-[3px] text-[5.5px] font-bold uppercase leading-none tracking-[0.12em]"
         style={{
           color: "var(--hh-lcd-soft)",
           boxShadow: "inset 0 0 0 1px rgb(var(--hh-lcd-rgb) / 0.22)",
         }}
       >
         {bank}
-      </span>
+      </button>
 
-      {/* The number in the display. It blinks while it is being typed. */}
+      {/* The number in the display, and how many there are to stand on. It blinks while
+          it is being typed. */}
       <span
         className={`shrink-0 text-[13px] font-bold leading-none ${entering ? "hh-blink" : ""}`}
         style={{
@@ -48,6 +78,14 @@ export default function RadioReadout({ zone, bank, digits, label, signal = 3, en
         }}
       >
         {digits}
+        {total ? (
+          <span
+            className="text-[7px] font-bold tracking-[0.02em]"
+            style={{ color: "var(--hh-lcd-soft)", textShadow: "none" }}
+          >
+            /{pad(total)}
+          </span>
+        ) : null}
       </span>
 
       <span
