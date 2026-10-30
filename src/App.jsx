@@ -28,6 +28,7 @@ const Colony                  = lazy(() => import('@/pages/Colony'));
 const AnalyticsDashboard      = lazy(() => import('@/pages/AnalyticsDashboard'));
 const GlobalIntelligence      = lazy(() => import('@/pages/GlobalIntelligence'));
 const ProfileView             = lazy(() => import('@/pages/ProfileView'));
+const ScannedCard             = lazy(() => import('@/pages/ScannedCard'));
 const ARTCommandCenter        = lazy(() => import('@/pages/ARTCommandCenter'));
 const TeamManager             = lazy(() => import('@/pages/TeamManager'));
 const FeatureToTeamMapper     = lazy(() => import('@/pages/FeatureToTeamMapper'));
@@ -278,6 +279,9 @@ const AuthenticatedApp = () => {
        <Route path="/Top100Women2025/:year/:month/:slug/index.html" element={<Top100Women2025DeepLink />} />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:id" element={<ProfileView />} />
+       {/* The handover face of a record: where a scanned card code lands. Public, and
+           answered without an account — the canonical reading stays /profiles/:id. */}
+       <Route path="/card/:id" element={<ScannedCard />} />
        <Route path="/editions/:id" element={<FellowEdition />} />
        <Route path="/platform-board" element={<PlatformDevelopmentBoard />} />
       <Route path="/meetups" element={<Meetups />} />

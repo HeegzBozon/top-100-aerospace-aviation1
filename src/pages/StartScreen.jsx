@@ -12,6 +12,7 @@ import StartMark from '@/components/start/StartMark';
 import StartSeasonLine from '@/components/start/StartSeasonLine';
 import PublicationCountdown from '@/components/start/PublicationCountdown';
 import StartTitleActions from '@/components/start/StartTitleActions';
+import TitleCardQr from '@/components/start/TitleCardQr';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
 import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
 import { loadWomenIssue } from '@/components/magazine/womenEdition';
@@ -265,6 +266,7 @@ export default function StartScreen() {
           control panel. */}
       <div className="hidden md:block">
         <DesktopStartScreen
+          user={user}
           phase={phase}
           status={status}
           onRetry={() => setAttempt((n) => n + 1)}
@@ -300,6 +302,12 @@ export default function StartScreen() {
             <StartSky phase={phase} />
 
             <div className="hh-scroll-page relative flex flex-col px-5 pb-6 pt-5">
+              {/* A Fellow's card, held in the corner of the screen for the person standing
+                  opposite: the code is the record, and it is handed over by being scanned. */}
+              <div className="absolute right-5 top-4 z-20">
+                <TitleCardQr user={user} />
+              </div>
+
               {/* The masthead, the cycle read twice on its own two lines, and then the
                   two keys the title screen asks for standing together in one row. */}
               <div className="hh-title-block mt-4 shrink-0">

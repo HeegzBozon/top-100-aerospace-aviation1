@@ -1,4 +1,5 @@
 import StartMetaRow from "@/components/start/StartMetaRow";
+import TitleCardQr from "@/components/start/TitleCardQr";
 import DesktopStartSky from "./DesktopStartSky";
 import DesktopStartRail from "./DesktopStartRail";
 import DesktopStartHero from "./DesktopStartHero";
@@ -12,6 +13,7 @@ import "../deskTitle.css";
 // index underneath. Same menu, same actions, same season record — read as a magazine
 // rather than as a joystick.
 export default function DesktopStartScreen({
+  user = null,
   phase,
   status,
   onRetry,
@@ -31,6 +33,12 @@ export default function DesktopStartScreen({
       style={{ background: phase.sky }}
     >
       <DesktopStartSky phase={phase} />
+
+      {/* The Fellow's card, printed in the corner of the cover: a hand turns the screen
+          round, and the person opposite scans the record rather than copying a name. */}
+      <div className="absolute right-8 top-7 z-20">
+        <TitleCardQr user={user} variant="desk" />
+      </div>
 
       <div className="relative mx-auto flex min-h-[calc(100vh-var(--imac-top)-var(--imac-bottom))] w-full max-w-[1180px] flex-col px-12 pb-32 pt-9 xl:px-16">
         <DesktopStartRail phase={phase} />

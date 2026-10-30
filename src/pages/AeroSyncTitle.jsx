@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/lib/AuthContext';
 import { hourPhase } from '@/components/core/appOpening';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import StartSky from '@/components/start/StartSky';
 import StartMetaRow from '@/components/start/StartMetaRow';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
+import TitleCardQr from '@/components/start/TitleCardQr';
 import AeroSyncActions from '@/components/aerosync/AeroSyncActions';
 import AeroSyncMark from '@/components/aerosync/AeroSyncMark';
 import AeroSyncStateLine from '@/components/aerosync/AeroSyncStateLine';
@@ -17,6 +19,7 @@ import { AEROSYNC_MENU } from '@/components/aerosync/aeroSyncMenuConfig';
 // selection drawn on the grid — and A opens what the cursor is standing on.
 export default function AeroSyncTitle() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [phase] = useState(() => hourPhase());
   const [cursorKey, setCursorKey] = useState(AEROSYNC_MENU[0].key);
 
@@ -72,6 +75,12 @@ export default function AeroSyncTitle() {
         <StartSky phase={phase} />
 
         <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-3 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
+          {/* The same card code the platform's title screen carries: this machine's
+              owner, handed over to whoever is standing opposite. */}
+          <div className="absolute right-5 top-4 z-20 md:right-16 md:top-12">
+            <TitleCardQr user={user} />
+          </div>
+
           <div className="hh-title-block mt-4 shrink-0 md:mt-10">
             <AeroSyncMark />
             <div className="mt-3 md:mt-4">
