@@ -447,7 +447,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
-                keyLabel={VOTE_KEYS[idx]}
+                keyLabel={radio ? String(idx + 1) : VOTE_KEYS[idx]}
               />
             );
           })}
