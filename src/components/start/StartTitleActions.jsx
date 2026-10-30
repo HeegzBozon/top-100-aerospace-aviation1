@@ -1,19 +1,14 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import NotifyMe from "./NotifyMe";
-import { ACCOUNT_KEYS, NOTIFY_OPTION, VOTE_OPTION } from "./startMenuConfig";
+import { ACCOUNT_KEYS, VOTE_OPTION } from "./startMenuConfig";
 
-// The two things the title screen asks for, read as one row: the ballot while the cycle
-// is asking for it — or, for whoever has no account yet, the way in — and the publishing
-// alert for a reader who will not be watching on the day. The readings above them are
-// what they answer; nothing here wraps into those lines.
+// The key the title screen asks for under its readings: the ballot while the cycle is
+// asking for it — or, for whoever has no account yet, the way in. The publishing alert
+// is not here; it stands on the results line it answers, up in the cycle band.
 //
 // Measuring is a Fellow's work, so the ballot stands only for a Fellow, and the way in
-// stands where it would be for everyone else: signing in, or making the account. The
-// alert opens its own field directly under the row, full width, so the row itself never
-// moves when it does — and on a phone with the keys up, that field is the first thing
-// above them.
+// stands where it would be for everyone else: signing in, or making the account.
 /* min-h-[24px] is the smallest a target may be — the type stays at 8.5px, the box grows
    around it, so the pill reads exactly as it did and the thumb has something to land on. */
 const PILL =
@@ -39,9 +34,6 @@ export default function StartTitleActions({
   signedIn = false,
   voteLive = false,
   selectedKey = null,
-  notifyOpen = false,
-  notifySelected = false,
-  onNotifyChange,
 }) {
   // The platform's own door: it signs a Fellow in, and opens the account a visitor has
   // not made yet. Either reading comes back to the Fellow's own profile — the home
@@ -83,13 +75,6 @@ export default function StartTitleActions({
             </button>
           );
         })}
-
-      <NotifyMe
-        open={notifyOpen}
-        onOpenChange={onNotifyChange}
-        selected={notifySelected}
-        dataKey={NOTIFY_OPTION.key}
-      />
     </div>
   );
 }

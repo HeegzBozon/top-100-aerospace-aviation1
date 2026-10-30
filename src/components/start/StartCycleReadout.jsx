@@ -46,7 +46,7 @@ function Reading({ label, tone, target, note, doneLabel = "Live", onRetry }) {
   );
 }
 
-export default function StartCycleReadout({ status, onRetry }) {
+export default function StartCycleReadout({ status, onRetry, notify = null }) {
   // The close comes off the season record itself, so the cover never disagrees with the
   // board; the results date ships on the calendar whatever the record says.
   const season = status.loading
@@ -67,13 +67,17 @@ export default function StartCycleReadout({ status, onRetry }) {
         doneLabel="Closed"
         onRetry={season.retry ? onRetry : null}
       />
-      <div className="min-w-0 border-l border-editorial-gold/20 pl-3">
+      {/* The results column carries the one ask that answers it: the publishing alert
+          stands under its own reading, right-aligned on the column, rather than beside
+          the ballot's key where it belonged to neither. */}
+      <div className="relative min-w-0 border-l border-editorial-gold/20 pl-3">
         <Reading
           label="Results go live"
           tone="rgb(var(--editorial-gold-rgb) / 1)"
           target={RESULTS_GO_LIVE}
           doneLabel="Live"
         />
+        {notify ? <div className="mt-1.5 flex justify-end">{notify}</div> : null}
       </div>
     </div>
   );

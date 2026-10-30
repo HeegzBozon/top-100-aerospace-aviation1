@@ -11,6 +11,7 @@ import StartSky from '@/components/start/StartSky';
 import StartMark from '@/components/start/StartMark';
 import StartCycleReadout from '@/components/start/StartCycleReadout';
 import StartTitleActions from '@/components/start/StartTitleActions';
+import NotifyMe from '@/components/start/NotifyMe';
 import TitleCardQr from '@/components/start/TitleCardQr';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
 import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
@@ -314,15 +315,27 @@ export default function StartScreen() {
               {/* The cycle on one band, then the two asks on one row: both read under the
                   masthead rather than beside the badge, so each gets the full measure of
                   the glass instead of wrapping into the other's column. */}
-              <StartCycleReadout status={status} onRetry={() => setAttempt((n) => n + 1)} />
+              <StartCycleReadout
+                status={status}
+                onRetry={() => setAttempt((n) => n + 1)}
+                /* The publishing alert belongs to the reading it answers: it stands on
+                   the results line, so what it asks for and what it promises are read
+                   together. */
+                notify={
+                  <NotifyMe
+                    open={notifyOpen}
+                    onOpenChange={setNotifyOpen}
+                    selected={cursorKey === NOTIFY_OPTION.key}
+                    dataKey={NOTIFY_OPTION.key}
+                    panelOverlay
+                  />
+                }
+              />
 
               <StartTitleActions
                 signedIn={signedIn}
                 voteLive={voteLive}
                 selectedKey={cursorKey}
-                notifyOpen={notifyOpen}
-                onNotifyChange={setNotifyOpen}
-                notifySelected={cursorKey === NOTIFY_OPTION.key}
               />
 
               <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />

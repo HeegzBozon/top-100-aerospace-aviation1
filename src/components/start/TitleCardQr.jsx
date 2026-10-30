@@ -101,12 +101,6 @@ export default function TitleCardQr({ user = null, variant = 'glass', className 
             style={{ width: size, height: size }}
           />
         </span>
-        <span
-          className="mt-1 block max-w-full truncate font-body text-[7px] font-bold uppercase tracking-[0.16em]"
-          style={{ color: 'rgb(var(--editorial-gold-rgb) / 0.85)' }}
-        >
-          {chosen.label}
-        </span>
       </button>
 
       {open ? (

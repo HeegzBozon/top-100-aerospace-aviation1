@@ -25,6 +25,10 @@ export default function NotifyMe({
   // pill carries the same anchor every other lit key does and the glass can bring it
   // into view when the wheel lands on it.
   dataKey = null,
+  // Set where the alert stands on a reading of its own — the title screen's results
+  // line — so the field opens under it as a small sheet rather than widening the
+  // column it is seated in. Off by default: the desk keeps the full-width block.
+  panelOverlay = false,
 }) {
   const [selfOpen, setSelfOpen] = useState(false);
   const open = openProp ?? selfOpen;
@@ -108,8 +112,10 @@ export default function NotifyMe({
       {open ? (
         <div
           id="results-notify"
-          className={`basis-full rounded-xl ${
-            large ? "mt-4 w-full max-w-md p-4" : "mt-1 p-3 md:max-w-md"
+          className={`rounded-xl ${
+            panelOverlay
+              ? "absolute right-0 top-full z-30 mt-1 w-[min(320px,calc(100vw-2.5rem))] p-3"
+              : `basis-full ${large ? "mt-4 w-full max-w-md p-4" : "mt-1 p-3 md:max-w-md"}`
           }`}
           style={{ background: 'rgba(6,12,22,0.46)', border: '1px solid rgba(201,168,124,0.34)', backdropFilter: 'blur(6px)' }}
         >
