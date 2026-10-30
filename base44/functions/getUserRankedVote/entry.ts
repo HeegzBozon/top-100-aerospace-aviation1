@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.5.0';
+import { seedBallotForVoter } from '../../shared/ballotSeed.ts';
 
 Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
@@ -30,12 +31,24 @@ Deno.serve(async (req) => {
             voter_email: user.email 
         });
 
-        const ballot = existingVote.length > 0 ? existingVote[0].ballot : [];
+        const saved = existingVote.length > 0 ? (existingVote[0].ballot || []) : [];
+
+        // A ballot opens where the Fellow's own nominations left it: the people they put
+        // forward are the draft it starts from. Seeded is not cast — has_voted only turns
+        // true once they save the ballot themselves.
+        const seeded = saved.length
+            ? { ids: [], count: 0 }
+            : await seedBallotForVoter(base44.asServiceRole, { email: user.email, seasonId: season_id })
+                .catch(() => ({ ids: [], count: 0 }));
+
+        const ballot = saved.length ? saved : seeded.ids || [];
 
         return new Response(JSON.stringify({ 
             success: true, 
             ballot,
-            has_voted: ballot.length > 0
+            has_voted: saved.length > 0,
+            seeded: saved.length === 0 && ballot.length > 0,
+            seeded_count: seeded.count || 0
         }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
