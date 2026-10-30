@@ -80,7 +80,7 @@ export default function HandheldDeck() {
   // The radio's own state: which bank the keys are typing (its channels, or the
   // surface's own numbered sections), which of its two displays is live — A, the
   // surface, or B, the machine's drawer — and the number standing in the display.
-  const [bank, setBank] = useState("CH");
+  const [bankChoice, setBankChoice] = useState(null);
   const [zone, setZone] = useState("A");
   const [typed, setTyped] = useState("");
 
@@ -145,6 +145,12 @@ export default function HandheldDeck() {
   // profile's own panels — hands the console a picker, which outranks the
   // page's module marks: the ring walks what is actually on the screen.
   const picker = useHandheldPicker();
+  // Which bank the keypad is typing. A surface that hands the console its own numbered
+  // options — the title screen's keys, each printed with its own number — opens the
+  // keypad on them, so the digits mean what the glass says they mean. Everywhere else
+  // the keys are the machine's channels. V/M overrules for the surface you are on, and
+  // the overrule is dropped the moment you move.
+  const bank = bankChoice || (picker ? "FN" : "CH");
   // The left print on the ring — back, not rewind — ends at the console's own back
   // handler when the surface has nothing of its own left to step through. That
   // handler is declared further down this component, so it is read through a ref:
@@ -235,6 +241,12 @@ export default function HandheldDeck() {
   useEffect(() => {
     setTyped("");
   }, [locationKey, bank, zone, mode]);
+
+  // A bank chosen by hand holds for the surface it was chosen on, and is given back when
+  // the machine tunes to another one — the next surface opens on the bank it is built for.
+  useEffect(() => {
+    setBankChoice(null);
+  }, [locationKey]);
 
   useEffect(() => {
     if (!menuOpen && zone === "B") setZone("A");
@@ -750,11 +762,23 @@ export default function HandheldDeck() {
         else blip("back");
         return;
       }
-      // Display A, in section mode: the keys are the surface's own numbered sections.
+      // Display A, in section mode: the keys are the surface's own numbered options —
+      // and where the surface prints a number on each of them, the key printed 03 is
+      // typed 3. A surface without numbers has its options counted from the front.
       if (bank === "FN") {
         if (digit === "0") {
           setTyped("");
           select();
+          return;
+        }
+        if (picker?.goToCode) {
+          const label = picker.goToCode(digit);
+          if (label) {
+            setTyped("");
+            announce(label);
+            return;
+          }
+          blip("back");
           return;
         }
         const target = Number(digit) - 1;
@@ -789,6 +813,7 @@ export default function HandheldDeck() {
       select,
       jumpToModule,
       go,
+      picker,
     ],
   );
 
@@ -808,8 +833,8 @@ export default function HandheldDeck() {
   const radioBank = useCallback(() => {
     blip("toggle");
     buzz();
-    setBank((current) => (current === "CH" ? "FN" : "CH"));
-  }, []);
+    setBankChoice(bank === "CH" ? "FN" : "CH");
+  }, [bank]);
 
   const radioZone = useCallback(() => {
     blip("toggle");
@@ -955,7 +980,7 @@ export default function HandheldDeck() {
             label={radioLabel}
             signal={radioSignal}
             entering={!!typed}
-            enterHint={typed ? "TUNE" : "MENU"}
+            enterHint={typed ? "TUNE" : picker ? "OPEN" : "MENU"}
             legend={modeLegend}
             mode={mode}
             isSignedIn={isSignedIn}

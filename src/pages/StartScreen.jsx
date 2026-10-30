@@ -210,6 +210,13 @@ export default function StartScreen() {
       step: (direction) => land(here() + direction),
       page: (direction) => land(here() + direction),
       goTo: (i) => land(i),
+      // The number printed on a key is what the console's keypad types: a Fellow reads
+      // 03 on the Edit profile key, presses 3, and the cursor goes there.
+      goToCode: (code) => {
+        const wanted = String(code).padStart(2, "0");
+        const target = optionsRef.current.findIndex((option) => option.index === wanted);
+        return target < 0 ? null : land(target);
+      },
       enter: () => {
         const option = optionsRef.current.find((item) => item.key === cursorRef.current);
         if (!option) return false;
@@ -265,12 +272,14 @@ export default function StartScreen() {
       </div>
 
       <div className="md:hidden">
-        {/* hh-scroll-window / hh-scroll-plane / hh-scroll-page: while the keys are up
-            this surface stops being one glass tall and clipped to it, and becomes a page
-            the picture can scroll — which is what leaves room for the address a reader is
-            typing into. Three levels are named so the change is deterministic: each stops
-            being a flex track and takes its own height. */}
-        <div className="hh-slide-window hh-scroll-window relative flex flex-col">
+        {/* The picture is a page, not a pane: the title card, the two asks and the keypad
+            run on past the foot of the glass and the glass scrolls them, so a menu longer
+            than one screen is read by scroll rather than clipped away. It still fills the
+            picture when it is short — min-h-full hands the sky the whole opening. */}
+        <div
+          className="hh-scroll-window relative flex min-h-full flex-col"
+          style={{ background: phase.sky }}
+        >
           {/* The picture plane: the hour's sky, edge to edge in the glass. Nothing is
               inset and nothing is rounded, so no strip of the page behind the device
               shows at the picture's edges and the star field runs the full height of the
@@ -279,12 +288,12 @@ export default function StartScreen() {
               The foot is square for the same reason — the picture ends on the readout
               band, where the glass is still running straight. */}
           <div
-            className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden"
+            className="hh-scroll-plane relative flex min-h-full flex-1 flex-col"
             style={{ background: phase.sky }}
           >
             <StartSky phase={phase} />
 
-            <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-3 pt-5">
+            <div className="hh-scroll-page relative flex flex-col px-5 pb-6 pt-5">
               {/* The masthead, the cycle read twice on its own two lines, and then the
                   two keys the title screen asks for standing together in one row. */}
               <div className="hh-title-block mt-4 shrink-0">
@@ -303,7 +312,7 @@ export default function StartScreen() {
                 </div>
               </div>
 
-              <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />
+              <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} flow />
             </div>
           </div>
         </div>
