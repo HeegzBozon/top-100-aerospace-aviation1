@@ -216,11 +216,15 @@ export default function StartScreen() {
       // would press rather than the option's place in the list.
       code: () => optionsRef.current[here()]?.index || null,
       // The number printed on a key is what the console's keypad types: a Fellow reads
-      // 03 on the Edit profile key, presses 3, and the cursor goes there.
+      // 03 on the Edit profile key, presses 3, and the key is pressed — the cursor lands
+      // on it and it opens, so a numbered key is a key rather than a way to point at one.
       goToCode: (code) => {
         const wanted = String(code).padStart(2, "0");
         const target = optionsRef.current.findIndex((option) => option.index === wanted);
-        return target < 0 ? null : land(target);
+        if (target < 0) return null;
+        const label = land(target);
+        if (label) api.current.enter();
+        return label;
       },
       enter: () => {
         const option = optionsRef.current.find((item) => item.key === cursorRef.current);
