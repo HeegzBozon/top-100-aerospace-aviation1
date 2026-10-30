@@ -31,8 +31,11 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
   const total = position?.total || 0;
   const travelled = total ? Math.min(100, Math.round((at / total) * 100)) : 0;
 
+  // The one press on this band, so it is drawn at the size of a key rather than of a label:
+  // the full height the band has to give, the word beside the mark, and a copper edge that
+  // makes it read as a key waiting to be pressed rather than as print.
   const pill =
-    "hh-share-pill flex h-[21px] shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[7px] font-bold uppercase tracking-[0.2em]";
+    "hh-share-pill flex h-[23px] shrink-0 items-center gap-1.5 rounded-full pl-2 pr-2.5 text-[7.5px] font-bold uppercase tracking-[0.18em]";
   const pillInk = { color: "var(--hh-pad-ink)" };
 
   return (
@@ -53,15 +56,16 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
           onClick={onShare}
           data-open={shareOpen || undefined}
           aria-label={shareOpen ? "Close the share drawer" : "Share this page"}
+          aria-pressed={shareOpen || undefined}
           className={`pointer-events-auto ${pill}`}
           style={pillInk}
         >
-          <Share className="h-[9px] w-[9px] shrink-0" />
+          <Share className="h-[11px] w-[11px] shrink-0" strokeWidth={2.4} />
           Share
         </button>
       ) : (
         <span className={`${pill} hh-engrave`} style={{ ...pillInk, opacity: 0.5 }}>
-          <Share className="h-[9px] w-[9px] shrink-0" />
+          <Share className="h-[11px] w-[11px] shrink-0" strokeWidth={2.4} />
           Share
         </span>
       )}
