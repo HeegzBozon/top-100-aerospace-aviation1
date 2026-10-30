@@ -72,7 +72,7 @@ export default function TitleCardQr({ user = null, variant = 'glass', className 
     storeDestination(key);
   };
 
-  const size = variant === 'desk' ? 132 : 104;
+  const size = variant === 'desk' ? 132 : 92;
 
   return (
     <div className={`shrink-0 ${className}`}>

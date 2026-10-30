@@ -9,8 +9,7 @@ import revealCursor from '@/components/handheld/revealCursor';
 import DesktopStartScreen from '@/components/desktop/start/DesktopStartScreen';
 import StartSky from '@/components/start/StartSky';
 import StartMark from '@/components/start/StartMark';
-import StartSeasonLine from '@/components/start/StartSeasonLine';
-import PublicationCountdown from '@/components/start/PublicationCountdown';
+import StartCycleReadout from '@/components/start/StartCycleReadout';
 import StartTitleActions from '@/components/start/StartTitleActions';
 import TitleCardQr from '@/components/start/TitleCardQr';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
@@ -280,10 +279,10 @@ export default function StartScreen() {
       </div>
 
       <div className="md:hidden">
-        {/* The picture is a page, not a pane: the title card, the two asks and the keypad
-            run on past the foot of the glass and the glass scrolls them, so a menu longer
-            than one screen is read by scroll rather than clipped away. It still fills the
-            picture when it is short — min-h-full hands the sky the whole opening. */}
+        {/* The cover is the glass: the masthead with the badge beside it, the cycle on one
+            instrument band, the two asks, then the keys taking whatever height is left.
+            Nothing here is taller than the picture, so the whole title screen is read at a
+            glance and the reader never scrolls to find a key. */}
         <div
           className="hh-scroll-window relative flex min-h-full flex-col"
           style={{ background: phase.sky }}
@@ -301,33 +300,32 @@ export default function StartScreen() {
           >
             <StartSky phase={phase} />
 
-            <div className="hh-scroll-page relative flex flex-col px-5 pb-6 pt-5">
-              {/* The masthead, the cycle read twice on its own two lines, and then the
-                  two keys the title screen asks for standing together in one row. The
-                  badge stands beside the masthead, printed at a size a camera reads
-                  across a table — so a card is handed over without a tap at all, and
-                  tapping it opens the badge full screen. */}
-              <div className="hh-title-block mt-4 flex shrink-0 items-start justify-between gap-3">
+            <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-4 pb-2 pt-3">
+              {/* The masthead, with the badge beside it — printed at a size a camera reads
+                  across a table, so a card is handed over without a tap at all, and tapping
+                  it opens the badge full screen. */}
+              <div className="hh-title-block flex shrink-0 items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <StartMark />
-                  <div className="mt-3">
-                    <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
-                    <PublicationCountdown />
-                    <StartTitleActions
-                      signedIn={signedIn}
-                      voteLive={voteLive}
-                      selectedKey={cursorKey}
-                      notifyOpen={notifyOpen}
-                      onNotifyChange={setNotifyOpen}
-                      notifySelected={cursorKey === NOTIFY_OPTION.key}
-                    />
-                  </div>
                 </div>
-
                 <TitleCardQr user={user} />
               </div>
 
-              <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} flow />
+              {/* The cycle on one band, then the two asks on one row: both read under the
+                  masthead rather than beside the badge, so each gets the full measure of
+                  the glass instead of wrapping into the other's column. */}
+              <StartCycleReadout status={status} onRetry={() => setAttempt((n) => n + 1)} />
+
+              <StartTitleActions
+                signedIn={signedIn}
+                voteLive={voteLive}
+                selectedKey={cursorKey}
+                notifyOpen={notifyOpen}
+                onNotifyChange={setNotifyOpen}
+                notifySelected={cursorKey === NOTIFY_OPTION.key}
+              />
+
+              <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />
             </div>
           </div>
         </div>

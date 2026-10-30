@@ -49,7 +49,7 @@ export default function StartTitleActions({
   const toLogin = () => base44.auth.redirectToLogin('/Profile');
 
   return (
-    <div className="mt-2.5 flex flex-wrap items-center gap-2 md:mt-3">
+    <div className="mt-2 flex flex-wrap items-center gap-1.5 md:mt-3 md:gap-2">
       {signedIn
         ? voteLive && (
           <Link

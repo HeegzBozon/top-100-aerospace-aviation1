@@ -22,19 +22,34 @@ export default function StartSurfaceKeys({ items, cursorKey, flow = false }) {
     revealCursor(cursorKey);
   }, [cursorKey]);
 
+  // The keys share out the height the glass has left, but only up to a point: past a
+  // hand's worth of key a tile stops being a key and becomes a panel, so the grid is
+  // capped at three rows of comfortable keys and any surplus stays sky. The rows are
+  // counted from the menu, so a row of three and a row of two are drawn the same size
+  // as three rows of three — the menu never reads as one giant tile when it is short.
+  const rows = Math.max(1, Math.ceil(items.length / 3));
+
   return (
     <div
       className={
         flow
           ? "mt-4 flex flex-col md:mt-8"
-          : "mt-4 flex min-h-0 flex-1 flex-col md:mt-8"
+          : "mt-3 flex min-h-0 flex-1 flex-col md:mt-8"
       }
     >
       <div
         className={
           flow
             ? "grid grid-cols-3 auto-rows-[minmax(66px,auto)] gap-2 md:auto-rows-[minmax(104px,auto)] md:gap-3"
-            : "grid min-h-0 flex-1 grid-cols-3 auto-rows-[minmax(66px,1fr)] gap-2 overflow-y-auto overscroll-contain md:auto-rows-[minmax(104px,auto)] md:gap-3"
+            : "grid min-h-0 flex-1 grid-cols-3 gap-2 overflow-y-auto overscroll-contain md:auto-rows-[minmax(104px,auto)] md:gap-3"
+        }
+        style={
+          flow
+            ? undefined
+            : {
+                gridTemplateRows: `repeat(${rows}, minmax(66px, 1fr))`,
+                maxHeight: rows * 132 + (rows - 1) * 8,
+              }
         }
       >
         {items.map((item) => (
