@@ -8,8 +8,8 @@ import { RESULTS_GO_LIVE } from "./PublicationCountdown";
 // this cover is meant to be read at a glance — nothing on it should have to be scrolled
 // to. The states are the same ones the season line has always carried: reading, failed
 // with a way to read it again, and a calendar with nothing on it yet — never a blank.
-const LABEL = "flex items-center gap-1 text-[7.5px] font-bold uppercase leading-none tracking-[0.2em]";
-const FIGURE = "mt-1 block truncate text-[11px] font-bold leading-none tabular-nums tracking-[0.06em]";
+const LABEL = "flex items-center gap-1 text-[8px] font-bold uppercase leading-none tracking-[0.2em]";
+const FIGURE = "mt-1 block truncate text-[11.5px] font-bold leading-none tabular-nums tracking-[0.06em]";
 
 function Reading({ label, tone, target, note, doneLabel = "Live", onRetry }) {
   const { days, hours, mins, secs, done } = useCountdown(target);
