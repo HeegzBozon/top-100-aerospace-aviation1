@@ -10,21 +10,21 @@ import { CAPABILITY_LABELS, OFFERING_LABELS, availabilityOption } from '@/compon
 export const CHANNELS = [
   {
     key: 'positions',
-    label: 'Positions',
-    short: 'JOBS',
+    label: 'Offers',
+    short: 'OFFER',
     digit: '1',
     kicker: 'Job & Career',
     blurb: 'Roles Fellows are filling, and Fellows who are open to a move.',
-    empty: 'No roles on this desk. A Fellow posts a role when their team is hiring; the board is quiet until one does.',
+    empty: 'No offers on this desk. A Fellow puts one up when their team is hiring; the board is quiet until one does.',
   },
   {
     key: 'mandates',
-    label: 'Mandates',
-    short: 'DEALS',
+    label: 'Term Sheets',
+    short: 'TERMS',
     digit: '2',
     kicker: 'Deal & BD',
     blurb: 'Fellows open to a commercial engagement. Introductions are made privately, through their record.',
-    empty: 'No one is standing open to a mandate just now. Those notices are set by the Fellow on their own record.',
+    empty: 'No one is standing open to a term sheet just now. Those notices are set by the Fellow on their own record.',
   },
   {
     key: 'open',
@@ -33,7 +33,7 @@ export const CHANNELS = [
     digit: '3',
     kicker: 'Anything else',
     blurb: 'Whatever else a Fellow puts up: collaborators, a desk, a paper, kit, a room at a show.',
-    empty: 'The open board is empty. It takes anything that is not a role and not a mandate.',
+    empty: 'The open board is empty. It takes anything that is not an offer and not a term sheet.',
   },
 ];
 
@@ -48,7 +48,7 @@ export const NOTICE_CATEGORIES = [
 export const TYPE_TAGS = {
   role: 'Role',
   available: 'Open to work',
-  mandate: 'Mandate',
+  mandate: 'Term sheet',
   notice: 'Notice',
 };
 
@@ -131,7 +131,7 @@ export function boardGroups(channel, board, search = '') {
     channel === 'mandates'
       ? [
           {
-            label: 'Open to a mandate · alphabetical',
+            label: 'Open to a term sheet · alphabetical',
             items: people.filter((person) => person.modes?.commercial).map((person) => personListing(person, 'mandate')),
           },
         ]

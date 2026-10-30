@@ -27,7 +27,7 @@ export default function AeroSyncPeople() {
   });
 
   const readout = useMemo(() => {
-    if (tab === 'desk') return 'Three desks · positions, mandates, notices';
+    if (tab === 'desk') return 'Three desks · offers, term sheets, notices';
     if (crm.state.loading) return 'Reading your people';
     return `${crm.total} contact${crm.total === 1 ? '' : 's'} kept · private to you`;
   }, [tab, crm.state.loading, crm.total]);

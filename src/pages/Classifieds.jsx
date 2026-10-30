@@ -18,8 +18,8 @@ const PAGE = 5;
 
 // The board.
 //
-// One surface, three desks: Positions (a role to fill, or a Fellow open to a move),
-// Mandates (a Fellow open to a commercial engagement), and the open board, which takes
+// One surface, three desks: Offers (a role to fill, or a Fellow open to a move),
+// Term Sheets (a Fellow open to a commercial engagement), and the open board, which takes
 // anything else a Fellow puts up. The reader walks the notices; the confirm key opens
 // the one standing under the cursor; BACK returns to the board where it was left.
 //
@@ -189,7 +189,7 @@ export default function Classifieds({ embedded = false }) {
               The board.
             </h1>
             <p className="mt-2 max-w-2xl text-[12.5px] leading-relaxed" style={{ color: C.muted }}>
-              Positions, mandates and notices, put up by Fellows themselves. Nothing here is priced,
+              Offers, term sheets and notices, put up by Fellows themselves. Nothing here is priced,
               featured or ordered by payment, and every introduction is made privately through the
               person&rsquo;s own record.
             </p>
