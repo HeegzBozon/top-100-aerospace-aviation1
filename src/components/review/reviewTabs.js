@@ -1,15 +1,15 @@
-import { Archive, Info, PenLine } from "lucide-react";
+import { Archive, Info, PenLine, Users } from "lucide-react";
 
-// Review: the three things a Fellow comes back to the machine for that are not a
-// program of work — how the platform runs, the record that stands for them, and the
-// cycles already closed. They were three keys on the title screen and read as three
-// errands; here they are one surface with three tabs, so the machine answers "where
-// do I go to look at something about me or about the record" with one key.
+// Review: the things a Fellow comes back to the machine for that are not a program of
+// work — how the platform runs, the people they have met and kept, the record that
+// stands for them, and the cycles already closed. They were keys on the title screen and
+// read as errands; here they are one surface with four tabs, so the machine answers
+// "where do I go to look at something about me or about the record" with one key.
 //
-// The order is the order they are read in: what this is, then their own entry in it,
-// then everything it has already printed. A visitor gets the two the platform makes
-// public; the record's own tab is drawn only for a Fellow, because there is nothing
-// behind it for anyone else.
+// The order is the order they are read in: what this is, then who is here with you, then
+// your own entry in it, then everything it has already printed. A visitor gets the two
+// the platform makes public; the network cartridge and the record are drawn only for a
+// Fellow, because there is nothing behind them for anyone else.
 export const REVIEW_TABS = [
   {
     key: "orientation",
@@ -20,8 +20,17 @@ export const REVIEW_TABS = [
     icon: Info,
   },
   {
-    key: "record",
+    key: "network",
     index: "2",
+    label: "My Network",
+    blurb: "The people you have met and kept — the rolodex, the boards, and the desk that puts work in front of them.",
+    to: "/aerosync",
+    icon: Users,
+    membersOnly: true,
+  },
+  {
+    key: "record",
+    index: "3",
     label: "Edit profile",
     blurb: "Your own record — the six checklists behind your profile, from the business card to the inbox.",
     to: "/record",
@@ -30,7 +39,7 @@ export const REVIEW_TABS = [
   },
   {
     key: "archive",
-    index: "3",
+    index: "4",
     label: "Archive",
     blurb: "The volumes already closed. Every cycle since the first, kept as the record it is.",
     to: "/archive/6a6b70136ccb7c358f77dd7f",

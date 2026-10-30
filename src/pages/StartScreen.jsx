@@ -12,6 +12,7 @@ import StartMark from '@/components/start/StartMark';
 import StartCycleReadout from '@/components/start/StartCycleReadout';
 import StartTitleActions from '@/components/start/StartTitleActions';
 import NotifyMe from '@/components/start/NotifyMe';
+import TitleVotePill from '@/components/start/TitleVotePill';
 import TitleCardQr from '@/components/start/TitleCardQr';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
 import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
@@ -318,9 +319,13 @@ export default function StartScreen() {
               <StartCycleReadout
                 status={status}
                 onRetry={() => setAttempt((n) => n + 1)}
-                /* The publishing alert belongs to the reading it answers: it stands on
-                   the results line, so what it asks for and what it promises are read
-                   together. */
+                /* Each ask stands on the reading that answers it: the ballot under the
+                   close, the publishing alert under the day the results go live. */
+                vote={
+                  signedIn && voteLive ? (
+                    <TitleVotePill selected={cursorKey === VOTE_OPTION.key} />
+                  ) : null
+                }
                 notify={
                   <NotifyMe
                     open={notifyOpen}
@@ -332,11 +337,7 @@ export default function StartScreen() {
                 }
               />
 
-              <StartTitleActions
-                signedIn={signedIn}
-                voteLive={voteLive}
-                selectedKey={cursorKey}
-              />
+              <StartTitleActions signedIn={signedIn} selectedKey={cursorKey} />
 
               <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />
             </div>

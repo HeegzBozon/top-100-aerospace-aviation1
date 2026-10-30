@@ -1,14 +1,13 @@
 import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { ACCOUNT_KEYS, VOTE_OPTION } from "./startMenuConfig";
+import { ACCOUNT_KEYS } from "./startMenuConfig";
 
-// The key the title screen asks for under its readings: the ballot while the cycle is
-// asking for it — or, for whoever has no account yet, the way in. The publishing alert
-// is not here; it stands on the results line it answers, up in the cycle band.
+// The way in, and nothing else.
 //
-// Measuring is a Fellow's work, so the ballot stands only for a Fellow, and the way in
-// stands where it would be for everyone else: signing in, or making the account.
+// Measuring is a Fellow's work, so the ballot stands on the cycle band, on the reading
+// that closes it (see StartCycleReadout) — which leaves this row to the one reader who
+// has no account: signing in, or making one. A Fellow is offered nothing here, so the
+// row is not drawn at all rather than standing empty under the band.
 /* min-h-[24px] is the smallest a target may be — the type stays at 8.5px, the box grows
    around it, so the pill reads exactly as it did and the thumb has something to land on. */
 const PILL =
@@ -30,11 +29,9 @@ const quiet = (selected) => ({
     : "inset 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.5)",
 });
 
-export default function StartTitleActions({
-  signedIn = false,
-  voteLive = false,
-  selectedKey = null,
-}) {
+export default function StartTitleActions({ signedIn = false, selectedKey = null }) {
+  if (signedIn) return null;
+
   // The platform's own door: it signs a Fellow in, and opens the account a visitor has
   // not made yet. Either reading comes back to the Fellow's own profile — the home
   // surface — so signing in lands somewhere instead of on the screen it left from.
@@ -42,39 +39,26 @@ export default function StartTitleActions({
 
   return (
     <div className="mt-2 flex flex-wrap items-center gap-1.5 md:mt-3 md:gap-2">
-      {signedIn
-        ? voteLive && (
-          <Link
-            to={VOTE_OPTION.to}
-            data-hh-key={VOTE_OPTION.key}
-            aria-current={selectedKey === VOTE_OPTION.key ? "true" : undefined}
+      {ACCOUNT_KEYS.map((key, i) => {
+        const Icon = key.icon;
+        const isAsk = i === ACCOUNT_KEYS.length - 1;
+        const selected = selectedKey === key.key;
+        return (
+          <button
+            key={key.key}
+            type="button"
+            onClick={toLogin}
+            data-hh-key={key.key}
+            aria-current={selected ? "true" : undefined}
             className={PILL}
-            style={quiet(selectedKey === VOTE_OPTION.key)}
+            style={isAsk ? loud(selected) : quiet(selected)}
           >
-            Vote now
-            <ArrowRight className="h-[9px] w-[9px]" />
-          </Link>
-        )
-        : ACCOUNT_KEYS.map((key, i) => {
-          const Icon = key.icon;
-          const isAsk = i === ACCOUNT_KEYS.length - 1;
-          const selected = selectedKey === key.key;
-          return (
-            <button
-              key={key.key}
-              type="button"
-              onClick={toLogin}
-              data-hh-key={key.key}
-              aria-current={selected ? "true" : undefined}
-              className={PILL}
-              style={isAsk ? loud(selected) : quiet(selected)}
-            >
-              <Icon className="h-[9px] w-[9px]" />
-              {key.label}
-              {isAsk && <ArrowRight className="h-[9px] w-[9px]" />}
-            </button>
-          );
-        })}
+            <Icon className="h-[9px] w-[9px]" />
+            {key.label}
+            {isAsk && <ArrowRight className="h-[9px] w-[9px]" />}
+          </button>
+        );
+      })}
     </div>
   );
 }

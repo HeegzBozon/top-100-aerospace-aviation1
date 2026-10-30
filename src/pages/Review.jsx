@@ -8,13 +8,14 @@ import StartMetaRow from '@/components/start/StartMetaRow';
 import ReviewKeys from '@/components/review/ReviewKeys';
 import { reviewTabsFor } from '@/components/review/reviewTabs';
 
-// Review. One surface where three errands used to stand as three keys on the title
-// screen: Orientation, the Fellow's own record, and the archive of closed cycles.
+// Review. One surface where the errands that used to stand as their own keys on the
+// title screen now live as tabs: Orientation, My Network, the Fellow's own record, and
+// the archive of closed cycles.
 //
-// It is a menu with three tabs, which is the one shape both controls are good at: the
-// ring (or ▲ / ▼) walks the strip, the tab under it is lit and reads itself out below,
-// and # opens it. The keypad's own numbers work too — 1, 2, 3 press the tab printed
-// with that number, the way every other numbered key on this machine does.
+// It is a menu with tabs, which is the one shape both controls are good at: the ring
+// (or ▲ / ▼) walks the strip, the tab under it is lit and reads itself out below, and #
+// opens it. The keypad's own numbers work too — 1, 2, 3 press the tab printed with that
+// number, the way every other numbered key on this machine does.
 export default function Review() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -107,7 +108,7 @@ export default function Review() {
               Review
             </h1>
             <p className="mt-2 text-[8.5px] font-bold uppercase tracking-[0.34em] text-editorial-cream/60 md:text-[11px]">
-              Orientation &middot; Your record &middot; The archive
+              Orientation &middot; My Network &middot; Your record &middot; The archive
             </p>
           </div>
 
