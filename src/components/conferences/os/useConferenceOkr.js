@@ -21,7 +21,17 @@ export default function useConferenceOkr() {
       countOr({ follow_up_sent: true }),
       countOr({ outcome: { $in: ['meeting', 'opportunity', 'won'] } }),
       countOr({ outcome: 'won' }),
-    ]).then(([captured, sent, outcomes, won]) => setValues({ loading: false, captured, sent, outcomes, won }));
+      base44.entities.ConferenceContact.filter({ outcome: { $in: ['won', 'lost'] } }, '-updated_date', 200).catch(() => []),
+    ]).then(([captured, sent, outcomes, won, closed]) => {
+      // Lead time: met → deal won. Cycle time: first follow-up → closed (won or lost).
+      const days = (a, b) => (new Date(b) - new Date(a)) / 86400000;
+      const avg = (list) => (list.length ? Math.round(list.reduce((s, n) => s + n, 0) / list.length) : null);
+      const wins = closed.filter((c) => c.outcome === 'won');
+      const lead = avg(wins.map((c) => days(c.met_on || c.created_date, c.updated_date)).filter((n) => n >= 0));
+      const cycle = avg(closed.filter((c) => c.follow_up_sent_at).map((c) => days(c.follow_up_sent_at, c.updated_date)).filter((n) => n >= 0));
+      const winRate = closed.length ? Math.round((wins.length / closed.length) * 100) : null;
+      setValues({ loading: false, captured, sent, outcomes, won, lead, cycle, winRate });
+    });
   }, []);
 
   const save = async (draft) => {

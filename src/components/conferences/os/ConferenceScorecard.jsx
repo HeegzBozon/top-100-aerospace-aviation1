@@ -59,10 +59,14 @@ export default function ConferenceScorecard({ loading, failed, counts }) {
       )}
 
       <div className="grid grid-cols-3 border-t border-editorial-copper/30">
-        {[['Days since', counts.since], ['Days till', counts.till === 0 ? 'Now' : counts.till], [`${new Date().getFullYear()} shows`, counts.thisYear]].map(([l, v], i) => (
+        {[
+          ['Lead time · deals', values.lead == null ? null : `${values.lead}d`],
+          ['Cycle time · closed', values.cycle == null ? null : `${values.cycle}d`],
+          ['Win rate', values.winRate == null ? null : `${values.winRate}%`],
+        ].map(([l, v], i) => (
           <div key={l} className={`px-2.5 py-2 ${i ? 'cfs-seam' : ''}`}>
             <p className="truncate text-[7.5px] font-bold uppercase tracking-[0.18em] text-editorial-gold/80">{l}</p>
-            <p className="mt-1 font-heading text-[18px] leading-none tabular-nums text-editorial-cream">{circuit || v == null ? '—' : v}</p>
+            <p className="mt-1 font-heading text-[18px] leading-none tabular-nums text-editorial-cream">{values.loading || v == null ? '—' : v}</p>
           </div>
         ))}
       </div>

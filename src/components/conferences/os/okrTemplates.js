@@ -3,9 +3,9 @@
 export const METRICS = {
   declared: 'Conferences declared',
   captured: 'Contacts captured',
-  sent: 'Follow-ups sent',
+  sent: 'Intros & follow-ups',
   outcomes: 'Meetings & opportunities',
-  won: 'Relationships won',
+  won: 'Offers & deals',
 };
 
 export const OKR_TEMPLATES = [
@@ -13,7 +13,7 @@ export const OKR_TEMPLATES = [
     key: 'pipeline',
     label: 'Build pipeline',
     objective: 'Turn every show into relationships that move',
-    key_results: [{ metric: 'captured', target: 25 }, { metric: 'sent', target: 25 }, { metric: 'outcomes', target: 5 }],
+    key_results: [{ metric: 'sent', target: 25 }, { metric: 'outcomes', target: 8 }, { metric: 'won', target: 3 }],
   },
   {
     key: 'circuit',
