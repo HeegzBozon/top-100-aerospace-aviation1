@@ -1,26 +1,54 @@
 import { C } from '@/components/crm/crmConfig';
 
 // The stand, read the way a reader walks past it: the volumes the house has bound, the
-// issues mailed out of them, and the notes it keeps by the door — the wire on one side and
-// what the platform shipped on the other.
+// issues inside them — each honoree's own profile, and the pieces written around them — and
+// the notes it keeps by the door: the wire on one side, what the platform shipped on the other.
 export const NEWSSTAND_TABS = [
-  { key: 'volumes', label: 'Volumes' },
-  { key: 'issues', label: 'Issues' },
-  { key: 'notes', label: 'Notes' },
+  { key: 'volumes', label: 'Volumes', subs: [] },
+  {
+    key: 'issues',
+    label: 'Issues',
+    subs: [
+      { key: 'spotlights', label: 'Spotlights' },
+      { key: 'articles', label: 'Articles' },
+    ],
+  },
+  {
+    key: 'notes',
+    label: 'Notes',
+    subs: [
+      { key: 'linkedin', label: 'LinkedIn' },
+      { key: 'release', label: 'Release notes' },
+    ],
+  },
 ];
+
+// The stand opens on what the house is saying right now. The bound volumes keep their place
+// on the rack behind it.
+export const DEFAULT_TAB_KEY = 'notes';
 
 export const RACKS = [
   {
-    key: 'editions',
+    key: 'volumes',
     tab: 'volumes',
     label: 'The rack',
-    kicker: 'Publications & volumes',
-    blurb: 'Every edition the house has bound and put on the stand.',
-    empty: 'The rack is being dressed. The next edition takes its place here the day it goes to press.',
+    kicker: 'Bound volumes',
+    blurb: 'Every volume the house has bound and put on the stand, the live one first.',
+    empty: 'The rack is being dressed. The next volume takes its place here the day it goes to press.',
+  },
+  {
+    key: 'spotlights',
+    tab: 'issues',
+    sub: 'spotlights',
+    label: 'The spotlights',
+    kicker: 'Individual profiles',
+    blurb: 'Each honoree, read on their own — the record a volume is built from.',
+    empty: 'No spotlight is lit yet. The first honoree takes their page here with the next volume.',
   },
   {
     key: 'articles',
-    tab: 'volumes',
+    tab: 'issues',
+    sub: 'articles',
     label: 'The folded sheets',
     kicker: 'Articles & features',
     blurb: 'The pieces that ran inside the volumes, read in the issue they were printed in.',
@@ -28,7 +56,8 @@ export const RACKS = [
   },
   {
     key: 'dispatches',
-    tab: 'volumes',
+    tab: 'issues',
+    sub: 'articles',
     label: 'The dispatch stand',
     kicker: 'Blogs & field notes',
     blurb: 'Writing filed by Fellows themselves — dispatches, notes and field reports.',
@@ -37,15 +66,16 @@ export const RACKS = [
   {
     key: 'newsletter',
     tab: 'issues',
-    label: 'The archive',
-    kicker: 'The newsletter · 41 issues',
-    blurb:
-      'Insights and Spotlights, mailed weekly since February 2022 — every issue, newest first, as it went out.',
+    sub: 'articles',
+    label: 'The newsletter',
+    kicker: 'Insights & Spotlights',
+    blurb: 'Every issue the house has mailed since February 2022, newest first, as it went out.',
     empty: 'The first issue of the newsletter takes its place here the day it is mailed.',
   },
   {
     key: 'wire',
     tab: 'notes',
+    sub: 'linkedin',
     label: 'Off the wire',
     kicker: 'LinkedIn',
     blurb: 'What the house is posting on its company page, newest first, as it goes out.',
@@ -55,6 +85,7 @@ export const RACKS = [
   {
     key: 'release',
     tab: 'notes',
+    sub: 'release',
     label: 'Release notes',
     kicker: 'What shipped',
     blurb: 'What the platform changed and shipped, pinned by the door, newest first.',

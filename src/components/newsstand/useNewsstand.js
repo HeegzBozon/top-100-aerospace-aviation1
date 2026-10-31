@@ -3,13 +3,13 @@ import { base44 } from '@/api/base44Client';
 import { chooseWomenIssue } from '@/components/magazine/womenEdition';
 import {
   ARTICLE_TYPE_LABELS,
-  ISSUE_STATUS_LABELS,
   POST_TYPE_LABELS,
   byDateDesc,
   dayLabel,
   firstLine,
 } from './newsstandConfig';
 import { newsletterNotes } from './newsletterArchive';
+import { ARCHIVE_VOLUMES } from '@/components/archive/archiveVolumes';
 
 const rows = (result) => (Array.isArray(result) ? result : result?.items || []);
 
@@ -22,7 +22,7 @@ const isStocked = (bulletin) => {
   return Number.isNaN(date.getTime()) || date <= new Date();
 };
 
-const EMPTY = { loading: true, error: null, issues: [], articles: [], bulletins: [] };
+const EMPTY = { loading: true, error: null, issues: [], articles: [], bulletins: [], nominees: [] };
 const WIRE_EMPTY = { loading: true, error: null, items: [], sources: [] };
 
 // The stand's stock: the bound editions, the articles that ran inside them, and the
@@ -46,8 +46,11 @@ export default function useNewsstand() {
         { sort: '-created_date', limit: 80 },
       ),
       base44.entities.Bulletin.filter({}, { sort: '-published_date', limit: 80 }),
+      // The spotlights are the honorees themselves: each one's own page. Read in name order,
+      // so the stand implies no standing of its own.
+      base44.entities.Nominee.filter({ status: 'active' }, { sort: 'name', limit: 100 }),
     ])
-      .then(([issues, articles, bulletins]) => {
+      .then(([issues, articles, bulletins, nominees]) => {
         const edition = chooseWomenIssue(rows(issues));
         setStock({
           loading: false,
@@ -55,6 +58,7 @@ export default function useNewsstand() {
           issues: edition ? [edition] : [],
           articles: rows(articles),
           bulletins: rows(bulletins),
+          nominees: rows(nominees),
         });
       })
       .catch((error) => {
@@ -64,6 +68,7 @@ export default function useNewsstand() {
           issues: [],
           articles: [],
           bulletins: [],
+          nominees: [],
         });
       });
   }, []);
@@ -99,21 +104,33 @@ export default function useNewsstand() {
   const sections = useMemo(() => {
     const issueTitles = new Map(stock.issues.map((issue) => [issue.id, issue.title]));
 
-    const editions = [...stock.issues].sort(byDateDesc('published_date', 'created_date')).map((issue) => ({
-      key: `issue-${issue.id}`,
-      rack: 'editions',
-      title: issue.title || 'Untitled edition',
-      subtitle: issue.subtitle || issue.cover_kicker || '',
-      kicker: issue.status === 'draft' ? 'The edition' : ISSUE_STATUS_LABELS[issue.status] || 'Edition',
-      foot: issue.issue_number
-        ? `Issue ${String(issue.issue_number).padStart(2, '0')}`
-        : 'The house edition',
-      meta: dayLabel(issue.published_date || issue.created_date),
-      cover: issue.cover_image_url || '',
-      // An edition still at the press has no reader to open, so it lands on the published
-      // edition page instead of a route that would come up empty.
-      to: issue.status === 'draft' ? '/Top100Women2025' : `/magazine/${issue.id}`,
+    // The bound volumes: exactly as many as the archive holds. The live volume wears the
+    // cover of the edition being printed now; the rest are set as typographic plates, since
+    // a volume of record was never given a cover of its own.
+    const liveCover = stock.issues[0]?.cover_image_url || '';
+    const volumes = ARCHIVE_VOLUMES.map((volume) => ({
+      key: `volume-${volume.seasonId}`,
+      rack: 'volumes',
+      kicker: volume.note || volume.year,
+      title: volume.title,
+      subtitle: volume.year,
+      foot: volume.volume,
+      cover: volume.livePath ? liveCover : '',
+      to: volume.livePath || volume.path,
     }));
+
+    // Each honoree, read on their own page.
+    const spotlights = stock.nominees
+      .filter((nominee) => nominee.name)
+      .map((nominee) => ({
+        key: `spotlight-${nominee.id}`,
+        rack: 'spotlights',
+        kicker: [nominee.title, nominee.company].filter(Boolean).join(' · ') || 'Honoree',
+        title: nominee.name,
+        meta: nominee.country || '',
+        teaser: nominee.description || '',
+        to: `/profiles/${nominee.id}`,
+      }));
 
     const articles = [...stock.articles].sort(byDateDesc('created_date')).map((article) => ({
       key: `article-${article.id}`,
@@ -162,7 +179,8 @@ export default function useNewsstand() {
         mediaUrl: post.mediaUrl,
         href: post.permalink,
       })),
-      editions,
+      volumes,
+      spotlights,
       articles,
       dispatches: stocked.filter((bulletin) => bulletin.scope !== 'platform').map(asBulletin),
       // The issues under the house's name: every edition the founder has mailed, newest
