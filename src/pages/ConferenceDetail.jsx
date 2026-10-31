@@ -6,6 +6,7 @@ import ConferenceHero from '@/components/conferences/ConferenceHero';
 import ConferenceModeSwitcher from '@/components/conferences/ConferenceModeSwitcher';
 import ConferencePeople from '@/components/conferences/ConferencePeople';
 import useConferenceRoom from '@/components/conferences/useConferenceRoom';
+import RunOfShow from '@/components/conferences/RunOfShow';
 import RsvpControl from '@/components/conference-room/RsvpControl';
 import FocusAreaBoard from '@/components/conference-room/FocusAreaBoard';
 import NowFacilitatingRibbon from '@/components/conference-room/NowFacilitatingRibbon';
@@ -117,12 +118,17 @@ export default function ConferenceDetail() {
           </Link>
         )}
 
+        {isHost && (
+          <section className="mt-3">
+            <RunOfShow room={room} accent={accent} onChanged={refresh} />
+          </section>
+        )}
+
+        <NowFacilitatingRibbon room={room} accent={accent} className="mt-3" />
+
         <section className="mt-4 rounded-sm p-3.5" style={{ background: '#fff', border: `1px solid ${B.border}` }}>
           {me ? (
-            <>
-              <RsvpControl room={room} myRsvp={myRsvp} user={me} accent={accent} onChanged={refresh} />
-              <NowFacilitatingRibbon room={room} accent={accent} />
-            </>
+            <RsvpControl room={room} myRsvp={myRsvp} user={me} accent={accent} onChanged={refresh} />
           ) : (
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>

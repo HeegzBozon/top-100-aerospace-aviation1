@@ -4,7 +4,7 @@
   "properties": {
     "conference_name": {
       "type": "string",
-      "description": "Display name of the conference, e.g. 'IAC 2026'. The conference itself is this record; its focus areas are the rooms inside it."
+      "description": "Display name of the external industry event, e.g. 'IAC 2026'. TOP 100 is not the host."
     },
     "conference_series": {
       "type": "string",
@@ -38,7 +38,7 @@
     },
     "official_url": {
       "type": "string",
-      "description": "Official show website"
+      "description": "Official show website. TOP 100 is not the host."
     },
     "domain_focus": {
       "type": "string",
@@ -52,11 +52,11 @@
         "policy",
         "entrepreneurship"
       ],
-      "description": "Primary domain the conference is oriented around"
+      "description": "Primary domain the room is oriented around"
     },
     "description": {
       "type": "string",
-      "description": "What this conference is, and what its rooms are coordinating. Authored by the host."
+      "description": "What this Mission Room is coordinating. Concierge-authored."
     },
     "status": {
       "type": "string",
@@ -68,15 +68,15 @@
         "archived"
       ],
       "default": "draft",
-      "description": "Lifecycle of the conference. 'draft' = hidden from Fellows; 'open' = attendance declarations accepted; 'live' = event in progress; 'closed' = event ended, record finalized; 'archived' = immutable."
+      "description": "Lifecycle of the room. 'draft' = hidden from Fellows; 'open' = RSVPs accepted; 'live' = event in progress; 'closed' = event ended, record finalized; 'archived' = immutable."
     },
     "facilitator_email": {
       "type": "string",
-      "description": "Email of the host who owns this conference. The host and administrators are the only parties who may edit it."
+      "description": "Email of the Fellow or staff facilitating the room"
     },
     "facilitator_name": {
       "type": "string",
-      "description": "Display name of the host"
+      "description": "Display name of the facilitator"
     },
     "focus_areas": {
       "type": "array",
@@ -95,7 +95,11 @@
         }
       },
       "default": [],
-      "description": "Self-organizing sub-rooms inside the conference"
+      "description": "Self-organizing sub-room focus topics"
+    },
+    "live_focus_key": {
+      "type": "string",
+      "description": "Key of the focus area the host has put in session right now, set from the run of show during the event. Display only; coordination signal, never read by discovery, ranking, or scoring."
     },
     "attendance_verified": {
       "type": "boolean",
@@ -108,7 +112,7 @@
     },
     "notes": {
       "type": "string",
-      "description": "Host teardown notes and production observations"
+      "description": "Facilitator teardown notes and competitive spec observations against the official show app"
     },
     "cover_key": {
       "type": "string",

@@ -165,6 +165,46 @@ export default async function (req) {
       return Response.json({ room });
     }
 
+    // The run of show: the host opens the conference, puts it in session, says which room is
+    // on now, and closes it. Never a field the host cannot see, and never a room this
+    // conference does not hold.
+    if (action === 'setStage') {
+      const roomId = clean(body?.room_id, 40);
+      if (!roomId) return Response.json({ error: 'room_id is required' }, { status: 400 });
+
+      const room = await admin.entities.ConferenceRoom
+        .get(roomId)
+        .catch((e) => (e.status === 404 ? null : Promise.reject(e)));
+      if (!room) return Response.json({ error: 'Conference not found' }, { status: 404 });
+      if (!isAdmin && room.facilitator_email !== user.email) {
+        return Response.json({ error: 'Only the host moves this conference on.' }, { status: 403 });
+      }
+
+      const patch: Record<string, unknown> = {};
+
+      if (body?.status !== undefined) {
+        const next = clean(body?.status, 20);
+        if (!['open', 'live', 'closed'].includes(next)) {
+          return Response.json({ error: 'A host may open, start or close a conference.' }, { status: 400 });
+        }
+        patch.status = next;
+      }
+
+      if (body?.live_focus_key !== undefined) {
+        const key = clean(body?.live_focus_key, 80);
+        const allowed = (room.focus_areas || []).map((area: any) => area?.key).filter(Boolean);
+        if (key && !allowed.includes(key)) {
+          return Response.json({ error: 'That room is not part of this conference.' }, { status: 400 });
+        }
+        patch.live_focus_key = key;
+      }
+
+      if (!Object.keys(patch).length) return Response.json({ error: 'Nothing to set' }, { status: 400 });
+
+      const updated = await admin.entities.ConferenceRoom.update(roomId, patch);
+      return Response.json({ room: updated });
+    }
+
     return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
