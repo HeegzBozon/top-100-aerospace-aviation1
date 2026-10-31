@@ -1,0 +1,191 @@
+{
+  "name": "CareerPitch",
+  "description": "A goal-specific presentation composed with the Career Copilot and explicitly approved by the Fellow. Expression only; never read by discovery, ranking, or scoring.",
+  "type": "object",
+  "properties": {
+    "fellow_email": {
+      "type": "string",
+      "description": "Email of the Fellow who owns this pitch. Stable key across User and Nominee records."
+    },
+    "fellow_id": {
+      "type": "string",
+      "description": "Nominee record id for the Fellow, when one exists"
+    },
+    "goal": {
+      "type": "string",
+      "enum": [
+        "job",
+        "deal",
+        "general"
+      ],
+      "description": "The outcome this pitch was composed for"
+    },
+    "headline": {
+      "type": "string",
+      "description": "One-line positioning statement, max 90 characters"
+    },
+    "pitch": {
+      "type": "string",
+      "description": "The tailored first-person pitch, max 900 characters"
+    },
+    "verified_points": {
+      "type": "array",
+      "default": [],
+      "description": "Points drawn only from corroborated profile records",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "detail"
+        ]
+      }
+    },
+    "expression_points": {
+      "type": "array",
+      "default": [],
+      "description": "Points drawn from the Fellow's own submitted framing",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "detail"
+        ]
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "default": [],
+      "description": "What the record does not yet say for this goal",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "why"
+        ]
+      }
+    },
+    "recommended_slides": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Configurable slide keys in the order the Fellow approved. Identity and verification are never listed; they stay locked at positions 1 and 2."
+    },
+    "availability_note": {
+      "type": "string",
+      "description": "One line describing the Fellow's active availability, when they have any"
+    },
+    "resources": {
+      "type": "array",
+      "default": [],
+      "description": "Curated platform resources referenced by the pitch",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Only an approved pitch has been applied to the Fellow's presentation"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Fellow approved this pitch and applied its slide order"
+    },
+    "shared_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Fellow last chose to share this presentation"
+    }
+  },
+  "required": [
+    "fellow_email",
+    "goal"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.fellow_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.fellow_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

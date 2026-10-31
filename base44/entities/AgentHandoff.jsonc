@@ -1,0 +1,97 @@
+{
+  "name": "AgentHandoff",
+  "description": "One inbox thread a Fellow has explicitly handed to their Superagent. Holds only that thread's context; the agent writes back a summary and a draft reply, and nothing is sent until the Fellow uses it.",
+  "type": "object",
+  "properties": {
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the Fellow who handed the thread over. The agent acts as this person."
+    },
+    "source_key": {
+      "type": "string",
+      "description": "Inbox item key of the thread, e.g. 'enquiry:<id>'"
+    },
+    "source_title": {
+      "type": "string",
+      "description": "Who the thread is with, as shown in the inbox"
+    },
+    "context": {
+      "type": "string",
+      "description": "The selected thread's content, snapshotted at handoff. The only context the agent is given."
+    },
+    "instruction": {
+      "type": "string",
+      "description": "What the Fellow asked the agent to do with this thread"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "drafted",
+        "used",
+        "dismissed"
+      ],
+      "default": "requested",
+      "description": "requested = waiting on the agent; drafted = agent wrote back; used = the Fellow sent their reply; dismissed = set aside"
+    },
+    "summary": {
+      "type": "string",
+      "description": "The agent's short summary of the thread"
+    },
+    "draft_reply": {
+      "type": "string",
+      "description": "The agent's suggested reply. Never sent by the agent."
+    },
+    "drafted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the agent wrote its draft"
+    }
+  },
+  "required": [
+    "owner_email",
+    "source_key",
+    "context"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.owner_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

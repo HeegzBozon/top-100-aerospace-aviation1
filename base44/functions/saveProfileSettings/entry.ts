@@ -27,6 +27,18 @@ const COVERS = ['none', 'orbit', 'launch', 'runway', 'lunar', 'horizon'];
 const LOCKED = ['identity', 'verification'];
 const REORDERABLE = ['eight', 'wall', 'flightography'];
 
+// Presentation deck regions. Identity and credential are locked at positions
+// 1 and 2; every region below may be ordered or hidden, and nothing else may.
+const SLIDE_REGIONS = [
+  'viral_post',
+  'blurb',
+  'documents',
+  'availability',
+  'eight',
+  'flightography',
+  'conferences',
+];
+
 export default async function (req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -70,6 +82,40 @@ export default async function (req) {
         return Response.json({ error: 'Module order must contain every allowed module once' }, { status: 400 });
       }
       patch.module_order = deduped;
+    }
+
+    if (body.slide_order !== undefined) {
+      const order = Array.isArray(body.slide_order) ? body.slide_order : null;
+      if (!order) return Response.json({ error: 'Slide order must be a list' }, { status: 400 });
+      if (order[0] !== 'identity' || order[1] !== 'verification') {
+        return Response.json(
+          { error: 'Identity and Credential are locked to positions 1 and 2' },
+          { status: 400 }
+        );
+      }
+      if (order.some((k) => LOCKED.includes(k) && k !== order[0] && k !== order[1])) {
+        return Response.json({ error: 'Identity and Credential may only hold positions 1 and 2' }, { status: 400 });
+      }
+      const rest = order.slice(2);
+      const unknown = rest.filter((k) => !SLIDE_REGIONS.includes(k));
+      if (unknown.length) {
+        return Response.json({ error: 'Slide is not on the allowlist: ' + unknown[0] }, { status: 400 });
+      }
+      const deduped = rest.filter((k, i) => rest.indexOf(k) === i);
+      patch.slide_order = ['identity', 'verification', ...deduped];
+    }
+
+    if (body.slide_hidden !== undefined) {
+      const hidden = Array.isArray(body.slide_hidden) ? body.slide_hidden : null;
+      if (!hidden) return Response.json({ error: 'Hidden slides must be a list' }, { status: 400 });
+      if (hidden.some((k) => LOCKED.includes(k))) {
+        return Response.json({ error: 'Identity and Credential can never be hidden' }, { status: 400 });
+      }
+      const unknown = hidden.filter((k) => !SLIDE_REGIONS.includes(k));
+      if (unknown.length) {
+        return Response.json({ error: 'Slide is not on the allowlist: ' + unknown[0] }, { status: 400 });
+      }
+      patch.slide_hidden = hidden.filter((k, i) => hidden.indexOf(k) === i);
     }
 
     if (body.six_word_story !== undefined) {

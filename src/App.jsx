@@ -101,6 +101,7 @@ const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
 const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
+const CareerCopilot = lazy(() => import('@/pages/CareerCopilot'));
 const Chamber = lazy(() => import('@/pages/Chamber'));
 const ChamberPractice = lazy(() => import('@/pages/ChamberPractice'));
 const Newsstand = lazy(() => import('@/pages/Newsstand'));
@@ -121,6 +122,7 @@ const ConferenceHost = lazy(() => import('@/pages/ConferenceHost'));
 const ConferenceHostApply = lazy(() => import('@/pages/ConferenceHostApply'));
 const ReferralRespond = lazy(() => import('@/pages/ReferralRespond'));
 const Inbox = lazy(() => import('@/pages/Inbox'));
+const OAuthConsent = lazy(() => import('@/pages/OAuthConsent'));
 
 
 // Every surface is an application the machine runs: the shell draws the chrome and
@@ -157,6 +159,8 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* The referral mini-portal stands outside the machine: its own private frame. */}
       <Route path="/referral/respond" element={<ReferralRespond />} />
+      {/* Where an AI assistant's sign-in is approved — the Superagent included. */}
+      <Route path="/oauth/consent" element={<OAuthConsent />} />
       {/* Everything renders inside the device on phones; desktop is untouched. */}
       <Route element={<HandheldShell />}>
       {/* A desk is housed in the desk machine: everything below renders inside its tube */}
@@ -340,6 +344,9 @@ const AuthenticatedApp = () => {
        <Route path="/badge" element={<ConferenceBadge />} />
        <Route path="/editions/:id" element={<FellowEdition />} />
        <Route path="/platform-board" element={<PlatformDevelopmentBoard />} />
+      {/* The Career Copilot: a goal-specific pitch composed from the Fellow's own
+          record, reviewed and approved before anything is applied. */}
+      <Route path="/career-copilot" element={<CareerCopilot />} />
       <Route path="/meetups" element={<Meetups />} />
       <Route path="/meetups/:eventId" element={<MeetupInvite />} />
 

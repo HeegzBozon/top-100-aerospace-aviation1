@@ -9,18 +9,19 @@ export const SLIDE_REGIONS = [
   { key: 'viral_post', label: 'Top Viral Post', locked: false },
   { key: 'blurb', label: 'Editorial', locked: false },
   { key: 'documents', label: 'Documents', locked: false },
+  { key: 'availability', label: 'Availability', locked: false },
   { key: 'eight', label: 'The Eight', locked: false },
   { key: 'flightography', label: 'Flightography', locked: false },
   { key: 'conferences', label: 'Mission Rooms', locked: false },
 ];
 
 export const LOCKED_SLIDES = ['identity', 'verification'];
-export const CONFIGURABLE_SLIDES = ['viral_post', 'blurb', 'documents', 'eight', 'flightography', 'conferences'];
+export const CONFIGURABLE_SLIDES = ['viral_post', 'blurb', 'documents', 'availability', 'eight', 'flightography', 'conferences'];
 export const ALL_SLIDE_KEYS = [...LOCKED_SLIDES, ...CONFIGURABLE_SLIDES];
 
 // Default roster surfaces all regions — the Fellow toggles off what they don't want.
 // Top Viral Post leads the configurable slides as the hero spread after identity + credential.
-export const DEFAULT_SLIDE_ORDER = ['identity', 'verification', 'viral_post', 'blurb', 'documents', 'eight', 'flightography', 'conferences'];
+export const DEFAULT_SLIDE_ORDER = ['identity', 'verification', 'viral_post', 'blurb', 'documents', 'availability', 'eight', 'flightography', 'conferences'];
 
 export const AUTOPLAY_MODES = [
   { key: 'loop', label: 'Loop', description: 'Advance through all slides and repeat', icon: 'Repeat' },

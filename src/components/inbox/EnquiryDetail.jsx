@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Loader2, Mail } from 'lucide-react';
+import SuperagentPanel from './SuperagentPanel';
 
 const ACTIONS = [
   { status: 'responded', label: 'Mark replied' },
@@ -9,7 +10,7 @@ const ACTIONS = [
 
 // An enquiry opened in place: what they wrote, a reply by email, and the status
 // that records how the conversation went. This is the old desk, inside the Inbox.
-export default function EnquiryDetail({ enquiry, onStatus }) {
+export default function EnquiryDetail({ item, enquiry, onStatus }) {
   const [busy, setBusy] = useState(null);
   const [error, setError] = useState('');
   const act = async (s) => {
@@ -33,6 +34,8 @@ export default function EnquiryDetail({ enquiry, onStatus }) {
         ))}
       </div>
       {error && <p className="mt-2 font-body text-xs text-destructive">{error}</p>}
+      <SuperagentPanel item={item} ownerEmail={enquiry.profile_email}
+        onReplied={() => (enquiry.status === 'responded' ? Promise.resolve() : onStatus('responded'))} />
     </div>
   );
 }

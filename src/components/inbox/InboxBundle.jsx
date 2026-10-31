@@ -19,7 +19,7 @@ export default function InboxBundle({ label, items, states, onSet, showSweep, cu
       <ul>{items.map((i) => (
         <Fragment key={i.key}>
           <InboxItemRow item={i} state={states[i.key]} onSet={onSet} active={i.key === cursorKey} onOpen={onOpen} />
-          {openKey === i.key && i.enquiry && <EnquiryDetail enquiry={i.enquiry} onStatus={(s) => onEnquiryStatus(i, s)} />}
+          {openKey === i.key && i.enquiry && <EnquiryDetail item={i} enquiry={i.enquiry} onStatus={(s) => onEnquiryStatus(i, s)} />}
         </Fragment>
       ))}</ul>
     </section>
