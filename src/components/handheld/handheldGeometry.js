@@ -61,7 +61,7 @@ export function setDeckClearance(clearance = DECK_CLEARANCE) {
 // does not — its own readout across the head of the keypad already prints where the
 // machine is standing, so a second band on the glass would only repeat it and eat the
 // picture. A foot of 0 is the face that needs none.
-export function applyShellVars(clearance = DECK_CLEARANCE, foot = FOOT_CLEARANCE) {
+export function applyShellVars(clearance = DECK_CLEARANCE, foot = 0) {
   holders += 1;
   document.body.classList.add("hh-shell");
   const root = document.documentElement.style;

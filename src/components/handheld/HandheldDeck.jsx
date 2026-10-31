@@ -235,7 +235,8 @@ export default function HandheldDeck() {
   // The radio prints the cycle on its own readout, so the glass keeps no cycle band of
   // its own: the whole foot is handed back to the picture and the share key moves down
   // into the machine's footer. The wheel has no readout, so it keeps the band.
-  const foot = radio ? 0 : undefined;
+  // Neither face keeps the cycle band now: the foot is handed back to the picture.
+  const foot = 0;
 
   useLayoutEffect(() => {
     applyShellVars(clearance, foot);
@@ -877,7 +878,6 @@ export default function HandheldDeck() {
 
       {/* The glass's footer: the share at its left, the measure of where the wheel stands
           ruled through the middle, the device's readout at its right. */}
-      {!radio && <ViewerFoot shareOpen={shareOpen} onShare={toggleShare} />}
 
       {!railHiddenOn(location.pathname) && (
         <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />

@@ -6,7 +6,7 @@ import { phaseForRoom } from '@/components/conference-room/conferenceRoomConfig'
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import revealCursor from '@/components/handheld/revealCursor';
 import ConferenceStage from './ConferenceStage';
-import ConferenceReadout from './ConferenceReadout';
+import ConferenceScorecard from './ConferenceScorecard';
 import ConferenceStageBar from './ConferenceStageBar';
 import { CONFERENCE_APPS } from './conferenceApps';
 
@@ -99,20 +99,13 @@ export default function ConferenceLauncher() {
 
       <div className="relative flex min-h-0 flex-1 flex-col px-4 pb-3 pt-6 md:mx-auto md:w-full md:max-w-5xl md:px-8 md:pb-12 md:pt-14">
         <header className="cfs-rise shrink-0">
-          <p className="text-[8.5px] font-bold uppercase tracking-[0.32em] text-editorial-gold/85 md:text-[10px]">
-            AeroSync · the circuit
-          </p>
-          <h1 className="mt-1.5 font-heading text-[40px] leading-[0.92] text-editorial-cream md:text-[68px]">
+          <h1 className="font-heading text-[40px] leading-[0.92] text-editorial-cream md:text-[68px]">
             Conferences
           </h1>
-          <p className="mt-2.5 max-w-md text-[11.5px] leading-relaxed text-editorial-cream/60 md:mt-4 md:max-w-lg md:text-[13.5px]">
-            One community, across every conference. Find what is ahead, stand in the
-            room, and the Fellows beside you are the ones you are there to meet.
-          </p>
         </header>
 
-        <div className="cfs-rise cfs-rise-1 shrink-0">
-          <ConferenceReadout loading={state.loading} failed={state.failed} counts={counts} />
+        <div className="cfs-rise cfs-rise-1 mt-4 shrink-0">
+          <ConferenceScorecard loading={state.loading} failed={state.failed} counts={counts} />
 
           {state.failed ? (
             <button
@@ -129,9 +122,6 @@ export default function ConferenceLauncher() {
           <ConferenceStageBar cursorKey={cursorKey} />
         </div>
 
-        <p className="mt-3 shrink-0 text-[8px] font-bold uppercase tracking-[0.24em] text-editorial-cream/30 md:mt-6 md:hidden">
-          The wheel walks the stages · press A to open one
-        </p>
       </div>
     </div>
   );
