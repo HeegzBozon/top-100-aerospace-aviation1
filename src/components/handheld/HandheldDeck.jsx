@@ -19,7 +19,7 @@ import useModuleNavigation, { getStage } from "./useModuleNavigation";
 import { useHandheldDeck, getDeck } from "./handheldDeck";
 import { useHandheldPicker } from "./handheldPicker";
 import HandheldNotifications from "./HandheldNotifications";
-import HandheldShareSheet from "./HandheldShareSheet";
+
 import HandheldSpeaker from "./HandheldSpeaker";
 import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
@@ -681,20 +681,19 @@ export default function HandheldDeck() {
     setSearchOpen(true);
   }, [booting, finishBoot]);
 
-  // The foot's Share pill: the drawer opens in the glass where the app lives — the
-  // link you are holding, the code that opens it on a phone, and the ways out of it —
-  // and the same pill puts it away again. It was a print on the ring once; standing on
-  // its own it is always reachable, over a drawer and on a surface that has claimed the
-  // face keys.
+  // The foot's Share pill: the badge is put on. A share is the same object wherever it is
+  // pressed from — the plate, a name and a code already pointing at what is being handed
+  // on — so the pill hands the glass to the badge itself rather than opening a drawer of
+  // its own over the picture.
   const toggleShare = useCallback(() => {
-    if (booting) return;
-    blip(shareOpen ? "back" : "open");
+    if (booting) return finishBoot();
+    blip("open");
     buzz();
-    if (shareOpen) return setShareOpen(false);
     setMenuMode(null);
     setNotificationsOpen(false);
-    setShareOpen(true);
-  }, [booting, shareOpen]);
+    setSearchOpen(false);
+    navigate("/badge");
+  }, [booting, finishBoot, navigate]);
 
   // What has come in — the same drawer rule as everything else: the way in where
   // there is an account to receive it.
@@ -943,13 +942,6 @@ export default function HandheldDeck() {
       <HandheldNotifications
         open={notificationsOpen && !booting}
         onClose={() => setNotificationsOpen(false)}
-      />
-
-      <HandheldShareSheet
-        open={shareOpen && !booting}
-        surface={surface}
-        isSignedIn={isSignedIn}
-        onClose={() => setShareOpen(false)}
       />
 
       <nav
