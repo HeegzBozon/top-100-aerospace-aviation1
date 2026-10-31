@@ -3,11 +3,11 @@ import { C } from '@/components/crm/crmConfig';
 import { RackEmpty } from '@/components/newsstand/NewsstandRack';
 import WireRow from '@/components/newsstand/WireRow';
 
-const SOURCE_NAMES = { instagram: 'Instagram', linkedin: 'LinkedIn' };
+const SOURCE_NAMES = { linkedin: 'LinkedIn' };
 
-// The rack the two accounts are set on. A network that is unreachable, or one whose account
-// has not been connected, is named quietly under the rack rather than taking the papers that
-// did come through off the stand.
+// The rack the house page is set on. A network that is unreachable, or one whose account has
+// not been connected, is named quietly under the rack rather than taking the papers that did
+// come through off the stand.
 export default function WireRack({ rack, items, wire, cursorKey, registerRef, onFocus, onOpen }) {
   if (wire.loading && !items.length) {
     return (

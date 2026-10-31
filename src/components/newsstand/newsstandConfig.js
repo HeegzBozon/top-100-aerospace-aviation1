@@ -49,10 +49,10 @@ export const RACKS = [
     key: 'wire',
     tab: 'wire',
     label: 'Off the wire',
-    kicker: 'Instagram & LinkedIn',
-    blurb: 'What the house is posting on its own accounts, newest first, as it goes out.',
+    kicker: 'LinkedIn',
+    blurb: 'What the house is posting on its company page, newest first, as it goes out.',
     empty:
-      'Nothing has gone out on the wire yet. A post from either house account prints here the day it is published.',
+      'Nothing has gone out on the wire yet. A post from the house page prints here the day it is published.',
   },
 ];
 

@@ -156,7 +156,7 @@ export default function useNewsstand() {
       wire: wire.items.map((post) => ({
         key: post.id,
         rack: 'wire',
-        kicker: post.source === 'instagram' ? 'Instagram' : 'LinkedIn',
+        kicker: 'LinkedIn',
         title: firstLine(post.text, 220) || 'A photograph',
         meta: [post.account, dayLabel(post.publishedAt)].filter(Boolean).join(' · '),
         mediaUrl: post.mediaUrl,
