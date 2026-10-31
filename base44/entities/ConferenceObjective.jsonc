@@ -1,0 +1,51 @@
+{
+  "name": "ConferenceObjective",
+  "type": "object",
+  "properties": {
+    "template_key": {
+      "type": "string",
+      "description": "Starter template this objective began from"
+    },
+    "objective": {
+      "type": "string",
+      "description": "The Fellow's own objective line. Private progress only; never measurement-bearing."
+    },
+    "key_results": {
+      "type": "array",
+      "default": [],
+      "description": "Key results, each tied to one curated metric with a target. Private to the Fellow.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string",
+            "enum": [
+              "declared",
+              "captured",
+              "sent",
+              "outcomes",
+              "won"
+            ]
+          },
+          "target": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

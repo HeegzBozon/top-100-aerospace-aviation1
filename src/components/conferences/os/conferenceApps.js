@@ -45,8 +45,8 @@ export const CONFERENCE_APPS = [
   {
     key: 'follow',
     index: '04',
-    label: 'Follow Up',
-    short: 'Follow Up',
+    label: 'Close',
+    short: 'Close',
     title: 'Close the loop',
     blurb: 'Debrief, send what you promised, record the outcome.',
     to: '/conferences/attend?stage=follow',

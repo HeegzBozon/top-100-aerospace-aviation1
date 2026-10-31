@@ -1,68 +1,66 @@
-import { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { useState } from 'react';
+import { Pencil } from 'lucide-react';
+import useConferenceOkr from './useConferenceOkr';
+import OkrEditor from './OkrEditor';
+import { METRICS } from './okrTemplates';
 
-// The title screen's dashboard: one objective, the key results that measure it, and the
-// circuit's own readings. Every number is the reader's private progress; none of it is
-// read by discovery or measurement.
-async function countOr(entity, query) {
-  try { return await base44.entities[entity].count(query); } catch { return null; }
-}
-
-function useKeyResults() {
-  const [kr, setKr] = useState({ loading: true });
-  useEffect(() => {
-    Promise.all([
-      countOr('ConferenceContact', {}),
-      countOr('ConferenceContact', { follow_up_sent: true }),
-      countOr('ConferenceContact', { outcome: { $in: ['meeting', 'opportunity', 'won'] } }),
-    ]).then(([captured, sent, outcomes]) => setKr({ loading: false, captured, sent, outcomes }));
-  }, []);
-  return kr;
-}
-
-const show = (v, loading) => (loading || v == null ? '—' : v);
-
-function Cell({ label, value, i }) {
+// The title screen's dashboard: the Fellow's own objective, its key results measured
+// against private readings, and the circuit's state. None of it feeds measurement.
+function KeyResult({ label, value, target }) {
+  const pct = value == null ? 0 : Math.min(100, Math.round((value / target) * 100));
   return (
-    <div className={`px-2.5 py-2 ${i % 3 ? 'cfs-seam' : ''}`}>
-      <p className="truncate text-[7.5px] font-bold uppercase tracking-[0.18em] text-editorial-gold/80">{label}</p>
-      <p className="mt-1 font-heading text-[18px] leading-none tabular-nums text-editorial-cream">{value}</p>
+    <div>
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="truncate text-[10px] text-editorial-cream/75">{label}</span>
+        <span className="shrink-0 font-heading text-[11px] tabular-nums text-editorial-cream">{value ?? '—'}<span className="text-editorial-cream/40"> / {target}</span></span>
+      </div>
+      <div className="mt-1 h-[3px] overflow-hidden rounded-full bg-editorial-cream/12">
+        <div className="h-full rounded-full bg-gradient-to-r from-editorial-copper to-editorial-gold" style={{ width: `${pct}%` }} />
+      </div>
     </div>
   );
 }
 
 export default function ConferenceScorecard({ loading, failed, counts }) {
-  const kr = useKeyResults();
+  const { okr, saved, values, save } = useConferenceOkr();
+  const [editing, setEditing] = useState(false);
   const circuit = loading || failed;
-  const pct = kr.captured ? Math.round(((kr.sent || 0) / kr.captured) * 100) : 0;
-  const cells = [
-    { label: 'Ahead', value: circuit ? '—' : counts.ahead },
-    { label: 'In session', value: circuit ? '—' : counts.live },
-    { label: 'Declared', value: circuit ? '—' : counts.declared },
-    { label: 'Captured', value: show(kr.captured, kr.loading) },
-    { label: 'Followed up', value: show(kr.sent, kr.loading) },
-    { label: 'Outcomes', value: show(kr.outcomes, kr.loading) },
-  ];
+  const read = (m) => (m === 'declared' ? (circuit ? null : counts.declared) : values.loading ? null : values[m]);
 
   return (
     <section className="cfs-readout overflow-hidden rounded-[9px]">
-      <div className="px-3 pb-2.5 pt-3">
-        <p className="text-[7.5px] font-bold uppercase tracking-[0.24em] text-editorial-gold/80">Objective</p>
-        <p className="mt-1 font-heading text-[15px] leading-tight text-editorial-cream">
-          Turn every show into relationships that move
-        </p>
-        <div className="mt-2.5 flex items-center gap-2">
-          <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-editorial-cream/12">
-            <div className="h-full rounded-full bg-editorial-copper" style={{ width: `${pct}%` }} />
-          </div>
-          <span className="text-[8px] font-bold uppercase tracking-[0.16em] text-editorial-cream/60">{pct}% closed</span>
+      <div className="flex items-start justify-between gap-2 px-3 pt-3">
+        <div className="min-w-0">
+          <p className="text-[7.5px] font-bold uppercase tracking-[0.24em] text-editorial-gold/80">
+            Objective{saved ? '' : ' · template'}
+          </p>
+          {!editing && <p className="mt-1 font-heading text-[15px] leading-tight text-editorial-cream">{okr.objective}</p>}
         </div>
+        {!editing && (
+          <button type="button" onClick={() => setEditing(true)} aria-label="Edit objective"
+            className="shrink-0 rounded-full border border-editorial-cream/20 p-1.5 text-editorial-gold">
+            <Pencil className="h-3 w-3" />
+          </button>
+        )}
       </div>
+
+      {editing ? (
+        <OkrEditor okr={okr} onSave={save} onClose={() => setEditing(false)} />
+      ) : (
+        <div className="space-y-2 px-3 pb-3 pt-2.5">
+          {okr.key_results.map((kr, i) => (
+            <KeyResult key={i} label={METRICS[kr.metric]} value={read(kr.metric)} target={kr.target} />
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-3 border-t border-editorial-copper/30">
-        {cells.slice(0, 3).map((c, i) => <Cell key={c.label} {...c} i={i} />)}
-      </div>
-      <div className="grid grid-cols-3 border-t border-editorial-copper/20">
-        {cells.slice(3).map((c, i) => <Cell key={c.label} {...c} i={i} />)}
+        {[['Ahead', counts.ahead], ['In session', counts.live], ['Declared', counts.declared]].map(([l, v], i) => (
+          <div key={l} className={`px-2.5 py-2 ${i ? 'cfs-seam' : ''}`}>
+            <p className="truncate text-[7.5px] font-bold uppercase tracking-[0.18em] text-editorial-gold/80">{l}</p>
+            <p className="mt-1 font-heading text-[18px] leading-none tabular-nums text-editorial-cream">{circuit ? '—' : v}</p>
+          </div>
+        ))}
       </div>
     </section>
   );
