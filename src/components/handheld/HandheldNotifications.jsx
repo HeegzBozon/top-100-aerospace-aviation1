@@ -5,6 +5,7 @@ import { Bell } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { blip, buzz } from "./handheldSound";
 import NotificationGroupRow from "./NotificationGroupRow";
+import PinnedEdition from "./PinnedEdition";
 
 // What has come in for this Fellow, drawn inside the glass like the cartridge
 // menu. Transmissions of one kind are stacked together; tapping one opens what it
@@ -156,9 +157,9 @@ export default function HandheldNotifications({ open, onClose }) {
             </p>
           </div>
         ) : (
-          groups.map((group) => (
+          [<PinnedEdition key="pinned" onOpen={() => goTo("/Top100Women2025")} />].concat(groups.map((group) => (
             <NotificationGroupRow key={group.title} group={group} renderItem={renderItem} />
-          ))
+          )))
         )}
       </div>
 

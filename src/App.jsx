@@ -108,6 +108,7 @@ const Newsstand = lazy(() => import('@/pages/Newsstand'));
 const ChamberOffice = lazy(() => import('@/pages/ChamberOffice'));
 const AppStore = lazy(() => import('@/pages/AppStore'));
 const AppStoreShelf = lazy(() => import('@/pages/AppStoreShelf'));
+const AppStoreRecruiter = lazy(() => import('@/pages/AppStoreRecruiter'));
 const PressKitStudio = lazy(() => import('@/pages/PressKitStudio'));
 const PressKitPublic = lazy(() => import('@/pages/PressKitPublic'));
 const Classifieds = lazy(() => import('@/pages/Classifieds'));
@@ -238,6 +239,7 @@ const AuthenticatedApp = () => {
       {/* The App Store: micro-tools, each doing one job and handing back an artifact */}
       <Route path="/app-store" element={<AppStore />} />
       <Route path="/app-store/shelf" element={<AppStoreShelf />} />
+      <Route path="/app-store/recruiter" element={<AppStoreRecruiter />} />
       {/* The Gift Shop: the house's own objects, under the name the Chamber gives it */}
       <Route path="/gift-shop" element={<Shop />} />
       <Route path="/press-kit" element={<PressKitStudio />} />
