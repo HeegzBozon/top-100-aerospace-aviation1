@@ -27,6 +27,8 @@ const staleVersion = (data) => /not active|invalid version/i.test(String(data?.m
 // A caption is set as text on the stand, never as markup.
 const clean = (text) =>
   String(text || '')
+    // LinkedIn prints a mention as @[Name](urn:li:person:…); the stand prints the name.
+    .replace(/@\[([^\]]+)\]\([^)]*\)/g, '$1')
     .replace(/<[^>]*>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -52,29 +54,17 @@ async function linkedInGet(url, accessToken) {
   throw new Error(lastError);
 }
 
-// The page the wire reads. A member who administers a page can list it from the token; where
-// the connected account cannot, the page's own id is set here and used instead.
-const LINKEDIN_ORGANIZATION_ID = '';
+// The page the wire reads: the house's own company page, named by its id. The connected account
+// is not permitted to list the pages it administers, so the page is set here and read directly.
+const LINKEDIN_ORGANIZATION_ID = '110252945';
 
-// The page a token administers is not carried on the token, so the page is asked which
-// organisations this member can post for.
-async function resolveOrganization(accessToken) {
-  if (LINKEDIN_ORGANIZATION_ID) return `urn:li:organization:${LINKEDIN_ORGANIZATION_ID}`;
-
-  const data = await linkedInGet(
-    'https://api.linkedin.com/rest/organizationAcls?q=roleAssignee&role=ADMINISTRATOR&state=APPROVED&count=10',
-    accessToken,
-  );
-  const urn = (data.elements || [])[0]?.organization || '';
-  if (!urn) throw new Error('No LinkedIn page is administered by the connected account.');
-  return urn.startsWith('urn:li:organization:') ? urn : `urn:li:organization:${urn}`;
-}
+const organizationUrn = () => `urn:li:organization:${LINKEDIN_ORGANIZATION_ID}`;
 
 async function readLinkedIn(base44) {
   const { accessToken } = await base44.asServiceRole.connectors.getConnection('linkedin');
   if (!accessToken) throw new Error('The LinkedIn page is not connected.');
 
-  const organization = await resolveOrganization(accessToken);
+  const organization = organizationUrn();
 
   const data = await linkedInGet(
     `https://api.linkedin.com/rest/posts?author=${encodeURIComponent(organization)}&q=author&count=12&sortBy=LAST_MODIFIED`,
