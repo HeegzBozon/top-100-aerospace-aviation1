@@ -6,6 +6,9 @@ import InboxBundle from './InboxBundle';
 const BUNDLES = [
   { key: 'introductions', label: 'Introductions' },
   { key: 'referrals', label: 'Referrals' },
+  { key: 'proposals', label: 'Proposals' },
+  { key: 'deals', label: 'Deals' },
+  { key: 'offers', label: 'Offers' },
 ];
 const VIEWS = ['inbox', 'pinned', 'done'];
 
@@ -43,7 +46,7 @@ export default function InboxTriage({ user }) {
         <div className="rounded border border-editorial-copper/40 bg-editorial-cream px-6 py-10 text-center">
           <p className="font-heading text-2xl text-editorial-navy">{view === 'done' ? 'Nothing done yet.' : 'All clear.'}</p>
           <p className="mt-2 font-body text-sm text-editorial-navy/70">
-            {view === 'inbox' ? 'Every referral and introduction is handled. Snoozed items return on their own.' : view === 'pinned' ? 'Pin an item to keep it here.' : 'Items you finish are kept here.'}
+            {view === 'inbox' ? 'Every referral, introduction, proposal, deal and offer is handled. Snoozed items return on their own.' : view === 'pinned' ? 'Pin an item to keep it here.' : 'Items you finish are kept here.'}
           </p>
         </div>
       ) : BUNDLES.map((b) => (

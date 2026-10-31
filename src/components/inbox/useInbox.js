@@ -8,6 +8,11 @@ const REFERRAL_STEP = {
   introduced: 'Introduced — confirm they connected',
 };
 
+const ENQUIRY_STEP = { new: 'New — awaiting your reply', opened: 'Read — reply pending', responded: 'Replied — in conversation' };
+const TIMELINE = { immediate: 'Immediate', this_quarter: 'This quarter', exploratory: 'Exploratory' };
+// Proposals and RFQs first, then the two intent tracks: Deal & BD, and Job & Career.
+const enquiryBundle = (q) => (q.request_type === 'proposal_rfq' ? 'proposals' : q.mode === 'commercial' ? 'deals' : 'offers');
+
 // The Inbox: a view over the records that need an answer, with a saved, shared
 // triage state per item. Source records stay canonical.
 export default function useInbox(user) {
@@ -19,9 +24,10 @@ export default function useInbox(user) {
     if (!user?.email) return;
     setStatus('loading');
     try {
-      const [refs, intros, saved] = await Promise.all([
+      const [refs, intros, enquiries, saved] = await Promise.all([
         base44.entities.ConferenceReferral.filter({ status: { $in: Object.keys(REFERRAL_STEP) } }, '-updated_date', 100),
         base44.entities.IntroRequest.filter({ recipient_email: user.email, status: { $in: ['pending', 'viewed'] } }, '-created_date', 100),
+        base44.entities.ProfileInquiry.filter({ profile_email: user.email, status: { $in: ['new', 'opened', 'responded'] } }, '-created_date', 100),
         base44.entities.InboxItemState.list('-updated_date', 500),
       ]);
       const next = [
@@ -34,6 +40,11 @@ export default function useInbox(user) {
           key: `intro:${i.id}`, bundle: 'introductions', at: i.created_date, person: true,
           title: `${i.requester_name || i.requester_email} asks for an introduction`,
           fact: i.target_title || i.message || 'Introduction request', to: '/Profile?surface=availability',
+        })),
+        ...enquiries.map((q) => ({
+          key: `enquiry:${q.id}`, bundle: enquiryBundle(q), at: q.created_date, person: q.status === 'new',
+          title: `${q.sender_name || q.sender_email}${q.sender_org ? ` · ${q.sender_org}` : ''}`,
+          fact: `${ENQUIRY_STEP[q.status]}${q.timeline ? ` · ${TIMELINE[q.timeline]}` : ''}`, to: '#enquiries',
         })),
       ];
       setItems(next);

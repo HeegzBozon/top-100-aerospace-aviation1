@@ -42,7 +42,7 @@ export const REVIEW_TABS = [
     index: "4",
     label: "Inbox",
     blurb: "Who has written to you through your profile — new enquiries first, each one answered at your own pace.",
-    to: "/record?surface=inbox",
+    to: "/inbox",
     icon: Mail,
     membersOnly: true,
   },
