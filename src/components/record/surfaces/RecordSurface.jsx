@@ -1,6 +1,5 @@
 import BusinessCardPanel from '@/components/record/BusinessCardPanel';
-import InquiryDeskPanel from '@/components/profile/intent/InquiryDeskPanel';
-import InboxTriage from '@/components/inbox/InboxTriage';
+import { Link } from 'react-router-dom';
 import ViewSurface from './ViewSurface';
 import DataRoomSurface from './DataRoomSurface';
 import AvailabilitySurface from './AvailabilitySurface';
@@ -64,8 +63,7 @@ export default function RecordSurface({
   if (surfaceKey === 'inbox') {
     return (
       <div className="mt-8">
-        <InboxTriage user={account} />
-        <InquiryDeskPanel user={account} accent={accent} />
+        <Link to="/inbox" className="pd-acct-link inline-flex">Open the Inbox</Link>
       </div>
     );
   }

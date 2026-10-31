@@ -120,6 +120,7 @@ const ConferenceDetail = lazy(() => import('@/pages/ConferenceDetail'));
 const ConferenceHost = lazy(() => import('@/pages/ConferenceHost'));
 const ConferenceHostApply = lazy(() => import('@/pages/ConferenceHostApply'));
 const ReferralRespond = lazy(() => import('@/pages/ReferralRespond'));
+const Inbox = lazy(() => import('@/pages/Inbox'));
 
 
 // Every surface is an application the machine runs: the shell draws the chrome and
@@ -156,6 +157,7 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* The referral mini-portal stands outside the machine: its own private frame. */}
       <Route path="/referral/respond" element={<ReferralRespond />} />
+      <Route path="/inbox" element={<Inbox />} />
       {/* Everything renders inside the device on phones; desktop is untouched. */}
       <Route element={<HandheldShell />}>
       {/* A desk is housed in the desk machine: everything below renders inside its tube */}
