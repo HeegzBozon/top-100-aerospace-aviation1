@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Pencil } from 'lucide-react';
+import { Pencil, Plus } from 'lucide-react';
+import useReferrals from '../referrals/useReferrals';
+import ReferralDesk from '../referrals/ReferralDesk';
 import useConferenceOkr from './useConferenceOkr';
 import OkrEditor from './OkrEditor';
 import { METRICS } from './okrTemplates';
@@ -24,6 +26,8 @@ function KeyResult({ label, value, target }) {
 export default function ConferenceScorecard({ loading, failed, counts }) {
   const { okr, saved, values, save } = useConferenceOkr();
   const [editing, setEditing] = useState(false);
+  const [deskOpen, setDeskOpen] = useState(false);
+  const desk = useReferrals();
   const circuit = loading || failed;
   const read = (m) => (m === 'declared' ? (circuit ? null : counts.declared) : values.loading ? null : values[m]);
 
@@ -62,14 +66,20 @@ export default function ConferenceScorecard({ loading, failed, counts }) {
         {[
           ['Lead time · deals', values.lead == null ? null : `${values.lead}d`],
           ['Cycle time · closed', values.cycle == null ? null : `${values.cycle}d`],
-          ['Win rate', values.winRate == null ? null : `${values.winRate}%`],
         ].map(([l, v], i) => (
           <div key={l} className={`px-2.5 py-2 ${i ? 'cfs-seam' : ''}`}>
             <p className="truncate text-[7.5px] font-bold uppercase tracking-[0.18em] text-editorial-gold/80">{l}</p>
             <p className="mt-1 font-heading text-[18px] leading-none tabular-nums text-editorial-cream">{values.loading || v == null ? '—' : v}</p>
           </div>
         ))}
+        <button type="button" onClick={() => setDeskOpen(true)} className="cfs-seam px-2.5 py-2 text-left transition-colors hover:bg-editorial-cream/5">
+          <p className="flex items-center justify-between text-[7.5px] font-bold uppercase tracking-[0.18em] text-editorial-gold/80">Referrals <Plus className="h-2.5 w-2.5" /></p>
+          <p className="mt-1 font-heading text-[18px] leading-none tabular-nums text-editorial-cream">
+            {desk.state === 'ready' ? desk.referrals.length : '—'}
+          </p>
+        </button>
       </div>
+      {deskOpen && <ReferralDesk desk={desk} onClose={() => setDeskOpen(false)} />}
     </section>
   );
 }
