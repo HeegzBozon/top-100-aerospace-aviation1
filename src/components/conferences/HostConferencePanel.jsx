@@ -4,6 +4,7 @@ import { ChevronDown, ExternalLink, Pencil } from 'lucide-react';
 import AvatarCluster from '@/components/conference-room/AvatarCluster';
 import VerifyAttendanceButton from '@/components/conference-room/VerifyAttendanceButton';
 import ConferenceEditor from './ConferenceEditor';
+import RunOfShow from './RunOfShow';
 import {
   B, conferenceHref, dateRangeLabel, disciplineLabel, domainAccent, phaseForRoom, placeLabel,
 } from './conferenceConfig';
@@ -79,6 +80,12 @@ export default function HostConferencePanel({ room, attendees = [], user, onSave
             {ended && (
               <VerifyAttendanceButton room={room} user={user} accent={accent} onChanged={() => onReload?.()} />
             )}
+          </div>
+
+          {/* The run of show, where the host already works: the same controls the
+              conference page carries, so an event is opened and run from the list. */}
+          <div className="mt-2.5">
+            <RunOfShow room={room} accent={accent} onChanged={() => onReload?.()} />
           </div>
 
           {editing && (

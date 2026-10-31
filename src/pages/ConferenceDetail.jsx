@@ -7,6 +7,7 @@ import ConferenceModeSwitcher from '@/components/conferences/ConferenceModeSwitc
 import ConferencePeople from '@/components/conferences/ConferencePeople';
 import useConferenceRoom from '@/components/conferences/useConferenceRoom';
 import RunOfShow from '@/components/conferences/RunOfShow';
+import ConferenceLinks from '@/components/conferences/ConferenceLinks';
 import RsvpControl from '@/components/conference-room/RsvpControl';
 import FocusAreaBoard from '@/components/conference-room/FocusAreaBoard';
 import NowFacilitatingRibbon from '@/components/conference-room/NowFacilitatingRibbon';
@@ -150,6 +151,10 @@ export default function ConferenceDetail() {
             </div>
           )}
         </section>
+
+        <div className="mt-3">
+          <ConferenceLinks room={room} accent={accent} />
+        </div>
 
         {me && (
           <section className="mt-3 rounded-sm p-3.5" style={{ background: '#fff', border: `1px solid ${B.border}` }}>

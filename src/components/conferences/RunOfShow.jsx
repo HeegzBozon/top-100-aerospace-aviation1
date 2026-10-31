@@ -46,6 +46,22 @@ export default function RunOfShow({ room, accent, onChanged }) {
     }
   };
 
+  // A draft is hidden from the circuit, so it has no stage to run yet: publishing it stays a
+  // deliberate act in the editor rather than the first button a host presses here.
+  if (room?.status === 'draft') {
+    return (
+      <div className="rounded-sm p-3.5" style={{ background: '#fff', border: `1px solid ${B.border}` }}>
+        <p className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: B.copper }}>
+          Run of show
+        </p>
+        <p className="mt-1.5 text-[11.5px] leading-relaxed" style={{ color: B.muted }}>
+          This conference is still a draft. Open it from the editor when the record is ready, and
+          the run of show appears here.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-sm p-3.5" style={{ background: '#fff', border: `1px solid ${B.border}` }}>
       <p className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: B.copper }}>
