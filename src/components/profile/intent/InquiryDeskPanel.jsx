@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Loader2, Inbox } from 'lucide-react';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import InquiryRow from './InquiryRow';
+import InquiryFilters, { INQUIRY_FILTERS } from './InquiryFilters';
 
 // The Fellow's private desk: everything written through the doors on their profile.
 // Reads only their own records (the record's access rules hold the line), and the
@@ -12,6 +13,15 @@ export default function InquiryDeskPanel({ user, accent }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState(null);
+  const [filter, setFilter] = useState('all');
+  const [counts, setCounts] = useState({});
+
+  useEffect(() => {
+    if (!user?.email) return;
+    Promise.all(INQUIRY_FILTERS.map((f) => base44.entities.ProfileInquiry.count({ profile_email: user.email, ...f.query })))
+      .then((n) => setCounts(Object.fromEntries(INQUIRY_FILTERS.map((f, i) => [f.key, n[i]]))))
+      .catch(() => {});
+  }, [user?.email, inquiries]);
 
   useEffect(() => {
     let alive = true;
@@ -22,7 +32,7 @@ export default function InquiryDeskPanel({ user, accent }) {
     (async () => {
       try {
         const page = await base44.entities.ProfileInquiry.filter(
-          { profile_email: user.email },
+          { profile_email: user.email, ...INQUIRY_FILTERS.find((f) => f.key === filter).query },
           { sort: '-created_date', limit: 50 }
         );
         if (alive) setInquiries(page?.items || (Array.isArray(page) ? page : []));
@@ -33,7 +43,7 @@ export default function InquiryDeskPanel({ user, accent }) {
       }
     })();
     return () => { alive = false; };
-  }, [user?.email]);
+  }, [user?.email, filter]);
 
   const setStatus = async (id, status) => {
     setBusyId(id);
@@ -52,7 +62,7 @@ export default function InquiryDeskPanel({ user, accent }) {
     }
   };
 
-  const unread = inquiries.filter((row) => row.status === 'new').length;
+  const unread = counts.new || 0;
 
   return (
     <section className="px-3 pb-4 pt-3">
@@ -75,6 +85,8 @@ export default function InquiryDeskPanel({ user, accent }) {
         )}
       </div>
 
+      <InquiryFilters active={filter} counts={counts} onChange={(k) => { setLoading(true); setFilter(k); }} />
+
       {loading ? (
         <div className="mt-6 flex items-center justify-center py-6">
           <Loader2 className="h-5 w-5 animate-spin" style={{ color: B.gold }} />
@@ -86,7 +98,9 @@ export default function InquiryDeskPanel({ user, accent }) {
       ) : inquiries.length === 0 ? (
         <div className="mt-3 rounded-2xl px-4 py-6 text-center" style={{ border: `1px dashed ${B.border}`, background: 'rgba(255,255,255,0.6)' }}>
           <Inbox className="mx-auto h-6 w-6" style={{ color: B.gold }} />
-          <p className="mt-2 font-heading text-[15px]" style={{ color: B.navy }}>The desk is empty.</p>
+          <p className="mt-2 font-heading text-[15px]" style={{ color: B.navy }}>
+            {filter === 'all' ? 'The desk is empty.' : 'Nothing here right now.'}
+          </p>
           <p className="mt-1 text-[11px] leading-relaxed" style={{ color: B.muted }}>
             When a door is open, an inquiry lands here with the sender&rsquo;s own words — nothing
             is routed to your inbox first.
