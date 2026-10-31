@@ -27,19 +27,23 @@ function when(value) {
   return date.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
-export default function BallotLedger({ ballots = [] }) {
+export default function BallotLedger({ ballots = [], recent = 0 }) {
   const [query, setQuery] = useState('');
+  const [showAll, setShowAll] = useState(false);
   const [sort, setSort] = useState({ key: 'submitted_at', dir: 'desc' });
+
+  // The latest landings first; the rest of the record stays one press away.
+  const rows = recent > 0 && !showAll ? ballots.slice(0, recent) : ballots;
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
     const filtered = needle
-      ? ballots.filter((row) =>
+      ? rows.filter((row) =>
           [row.voter_name, row.voter_email, row.cohort, row.state].some((value) =>
             String(value || '').toLowerCase().includes(needle)
           )
         )
-      : ballots;
+      : rows;
     const dir = sort.dir === 'asc' ? 1 : -1;
     return [...filtered].sort((a, b) => {
       if (sort.key === 'submitted_at') {
@@ -51,7 +55,7 @@ export default function BallotLedger({ ballots = [] }) {
       if (typeof x === 'number' && typeof y === 'number') return (x - y) * dir;
       return String(x ?? '').localeCompare(String(y ?? '')) * dir;
     });
-  }, [ballots, query, sort]);
+  }, [rows, query, sort]);
 
   const toggle = (key) =>
     setSort((prev) => ({ key, dir: prev.key === key && prev.dir === 'desc' ? 'asc' : 'desc' }));
@@ -68,9 +72,20 @@ export default function BallotLedger({ ballots = [] }) {
             className="h-8 pl-8 text-xs"
           />
         </div>
-        <p className="shrink-0 text-[10px] uppercase tracking-[0.16em] text-editorial-navy/45">
-          {visible.length} of {ballots.length} shown
-        </p>
+        <div className="flex shrink-0 items-center gap-3">
+          {recent > 0 && ballots.length > recent && (
+            <button
+              type="button"
+              onClick={() => setShowAll((value) => !value)}
+              className="text-[9.5px] font-semibold uppercase tracking-[0.16em] text-editorial-navy/45 hover:text-editorial-navy"
+            >
+              {showAll ? `Latest ${recent}` : 'Show all'}
+            </button>
+          )}
+          <p className="text-[10px] uppercase tracking-[0.16em] text-editorial-navy/45">
+            {visible.length} of {rows.length} shown
+          </p>
+        </div>
       </div>
 
       {/* A phone reads the ledger as cards: five columns cannot be read across a hand's

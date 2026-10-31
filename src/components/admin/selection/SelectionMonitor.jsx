@@ -6,7 +6,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import useMonitorEditMenu from './useMonitorEditMenu';
 import MonitorStats from './MonitorStats';
 import PulseBand from './PulseBand';
-import TrafficReadout from './TrafficReadout';
 import CohortDive from './CohortDive';
 import StandingsBoard from './StandingsBoard';
 import BallotLedger from './BallotLedger';
@@ -22,6 +21,8 @@ import ContributorTable from './ContributorTable';
 // operator and the standings.
 
 const REFRESH_MS = 60000;
+// The activity ledgers open on what has just landed; the whole record is one press away.
+const RECENT = 20;
 
 export default function SelectionMonitor({ onOpenMenu }) {
   const [scope, setScope] = useState('all');
@@ -105,44 +106,57 @@ export default function SelectionMonitor({ onOpenMenu }) {
 
   return (
     <div className="space-y-3">
-      {/* The figures stand at the head of the surface; the board follows immediately. */}
+      {/* The figures stand at the head of the surface; the reading follows immediately. */}
       <MonitorStats totals={totals} />
 
-      {/* The board leads, with the reading it is named beneath it. */}
-      <StandingsBoard
-        rows={data?.standings || []}
-        seeded={totals?.seeded || 0}
-        castBallots={totals?.ballots || 0}
-        mode={mode}
-        scopeKey={`${scope}:${mode}`}
-      />
-
-      <PulseBand totals={totals} mode={mode} />
-
-      <TrafficReadout />
-
-      <CohortDive cohortStats={data?.cohort_stats} mode={mode} />
-
-      <Tabs defaultValue="ballots">
-        <TabsList className="grid h-auto w-full grid-cols-3 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
-          <TabsTrigger value="ballots" className="px-1 text-[10px] md:px-3 md:text-sm">
-            Ballots
+      {/* Two readings of the same room: where the field stands, and what has just landed
+          in it. */}
+      <Tabs defaultValue="standings">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
+          <TabsTrigger value="standings" className="px-2 text-[11px] md:px-4 md:text-sm">
+            Standings
           </TabsTrigger>
-          <TabsTrigger value="marks" className="px-1 text-[10px] md:px-3 md:text-sm">
-            Marks
-          </TabsTrigger>
-          <TabsTrigger value="contributors" className="px-1 text-[10px] md:px-3 md:text-sm">
-            Community
+          <TabsTrigger value="activity" className="px-2 text-[11px] md:px-4 md:text-sm">
+            Activity
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="ballots" className="mt-2.5">
-          <BallotLedger ballots={data?.ballot_tracking || []} />
+
+        <TabsContent value="standings" className="mt-2.5 space-y-3">
+          <StandingsBoard
+            rows={data?.standings || []}
+            seeded={totals?.seeded || 0}
+            castBallots={totals?.ballots || 0}
+            mode={mode}
+            scopeKey={`${scope}:${mode}`}
+          />
+          <CohortDive cohortStats={data?.cohort_stats} mode={mode} />
         </TabsContent>
-        <TabsContent value="marks" className="mt-2.5">
-          <MarkSetsLedger marks={data?.ledger || []} />
-        </TabsContent>
-        <TabsContent value="contributors" className="mt-2.5">
-          <ContributorTable rows={data?.contributors || []} />
+
+        <TabsContent value="activity" className="mt-2.5 space-y-3">
+          <PulseBand totals={totals} mode={mode} />
+
+          <Tabs defaultValue="ballots">
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
+              <TabsTrigger value="ballots" className="px-1 text-[10px] md:px-3 md:text-sm">
+                Ballots
+              </TabsTrigger>
+              <TabsTrigger value="marks" className="px-1 text-[10px] md:px-3 md:text-sm">
+                Marks
+              </TabsTrigger>
+              <TabsTrigger value="contributors" className="px-1 text-[10px] md:px-3 md:text-sm">
+                Community
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="ballots" className="mt-2.5">
+              <BallotLedger ballots={data?.ballot_tracking || []} recent={RECENT} />
+            </TabsContent>
+            <TabsContent value="marks" className="mt-2.5">
+              <MarkSetsLedger marks={data?.ledger || []} recent={RECENT} />
+            </TabsContent>
+            <TabsContent value="contributors" className="mt-2.5">
+              <ContributorTable rows={data?.contributors || []} />
+            </TabsContent>
+          </Tabs>
         </TabsContent>
       </Tabs>
     </div>

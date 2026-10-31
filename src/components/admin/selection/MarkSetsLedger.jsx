@@ -13,12 +13,13 @@ function when(value) {
   return date.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
-export default function MarkSetsLedger({ marks = [] }) {
+export default function MarkSetsLedger({ marks = [], recent = 0 }) {
   const [query, setQuery] = useState('');
   const [showTest, setShowTest] = useState(true);
+  const [showAll, setShowAll] = useState(false);
   const [open, setOpen] = useState(() => new Set());
 
-  const sets = useMemo(() => {
+  const allSets = useMemo(() => {
     const map = new Map();
     marks.forEach((row) => {
       const key = row.set_key || `${row.voter_email}|${row.at}`;
@@ -38,6 +39,9 @@ export default function MarkSetsLedger({ marks = [] }) {
     });
     return [...map.values()].sort((a, b) => new Date(b.at || 0) - new Date(a.at || 0));
   }, [marks]);
+
+  // Sets are read newest first, so the latest landings are the head of the record.
+  const sets = recent > 0 && !showAll ? allSets.slice(0, recent) : allSets;
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -72,6 +76,15 @@ export default function MarkSetsLedger({ marks = [] }) {
           />
         </div>
         <div className="flex items-center gap-3">
+          {recent > 0 && allSets.length > recent && (
+            <button
+              type="button"
+              onClick={() => setShowAll((value) => !value)}
+              className="text-[9.5px] font-semibold uppercase tracking-[0.16em] text-editorial-navy/45 hover:text-editorial-navy"
+            >
+              {showAll ? `Latest ${recent}` : 'Show all'}
+            </button>
+          )}
           {testCount > 0 && (
             <button
               type="button"
