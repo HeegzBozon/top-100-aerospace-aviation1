@@ -157,11 +157,11 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* The referral mini-portal stands outside the machine: its own private frame. */}
       <Route path="/referral/respond" element={<ReferralRespond />} />
-      <Route path="/inbox" element={<Inbox />} />
       {/* Everything renders inside the device on phones; desktop is untouched. */}
       <Route element={<HandheldShell />}>
       {/* A desk is housed in the desk machine: everything below renders inside its tube */}
       <Route element={<DesktopShell />}>
+      <Route path="/inbox" element={<Inbox />} />
       {/* Everyone opens on the start screen: the surfaces a Fellow is entitled to, and
           the way in for whoever is not one yet — the same machine either way. */}
       <Route path="/" element={<StartScreen />} />

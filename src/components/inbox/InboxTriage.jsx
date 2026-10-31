@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import useInbox from './useInbox';
 import InboxBundle from './InboxBundle';
+import useInboxPicker from './useInboxPicker';
 
 const BUNDLES = [
   { key: 'introductions', label: 'Introductions' },
@@ -17,13 +18,6 @@ export default function InboxTriage({ user }) {
   const [view, setView] = useState('inbox');
   const now = Date.now();
 
-  if (status === 'loading') return <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-editorial-copper" /></div>;
-  if (status === 'error') return (
-    <p className="py-8 text-center font-body text-sm text-editorial-navy">
-      The inbox could not be read. <button className="font-semibold text-editorial-copper underline" onClick={reload}>Try again</button>
-    </p>
-  );
-
   const visible = items.filter((i) => {
     const s = states[i.key] || {};
     if (view === 'done') return s.done;
@@ -31,6 +25,19 @@ export default function InboxTriage({ user }) {
     if (view === 'pinned') return s.pinned;
     return !s.snoozed_until || new Date(s.snoozed_until).getTime() <= now;
   });
+  // Rows in the order they print, so the wheel walks them top to bottom.
+  const rows = BUNDLES.flatMap((b) => visible.filter((i) => i.bundle === b.key));
+  const { cursorKey } = useInboxPicker({
+    rows, views: VIEWS, view, setView,
+    onDone: (key) => setState(key, { done: true, snoozed_until: null }),
+  });
+
+  if (status === 'loading') return <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-editorial-copper" /></div>;
+  if (status === 'error') return (
+    <p className="py-8 text-center font-body text-sm text-editorial-navy">
+      The inbox could not be read. <button className="font-semibold text-editorial-copper underline" onClick={reload}>Try again</button>
+    </p>
+  );
 
   return (
     <div>
@@ -50,7 +57,7 @@ export default function InboxTriage({ user }) {
           </p>
         </div>
       ) : BUNDLES.map((b) => (
-        <InboxBundle key={b.key} label={b.label} states={states} onSet={setState} showSweep={view === 'inbox'}
+        <InboxBundle key={b.key} label={b.label} states={states} onSet={setState} showSweep={view === 'inbox'} cursorKey={cursorKey}
           items={visible.filter((i) => i.bundle === b.key)} />
       ))}
     </div>

@@ -17,7 +17,7 @@ export default function Inbox() {
   return (
     <div className="min-h-screen bg-editorial-cream px-4 py-6 md:px-8">
       <div className="mx-auto max-w-2xl">
-        <p className="pd-label">Inbox</p>
+        <p className="pd-label">Inbox <span className="ml-2 hidden normal-case tracking-normal text-editorial-navy/50 md:inline">Wheel walks · ◀ ▶ switch view · confirm opens · back marks done</span></p>
         <h1 className="mt-1 font-heading text-3xl text-editorial-navy">What needs an answer</h1>
         <div className="pd-rule mb-6 mt-3 w-12" />
         <InboxTriage user={user} />

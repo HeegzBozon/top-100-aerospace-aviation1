@@ -1,7 +1,7 @@
 import InboxItemRow from './InboxItemRow';
 
 // A bundle: one heading, its items, and a sweep that marks every unpinned item done.
-export default function InboxBundle({ label, items, states, onSet, showSweep }) {
+export default function InboxBundle({ label, items, states, onSet, showSweep, cursorKey }) {
   if (!items.length) return null;
   const sweep = () => items.filter((i) => !states[i.key]?.pinned).forEach((i) => onSet(i.key, { done: true }));
   return (
@@ -14,7 +14,7 @@ export default function InboxBundle({ label, items, states, onSet, showSweep }) 
           </button>
         )}
       </header>
-      <ul>{items.map((i) => <InboxItemRow key={i.key} item={i} state={states[i.key]} onSet={onSet} />)}</ul>
+      <ul>{items.map((i) => <InboxItemRow key={i.key} item={i} state={states[i.key]} onSet={onSet} active={i.key === cursorKey} />)}</ul>
     </section>
   );
 }
