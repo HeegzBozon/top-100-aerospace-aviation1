@@ -26,7 +26,7 @@ import { CONFERENCE_APPS } from './conferenceApps';
 // application without the selection jumping.
 export default function ConferenceLauncher() {
   const navigate = useNavigate();
-  const { state, circuit, myRoomIds, retry } = useConferences();
+  const { state, circuit, mine, myRoomIds, retry } = useConferences();
   const [cursorKey, setCursorKey] = useState(null);
 
   // What the band reads, from the same records every other surface counts from.
@@ -38,8 +38,24 @@ export default function ConferenceLauncher() {
       if (phase === 'live') live += 1;
       else if (phase === 'upcoming') ahead += 1;
     });
-    return { ahead, live, declared: myRoomIds?.size || 0 };
-  }, [circuit, myRoomIds]);
+    // The Fellow's own calendar: days since the last show they declared, days until the
+    // next, and how many they have declared this year.
+    const DAY = 86400000;
+    const now = Date.now();
+    const year = new Date().getFullYear();
+    let since = null;
+    let till = null;
+    let thisYear = 0;
+    mine.forEach((room) => {
+      const start = new Date(room.start_date).getTime();
+      const end = new Date(room.end_date || room.start_date).getTime();
+      if (new Date(room.start_date).getFullYear() === year) thisYear += 1;
+      if (end < now) since = since == null ? Math.floor((now - end) / DAY) : Math.min(since, Math.floor((now - end) / DAY));
+      else if (start > now) till = till == null ? Math.ceil((start - now) / DAY) : Math.min(till, Math.ceil((start - now) / DAY));
+      else till = 0;
+    });
+    return { ahead, live, declared: myRoomIds?.size || 0, since, till, thisYear };
+  }, [circuit, mine, myRoomIds]);
 
   const optionsRef = useRef(CONFERENCE_APPS);
   optionsRef.current = CONFERENCE_APPS;

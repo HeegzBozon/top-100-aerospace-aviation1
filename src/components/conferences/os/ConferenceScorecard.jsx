@@ -47,18 +47,22 @@ export default function ConferenceScorecard({ loading, failed, counts }) {
       {editing ? (
         <OkrEditor okr={okr} onSave={save} onClose={() => setEditing(false)} />
       ) : (
-        <div className="space-y-2 px-3 pb-3 pt-2.5">
+        <button type="button" onClick={() => setEditing(true)} aria-label="Edit key results"
+          className="block w-full space-y-2 px-3 pb-3 pt-2.5 text-left">
+          <p className="flex items-center justify-between text-[7.5px] font-bold uppercase tracking-[0.24em] text-editorial-gold/80">
+            Key results <span className="inline-flex items-center gap-1 text-editorial-cream/45"><Pencil className="h-2.5 w-2.5" /> Edit</span>
+          </p>
           {okr.key_results.map((kr, i) => (
             <KeyResult key={i} label={METRICS[kr.metric]} value={read(kr.metric)} target={kr.target} />
           ))}
-        </div>
+        </button>
       )}
 
       <div className="grid grid-cols-3 border-t border-editorial-copper/30">
-        {[['Ahead', counts.ahead], ['In session', counts.live], ['Declared', counts.declared]].map(([l, v], i) => (
+        {[['Days since', counts.since], ['Days till', counts.till === 0 ? 'Now' : counts.till], [`${new Date().getFullYear()} shows`, counts.thisYear]].map(([l, v], i) => (
           <div key={l} className={`px-2.5 py-2 ${i ? 'cfs-seam' : ''}`}>
             <p className="truncate text-[7.5px] font-bold uppercase tracking-[0.18em] text-editorial-gold/80">{l}</p>
-            <p className="mt-1 font-heading text-[18px] leading-none tabular-nums text-editorial-cream">{circuit ? '—' : v}</p>
+            <p className="mt-1 font-heading text-[18px] leading-none tabular-nums text-editorial-cream">{circuit || v == null ? '—' : v}</p>
           </div>
         ))}
       </div>
