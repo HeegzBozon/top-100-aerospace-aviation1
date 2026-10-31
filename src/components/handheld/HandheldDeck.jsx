@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Disc, Palette, Radio } from "lucide-react";
+import { Disc, Palette, Radio, Search } from "lucide-react";
 import ClickWheel from "./ClickWheel";
+import ConsoleKeyBar from "./ConsoleKeyBar";
 import FaceButtons from "./FaceButtons";
 import { pressDigit, pressFaceKey } from "./handheldKeys";
 import { drawerHint } from "./faceHint";
@@ -1012,6 +1013,32 @@ export default function HandheldDeck() {
           />
         ) : (
           <>
+            {/* The machine's key bar, worn by both faces: the two lists, the share, the
+                search this face has no pad to reach, then the way home and the three keys
+                that walk. The wheel keeps its own controls under it, so the ring stays the
+                hand's first reach and the bar the second. */}
+            <ConsoleKeyBar
+              className="mx-3 mt-1.5"
+              fileKey="X"
+              editKey="Y"
+              onFile={() => faceKey("X", () => openBarDrawer("file"))}
+              onEdit={() => faceKey("Y", () => openBarDrawer("edit"))}
+              onShare={toggleShare}
+              shareOpen={shareOpen}
+              fourth={{
+                glyph: Search,
+                sub: "SCAN",
+                onPress: openSearch,
+                ariaLabel: "Search the console",
+              }}
+              onHome={goHome}
+              onUp={() => rotate(-1)}
+              onDown={() => rotate(1)}
+              onUpEnd={() => walkEnd(-1)}
+              onDownEnd={() => walkEnd(1)}
+              onBack={back}
+            />
+
             {/* The controls, spaced so a thumb never has to guess: the speaker on the
                 left, the wheel on the centre line, the keypad on the right. The two sides
                 are the same width, so the wheel sits dead centre whatever either of them

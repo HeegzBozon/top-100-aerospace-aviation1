@@ -41,7 +41,7 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
   return (
     <div
       aria-hidden={staticView || undefined}
-      className="hh-viewer-foot pointer-events-none fixed z-[42] flex items-center gap-2.5 px-2.5 md:hidden"
+      className="hh-viewer-foot rc-band pointer-events-none fixed z-[42] flex items-center gap-2 px-3 md:hidden"
       style={{
         left: "var(--hh-glass-inset, 7px)",
         right: "var(--hh-glass-inset, 7px)",
@@ -49,6 +49,11 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
         height: "var(--hh-foot, 32px)",
       }}
     >
+      {/* The radio's cut at the foot of the glass: the band bolted into the case at both
+          ends, the same cut the menu strip wears above. */}
+      <span className="rc-rivet" style={{ left: 3 }} aria-hidden="true" />
+      <span className="rc-rivet" style={{ right: 3 }} aria-hidden="true" />
+
       {/* The press, at the left of the band */}
       {live ? (
         <button
@@ -70,11 +75,14 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
         </span>
       )}
 
-      {/* The measure: the position of the wheel, ruled and filled */}
-      <span className="hh-foot-seam relative h-px min-w-0 flex-1 overflow-hidden" aria-hidden="true">
+      {/* The measure, ruled the way the radio cuts its trench: the position of the wheel
+          filled in copper inside a groove of the finish's own dark, parted from the press
+          and the readout by the band's own machined seams. */}
+      <span className="hh-strip-seam h-[12px] shrink-0" aria-hidden="true" />
+      <span className="rc-groove relative h-[7px] min-w-0 flex-1 overflow-hidden" aria-hidden="true">
         {travelled > 0 ? (
           <span
-            className="absolute inset-y-0 left-0"
+            className="absolute inset-y-[1px] left-[1px] rounded-[2px]"
             style={{
               width: `${travelled}%`,
               background:
@@ -83,6 +91,7 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
           />
         ) : null}
       </span>
+      <span className="hh-strip-seam h-[12px] shrink-0" aria-hidden="true" />
 
       {/* The readout, at the right: the position, the cycle, the seconds turning over */}
       <span
