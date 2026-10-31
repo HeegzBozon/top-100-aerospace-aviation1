@@ -1,0 +1,102 @@
+{
+  "name": "ConferenceReferral",
+  "type": "object",
+  "properties": {
+    "subject_contact_id": {
+      "type": "string",
+      "description": "ConferenceContact id of the person being referred"
+    },
+    "subject_name": {
+      "type": "string"
+    },
+    "subject_email": {
+      "type": "string"
+    },
+    "recipient_contact_id": {
+      "type": "string",
+      "description": "ConferenceContact id of the person receiving the referral"
+    },
+    "recipient_name": {
+      "type": "string"
+    },
+    "recipient_email": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "hire",
+        "investor",
+        "customer",
+        "partner",
+        "supplier",
+        "mentor",
+        "press",
+        "peer"
+      ],
+      "description": "Curated reason the two should meet"
+    },
+    "context": {
+      "type": "string",
+      "description": "One line on why, written by the referrer (max 200 chars)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "drafted",
+        "consent_asked",
+        "consented",
+        "introduced",
+        "connected",
+        "declined"
+      ],
+      "default": "drafted",
+      "description": "Double opt-in progress. Private to the referrer; never measurement-bearing."
+    },
+    "introduced_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "threads": {
+      "type": "object",
+      "default": {},
+      "description": "Messages conversation id per step (consent, heads_up, intro)"
+    },
+    "sent_at": {
+      "type": "object",
+      "default": {},
+      "description": "When each step's message was sent, keyed by step"
+    },
+    "consent_token": {
+      "type": "string",
+      "description": "Single-use secret for the referred person's response link"
+    },
+    "heads_up_token": {
+      "type": "string",
+      "description": "Single-use secret for the recipient's response link"
+    },
+    "responses": {
+      "type": "object",
+      "default": {},
+      "description": "Answers from the response page, keyed by step: { answer: 'yes'|'no', at }"
+    }
+  },
+  "required": [
+    "subject_name",
+    "recipient_name"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

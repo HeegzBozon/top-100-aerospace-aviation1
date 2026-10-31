@@ -97,7 +97,7 @@ export default function ImacMusicControl() {
         <span className="imac-speaker-led" data-on={playing} aria-hidden="true" />
       </button>
 
-      <span className="flex flex-col leading-none">
+      <span className="imac-music-print flex flex-col leading-none">
         <span
           className="text-[7px] font-bold uppercase tracking-[0.22em]"
           style={{ color: "var(--imac-ink)" }}

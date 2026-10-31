@@ -5,7 +5,9 @@ import {
 } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
 import { careerTrajectory, metricCounts } from '@/components/voting/anonymize';
+import HonoreeChip from '@/components/voting/HonoreeChip';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import { useNavHint } from '@/components/handheld/faceHint';
 
 // The candidate's own information panel — the card's one door. Everything the
 // institution holds on them, kept anonymized: the six word story (the first draft of
@@ -17,7 +19,8 @@ import { registerPicker, touchPicker } from '@/components/handheld/handheldPicke
 // under the cursor. A turn at either end is kept and spent reading on down the panel,
 // so the wheel is never dead and the picture behind the panel never moves. A is taken
 // and does nothing through the panel; B, or the cross, puts it away.
-export default function EvidencePopover({ nominee, token, onClose }) {
+export default function EvidencePopover({ nominee, token, volumes = [], onClose }) {
+  const keyHint = useNavHint();
   const name = nominee.name || 'Evidence of judgment';
   const story = nominee.six_word_story || '';
   const bio = nominee.bio || '';
@@ -54,8 +57,27 @@ export default function EvidencePopover({ nominee, token, onClose }) {
       label: 'Professional biography',
       body: bio ? <Prose>{bio}</Prose> : <Empty note="Not yet on file — pending backfill." />,
     },
-    ...(contribution
-      ? [{ key: 'impact', label: 'Contribution evidence', body: <Prose>{contribution}</Prose> }]
+    // The volumes this person stood in, badged the way the card badges them: the same
+    // archived record, read wherever the evidence of judgment is read. A candidate with
+    // no contribution text still shows their volume, because the record is the evidence.
+    ...(contribution || volumes.length
+      ? [{
+          key: 'impact',
+          label: 'Contribution evidence',
+          icon: Award,
+          body: (
+            <div className="space-y-2">
+              {volumes.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {volumes.map((volume) => (
+                    <HonoreeChip key={volume.seasonId} volume={volume} size="lg" />
+                  ))}
+                </div>
+              )}
+              {contribution && <Prose>{contribution}</Prose>}
+            </div>
+          ),
+        }]
       : []),
     {
       key: 'flight',
@@ -196,7 +218,7 @@ export default function EvidencePopover({ nominee, token, onClose }) {
               <p className="hidden text-[11px] truncate md:block" style={{ color: `${brand.navy}60` }}>Evidence of judgment</p>
               {/* On the glass the wheel is the reader, so the panel says so. */}
               <p className="text-[9px] font-bold uppercase tracking-[0.16em] md:hidden" style={{ color: `${brand.navy}50` }}>
-                ◀▶ Sections · B Back
+                {keyHint({ walk: 'Sections', open: 'Open' })}
               </p>
             </div>
             <button onClick={onClose} className="h-8 w-8 rounded-full flex items-center justify-center shrink-0" style={{ background: `${brand.navy}06` }} aria-label="Put the panel away">

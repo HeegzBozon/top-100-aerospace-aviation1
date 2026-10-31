@@ -1,0 +1,593 @@
+/* ===== THE FACEPLATE — A TRANSCEIVER IN THE MACHINE'S CHIN =====
+   The desk machine's bezel carries a radio face. Every tone here is a finish token, so
+   the whole instrument recasts with the case it is mounted in: the plate is anodised
+   dark, the keys are the keypad's own polymer, and the readout is the same phosphor the
+   handheld's band is printed on. Nothing on this plate is a hard-coded colour except the
+   copper of the station key and the rose gold of the seal, which are the house metals. */
+.rd-face {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  height: 100%;
+  padding: 0 16px;
+  border-radius: 11px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0) 44%),
+    linear-gradient(180deg, #16202d 0%, #0c141e 58%, #070c14 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -18px 30px -26px rgba(3, 6, 13, 0.95),
+    0 2px 6px rgba(3, 6, 13, 0.45);
+}
+
+/* Moulded grain across the plate, the way the case itself is cast. */
+.rd-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.026) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: 0.6;
+}
+
+/* The drawer's backdrop: it stands behind the whole face, so a press anywhere off the
+   drawer puts it down and the plate itself is never taken out from under the hand. */
+.rd-backdrop {
+  position: fixed;
+  inset: 0;
+}
+
+.rd-screw {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex: none;
+}
+
+.rd-seam {
+  width: 1px;
+  height: 46px;
+  flex: none;
+  margin: 0 2px;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--hh-metal-rgb) / 0.04),
+    rgb(var(--hh-metal-rgb) / 0.42),
+    rgb(var(--hh-metal-rgb) / 0.04)
+  );
+}
+
+/* ===== THE READOUT =====
+   Backlit glass seated in the plate: a hairline of case all round it, the phosphor's own
+   wash across the top, and the figures lit from behind rather than printed on it. */
+.rd-lcd {
+  position: relative;
+  flex: none;
+  width: 272px;
+  padding: 4px 8px 5px;
+  border-radius: 5px;
+  background:
+    radial-gradient(120% 140% at 50% 0%, rgb(var(--hh-lcd-rgb) / 0.13) 0%, rgb(var(--hh-lcd-rgb) / 0) 72%),
+    linear-gradient(180deg, #091119 0%, #0d1822 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.72),
+    inset 0 2px 6px rgba(0, 0, 0, 0.78),
+    inset 0 0 22px rgb(var(--hh-lcd-rgb) / 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.09);
+}
+.rd-lcd[data-tuning="true"] {
+  animation: rd-scan 2.4s ease-in-out infinite;
+}
+@keyframes rd-scan {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.72), inset 0 2px 6px rgba(0,0,0,0.78), inset 0 0 22px rgb(var(--hh-lcd-rgb) / 0.12), 0 1px 0 rgba(255,255,255,0.09); }
+  50% { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.72), inset 0 2px 6px rgba(0,0,0,0.78), inset 0 0 30px rgb(var(--hh-lcd-rgb) / 0.26), 0 1px 0 rgba(255,255,255,0.09); }
+}
+
+.rd-lcd-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rd-lamp {
+  font-size: 5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgb(var(--hh-lcd-rgb) / 0.24);
+  transition: color 180ms ease;
+}
+.rd-lamp[data-on="true"] {
+  color: var(--hh-lcd-bright);
+  text-shadow: 0 0 6px rgb(var(--hh-lcd-rgb) / 0.9);
+}
+.rd-brand {
+  margin-left: auto;
+  font-size: 4.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+  color: rgb(var(--hh-lcd-rgb) / 0.34);
+}
+
+.rd-lcd-body {
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  margin-top: 1px;
+}
+
+.rd-read {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: none;
+}
+.rd-legend {
+  font-size: 5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: rgb(var(--hh-lcd-rgb) / 0.55);
+}
+.rd-digits {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--hh-lcd-bright);
+  text-shadow:
+    0 0 9px rgb(var(--hh-lcd-rgb) / 0.8),
+    0 0 2px rgb(var(--hh-lcd-rgb) / 0.95);
+}
+
+.rd-meta {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 2px;
+}
+.rd-band {
+  font-size: 5.5px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgb(var(--hh-lcd-rgb) / 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rd-label {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(var(--hh-lcd-rgb) / 0.95);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The S-meter: the band's scale, lit to the channel's place in it. */
+.rd-meter {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 2px;
+}
+.rd-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 11px;
+}
+.rd-bar {
+  width: 3px;
+  height: 11px;
+  border-radius: 1px;
+  background: rgb(var(--hh-lcd-rgb) / 0.14);
+  transition: background 200ms ease, box-shadow 200ms ease;
+}
+.rd-bar[data-lit="true"] {
+  background: var(--hh-lcd-bright);
+  box-shadow: 0 0 5px rgb(var(--hh-lcd-rgb) / 0.85);
+}
+.rd-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 4.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgb(var(--hh-lcd-rgb) / 0.4);
+}
+
+/* ===== THE KEYS =====
+   Matte polymer, the legend cut into the face, a lamp in the corner for the ones that
+   stand in a state. The copper key is the station, and it is the only one cast in metal. */
+.rd-keys {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(2, 62px);
+  gap: 5px;
+}
+.rd-key {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 26px;
+  padding: 0 4px;
+  border-radius: 3px;
+  color: var(--hh-pad-ink);
+  background: linear-gradient(180deg, var(--hh-pad-1) 0%, var(--hh-pad-2) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.35),
+    0 1px 0 rgba(3, 6, 13, 0.45),
+    0 2px 4px rgba(3, 6, 13, 0.3);
+  transition: filter 120ms ease, transform 110ms ease, box-shadow 110ms ease;
+}
+.rd-key:hover {
+  filter: brightness(1.18);
+}
+.rd-key:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 5px rgba(3, 6, 13, 0.6), 0 1px 0 rgba(3, 6, 13, 0.3);
+}
+.rd-key:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(var(--hh-metal-rgb) / 0.85);
+}
+.rd-key-glyph {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  opacity: 0.78;
+}
+.rd-key-print {
+  font-size: 5.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.rd-key-lamp {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.42);
+}
+.rd-key-lamp[data-on="true"] {
+  background: var(--hh-lcd-bright);
+  box-shadow: 0 0 5px rgb(var(--hh-lcd-rgb) / 0.9);
+}
+.rd-key[data-tone="copper"] {
+  width: 62px;
+  color: #1b0f05;
+  background: linear-gradient(180deg, var(--hh-metal-1) 0%, var(--hh-metal) 54%, var(--hh-metal-2) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.32),
+    0 1px 0 rgba(3, 6, 13, 0.4),
+    0 2px 5px rgba(3, 6, 13, 0.34);
+}
+.rd-key[data-tone="copper"] .rd-key-lamp {
+  background: rgba(27, 15, 5, 0.35);
+}
+.rd-key[data-tone="copper"] .rd-key-lamp[data-on="true"] {
+  background: #1b0f05;
+  box-shadow: none;
+}
+
+/* ===== THE BAY — WHERE THE SHELF NOW STANDS =====
+   A recess machined into the plate, milled with a shadow at its lip and a light along
+   its foot, carrying the machine's channel keys instead of a bar laid over the picture. */
+.rd-bay {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #060c14 0%, #0b141d 100%);
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.72),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.22);
+}
+
+/* ===== THE KNOBS =====
+   A knurled skirt with a turned cap on it: the cap is what carries the pointer, and it
+   turns without ever rewinding, the way a real shaft does not. */
+.rd-knob-cell {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.rd-knob {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  cursor: grab;
+  touch-action: none;
+  background-color: #0e151d;
+  background-image: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.085) 0 1.4deg,
+    rgba(3, 6, 13, 0.16) 1.4deg 3.2deg
+  );
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 3px 7px rgba(3, 6, 13, 0.55);
+}
+.rd-knob:active {
+  cursor: grabbing;
+}
+.rd-knob:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgb(var(--hh-metal-rgb) / 0.85),
+    0 3px 7px rgba(3, 6, 13, 0.55);
+}
+.rd-knob-cap {
+  position: absolute;
+  inset: 5px;
+  border-radius: 999px;
+  transform: rotate(var(--rd-angle, 0deg));
+  transition: transform 90ms ease-out;
+  background: radial-gradient(circle at 38% 28%, #3a4655 0%, #1b242e 62%, #0b1118 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -2px 4px rgba(3, 6, 13, 0.6),
+    0 1px 2px rgba(3, 6, 13, 0.5);
+}
+.rd-knob-mark {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  width: 2px;
+  height: 34%;
+  transform: translateX(-50%);
+  border-radius: 1px;
+  background: var(--hh-lcd-bright);
+  box-shadow: 0 0 4px rgb(var(--hh-lcd-rgb) / 0.85);
+}
+.rd-knob-cell[data-size="lg"] .rd-knob {
+  width: 56px;
+  height: 56px;
+}
+.rd-knob-cell[data-size="lg"] .rd-knob-cap {
+  inset: 6px;
+}
+.rd-knob-print {
+  font-size: 5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgb(var(--hh-ink-rgb) / 0.5);
+}
+
+/* ===== THE DRAWERS =====
+   The memory list, the band, and the station. They rise out of the plate the way a
+   transceiver's function menu lifts off its face, and none of them is ever clipped by it. */
+.rd-panel {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  z-index: 2;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(10, 17, 26, 0.985) 0%, rgba(6, 12, 20, 0.99) 100%);
+  border: 1px solid rgb(var(--hh-metal-rgb) / 0.36);
+  box-shadow:
+    0 30px 66px -26px rgba(3, 6, 13, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.rd-panel--index {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 470px;
+  max-width: calc(100vw - 90px);
+}
+.rd-panel--band {
+  left: 0;
+  width: 250px;
+}
+.rd-panel--station {
+  right: 0;
+  width: 262px;
+}
+
+.rd-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.rd-panel-kicker {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(201, 168, 124, 0.85);
+}
+.rd-panel-title {
+  margin-top: 5px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 1.2;
+  color: rgba(250, 248, 245, 0.92);
+}
+.rd-panel-x {
+  flex: none;
+  padding: 3px;
+  border-radius: 5px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 140ms ease;
+}
+.rd-panel-x:hover {
+  color: var(--hh-metal-1);
+}
+.rd-panel-x:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(var(--hh-metal-rgb) / 0.8);
+}
+
+.rd-panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 22px;
+  margin-top: 14px;
+}
+.rd-panel-group {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(250, 248, 245, 0.34);
+}
+.rd-panel-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  border-radius: 7px;
+  padding: 6px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.75);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+.rd-panel-item svg {
+  color: rgba(201, 168, 124, 0.65);
+}
+.rd-panel-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--hh-metal-1);
+}
+.rd-panel-item:hover svg {
+  color: var(--hh-metal-1);
+}
+.rd-panel-item:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.7);
+}
+.rd-panel-item--quiet {
+  color: rgba(255, 255, 255, 0.55);
+}
+.rd-panel-item--loud {
+  color: #c9a87c;
+}
+.rd-panel-hint {
+  margin-left: auto;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.35);
+}
+.rd-panel-foot {
+  margin-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 8px;
+}
+.rd-panel-mail {
+  margin-top: 6px;
+  padding: 0 8px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.42);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rd-band-body {
+  margin-top: 14px;
+}
+.rd-band-body > div {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.rd-band-body > div > span {
+  display: none;
+}
+.rd-band-note {
+  margin-top: 12px;
+  font-size: 9.5px;
+  line-height: 1.5;
+  color: rgba(250, 248, 245, 0.45);
+}
+
+/* ===== ON A NARROWER DESK =====
+   The plate gives up its less essential parts in order: the meter, then the record's
+   printed title, then the readout's width, and on the smallest desk the readout itself.
+   The key field, the knobs and the station key always stand. */
+@media (max-width: 1400px) {
+  .imac-chin .imac-music-print {
+    display: none;
+  }
+  .rd-lcd {
+    width: 240px;
+  }
+}
+@media (max-width: 1220px) {
+  .rd-meter,
+  .rd-brand {
+    display: none;
+  }
+  .rd-lcd {
+    width: 200px;
+  }
+  .rd-keys {
+    grid-template-columns: repeat(2, 52px);
+  }
+  .rd-key[data-tone="copper"] {
+    width: 52px;
+  }
+}
+@media (max-width: 1160px) {
+  .rd-lcd {
+    display: none;
+  }
+}
+/* The smallest desks: the key field keeps every key rather than giving any up, and the
+   bay scrolls by itself the way a crowded faceplate does. */
+@media (max-width: 900px) {
+  .rd-bay {
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .rd-bay::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rd-lcd[data-tuning="true"] {
+    animation: none;
+  }
+  .rd-knob-cap,
+  .rd-bar {
+    transition: none;
+  }
+}

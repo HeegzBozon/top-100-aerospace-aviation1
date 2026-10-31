@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { brand } from '@/components/nominate/NominateConfig';
 import ListBuilderHeader from '@/components/my-top100/ListBuilderHeader';
@@ -17,12 +16,15 @@ import StartHereSplit from '@/components/my-top100/StartHereSplit';
 import { Loader2, Pencil, Check, Rocket, LogIn, Sparkles, ListOrdered } from 'lucide-react';
 import VoteSurface from '@/components/voting/VoteSurface';
 import GlassVoteSurface from '@/components/my-top100/GlassVoteSurface';
+import GlassNominateSurface from '@/components/my-top100/GlassNominateSurface';
 import QuickAddBar from '@/components/my-top100/QuickAddBar';
 import { loadNomineePool, getNomineeCategory } from '@/components/my-top100/nomineeCategory';
 import HubNominationPopover from '@/components/my-top100/HubNominationPopover';
 import { useIsMobile } from '@/hooks/use-mobile';
 import useGlass from '@/hooks/useGlass';
 import GlassConsole from '@/components/handheld/GlassConsole';
+import MissionBriefing from '@/components/mission/MissionBriefing';
+import useMissionBriefing from '@/components/mission/useMissionBriefing';
 
 function generateShareCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -81,6 +83,14 @@ export default function MyTop100() {
     const requested = new URLSearchParams(window.location.search).get('tab');
     return ['start', 'nominate', 'vote'].includes(requested) ? requested : null;
   });
+  // The briefing is read once, and it belongs to nominating: it opens the first time a
+  // Fellow stands on the Nominate surface, and never again after that — not on a reload,
+  // not on the Vote surface. Afterwards it is one press away on the ballot's own key.
+  const surfaceTab = glass ? glassOpen : activeTab;
+  const briefing = useMissionBriefing(
+    user?.email,
+    !loading && !!user?.email && surfaceTab === 'nominate',
+  );
 
   const openExplorer = () => { setExplorerProfile(null); setExplorerOpen(true); };
   const openProfileFromList = async (item) => {
@@ -306,6 +316,14 @@ export default function MyTop100() {
     setSaveTimer(timer);
   }, [saveTimer, persistAndSync]);
 
+  // The glass always arranges the whole ballot — the cohorts are counted off that one
+  // order, so there is no filtered subset to merge it back into.
+  const handleReorderAll = (newOrder) => {
+    if (votingClosed) return;
+    setRankings(newOrder);
+    scheduleSave(newOrder, listName);
+  };
+
   const handleReorder = (newFilteredOrder) => {
     if (votingClosed) return;
     let newOrder = newFilteredOrder;
@@ -486,6 +504,7 @@ export default function MyTop100() {
       onOpenExplorer={openExplorer}
       onNominate={() => setMobilePopoverOpen(true)}
       onOpenVote={() => openTab('vote')}
+      onOpenBriefing={() => briefing.setOpen(true)}
     />
   );
 
@@ -529,11 +548,35 @@ export default function MyTop100() {
     />
   );
 
+  // The nominating surface on the glass is built for the glass: one objective at the head,
+  // the ballot under the thumb, and the intake behind a single copper key rather than a
+  // bar across the bottom of the picture.
+  const glassNominateNode = (
+    <GlassNominateSurface
+      rankings={rankings}
+      totalCount={rankings.length}
+      counts={listCategoryCounts}
+      readOnly={votingClosed}
+      pool={pool}
+      seasonCategory={seasonCategory}
+      addedIds={addedIds}
+      loadingPool={loadingPool}
+      onReorder={handleReorderAll}
+      onRemove={handleRemove}
+      onView={openProfileFromList}
+      onNominate={openQuickAdd}
+      onAdd={(person) => handleAdd(person, {
+        nomination_category: getNomineeCategory(person, seasonCategory) || 'women',
+      })}
+      onBriefing={() => briefing.setOpen(true)}
+    />
+  );
+
   // The three surfaces the console holds. The desk reads them as tabs; the glass
   // reads them as the cartridge menu.
   const consolePanels = [
     { key: 'start', label: 'Start Here', hint: 'Why this is here, and where to begin', icon: Rocket, node: startNode },
-    { key: 'nominate', label: 'Finalize Your TOP 100', hint: `${rankings.length}/100 ranked`, icon: Sparkles, node: <div className="px-3 pb-3">{builderPanel}<div className="mt-3">{listBlock}</div></div> },
+    { key: 'nominate', label: 'Nominate', hint: `${rankings.length}/100 nominated`, icon: Sparkles, node: glassNominateNode },
     { key: 'vote', label: 'Vote', hint: votingOpen ? 'Open — cast your ballot' : 'Your ranked ballot', icon: ListOrdered, node: glassVoteNode },
   ];
 
@@ -604,9 +647,17 @@ export default function MyTop100() {
 
       <Top100OSModal isOpen={showOS} onClose={() => setShowOS(false)} />
 
+      {/* The briefing the hub opens belongs to the surface it opens on: the ballot's
+          ladder when the committee is standing on Vote, the field's when it is nominating. */}
+      <MissionBriefing
+        open={briefing.open}
+        onOpenChange={(next) => (next ? briefing.setOpen(true) : briefing.close())}
+        section={shownTab === 'nominate' ? 'nominate' : 'vote'}
+      />
+
       <QuickAddBar
         onClick={openQuickAdd}
-        hidden={!isMobile || shownTab !== 'nominate' || mobilePopoverOpen || explorerOpen}
+        hidden={!isMobile || glass || shownTab !== 'nominate' || mobilePopoverOpen || explorerOpen}
       />
       {/* The intake is one door on both machines: the organizing column opens it, and so
           does the phone's quick-add bar. */}

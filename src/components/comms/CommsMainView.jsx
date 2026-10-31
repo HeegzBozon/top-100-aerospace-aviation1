@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { messageAudience } from "@/lib/messageAudience";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useConversation } from "@/components/contexts/ConversationContext";
 import { useQueryClient } from "@tanstack/react-query";
@@ -98,6 +99,7 @@ export default function CommsMainView({ onOpenMobileSidebar, onComposerActiveCha
         rrf_stage: rrfStage || activeConversation.rrf_stage,
         rrf_message_type: "message",
         ...(crpStep ? { crp_step: crpStep } : {}),
+        ...messageAudience(activeConversation),
       });
       if (parentId) {
         const parent = messages.find(m => m.id === parentId);

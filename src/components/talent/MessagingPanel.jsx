@@ -33,7 +33,9 @@ export default function MessagingPanel({ currentUserEmail, recipientEmail, recip
       sender_email: currentUserEmail,
       recipient_email: recipientEmail,
       content,
-      related_service_id: serviceId
+      related_service_id: serviceId,
+      participants: [currentUserEmail, recipientEmail],
+      is_public: false
     }),
     onSuccess: () => {
       setMessage('');

@@ -4,6 +4,7 @@ import {
   Linkedin, Instagram, Youtube, MapPin, Building2, Briefcase,
 } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
+import HonoreeChips from '@/components/voting/HonoreeChips';
 
 export default function NomineeProfilePanel({ nominee, onBack, onAdd, onNominate, isAdded }) {
   const avatar = nominee.avatar_url || nominee.photo_url;
@@ -67,6 +68,9 @@ export default function NomineeProfilePanel({ nominee, onBack, onAdd, onNominate
                 <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" />{nominee.discipline.replace(/_/g, ' ')}</span>
               )}
             </div>
+            {/* The volumes they are on the record for — the institution's own evidence,
+                read wherever the candidate is opened, not only on the voting card. */}
+            <HonoreeChips nominee={nominee} size="lg" className="mt-2" />
           </div>
         </div>
 

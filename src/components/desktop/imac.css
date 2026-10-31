@@ -16,7 +16,9 @@
   --room-foot: clamp(44px, 7.5vh, 146px);
   --imac-crown: 58px;
   --imac-side: 30px;
-  --imac-chin: 104px;
+  /* The chin is a faceplate now, not a printed band: it carries the readout, the key
+     field and the two knobs, so it stands taller than the old moulding's. */
+  --imac-chin: 130px;
   --imac-glass-x: calc(var(--room-x) + var(--imac-side));
   --imac-top: calc(var(--room-top) + var(--imac-crown));
   --imac-bottom: calc(var(--room-foot) + var(--imac-chin));
@@ -146,11 +148,14 @@
   justify-content: space-between;
 }
 
+/* The chin: the resin band the faceplate is mounted in. The plate is inset inside it, so
+   the colour the machine is moulded in still shows around the instrument. */
 .imac-chin {
   position: relative;
   flex: 0 0 var(--imac-chin);
   display: flex;
   align-items: center;
+  padding: 9px 15px 11px;
 }
 
 /* The grip moulded into the crown, and the grilles punched either side of it. */

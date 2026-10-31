@@ -14,6 +14,10 @@ const STEPS = 16; // sixteenth notes: one bar
 const LOOKAHEAD = 0.18; // seconds of music kept scheduled ahead of the clock
 const TICK_MS = 25;
 const MASTER = 0.34;
+
+// The desk faceplate's volume knob turns the record's single gain: 1 leaves the mixing
+// level above untouched, 0 is silence, and the level belongs to the sitting.
+let level = 1;
 const DRIFT = 7; // cents of wobble per note, which is what makes it sound played
 
 // Bass offsets are only ever the root, the fifth, the octave, or a fifth below, so a
@@ -424,6 +428,22 @@ export function currentTrack() {
   return PLAYLIST[index];
 }
 
+export function getVolume() {
+  return level;
+}
+
+// Turning the knob while the record is playing is heard at once; turning it in silence
+// simply sets where the next loop will start.
+export function setVolume(next) {
+  const wanted = Number(next);
+  level = Number.isFinite(wanted) ? Math.min(1, Math.max(0, wanted)) : level;
+  if (ctx && master) {
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setTargetAtTime(MASTER * level, ctx.currentTime, 0.06);
+  }
+  return level;
+}
+
 export function playPlaylist() {
   if (!ensure()) return false;
   if (!playing) {
@@ -434,7 +454,7 @@ export function playPlaylist() {
   }
   if (!timer) timer = setInterval(pump, TICK_MS);
   master.gain.cancelScheduledValues(ctx.currentTime);
-  master.gain.setTargetAtTime(MASTER, ctx.currentTime, 0.12);
+  master.gain.setTargetAtTime(MASTER * level, ctx.currentTime, 0.12);
   playing = true;
   return true;
 }

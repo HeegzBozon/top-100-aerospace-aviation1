@@ -1,12 +1,16 @@
 import { useEffect, useRef } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
+import { useNavHint } from '@/components/handheld/faceHint';
 
 // A run of keys on the glass, in the console's idiom: a kicker across the head, the
 // hints the hand needs, an optional readout above the list, and the keys themselves —
 // numbered, parted by a hairline, the one under the ring filled navy. The ring walks
 // this list; the turn past either end is the console's to hand to the glass.
-export default function GlassStudioList({ kicker, hint = '◀▶ Walk · A Open', note, entries = [], cursor = 0, onOpen, onBack, empty }) {
+export default function GlassStudioList({ kicker, hint, note, entries = [], cursor = 0, onOpen, onBack, empty }) {
+  // A list with no hint of its own prints the keys of the face on the case.
+  const keyHint = useNavHint();
+  const line = hint || keyHint();
   const rows = useRef([]);
 
   useEffect(() => {
@@ -21,7 +25,7 @@ export default function GlassStudioList({ kicker, hint = '◀▶ Walk · A Open'
         </p>
         <div className="flex items-center gap-2">
           <p className="text-[7.5px] font-bold uppercase tracking-[0.16em]" style={{ color: 'rgba(30,58,90,0.45)' }}>
-            {hint}
+            {line}
           </p>
           {onBack && (
             <button type="button" onClick={onBack} className="flex items-center gap-0.5 text-[7.5px] font-bold uppercase tracking-[0.16em]" style={{ color: P.navy }}>

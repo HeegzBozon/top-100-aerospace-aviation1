@@ -1,22 +1,33 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Loader2, RefreshCw, AlertTriangle, Activity } from 'lucide-react';
+import { Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import MonitorTotals from './MonitorTotals';
-import StandingsTable from './StandingsTable';
+import useMonitorEditMenu from './useMonitorEditMenu';
+import MonitorStats from './MonitorStats';
+import PulseBand from './PulseBand';
+import CohortDive from './CohortDive';
+import StandingsBoard from './StandingsBoard';
 import BallotLedger from './BallotLedger';
+import MarkSetsLedger from './MarkSetsLedger';
 import ContributorTable from './ContributorTable';
 
 // The selection monitor: every cohort's ballot in one room. Read-only, admin only — the
 // ledger of who weighed whom, and the tallies those weights are producing while the
 // windows are still open.
+//
+// The board is the whole head of the surface. Which reading it is, which cohort is in
+// scope and taking it again live in the machine's Edit menu, so nothing stands between the
+// operator and the standings.
 
 const REFRESH_MS = 60000;
+// The activity ledgers open on what has just landed; the whole record is one press away.
+const RECENT = 20;
 
-export default function SelectionMonitor() {
+export default function SelectionMonitor({ onOpenMenu }) {
   const [scope, setScope] = useState('all');
+  // Which ledger is being read: the community's record, or the internal review sets.
+  const [mode, setMode] = useState('live');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -27,7 +38,7 @@ export default function SelectionMonitor() {
       quiet ? setRefreshing(true) : setLoading(true);
       setError(null);
       try {
-        const payload = scope === 'all' ? {} : { season_ids: [scope] };
+        const payload = { mode, ...(scope === 'all' ? {} : { season_ids: [scope] }) };
         const res = await base44.functions.invoke('getSelectionAnalytics', payload);
         if (res?.data?.error) throw new Error(res.data.error);
         setData(res.data);
@@ -39,7 +50,7 @@ export default function SelectionMonitor() {
         setRefreshing(false);
       }
     },
-    [scope]
+    [scope, mode]
   );
 
   useEffect(() => {
@@ -50,6 +61,24 @@ export default function SelectionMonitor() {
     const id = setInterval(() => load(true), REFRESH_MS);
     return () => clearInterval(id);
   }, [load]);
+
+  // The picker offers the cohorts that can still be watched; archived editions keep
+  // their ledgers where they are.
+  const cohorts = useMemo(
+    () => (data?.cohorts || []).filter((c) => c.status !== 'archived'),
+    [data?.cohorts]
+  );
+
+  useMonitorEditMenu({
+    mode,
+    onMode: setMode,
+    scope,
+    onScope: setScope,
+    cohorts,
+    onRefresh: () => load(true),
+    onOpenSections: onOpenMenu,
+    enabled: !loading && !error,
+  });
 
   if (loading) {
     return (
@@ -73,68 +102,61 @@ export default function SelectionMonitor() {
     );
   }
 
-  // The picker offers the cohorts that can still be watched; archived editions keep
-  // their ledgers where they are.
-  const cohorts = (data?.cohorts || []).filter((c) => c.status !== 'archived');
-  const stamp = data?.generated_at
-    ? new Date(data.generated_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
-    : null;
+  const totals = data?.totals;
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-editorial-gold" />
-            <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-editorial-label">Selection</p>
-          </div>
-          <h2 className="mt-0.5 font-heading text-2xl leading-tight text-editorial-navy">Live monitor</h2>
-          <p className="text-xs text-editorial-navy/55">
-            Every cohort's ballot, its standings, and the marks behind them. {stamp && `Read at ${stamp}.`}
-          </p>
-        </div>
+    <div className="space-y-3">
+      {/* The figures stand at the head of the surface; the reading follows immediately. */}
+      <MonitorStats totals={totals} />
 
-        <div className="flex items-center gap-2">
-          <Select value={scope} onValueChange={setScope}>
-            <SelectTrigger className="h-8 w-[220px] text-xs">
-              <SelectValue placeholder="All cohorts" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All cohorts</SelectItem>
-              {cohorts.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.cohort_label || c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button size="sm" variant="outline" className="gap-1.5" onClick={() => load(true)} disabled={refreshing}>
-            {refreshing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
-            Refresh
-          </Button>
-        </div>
-      </div>
-
-      <MonitorTotals totals={data?.totals} cohortStats={data?.cohort_stats} />
-
+      {/* Two readings of the same room: where the field stands, and what has just landed
+          in it. */}
       <Tabs defaultValue="standings">
-        <TabsList className="bg-editorial-cream">
-          <TabsTrigger value="standings">Standings</TabsTrigger>
-          <TabsTrigger value="ballots">Ballots</TabsTrigger>
-          <TabsTrigger value="marks">Marks</TabsTrigger>
-          <TabsTrigger value="contributors">Community</TabsTrigger>
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
+          <TabsTrigger value="standings" className="px-2 text-[11px] md:px-4 md:text-sm">
+            Standings
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="px-2 text-[11px] md:px-4 md:text-sm">
+            Activity
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="standings" className="mt-4">
-          <StandingsTable rows={data?.standings || []} />
+
+        <TabsContent value="standings" className="mt-2.5 space-y-3">
+          <StandingsBoard
+            rows={data?.standings || []}
+            mode={mode}
+            scopeKey={`${scope}:${mode}`}
+          />
+          <CohortDive cohortStats={data?.cohort_stats} mode={mode} />
         </TabsContent>
-        <TabsContent value="ballots" className="mt-4">
-          <BallotLedger kind="ballots" ballots={data?.ballot_tracking || []} />
-        </TabsContent>
-        <TabsContent value="marks" className="mt-4">
-          <BallotLedger kind="marks" marks={data?.ledger || []} />
-        </TabsContent>
-        <TabsContent value="contributors" className="mt-4">
-          <ContributorTable rows={data?.contributors || []} />
+
+        <TabsContent value="activity" className="mt-2.5 space-y-3">
+          {/* The ledger is the surface: what has landed, read newest first. The tally
+              beneath it is the complement, not the headline. */}
+          <Tabs defaultValue="ballots">
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
+              <TabsTrigger value="ballots" className="px-1 text-[10px] md:px-3 md:text-sm">
+                Ballots
+              </TabsTrigger>
+              <TabsTrigger value="marks" className="px-1 text-[10px] md:px-3 md:text-sm">
+                Marks
+              </TabsTrigger>
+              <TabsTrigger value="contributors" className="px-1 text-[10px] md:px-3 md:text-sm">
+                Community
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="ballots" className="mt-2.5">
+              <BallotLedger ballots={data?.ballot_tracking || []} recent={RECENT} />
+            </TabsContent>
+            <TabsContent value="marks" className="mt-2.5">
+              <MarkSetsLedger marks={data?.ledger || []} recent={RECENT} />
+            </TabsContent>
+            <TabsContent value="contributors" className="mt-2.5">
+              <ContributorTable rows={data?.contributors || []} />
+            </TabsContent>
+          </Tabs>
+
+          <PulseBand totals={totals} mode={mode} />
         </TabsContent>
       </Tabs>
     </div>

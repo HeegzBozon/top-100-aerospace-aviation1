@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Users, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Users } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -10,7 +10,6 @@ import {
   emptyAngelNomination,
   emptyLocalLegend,
   combineGuidedReason,
-  brand,
 } from '@/components/nominate/NominateConfig';
 import NominateShell from '@/components/nominate/NominateShell';
 import StageWelcome from '@/components/nominate/StageWelcome';
@@ -25,6 +24,8 @@ import NominateBallotGate from '@/components/nominate/NominateBallotGate';
 import { isViewingAsVisitor } from '@/lib/viewerPreview';
 import ConsoleLoading from '@/components/core/ConsoleLoading';
 import MyTop100 from '@/pages/MyTop100';
+import MissionBriefing from '@/components/mission/MissionBriefing';
+import useMissionBriefing from '@/components/mission/useMissionBriefing';
 
 const SURVEY_ID = '69f45633daacf496cacd8666';
 const DRAFT_KEY = 'top100_nomination_draft_v1';
@@ -54,6 +55,9 @@ export default function NominationForm({ isPreview = false } = {}) {
   const [currentUser, setCurrentUser] = useState(null);
   // null until the platform answers whether a Fellow is standing here at all.
   const [signedIn, setSignedIn] = useState(null);
+  // A visitor filing a nomination is briefed once on this device, the same way a Fellow is
+  // briefed once on the hub: the record is shared, so nobody reads it twice.
+  const briefing = useMissionBriefing('guest', isPreview || signedIn === false);
   const [draftRestored, setDraftRestored] = useState(false);
   // A deep link names the surface it wants — the start screen's Vote now asks for
   // the vote tab — and goes there directly, with no title card in the way.
@@ -326,6 +330,7 @@ export default function NominationForm({ isPreview = false } = {}) {
   }
 
   return (
+    <>
     <NominateShell
       stageKey={stage}
       progress={progress}
@@ -444,5 +449,12 @@ export default function NominationForm({ isPreview = false } = {}) {
         />
       )}
     </NominateShell>
+
+    <MissionBriefing
+      open={briefing.open}
+      onOpenChange={(next) => (next ? briefing.setOpen(true) : briefing.close())}
+      section="nominate"
+    />
+    </>
   );
 }

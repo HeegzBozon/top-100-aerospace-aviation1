@@ -1,0 +1,42 @@
+{
+  "name": "InboxItemState",
+  "type": "object",
+  "properties": {
+    "item_key": {
+      "type": "string",
+      "description": "Stable key of the inbox item, e.g. 'referral:<id>' or 'intro:<id>'. The source record stays canonical; this holds only the triage state."
+    },
+    "done": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marked as done by the owner"
+    },
+    "pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Pinned so it survives a sweep"
+    },
+    "snoozed_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Hidden until this moment, then returns to the top"
+    }
+  },
+  "required": [
+    "item_key"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

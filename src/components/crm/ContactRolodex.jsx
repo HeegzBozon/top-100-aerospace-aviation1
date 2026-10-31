@@ -83,7 +83,7 @@ export default function ContactRolodex({ crm, onCapture }) {
         </select>
 
         <button type="button" onClick={onCapture} className={BTN_BASE} style={BTN.primary}>
-          <Plus className="h-3.5 w-3.5" /> Add a card
+          <Plus className="h-3.5 w-3.5" /> Scan
         </button>
       </div>
 
@@ -148,7 +148,7 @@ export default function ContactRolodex({ crm, onCapture }) {
             that was agreed next — private to you, and visible to no other Fellow.
           </p>
           <button type="button" onClick={onCapture} className={`${BTN_BASE} mt-3`} style={BTN.primary}>
-            <Plus className="h-3.5 w-3.5" /> Add a card
+            <Plus className="h-3.5 w-3.5" /> Scan
           </button>
         </div>
       ) : (

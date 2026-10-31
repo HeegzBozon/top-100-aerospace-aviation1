@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { registerPicker, touchPicker } from "@/components/handheld/handheldPicker";
 import { B } from "@/components/fellow-home/fellowHomeConfig";
+import { useNavHint } from "@/components/handheld/faceHint";
 
 const getStage = () => document.querySelector("[data-handheld-screen]");
 
@@ -20,6 +21,8 @@ const getStage = () => document.querySelector("[data-handheld-screen]");
 export default function GlassConsole({ kicker, panels, openKey = null, onOpen, deepLinkParam }) {
   const [cursor, setCursor] = useState(0);
   const rowsRef = useRef([]);
+  // The keys this menu is walked with, printed for the face on the case.
+  const keyHint = useNavHint();
 
   const cursorRef = useRef(0);
   cursorRef.current = cursor;
@@ -130,7 +133,7 @@ export default function GlassConsole({ kicker, panels, openKey = null, onOpen, d
             {kicker}
           </p>
           <p className="text-[7.5px] font-bold uppercase tracking-[0.16em]" style={{ color: B.muted }}>
-            ◀▶ Scroll · A Open
+            {keyHint({ walk: 'Scroll' })}
           </p>
         </div>
 

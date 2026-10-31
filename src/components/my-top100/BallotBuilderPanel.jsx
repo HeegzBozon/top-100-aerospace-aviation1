@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
 import { AlertCircle, ArrowRight, Compass, Loader2, RefreshCw, Search, Sparkles, UserPlus } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
-import RankedChoiceGuide from '@/components/my-top100/RankedChoiceGuide';
 import BallotSuggestionCard from '@/components/my-top100/BallotSuggestionCard';
 import useBallotSuggestions from '@/components/my-top100/useBallotSuggestions';
 
@@ -9,8 +7,6 @@ import useBallotSuggestions from '@/components/my-top100/useBallotSuggestions';
 // short list of profiles drawn from the Fellow's own judging. A suggestion is never a
 // placement — it reaches the ballot only through the Fellow's own hand — and the whole
 // column doubles as a way into a profile, a follow in AeroSync, or the directory itself.
-
-const guideKey = (email) => `top100.rankedBallotGuide.v1:${(email || 'guest').toLowerCase()}`;
 
 function SectionLabel({ children }) {
   return (
@@ -32,29 +28,9 @@ export default function BallotBuilderPanel({
   onOpenExplorer,
   onNominate,
   onOpenVote,
+  onOpenBriefing,
 }) {
-  const [guideOpen, setGuideOpen] = useState(false);
   const { loading, suggestions, basis, judged, error, refresh } = useBallotSuggestions({ user, pool });
-
-  // A voter is walked through the ranked ballot once, on the first ballot they arrange on
-  // this device, and the visit is recorded the moment the guide opens — a reader who walks
-  // away mid-read is still one ballot in and is not walked through it again.
-  useEffect(() => {
-    if (!user?.email) return;
-    let seen = null;
-    try {
-      seen = window.localStorage.getItem(guideKey(user.email));
-    } catch {
-      // A browser that keeps no storage simply sees the guide again.
-    }
-    if (seen) return;
-    setGuideOpen(true);
-    try {
-      window.localStorage.setItem(guideKey(user.email), new Date().toISOString());
-    } catch {
-      // Nothing to record.
-    }
-  }, [user?.email]);
 
   const open = suggestions.filter((person) => !addedIds.has(person.id));
   const remaining = Math.max(0, ballotMinimum - rankingsCount);
@@ -86,7 +62,7 @@ export default function BallotBuilderPanel({
         </div>
         <button
           type="button"
-          onClick={() => setGuideOpen(true)}
+          onClick={onOpenBriefing}
           className="shrink-0 rounded-full px-2.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.14em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
           style={{ background: `${brand.gold}1F`, border: `1px solid ${brand.gold}66`, color: brand.navy }}
         >
@@ -202,8 +178,6 @@ export default function BallotBuilderPanel({
         A suggestion is an invitation to look, never a placement. Open a profile to follow or
         connect in AeroSync.
       </p>
-
-      <RankedChoiceGuide open={guideOpen} onOpenChange={setGuideOpen} />
     </div>
   );
 }

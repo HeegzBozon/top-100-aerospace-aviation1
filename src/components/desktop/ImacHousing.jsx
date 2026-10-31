@@ -15,7 +15,7 @@ import "./imac.css";
 // The menubar stands at the head of the tube, holding its place while the surface
 // beneath it scrolls under — the same strip the handheld wears, so the desk and the
 // glass hold one menu between them.
-export default function ImacHousing({ children }) {
+export default function ImacHousing({ children, shelf = null }) {
   const { finishKey, finish, pack, packs, options, chooseFinish, choosePack } = useImacFinish();
 
   useEffect(() => {
@@ -40,13 +40,17 @@ export default function ImacHousing({ children }) {
         tabIndex={0}
         role="region"
         aria-label="Machine screen"
+        data-desk-tube=""
       >
         <DesktopMenuBar />
         {children}
       </div>
 
       <div className="imac-glass" aria-hidden="true" />
+      {/* The shelf is no longer laid over the picture: it is seated in the bezel, as the
+          key field of the chin's faceplate, so the whole tube belongs to the surface. */}
       <ImacChin
+        shelf={shelf}
         finish={finish}
         pack={pack}
         packs={packs}

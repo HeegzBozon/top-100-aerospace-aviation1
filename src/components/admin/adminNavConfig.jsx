@@ -26,6 +26,7 @@ import {
     MapPin,
     TrendingUp,
     Activity,
+    Mic,
 } from 'lucide-react';
 
 /**
@@ -66,6 +67,7 @@ export const ADMIN_SECTIONS = [
             { id: 'workspace-editorial', label: 'Cohort Workspace', icon: LayoutDashboard, component: 'CohortWorkspace' },
             { id: 'publications', label: 'Publications', icon: BookOpen, component: 'Publications' },
             { id: 'content', label: 'Knowledge Base', icon: FileText, component: 'KBArticleManager' },
+            { id: 'episodes', label: 'Episodes', icon: Mic, component: 'EpisodePipeline' },
             { id: 'viral-posts', label: 'Top Viral Posts', icon: TrendingUp, component: 'TopViralPostsManager' },
             { id: 'testimonials', label: 'Testimonials', icon: Sparkles, component: 'TestimonialModeration' },
             { id: 'community-notes', label: 'Community Notes', icon: MessageSquare, component: 'CommunityNotesModeration' },

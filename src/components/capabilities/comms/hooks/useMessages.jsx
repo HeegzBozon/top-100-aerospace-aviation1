@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { messageAudience } from "@/lib/messageAudience";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 
@@ -64,6 +65,7 @@ export function useMessages({ conversationId, userEmail, enabled = true }) {
         rrf_stage: rrfStage || conversationData?.rrf_stage,
         rrf_message_type: "message",
         ...(crpStep ? { crp_step: crpStep } : {}),
+        ...messageAudience(conversationData),
       });
 
       if (parentId) {

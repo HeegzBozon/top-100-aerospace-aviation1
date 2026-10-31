@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { messageAudience } from "@/lib/messageAudience";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Message } from "@/entities/Message";
 import { Conversation } from "@/entities/Conversation";
@@ -94,6 +95,7 @@ export default function PostFeed({ conversation, currentUser }) {
         upvoted_by: [],
         downvoted_by: [],
         read_by: [currentUser.email],
+        ...messageAudience(conversation),
       });
       await Conversation.update(conversation.id, {
         last_message_at: new Date().toISOString(),
@@ -122,6 +124,7 @@ export default function PostFeed({ conversation, currentUser }) {
         upvoted_by: [],
         downvoted_by: [],
         read_by: [currentUser.email],
+        ...messageAudience(conversation),
       });
     },
     onSuccess: () => qc.invalidateQueries(["messages", conversation?.id]),

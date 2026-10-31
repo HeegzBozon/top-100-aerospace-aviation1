@@ -130,6 +130,148 @@
       "type": "string",
       "format": "date-time",
       "description": "Last time the Fellow acknowledged their profile activity"
+    },
+    "intent_hire_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Job & Career mode. Independent switch, set by the Fellow alone. Renders the opportunity module and its enquiry route on the public profile and lists the Fellow on the Talent Desk. Never read by discovery ordering, measurement, influence tier, or scoring."
+    },
+    "intent_commercial_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Deal & BD mode. Independent switch, set by the Fellow alone. Renders the commercial module and its enquiry route on the public profile and lists the Fellow on the Talent Desk. Never read by discovery ordering, measurement, influence tier, or scoring."
+    },
+    "hire_pitch": {
+      "type": "string",
+      "description": "Two-line statement of the work the Fellow wants next. Curated length (max 280 characters). Display only."
+    },
+    "hire_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Keys from the approved capability set only; validated server-side. Display only."
+    },
+    "hire_availability": {
+      "type": "string",
+      "enum": [
+        "open_now",
+        "open_selective",
+        "not_looking"
+      ],
+      "description": "How open the Fellow is to a conversation. Informational on the profile; never used to order, filter, or feature anything."
+    },
+    "hire_work_preference": {
+      "type": "string",
+      "enum": [
+        "onsite",
+        "hybrid",
+        "remote",
+        "flexible"
+      ],
+      "description": "Curated work arrangement preference. Display only."
+    },
+    "hire_regions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Keys from the approved region set only. Display only."
+    },
+    "commercial_pitch": {
+      "type": "string",
+      "description": "What the Fellow can be engaged to do. Curated length (max 280 characters). Display only."
+    },
+    "commercial_offerings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Keys from the approved offering set only; validated server-side. Display only."
+    },
+    "commercial_engagements": {
+      "type": "string",
+      "enum": [
+        "open_now",
+        "open_selective",
+        "closed"
+      ],
+      "description": "How open the Fellow is to a commercial engagement. Informational only; never used to order, filter, or feature anything."
+    },
+    "commercial_sectors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Domain keys the Fellow will take commercial work in. Display only."
+    },
+    "inquiry_route": {
+      "type": "string",
+      "enum": [
+        "form",
+        "form_linkedin"
+      ],
+      "description": "Public contact preference. 'form' = the private enquiry form only; 'form_linkedin' = the form plus a LinkedIn key when the Fellow has a profile link. The Fellow's email address is never rendered publicly."
+    },
+    "dossier_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether visitors may download the standardized one-page dossier composed from the public record. Never read by discovery, ranking, or scoring."
+    },
+    "intent_updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the intent switches or their configuration were last written."
+    },
+    "inquiry_last_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time the Fellow opened their enquiry desk"
+    },
+    "documentary_prompts": {
+      "type": "object",
+      "default": {},
+      "description": "The Fellow's own answers to the documentary story prompts, keyed by prompt key (first_light, turning_point, hardest_problem, what_next). Each answer renders as an interview excerpt in the matching chapter of their documentary record. Display only; never read by discovery, ranking, scoring, or measurement."
+    },
+    "documentary_media": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Stable key for the contribution"
+          },
+          "chapter": {
+            "type": "string",
+            "description": "Chapter key the contribution is cut into (opening, credential, work, route, contributions, words, eight, next)"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "photo",
+              "clip",
+              "recording",
+              "document"
+            ],
+            "description": "What the contribution is: a still, a moving image, an interview recording, or a supporting document"
+          },
+          "url": {
+            "type": "string",
+            "description": "Public file URL for the contribution"
+          },
+          "caption": {
+            "type": "string",
+            "description": "Caption or credit printed under the contribution"
+          }
+        }
+      },
+      "default": [],
+      "description": "Stills, clips, interview recordings and documents the Fellow has contributed to their documentary record. Display only; never read by discovery, ranking, scoring, or measurement."
     }
   },
   "required": [

@@ -1,12 +1,14 @@
 import { ChevronLeft } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, layoutLabel } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
+import { useNavHint } from '@/components/handheld/faceHint';
 
 // A page of the issue, read whole on the glass — the reader's own rendering, one page
 // at a time. The ring scrolls the page rather than walking anything: back and forward
 // on the ring turn to the neighbouring page, which is how the issue is proved before
 // it is published.
 export default function GlassStudioPageRead({ page, issue, articles, pageNumber, totalPages, onTurn, onBack }) {
+  const keyHint = useNavHint();
   const canPrev = pageNumber > 1;
   const canNext = pageNumber < totalPages;
 
@@ -33,7 +35,7 @@ export default function GlassStudioPageRead({ page, issue, articles, pageNumber,
           ◀ Previous
         </button>
         <p className="text-[7.5px] font-bold uppercase tracking-[0.16em]" style={{ color: 'rgba(30,58,90,0.4)' }}>
-          ◀▶ Turn · B Back
+          {keyHint({ walk: 'Turn', open: 'Back' })}
         </p>
         <button type="button" disabled={!canNext} onClick={() => onTurn(1)} className="text-[8.5px] font-bold uppercase tracking-[0.16em] disabled:opacity-30" style={{ color: P.navy }}>
           Next ▶

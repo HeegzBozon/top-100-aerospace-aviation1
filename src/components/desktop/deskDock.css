@@ -1,28 +1,95 @@
-/* ===== THE DESK'S SHELF — THE DOCK =====
-   The row of things a hand reaches for without opening a menu, moulded from the machine
-   it stands on: the same polymer tones, the same steel hairline, a brass seam parting its
-   parts. A tile lifts when it is pointed at, the surface you are on lamps underneath it,
-   and each prints its own name above itself rather than carrying a permanent label — the
-   shelf stays quiet until it is asked something. Every tone is a finish token, so the dock
-   is recast with the case it is set into. */
-.ds-shelf {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 46%),
-    linear-gradient(180deg, var(--hh-shell-1) 0%, var(--hh-shell-2) 62%, var(--hh-shell-3) 100%);
-  box-shadow:
-    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.16),
-    inset 0 1px 0 var(--hh-shell-spec),
-    inset 0 -14px 22px -18px rgba(3, 6, 13, 0.8),
-    0 14px 34px -16px rgba(3, 6, 13, 0.78),
-    0 2px 6px rgba(3, 6, 13, 0.42);
+/* ===== THE CHANNEL KEYS — THE SHELF IN THE BEZEL =====
+   The desk's shelf, seated in the faceplate's recessed bay. These are keys on a
+   transceiver: matte polymer, hard 1px bevels, legends cut into them, and a lamp that
+   lights under the one whose channel you are listening to. Every tone is a finish token,
+   so the key field recasts with the case it is mounted in. */
+.ds-strip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 6px;
+  min-width: 0;
 }
 
-/* A machined seam where two parts of the shelf meet. */
+.ds-tile {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 5px;
+  color: rgb(var(--hh-ink-rgb) / 0.62);
+  background: linear-gradient(180deg, #22303f 0%, #16212d 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.5),
+    0 1px 0 rgba(3, 6, 13, 0.5),
+    0 2px 5px rgba(3, 6, 13, 0.35);
+  transition:
+    transform 130ms ease,
+    filter 130ms ease,
+    box-shadow 130ms ease;
+}
+.ds-tile:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+  color: var(--hh-ink);
+}
+.ds-tile:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 5px rgba(3, 6, 13, 0.6), 0 1px 0 rgba(3, 6, 13, 0.35);
+}
+.ds-tile:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(var(--hh-metal-rgb) / 0.85);
+}
+.ds-tile[aria-current="page"] {
+  color: var(--hh-metal-1);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 1px 0 rgba(3, 6, 13, 0.5),
+    0 0 10px -2px rgb(var(--hh-metal-rgb) / 0.55);
+}
+
+.ds-glyph {
+  width: 15px;
+  height: 15px;
+}
+
+/* The front screen's own mark, stamped rather than drawn. */
+.ds-mark {
+  font-family: var(--font-display);
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--hh-metal-1);
+}
+
+/* The lamp under a key: lit for the surface you are on. */
+.ds-lamp {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: transparent;
+}
+.ds-lamp[data-on="true"] {
+  background: var(--hh-metal-1);
+  box-shadow: 0 0 5px rgb(var(--hh-metal-rgb) / 0.85);
+}
+
+/* A machined seam where two parts of the key field meet. */
 .ds-seam {
   width: 1px;
-  align-self: stretch;
-  margin: 5px;
+  height: 20px;
   flex: none;
+  margin: 0 2px;
   background: linear-gradient(
     180deg,
     rgb(var(--hh-metal-rgb) / 0.04),
@@ -31,33 +98,66 @@
   );
 }
 
-/* A key on the shelf: matte, bevelled at its edges, pressed by rolling over its own
-   bevel — the same language as the machine's moulding. */
-.ds-tile {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+/* The seal: the one key that says what it is without being pointed at, because it is the
+   one thing a visitor is asked to do. Rose gold, the masthead's metal. */
+.ds-seal {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 11px;
+  border-radius: 5px;
+  font-size: 6.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #07111f;
+  background: linear-gradient(135deg, #c9a87c 0%, #e0c79a 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    inset 0 -1px 0 rgba(3, 6, 13, 0.34),
-    0 1px 0 rgba(3, 6, 13, 0.3);
-  transition:
-    transform 150ms ease,
-    box-shadow 150ms ease;
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.28),
+    0 1px 0 rgba(3, 6, 13, 0.4),
+    0 2px 5px rgba(3, 6, 13, 0.32);
+  transition: filter 130ms ease, transform 130ms ease;
 }
-.ds-tile:hover {
-  transform: translateY(-4px);
+.ds-seal .ds-glyph {
+  width: 11px;
+  height: 11px;
 }
-.ds-tile:active {
+.ds-seal:hover {
+  filter: brightness(1.06);
   transform: translateY(-1px);
 }
-.ds-tile:focus-visible {
+.ds-seal:active {
+  transform: translateY(1px);
+}
+.ds-seal:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px rgb(var(--hh-metal-rgb) / 0.85);
+  box-shadow: 0 0 0 2px rgba(201, 168, 124, 0.95);
 }
 
-/* The name a tile prints when it is pointed at. */
+/* A surface's own controls, lent to the bay while it stands. */
+.ds-host {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  flex: 1 1 auto;
+  width: clamp(280px, 34vw, 520px);
+}
+.ds-host-main {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+/* The name a key prints when it is pointed at. */
 .ds-tip {
   position: absolute;
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + 9px);
   left: 50%;
   transform: translate(-50%, 4px);
   opacity: 0;
@@ -83,9 +183,47 @@
   transform: translate(-50%, 0);
 }
 
+/* On a narrower desk the seal keeps its metal and gives up its word: the glyph is the
+   key, and the name is still on its label. */
+@media (max-width: 1400px) {
+  .ds-tile {
+    width: 30px;
+    height: 30px;
+  }
+  .ds-glyph {
+    width: 14px;
+    height: 14px;
+  }
+  .ds-seal {
+    height: 30px;
+    padding: 0 9px;
+  }
+  .ds-seal span {
+    display: none;
+  }
+}
+@media (max-width: 900px) {
+  .ds-tip {
+    display: none;
+  }
+  .ds-strip {
+    padding: 0 4px;
+  }
+  .ds-tile {
+    width: 28px;
+    height: 28px;
+  }
+  .ds-seal {
+    height: 28px;
+    padding: 0 8px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ds-tile:hover,
-  .ds-tile:active {
+  .ds-tile:active,
+  .ds-seal:hover,
+  .ds-seal:active {
     transform: none;
   }
   .ds-tip {

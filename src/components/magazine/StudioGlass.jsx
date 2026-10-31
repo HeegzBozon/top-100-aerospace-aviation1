@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import { useNavHint } from '@/components/handheld/faceHint';
+import { useConsoleFace, RADIO } from '@/components/handheld/consoleMode';
 import { MAGAZINE_PALETTE as P, layoutLabel } from '@/components/magazine/magazineConfig';
 import {
   buildArchiveEntries,
@@ -54,6 +56,9 @@ export default function StudioGlass({
   actions = {},
 }) {
   const navigate = useNavigate();
+  // The studio prints the keys of the face on the case.
+  const keyHint = useNavHint();
+  const faceIsRadio = useConsoleFace() === RADIO;
 
   const [level, setLevel] = useState(0);
   const [surface, setSurface] = useState(null);
@@ -405,7 +410,7 @@ export default function StudioGlass({
             {entry?.kind === 'issue' ? 'Masthead fields' : entryTitle}
           </p>
           <p className="flex-none text-[7.5px] font-bold uppercase tracking-[0.16em]" style={{ color: 'rgba(30,58,90,0.45)' }}>
-            ◀▶ Walk · A Write
+            {keyHint({ open: 'Write' })}
           </p>
         </div>
         <div className="mt-3 space-y-2">
@@ -452,10 +457,10 @@ export default function StudioGlass({
         : null;
 
   const hint = level === 4
-    ? '◀▶ Walk · A Take'
+    ? keyHint({ open: 'Take' })
     : level === 0
-      ? '◀▶ Walk · A Open'
-      : '◀▶ Walk · A Open · B Back';
+      ? keyHint({ open: 'Open' })
+      : `${keyHint({ open: 'Open' })} · ${faceIsRadio ? 'BACK Back' : 'B Back'}`;
 
   const back = level === 0 ? null : () => {
     if (level === 2) { setSurface(null); setLevel(1); setCursor(0); return; }

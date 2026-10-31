@@ -1,0 +1,141 @@
+{
+  "name": "ProfileInquiry",
+  "type": "object",
+  "properties": {
+    "profile_email": {
+      "type": "string",
+      "description": "Email of the Fellow the enquiry is addressed to. Resolved server-side from the profile record, never taken from the submitter. Private: never rendered on a public surface."
+    },
+    "profile_name": {
+      "type": "string",
+      "description": "Display name of the Fellow, denormalized for the enquiry desk"
+    },
+    "nominee_id": {
+      "type": "string",
+      "description": "Nominee record id the enquiry was submitted against"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "hire",
+        "commercial"
+      ],
+      "description": "Which intent track the enquiry belongs to: Job & Career or Deal & BD"
+    },
+    "request_type": {
+      "type": "string",
+      "enum": [
+        "role_conversation",
+        "dossier",
+        "introduction",
+        "proposal_rfq",
+        "asset_sheet"
+      ],
+      "description": "What the visitor is asking for"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Name of the person making the enquiry"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Email of the person making the enquiry. Private to the Fellow and administrators."
+    },
+    "sender_org": {
+      "type": "string",
+      "description": "Organisation the enquirer represents"
+    },
+    "sender_role": {
+      "type": "string",
+      "description": "The enquirer's own role or title"
+    },
+    "message": {
+      "type": "string",
+      "description": "The enquiry itself"
+    },
+    "timeline": {
+      "type": "string",
+      "enum": [
+        "immediate",
+        "this_quarter",
+        "exploratory"
+      ],
+      "description": "Curated timing signal offered to the visitor"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "opened",
+        "responded",
+        "closed",
+        "declined"
+      ],
+      "default": "new",
+      "description": "Where the enquiry stands in the Fellow's own desk"
+    },
+    "status_updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the status last changed"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "profile",
+        "desk"
+      ],
+      "default": "profile",
+      "description": "Surface the enquiry was submitted from"
+    },
+    "ghl_synced": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the enquirer was routed into GoHighLevel as a Ground Control contact"
+    }
+  },
+  "required": [
+    "profile_email",
+    "mode",
+    "request_type",
+    "sender_name",
+    "sender_email",
+    "message"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.profile_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "data.profile_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

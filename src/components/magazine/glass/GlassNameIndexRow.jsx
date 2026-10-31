@@ -20,7 +20,7 @@ export default function GlassNameIndexRow({ entry, active = false, read = false,
         className="w-7 flex-none font-mono text-[9.5px] tabular-nums"
         style={{ color: active ? P.gold : 'rgba(30,58,90,0.38)' }}
       >
-        {String(entry.number).padStart(3, '0')}
+        {String(entry.rank ?? entry.number).padStart(3, '0')}
       </span>
 
       <span className="min-w-0 flex-1">

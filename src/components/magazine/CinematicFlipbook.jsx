@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import HTMLFlipBook from 'react-pageflip';
-import { LogOut, BookOpen, ChevronLeft, ChevronRight, ChevronsLeft, Share2, List, X } from 'lucide-react';
+import { LogOut, BookOpen, ChevronLeft, ChevronRight, ChevronsLeft, Share2, List, X, Play, Pause, Bookmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
@@ -9,7 +9,9 @@ import ReaderModeToggle from '@/components/magazine/ReaderModeToggle';
 import { useCinematicPlayback } from '@/components/magazine/useCinematicPlayback';
 import { PlayPauseButton, SpeedSelector, PlaybackProgress } from '@/components/magazine/PlaybackControls';
 import ReadProgressMeter from '@/components/magazine/ReadProgressMeter';
+import PageScrollRail from '@/components/magazine/PageScrollRail';
 import { clearIssueProgress, readIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
+import { readIssueBookmarks, removeIssueBookmark, toggleIssueBookmark } from '@/lib/issueBookmarks';
 
 // The open issue on a desk: two pages held wide, turned by hand or rolled as a film.
 //
@@ -28,13 +30,16 @@ export default function CinematicFlipbook({
   setSpeed,
   mode,
   onModeChange,
+  restartFromCover = false,
 }) {
   const bookRef = useRef(null);
   const rootRef = useRef(null);
   const stageRef = useRef(null);
   // Read again arrives with `restart`: the issue opens at its front, whatever place the
-  // last pass left it at.
-  const restart = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('restart');
+  // last pass left it at — from the title screen's own Start over, or from a link that
+  // says so.
+  const restart = restartFromCover
+    || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('restart'));
   // The place is read back where the reader left it, so the issue reopens on the spread
   // they were reading rather than on the cover for the second time.
   const [currentPage, setCurrentPage] = useState(() => {
@@ -44,9 +49,24 @@ export default function CinematicFlipbook({
   });
   const [totalPages, setTotalPages] = useState(pages.length);
   const [showContents, setShowContents] = useState(false);
+  // The reader's own ribbons: the spreads they have marked to come back to, in the issue's
+  // page order. Kept on this machine, and only ever their own.
+  const [bookmarks, setBookmarks] = useState(() => readIssueBookmarks(issue?.id));
   const navigate = useNavigate();
   const [frameHeight, setFrameHeight] = useState(null);
   const [stage, setStage] = useState({ width: 0, height: 0 });
+  // The roll belongs to the page, not to the book: a spread can hold one page that runs
+  // past its frame and one that does not, and either can be put on hold by itself.
+  const [pausedPages, setPausedPages] = useState({});
+  const [rollable, setRollable] = useState({});
+
+  const reportOverflow = useCallback((key, hasOverflow) => {
+    setRollable((prev) => (Boolean(prev[key]) === hasOverflow ? prev : { ...prev, [key]: hasOverflow }));
+  }, []);
+
+  const togglePageRoll = useCallback((key) => {
+    setPausedPages((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
 
   const onFlip = useCallback((e) => setCurrentPage(e.data), []);
   const onInit = useCallback(() => {
@@ -161,6 +181,27 @@ export default function CinematicFlipbook({
     navigate('/');
   }, [issue.id, issue.title, currentPage, totalPages, navigate]);
 
+  // What a ribbon is called in the list: the chapter the page stands in, which is how a
+  // reader finds their way back to a spread they marked.
+  const bookmarkLabel = useCallback((idx) => {
+    const page = pages[idx];
+    if (page?.chapter_label) return page.chapter_label;
+    const chapter = pages.slice(0, idx + 1).reverse().find((entry) => entry.chapter_label);
+    return chapter?.chapter_label || (page?.layout_type === 'cover' ? 'Cover' : `Page ${idx + 1}`);
+  }, [pages]);
+
+  const markedHere = bookmarks.some((mark) => mark.page === currentPage);
+
+  const toggleBookmark = useCallback(() => {
+    if (!issue?.id) return;
+    setBookmarks(toggleIssueBookmark(issue.id, { page: currentPage, label: bookmarkLabel(currentPage) }));
+  }, [issue?.id, currentPage, bookmarkLabel]);
+
+  const dropBookmark = useCallback((page) => {
+    if (!issue?.id) return;
+    setBookmarks(removeIssueBookmark(issue.id, page));
+  }, [issue?.id]);
+
   // How much of the issue has gone by — the head band's measure, not the foot's.
   const issuePercent = totalPages > 1
     ? Math.min(100, Math.round((currentPage / (totalPages - 1)) * 100))
@@ -265,8 +306,18 @@ export default function CinematicFlipbook({
           >
             {pages.map((page, i) => {
               const open = holdsPage(i);
+              const key = page.id || i + 1;
+              const paused = Boolean(pausedPages[key]);
               return (
-                <div key={page.id || i} style={{ height: '100%', overflow: 'hidden' }}>
+                <div key={page.id || i} className="group relative" style={{ height: '100%', overflow: 'hidden' }}>
+                  {/* A marked spread wears its ribbon folded over the corner of the page */}
+                  {bookmarks.some((mark) => mark.page === i) && (
+                    <span
+                      className="pointer-events-none absolute right-0 top-0 z-10"
+                      aria-hidden="true"
+                      style={{ width: 0, height: 0, borderTop: `20px solid ${P.copper}`, borderLeft: '20px solid transparent' }}
+                    />
+                  )}
                   <FlipPage>
                     <PageRenderer
                       page={page}
@@ -277,8 +328,38 @@ export default function CinematicFlipbook({
                       playing={isPlaying && open}
                       autoscroll={open}
                       speed={typeof speed === 'number' ? speed : 1}
+                      paused={paused}
+                      onOverflow={reportOverflow}
                     />
                   </FlipPage>
+                  {/* The page's own measure at the trim, in place of the browser's scroll bar */}
+                  <PageScrollRail
+                    pageKey={key}
+                    tone={page?.layout_type === 'profile' ? 'night' : 'paper'}
+                  />
+                  {/* A page long enough to roll wears its own hold, on the page itself and
+                      only under a pointer — one per page, so the left and the right of a
+                      spread are started and stopped independently. */}
+                  {open && rollable[key] && (
+                    <button
+                      onClick={(event) => { event.stopPropagation(); togglePageRoll(key); }}
+                      onMouseDown={(event) => event.stopPropagation()}
+                      className={`absolute right-2.5 top-2.5 z-20 flex h-8 w-8 items-center justify-center rounded-full shadow-lg transition-opacity duration-200 group-hover:opacity-100 focus-visible:opacity-100 ${
+                        paused ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      style={{
+                        background: 'rgba(7,15,31,0.74)',
+                        border: `1px solid ${P.gold}66`,
+                        color: P.cream,
+                        backdropFilter: 'blur(6px)',
+                        WebkitBackdropFilter: 'blur(6px)',
+                      }}
+                      aria-label={paused ? 'Resume this page' : 'Pause this page'}
+                      title={paused ? 'Roll this page' : 'Hold this page'}
+                    >
+                      {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -336,6 +417,18 @@ export default function CinematicFlipbook({
         >
           <ChevronRight className="h-5 w-5" />
         </button>
+        {/* The ribbon: the spread under the reader, marked so it can be come back to */}
+        <button
+          onClick={toggleBookmark}
+          className="ml-1 flex h-9 items-center gap-1.5 rounded-full px-3 text-[9px] font-bold uppercase tracking-[0.18em] transition-all hover:bg-white/10"
+          style={{ color: markedHere ? P.gold : 'rgba(250,248,245,0.62)' }}
+          aria-pressed={markedHere}
+          aria-label={markedHere ? 'Remove the bookmark on this spread' : 'Bookmark this spread'}
+          title={markedHere ? 'Marked' : 'Mark this spread'}
+        >
+          <Bookmark className="h-4 w-4" fill={markedHere ? P.gold : 'none'} />
+          <span className="hidden sm:inline">{markedHere ? 'Marked' : 'Mark'}</span>
+        </button>
         {/* The issue by its parts: the chapters, read in one list and stepped into
             whole rather than a page at a time */}
         <button
@@ -366,11 +459,52 @@ export default function CinematicFlipbook({
         <div className="fixed inset-0 z-30 flex justify-end" style={{ background: 'rgba(7,15,31,0.6)' }} onClick={() => setShowContents(false)}>
           <div className="h-full w-full max-w-xs overflow-y-auto p-6" style={{ background: P.navy }} onClick={(e) => e.stopPropagation()}>
             <div className="mb-6 flex items-center justify-between">
-              <h3 className="font-serif text-lg" style={{ color: P.cream }}>Chapters</h3>
-              <button onClick={() => setShowContents(false)} className="rounded-full p-1 hover:bg-white/10" aria-label="Close chapters">
+              <h3 className="font-serif text-lg" style={{ color: P.cream }}>Contents</h3>
+              <button onClick={() => setShowContents(false)} className="rounded-full p-1 hover:bg-white/10" aria-label="Close contents">
                 <X className="h-4 w-4" style={{ color: P.cream }} />
               </button>
             </div>
+
+            {/* The reader's own ribbons, before the issue's own parts */}
+            <div className="mb-6">
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: P.gold }}>
+                Bookmarks
+              </p>
+              {bookmarks.length ? (
+                <div className="space-y-1">
+                  {bookmarks.map((mark) => (
+                    <div key={mark.page} className="flex items-center gap-1 rounded-lg hover:bg-white/5">
+                      <button
+                        onClick={() => goToPage(mark.page)}
+                        className="min-w-0 flex-1 px-3 py-2 text-left"
+                      >
+                        <p className="truncate text-sm" style={{ color: P.cream }}>
+                          {mark.label || 'Marked spread'}
+                        </p>
+                        <p className="mt-0.5 text-[10px]" style={{ color: 'rgba(250,248,245,0.4)' }}>
+                          Page {String(mark.page + 1).padStart(2, '0')}
+                        </p>
+                      </button>
+                      <button
+                        onClick={() => dropBookmark(mark.page)}
+                        className="mr-1 rounded-full p-1.5 transition-colors hover:bg-white/10"
+                        aria-label={`Remove the bookmark on page ${mark.page + 1}`}
+                      >
+                        <X className="h-3 w-3" style={{ color: 'rgba(250,248,245,0.5)' }} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="px-3 text-[11px] leading-relaxed" style={{ color: 'rgba(250,248,245,0.42)' }}>
+                  Nothing marked yet. The ribbon in the foot band marks the spread you are on.
+                </p>
+              )}
+            </div>
+
+            <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: P.gold }}>
+              Chapters
+            </p>
             <div className="space-y-1">
               {chapterIndex.map(({ page, index }, i) => (
                 <button

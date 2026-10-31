@@ -33,3 +33,15 @@ export function immersiveFor(pathname = "") {
 }
 
 export const standsBackOnDesk = (pathname = "") => immersiveFor(pathname).desk === "full";
+
+// WHICH SURFACES DO NOT WANT THE RAIL.
+//
+// The ticks down the right edge of the glass are a map of a page's sections, and they are
+// worth their width on a page being read. The ballot is not that: it is one surface walked
+// with the console's own keys, and every pixel down that edge is taken from the candidates
+// standing on it. A surface that fills the picture declares itself here rather than hiding
+// the rail from inside its own component.
+export const RAILLESS_SURFACES = [/^\/selection-committee\b/, /^\/nominate\b/];
+
+export const railHiddenOn = (pathname = "") =>
+  RAILLESS_SURFACES.some((surface) => surface.test(pathname));

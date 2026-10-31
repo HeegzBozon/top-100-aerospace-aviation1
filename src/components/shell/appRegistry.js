@@ -1,5 +1,5 @@
 import {
-  Award, BookOpen, Briefcase, Calendar, CalendarCheck, Compass, GraduationCap,
+  Award, BookOpen, Briefcase, Calendar, CalendarCheck, CalendarDays, Compass, GraduationCap,
   Globe2, Heart, Info, Landmark, Layers, LayoutGrid, LogIn, LogOut, Mail,
   MessageCircle, Network, Newspaper, Radar, Rocket, Scissors, Send, Shield,
   ShoppingBag, Ticket, Trophy, User, UserPlus, Users,
@@ -32,6 +32,7 @@ export const APP_GROUPS = [
     items: [
       { label: "Dashboard", to: "/board", icon: LayoutGrid },
       { label: "My Profile", to: "/Profile", icon: User },
+      { label: "Inbox", to: "/inbox", icon: Mail },
       { label: "The Bulletin", to: "/Profile?board=fellow", icon: LayoutGrid },
       { label: "Mission Rooms", to: "/Profile?board=conference", icon: Radar },
       { label: "Ribbon Cuttings", to: "/Profile?board=ribbon", icon: Scissors },
@@ -63,8 +64,10 @@ export const APP_GROUPS = [
     key: "community",
     label: "Community",
     items: [
+      { label: "Conferences", to: "/conferences", icon: CalendarDays, shelf: true },
+      { label: "Host a Conference", to: "/conferences/host", icon: Landmark, membersOnly: true },
       { label: "Comms", to: "/Comms", icon: MessageCircle, membersOnly: true },
-      { label: "Calendar", to: "/events", icon: Calendar, shelf: true },
+      { label: "Calendar", to: "/events", icon: Calendar },
       { label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
       { label: "Operation Moon Joy", to: "/hangouts", icon: Rocket },
       { label: "Local Legends", to: "/local-legends", icon: Users },
@@ -87,7 +90,8 @@ export const APP_GROUPS = [
     key: "account",
     label: "Account",
     items: [
-      { label: "Shop", to: "/Shop", icon: ShoppingBag, shelf: true },
+      { label: "Chamber of Commerce", to: "/chamber", icon: Landmark },
+      { label: "Gift Shop", to: "/gift-shop", icon: ShoppingBag, shelf: true },
       { label: "Subscribe", to: "/subscribe", icon: Mail, shelf: true },
       { label: "RSVP", to: "/rsvp", icon: CalendarCheck },
       // The way in, in both readings — signing in, and making the account a visitor has

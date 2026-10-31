@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, List } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import { useNavHint } from '@/components/handheld/faceHint';
 import { useCinematicPlayback, PLAYBACK_SPEEDS } from '@/components/magazine/useCinematicPlayback';
 import { buildIssueContents, buildNameIndex, foldLabel } from '@/components/magazine/glass/glassIssueEntries';
 import GlassIssuePage from '@/components/magazine/glass/GlassIssuePage';
@@ -9,8 +10,9 @@ import GlassNameIndex from '@/components/magazine/glass/GlassNameIndex';
 import useIssueEditMenu from '@/components/magazine/glass/useIssueEditMenu';
 import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
 
+import { loadEditionNominees } from '@/components/publication/useTop100WomenNominees';
 import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
-import { clearIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
+import { clearIssueProgress, readIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
 
 const getStage = () => document.querySelector('[data-handheld-screen]') || document.querySelector('.hh-stage');
 
@@ -26,12 +28,22 @@ const REGISTER_KEY = 'issue-name-index';
 // forward on the ring turn to the neighbouring page and A starts or stops the film.
 // The index holds the landmarks a reader navigates by, so a hundred-page issue is
 // still a short walk, and everything between them is reached by turning.
-export default function GlassIssueReader({ issue, pages = [], articles = [], signedUrl, isPlaying, setIsPlaying, speed, setSpeed }) {
+export default function GlassIssueReader({ issue, pages = [], articles = [], signedUrl, isPlaying, setIsPlaying, speed, setSpeed, restart = false }) {
   const isPdf = issue.assembly_mode === 'pdf';
   const total = isPdf ? (issue.cover_pdf_page_count || 0) : pages.length;
+  // The contents are walked by the keys printed for the face on the case.
+  const keyHint = useNavHint();
 
-  const [view, setView] = useState('contents');
-  const [position, setPosition] = useState(1);
+  // Play as film arrives with the film already running, so it opens on the page rather
+  // than on the contents.
+  const [view, setView] = useState(() => (isPlaying ? 'page' : 'contents'));
+  // The place is read back where the issue was left, so Resume opens on the spread it was
+  // put down at — and Start over hands back the cover instead.
+  const [position, setPosition] = useState(() => {
+    if (restart) return 1;
+    const place = readIssueProgress(issue?.id)?.page || 0;
+    return Math.min(place + 1, Math.max(total, 1));
+  });
   const [cursor, setCursor] = useState(0);
 
   const contents = useMemo(() => {
@@ -48,15 +60,38 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
 
   // The register of names: the issue's own honorees, numbered as they stand in it, read
   // from the portraits the issue already carries.
-  const nameIndex = useMemo(() => (isPdf ? [] : buildNameIndex(pages, articles)), [isPdf, pages, articles]);
+  // Each name's standing in the edition comes from the same resolved edition the issue
+  // was bound from, so the register's order is the edition's order.
+  const [rankById, setRankById] = useState(null);
+  useEffect(() => {
+    if (isPdf) return undefined;
+    let alive = true;
+    loadEditionNominees()
+      .then((nominees) => {
+        if (alive) setRankById(new Map(nominees.map((nominee) => [nominee.id, nominee.finalRank])));
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [isPdf]);
+
+  const nameIndex = useMemo(
+    () => (isPdf ? [] : buildNameIndex(pages, articles, rankById)),
+    [isPdf, pages, articles, rankById],
+  );
+
+  // An issue with no readable pages has no page to stand on: the reader falls back to the
+  // contents, which says what is missing, rather than holding a page that is not there.
+  useEffect(() => {
+    if (total < 1 && view === 'page') setView('contents');
+  }, [total, view]);
 
   // Read again opens the issue at its front with this reader's pass on it wiped, so the
   // title screen reads Start again rather than the pass just finished.
   useEffect(() => {
-    if (issue?.id && new URLSearchParams(window.location.search).has('restart')) {
+    if (issue?.id && (restart || new URLSearchParams(window.location.search).has('restart'))) {
       clearIssueProgress(issue.id);
     }
-  }, [issue?.id]);
+  }, [issue?.id, restart]);
 
   // The place is kept as the page turns, on the glass as on the desk, so the title screen
   // reports one reading whichever machine it was read on.
@@ -313,7 +348,7 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   return withPanel(
     <GlassStudioList
       kicker={isPdf ? 'Pages' : 'Contents'}
-      hint="◀▶ Walk · A Read"
+      hint={keyHint({ open: 'Read' })}
       note={(
         <div className="space-y-1.5">
           <div className="flex items-baseline justify-between gap-3">

@@ -3,6 +3,7 @@ import { List, X, Share2 } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
 import ReaderModeToggle from '@/components/magazine/ReaderModeToggle';
+import PageScrollRail from '@/components/magazine/PageScrollRail';
 
 // Single-page reading mode: every page of the issue set down one under the next as a long
 // editorial scroll. On a desk each page keeps the proportion of a printed page — the
@@ -76,7 +77,7 @@ export default function SinglePageReader({ pages, articles = [], issue, mode, on
               className="scroll-mt-16"
             >
               <div
-                className="mx-auto w-full max-w-[620px] overflow-hidden rounded-lg shadow-lg"
+                className="relative mx-auto w-full max-w-[620px] overflow-hidden rounded-lg shadow-lg"
                 style={{
                   aspectRatio: '5 / 7',
                   maxHeight: '82vh',
@@ -91,6 +92,8 @@ export default function SinglePageReader({ pages, articles = [], issue, mode, on
                   pageNumber={idx + 1}
                   totalPages={totalPages}
                 />
+                {/* The page's own measure, in place of the browser's scroll bar */}
+                <PageScrollRail pageKey={page.id || idx} />
               </div>
               {/* The folio, printed under the page the way a spread prints it */}
               <p

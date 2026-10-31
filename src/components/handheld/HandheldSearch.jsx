@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { QrCode, Search } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { blip, buzz } from "./handheldSound";
+import HandheldScanner from "./HandheldScanner";
 
 // The machine's search, drawn inside the glass the way the cartridge menu is: the same
 // well of phosphor, the same sheet of light over it, the same legend along the foot.
@@ -21,6 +22,9 @@ export default function HandheldSearch({ onClose, groups = [] }) {
   const [people, setPeople] = useState([]);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
+  // The same key does both: the lens reads a code, the field answers a name. One press
+  // of the keypad's scan key opens this drawer, and the machine's eye is in it.
+  const [scanning, setScanning] = useState(false);
 
   const term = query.trim();
 
@@ -115,11 +119,21 @@ export default function HandheldSearch({ onClose, groups = [] }) {
           className="text-[8px] font-bold uppercase tracking-[0.28em]"
           style={{ color: loading ? "var(--hh-lcd-bright)" : "var(--hh-lcd-soft)" }}
         >
-          {loading ? "Listening…" : idle ? "Directory" : `${surfaces.length + people.length} found`}
+          {scanning
+            ? "Reading a code"
+            : loading
+              ? "Listening…"
+              : idle
+                ? "Directory"
+                : `${surfaces.length + people.length} found`}
         </span>
       </div>
 
-      {/* The field */}
+      {scanning ? (
+        <HandheldScanner onOpen={go} onClose={() => setScanning(false)} />
+      ) : (
+        <>
+      {/* The field, with the eye beside it: the same key that types a name reads a code. */}
       <div
         className="flex items-center gap-2 px-3 py-2"
         style={{ borderBottom: "1px solid rgb(var(--hh-metal-rgb) / 0.16)" }}
@@ -136,6 +150,24 @@ export default function HandheldSearch({ onClose, groups = [] }) {
           className="w-full bg-transparent text-[13px] font-semibold outline-none placeholder:font-normal placeholder:tracking-[0.02em]"
           style={{ color: "var(--hh-lcd-bright)", caretColor: "var(--hh-lcd-bright)" }}
         />
+        <button
+          type="button"
+          onClick={() => {
+            blip("open");
+            buzz();
+            setScanning(true);
+          }}
+          aria-label="Scan a code"
+          title="Scan a code"
+          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px]"
+          style={{
+            background: "rgb(var(--hh-ink-rgb) / 0.06)",
+            boxShadow: "inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.16)",
+            color: "var(--hh-lcd)",
+          }}
+        >
+          <QrCode className="h-[13px] w-[13px]" strokeWidth={2.2} />
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto scrollbar-hide">
@@ -234,6 +266,8 @@ export default function HandheldSearch({ onClose, groups = [] }) {
           </>
         )}
       </div>
+        </>
+      )}
 
       {/* Footer — the legend along the foot, and the way out */}
       <div

@@ -1,0 +1,183 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { hourPhase } from '@/components/core/appOpening';
+import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import revealCursor from '@/components/handheld/revealCursor';
+import StartSky from '@/components/start/StartSky';
+import StartMetaRow from '@/components/start/StartMetaRow';
+import ChamberKeys from '@/components/chamber/ChamberKeys';
+import ChamberTabs from '@/components/chamber/ChamberTabs';
+import HouseOffices from '@/components/chamber/HouseOffices';
+import { CHAMBER_COUNTERS, CHAMBER_OFFICES } from '@/components/chamber/chamberPrograms';
+import { CHAMBER_DESKS } from '@/components/chamber/chamberOffices';
+
+// The Chamber of Commerce. Two counters on it — the App Store and the Gift Shop — and
+// behind them the offices the house does business from: its three practices, the
+// accelerator, membership, partnership, and the round.
+//
+// It is drawn the way Review is, as a menu with keys, because that is the one shape both
+// controls are good at: the ring walks every counter and every office in one list, the
+// one under the cursor is lit and reads itself out below, and # opens it. The keypad's
+// numbers work too, and an office that lives off the platform (the round) opens in its
+// own window rather than pretending to be a page here.
+//
+// The directory is cut into two tabs — the desks, then the house — so the ring walks the
+// leaf in front of it and nothing is reachable only by scrolling past something else.
+const CHAMBER_TABS = [
+  { key: 'desks', label: 'The desks', items: CHAMBER_DESKS },
+  { key: 'house', label: 'The house', items: CHAMBER_OFFICES },
+];
+
+export default function Chamber() {
+  const navigate = useNavigate();
+  const [phase] = useState(() => hourPhase());
+  const [tabKey, setTabKey] = useState(CHAMBER_TABS[0].key);
+
+  // The ring walks the counters and the leaf in front of it, never what is folded away.
+  const activeGroup = useMemo(
+    () => CHAMBER_TABS.find((tab) => tab.key === tabKey) || CHAMBER_TABS[0],
+    [tabKey],
+  );
+
+  const programs = useMemo(() => [...CHAMBER_COUNTERS, ...activeGroup.items], [activeGroup]);
+  const [cursorKey, setCursorKey] = useState(programs[0].key);
+
+  const cursorRef = useRef(cursorKey);
+  cursorRef.current = cursorKey;
+
+  // Switching leaves puts the cursor on the first thing behind the new one, so the ring is
+  // never left standing on an entry that has been folded away.
+  const selectTab = useCallback((key) => {
+    const group = CHAMBER_TABS.find((tab) => tab.key === key);
+    if (!group || !group.items.length) return;
+    setTabKey(key);
+    cursorRef.current = group.items[0].key;
+    setCursorKey(group.items[0].key);
+  }, []);
+
+  const land = useCallback((target) => {
+    if (target < 0 || target >= programs.length) return null;
+    cursorRef.current = programs[target].key;
+    setCursorKey(programs[target].key);
+    return programs[target].label;
+  }, [programs]);
+
+  const here = useCallback(
+    () => Math.max(0, programs.findIndex((program) => program.key === cursorRef.current)),
+    [programs],
+  );
+
+  const programsRef = useRef(programs);
+  programsRef.current = programs;
+
+  const api = useRef(null);
+  if (!api.current) {
+    api.current = {
+      labels: () => programsRef.current.map((program) => program.label),
+      index: here,
+      // One counter or office to the left or the right, and the list stops at its ends.
+      step: (direction) => land(here() + direction),
+      page: (direction) => land(here() + direction),
+      goTo: (i) => land(i),
+      code: () => programsRef.current[here()]?.index || null,
+      // The number printed on an entry is what the keypad types: press 7 and Membership
+      // is pressed, the cursor lands on it and it opens.
+      goToCode: (code) => {
+        const target = programsRef.current.findIndex((program) => program.index === String(code));
+        if (target < 0) return null;
+        const label = land(target);
+        if (label) api.current.enter();
+        return label;
+      },
+      enter: () => {
+        const program = programsRef.current.find((item) => item.key === cursorRef.current);
+        if (!program) return false;
+        if (program.href) {
+          window.open(program.href, "_blank", "noopener,noreferrer");
+          return true;
+        }
+        if (!program.to) return false;
+        navigate(program.to);
+        return true;
+      },
+      back: () => false,
+    };
+  }
+
+  useEffect(() => registerPicker(api.current), []);
+
+  useEffect(() => {
+    touchPicker();
+  }, [cursorKey, programs.length]);
+
+  // The ring can land on an office as easily as on a counter, so the reveal is done once
+  // for the whole list: whichever entry is lit, the glass brings it into view.
+  useEffect(() => {
+    revealCursor(cursorKey);
+  }, [cursorKey]);
+
+  const active = programs.find((program) => program.key === cursorKey) || programs[0];
+
+  return (
+    /* The same window the other title surfaces are drawn in: on a phone this is a page the
+       picture scrolls — nine entries do not fit one glass at once, and they are never cut
+       to make them try — on a desk it is the whole sheet. */
+    <div className="hh-scroll-window relative flex min-h-screen flex-col">
+      <div
+        className="hh-scroll-plane relative flex min-h-full flex-1 flex-col"
+        style={{ background: phase.sky }}
+      >
+        <StartSky phase={phase} />
+
+        <div className="hh-scroll-page relative flex flex-1 flex-col px-5 pb-7 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
+          <div className="hh-title-block mt-4 shrink-0 md:mt-10">
+            <div
+              className="h-px w-24 md:w-56"
+              style={{ background: 'linear-gradient(90deg, #B87333, #C9A87C 58%, transparent)' }}
+            />
+            <h1 className="mt-3 font-heading text-[2.05rem] leading-[0.95] tracking-[-0.01em] text-editorial-cream md:text-7xl">
+              Chamber of Commerce
+            </h1>
+            <p className="mt-2 text-[8.5px] font-bold uppercase tracking-[0.34em] text-editorial-cream/60 md:text-[11px]">
+              The counters &middot; The desks &middot; The house
+            </p>
+          </div>
+
+          <div className="mt-5 md:mt-9">
+            <p className="mb-2 text-[7.5px] font-bold uppercase tracking-[0.3em] text-editorial-gold/70 md:mb-3 md:text-[9px]">
+              The counters
+            </p>
+            <ChamberKeys programs={CHAMBER_COUNTERS} cursorKey={cursorKey} />
+          </div>
+
+          {/* One leaf of the directory at a time: the desks a member's own work is done
+              at, then the house the institution does business from. */}
+          <div className="mt-6 md:mt-9">
+            <ChamberTabs tabs={CHAMBER_TABS} activeKey={activeGroup.key} onSelect={selectTab} />
+            <div className="mt-3 md:mt-4">
+              <HouseOffices programs={activeGroup.items} cursorKey={cursorKey} />
+            </div>
+          </div>
+
+          {/* The entry under the cursor reads itself out below the list, so the wheel can
+              be turned without looking back up to know what it has landed on. */}
+          {active ? (
+            <p className="mt-3.5 min-h-[2.6em] text-[10.5px] leading-relaxed text-editorial-cream/72 md:mt-6 md:min-h-0 md:text-[13px]">
+              {active.blurb}
+            </p>
+          ) : null}
+
+          <div className="mt-3 flex items-center gap-2 text-[8px] font-bold uppercase tracking-[0.22em] text-editorial-cream/45 md:mt-8 md:text-[9.5px]">
+            <span>Turn to walk</span>
+            <span className="text-editorial-cream/25">/</span>
+            <span># to open</span>
+          </div>
+
+          <div className="mt-8 hidden md:block">
+            <StartMetaRow />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

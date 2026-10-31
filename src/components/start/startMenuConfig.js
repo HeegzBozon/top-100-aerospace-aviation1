@@ -1,33 +1,48 @@
-import { Archive, Award, BookOpen, LayoutGrid, ListChecks, LogIn, Shield, Trophy, UserPlus, Users } from "lucide-react";
+import { Award, BookOpen, CalendarDays, Landmark, ListChecks, LogIn, Newspaper, Shield, UserPlus } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
 // tile routes to a surface that already exists — the start screen holds the menu,
 // the surfaces hold the work.
 //
-// The committee stands as two surfaces rather than one drawer: nominating is the
-// work of putting names in, voting is the work of measuring them, and a Fellow
-// arriving at the title screen is almost always there for one of the two. Both land
-// inside the hub itself — the tab is the deep link, so neither waits behind the
-// title card in front of it.
+// The order is the order a Fellow arrives in: the committee's two acts first — nominating
+// and measuring — because that is the work the cycle is asking for, then Review, which is
+// the machine as something to look at rather than something to do, and the Chamber last.
+//
+// Review gathers what a Fellow comes back to rather than a program of work. It was
+// three keys, then four: the orientation, the Fellow's own network cartridge, their
+// record, and the archive of closed cycles are one surface with four tabs (see
+// pages/Review), so the title screen does not spend a key on any of them.
 //
 // Orientation, nominating and the published edition are the platform's public work: anyone
 // may do them. Measuring is a Fellow's — the ballot needs an account — and so are the
 // surfaces that hold a person's own record, so they carry the member flag and are simply
 // not drawn for a visitor.
 export const START_MENU = [
-  { key: "read", index: "00", label: "Orientation", to: "/mission-briefing", icon: BookOpen },
-  // The committee's second act is the ballot itself: a Fellow arrives here to put their
-  // own hundred in order, not to file a nomination — that lives inside the surface. The
-  // key is named for the work it opens.
-  { key: "nominate", index: "01", label: "Finalize Your TOP 100", to: "/selection-committee?tab=nominate", icon: Award },
+  // The committee's first act: putting names in. A Fellow arrives here to nominate, not
+  // to file a ballot — the ballot has its own key, and its own pill on the cycle band.
+  { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
+  // The committee's second act: a Fellow putting their own hundred in order.
   { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
-  { key: "networking", index: "03", label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
-  { key: "dashboard", index: "04", label: "Dashboard", to: "/board", icon: LayoutGrid, membersOnly: true },
-  { key: "results", index: "05", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
-  // The volumes already closed, open to anyone: the record of previous cycles reads as
-  // the archive it is, and every volume in it is reachable from the one it opens on.
-  { key: "archive", index: "06", label: "Archive", to: "/archive/6a6b70136ccb7c358f77dd7f", icon: Archive },
+  // The circuit: every aerospace conference the network is holding rooms in, and the
+  // workspace behind it for the organizers who stage them. Public — a visitor walks the
+  // calendar and is asked for an account only when they stand in a room.
+  { key: "conferences", index: "03", label: "Conferences", to: "/conferences", icon: CalendarDays },
+  // Review, closing the committee's row: the surface a Fellow comes back to look at rather
+  // than to do. Its own tabs are the deep links — orientation, My Network, the record, the
+  // published edition and the archive — so nothing waits behind the key in front of it.
+  { key: "review", index: "04", label: "Review", to: "/review", icon: BookOpen },
+  // The house's trading floor, closing the row: the App Store and the Gift Shop under one
+  // roof rather than as two keys on a menu that only has room for programs. It is itself a
+  // menu — turn to walk its two counters, # to open one. Public: every artifact on the
+  // shelf is composed from the reader's own record, so there is nothing behind this key a
+  // visitor cannot be shown.
+  { key: "chamber", index: "05", label: "Chamber of Commerce", to: "/chamber", icon: Landmark },
+  // The house's press, standing beside its counters: a newsstand rather than four keys —
+  // the editions on the rack, the articles that ran inside them, the dispatches Fellows
+  // file, and every release note the platform puts out. Public: it is a stand, and a stand
+  // exists to be read.
+  { key: "newsstand", index: "06", label: "Newsstand", to: "/newsstand", icon: Newspaper },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -59,8 +74,8 @@ export const ACCOUNT_KEYS = [
 
 export const accountKeysFor = (isSignedIn) => (isSignedIn ? [] : ACCOUNT_KEYS);
 
-// The ballot: the one action the cycle is asking for, offered beside the
-// countdown so the closing date and the way to vote are read in one line.
+// The ballot: the one action the cycle is asking for, offered under the countdown so the
+// closing date and the way to vote are read in one line.
 export const VOTE_OPTION = {
   key: "vote",
   label: "Vote now",
@@ -69,9 +84,9 @@ export const VOTE_OPTION = {
   to: "/selection-committee?tab=vote",
 };
 
-// The publishing alert: the other thing the title screen asks for, standing beside
-// the ballot. It is not a surface — the ring opens the field where it stands — so it
-// is only reached through the console's cursor.
+// The publishing alert: the other thing the title screen asks for, standing under the
+// day the results go live. It is not a surface — the ring opens the field where it
+// stands — so it is only reached through the console's cursor.
 export const NOTIFY_OPTION = {
   key: "notify",
   label: "Get notified",
