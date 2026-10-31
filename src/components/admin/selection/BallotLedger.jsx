@@ -191,9 +191,8 @@ export default function BallotLedger({ ballots = [], recent = 0 }) {
         </table>
       </div>
 
-      <p className="text-[10px] text-editorial-navy/45">
-        Sealed ballots: the ordering a voter saved is never shown here, only that it was cast. Seeded ballots are drafts
-        standing from a voter’s own nominations — they are not votes until the voter saves them.
+      <p className="text-[9.5px] uppercase tracking-[0.1em] text-editorial-navy/35">
+        Ordering stays sealed · seeded lists are drafts, not votes
       </p>
     </div>
   );

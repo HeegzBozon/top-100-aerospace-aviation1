@@ -124,8 +124,6 @@ export default function SelectionMonitor({ onOpenMenu }) {
         <TabsContent value="standings" className="mt-2.5 space-y-3">
           <StandingsBoard
             rows={data?.standings || []}
-            seeded={totals?.seeded || 0}
-            castBallots={totals?.ballots || 0}
             mode={mode}
             scopeKey={`${scope}:${mode}`}
           />
@@ -133,8 +131,8 @@ export default function SelectionMonitor({ onOpenMenu }) {
         </TabsContent>
 
         <TabsContent value="activity" className="mt-2.5 space-y-3">
-          <PulseBand totals={totals} mode={mode} />
-
+          {/* The ledger is the surface: what has landed, read newest first. The tally
+              beneath it is the complement, not the headline. */}
           <Tabs defaultValue="ballots">
             <TabsList className="grid h-auto w-full grid-cols-3 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
               <TabsTrigger value="ballots" className="px-1 text-[10px] md:px-3 md:text-sm">
@@ -157,6 +155,8 @@ export default function SelectionMonitor({ onOpenMenu }) {
               <ContributorTable rows={data?.contributors || []} />
             </TabsContent>
           </Tabs>
+
+          <PulseBand totals={totals} mode={mode} />
         </TabsContent>
       </Tabs>
     </div>

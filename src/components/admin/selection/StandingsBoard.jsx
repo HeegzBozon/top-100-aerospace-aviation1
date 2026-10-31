@@ -11,13 +11,7 @@ import StandingDetailDialog from './StandingDetailDialog';
 // Elo and the combined hint each get their own column, so a nominee can be followed down
 // one measure without the other two standing in for it — and the whole field is on the
 // board, not a slice of itself.
-export default function StandingsBoard({
-  rows = [],
-  seeded = 0,
-  castBallots = 0,
-  mode = 'live',
-  scopeKey = 'all',
-}) {
+export default function StandingsBoard({ rows = [], mode = 'live', scopeKey = 'all' }) {
   const [query, setQuery] = useState('');
   // The nominee whose full reading is open, with the column it was opened from.
   const [selected, setSelected] = useState(null);
@@ -44,42 +38,33 @@ export default function StandingsBoard({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="relative w-full max-w-xs">
+      <div className="flex items-center gap-2">
+        <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-editorial-navy/40" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search a name, company or cohort"
+            placeholder="Search the pool"
             className="h-8 pl-8 text-xs"
           />
         </div>
-        <div className="text-right">
-          <p className="text-[10px] uppercase tracking-[0.16em] text-editorial-navy/45">
-            {query.trim() ? `${filtered.length} of ${rows.length} in the pool` : `${rows.length} in the pool`}
-          </p>
-          <p className="text-[9.5px] uppercase tracking-[0.14em] text-editorial-navy/35">
-            {sinceStamp ? `Movement since ${sinceStamp}` : 'Movement from the next reading'}
-          </p>
-        </div>
+        <p className="shrink-0 text-[9px] font-semibold uppercase tracking-[0.12em] text-editorial-navy/45">
+          {query.trim() ? `${filtered.length}/${rows.length}` : rows.length} in pool
+          {sinceStamp ? ` · moved ${sinceStamp}` : ''}
+        </p>
       </div>
+
+      {mode === 'internal' && (
+        <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-editorial-label">
+          Internal · never scored
+        </p>
+      )}
 
       {/* A phone reads one ledger, not three columns: the same field with all three
           measures on every row, ordered down whichever one is pressed. */}
       <div className="md:hidden">
-        <p className="mb-1 text-[8px] font-bold uppercase tracking-[0.14em] text-editorial-navy/40">
-          {mode === 'internal'
-            ? 'Internal · never scored'
-            : `Projected · ${castBallots} cast + ${seeded} seeded`}
-        </p>
         <MobileStandingsLedger rows={filtered} moves={moves} since={since} mode={mode} onOpen={setSelected} />
       </div>
-
-      <p className="hidden text-[8.5px] font-semibold uppercase tracking-[0.14em] text-editorial-navy/40 md:block">
-        {mode === 'internal'
-          ? `Internal record · ${castBallots} cast + ${seeded} seeded · Elo recomputed from these sets · never scored`
-          : `Projected · ${castBallots} cast + ${seeded} seeded · Elo from the marks in view · never published`}
-      </p>
 
       <div className="hidden gap-2 md:grid md:grid-cols-3">
         {STANDING_COLUMNS.map((column) => (
@@ -94,10 +79,6 @@ export default function StandingsBoard({
           />
         ))}
       </div>
-
-      <p className="hidden text-[9px] text-editorial-navy/35 md:block">
-        Borda · Elo · Combined — an ordering hint for review only.
-      </p>
 
       <StandingDetailDialog entry={selected} since={since} onClose={() => setSelected(null)} />
     </div>

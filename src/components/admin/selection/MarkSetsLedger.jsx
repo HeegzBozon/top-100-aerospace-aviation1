@@ -245,9 +245,8 @@ export default function MarkSetsLedger({ marks = [], recent = 0 }) {
         </table>
       </div>
 
-      <p className="text-[10px] text-editorial-navy/45">
-        A set is one judgement: the pairs filed together when a voter weighed a group. Every mark is recorded against
-        the voter who cast it; the ballot behind it stays sealed.
+      <p className="text-[9.5px] uppercase tracking-[0.1em] text-editorial-navy/35">
+        A set is one judgement · every mark is recorded against its voter
       </p>
     </div>
   );
