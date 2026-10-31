@@ -47,14 +47,6 @@ export const RACKS = [
     empty: 'No spotlight is lit yet. The first honoree takes their page here with the next volume.',
   },
   {
-    key: 'dispatches',
-    tab: 'volumes',
-    label: 'The dispatch stand',
-    kicker: 'Blogs & field notes',
-    blurb: 'Writing filed by Fellows themselves — dispatches, notes and field reports.',
-    empty: 'The stand is quiet. Fellows file their dispatches here as they are written.',
-  },
-  {
     key: 'newsletter',
     tab: 'issues',
     sub: 'articles',

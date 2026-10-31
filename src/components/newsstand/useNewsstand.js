@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { chooseWomenIssue } from '@/components/magazine/womenEdition';
 import {
-  POST_TYPE_LABELS,
   byDateDesc,
   dayLabel,
   firstLine,
@@ -128,13 +127,10 @@ export default function useNewsstand() {
 
     const asBulletin = (bulletin) => {
       const body = bulletin.rich_body || bulletin.body || '';
-      const platform = bulletin.scope === 'platform';
       return {
         key: `bulletin-${bulletin.id}`,
-        rack: platform ? 'release' : 'dispatches',
-        kicker: platform
-          ? 'Platform note'
-          : POST_TYPE_LABELS[bulletin.post_type] || 'Bulletin',
+        rack: 'release',
+        kicker: 'Platform note',
         title: bulletin.title || firstLine(body, 90) || 'Bulletin',
         meta: [bulletin.author_name, dayLabel(bulletin.published_date || bulletin.created_date)]
           .filter(Boolean)
@@ -161,7 +157,6 @@ export default function useNewsstand() {
       })),
       volumes,
       spotlights,
-      dispatches: stocked.filter((bulletin) => bulletin.scope !== 'platform').map(asBulletin),
       // The issues under the house's name: every edition the founder has mailed, newest
       // first, numbered by its own date. The archive is a fixed record, so it is read from the
       // series itself rather than from platform bulletins.
