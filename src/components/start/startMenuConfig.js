@@ -1,14 +1,13 @@
-import { Award, BookOpen, Landmark, ListChecks, LogIn, Shield, Trophy, UserPlus } from "lucide-react";
+import { Award, BookOpen, Landmark, ListChecks, LogIn, Shield, UserPlus } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
 // tile routes to a surface that already exists — the start screen holds the menu,
 // the surfaces hold the work.
 //
-// The order is the order a Fellow arrives in: Review first, because the machine is
-// something to look at before it is something to do — what it is, who you know here,
-// your own record, and what it has already printed. Then the committee's two acts,
-// nominating and measuring, and the edition those acts produce.
+// The order is the order a Fellow arrives in: the committee's two acts first — nominating
+// and measuring — because that is the work the cycle is asking for, then Review, which is
+// the machine as something to look at rather than something to do, and the Chamber last.
 //
 // Review gathers what a Fellow comes back to rather than a program of work. It was
 // three keys, then four: the orientation, the Fellow's own network cartridge, their
@@ -20,22 +19,21 @@ import { Award, BookOpen, Landmark, ListChecks, LogIn, Shield, Trophy, UserPlus 
 // surfaces that hold a person's own record, so they carry the member flag and are simply
 // not drawn for a visitor.
 export const START_MENU = [
-  // Review, opening the menu: the surface a Fellow comes back to look at rather than to
-  // do. Its own tabs are the deep links — orientation, My Network, the record, the
-  // archive — so nothing waits behind the key in front of it.
-  { key: "review", index: "01", label: "Review", to: "/review", icon: BookOpen },
   // The committee's first act: putting names in. A Fellow arrives here to nominate, not
   // to file a ballot — the ballot has its own key, and its own pill on the cycle band.
-  { key: "nominate", index: "02", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
+  { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
   // The committee's second act: a Fellow putting their own hundred in order.
-  { key: "vote-surface", index: "03", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
-  { key: "results", index: "04", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
+  { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
+  // Review, closing the committee's row: the surface a Fellow comes back to look at rather
+  // than to do. Its own tabs are the deep links — orientation, My Network, the record, the
+  // published edition and the archive — so nothing waits behind the key in front of it.
+  { key: "review", index: "03", label: "Review", to: "/review", icon: BookOpen },
   // The house's trading floor, closing the row: the App Store and the Gift Shop under one
   // roof rather than as two keys on a menu that only has room for programs. It is itself a
   // menu — turn to walk its two counters, # to open one. Public: every artifact on the
   // shelf is composed from the reader's own record, so there is nothing behind this key a
   // visitor cannot be shown.
-  { key: "chamber", index: "05", label: "Chamber of Commerce", to: "/chamber", icon: Landmark },
+  { key: "chamber", index: "04", label: "Chamber of Commerce", to: "/chamber", icon: Landmark },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -43,7 +41,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "06",
+  index: "05",
   label: "Admin",
   to: "/Admin",
   icon: Shield,

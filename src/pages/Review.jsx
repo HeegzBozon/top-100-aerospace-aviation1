@@ -108,7 +108,7 @@ export default function Review() {
               Review
             </h1>
             <p className="mt-2 text-[8.5px] font-bold uppercase tracking-[0.34em] text-editorial-cream/60 md:text-[11px]">
-              FAQ &middot; My Network &middot; Your record &middot; The archive
+              FAQ &middot; My Network &middot; Your record &middot; The edition &middot; The archive
             </p>
           </div>
 

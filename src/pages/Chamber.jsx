@@ -91,16 +91,17 @@ export default function Chamber() {
   const active = programs.find((program) => program.key === cursorKey) || programs[0];
 
   return (
-    /* The same window the other title surfaces are drawn in: on a phone this is a page
-       the picture can scroll while the keys are up, on a desk it is the whole sheet. */
-    <div className="hh-slide-window hh-scroll-window relative flex flex-col md:block md:h-auto md:min-h-screen">
+    /* The same window the other title surfaces are drawn in: on a phone this is a page the
+       picture scrolls — nine entries do not fit one glass at once, and they are never cut
+       to make them try — on a desk it is the whole sheet. */
+    <div className="hh-scroll-window relative flex min-h-screen flex-col">
       <div
-        className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden md:min-h-screen"
+        className="hh-scroll-plane relative flex min-h-full flex-1 flex-col"
         style={{ background: phase.sky }}
       >
         <StartSky phase={phase} />
 
-        <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-4 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
+        <div className="hh-scroll-page relative flex flex-1 flex-col px-5 pb-7 pt-5 md:mx-auto md:w-full md:max-w-2xl md:px-16 md:pb-14 md:pt-14">
           <div className="hh-title-block mt-4 shrink-0 md:mt-10">
             <div
               className="h-px w-24 md:w-56"
