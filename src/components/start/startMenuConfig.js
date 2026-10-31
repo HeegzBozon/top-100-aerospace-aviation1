@@ -1,4 +1,4 @@
-import { Award, BookOpen, Landmark, ListChecks, LogIn, Newspaper, Shield, UserPlus } from "lucide-react";
+import { Award, BookOpen, CalendarDays, Landmark, ListChecks, LogIn, Newspaper, Shield, UserPlus } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -24,21 +24,25 @@ export const START_MENU = [
   { key: "nominate", index: "01", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
   // The committee's second act: a Fellow putting their own hundred in order.
   { key: "vote-surface", index: "02", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
+  // The circuit: every aerospace conference the network is holding rooms in, and the
+  // workspace behind it for the organizers who stage them. Public — a visitor walks the
+  // calendar and is asked for an account only when they stand in a room.
+  { key: "conferences", index: "03", label: "Conferences", to: "/conferences", icon: CalendarDays },
   // Review, closing the committee's row: the surface a Fellow comes back to look at rather
   // than to do. Its own tabs are the deep links — orientation, My Network, the record, the
   // published edition and the archive — so nothing waits behind the key in front of it.
-  { key: "review", index: "03", label: "Review", to: "/review", icon: BookOpen },
+  { key: "review", index: "04", label: "Review", to: "/review", icon: BookOpen },
   // The house's trading floor, closing the row: the App Store and the Gift Shop under one
   // roof rather than as two keys on a menu that only has room for programs. It is itself a
   // menu — turn to walk its two counters, # to open one. Public: every artifact on the
   // shelf is composed from the reader's own record, so there is nothing behind this key a
   // visitor cannot be shown.
-  { key: "chamber", index: "04", label: "Chamber of Commerce", to: "/chamber", icon: Landmark },
+  { key: "chamber", index: "05", label: "Chamber of Commerce", to: "/chamber", icon: Landmark },
   // The house's press, standing beside its counters: a newsstand rather than four keys —
   // the editions on the rack, the articles that ran inside them, the dispatches Fellows
   // file, and every release note the platform puts out. Public: it is a stand, and a stand
   // exists to be read.
-  { key: "newsstand", index: "05", label: "Newsstand", to: "/newsstand", icon: Newspaper },
+  { key: "newsstand", index: "06", label: "Newsstand", to: "/newsstand", icon: Newspaper },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -46,7 +50,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "06",
+  index: "07",
   label: "Admin",
   to: "/Admin",
   icon: Shield,

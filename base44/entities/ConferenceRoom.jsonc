@@ -97,6 +97,10 @@
       "default": [],
       "description": "Self-organizing sub-room focus topics"
     },
+    "live_focus_key": {
+      "type": "string",
+      "description": "Key of the focus area the host has put in session right now, set from the run of show during the event. Display only; coordination signal, never read by discovery, ranking, or scoring."
+    },
     "attendance_verified": {
       "type": "boolean",
       "default": false,
@@ -109,6 +113,32 @@
     "notes": {
       "type": "string",
       "description": "Facilitator teardown notes and competitive spec observations against the official show app"
+    },
+    "cover_key": {
+      "type": "string",
+      "enum": [
+        "none",
+        "orbit",
+        "launch",
+        "runway",
+        "lunar",
+        "horizon"
+      ],
+      "default": "none",
+      "description": "Key of a cover from the verified asset library. Curated choice, never a user upload. Display only; never read by discovery ordering, ranking, or scoring."
+    },
+    "host_organization": {
+      "type": "string",
+      "description": "The approved host's organization, denormalized at publish time for display on the conference record"
+    },
+    "registration_url": {
+      "type": "string",
+      "description": "External registration or ticket page, when the host runs registration elsewhere. Held for future in-platform registration; this release only links out."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the conference was first opened to the network"
     }
   },
   "required": [

@@ -111,6 +111,10 @@ const PressKitStudio = lazy(() => import('@/pages/PressKitStudio'));
 const PressKitPublic = lazy(() => import('@/pages/PressKitPublic'));
 const Classifieds = lazy(() => import('@/pages/Classifieds'));
 const Review = lazy(() => import('@/pages/Review'));
+const Conferences = lazy(() => import('@/pages/Conferences'));
+const ConferenceDetail = lazy(() => import('@/pages/ConferenceDetail'));
+const ConferenceHost = lazy(() => import('@/pages/ConferenceHost'));
+const ConferenceHostApply = lazy(() => import('@/pages/ConferenceHostApply'));
 
 
 // Every surface is an application the machine runs: the shell draws the chrome and
@@ -230,6 +234,13 @@ const AuthenticatedApp = () => {
       <Route path="/classifieds" element={<Classifieds />} />
       <Route path="/talent-desk" element={<Navigate to="/classifieds" replace />} />
       <Route path="/the-board" element={<TheBoard />} />
+      {/* The circuit: every conference the network holds rooms in, one page each, and the
+          workspace the approved hosts behind them publish from. The host addresses are
+          declared first so they read as doors rather than as conference ids. */}
+      <Route path="/conferences" element={<Conferences />} />
+      <Route path="/conferences/host" element={<ConferenceHost />} />
+      <Route path="/conferences/host/apply" element={<ConferenceHostApply />} />
+      <Route path="/conferences/:id" element={<ConferenceDetail />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />
       <Route path="/Home" element={<Navigate to="/" replace />} />

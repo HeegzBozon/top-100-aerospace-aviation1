@@ -1,5 +1,5 @@
 import {
-  Award, BookOpen, Briefcase, Calendar, CalendarCheck, Compass, GraduationCap,
+  Award, BookOpen, Briefcase, Calendar, CalendarCheck, CalendarDays, Compass, GraduationCap,
   Globe2, Heart, Info, Landmark, Layers, LayoutGrid, LogIn, LogOut, Mail,
   MessageCircle, Network, Newspaper, Radar, Rocket, Scissors, Send, Shield,
   ShoppingBag, Ticket, Trophy, User, UserPlus, Users,
@@ -63,8 +63,10 @@ export const APP_GROUPS = [
     key: "community",
     label: "Community",
     items: [
+      { label: "Conferences", to: "/conferences", icon: CalendarDays, shelf: true },
+      { label: "Host a Conference", to: "/conferences/host", icon: Landmark, membersOnly: true },
       { label: "Comms", to: "/Comms", icon: MessageCircle, membersOnly: true },
-      { label: "Calendar", to: "/events", icon: Calendar, shelf: true },
+      { label: "Calendar", to: "/events", icon: Calendar },
       { label: "AeroSync CRM", to: "/aerosync", icon: Users, membersOnly: true },
       { label: "Operation Moon Joy", to: "/hangouts", icon: Rocket },
       { label: "Local Legends", to: "/local-legends", icon: Users },
