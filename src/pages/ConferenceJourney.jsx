@@ -134,10 +134,6 @@ export default function ConferenceJourney() {
               <StandingReadout cells={cells} />
             </div>
 
-            <div data-hh-module="The journey" className="mt-3">
-              <StageTracker active={tab} onChange={setTab} progress={progress} />
-            </div>
-
             <div className="mt-3 space-y-3" data-hh-module="The surface">
               {tab === 'plan' && (
                 <>
@@ -182,6 +178,9 @@ export default function ConferenceJourney() {
                   onDelete={journey.removeContact}
                 />
               )}
+            </div>
+            <div data-hh-module="The journey">
+              <StageTracker active={tab} onChange={setTab} progress={progress} />
             </div>
           </>
         )}
