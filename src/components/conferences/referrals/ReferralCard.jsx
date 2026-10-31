@@ -1,20 +1,28 @@
-import { Mail, Share2, Check } from 'lucide-react';
-import { messages, mailto, STEPS } from './referralConfig';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Send, Check, MessageCircle, Loader2 } from 'lucide-react';
+import { sendReferralMessage } from '@/functions/sendReferralMessage';
+import { parties, mailto, STEPS } from './referralConfig';
 
-// One referral worked end to end: each party gets the message written for them,
-// and the referrer moves the opt-in along as replies come back.
-export default function ReferralCard({ referral, onUpdate }) {
+// One referral worked end to end. Send emails each member, files the message in
+// Messages, and opens the referrer's own mail for anyone not on the platform yet.
+export default function ReferralCard({ referral, onUpdate, onReplace }) {
   const r = referral;
+  const [busy, setBusy] = useState(null);
+  const [note, setNote] = useState('');
   const reached = STEPS.findIndex((s) => s.key === r.status);
-  const msgs = messages(r);
+  const sent = r.sent_at || {};
 
-  const share = async (m) => {
-    const text = `${m.subject}\n\n${m.body}`;
-    if (navigator.share) await navigator.share({ title: m.subject, text }).catch(() => {});
-    else await navigator.clipboard.writeText(text);
+  const send = async (step) => {
+    setBusy(step);
+    setNote('');
+    const { data } = await sendReferralMessage({ referral_id: r.id, step }).catch((e) => ({ data: { error: e.response?.data?.error || 'Could not send' } }));
+    setBusy(null);
+    if (data.error) return setNote(data.error);
+    onReplace(data.referral);
+    if (data.unregistered.length) window.location.href = mailto(data.unregistered, data.subject, data.body);
+    setNote(data.emailed.length ? 'Sent and saved to Messages.' : data.unregistered.length ? 'Opened in your mail.' : 'No email on file for this contact.');
   };
-
-  const advance = (key) => onUpdate(r.id, { status: key, ...(key === 'introduced' ? { introduced_at: new Date().toISOString() } : {}) });
 
   return (
     <article className="rounded-lg border border-editorial-cream/12 bg-editorial-cream/[0.04] p-3">
@@ -22,33 +30,39 @@ export default function ReferralCard({ referral, onUpdate }) {
 
       <div className="mt-2 grid grid-cols-4 gap-1">
         {STEPS.map((s, i) => (
-          <button key={s.key} type="button" onClick={() => advance(s.key)}
-            className={`rounded px-1 py-1 text-[8.5px] font-bold uppercase tracking-[0.08em] ${i <= reached ? 'bg-editorial-copper text-editorial-cream' : 'border border-editorial-cream/15 text-editorial-cream/55'}`}>
-            {i <= reached && <Check className="mr-0.5 inline h-2.5 w-2.5" />}{s.label}
+          <button key={s.key} type="button" onClick={() => onUpdate(r.id, { status: s.key })}
+            className={`flex items-center justify-center gap-0.5 rounded py-1 text-[9px] font-bold uppercase tracking-[0.06em] ${i <= reached ? 'bg-editorial-copper text-editorial-cream' : 'border border-editorial-cream/15 text-editorial-cream/55'}`}>
+            {i <= reached && <Check className="h-2.5 w-2.5" />}{s.label}
           </button>
         ))}
       </div>
 
       {r.status !== 'declined' && (
         <div className="mt-3 space-y-1.5">
-          {msgs.map((m, i) => {
-            const locked = m.key === 'intro' && reached < 1;
+          {parties(r).map((p) => {
+            const locked = p.key === 'intro' && reached < 1;
+            const thread = r.threads?.[p.key];
             return (
-              <div key={m.key} className={`flex items-center gap-2 rounded-md bg-editorial-navy/50 px-2.5 py-2 ${locked ? 'opacity-40' : ''}`}>
-                <span className="font-heading text-[11px] text-editorial-gold">{i + 1}</span>
-                <span className="min-w-0 flex-1 truncate text-[11px] text-editorial-cream/80">{m.party}</span>
-                <a href={locked ? undefined : mailto(m)} aria-label="Open in mail" aria-disabled={locked}
-                  className="rounded-full border border-editorial-cream/20 p-1.5 text-editorial-cream"><Mail className="h-3 w-3" /></a>
-                <button type="button" disabled={locked} onClick={() => share(m)} aria-label="Share or copy"
-                  className="rounded-full border border-editorial-cream/20 p-1.5 text-editorial-cream"><Share2 className="h-3 w-3" /></button>
+              <div key={p.key} className={`flex items-center gap-2 rounded-md bg-editorial-navy/60 px-2.5 py-2 ${locked ? 'opacity-45' : ''}`}>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[12px] text-editorial-cream">{p.label}{sent[p.key] && <Check className="ml-1 inline h-3 w-3 text-editorial-gold" />}</p>
+                  <p className="truncate text-[9.5px] text-editorial-cream/50">{p.hint}</p>
+                </div>
+                {thread && (
+                  <Link to={`/Comms?conv=${thread}`} aria-label="Open in Messages" className="rounded-full border border-editorial-cream/20 p-1.5 text-editorial-cream"><MessageCircle className="h-3 w-3" /></Link>
+                )}
+                <button type="button" disabled={locked || !!busy} onClick={() => send(p.key)}
+                  className="flex items-center gap-1 rounded-full bg-editorial-copper px-2.5 py-1 text-[10.5px] font-semibold text-editorial-cream disabled:opacity-40">
+                  {busy === p.key ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}{sent[p.key] ? 'Resend' : 'Send'}
+                </button>
               </div>
             );
           })}
-          {reached < 1 && <p className="text-[10px] text-editorial-cream/50">The introduction unlocks once the person referred agrees.</p>}
+          {note && <p className="text-[10.5px] text-editorial-gold">{note}</p>}
         </div>
       )}
 
-      <button type="button" onClick={() => advance(r.status === 'declined' ? 'drafted' : 'declined')}
+      <button type="button" onClick={() => onUpdate(r.id, { status: r.status === 'declined' ? 'drafted' : 'declined' })}
         className="mt-2 text-[10px] text-editorial-cream/45 underline">{r.status === 'declined' ? 'Reopen' : 'Mark declined'}</button>
     </article>
   );

@@ -56,6 +56,16 @@
     "introduced_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "threads": {
+      "type": "object",
+      "default": {},
+      "description": "Messages conversation id per step (consent, heads_up, intro)"
+    },
+    "sent_at": {
+      "type": "object",
+      "default": {},
+      "description": "When each step's message was sent, keyed by step"
     }
   },
   "required": [

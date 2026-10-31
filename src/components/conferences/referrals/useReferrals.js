@@ -30,5 +30,7 @@ export default function useReferrals() {
     setReferrals((list) => list.map((r) => (r.id === id ? row : r)));
   };
 
-  return { state, referrals, contacts, create, update, retry: load };
+  const replace = (row) => setReferrals((list) => list.map((r) => (r.id === row.id ? row : r)));
+
+  return { state, referrals, contacts, create, update, replace, retry: load };
 }

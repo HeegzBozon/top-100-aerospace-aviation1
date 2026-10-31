@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Pencil, Plus } from 'lucide-react';
 import useReferrals from '../referrals/useReferrals';
 import ReferralDesk from '../referrals/ReferralDesk';
@@ -64,8 +65,8 @@ export default function ConferenceScorecard({ loading, failed, counts }) {
 
       <div className="grid grid-cols-3 border-t border-editorial-copper/30">
         {[
-          ['Lead time · deals', values.lead == null ? null : `${values.lead}d`],
-          ['Cycle time · closed', values.cycle == null ? null : `${values.cycle}d`],
+          ['Lead · deal', values.lead == null ? null : `${values.lead}d`],
+          ['Cycle · close', values.cycle == null ? null : `${values.cycle}d`],
         ].map(([l, v], i) => (
           <div key={l} className={`px-2.5 py-2 ${i ? 'cfs-seam' : ''}`}>
             <p className="truncate text-[7.5px] font-bold uppercase tracking-[0.18em] text-editorial-gold/80">{l}</p>
@@ -79,7 +80,8 @@ export default function ConferenceScorecard({ loading, failed, counts }) {
           </p>
         </button>
       </div>
-      {deskOpen && <ReferralDesk desk={desk} onClose={() => setDeskOpen(false)} />}
+      {/* Portalled: the scorecard sits in an animated, clipped frame that would trap a fixed panel. */}
+      {deskOpen && createPortal(<ReferralDesk desk={desk} onClose={() => setDeskOpen(false)} />, document.body)}
     </section>
   );
 }

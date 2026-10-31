@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { X, Plus, Loader2 } from 'lucide-react';
 import ReferralComposer from './ReferralComposer';
 import ReferralCard from './ReferralCard';
+import InviteContacts from './InviteContacts';
 
 // The referral desk, opened over the glass from the scorecard.
 export default function ReferralDesk({ desk, onClose }) {
-  const { state, referrals, contacts, create, update, retry } = desk;
+  const { state, referrals, contacts, create, update, replace, retry } = desk;
   const [composing, setComposing] = useState(false);
 
   return (
@@ -24,7 +25,8 @@ export default function ReferralDesk({ desk, onClose }) {
           {state === 'error' && (
             <button type="button" onClick={retry} className="w-full rounded-md border border-editorial-cream/20 py-3 text-[12px] text-editorial-cream">Couldn't load. Try again</button>
           )}
-          {state === 'ready' && (composing ? (
+          {state === 'ready' && contacts.length < 2 && referrals.length === 0 && <InviteContacts count={contacts.length} />}
+          {state === 'ready' && (contacts.length >= 2 || referrals.length > 0) && (composing ? (
             <ReferralComposer contacts={contacts} onCancel={() => setComposing(false)}
               onCreate={async (d) => { await create(d); setComposing(false); }} />
           ) : (
@@ -38,7 +40,7 @@ export default function ReferralDesk({ desk, onClose }) {
                   <p className="font-heading text-[15px] text-editorial-cream">No referrals yet</p>
                   <p className="mt-1 text-[11px] text-editorial-cream/60">Ask first, give the recipient a heads-up, then introduce both. Each message is written for you.</p>
                 </div>
-              ) : referrals.map((r) => <ReferralCard key={r.id} referral={r} onUpdate={update} />)}
+              ) : referrals.map((r) => <ReferralCard key={r.id} referral={r} onUpdate={update} onReplace={replace} />)}
             </>
           ))}
         </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { REASONS } from './referralConfig';
+import InviteContacts from './InviteContacts';
 
 const field = 'w-full rounded-md border border-editorial-cream/15 bg-editorial-navy/60 px-2.5 py-2 text-editorial-cream';
 
@@ -38,10 +39,7 @@ export default function ReferralComposer({ contacts, onCreate, onCancel }) {
     </label>
   );
 
-  if (contacts.length < 2) {
-    return <p className="rounded-md border border-dashed border-editorial-cream/20 p-4 text-center text-[12px] text-editorial-cream/70">
-      Capture at least two contacts at a show, then refer one to the other here.</p>;
-  }
+  if (contacts.length < 2) return <InviteContacts count={contacts.length} />;
 
   return (
     <div className="space-y-3">
