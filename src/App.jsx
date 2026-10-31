@@ -29,6 +29,7 @@ const AnalyticsDashboard      = lazy(() => import('@/pages/AnalyticsDashboard'))
 const GlobalIntelligence      = lazy(() => import('@/pages/GlobalIntelligence'));
 const ProfileView             = lazy(() => import('@/pages/ProfileView'));
 const ScannedCard             = lazy(() => import('@/pages/ScannedCard'));
+const ConferenceBadge         = lazy(() => import('@/pages/ConferenceBadge'));
 const ARTCommandCenter        = lazy(() => import('@/pages/ARTCommandCenter'));
 const TeamManager             = lazy(() => import('@/pages/TeamManager'));
 const FeatureToTeamMapper     = lazy(() => import('@/pages/FeatureToTeamMapper'));
@@ -282,6 +283,8 @@ const AuthenticatedApp = () => {
        {/* The handover face of a record: where a scanned card code lands. Public, and
            answered without an account — the canonical reading stays /profiles/:id. */}
        <Route path="/card/:id" element={<ScannedCard />} />
+       {/* The badge itself: worn full screen, turned over into the card it hands on */}
+       <Route path="/badge" element={<ConferenceBadge />} />
        <Route path="/editions/:id" element={<FellowEdition />} />
        <Route path="/platform-board" element={<PlatformDevelopmentBoard />} />
       <Route path="/meetups" element={<Meetups />} />

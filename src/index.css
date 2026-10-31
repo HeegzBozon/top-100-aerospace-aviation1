@@ -1683,6 +1683,26 @@ button:focus-visible {
   }
 }
 
+/* ===== THE BADGE, WORN FULL SCREEN =====
+   A badge is held up, not browsed. While it is on the glass the controls centre is put
+   away and the clearance it holds is handed back to the picture, so the plate fills the
+   device the way a card fills a hand. Nothing else on the machine moves. */
+@media (max-width: 767px) {
+  body.hh-badge {
+    --hh-bottom: 0px;
+    --hh-foot: 0px;
+  }
+
+  body.hh-badge .hh-stage {
+    bottom: 0;
+  }
+
+  body.hh-badge .hh-chin,
+  body.hh-badge .hh-viewer-foot {
+    display: none;
+  }
+}
+
 /* ===== THE FELLOW'S BOOK =====
    The public record, held as a book. Pages are composed at one design size and
    scaled to whatever the spread gives them, so type stays vector-sharp and the

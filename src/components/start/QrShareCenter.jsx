@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Check, Copy, ExternalLink, Share2, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Check, Copy, ExternalLink, ScanLine, Share2, X } from 'lucide-react';
 import { qrSrc } from '@/lib/publicCard';
 
 const NAVY = '#1E3A5A';
@@ -50,6 +51,7 @@ export default function QrShareCenter({
   onClose,
 }) {
   const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onKey = (event) => {
@@ -238,6 +240,18 @@ export default function QrShareCenter({
               <ExternalLink className="h-3 w-3" /> Open
             </a>
           )}
+        </div>
+
+        {/* The badge is the same object worn on the whole glass, where it turns over. */}
+        <div className="px-4 pt-2">
+          <button
+            type="button"
+            onClick={() => navigate('/badge')}
+            className="inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full font-body text-[9px] font-bold uppercase tracking-[0.16em]"
+            style={{ background: '#FFFFFF', color: COPPER, border: `1px solid ${COPPER}66` }}
+          >
+            <ScanLine className="h-3 w-3" /> Wear the badge
+          </button>
         </div>
 
         <p className="px-5 pb-2 pt-3 text-center font-body text-[9px] leading-relaxed" style={{ color: 'rgba(30,58,90,0.58)' }}>
