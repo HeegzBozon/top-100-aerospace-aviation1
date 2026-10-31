@@ -159,9 +159,9 @@
    The radio face's bar is the machine's own cut, and the wheel now wears the same
    furniture: the menu strip across the head of the chin and the readout band across
    the foot of the glass are one band, banded one way. A well of the finish's recess,
-   a machined seam parting every cell, a rivet holding each end into the case, and the
-   trench ruled along the foot — so a hand reads the same bar whichever face the
-   console is standing in, and only the keys under it change. */
+   a machined seam parting every cell, and a rivet holding each end into the case — so a
+   hand reads the same bar whichever face the console is standing in, and only the keys
+   under it change. */
 .rc-band {
   position: relative;
 }
@@ -187,18 +187,6 @@
     rgba(7, 17, 31, 0.6) 100%
   );
   box-shadow: inset 0 0 0 1px rgba(7, 17, 31, 0.38), 0 1px 0 var(--hh-shell-spec);
-}
-/* The trench: the groove ruled along the foot of the band, under its keys. */
-.rc-trench {
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  bottom: 2px;
-  height: 2px;
-  border-radius: 2px;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(3, 6, 13, 0.95) 0%, rgb(var(--hh-metal-rgb) / 0.34) 100%);
-  box-shadow: inset 0 1px 2px rgba(3, 6, 13, 0.85);
 }
 /* The trench carrying the measure: the wheel's own position ruled through the band,
    filled in copper inside the finish's dark rather than floating over it. */

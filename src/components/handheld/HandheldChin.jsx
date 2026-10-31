@@ -33,6 +33,18 @@ export default function HandheldChin() {
         {/* The legend band, seated but unlit until the console's own bar comes up. */}
         <div className="mx-3 h-[26px] rounded-[4px]" style={{ background: "var(--hh-recess)", opacity: 0.55 }} />
 
+        {/* The key row the console lays under that bar, seated flat in its own slots so
+            the controls come up into space already cut for them. */}
+        <div aria-hidden="true" className="mx-3 mt-1.5 grid h-[28px] grid-cols-8 gap-[3px]">
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((slot) => (
+            <span
+              key={slot}
+              className="rounded-[7px]"
+              style={{ background: "var(--hh-shell-3)", opacity: 0.5 }}
+            />
+          ))}
+        </div>
+
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pt-1.5">
           {/* The speaker well: punched and waiting for its control. */}
           <span className="flex items-center justify-center">

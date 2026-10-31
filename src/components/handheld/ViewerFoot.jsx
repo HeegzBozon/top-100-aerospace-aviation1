@@ -50,7 +50,7 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
       }}
     >
       {/* The radio's cut at the foot of the glass: the band bolted into the case at both
-          ends, and the same trench ruled along its foot as the menu strip's above. */}
+          ends, the same cut the menu strip wears above. */}
       <span className="rc-rivet" style={{ left: 3 }} aria-hidden="true" />
       <span className="rc-rivet" style={{ right: 3 }} aria-hidden="true" />
 
@@ -122,8 +122,6 @@ export default function ViewerFoot({ staticView = false, shareOpen = false, onSh
           <span style={{ color: "var(--hh-lcd-bright)" }}>:{now.format("ss")}</span>
         </span>
       </span>
-
-      <span className="rc-trench" aria-hidden="true" />
     </div>
   );
 }

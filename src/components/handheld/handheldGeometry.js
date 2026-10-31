@@ -27,13 +27,14 @@ const NAV_CLEARANCE = 0;
 // inset above the band instead of running under it.
 const FOOT_CLEARANCE = 32;
 
-// Below the glass: the chin, carrying the machine's menu bar, then the wheel, the keys
-// and the speaker. The chin is three bands: the menu bar cut in at its head, the controls
-// (the wheel's own height, which out-measures both the key cluster and the speaker), and
-// the groove under them. The count below is what those add up to, plus a hair of slack —
-// the live chin is measured from its content, so this has to stay at or above it or the
-// case would sit on the bottom of the picture.
-const DECK_CLEARANCE = 158;
+// Below the glass: the chin, carrying the machine's menu bar, the key row both faces wear,
+// then the wheel, the face keys and the speaker. The chin is three bands: the menu bar cut
+// in at its head, the row of eight caps under it, and the controls (the wheel's own height,
+// which out-measures both the face keys and the speaker), with the case's foot padding
+// under them. The count below is what those add up to, plus a hair of slack — the live chin
+// is measured from its content, so this has to stay at or above it or the case would sit on
+// the bottom of the picture.
+const DECK_CLEARANCE = 190;
 
 // The radio face needs more case than the wheel does: the menu bar, the walking cluster
 // and a full keypad are more rows than the wheel ever had. It is measured the same way —

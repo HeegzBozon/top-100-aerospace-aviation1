@@ -46,9 +46,9 @@ export default function ChinMenuBar({
           "inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.14), inset 0 3px 6px -3px rgba(3,6,13,0.85), 0 1px 0 var(--hh-shell-spec)",
       }}
     >
-      {/* The radio's cut: the band bolted into the case at both ends, the trench ruled
-          along its foot under the words. The seams between the cells are drawn by the
-          band itself (see .rc-band), so every cell here lands on its own line. */}
+      {/* The radio's cut: the band bolted into the case at both ends. The seams between
+          the cells are drawn by the band itself (see .rc-band), so every cell here lands
+          on its own line. */}
       <span className="rc-rivet" style={{ left: 3 }} aria-hidden="true" />
       <span className="rc-rivet" style={{ right: 3 }} aria-hidden="true" />
       <MenuBar
@@ -69,7 +69,6 @@ export default function ChinMenuBar({
         editHint={keysClaimed ? "" : editKey}
         style={{ height: BAND }}
       />
-      <span className="rc-trench" aria-hidden="true" />
     </div>
   );
 }
