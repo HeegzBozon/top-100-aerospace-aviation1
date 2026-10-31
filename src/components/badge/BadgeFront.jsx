@@ -18,7 +18,7 @@ const initialsOf = (name = '') =>
     .join('')
     .toUpperCase();
 
-export default function BadgeFront({ person, template, qrLink, showQr = true, year }) {
+export default function BadgeFront({ person, template, qrLink, qrTitle, qrNote, showQr = true, year }) {
   const t = template;
 
   return (
@@ -121,13 +121,13 @@ export default function BadgeFront({ person, template, qrLink, showQr = true, ye
           className="relative mx-3 mb-2 flex items-center gap-3 rounded-[8px] px-3 py-2"
           style={{ background: t.plate, boxShadow: `inset 0 0 0 1px ${t.ruleSoft}` }}
         >
-          <img src={qrSrc(qrLink, 260, 1)} alt="Scan to open the card" className="h-[58px] w-[58px] shrink-0" />
+          <img src={qrSrc(qrLink, 260, 1)} alt="Scan to open" className="h-[58px] w-[58px] shrink-0" />
           <div className="min-w-0">
             <p className="font-body text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: '#1E3A5A' }}>
-              Scan to connect
+              {qrTitle || 'Scan to connect'}
             </p>
             <p className="mt-0.5 truncate font-body text-[9.5px]" style={{ color: 'rgba(30,58,90,0.62)' }}>
-              The card saves as a contact
+              {qrNote || 'The card saves as a contact'}
             </p>
           </div>
         </div>

@@ -1,12 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight, Loader2, RefreshCw, RotateCw, Save, Share2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useDevice } from '@/components/handheld/HandheldShell';
 import { saveContact } from '@/lib/publicCard';
+import { copyText } from '@/lib/clipboard';
+import {
+  availableDestinations,
+  readStoredDestination,
+  resolveDestination,
+  shareUrl,
+  storeDestination,
+} from '@/lib/shareDestinations';
 import BadgeFront from '@/components/badge/BadgeFront';
 import BadgeBack from '@/components/badge/BadgeBack';
 import BadgeTemplateDeck from '@/components/badge/BadgeTemplateDeck';
+import BadgeShareDock from '@/components/badge/BadgeShareDock';
 import { resolveBadgeTemplate } from '@/components/badge/badgeTemplates';
 import useBadgePerson from '@/components/badge/useBadgePerson';
 
@@ -19,8 +28,21 @@ import useBadgePerson from '@/components/badge/useBadgePerson';
 const KEY =
   'inline-flex items-center gap-1.5 rounded-full border border-editorial-cream/20 px-3 py-1.5 font-body text-[8.5px] font-bold uppercase tracking-[0.18em] text-editorial-cream/80 transition-colors hover:border-editorial-gold/60 hover:text-editorial-cream';
 
+// A program key hands the badge its own address: pressing share on the menu wears the
+// badge for that program, with the code already printed to it. Anything else worn here
+// points at the destination the Fellow last chose.
+const readIncoming = (state) => {
+  const url = state?.shareUrl;
+  if (!url) return null;
+  return {
+    url: /^https?:/i.test(url) ? url : `${window.location.origin}${url}`,
+    label: state?.shareLabel || '',
+  };
+};
+
 export default function ConferenceBadge() {
   const navigate = useNavigate();
+  const location = useLocation();
   const device = useDevice();
   const { loading, error, viewer, person, card, reload, saveBadge } = useBadgePerson();
 
@@ -28,6 +50,8 @@ export default function ConferenceBadge() {
   const [plate, setPlate] = useState(null);
   const [codeOn, setCodeOn] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [destination, setDestination] = useState(() => readStoredDestination());
+  const [incoming, setIncoming] = useState(() => readIncoming(location.state));
 
   // Worn full screen: the controls centre is put away for as long as the badge is up,
   // and the clearance it holds is handed back to the picture (see globals: body.hh-badge).
@@ -53,6 +77,30 @@ export default function ConferenceBadge() {
   const template = resolveBadgeTemplate(plate || card?.badge_template);
   const showQr = codeOn ?? card?.badge_qr_visible ?? true;
 
+  // Who the badge is worn for, in the shape the share centre already reads: a name, the
+  // lines under it, and the record the card opens.
+  const holder = useMemo(
+    () => ({
+      name: person?.name || '',
+      role: person?.role || '',
+      org: person?.org || '',
+      cardId: person?.profileId || '',
+    }),
+    [person]
+  );
+
+  const destinations = useMemo(() => availableDestinations(holder), [holder]);
+  const chosen = resolveDestination(destination || (holder.cardId ? 'card' : 'platform'), holder);
+  // What the code prints: the program the menu handed over, or the destination last set.
+  const link = incoming?.url || shareUrl(chosen.key, holder);
+
+  const qrTitle = !incoming && chosen.key === 'card' ? 'Scan to connect' : 'Scan to open';
+  const qrNote = incoming
+    ? incoming.label || 'The program you are handing on'
+    : chosen.key === 'card'
+      ? 'The card saves as a contact'
+      : chosen.note;
+
   const choosePlate = (key) => {
     setPlate(key);
     saveBadge({ badge_template: key });
@@ -64,43 +112,43 @@ export default function ConferenceBadge() {
     saveBadge({ badge_qr_visible: next });
   };
 
-  const share = async () => {
-    const url = person?.cardUrl;
-    if (!url) return;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: person?.name || 'TOP 100', url });
-      } catch {
-        /* the hand closed the sheet — nothing to report */
-      }
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      /* no clipboard on this origin; the code on the badge is still scannable */
-    }
+  // The choice is remembered, so the code standing on the title screen is always the one
+  // last set on the badge.
+  const chooseDestination = (key) => {
+    setIncoming(null);
+    setDestination(key);
+    storeDestination(key);
   };
+
+  const copy = async () => {
+    const ok = await copyText(link);
+    setCopied(ok);
+    if (ok) setTimeout(() => setCopied(false), 1800);
+  };
+
+  const share = async () => {
+    if (!navigator.share) return copy();
+    try {
+      await navigator.share({ title: person?.name || 'TOP 100 Aerospace & Aviation', url: link });
+    } catch {
+      /* the hand closed the sheet — nothing to report */
+    }
+    return undefined;
+  };
+
+  const openLink = () => window.open(link, '_blank', 'noopener');
 
   const actions = useMemo(() => {
     const list = [];
     if (person?.name) {
       list.push({ key: 'save', label: 'Save contact', Icon: Save, tone: 'solid', onClick: () => saveContact(person) });
     }
-    if (person?.cardUrl) {
+    if (link) {
       list.push({ key: 'share', label: copied ? 'Copied' : 'Share', Icon: Share2, tone: 'line', onClick: share });
-      list.push({
-        key: 'open',
-        label: 'Open card',
-        Icon: ArrowUpRight,
-        tone: 'line',
-        onClick: () => window.open(person.cardUrl, '_blank', 'noopener'),
-      });
+      list.push({ key: 'open', label: 'Open', Icon: ArrowUpRight, tone: 'line', onClick: openLink });
     }
     return list;
-  }, [person, copied]);
+  }, [person, copied, link]);
 
   return (
     <div
@@ -155,7 +203,9 @@ export default function ConferenceBadge() {
                 <BadgeFront
                   person={person}
                   template={template}
-                  qrLink={person?.cardUrl}
+                  qrLink={link}
+                  qrTitle={qrTitle}
+                  qrNote={qrNote}
                   showQr={showQr}
                   year={new Date().getFullYear()}
                 />
@@ -167,6 +217,19 @@ export default function ConferenceBadge() {
           </div>
 
           <BadgeTemplateDeck value={template.key} onChange={choosePlate} showQr={showQr} onToggleQr={toggleCode} />
+
+          {/* What the code hands on, and the ways of passing it on without a scan. */}
+          <BadgeShareDock
+            destinations={destinations}
+            selectedKey={chosen.key}
+            onSelect={chooseDestination}
+            incoming={incoming}
+            link={link}
+            copied={copied}
+            onCopy={copy}
+            onShare={share}
+            onOpen={openLink}
+          />
 
           <p className="px-5 text-center font-body text-[8.5px] leading-relaxed text-editorial-cream/35">
             Tap the plate to turn it over. The badge is what you wear; the card behind it is what they keep.

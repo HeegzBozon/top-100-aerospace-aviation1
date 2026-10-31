@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Copy, ExternalLink, ScanLine, Share2, X } from 'lucide-react';
 import { qrSrc } from '@/lib/publicCard';
+import { copyText as copyToClipboard } from '@/lib/clipboard';
 
 const NAVY = '#1E3A5A';
 const INK = '#16293F';
@@ -11,29 +12,6 @@ const COPPER = '#B87333';
 const GOLD = '#C9A87C';
 
 const LABEL = 'font-body text-[8px] font-bold uppercase tracking-[0.24em]';
-
-async function copyText(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    // An embedded browser or an insecure origin has no clipboard: copy by hand.
-    try {
-      const field = document.createElement('textarea');
-      field.value = text;
-      field.setAttribute('readonly', '');
-      field.style.position = 'fixed';
-      field.style.opacity = '0';
-      document.body.appendChild(field);
-      field.select();
-      const ok = document.execCommand('copy');
-      field.remove();
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-}
 
 // The badge, worn.
 //
@@ -62,7 +40,7 @@ export default function QrShareCenter({
   }, [onClose]);
 
   const copy = useCallback(async () => {
-    const ok = await copyText(link);
+    const ok = await copyToClipboard(link);
     setCopied(ok);
     if (ok) setTimeout(() => setCopied(false), 1800);
   }, [link]);
