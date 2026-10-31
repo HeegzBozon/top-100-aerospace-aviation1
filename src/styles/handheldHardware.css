@@ -155,6 +155,61 @@
     inset 0 0 0 1px rgb(var(--hh-metal-rgb) / 0.95);
 }
 
+/* ===== THE RADIO CUT — BOTH OF THE MACHINE'S BARS =====
+   The radio face's bar is the machine's own cut, and the wheel now wears the same
+   furniture: the menu strip across the head of the chin and the readout band across
+   the foot of the glass are one band, banded one way. A well of the finish's recess,
+   a machined seam parting every cell, a rivet holding each end into the case, and the
+   trench ruled along the foot — so a hand reads the same bar whichever face the
+   console is standing in, and only the keys under it change. */
+.rc-band {
+  position: relative;
+}
+/* The seam between two cells: one hairline of the finish's metal, printed on the
+   leading edge of everything but the first, so a row of cells reads as one casting
+   rather than as a row. */
+.rc-band .mb-cell + .mb-cell {
+  box-shadow: inset 1px 0 0 rgb(var(--hh-metal-rgb) / 0.20);
+}
+/* The rivet: the band bolted into the moulding at both ends. */
+.rc-rivet {
+  position: absolute;
+  top: 50%;
+  height: 4px;
+  width: 4px;
+  margin-top: -2px;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 34% 28%,
+    var(--hh-metal-1) 0%,
+    var(--hh-metal-2) 74%,
+    rgba(7, 17, 31, 0.6) 100%
+  );
+  box-shadow: inset 0 0 0 1px rgba(7, 17, 31, 0.38), 0 1px 0 var(--hh-shell-spec);
+}
+/* The trench: the groove ruled along the foot of the band, under its keys. */
+.rc-trench {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 2px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(3, 6, 13, 0.95) 0%, rgb(var(--hh-metal-rgb) / 0.34) 100%);
+  box-shadow: inset 0 1px 2px rgba(3, 6, 13, 0.85);
+}
+/* The trench carrying the measure: the wheel's own position ruled through the band,
+   filled in copper inside the finish's dark rather than floating over it. */
+.rc-groove {
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(3, 6, 13, 0.95) 0%, rgba(12, 24, 38, 0.86) 100%);
+  box-shadow:
+    inset 0 1px 3px rgba(3, 6, 13, 0.9),
+    inset 0 -1px 0 rgb(var(--hh-metal-rgb) / 0.28);
+}
+
 /* ===== A FIELD ON A PHONE =====
    Safari zooms the whole page in the moment a field drawn smaller than 16px takes
    the cursor, and a zoomed page is not the device's page: the picture jumps, and the
