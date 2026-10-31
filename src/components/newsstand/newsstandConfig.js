@@ -1,48 +1,78 @@
 import { C } from '@/components/crm/crmConfig';
 
-// The stand, read the way a reader walks past it: the rack of bound editions first, then
-// the folded sheets that came out of them, then the stand Fellows file their own writing
-// at, and finally the board by the door where the house pins what it shipped.
-// Two leaves, the way a newsstand is actually read: the papers you take away, and the
-// sheet pinned by the door saying what the house changed.
+// The stand, read the way a reader walks past it: the volumes the house has bound and the
+// pieces that ran inside them; the issues — every honoree as a spotlight of their own, and
+// the newsletter's own run; and the notes kept by the door, the wire on one side and what the
+// platform shipped on the other.
 export const NEWSSTAND_TABS = [
-  { key: 'publications', label: 'Publications' },
-  { key: 'notes', label: 'Release Notes' },
-];
-
-export const RACKS = [
+  { key: 'volumes', label: 'Volumes', subs: [] },
   {
     key: 'issues',
-    tab: 'publications',
-    label: 'The rack',
-    kicker: 'Publications & issues',
-    blurb: 'Every edition the house has bound and put on the stand.',
-    empty: 'The rack is being dressed. The next edition takes its place here the day it goes to press.',
-  },
-  {
-    key: 'articles',
-    tab: 'publications',
-    label: 'The folded sheets',
-    kicker: 'Articles & features',
-    blurb: 'The pieces that ran inside the editions, read in the issue they were printed in.',
-    empty: 'No article has come off the press yet. The first feature lands here with its issue.',
-  },
-  {
-    key: 'dispatches',
-    tab: 'publications',
-    label: 'The dispatch stand',
-    kicker: 'Blogs & field notes',
-    blurb: 'Writing filed by Fellows themselves — dispatches, notes and field reports.',
-    empty: 'The stand is quiet. Fellows file their dispatches here as they are written.',
+    label: 'Issues',
+    subs: [
+      { key: 'spotlights', label: 'Spotlights' },
+      { key: 'articles', label: 'Articles' },
+    ],
   },
   {
     key: 'notes',
+    label: 'Notes',
+    subs: [
+      { key: 'linkedin', label: 'LinkedIn' },
+      { key: 'release', label: 'Release notes' },
+    ],
+  },
+];
+
+// The stand opens on what the house is saying right now. The bound volumes keep their place
+// on the rack behind it.
+export const DEFAULT_TAB_KEY = 'notes';
+
+export const RACKS = [
+  {
+    key: 'volumes',
+    tab: 'volumes',
+    label: 'The rack',
+    kicker: 'Bound volumes',
+    blurb: 'Every volume the house has bound and put on the stand, the live one first.',
+    empty: 'The rack is being dressed. The next volume takes its place here the day it goes to press.',
+  },
+  {
+    key: 'spotlights',
+    tab: 'issues',
+    sub: 'spotlights',
+    label: 'The spotlights',
+    kicker: 'Individual profiles',
+    blurb: 'Each honoree, read on their own — the record a volume is built from.',
+    empty: 'No spotlight is lit yet. The first honoree takes their page here with the next volume.',
+  },
+  {
+    key: 'newsletter',
+    tab: 'issues',
+    sub: 'articles',
+    label: 'The newsletter',
+    kicker: 'Insights & Spotlights',
+    blurb: 'Every issue the house has mailed since February 2022, newest first, as it went out.',
+    empty: 'The first issue of the newsletter takes its place here the day it is mailed.',
+  },
+  {
+    key: 'wire',
     tab: 'notes',
-    label: 'The archive',
-    kicker: 'The newsletter · 41 editions',
-    blurb:
-      'Insights and Spotlights, mailed weekly since February 2022 — every edition, newest first, as it went out.',
-    empty: 'The first edition of the newsletter takes its place here the day it is mailed.',
+    sub: 'linkedin',
+    label: 'Off the wire',
+    kicker: 'LinkedIn',
+    blurb: 'What the house is posting on its company page, newest first, as it goes out.',
+    empty:
+      'Nothing has gone out on the wire yet. A post from the house page prints here the day it is published.',
+  },
+  {
+    key: 'release',
+    tab: 'notes',
+    sub: 'release',
+    label: 'Release notes',
+    kicker: 'What shipped',
+    blurb: 'What the platform changed and shipped, pinned by the door, newest first.',
+    empty: 'Nothing is pinned yet. Each release note goes up here the day it ships.',
   },
 ];
 

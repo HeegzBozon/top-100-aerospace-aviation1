@@ -4,41 +4,59 @@ import { Loader2 } from 'lucide-react';
 import { C, BTN_BASE, BTN } from '@/components/crm/crmConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import useNewsstand from '@/components/newsstand/useNewsstand';
-import { NEWSSTAND_TABS, RACKS } from '@/components/newsstand/newsstandConfig';
+import { DEFAULT_TAB_KEY, NEWSSTAND_TABS, RACKS } from '@/components/newsstand/newsstandConfig';
 import NewsstandTabs from '@/components/newsstand/NewsstandTabs';
+import NewsstandSubTabs from '@/components/newsstand/NewsstandSubTabs';
 import NewsstandFrontPage from '@/components/newsstand/NewsstandFrontPage';
 import NewsstandHeader from '@/components/newsstand/NewsstandHeader';
 import NewsstandRack, { RackEmpty, RackShelf } from '@/components/newsstand/NewsstandRack';
 import NewsstandCover from '@/components/newsstand/NewsstandCover';
 import StockRow from '@/components/newsstand/StockRow';
+import WireRack from '@/components/newsstand/WireRack';
 
 // The Newsstand.
 //
 // A digital Hudson News, standing where the Chamber's counters do: one storefront for the
-// house's whole printed output rather than a key per publication. The rack holds the bound
-// editions; the folded sheets are the articles that ran inside them; the dispatch stand is
-// where Fellows file their own writing; and the noticeboard by the door carries every
-// release note the platform has shipped.
+// house's whole printed output rather than a key per publication. Volumes is the rack of
+// bound volumes — as many as the archive holds — with the pieces that ran inside them below.
+// Issues is the spotlights, one page per honoree, and the newsletter's own articles. Notes is
+// what the house says out loud, the wire on one side and the release notes on the other — and
+// it is the leaf the stand opens on.
 //
-// An edition is read in the reader it was bound for, so pressing it leaves the stand. A
+// A volume or a spotlight is read on its own page, so pressing it leaves the stand. A
 // dispatch or a note is printed where it stands: pressing it opens the piece under its own
-// headline and the stand stays put. The ring walks the whole stock in the order it is
-// drawn, so a hand on the wheel crosses all four racks without touching the glass.
+// headline and the stand stays put. The ring walks the leaf in front of it in the order it
+// is drawn, so a hand on the wheel crosses every rack of that leaf without touching the glass.
 export default function Newsstand() {
   const navigate = useNavigate();
   const stock = useNewsstand();
   const { sections } = stock;
   const [cursorKey, setCursorKey] = useState(null);
   const [openKey, setOpenKey] = useState(null);
-  const [tabKey, setTabKey] = useState(NEWSSTAND_TABS[0].key);
+  const [tabKey, setTabKey] = useState(DEFAULT_TAB_KEY);
+  const [subKey, setSubKey] = useState(null);
 
-  // The ring walks the leaf in front of it only: what is folded away is not stock until
-  // its tab is opened.
-  const racks = useMemo(() => RACKS.filter((rack) => rack.tab === tabKey), [tabKey]);
-  // The rack of editions is set on the publications tab as its front page, so the list below
-  // only carries the racks that follow it.
-  const listRacks = useMemo(() => racks.filter((rack) => rack.key !== 'issues'), [racks]);
-  const leadEdition = sections.issues[0] || null;
+  // The ring walks the leaf in front of it only: what is folded away is not stock until its
+  // tab is opened — and a leaf with sections inside it opens on its first section.
+  const subs = useMemo(
+    () => NEWSSTAND_TABS.find((tab) => tab.key === tabKey)?.subs || [],
+    [tabKey],
+  );
+  const activeSub = subs.length ? subs.find((sub) => sub.key === subKey)?.key || subs[0].key : null;
+  const racks = useMemo(
+    () => RACKS.filter((rack) => rack.tab === tabKey && (!rack.sub || rack.sub === activeSub)),
+    [tabKey, activeSub],
+  );
+  // The live volume is set as the front page of its tab, so the rack below it carries the rest
+  // of the archive rather than printing that volume twice.
+  const leadVolume = sections.volumes[0] || null;
+  const itemsFor = useCallback(
+    (rack) => {
+      const list = sections[rack.key] || [];
+      return tabKey === 'volumes' && rack.key === 'volumes' && leadVolume ? list.slice(1) : list;
+    },
+    [sections, tabKey, leadVolume],
+  );
   const stockItems = useMemo(
     () => racks.flatMap((rack) => sections[rack.key] || []),
     [racks, sections],
@@ -82,6 +100,12 @@ export default function Newsstand() {
   const take = useCallback(
     (item) => {
       if (!item) return false;
+      // A post off the wire lives on the network it was published to, so the stand hands it
+      // over rather than opening it in the glass.
+      if (item.href) {
+        window.open(item.href, '_blank', 'noopener,noreferrer');
+        return true;
+      }
       if (item.to) {
         navigate(item.to);
         return true;
@@ -93,22 +117,40 @@ export default function Newsstand() {
     [navigate],
   );
 
-  const tabs = useMemo(
-    () =>
-      NEWSSTAND_TABS.map((tab) => ({
-        ...tab,
-        count: RACKS.filter((rack) => rack.tab === tab.key).reduce(
-          (total, rack) => total + (sections[rack.key]?.length || 0),
-          0,
-        ),
-      })),
+  const countOf = useCallback(
+    (list) => list.reduce((total, rack) => total + (sections[rack.key]?.length || 0), 0),
     [sections],
   );
+
+  // Every leaf prints its weight, and so does every section inside it.
+  const tabs = useMemo(
+    () =>
+      NEWSSTAND_TABS.map((tab) => {
+        const tabRacks = RACKS.filter((rack) => rack.tab === tab.key);
+        return {
+          ...tab,
+          count: countOf(tabRacks),
+          subs: (tab.subs || []).map((sub) => ({
+            ...sub,
+            count: countOf(tabRacks.filter((rack) => rack.sub === sub.key)),
+          })),
+        };
+      }),
+    [countOf],
+  );
+  const activeTab = tabs.find((tab) => tab.key === tabKey);
 
   // Turning a leaf puts the cursor on the first paper behind it, so the ring is never left
   // standing on something that has been folded away.
   const selectTab = useCallback((key) => {
     setTabKey(key);
+    setSubKey(null);
+    setOpenKey(null);
+    setCursorKey(null);
+  }, []);
+
+  const selectSub = useCallback((key) => {
+    setSubKey(key);
     setOpenKey(null);
     setCursorKey(null);
   }, []);
@@ -142,6 +184,11 @@ export default function Newsstand() {
         <NewsstandHeader />
 
         <NewsstandTabs tabs={tabs} activeKey={tabKey} onSelect={selectTab} />
+        <NewsstandSubTabs
+          tabs={activeTab?.subs || []}
+          activeKey={activeSub}
+          onSelect={selectSub}
+        />
 
         {stock.loading ? (
           <div className="flex items-center justify-center py-20">
@@ -164,33 +211,46 @@ export default function Newsstand() {
           </div>
         ) : (
           <>
-            {tabKey === 'publications' ? (
+            {tabKey === 'volumes' ? (
               <div
                 ref={(node) => {
-                  if (leadEdition) itemRefs.current[leadEdition.key] = node;
+                  if (leadVolume) itemRefs.current[leadVolume.key] = node;
                 }}
               >
                 <NewsstandFrontPage
-                  item={leadEdition}
+                  item={leadVolume}
                   empty={RACKS[0].empty}
-                  focused={!!leadEdition && cursorKey === leadEdition.key}
+                  focused={!!leadVolume && cursorKey === leadVolume.key}
                   onOpen={() => {
-                    if (!leadEdition) return;
-                    setCursorKey(leadEdition.key);
-                    take(leadEdition);
+                    if (!leadVolume) return;
+                    setCursorKey(leadVolume.key);
+                    take(leadVolume);
                   }}
                 />
               </div>
             ) : null}
 
             <div className="mt-8 space-y-10">
-            {listRacks.map((rack) => {
-              const items = sections[rack.key] || [];
-              const isRack = rack.key === 'issues';
+            {racks.map((rack) => {
+              const items = itemsFor(rack);
+              const isRack = rack.key === 'volumes';
+              const isWire = rack.key === 'wire';
 
               return (
-                <NewsstandRack key={rack.key} rack={rack} count={items.length}>
-                  {items.length === 0 ? (
+                <NewsstandRack key={rack.key} rack={rack} count={(sections[rack.key] || []).length}>
+                  {isWire ? (
+                    <WireRack
+                      rack={rack}
+                      items={items}
+                      wire={stock.wire}
+                      cursorKey={cursorKey}
+                      registerRef={(item, node) => {
+                        itemRefs.current[item.key] = node;
+                      }}
+                      onFocus={setCursorKey}
+                      onOpen={take}
+                    />
+                  ) : items.length === 0 ? (
                     <RackEmpty rack={rack} />
                   ) : isRack ? (
                     <>
