@@ -8,9 +8,11 @@ import { copyText } from '@/lib/clipboard';
 import {
   availableDestinations,
   readStoredDestination,
+  readStoredProgram,
   resolveDestination,
   shareUrl,
   storeDestination,
+  storeProgram,
 } from '@/lib/shareDestinations';
 import BadgeFront from '@/components/badge/BadgeFront';
 import BadgeBack from '@/components/badge/BadgeBack';
@@ -28,16 +30,16 @@ import useBadgePerson from '@/components/badge/useBadgePerson';
 const KEY =
   'inline-flex items-center gap-1.5 rounded-full border border-editorial-cream/20 px-3 py-1.5 font-body text-[8.5px] font-bold uppercase tracking-[0.18em] text-editorial-cream/80 transition-colors hover:border-editorial-gold/60 hover:text-editorial-cream';
 
+const absolute = (url) => (/^https?:/i.test(url) ? url : `${window.location.origin}${url}`);
+
 // A program key hands the badge its own address: pressing share on the menu wears the
-// badge for that program, with the code already printed to it. Anything else worn here
-// points at the destination the Fellow last chose.
+// badge for that program, with the code already printed to it. The program is remembered,
+// so a badge put away and worn again still carries the last one handed over. Anything
+// else worn here points at the destination the Fellow last chose.
 const readIncoming = (state) => {
-  const url = state?.shareUrl;
-  if (!url) return null;
-  return {
-    url: /^https?:/i.test(url) ? url : `${window.location.origin}${url}`,
-    label: state?.shareLabel || '',
-  };
+  if (state?.shareUrl) return { url: absolute(state.shareUrl), label: state?.shareLabel || '' };
+  const stored = readStoredProgram();
+  return stored ? { url: absolute(stored.url), label: stored.label } : null;
 };
 
 export default function ConferenceBadge() {
@@ -52,6 +54,13 @@ export default function ConferenceBadge() {
   const [copied, setCopied] = useState(false);
   const [destination, setDestination] = useState(() => readStoredDestination());
   const [incoming, setIncoming] = useState(() => readIncoming(location.state));
+
+  // The program is kept on the machine, not just in the navigation that brought it here:
+  // whichever one the badge is carrying is the one it will carry next time it is worn, and
+  // choosing a destination on the dock puts it down.
+  useEffect(() => {
+    storeProgram(incoming);
+  }, [incoming]);
 
   // Worn full screen: the controls centre is put away for as long as the badge is up,
   // and the clearance it holds is handed back to the picture (see globals: body.hh-badge).

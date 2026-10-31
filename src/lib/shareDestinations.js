@@ -79,3 +79,28 @@ export function storeDestination(key) {
     /* a private window keeps no memory of the choice; the code still prints */
   }
 }
+
+// A program handed over from the menu — a share key on the title screen, pressed for one
+// particular surface. It is written down rather than only carried in the navigation, so a
+// badge put away in a room and worn again still carries the last program it was picked up
+// for; choosing a destination on the badge forgets it.
+const PROGRAM = 'top100.share.program';
+
+export function readStoredProgram() {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(PROGRAM) || 'null');
+    if (!parsed?.url) return null;
+    return { url: parsed.url, label: parsed.label || '' };
+  } catch {
+    return null;
+  }
+}
+
+export function storeProgram(program) {
+  try {
+    if (!program?.url) window.localStorage.removeItem(PROGRAM);
+    else window.localStorage.setItem(PROGRAM, JSON.stringify({ url: program.url, label: program.label || '' }));
+  } catch {
+    /* a private window keeps no memory of the program; the badge still prints it now */
+  }
+}

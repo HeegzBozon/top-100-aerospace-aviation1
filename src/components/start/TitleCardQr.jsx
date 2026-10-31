@@ -1,26 +1,26 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { qrSrc } from '@/lib/publicCard';
 import {
-  availableDestinations,
   readStoredDestination,
+  readStoredProgram,
   resolveDestination,
   shareUrl,
-  storeDestination,
 } from '@/lib/shareDestinations';
-import QrShareCenter from './QrShareCenter';
 
 // The code standing on the title screen.
 //
 // It is a badge worn at the masthead, and it is printed at a size a camera reads across a
-// table — the hand-over needs no tap at all. Tapping opens the badge full screen, where
+// table — the hand-over needs no tap at all. Tapping wears the badge full screen, where
 // the code is larger still and the holder chooses what it opens: their own card, the
-// edition, the record, the archive. That choice is remembered, so the code on the title
-// screen is always the one last set.
+// edition, the record, the archive, or the program last handed over from the menu. That
+// choice is remembered, so the code on the title screen is always the one last set.
 export default function TitleCardQr({ user = null, variant = 'glass', className = '' }) {
-  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const [nominee, setNominee] = useState(null);
-  const [destination, setDestination] = useState(() => readStoredDestination());
+  const [destination] = useState(() => readStoredDestination());
+  const [program] = useState(() => readStoredProgram());
   const signedIn = !!user?.email;
 
   useEffect(() => {
@@ -61,16 +61,12 @@ export default function TitleCardQr({ user = null, variant = 'glass', className 
     };
   }, [nominee, signedIn, user?.full_name]);
 
-  const destinations = useMemo(() => availableDestinations(holder), [holder]);
   // With no account behind the screen there is no card to hand over, so an unset code
   // opens the platform itself rather than a page the visitor never chose.
   const chosen = resolveDestination(destination || (signedIn ? '' : 'platform'), holder);
-  const link = shareUrl(chosen.key, holder);
-
-  const choose = (key) => {
-    setDestination(key);
-    storeDestination(key);
-  };
+  // A program handed over from the menu outranks the destination: that is the code the
+  // badge is carrying, and this is the same code printed large enough to scan cold.
+  const link = program?.url || shareUrl(chosen.key, holder);
 
   const size = variant === 'desk' ? 132 : 92;
 
@@ -78,9 +74,8 @@ export default function TitleCardQr({ user = null, variant = 'glass', className 
     <div className={`shrink-0 ${className}`}>
       <button
         type="button"
-        onClick={() => setOpen(true)}
-        aria-haspopup="dialog"
-        aria-label={`Hand over the code: ${chosen.label}. Scan it, or open it larger.`}
+        onClick={() => navigate('/badge')}
+        aria-label={`Wear the badge: ${program?.label || chosen.label}. Scan the code, or open it larger.`}
         className="block text-right transition-transform active:scale-[0.98]"
       >
         <span
@@ -102,17 +97,6 @@ export default function TitleCardQr({ user = null, variant = 'glass', className 
           />
         </span>
       </button>
-
-      {open ? (
-        <QrShareCenter
-          holder={holder}
-          destinations={destinations}
-          destination={chosen.key}
-          onDestination={choose}
-          link={link}
-          onClose={() => setOpen(false)}
-        />
-      ) : null}
     </div>
   );
 }
