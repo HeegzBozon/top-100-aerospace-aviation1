@@ -5,6 +5,7 @@ import InboxBundle from './InboxBundle';
 import InboxMetrics from './InboxMetrics';
 import InboxControls, { SORTS } from './InboxControls';
 import useInboxPicker from './useInboxPicker';
+import Newsstand from '@/pages/Newsstand';
 
 import { BUNDLES, STAGES, inFilter } from './inboxFunnel';
 
@@ -16,7 +17,7 @@ export default function InboxTriage({ user }) {
   const [filter, setFilter] = useState('all');
   const [sort, setSort] = useState('newest');
   const [openKey, setOpenKey] = useState(null);
-  const [tab, setTab] = useState('inbox');
+  const [tab, setTab] = useState(() => new URLSearchParams(window.location.search).get('tab') === 'newsstand' ? 'newsstand' : 'inbox');
   const now = Date.now();
   const toggle = (key) => setOpenKey((k) => (k === key ? null : key));
 
@@ -47,15 +48,17 @@ export default function InboxTriage({ user }) {
 
   return (
     <div>
-      <div role="tablist" className="mb-3 grid grid-cols-2 rounded border border-editorial-navy/15 bg-white p-0.5">
-        {['funnel', 'inbox'].map((t) => (
+      <div role="tablist" className="mb-3 grid grid-cols-3 rounded border border-editorial-navy/15 bg-white p-0.5">
+        {['funnel', 'inbox', 'newsstand'].map((t) => (
           <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)}
             className={`rounded py-1.5 font-body text-[11px] font-semibold uppercase tracking-[0.16em] ${tab === t ? 'bg-editorial-navy text-editorial-cream' : 'text-editorial-navy'}`}>
             {t}
           </button>
         ))}
       </div>
-      {tab === 'funnel' ? (
+      {tab === 'newsstand' ? (
+        <div className="-mx-2.5 md:mx-0"><Newsstand /></div>
+      ) : tab === 'funnel' ? (
         <InboxMetrics items={items} states={states} filter={filter} onFilter={(f) => { setFilter(f); setTab('inbox'); }} />
       ) : (<>
       <InboxControls views={VIEWS} view={view} setView={setView} sort={sort} setSort={setSort}
