@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import ReadingModeTabs from './ReadingModeTabs';
+import useMonitorEditMenu from './useMonitorEditMenu';
 import PulseBand from './PulseBand';
 import TrafficReadout from './TrafficReadout';
 import CohortDive from './CohortDive';
@@ -15,13 +14,13 @@ import ContributorTable from './ContributorTable';
 
 // The selection monitor: every cohort's ballot in one room. Read-only, admin only — the
 // ledger of who weighed whom, and the tallies those weights are producing while the
-// windows are still open. The standings lead; the figures beneath them are the dive.
+// windows are still open.
+//
+// The board is the whole head of the surface. Which reading it is, which cohort is in
+// scope and taking it again live in the machine's Edit menu, so nothing stands between the
+// operator and the standings.
 
 const REFRESH_MS = 60000;
-
-function fmt(value) {
-  return typeof value === 'number' ? value.toLocaleString() : '—';
-}
 
 export default function SelectionMonitor() {
   const [scope, setScope] = useState('all');
@@ -61,6 +60,23 @@ export default function SelectionMonitor() {
     return () => clearInterval(id);
   }, [load]);
 
+  // The picker offers the cohorts that can still be watched; archived editions keep
+  // their ledgers where they are.
+  const cohorts = useMemo(
+    () => (data?.cohorts || []).filter((c) => c.status !== 'archived'),
+    [data?.cohorts]
+  );
+
+  useMonitorEditMenu({
+    mode,
+    onMode: setMode,
+    scope,
+    onScope: setScope,
+    cohorts,
+    onRefresh: () => load(true),
+    enabled: !loading && !error,
+  });
+
   if (loading) {
     return (
       <div className="flex h-72 items-center justify-center gap-2 rounded-xl border border-editorial-navy/10 bg-white">
@@ -83,78 +99,11 @@ export default function SelectionMonitor() {
     );
   }
 
-  // The picker offers the cohorts that can still be watched; archived editions keep
-  // their ledgers where they are.
-  const cohorts = (data?.cohorts || []).filter((c) => c.status !== 'archived');
   const totals = data?.totals;
-  const stamp = data?.generated_at
-    ? new Date(data.generated_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
-    : null;
 
   return (
     <div className="space-y-3">
-      {/* The head: what is being read, and which reading of it. Two keys carry the
-          switch, so the internal review is never buried under a scroll. */}
-      <div className="space-y-1.5">
-        <div className="flex items-end justify-between gap-2">
-          <div className="min-w-0">
-            <p className="text-[8px] font-bold uppercase tracking-[0.26em] text-editorial-label">Selection</p>
-            <h2 className="font-heading text-lg leading-tight text-editorial-navy md:text-2xl">
-              {mode === 'internal' ? 'Internal review' : 'Live monitor'}
-            </h2>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 shrink-0 gap-1 px-2"
-            onClick={() => load(true)}
-            disabled={refreshing}
-          >
-            {refreshing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
-            <span className="hidden md:inline">Refresh</span>
-          </Button>
-        </div>
-
-        <ReadingModeTabs
-          mode={mode}
-          onChange={setMode}
-          live={data?.totals?.comparisons_live || 0}
-          internal={data?.totals?.comparisons_test || 0}
-        />
-
-        {/* The figures, in a line: read as numbers on arrival, before the board. */}
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-[9px] uppercase tracking-[0.12em] text-editorial-navy/45">
-          <span>
-            <span className="text-[13px] font-semibold tabular-nums text-editorial-navy">{fmt(totals?.ballots)}</span>{' '}
-            ballots
-          </span>
-          <span>
-            <span className="text-[13px] font-semibold tabular-nums text-editorial-navy">{fmt(totals?.comparisons)}</span>{' '}
-            marks
-          </span>
-          <span>
-            <span className="text-[13px] font-semibold tabular-nums text-editorial-navy">{fmt(totals?.pool)}</span>{' '}
-            standing
-          </span>
-          {stamp && <span className="ml-auto tabular-nums text-editorial-navy/30">{stamp}</span>}
-        </div>
-
-        <Select value={scope} onValueChange={setScope}>
-          <SelectTrigger className="h-8 w-full text-xs md:w-[220px]">
-            <SelectValue placeholder="All cohorts" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All cohorts</SelectItem>
-            {cohorts.map((c) => (
-              <SelectItem key={c.id} value={c.id}>
-                {c.cohort_label || c.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* The board leads. */}
+      {/* The board leads, with the reading it is named beneath it. */}
       <StandingsBoard
         rows={data?.standings || []}
         seeded={totals?.seeded || 0}
