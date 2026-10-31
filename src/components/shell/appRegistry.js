@@ -64,7 +64,7 @@ export const APP_GROUPS = [
     key: "community",
     label: "Community",
     items: [
-      { label: "Conferences", to: "/conferences", icon: CalendarDays, shelf: true },
+      { label: "Events", to: "/conferences", icon: CalendarDays, shelf: true },
       { label: "Host a Conference", to: "/conferences/host", icon: Landmark, membersOnly: true },
       { label: "Comms", to: "/Comms", icon: MessageCircle, membersOnly: true },
       { label: "Calendar", to: "/events", icon: Calendar },

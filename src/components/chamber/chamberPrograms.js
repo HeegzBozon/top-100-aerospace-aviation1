@@ -12,14 +12,6 @@ import {
 
 export const CHAMBER_COUNTERS = [
   {
-    key: "app-store",
-    index: "1",
-    label: "App Store",
-    blurb: "The shelf of micro-tools, each doing one job on your own record and handing back an artifact.",
-    to: "/app-store",
-    icon: Store,
-  },
-  {
     key: "gift-shop",
     index: "2",
     label: "Gift Shop",
