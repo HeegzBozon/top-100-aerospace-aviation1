@@ -18,10 +18,10 @@ import WireRack from '@/components/newsstand/WireRack';
 //
 // A digital Hudson News, standing where the Chamber's counters do: one storefront for the
 // house's whole printed output rather than a key per publication. Volumes is the rack of
-// bound volumes — as many as the archive holds. Issues is what sits inside them: the
-// spotlights, one page per honoree, and the articles written around them. Notes is what the
-// house says out loud, the wire on one side and the release notes on the other — and it is
-// the leaf the stand opens on.
+// bound volumes — as many as the archive holds — with the pieces that ran inside them below.
+// Issues is the spotlights, one page per honoree, and the newsletter's own articles. Notes is
+// what the house says out loud, the wire on one side and the release notes on the other — and
+// it is the leaf the stand opens on.
 //
 // A volume or a spotlight is read on its own page, so pressing it leaves the stand. A
 // dispatch or a note is printed where it stands: pressing it opens the piece under its own

@@ -1,8 +1,9 @@
 import { C } from '@/components/crm/crmConfig';
 
-// The stand, read the way a reader walks past it: the volumes the house has bound, the
-// issues inside them — each honoree's own profile, and the pieces written around them — and
-// the notes it keeps by the door: the wire on one side, what the platform shipped on the other.
+// The stand, read the way a reader walks past it: the volumes the house has bound and the
+// pieces that ran inside them; the issues — every honoree as a spotlight of their own, and
+// the newsletter's own run; and the notes kept by the door, the wire on one side and what the
+// platform shipped on the other.
 export const NEWSSTAND_TABS = [
   { key: 'volumes', label: 'Volumes', subs: [] },
   {
@@ -47,8 +48,7 @@ export const RACKS = [
   },
   {
     key: 'articles',
-    tab: 'issues',
-    sub: 'articles',
+    tab: 'volumes',
     label: 'The folded sheets',
     kicker: 'Articles & features',
     blurb: 'The pieces that ran inside the volumes, read in the issue they were printed in.',
@@ -56,8 +56,7 @@ export const RACKS = [
   },
   {
     key: 'dispatches',
-    tab: 'issues',
-    sub: 'articles',
+    tab: 'volumes',
     label: 'The dispatch stand',
     kicker: 'Blogs & field notes',
     blurb: 'Writing filed by Fellows themselves — dispatches, notes and field reports.',
