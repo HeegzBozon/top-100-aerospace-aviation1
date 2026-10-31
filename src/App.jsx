@@ -154,6 +154,8 @@ const AuthenticatedApp = () => {
     <PageTurn>
     <Suspense fallback={<ConsoleLoading label="Loading surface" />}>
     <Routes>
+      {/* The referral mini-portal stands outside the machine: its own private frame. */}
+      <Route path="/referral/respond" element={<ReferralRespond />} />
       {/* Everything renders inside the device on phones; desktop is untouched. */}
       <Route element={<HandheldShell />}>
       {/* A desk is housed in the desk machine: everything below renders inside its tube */}
@@ -251,7 +253,6 @@ const AuthenticatedApp = () => {
       <Route path="/conferences/host" element={<ConferenceHost />} />
       <Route path="/conferences/host/apply" element={<ConferenceHostApply />} />
       <Route path="/conferences/:id" element={<ConferenceDetail />} />
-      <Route path="/referral/respond" element={<ReferralRespond />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />
       <Route path="/Home" element={<Navigate to="/" replace />} />
