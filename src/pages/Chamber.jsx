@@ -6,6 +6,7 @@ import revealCursor from '@/components/handheld/revealCursor';
 import StartSky from '@/components/start/StartSky';
 import StartMetaRow from '@/components/start/StartMetaRow';
 import ChamberKeys from '@/components/chamber/ChamberKeys';
+import ChamberTabs from '@/components/chamber/ChamberTabs';
 import HouseOffices from '@/components/chamber/HouseOffices';
 import { CHAMBER_COUNTERS, CHAMBER_OFFICES } from '@/components/chamber/chamberPrograms';
 import { CHAMBER_DESKS } from '@/components/chamber/chamberOffices';
@@ -19,14 +20,40 @@ import { CHAMBER_DESKS } from '@/components/chamber/chamberOffices';
 // one under the cursor is lit and reads itself out below, and # opens it. The keypad's
 // numbers work too, and an office that lives off the platform (the round) opens in its
 // own window rather than pretending to be a page here.
+//
+// The directory is cut into two tabs — the desks, then the house — so the ring walks the
+// leaf in front of it and nothing is reachable only by scrolling past something else.
+const CHAMBER_TABS = [
+  { key: 'desks', label: 'The desks', items: CHAMBER_DESKS },
+  { key: 'house', label: 'The house', items: CHAMBER_OFFICES },
+];
+
 export default function Chamber() {
   const navigate = useNavigate();
   const [phase] = useState(() => hourPhase());
-  const programs = useMemo(() => [...CHAMBER_COUNTERS, ...CHAMBER_DESKS, ...CHAMBER_OFFICES], []);
+  const [tabKey, setTabKey] = useState(CHAMBER_TABS[0].key);
+
+  // The ring walks the counters and the leaf in front of it, never what is folded away.
+  const activeGroup = useMemo(
+    () => CHAMBER_TABS.find((tab) => tab.key === tabKey) || CHAMBER_TABS[0],
+    [tabKey],
+  );
+
+  const programs = useMemo(() => [...CHAMBER_COUNTERS, ...activeGroup.items], [activeGroup]);
   const [cursorKey, setCursorKey] = useState(programs[0].key);
 
   const cursorRef = useRef(cursorKey);
   cursorRef.current = cursorKey;
+
+  // Switching leaves puts the cursor on the first thing behind the new one, so the ring is
+  // never left standing on an entry that has been folded away.
+  const selectTab = useCallback((key) => {
+    const group = CHAMBER_TABS.find((tab) => tab.key === key);
+    if (!group || !group.items.length) return;
+    setTabKey(key);
+    cursorRef.current = group.items[0].key;
+    setCursorKey(group.items[0].key);
+  }, []);
 
   const land = useCallback((target) => {
     if (target < 0 || target >= programs.length) return null;
@@ -112,7 +139,7 @@ export default function Chamber() {
               Chamber of Commerce
             </h1>
             <p className="mt-2 text-[8.5px] font-bold uppercase tracking-[0.34em] text-editorial-cream/60 md:text-[11px]">
-              The counters &middot; The house&rsquo;s offices
+              The counters &middot; The desks &middot; The house
             </p>
           </div>
 
@@ -123,18 +150,13 @@ export default function Chamber() {
             <ChamberKeys programs={CHAMBER_COUNTERS} cursorKey={cursorKey} />
           </div>
 
-          <div className="mt-5 md:mt-8">
-            <p className="mb-2 text-[7.5px] font-bold uppercase tracking-[0.3em] text-editorial-gold/70 md:mb-3 md:text-[9px]">
-              The desks
-            </p>
-            <HouseOffices programs={CHAMBER_DESKS} cursorKey={cursorKey} />
-          </div>
-
-          <div className="mt-5 md:mt-8">
-            <p className="mb-2 text-[7.5px] font-bold uppercase tracking-[0.3em] text-editorial-gold/70 md:mb-3 md:text-[9px]">
-              The house
-            </p>
-            <HouseOffices programs={CHAMBER_OFFICES} cursorKey={cursorKey} />
+          {/* One leaf of the directory at a time: the desks a member's own work is done
+              at, then the house the institution does business from. */}
+          <div className="mt-6 md:mt-9">
+            <ChamberTabs tabs={CHAMBER_TABS} activeKey={activeGroup.key} onSelect={selectTab} />
+            <div className="mt-3 md:mt-4">
+              <HouseOffices programs={activeGroup.items} cursorKey={cursorKey} />
+            </div>
           </div>
 
           {/* The entry under the cursor reads itself out below the list, so the wheel can
