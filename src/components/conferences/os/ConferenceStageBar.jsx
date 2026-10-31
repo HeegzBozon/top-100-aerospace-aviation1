@@ -12,14 +12,12 @@ export default function ConferenceStageBar({ cursorKey }) {
 
   return (
     <nav aria-label="Conference stages" className="cfs-readout relative overflow-hidden rounded-[12px] px-3 pb-2.5 pt-2.5">
-      <div className="mb-2.5 flex items-baseline justify-between gap-2">
-        <span className="text-[7.5px] font-bold uppercase tracking-[0.24em] text-editorial-gold/80">
-          {current ? `Stage ${current.index} of 04` : 'The cycle'}
-        </span>
-        <span className="truncate font-heading text-[12px] text-editorial-cream">
-          {current ? current.title : 'Plan · Do · Check · Act'}
-        </span>
-      </div>
+      {current && (
+        <div className="mb-2.5 flex items-baseline justify-between gap-2">
+          <span className="text-[7.5px] font-bold uppercase tracking-[0.24em] text-editorial-gold/80">Stage {current.index} of 04</span>
+          <span className="truncate font-heading text-[12px] text-editorial-cream">{current.title}</span>
+        </div>
+      )}
 
       <div className="relative">
         <div className="absolute left-[12.5%] right-[12.5%] top-[13px] h-[4px] rounded-full bg-editorial-cream/10 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]">

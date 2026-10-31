@@ -97,14 +97,16 @@ export default function ConferenceLauncher() {
     <div className="hh-scroll-window relative flex min-h-screen flex-col overflow-hidden">
       <ConferenceStage />
 
-      <div className="relative flex min-h-0 flex-1 flex-col px-4 pb-3 pt-6 md:mx-auto md:w-full md:max-w-5xl md:px-8 md:pb-12 md:pt-14">
+      <div className="relative flex min-h-0 flex-1 flex-col gap-3 px-3 pb-3 pt-4 md:mx-auto md:w-full md:max-w-5xl md:gap-6 md:px-8 md:pb-12 md:pt-14">
         <header className="cfs-rise shrink-0">
-          <h1 className="font-heading text-[40px] leading-[0.92] text-editorial-cream md:text-[68px]">
+          <h1 className="font-heading text-[30px] leading-none text-editorial-cream md:text-[68px]">
             Conferences
           </h1>
         </header>
 
-        <div className="cfs-rise cfs-rise-1 mt-4 shrink-0">
+        {/* The scorecard takes whatever height is left and scrolls inside itself, so the
+            tracker keeps its place on the shorter radio glass as well as the wheel's. */}
+        <div className="cfs-rise cfs-rise-1 min-h-0 flex-1 overflow-y-auto">
           <ConferenceScorecard loading={state.loading} failed={state.failed} counts={counts} />
 
           {state.failed ? (
@@ -118,7 +120,7 @@ export default function ConferenceLauncher() {
           ) : null}
         </div>
 
-        <div className="cfs-rise cfs-rise-2 mt-auto shrink-0 pt-4 md:pt-9">
+        <div className="cfs-rise cfs-rise-2 shrink-0">
           <ConferenceStageBar cursorKey={cursorKey} />
         </div>
 
