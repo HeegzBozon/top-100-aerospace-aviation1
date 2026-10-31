@@ -4,6 +4,7 @@ import { Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import useMonitorEditMenu from './useMonitorEditMenu';
+import MonitorStats from './MonitorStats';
 import PulseBand from './PulseBand';
 import TrafficReadout from './TrafficReadout';
 import CohortDive from './CohortDive';
@@ -22,7 +23,7 @@ import ContributorTable from './ContributorTable';
 
 const REFRESH_MS = 60000;
 
-export default function SelectionMonitor() {
+export default function SelectionMonitor({ onOpenMenu }) {
   const [scope, setScope] = useState('all');
   // Which ledger is being read: the community's record, or the internal review sets.
   const [mode, setMode] = useState('live');
@@ -103,6 +104,9 @@ export default function SelectionMonitor() {
 
   return (
     <div className="space-y-3">
+      {/* The figures stand at the head of the surface; the board follows immediately. */}
+      <MonitorStats totals={totals} onOpenMenu={onOpenMenu} />
+
       {/* The board leads, with the reading it is named beneath it. */}
       <StandingsBoard
         rows={data?.standings || []}

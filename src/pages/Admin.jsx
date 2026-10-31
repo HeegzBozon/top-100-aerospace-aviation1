@@ -237,7 +237,7 @@ export default function Admin() {
       case 'workspace-selection':
         return <CohortWorkspace phase="selection" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
       case 'selection-monitor':
-        return <SelectionMonitor />;
+        return <SelectionMonitor onOpenMenu={() => setMobileSidebarOpen(true)} />;
       case 'workspace-editorial':
         return <CohortWorkspace phase="editorial" season={workspaceSeason} seasons={seasons} onNavigate={setActiveTab} onSeasonsUpdate={loadAllData} />;
       case 'episodes':
@@ -363,8 +363,12 @@ export default function Admin() {
 
       {/* ── Main Content ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top bar */}
-        <header className="flex-shrink-0 h-14 flex items-center gap-3 px-4 md:px-6 border-b border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm">
+        {/* Top bar. The live monitor gives its head to the ledger on a phone: the monitor's
+            own figures line carries the way into the sections instead, so no breadcrumb bar
+            stands between the operator and the standings. */}
+        <header
+          className={`${activeTab === 'selection-monitor' ? 'hidden md:flex' : 'flex'} flex-shrink-0 h-14 items-center gap-3 px-4 md:px-6 border-b border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm`}
+        >
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileSidebarOpen(true)}
@@ -395,7 +399,7 @@ export default function Admin() {
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="p-4 md:p-6 lg:p-8">
+          <div className={`${activeTab === 'selection-monitor' ? 'p-2.5 md:p-6 lg:p-8' : 'p-4 md:p-6 lg:p-8'}`}>
             <Suspense fallback={
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--accent)] border-t-transparent" />
