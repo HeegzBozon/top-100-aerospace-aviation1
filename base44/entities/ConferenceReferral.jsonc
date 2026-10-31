@@ -66,6 +66,19 @@
       "type": "object",
       "default": {},
       "description": "When each step's message was sent, keyed by step"
+    },
+    "consent_token": {
+      "type": "string",
+      "description": "Single-use secret for the referred person's response link"
+    },
+    "heads_up_token": {
+      "type": "string",
+      "description": "Single-use secret for the recipient's response link"
+    },
+    "responses": {
+      "type": "object",
+      "default": {},
+      "description": "Answers from the response page, keyed by step: { answer: 'yes'|'no', at }"
     }
   },
   "required": [

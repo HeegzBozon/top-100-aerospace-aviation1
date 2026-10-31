@@ -53,7 +53,9 @@ export default function ReferralCard({ referral, onUpdate, onReplace }) {
               <div key={p.key} className={`flex items-center gap-2 rounded-md bg-editorial-navy/60 px-2.5 py-2 ${locked ? 'opacity-45' : ''}`}>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[12px] text-editorial-cream">{p.label}{sent[p.key] && <Check className="ml-1 inline h-3 w-3 text-editorial-gold" />}</p>
-                  <p className="truncate text-[9.5px] text-editorial-cream/50">{p.hint}</p>
+                  <p className="truncate text-[9.5px] text-editorial-cream/50">
+                    {r.responses?.[p.key] ? (r.responses[p.key].answer === 'yes' ? 'Answered: yes' : 'Answered: not now') : p.hint}
+                  </p>
                 </div>
                 {thread && (
                   <Link to={`/Comms?conv=${thread}`} aria-label="Open in Messages" className="rounded-full border border-editorial-cream/20 p-1.5 text-editorial-cream"><MessageCircle className="h-3 w-3" /></Link>

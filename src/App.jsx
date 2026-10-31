@@ -119,6 +119,7 @@ const ConferenceJourney = lazy(() => import('@/pages/ConferenceJourney'));
 const ConferenceDetail = lazy(() => import('@/pages/ConferenceDetail'));
 const ConferenceHost = lazy(() => import('@/pages/ConferenceHost'));
 const ConferenceHostApply = lazy(() => import('@/pages/ConferenceHostApply'));
+const ReferralRespond = lazy(() => import('@/pages/ReferralRespond'));
 
 
 // Every surface is an application the machine runs: the shell draws the chrome and
@@ -250,6 +251,7 @@ const AuthenticatedApp = () => {
       <Route path="/conferences/host" element={<ConferenceHost />} />
       <Route path="/conferences/host/apply" element={<ConferenceHostApply />} />
       <Route path="/conferences/:id" element={<ConferenceDetail />} />
+      <Route path="/referral/respond" element={<ReferralRespond />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />
       <Route path="/Home" element={<Navigate to="/" replace />} />

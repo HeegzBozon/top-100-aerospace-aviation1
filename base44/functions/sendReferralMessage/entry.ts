@@ -45,6 +45,10 @@ export default async function (req) {
     }
 
     const msg = build(r, step, me);
+    // A single-use response link for the asking steps, kept across resends.
+    const tokenField = step === 'consent' ? 'consent_token' : step === 'heads_up' ? 'heads_up_token' : null;
+    const token = tokenField ? (r[tokenField] || crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '')) : null;
+    if (token) msg.body += `\n\nAnswer in one tap: https://top100aero.space/referral/respond?t=${token}`;
     const to = msg.to.filter(Boolean).map((e) => e.toLowerCase());
     const users = to.length ? await base44.asServiceRole.entities.User.filter({ email: { $in: to } }) : [];
     const members = users.map((u) => u.email.toLowerCase());
@@ -76,7 +80,7 @@ export default async function (req) {
 
     const threads = { ...(r.threads || {}), ...(conversation_id ? { [step]: conversation_id } : {}) };
     const sent = { ...(r.sent_at || {}), [step]: new Date().toISOString() };
-    const update = { threads, sent_at: sent };
+    const update = { threads, sent_at: sent, ...(token ? { [tokenField]: token } : {}) };
     if (msg.status && r.status !== 'connected') update.status = msg.status === 'consent_asked' && r.status !== 'drafted' ? r.status : msg.status;
     if (step === 'intro') update.introduced_at = new Date().toISOString();
     const saved = await base44.entities.ConferenceReferral.update(r.id, update);
