@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { chooseWomenIssue } from '@/components/magazine/womenEdition';
 import {
-  ARTICLE_TYPE_LABELS,
   POST_TYPE_LABELS,
   byDateDesc,
   dayLabel,
@@ -22,12 +21,11 @@ const isStocked = (bulletin) => {
   return Number.isNaN(date.getTime()) || date <= new Date();
 };
 
-const EMPTY = { loading: true, error: null, issues: [], articles: [], bulletins: [], nominees: [] };
+const EMPTY = { loading: true, error: null, issues: [], bulletins: [], nominees: [] };
 const WIRE_EMPTY = { loading: true, error: null, items: [], sources: [] };
 
-// The stand's stock: the bound editions, the articles that ran inside them, and the
-// bulletins — the house's own release notes and the writing Fellows file. Three reads in
-// one round trip, read as four racks.
+// The stand's stock: the bound editions and the bulletins — the house's own release notes
+// and the writing Fellows file. Two reads in one round trip.
 export default function useNewsstand() {
   const [stock, setStock] = useState(EMPTY);
   // The wire is read from the two networks on its own round trip, so a network that is down
@@ -41,22 +39,17 @@ export default function useNewsstand() {
       // resolver the title screen and the edition's own route use picks it, so the front page
       // and the reader can never disagree about which issue is the live one.
       base44.entities.MagazineIssue.filter({}, { sort: '-created_date', limit: 50 }),
-      base44.entities.MagazineArticle.filter(
-        { status: { $in: ['published', 'laid_out', 'ready'] } },
-        { sort: '-created_date', limit: 80 },
-      ),
       base44.entities.Bulletin.filter({}, { sort: '-published_date', limit: 80 }),
       // The spotlights are the honorees themselves: each one's own page. Read in name order,
       // so the stand implies no standing of its own.
       base44.entities.Nominee.filter({ status: 'active' }, { sort: 'name', limit: 100 }),
     ])
-      .then(([issues, articles, bulletins, nominees]) => {
+      .then(([issues, bulletins, nominees]) => {
         const edition = chooseWomenIssue(rows(issues));
         setStock({
           loading: false,
           error: null,
           issues: edition ? [edition] : [],
-          articles: rows(articles),
           bulletins: rows(bulletins),
           nominees: rows(nominees),
         });
@@ -66,7 +59,6 @@ export default function useNewsstand() {
           loading: false,
           error: error?.message || 'The stand could not be read.',
           issues: [],
-          articles: [],
           bulletins: [],
           nominees: [],
         });
@@ -102,8 +94,6 @@ export default function useNewsstand() {
   }, [load, loadWire]);
 
   const sections = useMemo(() => {
-    const issueTitles = new Map(stock.issues.map((issue) => [issue.id, issue.title]));
-
     // The bound volumes: exactly as many as the archive holds. The live volume wears the
     // cover of the edition being printed now; the rest are set as typographic plates, since
     // a volume of record was never given a cover of its own.
@@ -130,21 +120,6 @@ export default function useNewsstand() {
         meta: nominee.country || '',
         teaser: nominee.description || '',
         to: `/profiles/${nominee.id}`,
-      }));
-
-    // The sheets folded into the volumes are the pieces written around the honorees. A profile
-    // piece is not stock here: every profile is a spotlight of its own, under Issues.
-    const articles = stock.articles
-      .filter((article) => article.article_type !== 'profile')
-      .sort(byDateDesc('created_date'))
-      .map((article) => ({
-        key: `article-${article.id}`,
-        rack: 'articles',
-        kicker: ARTICLE_TYPE_LABELS[article.article_type] || 'Article',
-        title: article.title || 'Untitled piece',
-        meta: [article.writer_credit, issueTitles.get(article.issue_id)].filter(Boolean).join(' · '),
-        teaser: article.teaser || article.subtitle || '',
-        to: article.issue_id ? `/magazine/${article.issue_id}` : null,
       }));
 
     const stocked = stock.bulletins
@@ -186,7 +161,6 @@ export default function useNewsstand() {
       })),
       volumes,
       spotlights,
-      articles,
       dispatches: stocked.filter((bulletin) => bulletin.scope !== 'platform').map(asBulletin),
       // The issues under the house's name: every edition the founder has mailed, newest
       // first, numbered by its own date. The archive is a fixed record, so it is read from the

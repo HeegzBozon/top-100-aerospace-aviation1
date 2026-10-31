@@ -47,14 +47,6 @@ export const RACKS = [
     empty: 'No spotlight is lit yet. The first honoree takes their page here with the next volume.',
   },
   {
-    key: 'articles',
-    tab: 'volumes',
-    label: 'The folded sheets',
-    kicker: 'Articles & features',
-    blurb: 'The pieces that ran inside the volumes, read in the issue they were printed in.',
-    empty: 'No article has come off the press yet. The first feature lands here with its issue.',
-  },
-  {
     key: 'dispatches',
     tab: 'volumes',
     label: 'The dispatch stand',
