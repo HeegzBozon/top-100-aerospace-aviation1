@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { chooseWomenIssue } from '@/components/magazine/womenEdition';
 import {
+  ISSUE_STATUS_LABELS,
   byDateDesc,
   dayLabel,
   firstLine,
@@ -20,7 +21,7 @@ const isStocked = (bulletin) => {
   return Number.isNaN(date.getTime()) || date <= new Date();
 };
 
-const EMPTY = { loading: true, error: null, issues: [], bulletins: [], nominees: [] };
+const EMPTY = { loading: true, error: null, issues: [], edition: null, bulletins: [], nominees: [] };
 const WIRE_EMPTY = { loading: true, error: null, items: [], sources: [] };
 
 // The stand's stock: the bound editions and the bulletins — the house's own release notes
@@ -44,11 +45,12 @@ export default function useNewsstand() {
       base44.entities.Nominee.filter({ status: 'active' }, { sort: 'name', limit: 100 }),
     ])
       .then(([issues, bulletins, nominees]) => {
-        const edition = chooseWomenIssue(rows(issues));
+        const allIssues = rows(issues);
         setStock({
           loading: false,
           error: null,
-          issues: edition ? [edition] : [],
+          issues: allIssues,
+          edition: chooseWomenIssue(allIssues),
           bulletins: rows(bulletins),
           nominees: rows(nominees),
         });
@@ -93,20 +95,28 @@ export default function useNewsstand() {
   }, [load, loadWire]);
 
   const sections = useMemo(() => {
-    // The bound volumes: exactly as many as the archive holds. The live volume wears the
-    // cover of the edition being printed now; the rest are set as typographic plates, since
-    // a volume of record was never given a cover of its own.
-    const liveCover = stock.issues[0]?.cover_image_url || '';
-    const volumes = ARCHIVE_VOLUMES.map((volume) => ({
-      key: `volume-${volume.seasonId}`,
-      rack: 'volumes',
-      kicker: volume.note || volume.year,
-      title: volume.title,
-      subtitle: volume.year,
-      foot: volume.volume,
-      cover: volume.livePath ? liveCover : '',
-      to: volume.livePath || volume.path,
-    }));
+    // The bound volumes: exactly as many as the archive holds, each read as the flip book
+    // bound for it. A volume whose book is out — published, archived, or the edition the
+    // house is printing now — hands over to the reader; one still at the press has no book
+    // to give yet, so it falls back to its roster. Publishing a staged draft is what moves
+    // it onto the reader, with no code to change.
+    const issueById = new Map(stock.issues.map((issue) => [issue.id, issue]));
+    const isBound = (issue) =>
+      !!issue && (['published', 'archived'].includes(issue.status) || issue.id === stock.edition?.id);
+    const volumes = ARCHIVE_VOLUMES.map((volume) => {
+      const issue = volume.issueId ? issueById.get(volume.issueId) : null;
+      return {
+        key: `volume-${volume.seasonId}`,
+        rack: 'volumes',
+        kicker: volume.note || volume.year,
+        title: volume.title,
+        subtitle: volume.year,
+        foot: volume.volume,
+        meta: issue ? ISSUE_STATUS_LABELS[issue.status] || '' : '',
+        cover: issue?.cover_image_url || (volume.livePath ? stock.edition?.cover_image_url : '') || '',
+        to: isBound(issue) ? `/magazine/${issue.id}` : volume.livePath || volume.path,
+      };
+    });
 
     // Each honoree, read on their own page.
     const spotlights = stock.nominees
