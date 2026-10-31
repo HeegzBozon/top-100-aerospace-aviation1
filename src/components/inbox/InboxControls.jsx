@@ -27,6 +27,7 @@ export default function InboxControls({ views, view, setView, sort, setSort, fil
       </Field>
       <Field label="Show" value={filter} onChange={setFilter}>
         <option value="all">Whole funnel</option>
+        {filter.startsWith('mix:') && <option value={filter}>Custom metric</option>}
         {STAGES.map((s) => (
           <optgroup key={s.key} label={s.label}>
             <option value={s.key}>All of {s.label.toLowerCase()}</option>

@@ -17,4 +17,5 @@ export const STAGES = [
 export const BUNDLES = STAGES.flatMap((s) => s.bundles);
 // A filter is 'all', a stage key, or a bundle key.
 export const inFilter = (filter, bundle) =>
-  filter === 'all' || filter === bundle || STAGES.find((s) => s.key === filter)?.bundles.some((b) => b.key === bundle);
+  filter === 'all' || filter === bundle ||
+  (filter.startsWith('mix:') && filter.slice(4).split(',').includes(bundle)) || STAGES.find((s) => s.key === filter)?.bundles.some((b) => b.key === bundle);
