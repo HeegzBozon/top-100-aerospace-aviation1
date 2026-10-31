@@ -32,6 +32,7 @@ export const APP_GROUPS = [
     items: [
       { label: "Dashboard", to: "/board", icon: LayoutGrid },
       { label: "My Profile", to: "/Profile", icon: User },
+      { label: "Inbox", to: "/inbox", icon: Mail },
       { label: "The Bulletin", to: "/Profile?board=fellow", icon: LayoutGrid },
       { label: "Mission Rooms", to: "/Profile?board=conference", icon: Radar },
       { label: "Ribbon Cuttings", to: "/Profile?board=ribbon", icon: Scissors },
