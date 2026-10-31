@@ -83,6 +83,8 @@ export default async function (req) {
 
     return Response.json({
       referral: saved, subject: msg.subject, body: msg.body, emailed, conversation_id,
+      // People not on the platform get the same note, plus the way in.
+      external_body: `${msg.body}\n\n—\nWe work together on TOP 100 Aerospace & Aviation. Join me there: https://top100aero.space`,
       unregistered: to.filter((e) => !members.includes(e)),
       missing_email: msg.to.length - to.length,
     });

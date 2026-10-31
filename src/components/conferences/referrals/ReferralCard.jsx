@@ -20,8 +20,15 @@ export default function ReferralCard({ referral, onUpdate, onReplace }) {
     setBusy(null);
     if (data.error) return setNote(data.error);
     onReplace(data.referral);
-    if (data.unregistered.length) window.location.href = mailto(data.unregistered, data.subject, data.body);
-    setNote(data.emailed.length ? 'Sent and saved to Messages.' : data.unregistered.length ? 'Opened in your mail.' : 'No email on file for this contact.');
+    const outside = data.unregistered.length;
+    if (outside) window.location.href = mailto(data.unregistered, data.subject, data.external_body || data.body);
+    const inApp = data.emailed.length;
+    setNote(
+      inApp && outside ? 'Sent to members and saved to Messages. Your mail opened for anyone not on the platform yet.'
+        : inApp ? 'Sent and saved to Messages.'
+        : outside ? 'Opened in your mail, with an invitation to join.'
+        : 'No email on file for this contact.'
+    );
   };
 
   return (
