@@ -97,6 +97,117 @@
       "type": "string",
       "format": "date-time",
       "description": "When the kit was first published."
+    },
+    "media_room_public": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Which item of the Media Room this entry lists: profile, kit, card or episode."
+          },
+          "label": {
+            "type": "string",
+            "description": "The label printed beside the link on the public Media Room."
+          },
+          "url": {
+            "type": "string",
+            "description": "The address the Fellow chose to publish for this item, written at the moment it was listed so the public room never reads another record to resolve it."
+          }
+        }
+      },
+      "default": [],
+      "description": "The items the Fellow has chosen to expose on the public Media Room, in their own order. Opt-in per item: an item absent from this list is private. Listing is expression only and is never read by discovery, ranking, or scoring."
+    },
+    "share_drafts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Stable key for the kept draft."
+          },
+          "context": {
+            "type": "string",
+            "description": "The share context the draft was written for: profile, card, badge, episode or selection."
+          },
+          "channel": {
+            "type": "string",
+            "description": "The channel the draft was written for: linkedin, email, spoken or bio."
+          },
+          "heading": {
+            "type": "string",
+            "description": "The subject line, hook or title the Fellow kept."
+          },
+          "body": {
+            "type": "string",
+            "description": "The copy itself, as the Fellow edited and kept it. Never published by the platform."
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [],
+            "description": "The source lines the draft was written from, kept beside it so the Fellow can check every fact later."
+          },
+          "kept_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the draft was kept."
+          }
+        }
+      },
+      "default": [],
+      "description": "Share copy the Fellow has kept. Private working material; the Fellow copies it out themselves and nothing here is posted on their behalf."
+    },
+    "editorial_calendar": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Stable key for the slot."
+          },
+          "week": {
+            "type": "number",
+            "description": "Which week of the plan the slot sits in, counted from the plan's first Monday."
+          },
+          "day": {
+            "type": "string",
+            "description": "The weekday the slot is set for: Monday to Friday."
+          },
+          "theme": {
+            "type": "string",
+            "description": "The slot's theme, in a few words."
+          },
+          "phase": {
+            "type": "string",
+            "description": "Which part of the journey the slot serves: profile, selection or promotion."
+          },
+          "asset": {
+            "type": "string",
+            "description": "The Media Room item the slot points at, when it points at one."
+          },
+          "channel": {
+            "type": "string",
+            "description": "Where the Fellow would put this: LinkedIn, Email, Conversation or Record."
+          },
+          "draft": {
+            "type": "string",
+            "description": "The post, note or talking point, as the Fellow edited it. Nothing here is scheduled or published by the platform."
+          },
+          "note": {
+            "type": "string",
+            "description": "One line on why the slot sits where it does."
+          }
+        }
+      },
+      "default": [],
+      "description": "The Fellow's kept editorial plan. Private working material covering the whole journey: the record itself, orientation to how the institution measures, and the professional work. Never read by discovery, ranking, or scoring."
     }
   },
   "required": [
