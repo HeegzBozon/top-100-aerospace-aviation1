@@ -1,9 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowUpRight, Loader2, RefreshCw, RotateCw, Save, Share2 } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Loader2, RefreshCw, RotateCw, Save, ScanLine, Share2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useDevice } from '@/components/handheld/HandheldShell';
 import { saveContact } from '@/lib/publicCard';
+import {
+  availableDestinations,
+  readStoredDestination,
+  resolveDestination,
+  shareUrl,
+  storeDestination,
+} from '@/lib/shareDestinations';
+import QrShareCenter from '@/components/start/QrShareCenter';
 import BadgeFront from '@/components/badge/BadgeFront';
 import BadgeBack from '@/components/badge/BadgeBack';
 import BadgeTemplateDeck from '@/components/badge/BadgeTemplateDeck';
@@ -28,6 +36,8 @@ export default function ConferenceBadge() {
   const [plate, setPlate] = useState(null);
   const [codeOn, setCodeOn] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [codeOpen, setCodeOpen] = useState(false);
+  const [destination, setDestination] = useState(() => readStoredDestination());
 
   // Worn full screen: the controls centre is put away for as long as the badge is up,
   // and the clearance it holds is handed back to the picture (see globals: body.hh-badge).
@@ -42,16 +52,31 @@ export default function ConferenceBadge() {
 
   useEffect(() => {
     const onKey = (event) => {
-      if (event.key !== 'Escape') return;
+      if (event.key !== 'Escape' || codeOpen) return;
       if (face === 'back') setFace('front');
       else navigate(-1);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [face, navigate]);
+  }, [face, codeOpen, navigate]);
 
   const template = resolveBadgeTemplate(plate || card?.badge_template);
   const showQr = codeOn ?? card?.badge_qr_visible ?? true;
+
+  // The code printed on the badge hands over the card. The code panel behind it is where
+  // the holder decides what the standing title-screen code opens, and that choice is
+  // remembered the same way it always was.
+  const shareHolder = useMemo(
+    () => ({ name: person?.name, role: person?.role, org: person?.org, cardId: person?.profileId || '' }),
+    [person]
+  );
+  const destinations = useMemo(() => availableDestinations(shareHolder), [shareHolder]);
+  const chosen = resolveDestination(destination, shareHolder);
+
+  const choose = (key) => {
+    setDestination(key);
+    storeDestination(key);
+  };
 
   const choosePlate = (key) => {
     setPlate(key);
@@ -111,16 +136,21 @@ export default function ConferenceBadge() {
         <button type="button" onClick={() => navigate(-1)} aria-label="Put the badge away" className={KEY}>
           <ArrowLeft className="h-3.5 w-3.5" />
         </button>
-        <p className="font-body text-[8px] font-bold uppercase tracking-[0.32em] text-editorial-gold/80">The badge</p>
-        <button
-          type="button"
-          onClick={() => setFace(face === 'front' ? 'back' : 'front')}
-          aria-pressed={face === 'back'}
-          className={KEY}
-        >
-          <RotateCw className="h-3.5 w-3.5" />
-          {face === 'front' ? 'Card' : 'Badge'}
-        </button>
+        <p className="shrink-0 font-body text-[8px] font-bold uppercase tracking-[0.32em] text-editorial-gold/80">The badge</p>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <button type="button" onClick={() => setCodeOpen(true)} aria-label="The code panel" className={KEY}>
+            <ScanLine className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setFace(face === 'front' ? 'back' : 'front')}
+            aria-pressed={face === 'back'}
+            className={KEY}
+          >
+            <RotateCw className="h-3.5 w-3.5" />
+            {face === 'front' ? 'Card' : 'Badge'}
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -185,6 +215,18 @@ export default function ConferenceBadge() {
           ) : null}
         </div>
       )}
+
+      {codeOpen ? (
+        <QrShareCenter
+          holder={shareHolder}
+          destinations={destinations}
+          destination={chosen.key}
+          onDestination={choose}
+          link={shareUrl(chosen.key, shareHolder)}
+          onClose={() => setCodeOpen(false)}
+          showWear={false}
+        />
+      ) : null}
     </div>
   );
 }
