@@ -3,9 +3,17 @@ import { C } from '@/components/crm/crmConfig';
 // The stand, read the way a reader walks past it: the rack of bound editions first, then
 // the folded sheets that came out of them, then the stand Fellows file their own writing
 // at, and finally the board by the door where the house pins what it shipped.
+// Two leaves, the way a newsstand is actually read: the papers you take away, and the
+// sheet pinned by the door saying what the house changed.
+export const NEWSSTAND_TABS = [
+  { key: 'publications', label: 'Publications' },
+  { key: 'notes', label: 'Release Notes' },
+];
+
 export const RACKS = [
   {
     key: 'issues',
+    tab: 'publications',
     label: 'The rack',
     kicker: 'Publications & issues',
     blurb: 'Every edition the house has bound and put on the stand.',
@@ -13,6 +21,7 @@ export const RACKS = [
   },
   {
     key: 'articles',
+    tab: 'publications',
     label: 'The folded sheets',
     kicker: 'Articles & features',
     blurb: 'The pieces that ran inside the editions, read in the issue they were printed in.',
@@ -20,6 +29,7 @@ export const RACKS = [
   },
   {
     key: 'dispatches',
+    tab: 'publications',
     label: 'The dispatch stand',
     kicker: 'Blogs & field notes',
     blurb: 'Writing filed by Fellows themselves — dispatches, notes and field reports.',
@@ -27,6 +37,7 @@ export const RACKS = [
   },
   {
     key: 'notes',
+    tab: 'notes',
     label: 'The noticeboard',
     kicker: 'Releases & platform notes',
     blurb: 'What we shipped, what changed, and what is being built next — pinned by the door.',

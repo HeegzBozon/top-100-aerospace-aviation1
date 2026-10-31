@@ -4,7 +4,8 @@ import { Loader2 } from 'lucide-react';
 import { C, BTN_BASE, BTN } from '@/components/crm/crmConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import useNewsstand from '@/components/newsstand/useNewsstand';
-import { RACKS } from '@/components/newsstand/newsstandConfig';
+import { NEWSSTAND_TABS, RACKS } from '@/components/newsstand/newsstandConfig';
+import NewsstandTabs from '@/components/newsstand/NewsstandTabs';
 import NewsstandHeader from '@/components/newsstand/NewsstandHeader';
 import NewsstandRack, { RackEmpty, RackShelf } from '@/components/newsstand/NewsstandRack';
 import NewsstandCover from '@/components/newsstand/NewsstandCover';
@@ -28,10 +29,14 @@ export default function Newsstand() {
   const { sections } = stock;
   const [cursorKey, setCursorKey] = useState(null);
   const [openKey, setOpenKey] = useState(null);
+  const [tabKey, setTabKey] = useState(NEWSSTAND_TABS[0].key);
 
+  // The ring walks the leaf in front of it only: what is folded away is not stock until
+  // its tab is opened.
+  const racks = useMemo(() => RACKS.filter((rack) => rack.tab === tabKey), [tabKey]);
   const stockItems = useMemo(
-    () => [...sections.issues, ...sections.articles, ...sections.dispatches, ...sections.notes],
-    [sections],
+    () => racks.flatMap((rack) => sections[rack.key] || []),
+    [racks, sections],
   );
 
   const itemsRef = useRef(stockItems);
@@ -83,6 +88,26 @@ export default function Newsstand() {
     [navigate],
   );
 
+  const tabs = useMemo(
+    () =>
+      NEWSSTAND_TABS.map((tab) => ({
+        ...tab,
+        count: RACKS.filter((rack) => rack.tab === tab.key).reduce(
+          (total, rack) => total + (sections[rack.key]?.length || 0),
+          0,
+        ),
+      })),
+    [sections],
+  );
+
+  // Turning a leaf puts the cursor on the first paper behind it, so the ring is never left
+  // standing on something that has been folded away.
+  const selectTab = useCallback((key) => {
+    setTabKey(key);
+    setOpenKey(null);
+    setCursorKey(null);
+  }, []);
+
   const api = useRef(null);
   if (!api.current) {
     api.current = {
@@ -120,6 +145,8 @@ export default function Newsstand() {
       <div className="mx-auto w-full max-w-5xl px-4 pb-14 pt-6 md:px-8 md:pb-20 md:pt-12">
         <NewsstandHeader tally={tally} />
 
+        <NewsstandTabs tabs={tabs} activeKey={tabKey} onSelect={selectTab} />
+
         {stock.loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-6 w-6 animate-spin" style={{ color: C.gold }} />
@@ -141,7 +168,7 @@ export default function Newsstand() {
           </div>
         ) : (
           <div className="mt-8 space-y-10">
-            {RACKS.map((rack) => {
+            {racks.map((rack) => {
               const items = sections[rack.key] || [];
               const isRack = rack.key === 'issues';
 
