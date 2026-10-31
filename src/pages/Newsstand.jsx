@@ -131,19 +131,10 @@ export default function Newsstand() {
     touchPicker();
   }, [cursorKey, openKey, stockItems.length]);
 
-  const tally = stock.loading
-    ? null
-    : [
-        `${sections.issues.length} ${sections.issues.length === 1 ? 'edition' : 'editions'}`,
-        `${sections.articles.length} ${sections.articles.length === 1 ? 'article' : 'articles'}`,
-        `${sections.dispatches.length} ${sections.dispatches.length === 1 ? 'dispatch' : 'dispatches'}`,
-        `${sections.notes.length} ${sections.notes.length === 1 ? 'note' : 'notes'}`,
-      ].join('  ·  ');
-
   return (
     <div className="min-h-screen" style={{ background: C.cream }}>
       <div className="mx-auto w-full max-w-5xl px-4 pb-14 pt-6 md:px-8 md:pb-20 md:pt-12">
-        <NewsstandHeader tally={tally} />
+        <NewsstandHeader />
 
         <NewsstandTabs tabs={tabs} activeKey={tabKey} onSelect={selectTab} />
 
