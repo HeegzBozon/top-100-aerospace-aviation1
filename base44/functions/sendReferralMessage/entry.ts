@@ -69,6 +69,7 @@ export default async function (req) {
       });
       await base44.asServiceRole.entities.Message.create({
         conversation_id: conv.id, sender_email: me.email, sender_name: me.full_name, content: msg.body, message_type: 'text',
+        participants, is_public: false,
       });
       conversation_id = conv.id;
     }
