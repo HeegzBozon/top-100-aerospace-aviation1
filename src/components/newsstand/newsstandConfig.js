@@ -38,10 +38,11 @@ export const RACKS = [
   {
     key: 'notes',
     tab: 'notes',
-    label: 'The noticeboard',
-    kicker: 'Releases & platform notes',
-    blurb: 'What we shipped, what changed, and what is being built next — pinned by the door.',
-    empty: 'Nothing is pinned up yet. Release and platform notes appear here as they go out.',
+    label: 'The archive',
+    kicker: 'The newsletter · 41 editions',
+    blurb:
+      'Insights and Spotlights, mailed weekly since February 2022 — every edition, newest first, as it went out.',
+    empty: 'The first edition of the newsletter takes its place here the day it is mailed.',
   },
 ];
 

@@ -28,7 +28,9 @@ export default function StockRow({ item, index, focused = false, open = false, o
           className="mt-[2px] w-5 shrink-0 text-[9px] font-bold tabular-nums"
           style={{ color: focused ? C.copper : 'rgba(30,58,90,0.32)' }}
         >
-          {String(index + 1).padStart(2, '0')}
+          {item.number
+            ? String(item.number).padStart(2, '0')
+            : String(index + 1).padStart(2, '0')}
         </span>
 
         <span className="min-w-0 flex-1">

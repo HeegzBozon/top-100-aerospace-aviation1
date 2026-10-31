@@ -9,6 +9,7 @@ import {
   dayLabel,
   firstLine,
 } from './newsstandConfig';
+import { newsletterNotes } from './newsletterArchive';
 
 const rows = (result) => (Array.isArray(result) ? result : result?.items || []);
 
@@ -125,7 +126,10 @@ export default function useNewsstand() {
       issues,
       articles,
       dispatches: stocked.filter((bulletin) => bulletin.scope !== 'platform').map(asBulletin),
-      notes: stocked.filter((bulletin) => bulletin.scope === 'platform').map(asBulletin),
+      // The board by the door carries the newsletter: every edition the founder has mailed,
+      // newest first, numbered by its own date. The archive is a fixed record, so it is read
+      // from the series itself rather than from platform bulletins.
+      notes: newsletterNotes(),
     };
   }, [stock]);
 
