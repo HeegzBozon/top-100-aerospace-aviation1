@@ -7,7 +7,7 @@ export default function InboxBundle({ label, items, states, onSet, showSweep, cu
   if (!items.length) return null;
   const sweep = () => items.filter((i) => !states[i.key]?.pinned).forEach((i) => onSet(i.key, { done: true }));
   return (
-    <section className="mb-5 rounded border border-editorial-navy/10 bg-white px-4 pt-3">
+    <section className="mb-3 rounded border border-editorial-navy/10 bg-white px-3 pt-2.5 md:mb-5 md:px-4 md:pt-3">
       <header className="flex items-center justify-between">
         <h3 className="pd-label">{label} · {items.length}</h3>
         {showSweep && (

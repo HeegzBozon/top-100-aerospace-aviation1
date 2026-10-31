@@ -5,12 +5,12 @@ export const SORTS = [
   { key: 'you', label: 'Needs you', compare: (a, b) => (b.person ? 1 : 0) - (a.person ? 1 : 0) || time(b) - time(a) },
 ];
 
-const chip = (on) => `shrink-0 rounded-full border px-3 py-1 font-body text-[11px] font-semibold uppercase tracking-[0.12em] ${on ? 'border-editorial-navy bg-editorial-navy text-editorial-cream' : 'border-editorial-navy/20 text-editorial-navy'}`;
+const chip = (on) => `shrink-0 rounded-full border px-2.5 py-1 font-body md:px-3 text-[11px] font-semibold uppercase tracking-[0.12em] ${on ? 'border-editorial-navy bg-editorial-navy text-editorial-cream' : 'border-editorial-navy/20 text-editorial-navy'}`;
 
 // The sub-inbox controls: which pile (Inbox / Pinned / Done), which category, and the order.
 export default function InboxControls({ views, view, setView, sort, setSort, bundles, filter, setFilter }) {
   return (
-    <div className="mb-4 space-y-2">
+    <div className="mb-3 space-y-2 md:mb-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex gap-1.5">
           {views.map((v) => <button key={v} onClick={() => setView(v)} className={chip(view === v)}>{v}</button>)}
