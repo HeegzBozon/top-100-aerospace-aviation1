@@ -6,6 +6,7 @@ import { registerPicker, touchPicker } from '@/components/handheld/handheldPicke
 import useNewsstand from '@/components/newsstand/useNewsstand';
 import { NEWSSTAND_TABS, RACKS } from '@/components/newsstand/newsstandConfig';
 import NewsstandTabs from '@/components/newsstand/NewsstandTabs';
+import NewsstandFrontPage from '@/components/newsstand/NewsstandFrontPage';
 import NewsstandHeader from '@/components/newsstand/NewsstandHeader';
 import NewsstandRack, { RackEmpty, RackShelf } from '@/components/newsstand/NewsstandRack';
 import NewsstandCover from '@/components/newsstand/NewsstandCover';
@@ -34,6 +35,10 @@ export default function Newsstand() {
   // The ring walks the leaf in front of it only: what is folded away is not stock until
   // its tab is opened.
   const racks = useMemo(() => RACKS.filter((rack) => rack.tab === tabKey), [tabKey]);
+  // The rack of editions is set on the publications tab as its front page, so the list below
+  // only carries the racks that follow it.
+  const listRacks = useMemo(() => racks.filter((rack) => rack.key !== 'issues'), [racks]);
+  const leadEdition = sections.issues[0] || null;
   const stockItems = useMemo(
     () => racks.flatMap((rack) => sections[rack.key] || []),
     [racks, sections],
@@ -158,8 +163,28 @@ export default function Newsstand() {
             </button>
           </div>
         ) : (
-          <div className="mt-8 space-y-10">
-            {racks.map((rack) => {
+          <>
+            {tabKey === 'publications' ? (
+              <div
+                ref={(node) => {
+                  if (leadEdition) itemRefs.current[leadEdition.key] = node;
+                }}
+              >
+                <NewsstandFrontPage
+                  item={leadEdition}
+                  empty={RACKS[0].empty}
+                  focused={!!leadEdition && cursorKey === leadEdition.key}
+                  onOpen={() => {
+                    if (!leadEdition) return;
+                    setCursorKey(leadEdition.key);
+                    take(leadEdition);
+                  }}
+                />
+              </div>
+            ) : null}
+
+            <div className="mt-8 space-y-10">
+            {listRacks.map((rack) => {
               const items = sections[rack.key] || [];
               const isRack = rack.key === 'issues';
 
@@ -215,7 +240,8 @@ export default function Newsstand() {
                 </NewsstandRack>
               );
             })}
-          </div>
+            </div>
+          </>
         )}
 
         <p className="mt-10 text-[10px] leading-relaxed" style={{ color: C.muted }}>

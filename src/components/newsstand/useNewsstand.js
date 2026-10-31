@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { chooseWomenIssue } from '@/components/magazine/womenEdition';
 import {
   ARTICLE_TYPE_LABELS,
   ISSUE_STATUS_LABELS,
@@ -31,10 +32,10 @@ export default function useNewsstand() {
   const load = useCallback(() => {
     setStock((prev) => ({ ...prev, loading: true, error: null }));
     return Promise.all([
-      base44.entities.MagazineIssue.filter(
-        { status: { $in: ['published', 'archived', 'preview'] } },
-        { sort: '-created_date', limit: 40 },
-      ),
+      // One edition on the rack: the TOP 100 Women edition the house is printing. The same
+      // resolver the title screen and the edition's own route use picks it, so the front page
+      // and the reader can never disagree about which issue is the live one.
+      base44.entities.MagazineIssue.filter({}, { sort: '-created_date', limit: 50 }),
       base44.entities.MagazineArticle.filter(
         { status: { $in: ['published', 'laid_out', 'ready'] } },
         { sort: '-created_date', limit: 80 },
@@ -42,10 +43,11 @@ export default function useNewsstand() {
       base44.entities.Bulletin.filter({}, { sort: '-published_date', limit: 80 }),
     ])
       .then(([issues, articles, bulletins]) => {
+        const edition = chooseWomenIssue(rows(issues));
         setStock({
           loading: false,
           error: null,
-          issues: rows(issues),
+          issues: edition ? [edition] : [],
           articles: rows(articles),
           bulletins: rows(bulletins),
         });
@@ -73,13 +75,15 @@ export default function useNewsstand() {
       rack: 'issues',
       title: issue.title || 'Untitled edition',
       subtitle: issue.subtitle || issue.cover_kicker || '',
-      kicker: ISSUE_STATUS_LABELS[issue.status] || 'Edition',
+      kicker: issue.status === 'draft' ? 'The edition' : ISSUE_STATUS_LABELS[issue.status] || 'Edition',
       foot: issue.issue_number
         ? `Issue ${String(issue.issue_number).padStart(2, '0')}`
         : 'The house edition',
       meta: dayLabel(issue.published_date || issue.created_date),
       cover: issue.cover_image_url || '',
-      to: `/magazine/${issue.id}`,
+      // An edition still at the press has no reader to open, so it lands on the published
+      // edition page instead of a route that would come up empty.
+      to: issue.status === 'draft' ? '/Top100Women2025' : `/magazine/${issue.id}`,
     }));
 
     const articles = [...stock.articles].sort(byDateDesc('created_date')).map((article) => ({
