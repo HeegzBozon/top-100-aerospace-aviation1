@@ -27,10 +27,10 @@ export default function ShopHero() {
           <span className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: GOLD }}>The Hangar</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-light text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Official Gear & <span style={{ color: GOLD }}>Flagship Software</span>
+          Official Gear & <span style={{ color: GOLD }}>Collectibles</span>
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-sm md:text-base text-white/60" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-          From Ground Control — the business communication platform built for aerospace shops — to mission-grade apparel and collectibles.
+          Mission-grade apparel, collectibles, and the objects the house prints its mark on. The tools live next door, in the App Store.
         </p>
       </div>
     </section>
