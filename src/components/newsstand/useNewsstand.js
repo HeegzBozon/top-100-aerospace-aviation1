@@ -99,9 +99,9 @@ export default function useNewsstand() {
   const sections = useMemo(() => {
     const issueTitles = new Map(stock.issues.map((issue) => [issue.id, issue.title]));
 
-    const issues = [...stock.issues].sort(byDateDesc('published_date', 'created_date')).map((issue) => ({
+    const editions = [...stock.issues].sort(byDateDesc('published_date', 'created_date')).map((issue) => ({
       key: `issue-${issue.id}`,
-      rack: 'issues',
+      rack: 'editions',
       title: issue.title || 'Untitled edition',
       subtitle: issue.subtitle || issue.cover_kicker || '',
       kicker: issue.status === 'draft' ? 'The edition' : ISSUE_STATUS_LABELS[issue.status] || 'Edition',
@@ -134,7 +134,7 @@ export default function useNewsstand() {
       const platform = bulletin.scope === 'platform';
       return {
         key: `bulletin-${bulletin.id}`,
-        rack: platform ? 'notes' : 'dispatches',
+        rack: platform ? 'release' : 'dispatches',
         kicker: platform
           ? 'Platform note'
           : POST_TYPE_LABELS[bulletin.post_type] || 'Bulletin',
@@ -162,13 +162,15 @@ export default function useNewsstand() {
         mediaUrl: post.mediaUrl,
         href: post.permalink,
       })),
-      issues,
+      editions,
       articles,
       dispatches: stocked.filter((bulletin) => bulletin.scope !== 'platform').map(asBulletin),
-      // The board by the door carries the newsletter: every edition the founder has mailed,
-      // newest first, numbered by its own date. The archive is a fixed record, so it is read
-      // from the series itself rather than from platform bulletins.
-      notes: newsletterNotes(),
+      // The issues under the house's name: every edition the founder has mailed, newest
+      // first, numbered by its own date. The archive is a fixed record, so it is read from the
+      // series itself rather than from platform bulletins.
+      newsletter: newsletterNotes(),
+      // And the notes pinned by the door: what the platform itself shipped.
+      release: stocked.filter((bulletin) => bulletin.scope === 'platform').map(asBulletin),
     };
   }, [stock, wire]);
 

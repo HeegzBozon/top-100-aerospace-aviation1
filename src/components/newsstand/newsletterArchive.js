@@ -309,7 +309,7 @@ export const NEWSLETTER_COUNT = NEWSLETTER_EDITIONS.length;
 export const newsletterNotes = () =>
   NEWSLETTER_EDITIONS.map((edition) => ({
     key: `newsletter-${edition.issue}`,
-    rack: 'notes',
+    rack: 'newsletter',
     number: edition.issue,
     kicker: 'The newsletter',
     title: edition.title,

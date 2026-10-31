@@ -16,10 +16,10 @@ import WireRack from '@/components/newsstand/WireRack';
 // The Newsstand.
 //
 // A digital Hudson News, standing where the Chamber's counters do: one storefront for the
-// house's whole printed output rather than a key per publication. The rack holds the bound
-// editions; the folded sheets are the articles that ran inside them; the dispatch stand is
-// where Fellows file their own writing; and the noticeboard by the door carries every
-// release note the platform has shipped.
+// house's whole printed output rather than a key per publication. Volumes holds the bound
+// editions, the folded sheets that ran inside them and the stand Fellows file their own
+// writing at; Issues is the newsletter's own run; and Notes keeps what the house says out
+// loud — the wire and the release notes.
 //
 // An edition is read in the reader it was bound for, so pressing it leaves the stand. A
 // dispatch or a note is printed where it stands: pressing it opens the piece under its own
@@ -38,8 +38,8 @@ export default function Newsstand() {
   const racks = useMemo(() => RACKS.filter((rack) => rack.tab === tabKey), [tabKey]);
   // The rack of editions is set on the publications tab as its front page, so the list below
   // only carries the racks that follow it.
-  const listRacks = useMemo(() => racks.filter((rack) => rack.key !== 'issues'), [racks]);
-  const leadEdition = sections.issues[0] || null;
+  const listRacks = useMemo(() => racks.filter((rack) => rack.key !== 'editions'), [racks]);
+  const leadEdition = sections.editions[0] || null;
   const stockItems = useMemo(
     () => racks.flatMap((rack) => sections[rack.key] || []),
     [racks, sections],
@@ -171,7 +171,7 @@ export default function Newsstand() {
           </div>
         ) : (
           <>
-            {tabKey === 'publications' ? (
+            {tabKey === 'volumes' ? (
               <div
                 ref={(node) => {
                   if (leadEdition) itemRefs.current[leadEdition.key] = node;
@@ -193,7 +193,7 @@ export default function Newsstand() {
             <div className="mt-8 space-y-10">
             {listRacks.map((rack) => {
               const items = sections[rack.key] || [];
-              const isRack = rack.key === 'issues';
+              const isRack = rack.key === 'editions';
               const isWire = rack.key === 'wire';
 
               return (

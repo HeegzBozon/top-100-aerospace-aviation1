@@ -1,58 +1,64 @@
 import { C } from '@/components/crm/crmConfig';
 
-// The stand, read the way a reader walks past it: the rack of bound editions first, then
-// the folded sheets that came out of them, then the stand Fellows file their own writing
-// at, and finally the board by the door where the house pins what it shipped.
-// Three leaves, the way a newsstand is actually read: the papers you take away, what the
-// house is posting on its own accounts, and the sheet pinned by the door saying what changed.
+// The stand, read the way a reader walks past it: the volumes the house has bound, the
+// issues mailed out of them, and the notes it keeps by the door — the wire on one side and
+// what the platform shipped on the other.
 export const NEWSSTAND_TABS = [
-  { key: 'publications', label: 'Publications' },
-  { key: 'wire', label: 'The Wire' },
-  { key: 'notes', label: 'Release Notes' },
+  { key: 'volumes', label: 'Volumes' },
+  { key: 'issues', label: 'Issues' },
+  { key: 'notes', label: 'Notes' },
 ];
 
 export const RACKS = [
   {
-    key: 'issues',
-    tab: 'publications',
+    key: 'editions',
+    tab: 'volumes',
     label: 'The rack',
-    kicker: 'Publications & issues',
+    kicker: 'Publications & volumes',
     blurb: 'Every edition the house has bound and put on the stand.',
     empty: 'The rack is being dressed. The next edition takes its place here the day it goes to press.',
   },
   {
     key: 'articles',
-    tab: 'publications',
+    tab: 'volumes',
     label: 'The folded sheets',
     kicker: 'Articles & features',
-    blurb: 'The pieces that ran inside the editions, read in the issue they were printed in.',
+    blurb: 'The pieces that ran inside the volumes, read in the issue they were printed in.',
     empty: 'No article has come off the press yet. The first feature lands here with its issue.',
   },
   {
     key: 'dispatches',
-    tab: 'publications',
+    tab: 'volumes',
     label: 'The dispatch stand',
     kicker: 'Blogs & field notes',
     blurb: 'Writing filed by Fellows themselves — dispatches, notes and field reports.',
     empty: 'The stand is quiet. Fellows file their dispatches here as they are written.',
   },
   {
-    key: 'notes',
-    tab: 'notes',
+    key: 'newsletter',
+    tab: 'issues',
     label: 'The archive',
-    kicker: 'The newsletter · 41 editions',
+    kicker: 'The newsletter · 41 issues',
     blurb:
-      'Insights and Spotlights, mailed weekly since February 2022 — every edition, newest first, as it went out.',
-    empty: 'The first edition of the newsletter takes its place here the day it is mailed.',
+      'Insights and Spotlights, mailed weekly since February 2022 — every issue, newest first, as it went out.',
+    empty: 'The first issue of the newsletter takes its place here the day it is mailed.',
   },
   {
     key: 'wire',
-    tab: 'wire',
+    tab: 'notes',
     label: 'Off the wire',
     kicker: 'LinkedIn',
     blurb: 'What the house is posting on its company page, newest first, as it goes out.',
     empty:
       'Nothing has gone out on the wire yet. A post from the house page prints here the day it is published.',
+  },
+  {
+    key: 'release',
+    tab: 'notes',
+    label: 'Release notes',
+    kicker: 'What shipped',
+    blurb: 'What the platform changed and shipped, pinned by the door, newest first.',
+    empty: 'Nothing is pinned yet. Each release note goes up here the day it ships.',
   },
 ];
 

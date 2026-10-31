@@ -1,8 +1,8 @@
 import { C } from '@/components/crm/crmConfig';
 
-// The stand's two leaves. Publications is everything you take away and read; Release Notes
-// is the sheet by the door — what shipped and what changed. Each leaf prints its own count,
-// so the weight of a tab is legible before it is opened.
+// The stand's three leaves: the volumes you take away, the issues mailed out of them, and the
+// notes the house keeps by the door. Each leaf prints its own count, so the weight of a tab is
+// legible before it is opened.
 export default function NewsstandTabs({ tabs = [], activeKey, onSelect }) {
   return (
     <div
