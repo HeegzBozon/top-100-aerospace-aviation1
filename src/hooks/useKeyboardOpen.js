@@ -11,7 +11,8 @@ import { useEffect, useState } from "react";
 // nothing: the whole picture has already moved up, chin and all.
 const GLASS = "(max-width: 767px)";
 const KEYBOARD_MIN = 120; // px of picture held before this counts as keys, not chrome
-const FIELD = "input, textarea, select, [contenteditable='true']";
+// A select opens a picker, not the keys, so it never puts the console away.
+const FIELD = "input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='button']):not([type='submit']), textarea, [contenteditable='true']";
 
 const typingInto = () => {
   const active = document.activeElement;
