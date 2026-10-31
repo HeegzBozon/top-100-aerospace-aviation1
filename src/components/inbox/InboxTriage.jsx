@@ -52,7 +52,7 @@ export default function InboxTriage({ user }) {
         {['funnel', 'inbox', 'newsstand'].map((t) => (
           <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)}
             className={`rounded py-1.5 font-body text-[11px] font-semibold uppercase tracking-[0.16em] ${tab === t ? 'bg-editorial-navy text-editorial-cream' : 'text-editorial-navy'}`}>
-            {t}
+            {t === 'newsstand' ? 'Latest' : t}
           </button>
         ))}
       </div>
