@@ -44,7 +44,7 @@ export default function ConferenceDiscover() {
 
   return (
     <div className="min-h-screen" style={{ background: B.cream }}>
-      <ConferenceAppBar app="discover" />
+      <ConferenceAppBar app="plan" />
 
       <div className="mx-auto w-full max-w-5xl px-4 pb-24 pt-5 md:px-8 md:pb-16 md:pt-8">
         <header data-hh-module="The circuit">

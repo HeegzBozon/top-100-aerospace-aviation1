@@ -1,5 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import useConferenceMenus from '@/components/conferences/os/useConferenceMenus';
+import { conferenceApp } from '@/components/conferences/os/conferenceApps';
 import { ArrowRight, Loader2, LogIn, Radar, RotateCcw, Signal, Users } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
@@ -22,6 +24,9 @@ import { isListed } from '@/components/attendee-journey/journeyConfig';
 // discovery, ranking, or scoring.
 export default function ConferenceAttend() {
   const { user } = useAuth();
+  const [params] = useSearchParams();
+  const stage = ['pack', 'lockin', 'follow'].includes(params.get('stage')) ? params.get('stage') : 'pack';
+  useConferenceMenus();
   const { state, mine, attendeesFor, me, retry } = useConferences();
   const { map, connect, accept, decline, disconnect } = useConnectionMap(user?.email);
   const [busyEmail, setBusyEmail] = useState(null);
@@ -68,7 +73,7 @@ export default function ConferenceAttend() {
 
   return (
     <div className="min-h-screen" style={{ background: B.cream }}>
-      <ConferenceAppBar app="attend" />
+      <ConferenceAppBar app={stage} />
 
       <div className="mx-auto w-full max-w-3xl px-4 pb-24 pt-5 md:px-8 md:pb-16 md:pt-8">
         <header data-hh-module="Attend and network">
@@ -160,11 +165,11 @@ export default function ConferenceAttend() {
                       attending
                     />
                     <Link
-                      to={`/conferences/attend/${room.id}`}
+                      to={`/conferences/attend/${room.id}?stage=${stage}`}
                       className="mt-1.5 inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-[9.5px] font-bold uppercase tracking-[0.16em]"
                       style={{ background: B.navy, color: '#fff' }}
                     >
-                      Open your plan <ArrowRight className="h-3 w-3" />
+                      Open {conferenceApp(stage).label} <ArrowRight className="h-3 w-3" />
                     </Link>
                   </div>
                 ))}

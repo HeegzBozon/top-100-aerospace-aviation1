@@ -1,50 +1,61 @@
-import { Compass, Landmark, Users } from 'lucide-react';
+import { CheckSquare, Compass, Handshake, Luggage } from 'lucide-react';
 
-// THE THREE APPLICATIONS THE CONFERENCES MACHINE RUNS.
+// THE FOUR STAGES THE CONFERENCES MACHINE RUNS: Plan, Pack, Lock In, Follow Up.
 //
-// One launcher, three doors. The circuit is an index of what is ahead; the room is
-// where a Fellow stands in it; the desk is where a host sets the show. Declared once
-// and read by the launcher, the chrome every micro-app wears, and nothing else — so
-// an application is added here once and is reachable from all three places.
+// One launcher, one journey. Plan is where a show is chosen (or staged) and the trip is
+// booked; Pack, Lock In and Follow Up are worked inside the conference itself. Declared
+// once and read by the launcher, the app bar and the File and Edit menus.
 //
-// The printed index is the number the radio's keypad types: press 2 and the Attend
-// application opens. Never reorder without reprinting, and never let a key's number
-// stand for anything but its own door.
+// The printed index is the number the radio's keypad types. Never reorder without
+// reprinting.
 export const CONFERENCE_APPS = [
   {
-    key: 'discover',
+    key: 'plan',
     index: '01',
-    label: 'Discover',
-    short: 'Discover',
-    title: 'Discover the circuit',
-    blurb: 'Every conference the network holds rooms in, in date order.',
-    to: '/conferences/discover',
+    label: 'Plan',
+    short: 'Plan',
+    title: 'Choose the show, book the trip',
+    blurb: 'Discover or host a conference, then plan your stay.',
+    to: '/conferences/plan',
     icon: Compass,
     accent: '#c9a87c',
   },
   {
-    key: 'attend',
+    key: 'pack',
     index: '02',
-    label: 'Attend & Network',
-    short: 'Attend',
-    title: 'Stand in the room',
-    blurb: 'What you have declared, and the Fellows standing in it with you.',
-    to: '/conferences/attend',
-    icon: Users,
+    label: 'Pack',
+    short: 'Pack',
+    title: 'Get ready to go',
+    blurb: 'The checklist that gets you to the floor prepared.',
+    to: '/conferences/attend?stage=pack',
+    icon: Luggage,
     accent: '#b87333',
   },
   {
-    key: 'host',
+    key: 'lockin',
     index: '03',
-    label: 'Host & Facilitate',
-    short: 'Host',
-    title: 'Run the room',
-    blurb: 'Stage a conference, set the run of show, say what is live now.',
-    to: '/conferences/host',
-    icon: Landmark,
+    label: 'Lock In',
+    short: 'Lock In',
+    title: 'Work the floor',
+    blurb: 'Meet your targets and capture every conversation.',
+    to: '/conferences/attend?stage=lockin',
+    icon: CheckSquare,
+    accent: '#c9a87c',
+  },
+  {
+    key: 'follow',
+    index: '04',
+    label: 'Follow Up',
+    short: 'Follow Up',
+    title: 'Close the loop',
+    blurb: 'Debrief, send what you promised, record the outcome.',
+    to: '/conferences/attend?stage=follow',
+    icon: Handshake,
     accent: '#7a8fa6',
   },
 ];
+
+export const STAGE_KEYS = ['plan', 'pack', 'lockin', 'follow'];
 
 export const CONFERENCE_LAUNCH_HREF = '/conferences';
 

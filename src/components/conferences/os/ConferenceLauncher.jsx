@@ -126,7 +126,7 @@ export default function ConferenceLauncher() {
         </div>
 
         <div className="cfs-rise cfs-rise-2 mt-4 flex min-h-0 flex-1 flex-col md:mt-9">
-          <div className="grid min-h-0 flex-1 grid-cols-1 auto-rows-[minmax(76px,1fr)] gap-2 md:grid-cols-3 md:auto-rows-[196px] md:content-start md:gap-3">
+          <div className="grid min-h-0 flex-1 grid-cols-1 auto-rows-[minmax(76px,1fr)] gap-2 md:grid-cols-4 md:auto-rows-[196px] md:content-start md:gap-3">
             {CONFERENCE_APPS.map((app) => (
               <MicroAppKey key={app.key} app={app} selected={app.key === cursorKey} />
             ))}

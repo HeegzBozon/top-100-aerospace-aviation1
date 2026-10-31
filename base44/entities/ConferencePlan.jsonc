@@ -74,6 +74,19 @@
       },
       "default": [],
       "description": "The prioritized list of people to meet, ordered as the Fellow built it. Private to the Fellow; carries zero weight in discovery, directory ordering, measurement, or scoring."
+    },
+    "packed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Keys from the curated Pack checklist the Fellow has ticked off. Private progress only; never measurement-bearing."
+    },
+    "travel_planned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the Fellow has marked their travel as planned. Private progress only."
     }
   },
   "required": [

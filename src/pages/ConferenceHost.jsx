@@ -31,7 +31,7 @@ export default function ConferenceHost() {
 
   return (
     <div className="min-h-screen" style={{ background: B.cream }}>
-      <ConferenceAppBar app="host" />
+      <ConferenceAppBar app="plan" />
 
       <div className="mx-auto w-full max-w-3xl px-4 pb-24 pt-5 md:px-8 md:pb-16 md:pt-8">
         <header data-hh-module="Your conferences">

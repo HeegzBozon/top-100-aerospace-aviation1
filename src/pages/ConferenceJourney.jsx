@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Loader2, LogIn, RotateCcw, Signal } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
@@ -11,7 +11,12 @@ import {
 } from '@/components/conferences/conferenceConfig';
 import useJourney from '@/components/attendee-journey/useJourney';
 import { isListed } from '@/components/attendee-journey/journeyConfig';
-import JourneyTabs from '@/components/attendee-journey/JourneyTabs';
+import StageTracker from '@/components/attendee-journey/StageTracker';
+import PackPanel from '@/components/attendee-journey/PackPanel';
+import { stageProgress } from '@/components/attendee-journey/stageProgress';
+import ConferenceTravelDesk from '@/components/travel/ConferenceTravelDesk';
+import useConferenceMenus from '@/components/conferences/os/useConferenceMenus';
+import { STAGE_KEYS } from '@/components/conferences/os/conferenceApps';
 import PlanPanel from '@/components/attendee-journey/PlanPanel';
 import TargetsPanel from '@/components/attendee-journey/TargetsPanel';
 import CapturePanel from '@/components/attendee-journey/CapturePanel';
@@ -29,10 +34,14 @@ export default function ConferenceJourney() {
   const { user } = useAuth();
   const journey = useJourney(roomId);
   const { upcoming, myRoomIds, attendeesFor } = useConferences();
-  const [tab, setTab] = useState('plan');
+  const [params, setParams] = useSearchParams();
+  const tab = STAGE_KEYS.includes(params.get('stage')) ? params.get('stage') : 'plan';
+  const setTab = useCallback((key) => setParams({ stage: key }, { replace: true }), [setParams]);
 
   const { room, plan, contacts, roster, myRsvp, queued, state } = journey;
   const targets = plan?.targets || [];
+  const progress = useMemo(() => stageProgress(plan, contacts), [plan, contacts]);
+  useConferenceMenus({ room, contacts, onStage: setTab });
 
   // A resurface is only offered where both of them are listed in the show ahead. A private
   // declaration is not a shared show, and neither is one the Fellow has not declared for.
@@ -55,7 +64,7 @@ export default function ConferenceJourney() {
 
   return (
     <div className="min-h-screen" style={{ background: B.cream }}>
-      <ConferenceAppBar app="attend" />
+      <ConferenceAppBar app={tab} />
 
       <div className="mx-auto w-full max-w-3xl px-4 pb-24 pt-4 md:px-8 md:pb-16 md:pt-8">
         <Link
@@ -126,38 +135,36 @@ export default function ConferenceJourney() {
             </div>
 
             <div data-hh-module="The journey" className="mt-3">
-              <JourneyTabs
-                active={tab}
-                onChange={setTab}
-                badges={{
-                  targets: targets.length || undefined,
-                  debrief: contacts.filter((c) => !c.notes || !c.promise).length || undefined,
-                  follow: contacts.filter((c) => !c.follow_up_sent).length || undefined,
-                }}
-              />
+              <StageTracker active={tab} onChange={setTab} progress={progress} />
             </div>
 
-            <div className="mt-3" data-hh-module="The surface">
+            <div className="mt-3 space-y-3" data-hh-module="The surface">
               {tab === 'plan' && (
-                <PlanPanel
-                  plan={plan}
-                  onSave={journey.savePlan}
-                  visibility={myRsvp?.visibility || 'listed'}
-                  onVisibility={journey.setVisibility}
-                  declared={!!myRsvp}
-                />
+                <>
+                  <PlanPanel
+                    plan={plan}
+                    onSave={journey.savePlan}
+                    visibility={myRsvp?.visibility || 'listed'}
+                    onVisibility={journey.setVisibility}
+                    declared={!!myRsvp}
+                  />
+                  <TargetsPanel
+                    roster={roster}
+                    targets={targets}
+                    onAdd={journey.addTarget}
+                    onPatch={journey.setTarget}
+                    onRemove={journey.removeTarget}
+                  />
+                  {room && <ConferenceTravelDesk room={room} />}
+                  <label className="flex items-center gap-2 rounded-sm px-3 py-2.5 text-[12px]" style={{ background: '#fff', border: `1px solid ${B.border}`, color: B.navy }}>
+                    <input type="checkbox" checked={!!plan?.travel_planned} onChange={(e) => journey.savePlan({ travel_planned: e.target.checked })} />
+                    My travel is booked
+                  </label>
+                </>
               )}
-              {tab === 'targets' && (
-                <TargetsPanel
-                  roster={roster}
-                  targets={targets}
-                  onAdd={journey.addTarget}
-                  onPatch={journey.setTarget}
-                  onRemove={journey.removeTarget}
-                />
-              )}
-              {tab === 'capture' && <CapturePanel onCapture={journey.addContact} />}
-              {tab === 'debrief' && (
+              {tab === 'pack' && <PackPanel plan={plan} onSave={journey.savePlan} />}
+              {tab === 'lockin' && <CapturePanel onCapture={journey.addContact} />}
+              {tab === 'follow' && (
                 <DebriefPanel
                   contacts={contacts}
                   targets={targets}
