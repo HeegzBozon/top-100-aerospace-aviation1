@@ -87,7 +87,66 @@ export default function MarkSetsLedger({ marks = [] }) {
         </div>
       </div>
 
-      <div className="max-h-[520px] overflow-auto rounded-lg border border-editorial-navy/10 bg-white">
+      {/* On a phone a set is one card that opens into its pairs, rather than a table
+          dragged sideways to reach the count. */}
+      <div className="space-y-1.5 md:hidden">
+        {visible.map((set) => {
+          const expanded = open.has(set.key);
+          const flagged = set.voter_role === 'admin' || set.is_test;
+          return (
+            <div key={set.key} className="overflow-hidden rounded-lg border border-editorial-navy/10 bg-white shadow-sm">
+              <button
+                type="button"
+                onClick={() => toggle(set.key)}
+                aria-expanded={expanded}
+                className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left"
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[12px] font-semibold leading-tight text-editorial-navy">
+                    {set.voter_name}
+                  </span>
+                  <span className="mt-0.5 flex flex-wrap items-baseline gap-x-2 text-[9px] uppercase tracking-[0.1em] text-editorial-navy/45">
+                    <span className="tabular-nums">{set.pairs.length} pairs</span>
+                    <span className="truncate">{set.cohort || '—'}</span>
+                    {flagged && (
+                      <span className="rounded-sm bg-editorial-copper/15 px-1 py-[1px] text-[8px] font-bold tracking-[0.12em] text-editorial-label">
+                        {set.voter_role === 'admin' ? 'Admin' : 'Test'}
+                      </span>
+                    )}
+                  </span>
+                </span>
+                <span className="shrink-0 text-right text-[9px] tabular-nums normal-case text-editorial-navy/45">
+                  {when(set.at)}
+                </span>
+                <ChevronDown
+                  className={`h-3 w-3 shrink-0 text-editorial-navy/40 transition-transform ${expanded ? '' : '-rotate-90'}`}
+                />
+              </button>
+
+              {expanded && (
+                <ul className="space-y-1 border-t border-editorial-navy/10 bg-editorial-cream/60 px-2.5 py-2">
+                  {set.pairs.map((pair) => (
+                    <li key={pair.id} className="flex flex-wrap items-baseline gap-1.5 text-[11px] leading-snug">
+                      <span className="font-semibold text-editorial-navy">{pair.winner}</span>
+                      <span className="text-editorial-navy/45">over</span>
+                      <span className="text-editorial-navy/75">{pair.loser}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        })}
+        {visible.length === 0 && (
+          <p className="rounded-lg border border-editorial-navy/10 bg-white px-3 py-8 text-center text-[11px] leading-relaxed text-editorial-navy/55">
+            {marks.length === 0
+              ? 'No marks recorded in this scope yet. The ledger fills as the community weighs.'
+              : `Nothing matches “${query}”.`}
+          </p>
+        )}
+      </div>
+
+      <div className="hidden max-h-[520px] overflow-auto rounded-lg border border-editorial-navy/10 bg-white md:block">
         <table className="w-full border-collapse text-left">
           <thead className="sticky top-0 z-10 bg-editorial-navy text-editorial-cream">
             <tr>

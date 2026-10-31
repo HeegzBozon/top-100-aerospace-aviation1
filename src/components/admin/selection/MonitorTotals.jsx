@@ -90,17 +90,26 @@ export default function MonitorTotals({ totals, cohortStats, mode = 'live' }) {
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
+      {/* Six numbers, three across on a phone: the whole count stays inside one screen
+          so the reading is a dashboard rather than a scroll. */}
+      <div className="grid grid-cols-3 gap-1.5 md:gap-2 lg:grid-cols-6">
         {TILES.map(({ key, label, hint, icon: Icon }) => (
-          <div key={key} className="rounded-lg border border-editorial-navy/10 bg-white px-3 py-2.5 shadow-sm">
-            <div className="flex items-center gap-1.5 text-editorial-navy/50">
-              <Icon className="h-3 w-3" />
-              <span className="text-[9px] font-bold uppercase tracking-[0.2em]">{label}</span>
+          <div
+            key={key}
+            className="rounded-lg border border-editorial-navy/10 bg-white px-2 py-1.5 shadow-sm md:px-3 md:py-2.5"
+          >
+            <div className="flex items-center gap-1 text-editorial-navy/50 md:gap-1.5">
+              <Icon className="hidden h-3 w-3 shrink-0 md:block" />
+              <span className="truncate text-[7.5px] font-bold uppercase tracking-[0.12em] md:text-[9px] md:tracking-[0.2em]">
+                {label}
+              </span>
             </div>
-            <p className="mt-1 font-heading text-[22px] leading-none tabular-nums text-editorial-navy">
+            <p className="mt-0.5 font-heading text-[16px] leading-none tabular-nums text-editorial-navy md:mt-1 md:text-[22px]">
               {fmt(totals?.[key])}
             </p>
-            <p className="mt-1 text-[9.5px] uppercase tracking-[0.14em] text-editorial-navy/40">{hint}</p>
+            <p className="mt-0.5 hidden text-[9.5px] uppercase tracking-[0.14em] text-editorial-navy/40 md:mt-1 md:block">
+              {hint}
+            </p>
           </div>
         ))}
       </div>

@@ -86,58 +86,79 @@ export default function SelectionMonitor() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-editorial-gold" />
-            <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-editorial-label">Selection</p>
+      {/* On a phone the head is three short rows — what this reading is, which reading it
+          is, and which cohort — so the switch between the community's record and the
+          internal review is one press away instead of buried in a wrapped toolbar. */}
+      <div className="space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <Activity className="h-3.5 w-3.5 text-editorial-gold" />
+              <p className="text-[8.5px] font-bold uppercase tracking-[0.26em] text-editorial-label">Selection</p>
+            </div>
+            <h2 className="mt-0.5 font-heading text-xl leading-tight text-editorial-navy md:text-2xl">
+              {mode === 'internal' ? 'Internal review' : 'Live monitor'}
+            </h2>
+            <p className="text-[10.5px] leading-snug text-editorial-navy/55 md:max-w-xl md:text-xs">
+              {mode === 'internal'
+                ? 'The sets an administrator cast, read apart from the community. Nothing here is scored or published.'
+                : "Every cohort's ballot, its standings, and the marks behind them."}{' '}
+              {stamp && `Read at ${stamp}.`}
+            </p>
           </div>
-          <h2 className="mt-0.5 font-heading text-2xl leading-tight text-editorial-navy">
-            {mode === 'internal' ? 'Internal review' : 'Live monitor'}
-          </h2>
-          <p className="max-w-xl text-xs text-editorial-navy/55">
-            {mode === 'internal'
-              ? 'The sets an administrator cast, read apart from the community so the platform can keep a baseline of its own. Nothing here is scored or published.'
-              : "Every cohort's ballot, its standings, and the marks behind them."}{' '}
-            {stamp && `Read at ${stamp}.`}
-          </p>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <ReadingModeTabs
-            mode={mode}
-            onChange={setMode}
-            live={data?.totals?.comparisons_live || 0}
-            internal={data?.totals?.comparisons_test || 0}
-          />
-          <Select value={scope} onValueChange={setScope}>
-            <SelectTrigger className="h-8 w-[220px] text-xs">
-              <SelectValue placeholder="All cohorts" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All cohorts</SelectItem>
-              {cohorts.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.cohort_label || c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button size="sm" variant="outline" className="gap-1.5" onClick={() => load(true)} disabled={refreshing}>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 shrink-0 gap-1 px-2"
+            onClick={() => load(true)}
+            disabled={refreshing}
+          >
             {refreshing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
-            Refresh
+            <span className="hidden md:inline">Refresh</span>
           </Button>
         </div>
+
+        <ReadingModeTabs
+          mode={mode}
+          onChange={setMode}
+          live={data?.totals?.comparisons_live || 0}
+          internal={data?.totals?.comparisons_test || 0}
+        />
+
+        <Select value={scope} onValueChange={setScope}>
+          <SelectTrigger className="h-8 w-full text-xs md:w-[220px]">
+            <SelectValue placeholder="All cohorts" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All cohorts</SelectItem>
+            {cohorts.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.cohort_label || c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <MonitorTotals totals={data?.totals} cohortStats={data?.cohort_stats} mode={mode} />
 
       <Tabs defaultValue="standings">
-        <TabsList className="bg-editorial-cream">
-          <TabsTrigger value="standings">Standings</TabsTrigger>
-          <TabsTrigger value="ballots">Ballots</TabsTrigger>
-          <TabsTrigger value="marks">Marks</TabsTrigger>
-          <TabsTrigger value="contributors">Community</TabsTrigger>
+        {/* Four ledgers, four equal keys: the strip reads as one row of the instrument on
+            a phone rather than overflowing into a sideways scroll. */}
+        <TabsList className="grid h-auto w-full grid-cols-4 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
+          <TabsTrigger value="standings" className="px-1 text-[10px] md:px-3 md:text-sm">
+            Standings
+          </TabsTrigger>
+          <TabsTrigger value="ballots" className="px-1 text-[10px] md:px-3 md:text-sm">
+            Ballots
+          </TabsTrigger>
+          <TabsTrigger value="marks" className="px-1 text-[10px] md:px-3 md:text-sm">
+            Marks
+          </TabsTrigger>
+          <TabsTrigger value="contributors" className="px-1 text-[10px] md:px-3 md:text-sm">
+            Community
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="standings" className="mt-4">
           <StandingsBoard

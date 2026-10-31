@@ -13,7 +13,7 @@ export default function ReadingModeTabs({ mode, onChange, live = 0, internal = 0
     <div
       role="tablist"
       aria-label="Reading"
-      className="inline-flex overflow-hidden rounded-md border border-editorial-navy/15 bg-white"
+      className="grid w-full grid-cols-2 overflow-hidden rounded-md border border-editorial-navy/15 bg-white md:inline-flex md:w-auto"
     >
       {MODES.map((item) => {
         const active = item.key === mode;
@@ -24,7 +24,7 @@ export default function ReadingModeTabs({ mode, onChange, live = 0, internal = 0
             role="tab"
             aria-selected={active}
             onClick={() => onChange(item.key)}
-            className={`px-2.5 py-1 text-left transition-colors ${
+            className={`flex-1 px-2.5 py-1 text-center transition-colors md:flex-none md:text-left ${
               active ? 'bg-editorial-navy text-editorial-cream' : 'text-editorial-navy/60 hover:bg-editorial-cream'
             }`}
           >
