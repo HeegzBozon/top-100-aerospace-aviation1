@@ -7,7 +7,7 @@ import { registerPicker, touchPicker } from '@/components/handheld/handheldPicke
 import revealCursor from '@/components/handheld/revealCursor';
 import ConferenceStage from './ConferenceStage';
 import ConferenceReadout from './ConferenceReadout';
-import MicroAppKey from './MicroAppKey';
+import ConferenceStageBar from './ConferenceStageBar';
 import { CONFERENCE_APPS } from './conferenceApps';
 
 // THE TITLE SCREEN OF THE CONFERENCES MACHINE.
@@ -125,16 +125,12 @@ export default function ConferenceLauncher() {
           ) : null}
         </div>
 
-        <div className="cfs-rise cfs-rise-2 mt-4 flex min-h-0 flex-1 flex-col md:mt-9">
-          <div className="grid min-h-0 flex-1 grid-cols-1 auto-rows-[minmax(76px,1fr)] gap-2 md:grid-cols-4 md:auto-rows-[196px] md:content-start md:gap-3">
-            {CONFERENCE_APPS.map((app) => (
-              <MicroAppKey key={app.key} app={app} selected={app.key === cursorKey} />
-            ))}
-          </div>
+        <div className="cfs-rise cfs-rise-2 mt-auto shrink-0 pt-4 md:pt-9">
+          <ConferenceStageBar cursorKey={cursorKey} />
         </div>
 
         <p className="mt-3 shrink-0 text-[8px] font-bold uppercase tracking-[0.24em] text-editorial-cream/30 md:mt-6 md:hidden">
-          The wheel walks the cartridges · press A to open one
+          The wheel walks the stages · press A to open one
         </p>
       </div>
     </div>
