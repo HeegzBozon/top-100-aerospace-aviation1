@@ -132,15 +132,20 @@ export default function useNewsstand() {
         to: `/profiles/${nominee.id}`,
       }));
 
-    const articles = [...stock.articles].sort(byDateDesc('created_date')).map((article) => ({
-      key: `article-${article.id}`,
-      rack: 'articles',
-      kicker: ARTICLE_TYPE_LABELS[article.article_type] || 'Article',
-      title: article.title || 'Untitled piece',
-      meta: [article.writer_credit, issueTitles.get(article.issue_id)].filter(Boolean).join(' · '),
-      teaser: article.teaser || article.subtitle || '',
-      to: article.issue_id ? `/magazine/${article.issue_id}` : null,
-    }));
+    // The sheets folded into the volumes are the pieces written around the honorees. A profile
+    // piece is not stock here: every profile is a spotlight of its own, under Issues.
+    const articles = stock.articles
+      .filter((article) => article.article_type !== 'profile')
+      .sort(byDateDesc('created_date'))
+      .map((article) => ({
+        key: `article-${article.id}`,
+        rack: 'articles',
+        kicker: ARTICLE_TYPE_LABELS[article.article_type] || 'Article',
+        title: article.title || 'Untitled piece',
+        meta: [article.writer_credit, issueTitles.get(article.issue_id)].filter(Boolean).join(' · '),
+        teaser: article.teaser || article.subtitle || '',
+        to: article.issue_id ? `/magazine/${article.issue_id}` : null,
+      }));
 
     const stocked = stock.bulletins
       .filter(isStocked)
