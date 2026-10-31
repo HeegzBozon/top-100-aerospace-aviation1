@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import useInbox from './useInbox';
 import InboxBundle from './InboxBundle';
+import InboxMetrics from './InboxMetrics';
+import InboxControls, { SORTS } from './InboxControls';
 import useInboxPicker from './useInboxPicker';
 
 const BUNDLES = [
-  { key: 'introductions', label: 'Introductions' },
+  { key: 'introductions', label: 'Intros' },
   { key: 'referrals', label: 'Referrals' },
   { key: 'proposals', label: 'Proposals' },
   { key: 'deals', label: 'Deals' },
@@ -14,21 +16,27 @@ const BUNDLES = [
 const VIEWS = ['inbox', 'pinned', 'done'];
 
 export default function InboxTriage({ user }) {
-  const { items, states, status, reload, setState } = useInbox(user);
+  const { items, states, status, reload, setState, setEnquiryStatus } = useInbox(user);
   const [view, setView] = useState('inbox');
+  const [filter, setFilter] = useState('all');
+  const [sort, setSort] = useState('newest');
+  const [openKey, setOpenKey] = useState(null);
   const now = Date.now();
+  const toggle = (key) => setOpenKey((k) => (k === key ? null : key));
 
   const visible = items.filter((i) => {
     const s = states[i.key] || {};
+    if (filter !== 'all' && i.bundle !== filter) return false;
     if (view === 'done') return s.done;
     if (s.done) return false;
     if (view === 'pinned') return s.pinned;
     return !s.snoozed_until || new Date(s.snoozed_until).getTime() <= now;
-  });
+  }).sort(SORTS.find((x) => x.key === sort).compare);
   // Rows in the order they print, so the wheel walks them top to bottom.
-  const rows = BUNDLES.flatMap((b) => visible.filter((i) => i.bundle === b.key));
+  const shown = BUNDLES.filter((b) => filter === 'all' || b.key === filter);
+  const rows = shown.flatMap((b) => visible.filter((i) => i.bundle === b.key));
   const { cursorKey } = useInboxPicker({
-    rows, views: VIEWS, view, setView,
+    rows, views: VIEWS, view, setView, onOpen: toggle,
     onDone: (key) => setState(key, { done: true, snoozed_until: null }),
   });
 
@@ -39,25 +47,23 @@ export default function InboxTriage({ user }) {
     </p>
   );
 
+  const label = filter === 'all' ? 'referral, introduction, proposal, deal and offer' : BUNDLES.find((b) => b.key === filter).label.toLowerCase();
+
   return (
     <div>
-      <div className="mb-4 flex gap-2">
-        {VIEWS.map((v) => (
-          <button key={v} onClick={() => setView(v)}
-            className={`rounded-full border px-3 py-1 font-body text-xs font-semibold uppercase tracking-[0.12em] ${view === v ? 'border-editorial-navy bg-editorial-navy text-editorial-cream' : 'border-editorial-navy/20 text-editorial-navy'}`}>
-            {v}
-          </button>
-        ))}
-      </div>
-      {visible.length === 0 ? (
+      <InboxMetrics bundles={BUNDLES} items={items} states={states} filter={filter} onFilter={setFilter} />
+      <InboxControls views={VIEWS} view={view} setView={setView} sort={sort} setSort={setSort}
+        bundles={BUNDLES} filter={filter} setFilter={setFilter} />
+      {rows.length === 0 ? (
         <div className="rounded border border-editorial-copper/40 bg-editorial-cream px-6 py-10 text-center">
           <p className="font-heading text-2xl text-editorial-navy">{view === 'done' ? 'Nothing done yet.' : 'All clear.'}</p>
           <p className="mt-2 font-body text-sm text-editorial-navy/70">
-            {view === 'inbox' ? 'Every referral, introduction, proposal, deal and offer is handled. Snoozed items return on their own.' : view === 'pinned' ? 'Pin an item to keep it here.' : 'Items you finish are kept here.'}
+            {view === 'inbox' ? `Every ${label} is handled. Snoozed items return on their own.` : view === 'pinned' ? 'Pin an item to keep it here.' : 'Items you finish are kept here.'}
           </p>
         </div>
-      ) : BUNDLES.map((b) => (
+      ) : shown.map((b) => (
         <InboxBundle key={b.key} label={b.label} states={states} onSet={setState} showSweep={view === 'inbox'} cursorKey={cursorKey}
+          openKey={openKey} onOpen={toggle} onEnquiryStatus={setEnquiryStatus}
           items={visible.filter((i) => i.bundle === b.key)} />
       ))}
     </div>

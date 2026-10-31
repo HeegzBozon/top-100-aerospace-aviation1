@@ -5,11 +5,11 @@ import { registerPicker, touchPicker } from '@/components/handheld/handheldPicke
 // The wheel walks the Inbox: a turn moves the cursor item by item (stopping at the
 // ends, per the cursor law), back/forward on the ring switch Inbox / Pinned / Done,
 // the confirm key opens the item under the cursor, and back marks it done.
-export default function useInboxPicker({ rows, views, view, setView, onDone }) {
+export default function useInboxPicker({ rows, views, view, setView, onDone, onOpen }) {
   const navigate = useNavigate();
   const [cursor, setCursor] = useState(0);
   const live = useRef({});
-  live.current = { rows, views, view, setView, onDone, cursor };
+  live.current = { rows, views, view, setView, onDone, onOpen, cursor };
 
   useEffect(() => { if (cursor >= rows.length) setCursor(Math.max(0, rows.length - 1)); }, [rows.length, cursor]);
 
@@ -37,7 +37,8 @@ export default function useInboxPicker({ rows, views, view, setView, onDone }) {
       enter: () => {
         const row = live.current.rows[live.current.cursor];
         if (!row) return false;
-        navigate(row.to);
+        if (row.enquiry) live.current.onOpen(row.key);
+        else navigate(row.to);
         return true;
       },
       back: () => {

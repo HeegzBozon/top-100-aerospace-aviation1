@@ -44,7 +44,7 @@ export default function useInbox(user) {
         ...enquiries.map((q) => ({
           key: `enquiry:${q.id}`, bundle: enquiryBundle(q), at: q.created_date, person: q.status === 'new',
           title: `${q.sender_name || q.sender_email}${q.sender_org ? ` · ${q.sender_org}` : ''}`,
-          fact: `${ENQUIRY_STEP[q.status]}${q.timeline ? ` · ${TIMELINE[q.timeline]}` : ''}`, to: '#enquiries',
+          fact: `${ENQUIRY_STEP[q.status]}${q.timeline ? ` · ${TIMELINE[q.timeline]}` : ''}`, enquiry: q,
         })),
       ];
       setItems(next);
@@ -66,5 +66,14 @@ export default function useInbox(user) {
     setStates((s) => ({ ...s, [key]: saved }));
   };
 
-  return { items, states, status, reload: load, setState };
+  // The enquiry desk, folded in: the status set here is the record of how it went.
+  // Closing or declining an enquiry also files it as done.
+  const setEnquiryStatus = async (item, next) => {
+    await base44.entities.ProfileInquiry.update(item.enquiry.id, { status: next, status_updated_at: new Date().toISOString() });
+    setItems((list) => list.map((i) => (i.key === item.key
+      ? { ...i, enquiry: { ...i.enquiry, status: next }, fact: ENQUIRY_STEP[next] || 'Closed' } : i)));
+    if (next === 'closed' || next === 'declined') await setState(item.key, { done: true, snoozed_until: null });
+  };
+
+  return { items, states, status, reload: load, setState, setEnquiryStatus };
 }
