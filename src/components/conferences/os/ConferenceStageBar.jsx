@@ -5,15 +5,20 @@ import { CONFERENCE_APPS } from './conferenceApps';
 // numbered nodes, and a glowing marker on the stage the cursor stands on. Each node keeps
 // data-hh-key so the wheel and the keypad still land on it.
 export default function ConferenceStageBar({ cursorKey }) {
-  const at = Math.max(0, CONFERENCE_APPS.findIndex((a) => a.key === cursorKey));
-  const fill = (at / (CONFERENCE_APPS.length - 1)) * 100;
+  // No stage is lit until the wheel lands on one: the title screen stands before the cycle.
+  const at = CONFERENCE_APPS.findIndex((a) => a.key === cursorKey);
+  const fill = at < 0 ? 0 : (at / (CONFERENCE_APPS.length - 1)) * 100;
   const current = CONFERENCE_APPS[at];
 
   return (
     <nav aria-label="Conference stages" className="cfs-readout relative overflow-hidden rounded-[12px] px-3 pb-2.5 pt-2.5">
       <div className="mb-2.5 flex items-baseline justify-between gap-2">
-        <span className="text-[7.5px] font-bold uppercase tracking-[0.24em] text-editorial-gold/80">Stage {current.index} of 04</span>
-        <span className="truncate font-heading text-[12px] text-editorial-cream">{current.title}</span>
+        <span className="text-[7.5px] font-bold uppercase tracking-[0.24em] text-editorial-gold/80">
+          {current ? `Stage ${current.index} of 04` : 'The cycle'}
+        </span>
+        <span className="truncate font-heading text-[12px] text-editorial-cream">
+          {current ? current.title : 'Plan · Do · Check · Act'}
+        </span>
       </div>
 
       <div className="relative">

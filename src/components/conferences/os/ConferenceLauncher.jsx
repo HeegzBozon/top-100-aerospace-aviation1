@@ -27,7 +27,7 @@ import { CONFERENCE_APPS } from './conferenceApps';
 export default function ConferenceLauncher() {
   const navigate = useNavigate();
   const { state, circuit, myRoomIds, retry } = useConferences();
-  const [cursorKey, setCursorKey] = useState(CONFERENCE_APPS[0].key);
+  const [cursorKey, setCursorKey] = useState(null);
 
   // What the band reads, from the same records every other surface counts from.
   const counts = useMemo(() => {

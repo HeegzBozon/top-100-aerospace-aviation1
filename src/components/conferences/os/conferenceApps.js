@@ -1,6 +1,6 @@
 import { CheckSquare, Compass, Handshake, Luggage } from 'lucide-react';
 
-// THE FOUR STAGES THE CONFERENCES MACHINE RUNS: Plan, Pack, Lock In, Follow Up.
+// THE FOUR STAGES THE CONFERENCES MACHINE RUNS: Plan, Do, Check, Act.
 //
 // One launcher, one journey. Plan is where a show is chosen (or staged) and the trip is
 // booked; Pack, Lock In and Follow Up are worked inside the conference itself. Declared
@@ -23,8 +23,8 @@ export const CONFERENCE_APPS = [
   {
     key: 'pack',
     index: '02',
-    label: 'Pack',
-    short: 'Pack',
+    label: 'Do',
+    short: 'Do',
     title: 'Get ready to go',
     blurb: 'The checklist that gets you to the floor prepared.',
     to: '/conferences/attend?stage=pack',
@@ -34,8 +34,8 @@ export const CONFERENCE_APPS = [
   {
     key: 'lockin',
     index: '03',
-    label: 'Lock In',
-    short: 'Lock In',
+    label: 'Check',
+    short: 'Check',
     title: 'Work the floor',
     blurb: 'Meet your targets and capture every conversation.',
     to: '/conferences/attend?stage=lockin',
@@ -45,8 +45,8 @@ export const CONFERENCE_APPS = [
   {
     key: 'follow',
     index: '04',
-    label: 'Close',
-    short: 'Close',
+    label: 'Act',
+    short: 'Act',
     title: 'Close the loop',
     blurb: 'Debrief, send what you promised, record the outcome.',
     to: '/conferences/attend?stage=follow',
