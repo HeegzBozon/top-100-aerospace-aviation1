@@ -6,13 +6,8 @@ import InboxMetrics from './InboxMetrics';
 import InboxControls, { SORTS } from './InboxControls';
 import useInboxPicker from './useInboxPicker';
 
-const BUNDLES = [
-  { key: 'introductions', label: 'Intros' },
-  { key: 'referrals', label: 'Referrals' },
-  { key: 'proposals', label: 'Proposals' },
-  { key: 'deals', label: 'Deals' },
-  { key: 'offers', label: 'Offers' },
-];
+import { BUNDLES, STAGES, inFilter } from './inboxFunnel';
+
 const VIEWS = ['inbox', 'pinned', 'done'];
 
 export default function InboxTriage({ user }) {
@@ -26,14 +21,14 @@ export default function InboxTriage({ user }) {
 
   const visible = items.filter((i) => {
     const s = states[i.key] || {};
-    if (filter !== 'all' && i.bundle !== filter) return false;
+    if (!inFilter(filter, i.bundle)) return false;
     if (view === 'done') return s.done;
     if (s.done) return false;
     if (view === 'pinned') return s.pinned;
     return !s.snoozed_until || new Date(s.snoozed_until).getTime() <= now;
   }).sort(SORTS.find((x) => x.key === sort).compare);
   // Rows in the order they print, so the wheel walks them top to bottom.
-  const shown = BUNDLES.filter((b) => filter === 'all' || b.key === filter);
+  const shown = BUNDLES.filter((b) => inFilter(filter, b.key));
   const rows = shown.flatMap((b) => visible.filter((i) => i.bundle === b.key));
   const { cursorKey } = useInboxPicker({
     rows, views: VIEWS, view, setView, onOpen: toggle,
@@ -47,13 +42,13 @@ export default function InboxTriage({ user }) {
     </p>
   );
 
-  const label = filter === 'all' ? 'referral, introduction, proposal, deal and offer' : BUNDLES.find((b) => b.key === filter).label.toLowerCase();
+  const label = filter === 'all' ? 'item in the funnel' : `item in ${(BUNDLES.find((b) => b.key === filter) || STAGES.find((s) => s.key === filter)).label.toLowerCase()}`;
 
   return (
     <div>
-      <InboxMetrics bundles={BUNDLES} items={items} states={states} filter={filter} onFilter={setFilter} />
+      <InboxMetrics items={items} states={states} filter={filter} onFilter={setFilter} />
       <InboxControls views={VIEWS} view={view} setView={setView} sort={sort} setSort={setSort}
-        bundles={BUNDLES} filter={filter} setFilter={setFilter} />
+        filter={filter} setFilter={setFilter} />
       {rows.length === 0 ? (
         <div className="rounded border border-editorial-copper/40 bg-editorial-cream px-6 py-10 text-center">
           <p className="font-heading text-2xl text-editorial-navy">{view === 'done' ? 'Nothing done yet.' : 'All clear.'}</p>

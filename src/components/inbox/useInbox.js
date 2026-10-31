@@ -9,6 +9,7 @@ const REFERRAL_STEP = {
 };
 
 const ENQUIRY_STEP = { new: 'New — awaiting your reply', opened: 'Read — reply pending', responded: 'Replied — in conversation' };
+const NOMINATION_STEP = { new: 'Received — awaiting review', reviewing: 'Under review', approved: 'Approved — in the pool', rejected: 'Not advanced', archived: 'Archived' };
 const TIMELINE = { immediate: 'Immediate', this_quarter: 'This quarter', exploratory: 'Exploratory' };
 // Proposals and RFQs first, then the two intent tracks: Deal & BD, and Job & Career.
 const enquiryBundle = (q) => (q.request_type === 'proposal_rfq' ? 'proposals' : q.mode === 'commercial' ? 'deals' : 'offers');
@@ -30,6 +31,7 @@ export default function useInbox(user) {
         base44.entities.ProfileInquiry.filter({ profile_email: user.email, status: { $in: ['new', 'opened', 'responded'] } }, '-created_date', 100),
         base44.entities.InboxItemState.list('-updated_date', 500),
       ]);
+      const noms = await base44.entities.NominationIntake.filter({ nominator_email: user.email }, '-created_date', 100).catch(() => []);
       const next = [
         ...refs.map((r) => ({
           key: `referral:${r.id}`, bundle: 'referrals', at: r.updated_date,
@@ -40,6 +42,10 @@ export default function useInbox(user) {
           key: `intro:${i.id}`, bundle: 'introductions', at: i.created_date, person: true,
           title: `${i.requester_name || i.requester_email} asks for an introduction`,
           fact: i.target_title || i.message || 'Introduction request', to: '/Profile?surface=availability',
+        })),
+        ...noms.map((n) => ({
+          key: `nomination:${n.id}`, bundle: 'nominations', at: n.created_date, person: false,
+          title: `You nominated ${n.nominee_name}`, fact: NOMINATION_STEP[n.status] || 'Received', to: '/selection-committee',
         })),
         ...enquiries.map((q) => ({
           key: `enquiry:${q.id}`, bundle: enquiryBundle(q), at: q.created_date, person: q.status === 'new',
