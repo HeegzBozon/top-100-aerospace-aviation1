@@ -141,12 +141,15 @@ export default function useJourney(roomId) {
     return saved.length;
   }, [roomId]);
 
+  // The queue is only drained once the room has been read, so a row written on the way in
+  // is never overwritten by the list that was already in flight.
   useEffect(() => {
+    if (state.loading) return undefined;
     const onOnline = () => { flushQueue(); };
     flushQueue();
     window.addEventListener('online', onOnline);
     return () => window.removeEventListener('online', onOnline);
-  }, [flushQueue]);
+  }, [flushQueue, state.loading]);
 
   const updateContact = useCallback(async (id, patch) => {
     setContacts((list) => list.map((row) => (row.id === id ? { ...row, ...patch } : row)));

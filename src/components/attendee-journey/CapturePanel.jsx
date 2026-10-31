@@ -209,12 +209,20 @@ export default function CapturePanel({ onCapture }) {
 
         {error && <p className="text-[11px]" style={{ color: '#a33' }}>{error}</p>}
 
-        <div>
-          <Key onClick={submit} disabled={status === 'saving'}>
-            {status === 'saving' && <Loader2 className="h-3 w-3 animate-spin" />}
-            Capture
-          </Key>
-        </div>
+      </div>
+
+      {/* The key rides the foot of the glass, so the capture is always under the thumb. */}
+      <div
+        className="sticky bottom-0 -mx-4 -mb-4 mt-2 flex items-center justify-between gap-2 px-4 py-2.5"
+        style={{ background: '#fff', borderTop: `1px solid ${B.border}` }}
+      >
+        <span className="text-[9.5px] uppercase tracking-[0.14em]" style={{ color: B.muted }}>
+          One thumb, ten seconds
+        </span>
+        <Key onClick={submit} disabled={status === 'saving'}>
+          {status === 'saving' && <Loader2 className="h-3 w-3 animate-spin" />}
+          Capture
+        </Key>
       </div>
     </Panel>
   );

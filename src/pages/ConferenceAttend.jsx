@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Loader2, LogIn, Radar, RotateCcw, Signal, Users } from 'lucide-react';
+import { ArrowRight, Loader2, LogIn, Radar, RotateCcw, Signal, Users } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import ConferenceAppBar from '@/components/conferences/os/ConferenceAppBar';
@@ -31,7 +31,8 @@ export default function ConferenceAttend() {
     mine.forEach((room) => {
       attendeesFor(room).forEach((rsvp) => {
         const email = rsvp.fellow_email;
-        if (!email || email === me?.email) return;
+        // A Fellow who has held their declaration private is not on anyone else's roster.
+        if (!email || email === me?.email || !isListed(rsvp)) return;
         const entry = byEmail.get(email) || {
           email,
           name: rsvp.fellow_name,
@@ -152,12 +153,20 @@ export default function ConferenceAttend() {
               </div>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
                 {mine.map((room) => (
-                  <ConferenceCard
-                    key={room.id}
-                    room={room}
-                    attendees={attendeesFor(room)}
-                    attending
-                  />
+                  <div key={room.id} className="flex flex-col">
+                    <ConferenceCard
+                      room={room}
+                      attendees={attendeesFor(room).filter(isListed)}
+                      attending
+                    />
+                    <Link
+                      to={`/conferences/attend/${room.id}`}
+                      className="mt-1.5 inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-[9.5px] font-bold uppercase tracking-[0.16em]"
+                      style={{ background: B.navy, color: '#fff' }}
+                    >
+                      Open your plan <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  </div>
                 ))}
               </div>
             </section>

@@ -172,6 +172,7 @@ export default function ConferenceJourney() {
                   fellowName={user.full_name}
                   sharedShowsFor={sharedShowsFor}
                   onPatch={journey.updateContact}
+                  onDelete={journey.removeContact}
                 />
               )}
             </div>

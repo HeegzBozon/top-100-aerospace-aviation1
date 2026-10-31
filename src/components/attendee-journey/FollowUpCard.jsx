@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Check, Copy, Linkedin, Mail, RotateCcw, Send } from 'lucide-react';
+import { Check, Copy, Linkedin, Mail, RotateCcw, Send, Trash2 } from 'lucide-react';
 import { copyText } from '@/lib/clipboard';
 import {
   B, HEAT, OUTCOMES, RELATIONSHIP_TYPES, composeFollowUp, labelOf, mailtoHref,
@@ -9,7 +9,7 @@ import { Chip, Field, GhostKey, inputStyle } from './bits';
 // One relationship, worked. The draft is built from what the Fellow captured and edited by
 // them; it leaves from their own account, on their own timing, and nothing is ever sent by
 // the platform. Arming a resurface is only offered at a show both of them list themselves in.
-export default function FollowUpCard({ contact, fellowName, sharedShows, onPatch }) {
+export default function FollowUpCard({ contact, fellowName, sharedShows, onPatch, onDelete }) {
   const [draft, setDraft] = useState(
     contact.follow_up_draft || composeFollowUp(contact, fellowName),
   );
@@ -45,14 +45,25 @@ export default function FollowUpCard({ contact, fellowName, sharedShows, onPatch
             {meta}
           </p>
         </div>
-        {contact.follow_up_sent && (
-          <span
-            className="shrink-0 rounded-full px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-[0.1em]"
-            style={{ background: `${B.navy}12`, color: B.navy }}
+        <span className="flex shrink-0 items-center gap-1.5">
+          {contact.follow_up_sent && (
+            <span
+              className="rounded-full px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-[0.1em]"
+              style={{ background: `${B.navy}12`, color: B.navy }}
+            >
+              Sent
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={onDelete}
+            aria-label={`Delete the record for ${contact.full_name}`}
+            className="rounded-full p-1 transition-opacity hover:opacity-70"
+            style={{ color: B.muted }}
           >
-            Sent
-          </span>
-        )}
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </span>
       </div>
 
       {contact.promise && (

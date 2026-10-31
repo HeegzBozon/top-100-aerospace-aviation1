@@ -10,7 +10,7 @@ import FollowUpCard from './FollowUpCard';
 // sequenced and nothing is sent for the Fellow: each card is a draft they edit and a key
 // that opens their own mail or LinkedIn. The outcome they record is what makes the next
 // conference smarter than this one.
-export default function FollowUpPanel({ contacts, fellowName, sharedShowsFor, onPatch }) {
+export default function FollowUpPanel({ contacts, fellowName, sharedShowsFor, onPatch, onDelete }) {
   const queue = useMemo(() => [...contacts].sort((a, b) => (
     Number(!!a.follow_up_sent) - Number(!!b.follow_up_sent)
   )), [contacts]);
@@ -41,6 +41,11 @@ export default function FollowUpPanel({ contacts, fellowName, sharedShowsFor, on
               fellowName={fellowName}
               sharedShows={sharedShowsFor(contact)}
               onPatch={(patch) => onPatch(contact.id, patch)}
+              onDelete={() => {
+                if (window.confirm(`Forget ${contact.full_name}? The notes and the promise go with them.`)) {
+                  onDelete(contact.id);
+                }
+              }}
             />
           ))}
         </div>

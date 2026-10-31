@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Check, Loader2 } from 'lucide-react';
 import { B, MAX_OUTCOMES } from './journeyConfig';
-import { Chip, Field, Key, Panel, SectionLabel, inputStyle } from './bits';
+import { Chip, Key, Panel, SectionLabel, inputStyle } from './bits';
 
 // PLAN — why the Fellow is standing in this room.
 //

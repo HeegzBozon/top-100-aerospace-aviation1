@@ -67,8 +67,6 @@ export const isListed = (rsvp) => (rsvp?.visibility || 'listed') === 'listed';
 const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 export const emailLooksReal = (value) => !value || EMAIL_SHAPE.test(String(value).trim());
 
-export const isEmail = (value) => !!value && EMAIL_SHAPE.test(String(value).trim());
-
 export const firstNameOf = (name) => String(name || '').trim().split(/\s+/)[0] || 'there';
 
 const sentence = (text) => {
@@ -88,7 +86,7 @@ export const composeFollowUp = (contact, fellowName) => {
     lines.push(`I made a note of what you're working on: ${sentence(contact.notes)}`);
   }
   if (contact.promise) {
-    lines.push(`As promised, ${sentence(contact.promise)}`);
+    lines.push(`As promised: ${sentence(contact.promise)}`);
   }
   if (contact.next_step) {
     lines.push(`Next: ${sentence(contact.next_step)}`);
