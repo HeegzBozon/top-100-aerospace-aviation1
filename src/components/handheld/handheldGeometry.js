@@ -38,8 +38,10 @@ const DECK_CLEARANCE = 158;
 // The radio face needs more case than the wheel does: the menu bar, the walking cluster
 // and a full keypad are more rows than the wheel ever had. It is measured the same way —
 // the bar, the cluster, the speaker slot and the keypad, plus the air around them — so the
-// glass opens straight onto whichever face is fitted.
-const RADIO_CLEARANCE = 222;
+// glass opens straight onto whichever face is fitted. The pad shares the case with the bar
+// above it, so the bar's own band is counted in here: at 222 the pad's last row ran out
+// through the foot of the machine.
+const RADIO_CLEARANCE = 240;
 
 export { NAV_CLEARANCE, DECK_CLEARANCE, RADIO_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH, FOOT_CLEARANCE };
 

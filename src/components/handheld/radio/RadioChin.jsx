@@ -36,7 +36,7 @@ export default function RadioChin({
   shareOpen = false,
 }) {
   return (
-    <div className="flex h-full flex-col gap-[3px] px-3 pt-1.5">
+    <div className="flex min-h-0 flex-1 flex-col gap-[3px] px-3 pt-1.5">
       {/* The cluster: the two lists, the share, the bank the pad is standing on, and the
           keys that walk. */}
       <div className="grid h-[28px] shrink-0 grid-cols-8 gap-[3px]">

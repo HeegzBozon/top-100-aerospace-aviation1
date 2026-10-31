@@ -954,7 +954,7 @@ export default function HandheldDeck() {
 
       <nav
         aria-label="Handheld console controls"
-        className="hh-chin fixed z-40 select-none md:hidden"
+        className="hh-chin fixed z-40 flex select-none flex-col md:hidden"
         style={{
           left: "var(--hh-frame, 0px)",
           right: "var(--hh-frame, 0px)",
