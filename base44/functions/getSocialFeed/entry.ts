@@ -9,7 +9,20 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 const CACHE_MS = 10 * 60 * 1000;
 let held = { at: 0, payload: null };
 
-const LINKEDIN_VERSION = '202509';
+// LinkedIn retires an API version every month and refuses one that is no longer active, so
+// the newest version an endpoint will accept is found rather than pinned: the current month
+// is asked first and the read steps back a month at a time until the network takes it.
+const versionMonths = (count = 12) => {
+  const out = [];
+  const now = new Date();
+  for (let back = 0; back < count; back += 1) {
+    const month = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - back, 1));
+    out.push(`${month.getUTCFullYear()}${String(month.getUTCMonth() + 1).padStart(2, '0')}`);
+  }
+  return out;
+};
+
+const staleVersion = (data) => /not active|invalid version/i.test(String(data?.message || ''));
 
 // A caption is set as text on the stand, never as markup.
 const clean = (text) =>
@@ -59,17 +72,38 @@ async function readInstagram(base44) {
   return { account, items };
 }
 
+async function linkedInGet(url, accessToken) {
+  let lastError = 'LinkedIn did not answer.';
+  for (const version of versionMonths()) {
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'LinkedIn-Version': version,
+        'X-Restli-Protocol-Version': '2.0.0',
+      },
+      signal: AbortSignal.timeout(12000),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) return data;
+    lastError = data?.message || `LinkedIn returned ${res.status}.`;
+    if (!staleVersion(data)) throw new Error(lastError);
+  }
+  throw new Error(lastError);
+}
+
+// The page the wire reads. A member who administers a page can list it from the token; where
+// the connected account cannot, the page's own id is set here and used instead.
+const LINKEDIN_ORGANIZATION_ID = '';
+
 // The page a token administers is not carried on the token, so the page is asked which
 // organisations this member can post for.
-async function resolveOrganization(headers) {
-  const res = await fetch(
+async function resolveOrganization(accessToken) {
+  if (LINKEDIN_ORGANIZATION_ID) return `urn:li:organization:${LINKEDIN_ORGANIZATION_ID}`;
+
+  const data = await linkedInGet(
     'https://api.linkedin.com/rest/organizationAcls?q=roleAssignee&role=ADMINISTRATOR&state=APPROVED&count=10',
-    { headers, signal: AbortSignal.timeout(12000) },
+    accessToken,
   );
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data?.message || `LinkedIn would not list our page (${res.status}).`);
-  }
   const urn = (data.elements || [])[0]?.organization || '';
   if (!urn) throw new Error('No LinkedIn page is administered by the connected account.');
   return urn.startsWith('urn:li:organization:') ? urn : `urn:li:organization:${urn}`;
@@ -79,20 +113,12 @@ async function readLinkedIn(base44) {
   const { accessToken } = await base44.asServiceRole.connectors.getConnection('linkedin');
   if (!accessToken) throw new Error('The LinkedIn page is not connected.');
 
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    'LinkedIn-Version': LINKEDIN_VERSION,
-    'X-Restli-Protocol-Version': '2.0.0',
-  };
+  const organization = await resolveOrganization(accessToken);
 
-  const organization = await resolveOrganization(headers);
-
-  const res = await fetch(
+  const data = await linkedInGet(
     `https://api.linkedin.com/rest/posts?author=${encodeURIComponent(organization)}&q=author&count=12&sortBy=LAST_MODIFIED`,
-    { headers, signal: AbortSignal.timeout(12000) },
+    accessToken,
   );
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data?.message || `LinkedIn did not return our posts (${res.status}).`);
 
   const items = (data.elements || [])
     .filter((post) => !post.lifecycleState || post.lifecycleState === 'PUBLISHED')
@@ -138,9 +164,9 @@ export default async function (req) {
       .sort((a, b) => new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0));
 
     const payload = {
+      sources: [settle(instagram, 'instagram'), settle(linkedin, 'linkedin')],
       fetchedAt: new Date().toISOString(),
       items,
-      sources: [settle(instagram, 'instagram'), settle(linkedin, 'linkedin')],
     };
 
     held = { at: Date.now(), payload };

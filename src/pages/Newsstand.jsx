@@ -11,6 +11,7 @@ import NewsstandHeader from '@/components/newsstand/NewsstandHeader';
 import NewsstandRack, { RackEmpty, RackShelf } from '@/components/newsstand/NewsstandRack';
 import NewsstandCover from '@/components/newsstand/NewsstandCover';
 import StockRow from '@/components/newsstand/StockRow';
+import WireRack from '@/components/newsstand/WireRack';
 
 // The Newsstand.
 //
@@ -82,6 +83,12 @@ export default function Newsstand() {
   const take = useCallback(
     (item) => {
       if (!item) return false;
+      // A post off the wire lives on the network it was published to, so the stand hands it
+      // over rather than opening it in the glass.
+      if (item.href) {
+        window.open(item.href, '_blank', 'noopener,noreferrer');
+        return true;
+      }
       if (item.to) {
         navigate(item.to);
         return true;
@@ -187,10 +194,23 @@ export default function Newsstand() {
             {listRacks.map((rack) => {
               const items = sections[rack.key] || [];
               const isRack = rack.key === 'issues';
+              const isWire = rack.key === 'wire';
 
               return (
                 <NewsstandRack key={rack.key} rack={rack} count={items.length}>
-                  {items.length === 0 ? (
+                  {isWire ? (
+                    <WireRack
+                      rack={rack}
+                      items={items}
+                      wire={stock.wire}
+                      cursorKey={cursorKey}
+                      registerRef={(item, node) => {
+                        itemRefs.current[item.key] = node;
+                      }}
+                      onFocus={setCursorKey}
+                      onOpen={take}
+                    />
+                  ) : items.length === 0 ? (
                     <RackEmpty rack={rack} />
                   ) : isRack ? (
                     <>

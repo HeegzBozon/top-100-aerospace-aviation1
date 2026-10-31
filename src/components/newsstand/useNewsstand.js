@@ -23,12 +23,16 @@ const isStocked = (bulletin) => {
 };
 
 const EMPTY = { loading: true, error: null, issues: [], articles: [], bulletins: [] };
+const WIRE_EMPTY = { loading: true, error: null, items: [], sources: [] };
 
 // The stand's stock: the bound editions, the articles that ran inside them, and the
 // bulletins — the house's own release notes and the writing Fellows file. Three reads in
 // one round trip, read as four racks.
 export default function useNewsstand() {
   const [stock, setStock] = useState(EMPTY);
+  // The wire is read from the two networks on its own round trip, so a network that is down
+  // leaves the rest of the stand standing.
+  const [wire, setWire] = useState(WIRE_EMPTY);
 
   const load = useCallback(() => {
     setStock((prev) => ({ ...prev, loading: true, error: null }));
@@ -64,9 +68,33 @@ export default function useNewsstand() {
       });
   }, []);
 
+  const loadWire = useCallback(() => {
+    setWire((prev) => ({ ...prev, loading: true, error: null }));
+    return base44.functions
+      .invoke('getSocialFeed', {})
+      .then((res) => {
+        const data = res?.data || {};
+        setWire({
+          loading: false,
+          error: null,
+          items: data.items || [],
+          sources: data.sources || [],
+        });
+      })
+      .catch((error) => {
+        setWire({
+          loading: false,
+          error: error?.message || 'The wire could not be read.',
+          items: [],
+          sources: [],
+        });
+      });
+  }, []);
+
   useEffect(() => {
     load();
-  }, [load]);
+    loadWire();
+  }, [load, loadWire]);
 
   const sections = useMemo(() => {
     const issueTitles = new Map(stock.issues.map((issue) => [issue.id, issue.title]));
@@ -123,6 +151,17 @@ export default function useNewsstand() {
     };
 
     return {
+      // A post is set as one line of stock: the source printed above it, its own words below,
+      // and the address it goes out from.
+      wire: wire.items.map((post) => ({
+        key: post.id,
+        rack: 'wire',
+        kicker: post.source === 'instagram' ? 'Instagram' : 'LinkedIn',
+        title: firstLine(post.text, 220) || 'A photograph',
+        meta: [post.account, dayLabel(post.publishedAt)].filter(Boolean).join(' · '),
+        mediaUrl: post.mediaUrl,
+        href: post.permalink,
+      })),
       issues,
       articles,
       dispatches: stocked.filter((bulletin) => bulletin.scope !== 'platform').map(asBulletin),
@@ -131,7 +170,7 @@ export default function useNewsstand() {
       // from the series itself rather than from platform bulletins.
       notes: newsletterNotes(),
     };
-  }, [stock]);
+  }, [stock, wire]);
 
-  return { ...stock, sections, reload: load };
+  return { ...stock, sections, wire, reload: load, reloadWire: loadWire };
 }

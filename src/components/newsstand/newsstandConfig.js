@@ -3,10 +3,11 @@ import { C } from '@/components/crm/crmConfig';
 // The stand, read the way a reader walks past it: the rack of bound editions first, then
 // the folded sheets that came out of them, then the stand Fellows file their own writing
 // at, and finally the board by the door where the house pins what it shipped.
-// Two leaves, the way a newsstand is actually read: the papers you take away, and the
-// sheet pinned by the door saying what the house changed.
+// Three leaves, the way a newsstand is actually read: the papers you take away, what the
+// house is posting on its own accounts, and the sheet pinned by the door saying what changed.
 export const NEWSSTAND_TABS = [
   { key: 'publications', label: 'Publications' },
+  { key: 'wire', label: 'The Wire' },
   { key: 'notes', label: 'Release Notes' },
 ];
 
@@ -43,6 +44,15 @@ export const RACKS = [
     blurb:
       'Insights and Spotlights, mailed weekly since February 2022 — every edition, newest first, as it went out.',
     empty: 'The first edition of the newsletter takes its place here the day it is mailed.',
+  },
+  {
+    key: 'wire',
+    tab: 'wire',
+    label: 'Off the wire',
+    kicker: 'Instagram & LinkedIn',
+    blurb: 'What the house is posting on its own accounts, newest first, as it goes out.',
+    empty:
+      'Nothing has gone out on the wire yet. A post from either house account prints here the day it is published.',
   },
 ];
 
