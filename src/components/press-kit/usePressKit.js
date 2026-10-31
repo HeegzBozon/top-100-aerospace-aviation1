@@ -25,6 +25,13 @@ function draftToRow(draft) {
     links: draft.links
       .map((row) => ({ label: (row.label || '').trim(), url: (row.url || '').trim() }))
       .filter((row) => row.url),
+    // The studio's own working material travels with the kit row: which items the Fellow
+    // has listed publicly, the share copy they kept, and the plan they built.
+    media_room_public: (Array.isArray(draft.media_room_public) ? draft.media_room_public : [])
+      .filter((row) => row?.key && row?.url)
+      .map((row) => ({ key: row.key, label: row.label || '', url: row.url })),
+    share_drafts: Array.isArray(draft.share_drafts) ? draft.share_drafts : [],
+    editorial_calendar: Array.isArray(draft.editorial_calendar) ? draft.editorial_calendar : [],
   };
 }
 

@@ -4,6 +4,7 @@ import { ArrowRight, Download, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { B } from '@/components/fellow-home/fellowHomeConfig';
 import PressKitSheet from '@/components/press-kit/PressKitSheet';
+import { publicRoomItems } from '@/components/press-kit/mediaRoomAssets';
 import { downloadKitPdf } from '@/components/press-kit/kitPdf';
 
 // The shared kit: the page a Fellow forwards. Read-only, no chrome of the platform's
@@ -79,11 +80,42 @@ export default function PressKitPublic() {
   }
 
   const kit = state.kit;
+  const roomItems = publicRoomItems(kit);
 
   return (
     <div className="min-h-screen" style={{ background: B.cream }}>
       <div className="mx-auto w-full max-w-2xl px-4 py-6 md:px-8 md:py-12">
         <PressKitSheet kit={kit} shareUrl={shareUrl} className="shadow-sm" />
+
+        {roomItems.length ? (
+          <section
+            className="mt-3 rounded-xl p-4"
+            style={{ background: '#fffdf9', border: `1px solid ${B.border}` }}
+          >
+            <p className="text-[8px] font-bold uppercase tracking-[0.28em]" style={{ color: B.copper }}>
+              In the media room
+            </p>
+            <ul className="mt-2 divide-y" style={{ borderColor: B.border }}>
+              {roomItems.map((item) => (
+                <li key={item.key} className="flex items-center justify-between gap-3 py-2">
+                  <span className="text-[12px]" style={{ color: B.navy }}>
+                    {item.label}
+                  </span>
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex shrink-0 items-center gap-1 text-[8px] font-bold uppercase tracking-[0.16em]"
+                    style={{ color: B.copper }}
+                  >
+                    Open
+                    <ArrowRight className="h-2.5 w-2.5" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <button

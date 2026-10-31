@@ -67,6 +67,9 @@ export function seedFrom(user, nominee, settings) {
     contact_email: clean(user?.email),
     evidence: evidenceFrom(nominee),
     links: linksFrom(nominee),
+    media_room_public: [],
+    share_drafts: [],
+    editorial_calendar: [],
   };
 }
 
@@ -93,5 +96,8 @@ export function rowToDraft(row) {
     contact_email: row.contact_email || '',
     evidence: Array.isArray(row.evidence) ? row.evidence : [],
     links: Array.isArray(row.links) ? row.links : [],
+    media_room_public: Array.isArray(row.media_room_public) ? row.media_room_public : [],
+    share_drafts: Array.isArray(row.share_drafts) ? row.share_drafts : [],
+    editorial_calendar: Array.isArray(row.editorial_calendar) ? row.editorial_calendar : [],
   };
 }
