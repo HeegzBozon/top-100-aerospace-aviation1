@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Loader2, Plus, RotateCcw, Signal } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
-import ConferenceModeSwitcher from '@/components/conferences/ConferenceModeSwitcher';
+import ConferenceAppBar from '@/components/conferences/os/ConferenceAppBar';
 import HostConferencePanel from '@/components/conferences/HostConferencePanel';
 import ConferenceEditor from '@/components/conferences/ConferenceEditor';
 import HostGate from '@/components/conferences/HostGate';
@@ -31,17 +31,16 @@ export default function ConferenceHost() {
 
   return (
     <div className="min-h-screen" style={{ background: B.cream }}>
-      <div className="mx-auto w-full max-w-3xl px-4 pb-24 pt-6 md:px-8 md:pb-16 md:pt-12">
-        <header className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-[9px] font-bold uppercase tracking-[0.28em]" style={{ color: B.copper }}>
-              AeroSync · Host workspace
-            </p>
-            <h1 className="mt-1 font-heading text-[26px] leading-tight md:text-4xl" style={{ color: B.navy }}>
-              Your conferences
-            </h1>
-          </div>
-          <ConferenceModeSwitcher mode="host" />
+      <ConferenceAppBar app="host" />
+
+      <div className="mx-auto w-full max-w-3xl px-4 pb-24 pt-5 md:px-8 md:pb-16 md:pt-8">
+        <header data-hh-module="Your conferences">
+          <p className="text-[9px] font-bold uppercase tracking-[0.28em]" style={{ color: B.copper }}>
+            AeroSync · Host &amp; Facilitate
+          </p>
+          <h1 className="mt-1 font-heading text-[26px] leading-tight md:text-4xl" style={{ color: B.navy }}>
+            Your conferences
+          </h1>
         </header>
 
         <p className="mt-2 text-[11.5px]" style={{ color: B.muted }}>
