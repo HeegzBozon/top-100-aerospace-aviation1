@@ -1,4 +1,4 @@
-import { Archive, Info, PenLine, Trophy, Users } from "lucide-react";
+import { Archive, Info, Mail, PenLine, Trophy, Users } from "lucide-react";
 
 // Review: the things a Fellow comes back to the machine for that are not a program of
 // work — how the platform runs, the people they have met and kept, the record that
@@ -38,10 +38,19 @@ export const REVIEW_TABS = [
     membersOnly: true,
   },
   {
+    key: "inbox",
+    index: "4",
+    label: "Inbox",
+    blurb: "Who has written to you through your profile — new enquiries first, each one answered at your own pace.",
+    to: "/record?surface=inbox",
+    icon: Mail,
+    membersOnly: true,
+  },
+  {
     // The edition itself, which used to stand as its own key on the title screen. It
     // belongs here: it is something a Fellow comes back to read, not a program of work.
     key: "women-2025",
-    index: "4",
+    index: "5",
     label: "Women 2025",
     blurb: "The 2025 edition of TOP 100 Women — the cover, the contents, the register and the film.",
     to: "/women-2025",
@@ -49,7 +58,7 @@ export const REVIEW_TABS = [
   },
   {
     key: "archive",
-    index: "5",
+    index: "6",
     label: "Archive",
     blurb: "The volumes already closed. Every cycle since the first, kept as the record it is.",
     to: "/archive/6a6b70136ccb7c358f77dd7f",
