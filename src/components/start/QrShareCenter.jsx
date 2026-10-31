@@ -49,7 +49,6 @@ export default function QrShareCenter({
   onDestination,
   link,
   onClose,
-  showWear = true,
 }) {
   const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
@@ -244,18 +243,16 @@ export default function QrShareCenter({
         </div>
 
         {/* The badge is the same object worn on the whole glass, where it turns over. */}
-        {showWear ? (
-          <div className="px-4 pt-2">
-            <button
-              type="button"
-              onClick={() => navigate('/badge')}
-              className="inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full font-body text-[9px] font-bold uppercase tracking-[0.16em]"
-              style={{ background: '#FFFFFF', color: COPPER, border: `1px solid ${COPPER}66` }}
-            >
-              <ScanLine className="h-3 w-3" /> Wear the badge
-            </button>
-          </div>
-        ) : null}
+        <div className="px-4 pt-2">
+          <button
+            type="button"
+            onClick={() => navigate('/badge')}
+            className="inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full font-body text-[9px] font-bold uppercase tracking-[0.16em]"
+            style={{ background: '#FFFFFF', color: COPPER, border: `1px solid ${COPPER}66` }}
+          >
+            <ScanLine className="h-3 w-3" /> Wear the badge
+          </button>
+        </div>
 
         <p className="px-5 pb-2 pt-3 text-center font-body text-[9px] leading-relaxed" style={{ color: 'rgba(30,58,90,0.58)' }}>
           {selected?.key === 'card'
