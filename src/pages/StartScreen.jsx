@@ -5,14 +5,16 @@ import { useAuth } from '@/lib/AuthContext';
 import { hourPhase } from '@/components/core/appOpening';
 import { useCountdown } from '@/components/events/useCountdown';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import revealCursor from '@/components/handheld/revealCursor';
 import DesktopStartScreen from '@/components/desktop/start/DesktopStartScreen';
 import StartSky from '@/components/start/StartSky';
 import StartMark from '@/components/start/StartMark';
-import StartSeasonLine from '@/components/start/StartSeasonLine';
-import PublicationCountdown from '@/components/start/PublicationCountdown';
+import StartCycleReadout from '@/components/start/StartCycleReadout';
 import StartTitleActions from '@/components/start/StartTitleActions';
+import NotifyMe from '@/components/start/NotifyMe';
+import TitleVotePill from '@/components/start/TitleVotePill';
+import TitleCardQr from '@/components/start/TitleCardQr';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
-import useRecordChecklist from '@/components/record/useRecordChecklist';
 import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
 import { loadWomenIssue } from '@/components/magazine/womenEdition';
 import { issueStatus, progressCta, readIssueProgress } from '@/lib/readingProgress';
@@ -42,9 +44,6 @@ export default function StartScreen() {
   // The Fellow's own ballot, as it stands: the program's key reports it, so the card that
   // asks for a hundred names says how many of them are already in order.
   const [ballotCount, setBallotCount] = useState(null);
-  // The Fellow's own record, read once here and handed to both machines: the six keys
-  // beneath the programs report how much of each checklist is already in place.
-  const record = useRecordChecklist();
 
   useEffect(() => {
     if (!signedIn) {
@@ -78,11 +77,6 @@ export default function StartScreen() {
       if (item.key === 'nominate') {
         return ballotCount === null ? item : { ...item, progressLabel: `${ballotCount}/100` };
       }
-      // The record's own key reports how much of the record is already in place, so the
-      // six checklists behind it are read as one figure on the title screen.
-      if (item.key === 'record') {
-        return record.loading ? item : { ...item, progressLabel: `${record.overall?.percent ?? 0}%` };
-      }
       if (item.key !== 'results') return item;
       return {
         ...item,
@@ -109,7 +103,7 @@ export default function StartScreen() {
           : {}),
       };
     });
-  }, [user?.role, signedIn, womenIssue, ballotCount, record.loading, record.overall]);
+  }, [user?.role, signedIn, womenIssue, ballotCount]);
 
   // Which issue the edition stands for, so its key can report the reader's place in it.
   // A title screen that cannot reach the issue still draws, worded plainly as a way in.
@@ -210,6 +204,21 @@ export default function StartScreen() {
       step: (direction) => land(here() + direction),
       page: (direction) => land(here() + direction),
       goTo: (i) => land(i),
+      // The number printed on the key the cursor is standing on — nothing for the two
+      // asks, which print no number — so the radio's display shows the figure a hand
+      // would press rather than the option's place in the list.
+      code: () => optionsRef.current[here()]?.index || null,
+      // The number printed on a key is what the console's keypad types: a Fellow reads
+      // 03 on the Edit profile key, presses 3, and the key is pressed — the cursor lands
+      // on it and it opens, so a numbered key is a key rather than a way to point at one.
+      goToCode: (code) => {
+        const wanted = String(code).padStart(2, "0");
+        const target = optionsRef.current.findIndex((option) => option.index === wanted);
+        if (target < 0) return null;
+        const label = land(target);
+        if (label) api.current.enter();
+        return label;
+      },
       enter: () => {
         const option = optionsRef.current.find((item) => item.key === cursorRef.current);
         if (!option) return false;
@@ -245,6 +254,12 @@ export default function StartScreen() {
     touchPicker();
   }, [cursorKey, options.length]);
 
+  // The ring can land on an ask as easily as on a key, so the reveal is done once for
+  // the whole list: whichever option is lit, the glass brings it into view.
+  useEffect(() => {
+    revealCursor(cursorKey);
+  }, [cursorKey]);
+
   return (
     <>
       {/* The desk opens on the cover rather than on the keypad: the same menu, the same
@@ -252,6 +267,7 @@ export default function StartScreen() {
           control panel. */}
       <div className="hidden md:block">
         <DesktopStartScreen
+          user={user}
           phase={phase}
           status={status}
           onRetry={() => setAttempt((n) => n + 1)}
@@ -265,12 +281,19 @@ export default function StartScreen() {
       </div>
 
       <div className="md:hidden">
-        {/* hh-scroll-window / hh-scroll-plane / hh-scroll-page: while the keys are up
-            this surface stops being one glass tall and clipped to it, and becomes a page
-            the picture can scroll — which is what leaves room for the address a reader is
-            typing into. Three levels are named so the change is deterministic: each stops
-            being a flex track and takes its own height. */}
-        <div className="hh-slide-window hh-scroll-window relative flex flex-col">
+        {/* The cover is the glass: the masthead with the badge beside it, the cycle on one
+            instrument band, the two asks, then the keys taking whatever height is left.
+            Nothing here is taller than the picture, so the whole title screen is read at a
+            glance and the reader never scrolls to find a key. */}
+        {/* The plane is measured against the glass, not against its own content:
+            min-h-screen resolves to the picture window's exact height in the shell
+            (index.css), so the sky runs from the strip at the head of the glass all
+            the way down to the chin instead of stopping under the keys and leaving
+            the well showing as a dead band at the foot. */}
+        <div
+          className="hh-scroll-window relative flex min-h-screen flex-col"
+          style={{ background: phase.sky }}
+        >
           {/* The picture plane: the hour's sky, edge to edge in the glass. Nothing is
               inset and nothing is rounded, so no strip of the page behind the device
               shows at the picture's edges and the star field runs the full height of the
@@ -279,29 +302,47 @@ export default function StartScreen() {
               The foot is square for the same reason — the picture ends on the readout
               band, where the glass is still running straight. */}
           <div
-            className="hh-scroll-plane relative flex min-h-0 flex-1 flex-col overflow-hidden"
+            className="hh-scroll-plane relative flex min-h-full flex-1 flex-col"
             style={{ background: phase.sky }}
           >
             <StartSky phase={phase} />
 
-            <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-5 pb-3 pt-5">
-              {/* The masthead, the cycle read twice on its own two lines, and then the
-                  two keys the title screen asks for standing together in one row. */}
-              <div className="hh-title-block mt-4 shrink-0">
-                <StartMark />
-                <div className="mt-3">
-                  <StartSeasonLine status={status} onRetry={() => setAttempt((n) => n + 1)} />
-                  <PublicationCountdown />
-                  <StartTitleActions
-                    signedIn={signedIn}
-                    voteLive={voteLive}
-                    selectedKey={cursorKey}
-                    notifyOpen={notifyOpen}
-                    onNotifyChange={setNotifyOpen}
-                    notifySelected={cursorKey === NOTIFY_OPTION.key}
-                  />
+            <div className="hh-scroll-page relative flex min-h-0 flex-1 flex-col px-4 pb-2 pt-3">
+              {/* The masthead, with the badge beside it — printed at a size a camera reads
+                  across a table, so a card is handed over without a tap at all, and tapping
+                  it opens the badge full screen. */}
+              <div className="hh-title-block flex shrink-0 items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <StartMark />
                 </div>
+                <TitleCardQr user={user} />
               </div>
+
+              {/* The cycle on one band, then the two asks on one row: both read under the
+                  masthead rather than beside the badge, so each gets the full measure of
+                  the glass instead of wrapping into the other's column. */}
+              <StartCycleReadout
+                status={status}
+                onRetry={() => setAttempt((n) => n + 1)}
+                /* Each ask stands on the reading that answers it: the ballot under the
+                   close, the publishing alert under the day the results go live. */
+                vote={
+                  signedIn && voteLive ? (
+                    <TitleVotePill selected={cursorKey === VOTE_OPTION.key} />
+                  ) : null
+                }
+                notify={
+                  <NotifyMe
+                    open={notifyOpen}
+                    onOpenChange={setNotifyOpen}
+                    selected={cursorKey === NOTIFY_OPTION.key}
+                    dataKey={NOTIFY_OPTION.key}
+                    panelOverlay
+                  />
+                }
+              />
+
+              <StartTitleActions signedIn={signedIn} selectedKey={cursorKey} />
 
               <StartSurfaceKeys items={menuItems} cursorKey={cursorKey} />
             </div>

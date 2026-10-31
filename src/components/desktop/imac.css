@@ -16,7 +16,9 @@
   --room-foot: clamp(44px, 7.5vh, 146px);
   --imac-crown: 58px;
   --imac-side: 30px;
-  --imac-chin: 104px;
+  /* The chin is a faceplate now, not a printed band: it carries the readout, the key
+     field and the two knobs, so it stands taller than the old moulding's. */
+  --imac-chin: 130px;
   --imac-glass-x: calc(var(--room-x) + var(--imac-side));
   --imac-top: calc(var(--room-top) + var(--imac-crown));
   --imac-bottom: calc(var(--room-foot) + var(--imac-chin));
@@ -146,11 +148,14 @@
   justify-content: space-between;
 }
 
+/* The chin: the resin band the faceplate is mounted in. The plate is inset inside it, so
+   the colour the machine is moulded in still shows around the instrument. */
 .imac-chin {
   position: relative;
   flex: 0 0 var(--imac-chin);
   display: flex;
   align-items: center;
+  padding: 9px 15px 11px;
 }
 
 /* The grip moulded into the crown, and the grilles punched either side of it. */
@@ -286,27 +291,6 @@
     inset 0 -7px 13px -11px rgba(255, 255, 255, 0.10),
     inset 0 0 90px rgba(0, 0, 0, 0.45);
 }
-/* The shelf, seated in the tube.
-   Its foot is measured from the machine's own chin, and its sides from the tube's own
-   margins, so it always stands inside the opening however tall the window is — no
-   viewport arithmetic, nothing left hanging in the room below. It is drawn over the
-   tube rather than inside its scroll window, so a record's pages pass beneath it and
-   the shelf itself never moves. */
-.imac-shelf {
-  position: absolute;
-  left: var(--imac-side);
-  right: var(--imac-side);
-  bottom: calc(var(--imac-chin) + 10px);
-  z-index: 60;
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
-}
-.imac-shelf > * {
-  pointer-events: auto;
-  max-width: 100%;
-}
-
 .imac-screen:focus-visible {
   outline: 2px solid rgba(201, 168, 124, 0.85);
   outline-offset: 2px;

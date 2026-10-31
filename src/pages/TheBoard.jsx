@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useMyTop100 } from '@/components/fellow-home/useMyTop100';
 import { resolveCommitteePhase } from '@/components/fellow-home/season/useCommitteePhase';
+import AheadBand from '@/components/board/AheadBand';
 import BoardColumn from '@/components/board/BoardColumn';
 import CheckInColumn from '@/components/board/CheckInColumn';
 import SeasonBand from '@/components/board/SeasonBand';
@@ -11,6 +12,7 @@ import { BOARD_COLUMNS, BRAND } from '@/components/board/boardConfig';
 import useBoardCards from '@/components/board/useBoardCards';
 import useGlass from '@/hooks/useGlass';
 import { Loader2, RotateCcw } from 'lucide-react';
+import { useNavHint } from '@/components/handheld/faceHint';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 const CLOSED_PHASES = ['completed', 'archived'];
@@ -25,6 +27,7 @@ const statLine = (value, suffix) => (value === null ? null : `${value} ${suffix}
 // each scrollable all the way down for depth. The console's ring crosses the
 // columns; rotation moves inside one.
 export default function TheBoard() {
+  const keyHint = useNavHint();
   const [data, setData] = useState(null);
   const [state, setState] = useState({ loading: true, failed: false });
   const [attempt, setAttempt] = useState(0);
@@ -190,13 +193,13 @@ export default function TheBoard() {
           className="text-[7.5px] font-bold uppercase tracking-[0.26em]"
           style={{ color: 'rgba(30,58,90,0.45)' }}
         >
-          ◀▶ Columns · ▼ Depth
+          {keyHint({ walk: 'Columns', open: 'Depth' })}
         </span>
       </div>
 
       <div
         data-hh-track
-        className="flex min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-3 pb-3 scrollbar-hide md:grid md:h-auto md:grid-cols-2 md:gap-5 md:overflow-visible md:px-6 md:pb-10 md:pt-6 lg:grid-cols-3 xl:grid-cols-5"
+        className="flex min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-3 pb-3 scrollbar-hide md:grid md:h-auto md:grid-cols-2 md:gap-5 md:overflow-visible md:px-6 md:pb-10 md:pt-6 lg:grid-cols-3 xl:grid-cols-6"
       >
         {BOARD_COLUMNS.map((column) =>
           column.kind === 'check-in' ? (
@@ -214,7 +217,13 @@ export default function TheBoard() {
               stats={stats}
               selectedKey={selectedKey}
               live={column.key === 'season' ? stats.seasonLine : null}
-              band={column.key === 'season' ? <SeasonBand phase={phase} loading={state.loading} /> : null}
+              band={
+                column.key === 'season' ? (
+                  <SeasonBand phase={phase} loading={state.loading} />
+                ) : column.key === 'ahead' ? (
+                  <AheadBand />
+                ) : null
+              }
             />
           ),
         )}

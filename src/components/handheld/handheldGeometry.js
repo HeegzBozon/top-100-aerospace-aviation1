@@ -16,8 +16,10 @@ const FRAME_GUTTER = 14; // the desk margin: how much surface shows around the s
 // turns (see HandheldBody and HandheldScreenFrame).
 const BEZEL_WIDTH = 14;
 
-// Inside the glass: the strip cut across its head, and the air it leaves under it.
-const NAV_CLEARANCE = 34;
+// Inside the glass at its head: nothing. The legend band that used to be cut across the
+// top of the picture is on the case now, at the head of the chin (see ChinMenuBar), so the
+// glass opens straight onto the surface being read.
+const NAV_CLEARANCE = 0;
 
 // Inside the glass, at its foot: the readout band — the cycle's stamp. It is the glass's
 // own footer rather than a strip added below the picture: taken from the pane's bottom
@@ -25,16 +27,23 @@ const NAV_CLEARANCE = 34;
 // inset above the band instead of running under it.
 const FOOT_CLEARANCE = 32;
 
-// Below the glass: the chin, carrying the wheel, the keys, the speaker and the plate.
-// The chin is three bands: the controls (the wheel's own height, which out-measures
-// both the key cluster and the speaker), the groove under them, and the footer plate —
-// under which the case runs on a little, so the plate is set into the moulding rather
-// than bleeding off its bottom edge. The count below is what those add up to, plus a
-// hair of slack — the live chin is measured from its content, so this has to stay
-// at or above it or the case would sit on the bottom of the picture.
+// Below the glass: the chin, carrying the machine's menu bar, then the wheel, the keys
+// and the speaker. The chin is three bands: the menu bar cut in at its head, the controls
+// (the wheel's own height, which out-measures both the key cluster and the speaker), and
+// the groove under them. The count below is what those add up to, plus a hair of slack —
+// the live chin is measured from its content, so this has to stay at or above it or the
+// case would sit on the bottom of the picture.
 const DECK_CLEARANCE = 158;
 
-export { NAV_CLEARANCE, DECK_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH };
+// The radio face needs more case than the wheel does: the menu bar, the walking cluster
+// and a full keypad are more rows than the wheel ever had. It is measured the same way —
+// the bar, the cluster, the speaker slot and the keypad, plus the air around them — so the
+// glass opens straight onto whichever face is fitted. The pad shares the case with the bar
+// above it, so the bar's own band is counted in here: at 222 the pad's last row ran out
+// through the foot of the machine.
+const RADIO_CLEARANCE = 240;
+
+export { NAV_CLEARANCE, DECK_CLEARANCE, RADIO_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH, FOOT_CLEARANCE };
 
 // Whoever is painting the hardware puts its space on the document. The count is
 // the point: a loading chassis handing the device to the console must not take
@@ -42,7 +51,16 @@ export { NAV_CLEARANCE, DECK_CLEARANCE, FRAME_GUTTER, BEZEL_WIDTH };
 // when the shell is told to put the device away.
 let holders = 0;
 
-export function applyShellVars() {
+// The chin's depth, for the face that is fitted: the wheel's case or the radio's.
+export function setDeckClearance(clearance = DECK_CLEARANCE) {
+  document.documentElement.style.setProperty("--hh-bottom", `${clearance + FRAME_GUTTER}px`);
+}
+
+// The foot is the face's too: the wheel's glass carries the cycle band, and the radio's
+// does not — its own readout across the head of the keypad already prints where the
+// machine is standing, so a second band on the glass would only repeat it and eat the
+// picture. A foot of 0 is the face that needs none.
+export function applyShellVars(clearance = DECK_CLEARANCE, foot = FOOT_CLEARANCE) {
   holders += 1;
   document.body.classList.add("hh-shell");
   const root = document.documentElement.style;
@@ -51,9 +69,10 @@ export function applyShellVars() {
   root.setProperty("--hh-nav", `${NAV_CLEARANCE}px`);
   // The picture opens straight onto the chin: no band of moulding is held below the
   // pane, so the glass's bottom edge IS the chin's top edge and the readout band inside
-  // it is the lowest part of the picture.
-  root.setProperty("--hh-bottom", `${DECK_CLEARANCE + FRAME_GUTTER}px`);
-  root.setProperty("--hh-foot", `${FOOT_CLEARANCE}px`);
+  // it is the lowest part of the picture. How deep the chin is belongs to the face
+  // fitted to it, so it is handed in rather than assumed.
+  setDeckClearance(clearance);
+  root.setProperty("--hh-foot", `${foot}px`);
   root.setProperty("--hh-frame", `${FRAME_GUTTER}px`);
   root.setProperty("--hh-bezel-w", `${BEZEL_WIDTH}px`);
 }

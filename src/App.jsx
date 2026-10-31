@@ -28,6 +28,8 @@ const Colony                  = lazy(() => import('@/pages/Colony'));
 const AnalyticsDashboard      = lazy(() => import('@/pages/AnalyticsDashboard'));
 const GlobalIntelligence      = lazy(() => import('@/pages/GlobalIntelligence'));
 const ProfileView             = lazy(() => import('@/pages/ProfileView'));
+const ScannedCard             = lazy(() => import('@/pages/ScannedCard'));
+const ConferenceBadge         = lazy(() => import('@/pages/ConferenceBadge'));
 const ARTCommandCenter        = lazy(() => import('@/pages/ARTCommandCenter'));
 const TeamManager             = lazy(() => import('@/pages/TeamManager'));
 const FeatureToTeamMapper     = lazy(() => import('@/pages/FeatureToTeamMapper'));
@@ -93,16 +95,18 @@ const WomenCollageGenerator = lazy(() => import('@/pages/WomenCollageGenerator')
 const Top100Women2025DeepLink = lazy(() => import('@/pages/Top100Women2025DeepLink'));
 const TheBoard = lazy(() => import('@/pages/TheBoard'));
 const StartScreen = lazy(() => import('@/pages/StartScreen'));
-const AeroSyncContacts = lazy(() => import('@/pages/AeroSyncContacts'));
+const AeroSyncPeople = lazy(() => import('@/pages/AeroSyncPeople'));
+const AeroSyncScan = lazy(() => import('@/pages/AeroSyncScan'));
 const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
 const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
-const TalentDesk = lazy(() => import('@/pages/TalentDesk'));
 const AppStore = lazy(() => import('@/pages/AppStore'));
 const AppStoreShelf = lazy(() => import('@/pages/AppStoreShelf'));
 const PressKitStudio = lazy(() => import('@/pages/PressKitStudio'));
 const PressKitPublic = lazy(() => import('@/pages/PressKitPublic'));
+const Classifieds = lazy(() => import('@/pages/Classifieds'));
+const Review = lazy(() => import('@/pages/Review'));
 
 
 // Every surface is an application the machine runs: the shell draws the chrome and
@@ -145,6 +149,9 @@ const AuthenticatedApp = () => {
           the way in for whoever is not one yet — the same machine either way. */}
       <Route path="/" element={<StartScreen />} />
       <Route path="/start" element={<StartScreen />} />
+      {/* Review: the orientation, a Fellow's own record and the archive, read as one
+          surface with three tabs rather than three keys on the title screen. */}
+      <Route path="/review" element={<Review />} />
       <Route path="/DiscoveryQuestionnaire" element={<DiscoveryQuestionnaire />} />
       <Route path="/onboarding" element={<OnboardingKickstarter />} />
       <Route path="/onboarding-admin" element={<OnboardingAdmin />} />
@@ -183,21 +190,26 @@ const AuthenticatedApp = () => {
       {/* AeroSync opens on its own title screen, the way the platform does, and the
           surfaces it lists live beneath it */}
       <Route path="/aerosync" element={<AeroSyncTitle />} />
-      <Route path="/aerosync/contacts" element={<AeroSyncContacts />} />
+      <Route path="/aerosync/scan" element={<AeroSyncScan />} />
+      <Route path="/aerosync/people" element={<AeroSyncPeople />} />
+      {/* The rolodex and the following ledger are one surface now, and the capture is
+          the Scan surface: the old addresses land on the People they belong to. */}
+      <Route path="/aerosync/contacts" element={<Navigate to="/aerosync/people" replace />} />
       <Route path="/aerosync/rooms" element={<AeroSyncRooms />} />
       <Route path="/aerosync/following" element={<AeroSyncFollowing />} />
       {/* The networking page is retired: its work lives on AeroSync's surfaces now */}
       <Route path="/networking" element={<Navigate to="/aerosync" replace />} />
       {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
       <Route path="/mission-briefing" element={<MissionBriefing />} />
-      {/* The desk: who has a door open. Public and alphabetical — never ordered by
-          availability, intent, or anything commercial. */}
-      <Route path="/talent-desk" element={<TalentDesk />} />
       {/* The App Store: micro-tools, each doing one job and handing back an artifact */}
       <Route path="/app-store" element={<AppStore />} />
       <Route path="/app-store/shelf" element={<AppStoreShelf />} />
       <Route path="/press-kit" element={<PressKitStudio />} />
       <Route path="/press-kit/:shareCode" element={<PressKitPublic />} />
+      {/* The board: positions, mandates and the open desk, put up by Fellows. Read as a
+          classified page — the old desk's address lands on it. */}
+      <Route path="/classifieds" element={<Classifieds />} />
+      <Route path="/talent-desk" element={<Navigate to="/classifieds" replace />} />
       <Route path="/the-board" element={<TheBoard />} />
       {/* Legacy home routes → canonical / */}
       <Route path="/home-v2" element={<Navigate to="/" replace />} />
@@ -277,6 +289,11 @@ const AuthenticatedApp = () => {
        <Route path="/Top100Women2025/:year/:month/:slug/index.html" element={<Top100Women2025DeepLink />} />
        <Route path="/Top100Women2025/:nomineeId" element={<DynamicProfilePage />} />
        <Route path="/profiles/:id" element={<ProfileView />} />
+       {/* The handover face of a record: where a scanned card code lands. Public, and
+           answered without an account — the canonical reading stays /profiles/:id. */}
+       <Route path="/card/:id" element={<ScannedCard />} />
+       {/* The badge itself: worn full screen, turned over into the card it hands on */}
+       <Route path="/badge" element={<ConferenceBadge />} />
        <Route path="/editions/:id" element={<FellowEdition />} />
        <Route path="/platform-board" element={<PlatformDevelopmentBoard />} />
       <Route path="/meetups" element={<Meetups />} />

@@ -298,11 +298,14 @@ button:focus-visible {
   --hh-foot: 32px;
 
   /* The desk margin, the moulding around the glass, and the inset every surface
-     on the picture is measured from — the last being the first two added. */
-  --hh-frame: 14px;
-  /* Set deeper than the steps need: the case takes more and the picture gives it up,
-     which is what makes the opening read as a well rather than a frame. */
-  --hh-bezel-w: 14px;
+     on the picture is measured from — the last being the first two added. Held to
+     the width of a seam rather than of a margin: on a phone the case was taking
+     28px down each side of a 372px picture, which is width the surface behind it
+     can never get back. */
+  --hh-frame: 9px;
+  /* Deep enough to read as a well rather than a frame, and no deeper: every pixel
+     here is taken from the picture on both sides at once. */
+  --hh-bezel-w: 9px;
   --hh-glass-inset: calc(var(--hh-frame, 0px) + var(--hh-bezel-w, 0px));
 
   /* The strip cut across the head of the glass, and the air it leaves under
@@ -424,6 +427,9 @@ button:focus-visible {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  /* Nothing is cut across the head of the picture any more, so the window takes the
+     glass's own curve at its top corners and clips the surface to it. */
+  border-radius: 8px 8px 0 0;
 }
 
 /* A deck fills the glass exactly: one slide per screen, each scrolling inside
@@ -734,6 +740,24 @@ button:focus-visible {
     rgb(var(--hh-metal-rgb) / 0.42),
     rgb(var(--hh-metal-rgb) / 0.05)
   );
+}
+
+/* ===== THE RADIO FACE — THE READOUT =====
+   The handheld's second face. A field transceiver prints its whole state on one strip
+   and nothing else, so that strip is built as a well of dark glass seated in the case:
+   the moulding's shadow biting down its top edge, a steel hairline closing the opening,
+   and the ink lit from behind rather than printed on it. Nothing here is a hard-coded
+   colour — the readout takes the finish's own glass, so a machine recast in another
+   moulding recasts its instrument with it. */
+.hr-lcd {
+  border-radius: 5px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0) 52%),
+    radial-gradient(130% 150% at 50% 0%, #16283C 0%, #0A1421 62%, #060C15 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--hh-ink-rgb) / 0.16),
+    inset 0 3px 7px -3px rgba(3, 6, 13, 0.85),
+    0 1px 0 var(--hh-shell-spec);
 }
 
 /* ===== RETRO POLYMER — THE CASE, AND HOW EVERYTHING IS FITTED TO IT =====
@@ -1261,6 +1285,27 @@ button:focus-visible {
   display: none;
 }
 
+/* ===== NO SCROLL CHROME ON THE GLASS =====
+   The device is the frame. A browser's scrollbar drawn inside it takes a strip of the
+   picture on every scrolling surface, and on a dark desk the trough prints as a black
+   band down one edge — the machine appears to have a second, narrower case inside it.
+   So on a phone nothing in the shell shows scroll chrome: the page, the stage, and every
+   container a surface rolls inside itself. The roll is still the wheel, a thumb and the
+   film; where a surface wants to report its own measure it draws it (PageScrollRail). */
+@media (max-width: 767px) {
+  body.hh-shell,
+  body.hh-shell * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  body.hh-shell::-webkit-scrollbar,
+  body.hh-shell *::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+}
+
 /* ===== THE ISSUE'S MEASURE — THE READING BAR =====
    The metal in the head band's track: one slow sheen crossing the copper-into-rose-gold
    fill, so the measure reads as a live instrument rather than a printed rule. Nothing
@@ -1635,6 +1680,26 @@ button:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .doc-still, .doc-line, .doc-fade {
     animation: none;
+  }
+}
+
+/* ===== THE BADGE, WORN FULL SCREEN =====
+   A badge is held up, not browsed. While it is on the glass the controls centre is put
+   away and the clearance it holds is handed back to the picture, so the plate fills the
+   device the way a card fills a hand. Nothing else on the machine moves. */
+@media (max-width: 767px) {
+  body.hh-badge {
+    --hh-bottom: 0px;
+    --hh-foot: 0px;
+  }
+
+  body.hh-badge .hh-stage {
+    bottom: 0;
+  }
+
+  body.hh-badge .hh-chin,
+  body.hh-badge .hh-viewer-foot {
+    display: none;
   }
 }
 

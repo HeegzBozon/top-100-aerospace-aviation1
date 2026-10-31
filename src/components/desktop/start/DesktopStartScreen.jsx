@@ -1,4 +1,5 @@
 import StartMetaRow from "@/components/start/StartMetaRow";
+import TitleCardQr from "@/components/start/TitleCardQr";
 import DesktopStartSky from "./DesktopStartSky";
 import DesktopStartRail from "./DesktopStartRail";
 import DesktopStartHero from "./DesktopStartHero";
@@ -12,6 +13,7 @@ import "../deskTitle.css";
 // index underneath. Same menu, same actions, same season record — read as a magazine
 // rather than as a joystick.
 export default function DesktopStartScreen({
+  user = null,
   phase,
   status,
   onRetry,
@@ -48,8 +50,14 @@ export default function DesktopStartScreen({
         </div>
         <DesktopSurfaceIndex items={menuItems} />
 
-        <div className="mt-auto pt-14">
-          <StartMetaRow />
+        {/* The badge is pinned at the foot of the cover: printed at a size a camera reads
+            across a desk, so the record is handed over by being scanned rather than by
+            copying a name across. Tapping it opens it full screen. */}
+        <div className="mt-auto flex items-end justify-between gap-8 pt-14">
+          <div className="min-w-0 flex-1">
+            <StartMetaRow />
+          </div>
+          <TitleCardQr user={user} variant="desk" />
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import { BookOpen, Play, RotateCcw } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { readIssueProgress } from '@/lib/readingProgress';
+import { useNavHint } from '@/components/handheld/faceHint';
 
 // An issue's opening, played in the glass.
 //
@@ -12,6 +13,7 @@ import { readIssueProgress } from '@/lib/readingProgress';
 // reading it, or letting it play as a film — are walked on the ring as well as
 // tapped.
 export default function GlassIssueOpening({ issue, onBegin, onAutoPlay }) {
+  const keyHint = useNavHint();
   const [stage, setStage] = useState(0);
   const [cursor, setCursor] = useState(0);
   const cursorRef = useRef(0);
@@ -167,7 +169,7 @@ export default function GlassIssueOpening({ issue, onBegin, onAutoPlay }) {
         )}
 
         <p className="mt-3 text-[7.5px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(250,248,245,0.34)' }}>
-          ◀▶ Walk · A Take
+          {keyHint({ open: 'Take' })}
         </p>
       </div>
 

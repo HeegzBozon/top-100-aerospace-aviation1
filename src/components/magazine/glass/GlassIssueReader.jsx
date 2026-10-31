@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, List } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
+import { useNavHint } from '@/components/handheld/faceHint';
 import { useCinematicPlayback, PLAYBACK_SPEEDS } from '@/components/magazine/useCinematicPlayback';
 import { buildIssueContents, buildNameIndex, foldLabel } from '@/components/magazine/glass/glassIssueEntries';
 import GlassIssuePage from '@/components/magazine/glass/GlassIssuePage';
@@ -30,6 +31,8 @@ const REGISTER_KEY = 'issue-name-index';
 export default function GlassIssueReader({ issue, pages = [], articles = [], signedUrl, isPlaying, setIsPlaying, speed, setSpeed, restart = false }) {
   const isPdf = issue.assembly_mode === 'pdf';
   const total = isPdf ? (issue.cover_pdf_page_count || 0) : pages.length;
+  // The contents are walked by the keys printed for the face on the case.
+  const keyHint = useNavHint();
 
   // Play as film arrives with the film already running, so it opens on the page rather
   // than on the contents.
@@ -345,7 +348,7 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   return withPanel(
     <GlassStudioList
       kicker={isPdf ? 'Pages' : 'Contents'}
-      hint="◀▶ Walk · A Read"
+      hint={keyHint({ open: 'Read' })}
       note={(
         <div className="space-y-1.5">
           <div className="flex items-baseline justify-between gap-3">
