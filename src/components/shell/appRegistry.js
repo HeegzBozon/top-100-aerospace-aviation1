@@ -87,7 +87,8 @@ export const APP_GROUPS = [
     key: "account",
     label: "Account",
     items: [
-      { label: "Shop", to: "/Shop", icon: ShoppingBag, shelf: true },
+      { label: "Chamber of Commerce", to: "/chamber", icon: Landmark },
+      { label: "Gift Shop", to: "/gift-shop", icon: ShoppingBag, shelf: true },
       { label: "Subscribe", to: "/subscribe", icon: Mail, shelf: true },
       { label: "RSVP", to: "/rsvp", icon: CalendarCheck },
       // The way in, in both readings — signing in, and making the account a visitor has

@@ -101,6 +101,9 @@ const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
 const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
+const Chamber = lazy(() => import('@/pages/Chamber'));
+const ChamberPractice = lazy(() => import('@/pages/ChamberPractice'));
+const ChamberOffice = lazy(() => import('@/pages/ChamberOffice'));
 const AppStore = lazy(() => import('@/pages/AppStore'));
 const AppStoreShelf = lazy(() => import('@/pages/AppStoreShelf'));
 const PressKitStudio = lazy(() => import('@/pages/PressKitStudio'));
@@ -201,9 +204,20 @@ const AuthenticatedApp = () => {
       <Route path="/networking" element={<Navigate to="/aerosync" replace />} />
       {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
       <Route path="/mission-briefing" element={<MissionBriefing />} />
+      {/* The Chamber of Commerce: the house's trading floor, with the App Store and the
+          Gift Shop as its two counters */}
+      <Route path="/chamber" element={<Chamber />} />
+      {/* The desks the Chamber works from — opportunities, introductions, the career
+          center, the domain networks and the ribbon cuttings. Each is served by the
+          surface already built against its canonical entity. */}
+      <Route path="/chamber/office/:office" element={<ChamberOffice />} />
+      {/* The house's own practices — consulting, the creative agency, the incubator */}
+      <Route path="/chamber/:practice" element={<ChamberPractice />} />
       {/* The App Store: micro-tools, each doing one job and handing back an artifact */}
       <Route path="/app-store" element={<AppStore />} />
       <Route path="/app-store/shelf" element={<AppStoreShelf />} />
+      {/* The Gift Shop: the house's own objects, under the name the Chamber gives it */}
+      <Route path="/gift-shop" element={<Shop />} />
       <Route path="/press-kit" element={<PressKitStudio />} />
       <Route path="/press-kit/:shareCode" element={<PressKitPublic />} />
       {/* The board: positions, mandates and the open desk, put up by Fellows. Read as a

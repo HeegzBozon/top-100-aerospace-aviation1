@@ -1,9 +1,9 @@
-import { Archive, Info, PenLine, Users } from "lucide-react";
+import { Archive, Info, PenLine, Trophy, Users } from "lucide-react";
 
 // Review: the things a Fellow comes back to the machine for that are not a program of
 // work — how the platform runs, the people they have met and kept, the record that
 // stands for them, and the cycles already closed. They were keys on the title screen and
-// read as errands; here they are one surface with four tabs, so the machine answers
+// read as errands; here they are one surface with five tabs, so the machine answers
 // "where do I go to look at something about me or about the record" with one key.
 //
 // The order is the order they are read in: what this is, then who is here with you, then
@@ -38,8 +38,18 @@ export const REVIEW_TABS = [
     membersOnly: true,
   },
   {
-    key: "archive",
+    // The edition itself, which used to stand as its own key on the title screen. It
+    // belongs here: it is something a Fellow comes back to read, not a program of work.
+    key: "women-2025",
     index: "4",
+    label: "Women 2025",
+    blurb: "The 2025 edition of TOP 100 Women — the cover, the contents, the register and the film.",
+    to: "/women-2025",
+    icon: Trophy,
+  },
+  {
+    key: "archive",
+    index: "5",
     label: "Archive",
     blurb: "The volumes already closed. Every cycle since the first, kept as the record it is.",
     to: "/archive/6a6b70136ccb7c358f77dd7f",

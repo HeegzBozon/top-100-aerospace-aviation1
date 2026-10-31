@@ -1,5 +1,5 @@
 import ShopHero from '@/components/shop/ShopHero';
-import GroundControlFlagship from '@/components/shop/GroundControlFlagship';
+import GiftShopWaitlist from '@/components/shop/GiftShopWaitlist';
 import MerchGrid from '@/components/shop/MerchGrid';
 import PartnerSpotlight from '@/components/shop/PartnerSpotlight';
 import ComicCardDrop from '@/components/shop/ComicCardDrop';
@@ -19,12 +19,12 @@ export default function Shop() {
 
       <ShopHero />
 
+      {/* The opening list, asked for before anything is sold */}
+      <GiftShopWaitlist />
+
       <main>
         {/* Featured partner */}
         <PartnerSpotlight />
-
-        {/* Flagship product */}
-        <GroundControlFlagship />
 
         {/* Merchandise collection */}
         <MerchGrid />

@@ -16,8 +16,6 @@ import TitleVotePill from '@/components/start/TitleVotePill';
 import TitleCardQr from '@/components/start/TitleCardQr';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
 import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
-import { loadWomenIssue } from '@/components/magazine/womenEdition';
-import { issueStatus, progressCta, readIssueProgress } from '@/lib/readingProgress';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
 
@@ -40,7 +38,6 @@ export default function StartScreen() {
   const [attempt, setAttempt] = useState(0);
   const [cursorKey, setCursorKey] = useState(START_MENU[0].key);
   const [notifyOpen, setNotifyOpen] = useState(false);
-  const [womenIssue, setWomenIssue] = useState(null);
   // The Fellow's own ballot, as it stands: the program's key reports it, so the card that
   // asks for a hundred names says how many of them are already in order.
   const [ballotCount, setBallotCount] = useState(null);
@@ -69,53 +66,15 @@ export default function StartScreen() {
   // is entitled to — reading, nominating and the published edition for anyone at all, the
   // ballot and a Fellow's own surfaces for a Fellow — and, for the few who run it, one
   // extra key at the end of the row.
-  const menuItems = useMemo(() => {
-    const progress = readIssueProgress(womenIssue?.id);
-    const status = issueStatus(progress);
-    return startMenuFor({ isAdmin: user?.role === 'admin', isSignedIn: signedIn }).map((item) => {
-      // The ballot's key carries the ballot's own progress — x of the hundred it asks for.
-      if (item.key === 'nominate') {
-        return ballotCount === null ? item : { ...item, progressLabel: `${ballotCount}/100` };
-      }
-      if (item.key !== 'results') return item;
-      return {
-        ...item,
-        // The edition can be handed on from its own card whether or not this machine can
-        // reach the issue record itself.
-        shareUrl: `${window.location.origin}/women-2025`,
-        ...(womenIssue
-          ? {
-            // The edition reports the reader's own place in it, and how it was gone
-            // through: Start before it is begun, Resume while it is being read, and
-            // Read again once it is finished — read or skimmed either way.
-            cta: progressCta(progress),
-            progress: progress || null,
-            status,
-            // A reader who has begun the issue is taken to the issue itself rather than
-            // through the route that resolves one — and Read again opens it at its front,
-            // with this reader's pass on it wiped, so the second reading starts clean.
-            to: !progress
-              ? item.to
-              : status.finished
-                ? `/magazine/${womenIssue.id}?restart=1`
-                : `/magazine/${womenIssue.id}`,
-          }
-          : {}),
-      };
-    });
-  }, [user?.role, signedIn, womenIssue, ballotCount]);
-
-  // Which issue the edition stands for, so its key can report the reader's place in it.
-  // A title screen that cannot reach the issue still draws, worded plainly as a way in.
-  useEffect(() => {
-    let alive = true;
-    loadWomenIssue()
-      .then((issue) => alive && setWomenIssue(issue))
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, []);
+  const menuItems = useMemo(
+    () =>
+      startMenuFor({ isAdmin: user?.role === 'admin', isSignedIn: signedIn }).map((item) => {
+        // The ballot's key carries the ballot's own progress — x of the hundred it asks for.
+        if (item.key !== 'nominate' || ballotCount === null) return item;
+        return { ...item, progressLabel: `${ballotCount}/100` };
+      }),
+    [user?.role, signedIn, ballotCount],
+  );
 
   useEffect(() => {
     let alive = true;

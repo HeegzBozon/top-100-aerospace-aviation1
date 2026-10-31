@@ -1,9 +1,19 @@
-import { Compass, FileText, Radar, Rocket, Users } from 'lucide-react';
+import { Compass, FileText, Gauge, Radar, Rocket, Users } from 'lucide-react';
 
 // The App Store's catalog. One entry per micro-tool: what it is, the single job it does,
 // and the artifact it hands back. Only a tool with status 'available' carries a way in —
 // a listed tool that is still being built is described, never opened.
 export const STORE_TOOLS = [
+  {
+    key: 'ground-control',
+    name: 'Ground Control',
+    kicker: 'Business communication platform',
+    job: 'The house’s own platform for aerospace shops: the desk that keeps a programme’s communication in one place.',
+    artifact: 'A working workspace, opened on request — audit or trial.',
+    status: 'available',
+    to: '/ground-control',
+    icon: Gauge,
+  },
   {
     key: 'press-kit',
     name: 'The Press Kit',
