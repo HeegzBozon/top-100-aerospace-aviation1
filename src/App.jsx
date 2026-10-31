@@ -101,6 +101,10 @@ const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
 const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
+const AppStore = lazy(() => import('@/pages/AppStore'));
+const AppStoreShelf = lazy(() => import('@/pages/AppStoreShelf'));
+const PressKitStudio = lazy(() => import('@/pages/PressKitStudio'));
+const PressKitPublic = lazy(() => import('@/pages/PressKitPublic'));
 const Classifieds = lazy(() => import('@/pages/Classifieds'));
 const Review = lazy(() => import('@/pages/Review'));
 
@@ -197,6 +201,11 @@ const AuthenticatedApp = () => {
       <Route path="/networking" element={<Navigate to="/aerosync" replace />} />
       {/* The onboarding sequence: why, who, what, when, where, how — then the record */}
       <Route path="/mission-briefing" element={<MissionBriefing />} />
+      {/* The App Store: micro-tools, each doing one job and handing back an artifact */}
+      <Route path="/app-store" element={<AppStore />} />
+      <Route path="/app-store/shelf" element={<AppStoreShelf />} />
+      <Route path="/press-kit" element={<PressKitStudio />} />
+      <Route path="/press-kit/:shareCode" element={<PressKitPublic />} />
       {/* The board: positions, mandates and the open desk, put up by Fellows. Read as a
           classified page — the old desk's address lands on it. */}
       <Route path="/classifieds" element={<Classifieds />} />

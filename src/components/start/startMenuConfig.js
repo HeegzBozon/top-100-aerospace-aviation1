@@ -1,4 +1,4 @@
-import { Award, BookOpen, ListChecks, LogIn, Shield, Trophy, UserPlus } from "lucide-react";
+import { Award, BookOpen, ListChecks, LogIn, Shield, Store, Trophy, UserPlus } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -30,6 +30,9 @@ export const START_MENU = [
   // The committee's second act: a Fellow putting their own hundred in order.
   { key: "vote-surface", index: "03", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
   { key: "results", index: "04", label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy },
+  // The shelf of micro-tools, closing the row. Public: every artifact is composed from
+  // the reader's own record, so there is nothing behind this key a visitor cannot be shown.
+  { key: "app-store", index: "05", label: "App Store", to: "/app-store", icon: Store },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -37,7 +40,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "05",
+  index: "06",
   label: "Admin",
   to: "/Admin",
   icon: Shield,
