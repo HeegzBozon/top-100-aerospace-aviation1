@@ -1,0 +1,86 @@
+{
+  "name": "ConferenceHost",
+  "type": "object",
+  "properties": {
+    "applicant_email": {
+      "type": "string",
+      "description": "Email of the Fellow or organizer applying to host conferences. One record per applicant; the record's status is the credential."
+    },
+    "applicant_name": {
+      "type": "string",
+      "description": "Display name, denormalized at application time"
+    },
+    "organization": {
+      "type": "string",
+      "description": "The body that stages the conference, e.g. an association, a company, a society"
+    },
+    "role_title": {
+      "type": "string",
+      "description": "The applicant's role in the organization"
+    },
+    "website": {
+      "type": "string",
+      "description": "Organization or series website"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why this organizer should be able to publish conferences on the network. Read by the reviewing administrator only."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "suspended",
+        "declined"
+      ],
+      "default": "pending",
+      "description": "Host approval state. Only 'approved' confers the right to create and publish conferences. Written by the review path alone, never by the applicant."
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the application was last reviewed"
+    },
+    "reviewed_by_email": {
+      "type": "string",
+      "description": "Email of the administrator who last reviewed the application"
+    },
+    "review_note": {
+      "type": "string",
+      "description": "Internal review note. Admin-only provenance; never rendered on a public surface."
+    }
+  },
+  "required": [
+    "applicant_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.applicant_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
