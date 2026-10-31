@@ -8,6 +8,7 @@ import StartMetaRow from '@/components/start/StartMetaRow';
 import ChamberKeys from '@/components/chamber/ChamberKeys';
 import HouseOffices from '@/components/chamber/HouseOffices';
 import { CHAMBER_COUNTERS, CHAMBER_OFFICES } from '@/components/chamber/chamberPrograms';
+import { CHAMBER_DESKS } from '@/components/chamber/chamberOffices';
 
 // The Chamber of Commerce. Two counters on it — the App Store and the Gift Shop — and
 // behind them the offices the house does business from: its three practices, the
@@ -21,7 +22,7 @@ import { CHAMBER_COUNTERS, CHAMBER_OFFICES } from '@/components/chamber/chamberP
 export default function Chamber() {
   const navigate = useNavigate();
   const [phase] = useState(() => hourPhase());
-  const programs = useMemo(() => [...CHAMBER_COUNTERS, ...CHAMBER_OFFICES], []);
+  const programs = useMemo(() => [...CHAMBER_COUNTERS, ...CHAMBER_DESKS, ...CHAMBER_OFFICES], []);
   const [cursorKey, setCursorKey] = useState(programs[0].key);
 
   const cursorRef = useRef(cursorKey);
@@ -120,6 +121,13 @@ export default function Chamber() {
               The counters
             </p>
             <ChamberKeys programs={CHAMBER_COUNTERS} cursorKey={cursorKey} />
+          </div>
+
+          <div className="mt-5 md:mt-8">
+            <p className="mb-2 text-[7.5px] font-bold uppercase tracking-[0.3em] text-editorial-gold/70 md:mb-3 md:text-[9px]">
+              The desks
+            </p>
+            <HouseOffices programs={CHAMBER_DESKS} cursorKey={cursorKey} />
           </div>
 
           <div className="mt-5 md:mt-8">

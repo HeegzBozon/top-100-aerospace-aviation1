@@ -3,8 +3,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { base44 } from '@/api/base44Client';
-import { createPageUrl } from '@/utils';
 import { Send, Loader2, CheckCircle, Sparkles } from 'lucide-react';
+
+// Where an introduction is answered. The request used to be emailed with a link to a
+// dashboard that never read it; the Chamber's introductions desk is the place the record
+// actually lands, so the notification points at it.
+const INTRO_DESK_PATH = '/chamber/office/introductions';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -39,25 +43,24 @@ export default function IntroRequestModal({
         status: 'pending'
       });
 
-      // Send notification email with direct dashboard link
-      const dashboardUrl = targetType === 'job' 
-        ? `${window.location.origin}${createPageUrl('MissionControl') + '?module=employer'}?tab=intros`
-        : `${window.location.origin}${createPageUrl('MissionControl') + '?module=provider'}`;
+      // The introduction is answered in the Chamber's own desk, not in a dashboard.
+      const deskUrl = `${window.location.origin}${INTRO_DESK_PATH}`;
 
       await base44.integrations.Core.SendEmail({
         to: recipientEmail,
-        subject: `🤝 New Introduction Request: ${targetTitle}`,
+        subject: `New introduction request: ${targetTitle}`,
         body: `
 Hello,
 
-${user.full_name} has requested an introduction for your ${targetType === 'job' ? 'job posting' : 'service'}: "${targetTitle}".
+${user.full_name} has asked to be introduced to you — ${targetType === 'job' ? 'regarding the role' : 'regarding the availability you posted'}: "${targetTitle}".
 
-${message ? `Their message:\n"${message}"\n` : ''}Contact: ${user.email}
+${message ? `Their note:\n"${message}"\n` : ''}Contact: ${user.email}
 
-➡️ Respond now: ${dashboardUrl}
+The chamber introduces; it never brokers. Any terms are between you.
 
-Best,
-TOP 100 Talent Exchange
+Answer it in your introductions desk: ${deskUrl}
+
+TOP 100 Aerospace & Aviation
         `.trim()
       });
 

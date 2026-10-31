@@ -29,10 +29,13 @@ export const CHAMBER_COUNTERS = [
   },
 ];
 
+// The house's offices carry the numbers after the desks (see chamberOffices.js), so the
+// directory reads as one list from the counters down: 1–2 the counters, 3–7 the desks,
+// 8–14 the offices.
 export const CHAMBER_OFFICES = [
   {
     key: "consulting",
-    index: "3",
+    index: "8",
     label: "Consulting",
     blurb: "The house's practitioners, engaged for a defined piece of work.",
     to: "/chamber/consulting",
@@ -40,7 +43,7 @@ export const CHAMBER_OFFICES = [
   },
   {
     key: "creative-agency",
-    index: "4",
+    index: "9",
     label: "Creative Agency",
     blurb: "Identity, editorial and film made to the standard the publication is printed at.",
     to: "/chamber/creative-agency",
@@ -48,7 +51,7 @@ export const CHAMBER_OFFICES = [
   },
   {
     key: "incubator",
-    index: "5",
+    index: "10",
     label: "Incubator",
     blurb: "Early ventures housed inside the institution, with the record behind them.",
     to: "/chamber/incubator",
@@ -56,7 +59,7 @@ export const CHAMBER_OFFICES = [
   },
   {
     key: "accelerator",
-    index: "6",
+    index: "11",
     label: "Accelerator",
     blurb: "The cohort programme for ventures already in the air.",
     to: "/AcceleratorHub",
@@ -64,7 +67,7 @@ export const CHAMBER_OFFICES = [
   },
   {
     key: "membership",
-    index: "7",
+    index: "12",
     label: "Membership",
     blurb: "Standing in the institution, read on one axis from public to patron.",
     to: "/Membership",
@@ -72,7 +75,7 @@ export const CHAMBER_OFFICES = [
   },
   {
     key: "sponsorship",
-    index: "8",
+    index: "13",
     label: "Sponsorship",
     blurb: "Partnership with the record — patron of the work, never of the measurement.",
     to: "/SponsorPitch",
@@ -80,7 +83,7 @@ export const CHAMBER_OFFICES = [
   },
   {
     key: "fundraising",
-    index: "9",
+    index: "14",
     label: "Fundraising",
     blurb: "The round, open to the community on Wefunder.",
     href: "https://wefunder.com/top.100.aerospace.aviation",
