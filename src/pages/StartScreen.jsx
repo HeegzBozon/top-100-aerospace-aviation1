@@ -285,8 +285,13 @@ export default function StartScreen() {
             instrument band, the two asks, then the keys taking whatever height is left.
             Nothing here is taller than the picture, so the whole title screen is read at a
             glance and the reader never scrolls to find a key. */}
+        {/* The plane is measured against the glass, not against its own content:
+            min-h-screen resolves to the picture window's exact height in the shell
+            (index.css), so the sky runs from the strip at the head of the glass all
+            the way down to the chin instead of stopping under the keys and leaving
+            the well showing as a dead band at the foot. */}
         <div
-          className="hh-scroll-window relative flex min-h-full flex-col"
+          className="hh-scroll-window relative flex min-h-screen flex-col"
           style={{ background: phase.sky }}
         >
           {/* The picture plane: the hour's sky, edge to edge in the glass. Nothing is
