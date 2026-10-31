@@ -3,13 +3,14 @@ import { Season } from '@/entities/Season';
 import { KBArticle } from '@/entities/KBArticle';
 import { User } from '@/entities/User';
 import { useToast } from "@/components/ui/use-toast";
-import { Settings, X, Menu } from 'lucide-react';
+import { Settings, X } from 'lucide-react';
 
 // Admin shell components
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs';
 import AdminCommandPalette, { addRecentTab } from '@/components/admin/AdminCommandPalette';
 import { findTabById, resolveTabId } from '@/components/admin/adminNavConfig';
+import useAdminSectionsMenu from '@/components/admin/useAdminSectionsMenu';
 
 // Admin content components — lazy-loaded per tab (only the active tab downloads its chunk)
 const AdminCommandCenter        = lazy(() => import('@/components/admin/AdminCommandCenter'));
@@ -80,6 +81,13 @@ export default function Admin() {
   const [viewingSeason, setViewingSeason] = useState(null);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  // The portal carries no bar of its own on a phone, so its index of sections is offered
+  // from the machine's Edit menu — the same drawer the monitor's own controls sit in.
+  useAdminSectionsMenu({
+    enabled: activeTab !== 'selection-monitor',
+    onOpenSections: () => setMobileSidebarOpen(true),
+  });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try { return JSON.parse(localStorage.getItem(SIDEBAR_COLLAPSED_KEY) || 'false'); } catch { return false; }
   });
@@ -363,20 +371,9 @@ export default function Admin() {
 
       {/* ── Main Content ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top bar. The live monitor gives its head to the ledger on a phone: the monitor's
-            own figures line carries the way into the sections instead, so no breadcrumb bar
-            stands between the operator and the standings. */}
-        <header
-          className={`${activeTab === 'selection-monitor' ? 'hidden md:flex' : 'flex'} flex-shrink-0 h-14 items-center gap-3 px-4 md:px-6 border-b border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm`}
-        >
-          {/* Mobile hamburger */}
-          <button
-            onClick={() => setMobileSidebarOpen(true)}
-            className="md:hidden text-[var(--muted)] hover:text-[var(--text)] transition-colors p-1"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-
+        {/* Top bar — a desk's furniture. On a phone the portal gives its whole head to the
+            section being read; the way between sections lives in the machine's Edit menu. */}
+        <header className="hidden md:flex flex-shrink-0 h-14 items-center gap-3 px-4 md:px-6 border-b border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm">
           {/* Breadcrumbs */}
           <div className="flex-1 min-w-0">
             <AdminBreadcrumbs activeTab={activeTab} />
@@ -399,7 +396,7 @@ export default function Admin() {
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto">
-          <div className={`${activeTab === 'selection-monitor' ? 'p-2.5 md:p-6 lg:p-8' : 'p-4 md:p-6 lg:p-8'}`}>
+          <div className={`${activeTab === 'selection-monitor' ? 'p-2.5 md:p-6 lg:p-8' : 'p-3 md:p-6 lg:p-8'}`}>
             <Suspense fallback={
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--accent)] border-t-transparent" />

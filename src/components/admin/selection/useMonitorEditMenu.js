@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { Building2, Layers, RefreshCw, ShieldCheck, Users } from 'lucide-react';
+import { Building2, Layers, LayoutGrid, RefreshCw, ShieldCheck, Users } from 'lucide-react';
 import { registerSurfaceEditGroups } from '@/components/shell/surfaceFileMenu';
 
 // The monitor's own Edit menu.
@@ -22,6 +22,7 @@ export default function useMonitorEditMenu({
   onScope,
   cohorts = [],
   onRefresh,
+  onOpenSections,
   enabled = true,
 }) {
   const groups = useMemo(
@@ -67,8 +68,20 @@ export default function useMonitorEditMenu({
         label: 'The ledger',
         items: [{ key: 'refresh', label: 'Read it again', icon: RefreshCw, onSelect: () => onRefresh() }],
       },
+      // The portal's index, since the surface carries no bar of its own on a phone.
+      ...(onOpenSections
+        ? [
+            {
+              key: 'admin-sections',
+              label: 'Mission Control',
+              items: [
+                { key: 'open-sections', label: 'All sections', icon: LayoutGrid, onSelect: onOpenSections },
+              ],
+            },
+          ]
+        : []),
     ],
-    [mode, scope, cohorts, onMode, onScope, onRefresh]
+    [mode, scope, cohorts, onMode, onScope, onRefresh, onOpenSections]
   );
 
   // The drawer reads through a getter, so the list always speaks for the reading as it

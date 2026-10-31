@@ -75,6 +75,7 @@ export default function SelectionMonitor({ onOpenMenu }) {
     onScope: setScope,
     cohorts,
     onRefresh: () => load(true),
+    onOpenSections: onOpenMenu,
     enabled: !loading && !error,
   });
 
@@ -105,7 +106,7 @@ export default function SelectionMonitor({ onOpenMenu }) {
   return (
     <div className="space-y-3">
       {/* The figures stand at the head of the surface; the board follows immediately. */}
-      <MonitorStats totals={totals} onOpenMenu={onOpenMenu} />
+      <MonitorStats totals={totals} />
 
       {/* The board leads, with the reading it is named beneath it. */}
       <StandingsBoard
