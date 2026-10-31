@@ -103,6 +103,7 @@ const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
 const Chamber = lazy(() => import('@/pages/Chamber'));
 const ChamberPractice = lazy(() => import('@/pages/ChamberPractice'));
+const Newsstand = lazy(() => import('@/pages/Newsstand'));
 const ChamberOffice = lazy(() => import('@/pages/ChamberOffice'));
 const AppStore = lazy(() => import('@/pages/AppStore'));
 const AppStoreShelf = lazy(() => import('@/pages/AppStoreShelf'));
@@ -213,6 +214,10 @@ const AuthenticatedApp = () => {
       <Route path="/chamber/office/:office" element={<ChamberOffice />} />
       {/* The house's own practices — consulting, the creative agency, the incubator */}
       <Route path="/chamber/:practice" element={<ChamberPractice />} />
+      {/* The Newsstand: the house's press under one awning — the editions on the rack, the
+          articles inside them, the dispatches Fellows file, and every release note about
+          the platform itself. */}
+      <Route path="/newsstand" element={<Newsstand />} />
       {/* The App Store: micro-tools, each doing one job and handing back an artifact */}
       <Route path="/app-store" element={<AppStore />} />
       <Route path="/app-store/shelf" element={<AppStoreShelf />} />

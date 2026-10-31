@@ -1,4 +1,4 @@
-import { Award, BookOpen, Landmark, ListChecks, LogIn, Shield, UserPlus } from "lucide-react";
+import { Award, BookOpen, Landmark, ListChecks, LogIn, Newspaper, Shield, UserPlus } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -34,6 +34,11 @@ export const START_MENU = [
   // shelf is composed from the reader's own record, so there is nothing behind this key a
   // visitor cannot be shown.
   { key: "chamber", index: "04", label: "Chamber of Commerce", to: "/chamber", icon: Landmark },
+  // The house's press, standing beside its counters: a newsstand rather than four keys —
+  // the editions on the rack, the articles that ran inside them, the dispatches Fellows
+  // file, and every release note the platform puts out. Public: it is a stand, and a stand
+  // exists to be read.
+  { key: "newsstand", index: "05", label: "Newsstand", to: "/newsstand", icon: Newspaper },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -41,7 +46,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "05",
+  index: "06",
   label: "Admin",
   to: "/Admin",
   icon: Shield,
