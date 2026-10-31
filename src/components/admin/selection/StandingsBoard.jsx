@@ -67,40 +67,18 @@ export default function StandingsBoard({
       {/* A phone reads one ledger, not three columns: the same field with all three
           measures on every row, ordered down whichever one is pressed. */}
       <div className="md:hidden">
-        <p className="mb-2 rounded-md border-l-2 border-editorial-copper bg-editorial-cream/70 px-2.5 py-1.5 text-[9.5px] leading-relaxed text-editorial-navy/70">
-          {mode === 'internal' ? (
-            <>
-              <span className="font-semibold text-editorial-navy">Internal record.</span> Every mark in view was cast by
-              an administrator. None of it is scored or published.
-            </>
-          ) : (
-            <>
-              <span className="font-semibold text-editorial-navy">Borda and Combined are projected</span> from {castBallots}{' '}
-              ballot{castBallots === 1 ? '' : 's'} and {seeded} seeded draft{seeded === 1 ? '' : 's'}. Elo is scored from
-              the marks in view.
-            </>
-          )}
+        <p className="mb-1 text-[8px] font-bold uppercase tracking-[0.14em] text-editorial-navy/40">
+          {mode === 'internal'
+            ? 'Internal · never scored'
+            : `Projected · ${castBallots} cast + ${seeded} seeded`}
         </p>
         <MobileStandingsLedger rows={filtered} moves={moves} since={since} mode={mode} onOpen={setSelected} />
       </div>
 
-      <p className="hidden rounded-md border-l-2 border-editorial-copper bg-editorial-cream/70 px-3 py-2 text-[11px] leading-relaxed text-editorial-navy/70 md:block">
-        {mode === 'internal' ? (
-          <>
-            <span className="font-semibold text-editorial-navy">This is the internal record.</span> Every mark in view was
-            cast by an administrator and stamped at the moment it was written. None of it is scored or published: the Elo
-            column is recomputed from these sets alone, so the platform can read a baseline of its own beside the
-            community's. The recorded rating on each record is untouched.
-          </>
-        ) : (
-          <>
-            <span className="font-semibold text-editorial-navy">Borda and Combined are projected.</span> {castBallots}{' '}
-            ballot{castBallots === 1 ? '' : 's'} cast and {seeded} draft{seeded === 1 ? '' : 's'} seeded from nominations,
-            read here as if cast. Nothing is written, and no projected figure reaches a Fellow's surface. Elo is scored
-            from this view's marks alone: an administrator's set is stamped and never scored, so a review leaves no mark
-            on the community's rating.
-          </>
-        )}
+      <p className="hidden text-[8.5px] font-semibold uppercase tracking-[0.14em] text-editorial-navy/40 md:block">
+        {mode === 'internal'
+          ? `Internal record · ${castBallots} cast + ${seeded} seeded · Elo recomputed from these sets · never scored`
+          : `Projected · ${castBallots} cast + ${seeded} seeded · Elo from the marks in view · never published`}
       </p>
 
       <div className="hidden gap-2 md:grid md:grid-cols-3">
@@ -117,10 +95,8 @@ export default function StandingsBoard({
         ))}
       </div>
 
-      <p className="hidden text-[10px] text-editorial-navy/45 md:block">
-        {mode === 'internal'
-          ? 'Borda from ranked lists · Elo recomputed from the internal sets in view · Combined is an ordering hint for review only.'
-          : 'Borda from ranked lists · Elo recomputed from the community marks in view · Combined is an ordering hint for review only. No weight of it leaves the platform.'}
+      <p className="hidden text-[9px] text-editorial-navy/35 md:block">
+        Borda · Elo · Combined — an ordering hint for review only.
       </p>
 
       <StandingDetailDialog entry={selected} since={since} onClose={() => setSelected(null)} />

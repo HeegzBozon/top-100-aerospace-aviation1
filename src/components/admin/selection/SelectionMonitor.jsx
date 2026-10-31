@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Loader2, RefreshCw, AlertTriangle, Activity } from 'lucide-react';
+import { Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import ReadingModeTabs from './ReadingModeTabs';
-import MonitorTotals from './MonitorTotals';
+import PulseBand from './PulseBand';
+import TrafficReadout from './TrafficReadout';
+import CohortDive from './CohortDive';
 import StandingsBoard from './StandingsBoard';
 import BallotLedger from './BallotLedger';
 import MarkSetsLedger from './MarkSetsLedger';
@@ -13,9 +15,13 @@ import ContributorTable from './ContributorTable';
 
 // The selection monitor: every cohort's ballot in one room. Read-only, admin only — the
 // ledger of who weighed whom, and the tallies those weights are producing while the
-// windows are still open.
+// windows are still open. The standings lead; the figures beneath them are the dive.
 
 const REFRESH_MS = 60000;
+
+function fmt(value) {
+  return typeof value === 'number' ? value.toLocaleString() : '—';
+}
 
 export default function SelectionMonitor() {
   const [scope, setScope] = useState('all');
@@ -80,33 +86,23 @@ export default function SelectionMonitor() {
   // The picker offers the cohorts that can still be watched; archived editions keep
   // their ledgers where they are.
   const cohorts = (data?.cohorts || []).filter((c) => c.status !== 'archived');
+  const totals = data?.totals;
   const stamp = data?.generated_at
     ? new Date(data.generated_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
     : null;
 
   return (
-    <div className="space-y-4">
-      {/* On a phone the head is three short rows — what this reading is, which reading it
-          is, and which cohort — so the switch between the community's record and the
-          internal review is one press away instead of buried in a wrapped toolbar. */}
-      <div className="space-y-2">
-        <div className="flex items-start justify-between gap-2">
+    <div className="space-y-3">
+      {/* The head: what is being read, and which reading of it. Two keys carry the
+          switch, so the internal review is never buried under a scroll. */}
+      <div className="space-y-1.5">
+        <div className="flex items-end justify-between gap-2">
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <Activity className="h-3.5 w-3.5 text-editorial-gold" />
-              <p className="text-[8.5px] font-bold uppercase tracking-[0.26em] text-editorial-label">Selection</p>
-            </div>
-            <h2 className="mt-0.5 font-heading text-xl leading-tight text-editorial-navy md:text-2xl">
+            <p className="text-[8px] font-bold uppercase tracking-[0.26em] text-editorial-label">Selection</p>
+            <h2 className="font-heading text-lg leading-tight text-editorial-navy md:text-2xl">
               {mode === 'internal' ? 'Internal review' : 'Live monitor'}
             </h2>
-            <p className="text-[10.5px] leading-snug text-editorial-navy/55 md:max-w-xl md:text-xs">
-              {mode === 'internal'
-                ? 'The sets an administrator cast, read apart from the community. Nothing here is scored or published.'
-                : "Every cohort's ballot, its standings, and the marks behind them."}{' '}
-              {stamp && `Read at ${stamp}.`}
-            </p>
           </div>
-
           <Button
             size="sm"
             variant="outline"
@@ -126,6 +122,23 @@ export default function SelectionMonitor() {
           internal={data?.totals?.comparisons_test || 0}
         />
 
+        {/* The figures, in a line: read as numbers on arrival, before the board. */}
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-[9px] uppercase tracking-[0.12em] text-editorial-navy/45">
+          <span>
+            <span className="text-[13px] font-semibold tabular-nums text-editorial-navy">{fmt(totals?.ballots)}</span>{' '}
+            ballots
+          </span>
+          <span>
+            <span className="text-[13px] font-semibold tabular-nums text-editorial-navy">{fmt(totals?.comparisons)}</span>{' '}
+            marks
+          </span>
+          <span>
+            <span className="text-[13px] font-semibold tabular-nums text-editorial-navy">{fmt(totals?.pool)}</span>{' '}
+            standing
+          </span>
+          {stamp && <span className="ml-auto tabular-nums text-editorial-navy/30">{stamp}</span>}
+        </div>
+
         <Select value={scope} onValueChange={setScope}>
           <SelectTrigger className="h-8 w-full text-xs md:w-[220px]">
             <SelectValue placeholder="All cohorts" />
@@ -141,15 +154,23 @@ export default function SelectionMonitor() {
         </Select>
       </div>
 
-      <MonitorTotals totals={data?.totals} cohortStats={data?.cohort_stats} mode={mode} />
+      {/* The board leads. */}
+      <StandingsBoard
+        rows={data?.standings || []}
+        seeded={totals?.seeded || 0}
+        castBallots={totals?.ballots || 0}
+        mode={mode}
+        scopeKey={`${scope}:${mode}`}
+      />
 
-      <Tabs defaultValue="standings">
-        {/* Four ledgers, four equal keys: the strip reads as one row of the instrument on
-            a phone rather than overflowing into a sideways scroll. */}
-        <TabsList className="grid h-auto w-full grid-cols-4 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
-          <TabsTrigger value="standings" className="px-1 text-[10px] md:px-3 md:text-sm">
-            Standings
-          </TabsTrigger>
+      <PulseBand totals={totals} mode={mode} />
+
+      <TrafficReadout />
+
+      <CohortDive cohortStats={data?.cohort_stats} mode={mode} />
+
+      <Tabs defaultValue="ballots">
+        <TabsList className="grid h-auto w-full grid-cols-3 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
           <TabsTrigger value="ballots" className="px-1 text-[10px] md:px-3 md:text-sm">
             Ballots
           </TabsTrigger>
@@ -160,22 +181,13 @@ export default function SelectionMonitor() {
             Community
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="standings" className="mt-4">
-          <StandingsBoard
-            rows={data?.standings || []}
-            seeded={data?.totals?.seeded || 0}
-            castBallots={data?.totals?.ballots || 0}
-            mode={mode}
-            scopeKey={`${scope}:${mode}`}
-          />
-        </TabsContent>
-        <TabsContent value="ballots" className="mt-4">
+        <TabsContent value="ballots" className="mt-2.5">
           <BallotLedger ballots={data?.ballot_tracking || []} />
         </TabsContent>
-        <TabsContent value="marks" className="mt-4">
+        <TabsContent value="marks" className="mt-2.5">
           <MarkSetsLedger marks={data?.ledger || []} />
         </TabsContent>
-        <TabsContent value="contributors" className="mt-4">
+        <TabsContent value="contributors" className="mt-2.5">
           <ContributorTable rows={data?.contributors || []} />
         </TabsContent>
       </Tabs>
