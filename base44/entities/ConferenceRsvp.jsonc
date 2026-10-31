@@ -35,6 +35,15 @@
       "default": "attending",
       "description": "Confirmed attendance or waitlist"
     },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "listed",
+        "private"
+      ],
+      "default": "listed",
+      "description": "Whether this declaration is listed to other Fellows in the room, or held private. Private declarations are excluded from the attendee roster and from target lists. Coordination only; never read by discovery, ranking, or scoring."
+    },
     "volunteer": {
       "type": "boolean",
       "default": false,

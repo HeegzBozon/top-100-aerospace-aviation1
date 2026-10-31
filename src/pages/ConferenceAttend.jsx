@@ -11,6 +11,7 @@ import useConferences from '@/components/conferences/useConferences';
 import { useConnectionMap } from '@/components/fellow-home/useConnections';
 import { phaseForRoom } from '@/components/conference-room/conferenceRoomConfig';
 import { B, DISCOVER_HREF } from '@/components/conferences/conferenceConfig';
+import { isListed } from '@/components/attendee-journey/journeyConfig';
 
 // ATTEND & NETWORK — the room, and the people standing in it.
 //
