@@ -46,14 +46,11 @@ export default function ImacHousing({ children, shelf = null }) {
         {children}
       </div>
 
-      {/* The shelf stands on the picture: it is seated against the foot of the tube's
-          own opening, measured from the machine rather than from the window, so it can
-          never drift out past the resin on any screen height. It sits outside the
-          scrolling window, so the record's pages pass under it and it stays put. */}
-      {shelf ? <div className="imac-shelf">{shelf}</div> : null}
-
       <div className="imac-glass" aria-hidden="true" />
+      {/* The shelf is no longer laid over the picture: it is seated in the bezel, as the
+          key field of the chin's faceplate, so the whole tube belongs to the surface. */}
       <ImacChin
+        shelf={shelf}
         finish={finish}
         pack={pack}
         packs={packs}

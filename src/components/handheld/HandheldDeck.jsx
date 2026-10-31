@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Palette } from "lucide-react";
+import { Disc, Palette, Radio } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import FaceButtons from "./FaceButtons";
-import { pressFaceKey } from "./handheldKeys";
-import ScreenTopBar from "./ScreenTopBar";
+import { pressDigit, pressFaceKey } from "./handheldKeys";
+import { drawerHint } from "./faceHint";
+import ChinMenuBar from "./ChinMenuBar";
 import ViewerFoot from "./ViewerFoot";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldBody from "./HandheldBody";
@@ -20,15 +21,22 @@ import { useHandheldPicker } from "./handheldPicker";
 import HandheldNotifications from "./HandheldNotifications";
 import HandheldShareSheet from "./HandheldShareSheet";
 import HandheldSpeaker from "./HandheldSpeaker";
-import HandheldPlate from "./HandheldPlate";
 import { stopPlaylist } from "./consoleMusic";
 import { surfaceLabel } from "./handheldDestinations";
 import { menuGroups as barMenuGroups } from "@/components/shell/barMenus";
 import { editGroupsWith, fileGroupsWith } from "@/components/shell/surfaceFileMenu";
 import useHandheldFinish from "./useHandheldFinish";
 import { blip, buzz, persistSound } from "./handheldSound";
+import { railHiddenOn } from "@/components/shell/immersiveSurfaces";
 import { openingPlaysNow } from "@/components/core/appOpening";
-import { applyShellVars, DECK_CLEARANCE, releaseShellVars } from "./handheldGeometry";
+import {
+  applyShellVars,
+  DECK_CLEARANCE,
+  RADIO_CLEARANCE,
+  releaseShellVars,
+} from "./handheldGeometry";
+import useConsoleMode, { RADIO } from "./consoleMode";
+import RadioChin from "./radio/RadioChin";
 
 // The device's space is measured in handheldGeometry — one set of numbers, applied
 // by the console and by the loading chassis alike, so the hardware is never hidden
@@ -45,16 +53,17 @@ const ZONE_DIR = { menu: "up", play: "down", prev: "left", next: "right" };
 // press that opened it reads back on the glass — Y lands on a drawer headed Edit.
 const DRAWER_TITLES = { file: "File", edit: "Edit", sections: "Sections", finish: "Customize" };
 
-// The handheld. One body: a legend band printed on the case, a viewer the content
-// renders in below it, and a chin carrying the click wheel, the face buttons and the
-// grille.
+// The handheld. One body: a viewer the content renders in, and a chin carrying the
+// machine's menu bar and the controls — the click wheel and the face buttons, or the
+// radio's keypad.
 // The wheel does it all — rotation scrolls the picture or walks the menu, the centre
 // selects what the ring landed on, MENU goes up a level and opens the cartridges from
 // the top, back and forward step the page's modules, and the bottom key plays the page
 // down the glass and stops it again. Holding the centre, or tapping the mark on the
 // case, goes home. Y opens the Edit drawer — the same list the bar's own Edit cell
-// holds, one press from anywhere — and the share stands on its own pill at the left of the
-// readout band, in the glass itself, on every surface.
+// holds, one press from anywhere, and where the console's own two controls live — and
+// the share stands on its own pill at the left of the readout band, in the glass itself,
+// on every surface.
 // A surface may also take the ring itself and steer with it — the field game walks
 // on it — in which case the four zones become up, down, left and right for as long
 // as nothing of the console's own is open over the glass.
@@ -62,6 +71,19 @@ export default function HandheldDeck() {
   const navigate = useNavigate();
   const location = useLocation();
   const { groups, isSignedIn, isAdmin } = useHandheldDestinations();
+
+  // Which face the machine is wearing: the click wheel it was built with, or the radio,
+  // whose keypad walks the same index by number. The surface chooses the face it is
+  // written in; the plate overrules, and the overrule is remembered.
+  const { mode, cycle: cycleMode, legend: modeLegend } = useConsoleMode(location.pathname);
+  const radio = mode === RADIO;
+  // What every legend on this machine is printed in: the face fitted to the case.
+  const face = radio ? RADIO : "wheel";
+
+  // The radio's own state: which bank the keys are typing (its channels, or the
+  // surface's own numbered sections), and the number typed into them.
+  const [bankChoice, setBankChoice] = useState(null);
+  const [typed, setTyped] = useState("");
 
   const [menuMode, setMenuMode] = useState(null);
   const [cursor, setCursor] = useState(0);
@@ -84,25 +106,26 @@ export default function HandheldDeck() {
 
   const { finishKey, finish, finishes, chooseFinish } = useHandheldFinish();
 
-  const menuGroups = useMemo(
+  // The machine's own two controls — the finish the case is wearing and the face it is
+  // wearing it in — live in the Edit drawer. They were the two keys of the foot plate; the
+  // plate is gone, so the drawer that means "change something" carries them.
+  const consoleItems = useMemo(
     () => [
-      ...groups,
-      {
-        key: "hardware",
-        label: "Hardware",
-        items: [{ label: `Customize · ${finish.label}`, action: "finish", icon: Palette }],
-      },
+      { label: `Customize · ${finish.label}`, action: "finish", icon: Palette },
+      { label: `Console face · ${modeLegend}`, action: "cycleMode", icon: radio ? Disc : Radio },
     ],
-    [groups, finish.label],
+    [finish.label, modeLegend, radio],
   );
+
+  const menuGroups = groups;
 
   const flat = useMemo(() => menuGroups.flatMap((group) => group.items), [menuGroups]);
   const locationKey = `${location.pathname}${location.search}`;
   const surface = useMemo(() => surfaceLabel(location, groups), [location, groups]);
 
-  // The finish is hardware, so it lives on the menu beside the cartridges — a
-  // drawer of mouldings, not a preference buried in a page. The one the device
-  // is wearing carries the same Now mark the list gives the surface you are on.
+  // The finish is hardware, so it is chosen from the Edit drawer beside the face the
+  // machine is wearing — a set of mouldings, not a preference buried in a page. The one
+  // the device is wearing carries the same Now mark the list gives the surface you are on.
   const finishItems = useMemo(
     () =>
       finishes.map((option) => ({
@@ -124,6 +147,12 @@ export default function HandheldDeck() {
   // profile's own panels — hands the console a picker, which outranks the
   // page's module marks: the ring walks what is actually on the screen.
   const picker = useHandheldPicker();
+  // Which bank the keypad is typing. A surface that hands the console its own numbered
+  // options — the title screen's keys, each printed with its own number — opens the
+  // keypad on them, so the digits mean what the glass says they mean. Everywhere else
+  // the keys are the machine's channels. V/M overrules for the surface you are on, and
+  // the overrule is dropped the moment you move.
+  const bank = bankChoice || (picker ? "FN" : "CH");
   // The left print on the ring — back, not rewind — ends at the console's own back
   // handler when the surface has nothing of its own left to step through. That
   // handler is declared further down this component, so it is read through a ref:
@@ -181,10 +210,15 @@ export default function HandheldDeck() {
             : []),
         ]);
       }
-      if (mode === "edit") return editGroupsWith(barDrawers.edit || []);
+      if (mode === "edit") {
+        return editGroupsWith([
+          ...(barDrawers.edit || []),
+          { key: "console", label: "Console", items: consoleItems },
+        ]);
+      }
       return barDrawers[mode] || menuGroups;
     },
-    [sectionItems, finishItems, barDrawers, menuGroups],
+    [sectionItems, finishItems, barDrawers, consoleItems, menuGroups],
   );
 
   // What the wheel walks, per drawer it happens to be in.
@@ -193,17 +227,37 @@ export default function HandheldDeck() {
   // Reserve the hardware's space, and hand it back when the console is put away
   // (a surface asking for the whole glass). A layout effect, so the hardware is
   // already in place on the frame the console appears in, and the same values the
-  // loading chassis applied — so the hand-over between them is invisible.
+  // loading chassis applied — so the hand-over between them is invisible. The depth
+  // belongs to the face fitted: the radio's case is drawn deeper than the wheel's, and
+  // every surface on the glass is inset from whichever one is standing.
+  const clearance = radio ? RADIO_CLEARANCE : DECK_CLEARANCE;
+  // The radio prints the cycle on its own readout, so the glass keeps no cycle band of
+  // its own: the whole foot is handed back to the picture and the share key moves down
+  // into the machine's footer. The wheel has no readout, so it keeps the band.
+  const foot = radio ? 0 : undefined;
+
   useLayoutEffect(() => {
-    applyShellVars();
+    applyShellVars(clearance, foot);
     return releaseShellVars;
-  }, []);
+  }, [clearance, foot]);
 
   useEffect(() => () => clearTimeout(flashTimer.current), []);
 
   // Putting the console away stops its music: the speaker key is gone once the
   // device is off the glass, so the loop must not keep playing with no hand on it.
   useEffect(() => () => stopPlaylist(), []);
+
+  // A number typed on one surface means nothing on the next, and a drawer that closes
+  // puts the keys back on the surface.
+  useEffect(() => {
+    setTyped("");
+  }, [locationKey, bank, mode]);
+
+  // A bank chosen by hand holds for the surface it was chosen on, and is given back when
+  // the machine tunes to another one — the next surface opens on the bank it is built for.
+  useEffect(() => {
+    setBankChoice(null);
+  }, [locationKey]);
 
   // The read-along: the wheel's play zone walks the page down the glass until
   // the bottom arrives or the reader takes over.
@@ -298,6 +352,8 @@ export default function HandheldDeck() {
 
       // Not a cartridge: the hardware drawer opens where you stand.
       if (destination.action === "finish") return openFinish();
+      // The face the machine wears, stepped from the drawer that also chooses its finish.
+      if (destination.action === "cycleMode") return cycleMode();
       // The way in, on the platform's own door: one page both signs a Fellow in and
       // opens the account a visitor does not have yet.
       if (destination.action === "signin" || destination.action === "join") {
@@ -313,7 +369,7 @@ export default function HandheldDeck() {
       }
       if (destination.to) navigate(destination.to);
     },
-    [navigate, openFinish],
+    [navigate, openFinish, cycleMode],
   );
 
   const openMenu = useCallback(() => {
@@ -456,6 +512,54 @@ export default function HandheldDeck() {
       if (nav.scrollBy(step * 54) === false) blip("back");
     },
     [menuOpen, menuMode, listFor, cursor, picker, deck, finishBoot, nav, announce, steering],
+  );
+
+  // A held ▲ / ▼ runs to the end of what it was walking: the top or the bottom of the
+  // list the cursor stands in — the surface's own options, the deck's slides, the page's
+  // sections — and where the surface has none, the ends of the picture itself. One press
+  // is still one card; holding is how a long strip is crossed without counting.
+  const walkEnd = useCallback(
+    (direction) => {
+      finishBoot();
+      if (steering) return;
+      const top = direction < 0;
+      if (menuOpen) {
+        const list = listFor(menuMode);
+        if (!list.length) return;
+        setCursor(top ? 0 : list.length - 1);
+        blip("move");
+        return;
+      }
+      if (picker) {
+        const labels = picker.labels();
+        if (!labels.length) return;
+        const label = picker.goTo(top ? 0 : labels.length - 1);
+        blip("move");
+        if (label && label !== true) announce(label);
+        return;
+      }
+      if (deck) {
+        const target = top ? 0 : Math.max(0, deck.count() - 1);
+        deck.goTo(target);
+        blip("move");
+        announce(deck.labels()[target]);
+        return;
+      }
+      if (nav.modules.length) {
+        const target = top ? 0 : nav.modules.length - 1;
+        if (nav.goTo(target) !== null) {
+          blip("move");
+          announce(nav.modules[target]?.label);
+          return;
+        }
+      }
+      const stage = getStage();
+      if (!stage) return;
+      stage.scrollTo({ top: top ? 0 : stage.scrollHeight, behavior: "smooth" });
+      blip("move");
+      announce(top ? "Top" : "Bottom");
+    },
+    [menuOpen, menuMode, listFor, picker, deck, nav, finishBoot, announce, steering],
   );
 
   const jumpGroup = useCallback(
@@ -658,6 +762,111 @@ export default function HandheldDeck() {
   }, [booting, finishBoot, menuOpen, notificationsOpen, shareOpen, navigate, picker]);
   backRef.current = back;
 
+  // --- the radio's keys ----------------------------------------------------
+  // A channel is any entry of the machine's own index, numbered in the order the drawer
+  // prints it: the number typed on the keypad and the number in the drawer are the same
+  // number. The surface's own sections are numbered the same way, which is what the bank
+  // key switches the pad between.
+  const pad = String(Math.max(flat.length, 1)).length;
+
+  // Tuning: the keypad names a channel and the machine goes there, exactly as pressing
+  // that entry in the drawer would.
+  const tuneTo = useCallback(
+    (channel) => {
+      const item = flat[channel - 1];
+      if (!item) {
+        blip("back");
+        announce("No channel");
+        return;
+      }
+      go(item);
+    },
+    [flat, go, announce],
+  );
+
+  const radioDigit = useCallback(
+    (digit) => {
+      finishBoot();
+      // In section mode the keys are the surface's own numbered options —
+      // and where the surface prints a number on each of them, the key printed 03 is
+      // typed 3. A surface without numbers has its options counted from the front.
+      if (bank === "FN") {
+        // A surface holding the digits answers first: the chamber's four candidates
+        // stand under 1–4, and the press puts the card under the same hand a tap would.
+        if (pressDigit(digit)) {
+          setTyped("");
+          blip("select");
+          buzz();
+          return;
+        }
+        if (digit === "0") {
+          setTyped("");
+          select();
+          return;
+        }
+        if (picker?.goToCode) {
+          const label = picker.goToCode(digit);
+          if (label) {
+            setTyped("");
+            announce(label);
+            return;
+          }
+          blip("back");
+          return;
+        }
+        const target = Number(digit) - 1;
+        if (target >= 0 && target < modules.length) {
+          setTyped("");
+          jumpToModule(target);
+          return;
+        }
+        blip("back");
+        return;
+      }
+      // In channel mode the keys type a channel, and the machine tunes the moment the
+      // number is as long as the index can be.
+      const next = `${typed}${digit}`.slice(-pad);
+      setTyped(next);
+      announce(`CH ${next}`);
+      if (next.length === pad) {
+        setTyped("");
+        tuneTo(Number(next));
+      }
+    },
+    [
+      bank,
+      modules.length,
+      typed,
+      pad,
+      announce,
+      tuneTo,
+      finishBoot,
+      select,
+      jumpToModule,
+      go,
+      picker,
+    ],
+  );
+
+  // The bottom right key: enter what was typed, or — with nothing standing in the
+  // display — confirm what the ring would, which is how a surface is opened by keypad.
+  const radioEnter = useCallback(() => {
+    finishBoot();
+    if (typed) {
+      const channel = Number(typed);
+      setTyped("");
+      tuneTo(channel);
+      return;
+    }
+    select();
+  }, [finishBoot, typed, tuneTo, select]);
+
+  const radioBank = useCallback(() => {
+    blip("toggle");
+    buzz();
+    setBankChoice(bank === "CH" ? "FN" : "CH");
+  }, [bank]);
+
   return (
     <>
       {/* One moulding behind everything: the display, the bezel and the deck are
@@ -666,25 +875,13 @@ export default function HandheldDeck() {
 
       <HandheldScreenFrame />
 
-      {/* The strip across the head of the glass: where you are, and the controls. */}
-      <ScreenTopBar
-        surface={surface}
-        module={modules[moduleIndex]?.label}
-        menuOpen={menuOpen && menuMode !== "file" && menuMode !== "edit"}
-        fileOpen={menuMode === "file"}
-        editOpen={menuMode === "edit"}
-        onHome={goHome}
-        onMenu={upOneLevel}
-        onFile={() => openBarDrawer("file")}
-        onEdit={() => openBarDrawer("edit")}
-        onNotifications={openNotifications}
-      />
+      {/* The glass's footer: the share at its left, the measure of where the wheel stands
+          ruled through the middle, the device's readout at its right. */}
+      {!radio && <ViewerFoot shareOpen={shareOpen} onShare={toggleShare} />}
 
-      {/* The glass's footer: the share at its left, the device's readout at its right,
-          cut across the foot of the picture. */}
-      <ViewerFoot shareOpen={shareOpen} onShare={toggleShare} />
-
-      <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
+      {!railHiddenOn(location.pathname) && (
+        <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
+      )}
 
       {/* Section announcement — the page reports where the wheel just landed */}
       {flash && (
@@ -723,10 +920,10 @@ export default function HandheldDeck() {
           }
           hint={
             menuMode === "sections"
-              ? "◀▶ Move · ● Go · B Back"
+              ? drawerHint(face, { run: "Go" })
               : menuMode === "finish"
-                ? "◀▶ Move · ● Apply · B Back"
-                : undefined
+                ? drawerHint(face, { run: "Apply" })
+                : drawerHint(face, { move: "Group", run: "Load" })
           }
           onActivate={(item) => {
             if (menuMode === "finish") return applyFinish(item);
@@ -766,57 +963,102 @@ export default function HandheldDeck() {
              lands exactly on the glass's own foot whatever the case is wearing. A chin
              sized by its content can creep up over the pane and take the readout band
              with it. */
-          height: `calc(${DECK_CLEARANCE}px + env(safe-area-inset-bottom))`,
+          height: `calc(${clearance}px + env(safe-area-inset-bottom))`,
           /* Square where it meets the glass, and the body's own corner at the foot:
              the same 22 the moulding carries, so the case turns one corner, not two. */
           borderRadius: "0 0 22px 22px",
-          paddingBottom: "calc(12px + env(safe-area-inset-bottom))",
+          /* Each face sets its own foot: the wheel sits on a deeper plate margin, the
+             radio's keypad runs closer to the edge of the case. */
+          paddingBottom: `calc(${radio ? 8 : 12}px + env(safe-area-inset-bottom))`,
         }}
       >
         {/* The chin is pinned like a real moulding: a screw at each corner. */}
         <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, left: 5 }} aria-hidden="true" />
         <span className="hh-screw absolute h-[6px] w-[6px] rounded-full" style={{ top: 4, right: 5 }} aria-hidden="true" />
 
-        {/* The controls, spaced so a thumb never has to guess: the speaker on the
-            left, the wheel on the centre line, the keypad on the right. The two sides
-            are the same width, so the wheel sits dead centre whatever either of them
-            measures. */}
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pt-1.5">
-          {/* The left column: the case speaker with the console's record on it. The
-              Share pill that stood under it rides the readout band now, at the left of
-              the foot of the glass (see ViewerFoot). */}
-          <div className="flex items-center justify-center">
-            <HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />
-          </div>
-
-          <ClickWheel
-            size={104}
-            onRotate={rotate}
-            onMenu={steering ? null : upOneLevel}
-            onPrev={steering ? null : () => stepSection(-1)}
-            onNext={steering ? null : () => stepSection(1)}
-            playing={playing || !!picker?.isPlaying?.()}
-            onSearch={steering ? null : openSearch}
-            onPlay={steering ? null : togglePlay}
-            onSelect={select}
+        {/* The legend band across the head of the chin, whichever face is fitted: the
+            machine's menu bar, cut into the case so the glass is all picture. */}
+        <div className="shrink-0 pt-1">
+          <ChinMenuBar
+            surface={surface}
+            module={radio && typed ? `#${typed}` : modules[moduleIndex]?.label}
+            menuOpen={menuOpen && menuMode !== "file" && menuMode !== "edit"}
+            fileOpen={menuMode === "file"}
+            editOpen={menuMode === "edit"}
             onHome={goHome}
-            steer={!!steering}
-            onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}
-            prints={steering?.prints}
+            onMenu={upOneLevel}
+            onFile={() => openBarDrawer("file")}
+            onEdit={() => openBarDrawer("edit")}
+            onNotifications={openNotifications}
+            fileKey={radio ? "V" : "X"}
+            editKey={radio ? "A" : "Y"}
           />
-
-          <div className="flex justify-end">
-            <FaceButtons
-              onConfirm={() => faceKey("A", select)}
-              onBack={() => faceKey("B", back)}
-              onFile={() => faceKey("X", () => openBarDrawer("file"))}
-              onEdit={() => faceKey("Y", () => openBarDrawer("edit"))}
-            />
-          </div>
         </div>
 
-        {/* The maker's plate, fitted into the foot of the case. */}
-        <HandheldPlate finish={finish} isSignedIn={isSignedIn} onCustomize={openFinish} />
+        {radio ? (
+          /* The radio face: the walking cluster, the speaker slot and the keypad. Every
+             key prints the state it is standing in, and the machine's menu bar stands
+             above them in the case. */
+          <RadioChin
+            bank={bank}
+            onDigit={radioDigit}
+            onEnter={radioEnter}
+            onScan={openSearch}
+            onBank={radioBank}
+            onFile={() => openBarDrawer("file")}
+            onEdit={() => openBarDrawer("edit")}
+            onUp={() => rotate(-1)}
+            onDown={() => rotate(1)}
+            onUpEnd={() => walkEnd(-1)}
+            onDownEnd={() => walkEnd(1)}
+            onHome={goHome}
+            onBack={back}
+            onAnnounce={announce}
+            onSoundOn={() => persistSound(true)}
+            onShare={toggleShare}
+            shareOpen={shareOpen}
+          />
+        ) : (
+          <>
+            {/* The controls, spaced so a thumb never has to guess: the speaker on the
+                left, the wheel on the centre line, the keypad on the right. The two sides
+                are the same width, so the wheel sits dead centre whatever either of them
+                measures. */}
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 pt-1.5">
+              {/* The left column: the case speaker with the console's record on it. The
+                  Share pill that stood under it rides the readout band now, at the left of
+                  the foot of the glass (see ViewerFoot). */}
+              <div className="flex items-center justify-center">
+                <HandheldSpeaker onAnnounce={announce} onSoundOn={() => persistSound(true)} />
+              </div>
+
+              <ClickWheel
+                size={104}
+                onRotate={rotate}
+                onMenu={steering ? null : upOneLevel}
+                onPrev={steering ? null : () => stepSection(-1)}
+                onNext={steering ? null : () => stepSection(1)}
+                playing={playing || !!picker?.isPlaying?.()}
+                onSearch={steering ? null : openSearch}
+                onPlay={steering ? null : togglePlay}
+                onSelect={select}
+                onHome={goHome}
+                steer={!!steering}
+                onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}
+                prints={steering?.prints}
+              />
+
+              <div className="flex justify-end">
+                <FaceButtons
+                  onConfirm={() => faceKey("A", select)}
+                  onBack={() => faceKey("B", back)}
+                  onFile={() => faceKey("X", () => openBarDrawer("file"))}
+                  onEdit={() => faceKey("Y", () => openBarDrawer("edit"))}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </nav>
     </>
   );

@@ -5,15 +5,17 @@ export default function StartMark() {
   return (
     <div className="shrink-0">
       <div
-        className="h-px w-24 md:w-56"
+        className="h-px w-16 md:w-56"
         style={{ background: "linear-gradient(90deg, #B87333, #C9A87C 58%, transparent)" }}
       />
 
-      <h1 className="mt-3 font-heading text-[2.5rem] leading-[0.95] tracking-[-0.01em] text-editorial-cream md:text-7xl">
+      {/* Set to the size the glass can spare: the masthead is a third of the cover on a
+          phone, and the keys it stands above are what the reader came for. */}
+      <h1 className="mt-2 font-heading text-[1.95rem] leading-[0.95] tracking-[-0.01em] text-editorial-cream md:mt-3 md:text-7xl">
         TOP 100
       </h1>
 
-      <p className="mt-2 text-[8.5px] font-bold uppercase tracking-[0.34em] text-editorial-cream/60 md:text-[11px]">
+      <p className="mt-1.5 text-[8px] font-bold uppercase tracking-[0.3em] text-editorial-cream/60 md:mt-2 md:text-[11px] md:tracking-[0.34em]">
         Aerospace &amp; Aviation
       </p>
     </div>

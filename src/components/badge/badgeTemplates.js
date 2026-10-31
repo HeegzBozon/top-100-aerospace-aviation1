@@ -1,0 +1,92 @@
+// THE PLATES A BADGE IS WORN IN — declared once, chosen from only.
+//
+// A conference badge is a manufactured object: a stock, a printed band, a machined
+// rule and lettering cut into the face and lit from above. So a Fellow never picks a
+// colour — they pick a plate the house already makes, and every tone the badge prints
+// comes from that plate. Expression lives in the choice and in the ordering of what the
+// badge carries; it never becomes a colour wheel.
+export const BADGE_TEMPLATES = [
+  {
+    key: 'navy_enamel',
+    label: 'Navy enamel',
+    note: 'The house plate',
+    dark: true,
+    stock: 'radial-gradient(122% 92% at 50% 0%, #1B3350 0%, #12253C 54%, #0B1826 100%)',
+    ink: '#FAF8F5',
+    inkSoft: 'rgba(250,248,245,0.58)',
+    band: '#0A1522',
+    rule: '#B87333',
+    ruleSoft: 'rgba(184,115,51,0.42)',
+    engrave: '0 1px 0 rgba(255,255,255,0.18), 0 -1px 0 rgba(3,8,15,0.6)',
+    plate: '#FFFFFF',
+    grain: 'rgba(255,255,255,0.045)',
+    edge: 'rgba(250,248,245,0.22)',
+  },
+  {
+    key: 'carbon_black',
+    label: 'Carbon',
+    note: 'Late programme',
+    dark: true,
+    stock: 'radial-gradient(120% 92% at 50% 0%, #1A1E24 0%, #10141A 56%, #070A0E 100%)',
+    ink: '#EFE9DC',
+    inkSoft: 'rgba(239,233,220,0.52)',
+    band: '#06090D',
+    rule: '#C9A87C',
+    ruleSoft: 'rgba(201,168,124,0.40)',
+    engrave: '0 1px 0 rgba(255,255,255,0.14), 0 -1px 0 rgba(0,0,0,0.7)',
+    plate: '#FFFFFF',
+    grain: 'rgba(255,255,255,0.035)',
+    edge: 'rgba(239,233,220,0.18)',
+  },
+  {
+    key: 'brushed_steel',
+    label: 'Brushed steel',
+    note: 'Machined',
+    dark: false,
+    stock: 'linear-gradient(178deg, #E3E6E9 0%, #D2D7DC 46%, #BFC6CC 100%)',
+    ink: '#1E2A36',
+    inkSoft: 'rgba(30,42,54,0.58)',
+    band: '#1E3A5A',
+    rule: '#B87333',
+    ruleSoft: 'rgba(184,115,51,0.45)',
+    engrave: '0 1px 0 rgba(255,255,255,0.85), 0 -1px 0 rgba(30,42,54,0.18)',
+    plate: '#FFFFFF',
+    grain: 'rgba(30,42,54,0.045)',
+    edge: 'rgba(30,42,54,0.22)',
+  },
+  {
+    key: 'ivory_board',
+    label: 'Ivory board',
+    note: 'Pressed stock',
+    dark: false,
+    stock: 'radial-gradient(120% 92% at 50% 0%, #FCFAF6 0%, #F4EFE4 58%, #E8DFCE 100%)',
+    ink: '#1E3A5A',
+    inkSoft: 'rgba(30,58,90,0.62)',
+    band: '#1E3A5A',
+    rule: '#B87333',
+    ruleSoft: 'rgba(184,115,51,0.42)',
+    engrave: '0 1px 0 rgba(255,255,255,0.9), 0 -1px 0 rgba(30,58,90,0.16)',
+    plate: '#FFFFFF',
+    grain: 'rgba(30,58,90,0.05)',
+    edge: 'rgba(30,58,90,0.18)',
+  },
+  {
+    key: 'rose_plate',
+    label: 'Rose plate',
+    note: 'Masthead',
+    dark: false,
+    stock: 'radial-gradient(120% 92% at 50% 0%, #F6E9DC 0%, #EBD6C4 56%, #DCC0A6 100%)',
+    ink: '#3A2A1E',
+    inkSoft: 'rgba(58,42,30,0.58)',
+    band: '#2A1D14',
+    rule: '#B87333',
+    ruleSoft: 'rgba(184,115,51,0.48)',
+    engrave: '0 1px 0 rgba(255,255,255,0.8), 0 -1px 0 rgba(58,42,30,0.2)',
+    plate: '#FFFFFF',
+    grain: 'rgba(58,42,30,0.05)',
+    edge: 'rgba(58,42,30,0.22)',
+  },
+];
+
+export const resolveBadgeTemplate = (key) =>
+  BADGE_TEMPLATES.find((template) => template.key === key) || BADGE_TEMPLATES[0];

@@ -51,6 +51,22 @@
       "type": "boolean",
       "default": false,
       "description": "Whether the number is printed on the card and written into the saved contact file."
+    },
+    "badge_template": {
+      "type": "string",
+      "enum": [
+        "navy_enamel",
+        "carbon_black",
+        "brushed_steel",
+        "ivory_board",
+        "rose_plate"
+      ],
+      "description": "Key of the plate the Fellow wears their badge in. A curated finish from the approved set, never a free-form colour; display only and never read by discovery, ranking or scoring."
+    },
+    "badge_qr_visible": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the hand-over code is printed on the badge face. Display only; the card behind it is unchanged either way."
     }
   },
   "required": [

@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import { LogIn } from 'lucide-react';
 import PublicationSectionKey from './PublicationSectionKey';
 import { publicationBrand as brandColors } from './publicationConfig';
+import { useNavHint } from '@/components/handheld/faceHint';
 
 // The publication's own title card, in the console's idiom: the masthead, the edition's
 // line, the discovery readout — which is what the floating tracker used to say, now printed
 // where the reader is standing — and the contents as keys the ring walks. Anything below
 // the fold is brought up, so the key under the cursor is never off the glass.
 export default function PublicationIndex({ items, cursorKey, onOpen, discovered, total, signedIn, onSignIn }) {
+  const keyHint = useNavHint();
   useEffect(() => {
     if (!cursorKey) return;
     document.querySelector(`[data-hh-key="${cursorKey}"]`)?.scrollIntoView({ block: 'nearest' });
@@ -66,7 +68,7 @@ export default function PublicationIndex({ items, cursorKey, onOpen, discovered,
           Contents
         </p>
         <p className="text-[8px] font-bold uppercase tracking-[0.16em]" style={{ color: `${brandColors.ink}45` }}>
-          ◀▶ Walk · A Open
+          {keyHint({ walk: 'Walk' })}
         </p>
       </div>
 

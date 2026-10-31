@@ -400,7 +400,10 @@ export default async function (req) {
         ballots: ballotCount,
         seeded: openDrafts.length,
         ballots_on_record: ballotCount + openDrafts.length,
-        pool: cohortStats.reduce((n, c) => n + c.pool, 0),
+        // People, not seats: a Fellow standing in two open cohorts is one person in the
+        // pool, and summing the cohort counts would count them twice.
+        pool: scoped.length,
+        pool_seats: cohortStats.reduce((n, c) => n + c.pool, 0),
         votes_per_contributor:
           contributorCount > 0 ? Math.round((comparisons / contributorCount) * 10) / 10 : 0,
       },

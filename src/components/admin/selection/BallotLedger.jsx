@@ -27,19 +27,23 @@ function when(value) {
   return date.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
-export default function BallotLedger({ ballots = [] }) {
+export default function BallotLedger({ ballots = [], recent = 0 }) {
   const [query, setQuery] = useState('');
+  const [showAll, setShowAll] = useState(false);
   const [sort, setSort] = useState({ key: 'submitted_at', dir: 'desc' });
+
+  // The latest landings first; the rest of the record stays one press away.
+  const rows = recent > 0 && !showAll ? ballots.slice(0, recent) : ballots;
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
     const filtered = needle
-      ? ballots.filter((row) =>
+      ? rows.filter((row) =>
           [row.voter_name, row.voter_email, row.cohort, row.state].some((value) =>
             String(value || '').toLowerCase().includes(needle)
           )
         )
-      : ballots;
+      : rows;
     const dir = sort.dir === 'asc' ? 1 : -1;
     return [...filtered].sort((a, b) => {
       if (sort.key === 'submitted_at') {
@@ -51,7 +55,7 @@ export default function BallotLedger({ ballots = [] }) {
       if (typeof x === 'number' && typeof y === 'number') return (x - y) * dir;
       return String(x ?? '').localeCompare(String(y ?? '')) * dir;
     });
-  }, [ballots, query, sort]);
+  }, [rows, query, sort]);
 
   const toggle = (key) =>
     setSort((prev) => ({ key, dir: prev.key === key && prev.dir === 'desc' ? 'asc' : 'desc' }));
@@ -68,12 +72,64 @@ export default function BallotLedger({ ballots = [] }) {
             className="h-8 pl-8 text-xs"
           />
         </div>
-        <p className="shrink-0 text-[10px] uppercase tracking-[0.16em] text-editorial-navy/45">
-          {visible.length} of {ballots.length} shown
-        </p>
+        <div className="flex shrink-0 items-center gap-3">
+          {recent > 0 && ballots.length > recent && (
+            <button
+              type="button"
+              onClick={() => setShowAll((value) => !value)}
+              className="text-[9.5px] font-semibold uppercase tracking-[0.16em] text-editorial-navy/45 hover:text-editorial-navy"
+            >
+              {showAll ? `Latest ${recent}` : 'Show all'}
+            </button>
+          )}
+          <p className="text-[10px] uppercase tracking-[0.16em] text-editorial-navy/45">
+            {visible.length} of {rows.length} shown
+          </p>
+        </div>
       </div>
 
-      <div className="max-h-[520px] overflow-auto rounded-lg border border-editorial-navy/10 bg-white">
+      {/* A phone reads the ledger as cards: five columns cannot be read across a hand's
+          width without dragging the table sideways, and the state is what matters first. */}
+      <div className="space-y-1.5 md:hidden">
+        {visible.map((row) => {
+          const tone = STATE_TONE[row.state] || STATE_TONE.Cast;
+          return (
+            <div
+              key={row.id}
+              className="rounded-lg border border-editorial-navy/10 bg-white px-2.5 py-1.5 shadow-sm"
+            >
+              <div className="flex items-baseline gap-2">
+                <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-tight text-editorial-navy">
+                  {row.voter_name}
+                </p>
+                <span className="shrink-0 text-[8.5px] font-bold uppercase tracking-[0.16em]" style={{ color: tone.color }}>
+                  {tone.label}
+                </span>
+              </div>
+              <div className="mt-0.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-[9px] uppercase tracking-[0.1em] text-editorial-navy/45">
+                <span className="truncate">{row.cohort || '—'}</span>
+                <span className="tabular-nums">{row.length} choices</span>
+                <span className="ml-auto tabular-nums normal-case tracking-normal">
+                  {row.submitted_at
+                    ? when(row.submitted_at)
+                    : row.nominated_at
+                      ? `nominated ${when(row.nominated_at)}`
+                      : '—'}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+        {visible.length === 0 && (
+          <p className="rounded-lg border border-editorial-navy/10 bg-white px-3 py-8 text-center text-[11px] leading-relaxed text-editorial-navy/55">
+            {ballots.length === 0
+              ? 'Nothing recorded in this scope yet. The ledger fills as the community weighs.'
+              : `Nothing matches “${query}”.`}
+          </p>
+        )}
+      </div>
+
+      <div className="hidden max-h-[520px] overflow-auto rounded-lg border border-editorial-navy/10 bg-white md:block">
         <table className="w-full border-collapse text-left">
           <thead className="sticky top-0 z-10 bg-editorial-navy text-editorial-cream">
             <tr>
@@ -135,9 +191,8 @@ export default function BallotLedger({ ballots = [] }) {
         </table>
       </div>
 
-      <p className="text-[10px] text-editorial-navy/45">
-        Sealed ballots: the ordering a voter saved is never shown here, only that it was cast. Seeded ballots are drafts
-        standing from a voter’s own nominations — they are not votes until the voter saves them.
+      <p className="text-[9.5px] uppercase tracking-[0.1em] text-editorial-navy/35">
+        Ordering stays sealed · seeded lists are drafts, not votes
       </p>
     </div>
   );

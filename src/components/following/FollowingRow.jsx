@@ -53,7 +53,7 @@ export default function FollowingRow({ person, contact, inList, listPosition, bu
             <span className="truncate">
               {[contact.role_title, contact.company].filter(Boolean).join(' · ') || contact.email}
             </span>
-            <Link to="/aerosync/contacts" className="font-bold uppercase tracking-[0.12em]" style={{ color: '#B87333' }}>
+            <Link to="/aerosync/people" className="font-bold uppercase tracking-[0.12em]" style={{ color: '#B87333' }}>
               Open
             </Link>
           </p>

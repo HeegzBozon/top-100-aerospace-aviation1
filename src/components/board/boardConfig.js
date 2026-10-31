@@ -1,4 +1,4 @@
-import { Briefcase, CheckCircle2, GraduationCap, Send, Trophy } from "lucide-react";
+import { Briefcase, CalendarDays, CheckCircle2, GraduationCap, Radar, Send, Trophy } from "lucide-react";
 
 // The house tones, straight from the brand sheet.
 export const BRAND = {
@@ -184,9 +184,36 @@ export const BOARD_COLUMNS = [
         action: "Open the index",
       },
       {
-        key: "calendar",
+        key: "chamber-calendar",
         title: "The chamber calendar",
         blurb: "Hiring rooms and receptions at the shows this season.",
+        to: "/events",
+        action: "Open the calendar",
+      },
+    ],
+  },
+  // What is still ahead of the Fellow: the rooms opened at the shows and the shows
+  // themselves. Both used to stand as keys on the CRM's title screen; they are read here,
+  // on the board that already reports the cycle, and open the surfaces that hold the rest.
+  {
+    key: "ahead",
+    index: "05",
+    label: "Ahead",
+    tagline: "The shows on the calendar, and the rooms Fellows have opened in them.",
+    icon: CalendarDays,
+    cards: [
+      {
+        key: "rooms-ahead",
+        title: "Rooms ahead",
+        blurb: "Declare your attendance, and the introductions follow.",
+        stat: "roomsOpen",
+        to: "/aerosync/rooms",
+        action: "Open the rooms",
+      },
+      {
+        key: "events-ahead",
+        title: "The calendar",
+        blurb: "Every show, workshop and reception on the chamber's calendar.",
         to: "/events",
         action: "Open the calendar",
       },

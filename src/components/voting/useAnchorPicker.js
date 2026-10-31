@@ -59,7 +59,15 @@ export default function useAnchorPicker({ count, labelAt, active, setKey, onChoo
     };
   }
 
-  useEffect(() => registerPicker(api.current), []);
+  // The claim is held only while a set is actually standing, and it is made the moment
+  // one stands. The ballot menu this ballot renders inside claims the console when it
+  // mounts; a picker registered later is the one on top, so the chamber has to take the
+  // console back each time a set is drawn — otherwise the ring and the confirm key stay
+  // with the menu and never reach the four cards.
+  useEffect(() => {
+    if (!active) return undefined;
+    return registerPicker(api.current);
+  }, [active]);
 
   // A desk keyboard walks the same cards the ring does: the arrows move the cursor and
   // the ends hold, Enter votes for the card under it, and I opens that card's file. A

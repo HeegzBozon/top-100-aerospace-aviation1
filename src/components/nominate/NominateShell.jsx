@@ -43,7 +43,7 @@ export default function NominateShell({ children, stageKey, progress, onExit }) 
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-start justify-center p-4 sm:p-8 md:p-12 overflow-y-auto">
+      <div className="flex-1 flex items-start justify-center p-3 sm:p-8 md:p-12 overflow-y-auto">
         <div className="w-full max-w-2xl">
           <AnimatePresence mode="wait">
             <motion.div

@@ -29,6 +29,51 @@ export const registerFaceKeys = (fn) => {
 
 export const pressFaceKey = (name) => (handler ? handler(name) === true : false);
 
+// The radio's own keys. The keypad has no letters on it, so a surface with four things
+// standing under the hand — the chamber's candidates — claims the digits instead: the
+// same claim, made in the face's own alphabet. A digit claimed here is taken before the
+// keypad is allowed to tune or to jump: the surface answers for it.
+let digitHandler = null;
+
+export const registerDigits = (fn) => {
+  digitHandler = fn;
+  return () => {
+    if (digitHandler === fn) digitHandler = null;
+  };
+};
+
+export const pressDigit = (digit) => (digitHandler ? digitHandler(digit) === true : false);
+
+// What the pad's figures are doing right now.
+//
+// A surface that claims the digits prints their meaning on them, so the keypad says what
+// it will do rather than leaving the hand to remember: on the ballot, 1–9 are positions to
+// walk to, and while a name is lifted they are the ranks it can be carried to. A surface
+// that prints nothing leaves the letters where they were.
+let digitLegend = null;
+const legendListeners = new Set();
+
+export const registerDigitLegends = (legend) => {
+  digitLegend = legend;
+  legendListeners.forEach((fn) => fn(legend));
+  return () => {
+    if (digitLegend === legend) {
+      digitLegend = null;
+      legendListeners.forEach((fn) => fn(null));
+    }
+  };
+};
+
+export const useDigitLegends = () => {
+  const [legend, setLegend] = useState(digitLegend);
+  useEffect(() => {
+    setLegend(digitLegend);
+    legendListeners.add(setLegend);
+    return () => legendListeners.delete(setLegend);
+  }, []);
+  return legend;
+};
+
 // Whether a surface is holding the four keys. The hardware reads this to put on the
 // legends that go with it: while the keys are held, Y prints its own letter — it is a
 // vote — and the share stays on the pill at the foot of the glass, where it always is.
