@@ -96,6 +96,79 @@
       ],
       "default": "manual",
       "description": "How the contact arrived: read from a captured card, or typed in by hand."
+    },
+    "room_id": {
+      "type": "string",
+      "description": "ID of the ConferenceRoom the contact was captured in. Ties a capture to the show it happened at without copying the conference record."
+    },
+    "relationship_type": {
+      "type": "string",
+      "enum": [
+        "investor",
+        "customer",
+        "hire",
+        "partner",
+        "supplier",
+        "mentor",
+        "press",
+        "peer"
+      ],
+      "description": "Curated relationship type, chosen in one tap at capture. Private to the Fellow; never read by discovery, directory ordering, measurement, or scoring."
+    },
+    "heat": {
+      "type": "string",
+      "enum": [
+        "hot",
+        "warm",
+        "cool"
+      ],
+      "description": "How warm the conversation was: asked for a next step, real interest, or polite. Private to the Fellow; never measurement-bearing."
+    },
+    "promise": {
+      "type": "string",
+      "description": "What the Fellow said they would send or do. The line the first follow-up is built from, and the item the Fellow owes."
+    },
+    "consent_confirmed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the Fellow confirmed the person agreed to have their details kept. A capture is never saved without this."
+    },
+    "follow_up_draft": {
+      "type": "string",
+      "description": "The personalised follow-up the Fellow composed from this capture. Drafted in the app, edited by the Fellow, and sent by the Fellow from their own account."
+    },
+    "follow_up_sent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the Fellow has marked the follow-up as sent. Nothing is ever sent automatically by the platform."
+    },
+    "follow_up_sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Fellow marked the follow-up as sent"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "none",
+        "meeting",
+        "opportunity",
+        "network",
+        "dormant",
+        "won",
+        "lost"
+      ],
+      "default": "none",
+      "description": "Where the relationship stands after the show, recorded by the Fellow. Private progress only; never measurement-bearing."
+    },
+    "resurface_room_id": {
+      "type": "string",
+      "description": "ID of a future ConferenceRoom this contact is to be resurfaced at. Only settable when both parties are listed on that room's roster."
+    },
+    "resurface_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the contact is armed to resurface at the next shared show"
     }
   },
   "required": [

@@ -112,6 +112,10 @@ const PressKitPublic = lazy(() => import('@/pages/PressKitPublic'));
 const Classifieds = lazy(() => import('@/pages/Classifieds'));
 const Review = lazy(() => import('@/pages/Review'));
 const Conferences = lazy(() => import('@/pages/Conferences'));
+const ConferencePlanHub = lazy(() => import('@/pages/ConferencePlanHub'));
+const ConferenceDiscover = lazy(() => import('@/pages/ConferenceDiscover'));
+const ConferenceAttend = lazy(() => import('@/pages/ConferenceAttend'));
+const ConferenceJourney = lazy(() => import('@/pages/ConferenceJourney'));
 const ConferenceDetail = lazy(() => import('@/pages/ConferenceDetail'));
 const ConferenceHost = lazy(() => import('@/pages/ConferenceHost'));
 const ConferenceHostApply = lazy(() => import('@/pages/ConferenceHostApply'));
@@ -238,6 +242,11 @@ const AuthenticatedApp = () => {
           workspace the approved hosts behind them publish from. The host addresses are
           declared first so they read as doors rather than as conference ids. */}
       <Route path="/conferences" element={<Conferences />} />
+      <Route path="/conferences/plan" element={<ConferencePlanHub />} />
+      <Route path="/conferences/discover" element={<ConferenceDiscover />} />
+      <Route path="/conferences/attend" element={<ConferenceAttend />} />
+      {/* One conference, worked from the inside: plan, targets, capture, debrief, follow up */}
+      <Route path="/conferences/attend/:roomId" element={<ConferenceJourney />} />
       <Route path="/conferences/host" element={<ConferenceHost />} />
       <Route path="/conferences/host/apply" element={<ConferenceHostApply />} />
       <Route path="/conferences/:id" element={<ConferenceDetail />} />

@@ -8,6 +8,7 @@ import ConferencePeople from '@/components/conferences/ConferencePeople';
 import useConferenceRoom from '@/components/conferences/useConferenceRoom';
 import RunOfShow from '@/components/conferences/RunOfShow';
 import ConferenceLinks from '@/components/conferences/ConferenceLinks';
+import ConferenceTravelDesk from '@/components/travel/ConferenceTravelDesk';
 import RsvpControl from '@/components/conference-room/RsvpControl';
 import FocusAreaBoard from '@/components/conference-room/FocusAreaBoard';
 import NowFacilitatingRibbon from '@/components/conference-room/NowFacilitatingRibbon';
@@ -154,6 +155,10 @@ export default function ConferenceDetail() {
 
         <div className="mt-3">
           <ConferenceLinks room={room} accent={accent} />
+        </div>
+
+        <div className="mt-3">
+          <ConferenceTravelDesk room={room} />
         </div>
 
         {me && (

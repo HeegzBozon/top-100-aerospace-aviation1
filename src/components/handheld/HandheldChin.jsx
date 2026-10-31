@@ -94,7 +94,7 @@ export default function HandheldChin() {
 
       {/* The glass's footer, painted unlit while the console is not mounted yet: the
           readout band, standing exactly where the live one takes over from it. */}
-      <ViewerFoot staticView />
+
     </>
   );
 }

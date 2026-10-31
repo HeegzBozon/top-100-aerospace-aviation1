@@ -1,0 +1,137 @@
+{
+  "name": "ConferencePlan",
+  "type": "object",
+  "properties": {
+    "room_id": {
+      "type": "string",
+      "description": "ID of the ConferenceRoom this plan is written against. The conference itself is never duplicated onto the plan."
+    },
+    "conference_name": {
+      "type": "string",
+      "description": "Denormalized conference display name, for the reader's own index of plans"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the Fellow who owns this plan. Access is anchored on this field."
+    },
+    "reason": {
+      "type": "string",
+      "description": "The one-line 'why I'm going'. Written by the Fellow, readable only by the Fellow and admins."
+    },
+    "outcomes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Up to three measurable outcomes the Fellow is going for. Read back at the end of the show to report against."
+    },
+    "outcome_report": {
+      "type": "string",
+      "description": "The Fellow's own report of how the show went against their three outcomes. Private to the Fellow."
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email of the Fellow or peer being targeted, as declared on the room roster"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name, denormalized from the roster"
+          },
+          "avatar_url": {
+            "type": "string",
+            "description": "Avatar URL, denormalized from the roster"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "must_meet",
+              "nice_to_meet"
+            ],
+            "default": "must_meet",
+            "description": "Must-meet or nice-to-meet. The Fellow's own ordering of the room."
+          },
+          "why": {
+            "type": "string",
+            "description": "Why this person matters to the Fellow's stated outcomes"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "met",
+              "missed"
+            ],
+            "default": "pending",
+            "description": "Whether the target has been met on the floor. Set by the Fellow; personal progress only, never measurement-bearing."
+          }
+        }
+      },
+      "default": [],
+      "description": "The prioritized list of people to meet, ordered as the Fellow built it. Private to the Fellow; carries zero weight in discovery, directory ordering, measurement, or scoring."
+    },
+    "packed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Keys from the curated Pack checklist the Fellow has ticked off. Private progress only; never measurement-bearing."
+    },
+    "travel_planned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the Fellow has marked their travel as planned. Private progress only."
+    }
+  },
+  "required": [
+    "room_id",
+    "owner_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.owner_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1755,3 +1755,124 @@ button:focus-visible {
     opacity: 0;
   }
 }
+
+/* ===== THE CONFERENCE STAGE =====
+   The circuit is a room with the lights down: a navy plate lit from above, a fine
+   field of stars, one slow arc of copper turning over it, and a horizon rule that
+   divides the reading from the instrument band at its foot. Nothing here carries
+   meaning. Nothing moves on a timer of its own: the sweep is one transform on one
+   element, and it stops for a reader who asks it to. */
+.cfs-orbit {
+  animation: cfs-orbit 54s linear infinite;
+}
+@keyframes cfs-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* The title and the cartridges arrive the way a film title does — in order, once. */
+.cfs-rise {
+  animation: cfs-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes cfs-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cfs-rise-1 { animation-delay: 140ms; }
+.cfs-rise-2 { animation-delay: 280ms; }
+
+/* The instrument band the circuit is read off. */
+.cfs-readout {
+  background: linear-gradient(180deg, rgba(9, 20, 34, 0.86) 0%, rgba(6, 13, 23, 0.94) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 12px 26px -16px rgba(3, 6, 13, 0.85);
+}
+.cfs-seam {
+  box-shadow: inset 1px 0 0 rgb(var(--editorial-copper-rgb) / 0.38);
+}
+
+/* A cartridge: a moulded plate seated against a brass spine, with an LED that only
+   lights on the one the console's ring is standing on. */
+.cfs-key {
+  background: linear-gradient(180deg, rgba(250, 248, 245, 0.075) 0%, rgba(250, 248, 245, 0.028) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(250, 248, 245, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 10px 22px -16px rgba(3, 6, 13, 0.95);
+  transition: background 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+.cfs-key:hover,
+.cfs-key:focus-visible {
+  background: linear-gradient(180deg, rgba(250, 248, 245, 0.11) 0%, rgba(250, 248, 245, 0.045) 100%);
+  outline: none;
+}
+.cfs-key.is-selected {
+  background: linear-gradient(180deg, rgba(201, 168, 124, 0.19) 0%, rgba(201, 168, 124, 0.07) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.72),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 16px 32px -18px rgba(3, 6, 13, 0.95);
+}
+.cfs-led {
+  background: rgba(239, 233, 220, 0.22);
+  transition: background-color 200ms ease, box-shadow 200ms ease;
+}
+.cfs-key.is-selected .cfs-led {
+  background: #c9a87c;
+  box-shadow: 0 0 7px rgba(201, 168, 124, 0.9);
+}
+
+/* The chrome the three applications are read through: one navy strip cut with a
+   copper seam, the launcher at its left and the applications printed as keys. */
+.cfs-bar {
+  background: linear-gradient(180deg, #24425f 0%, #16293f 62%, #101f31 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgb(var(--editorial-copper-rgb) / 0.55),
+    0 6px 16px -12px rgba(3, 6, 13, 0.9);
+}
+.cfs-tab {
+  display: inline-flex;
+  min-width: 0;
+  flex: 1;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  overflow: hidden;
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-family: var(--font-body);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(250, 248, 245, 0.58);
+  transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+.cfs-tab:hover {
+  color: rgba(250, 248, 245, 0.86);
+}
+.cfs-tab.is-active {
+  color: #faf8f5;
+  background: rgba(201, 168, 124, 0.16);
+  box-shadow: inset 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.55);
+}
+.cfs-tab-index {
+  font-family: var(--font-heading);
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  color: rgb(var(--editorial-gold-rgb) / 0.75);
+}
+.cfs-tab.is-active .cfs-tab-index {
+  color: #c9a87c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cfs-orbit,
+  .cfs-rise {
+    animation: none;
+  }
+}

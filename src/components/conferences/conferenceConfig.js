@@ -29,11 +29,14 @@ export {
 // The two audiences the surface is read by. Attendee is the default; Host is the
 // workspace, and it asks for approval before it opens.
 export const CONFERENCE_MODES = [
-  { key: 'attend', label: 'Attend', to: '/conferences' },
+  { key: 'attend', label: 'Attend', to: '/conferences/discover' },
   { key: 'host', label: 'Host', to: '/conferences/host' },
 ];
 
+// The launcher is the front door; the three applications stand behind it.
 export const CONFERENCES_HREF = '/conferences';
+export const DISCOVER_HREF = '/conferences/discover';
+export const ATTEND_HREF = '/conferences/attend';
 export const HOST_HREF = '/conferences/host';
 export const HOST_APPLY_HREF = '/conferences/host/apply';
 
