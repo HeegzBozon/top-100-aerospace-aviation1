@@ -16,6 +16,7 @@ export default function InboxTriage({ user }) {
   const [filter, setFilter] = useState('all');
   const [sort, setSort] = useState('newest');
   const [openKey, setOpenKey] = useState(null);
+  const [tab, setTab] = useState('inbox');
   const now = Date.now();
   const toggle = (key) => setOpenKey((k) => (k === key ? null : key));
 
@@ -31,7 +32,7 @@ export default function InboxTriage({ user }) {
   const shown = BUNDLES.filter((b) => inFilter(filter, b.key));
   const rows = shown.flatMap((b) => visible.filter((i) => i.bundle === b.key));
   const { cursorKey } = useInboxPicker({
-    rows, views: VIEWS, view, setView, onOpen: toggle,
+    rows: tab === 'inbox' ? rows : [], views: VIEWS, view, setView, onOpen: toggle,
     onDone: (key) => setState(key, { done: true, snoozed_until: null }),
   });
 
@@ -46,7 +47,17 @@ export default function InboxTriage({ user }) {
 
   return (
     <div>
-      <InboxMetrics items={items} states={states} filter={filter} onFilter={setFilter} />
+      <div role="tablist" className="mb-3 grid grid-cols-2 rounded border border-editorial-navy/15 bg-white p-0.5">
+        {['funnel', 'inbox'].map((t) => (
+          <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)}
+            className={`rounded py-1.5 font-body text-[11px] font-semibold uppercase tracking-[0.16em] ${tab === t ? 'bg-editorial-navy text-editorial-cream' : 'text-editorial-navy'}`}>
+            {t}
+          </button>
+        ))}
+      </div>
+      {tab === 'funnel' ? (
+        <InboxMetrics items={items} states={states} filter={filter} onFilter={(f) => { setFilter(f); setTab('inbox'); }} />
+      ) : (<>
       <InboxControls views={VIEWS} view={view} setView={setView} sort={sort} setSort={setSort}
         filter={filter} setFilter={setFilter} />
       {rows.length === 0 ? (
@@ -61,6 +72,7 @@ export default function InboxTriage({ user }) {
           openKey={openKey} onOpen={toggle} onEnquiryStatus={setEnquiryStatus}
           items={visible.filter((i) => i.bundle === b.key)} />
       ))}
+      </>)}
     </div>
   );
 }
