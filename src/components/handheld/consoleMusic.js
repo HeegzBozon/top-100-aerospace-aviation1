@@ -122,12 +122,19 @@ let nextTime = 0;
 let step = 0;
 let bar = 0;
 let index = 0;
+// The record currently loaded: the house playlist unless a surface hands over its own.
+let queue = PLAYLIST;
+let queueKey = "house";
+// Each track plays this many bars, then the record moves on through the playlist.
+const TRACK_BARS = 48;
+const listeners = new Set();
+const announce = () => listeners.forEach((fn) => fn(queue[index]));
 let playing = false;
 let ctxBound = false;
 
 const hz = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 const drift = () => (Math.random() - 0.5) * DRIFT;
-const lofi = () => PLAYLIST[index].kind === "lo-fi";
+const lofi = () => queue[index].kind === "lo-fi";
 
 // A gain that rises fast and falls away — every voice in here is built on it.
 function env(gain, at, level, attack, decay) {
@@ -363,7 +370,7 @@ function pad(at, chord, decay) {
 const isBSection = (at) => at % 8 >= 4;
 
 function playStep(at) {
-  const track = PLAYLIST[index];
+  const track = queue[index];
   const chord = track.chords[bar % track.chords.length];
   const beat = 60 / track.bpm / 4;
   const busy = isBSection(bar);
@@ -399,7 +406,7 @@ function playStep(at) {
 // pushed back by the track's own swing — the grid stays even and the playing does not.
 function pump() {
   if (!ctx) return;
-  const track = PLAYLIST[index];
+  const track = queue[index];
   const beat = 60 / track.bpm / 4;
   while (nextTime < ctx.currentTime + LOOKAHEAD) {
     // Never book a note into the past: a context that was paused for a moment must
@@ -411,13 +418,37 @@ function pump() {
     if (step >= STEPS) {
       step = 0;
       bar += 1;
+      // The playlist plays through: a single-track scene theme keeps looping.
+      if (bar >= TRACK_BARS && queue.length > 1) {
+        nextTrack();
+        return;
+      }
     }
   }
 }
 
+// A surface loads its own playlist (a room, a character's theme). The same key twice is
+// a no-op, so a room's record is never restarted by a re-render.
+export function loadPlaylist(key, tracks, startAt = 0) {
+  if (!tracks?.length || key === queueKey) return;
+  queue = tracks;
+  queueKey = key;
+  index = Math.min(startAt, tracks.length - 1);
+  step = 0;
+  bar = 0;
+  if (ctx) nextTime = Math.max(nextTime, ctx.currentTime + 0.06);
+  setTiming();
+  announce();
+}
+
+export function onTrackChange(fn) {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
 function setTiming() {
   if (!delayNode || !ctx) return;
-  delayNode.delayTime.setTargetAtTime((60 / PLAYLIST[index].bpm) * 0.75, ctx.currentTime, 0.05);
+  delayNode.delayTime.setTargetAtTime((60 / queue[index].bpm) * 0.75, ctx.currentTime, 0.05);
 }
 
 export function isPlaying() {
@@ -425,7 +456,7 @@ export function isPlaying() {
 }
 
 export function currentTrack() {
-  return PLAYLIST[index];
+  return queue[index];
 }
 
 export function getVolume() {
@@ -472,9 +503,10 @@ export function stopPlaylist() {
 }
 
 export function nextTrack() {
-  index = (index + 1) % PLAYLIST.length;
+  index = (index + 1) % queue.length;
   step = 0;
   bar = 0;
   setTiming();
-  return PLAYLIST[index];
+  announce();
+  return queue[index];
 }

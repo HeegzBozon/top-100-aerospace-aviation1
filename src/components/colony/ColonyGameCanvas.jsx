@@ -142,15 +142,25 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
 
   if (label) {
     // The nameplate: a navy plate with a copper rule, the name in serif and, for staff, the role in gold.
-    const fs = Math.max(10, Math.round(cell * 0.55));
-    const ss = Math.max(8, Math.round(fs * 0.7));
+    // Compact and capped: the plate never outgrows the figure it names.
+    const fs = Math.min(12, Math.max(9, Math.round(cell * 0.36)));
+    const ss = Math.max(7, Math.round(fs * 0.68));
+    if (label.length > 18) label = `${label.slice(0, 17)}…`;
     ctx.font = `600 ${fs}px Georgia, serif`;
     const nw = ctx.measureText(label).width;
     ctx.font = `700 ${ss}px sans-serif`;
     const rw = meta.sub ? ctx.measureText(meta.sub.toUpperCase()).width : 0;
-    const w = Math.round(Math.max(nw, rw) + 14), h = meta.sub ? fs + ss + 9 : fs + 8;
+    const w = Math.round(Math.max(nw, rw) + 10), h = meta.sub ? fs + ss + 7 : fs + 6;
     // Whole pixels: a tag drawn on fractions shimmers as the camera glides.
-    const lx = Math.round(x - w / 2), ly = Math.round(top - h - 3);
+    const lx = Math.round(x - w / 2);
+    let ly = Math.round(top - h - 2);
+    // Stack instead of overlapping: lift this plate above any already drawn where it would sit.
+    const tags = meta.plates || [];
+    for (let i = 0; i < 6; i += 1) {
+      const hit = tags.find(p => p.tag && lx < p.tag.x + p.tag.w && lx + w > p.tag.x && ly < p.tag.y + p.tag.h && ly + h > p.tag.y);
+      if (!hit) break;
+      ly = hit.tag.y - h - 1;
+    }
     ctx.fillStyle = meta.me ? 'rgba(184,115,51,0.92)' : 'rgba(14,24,41,0.9)';
     ctx.beginPath(); ctx.roundRect ? ctx.roundRect(lx, ly, w, h, 4) : ctx.rect(lx, ly, w, h); ctx.fill();
     ctx.strokeStyle = meta.sub ? '#C9A87C' : 'rgba(184,115,51,0.85)';
@@ -165,7 +175,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
       ctx.font = `700 ${ss}px sans-serif`;
       ctx.fillText(meta.sub.toUpperCase(), Math.round(x), ly + fs + ss / 2 + 5);
     }
-    meta.plates?.push({ id: meta.id, x: lx, y: ly, w, h: Math.max(h, top + cell * 2.1 * tall - ly) });
+    meta.plates?.push({ id: meta.id, x: lx, y: ly, w, h: Math.max(h, top + cell * 2.1 * tall - ly), tag: { x: lx, y: ly, w, h } });
   }
 }
 

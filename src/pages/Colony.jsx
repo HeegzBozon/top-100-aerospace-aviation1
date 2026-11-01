@@ -26,6 +26,8 @@ import ColonyMapEditor from '@/components/colony/ColonyMapEditor';
 import ColonyNpcDialogue from '@/components/colony/ColonyNpcDialogue';
 import ColonyPersonCard from '@/components/colony/ColonyPersonCard';
 import ColonyPassport from '@/components/colony/quests/ColonyPassport';
+import ColonyQuestTracker from '@/components/colony/quests/ColonyQuestTracker';
+import { useColonyMusic } from '@/components/colony/colonyMusic';
 import ColonyQuestStep from '@/components/colony/quests/ColonyQuestStep';
 import ColonyReconcile from '@/components/colony/quests/ColonyReconcile';
 import usePassport, { restoreFromLink } from '@/components/colony/quests/usePassport';
@@ -142,6 +144,8 @@ function ColonyRoom({ onReplayWelcome }) {
   ];
   const activeNpc = castState.cast.find(c => c.id === npcId);
   const activeQuest = activeNpc && pp.passport ? questFor(activeNpc.id, pp.passport) : null;
+  const openPassport = useCallback(() => setPanel('passport'), []);
+  useColonyMusic(room, (panel === 'npc' || panel === 'quest') && activeNpc ? activeNpc.id : null);
   const [myCell, setMyCell] = useState(null);
   const [chat, setChat] = useState([]);
   const [mediaError, setMediaError] = useState('');
@@ -483,6 +487,7 @@ function ColonyRoom({ onReplayWelcome }) {
         />
       </div>
 
+      {!panel && <ColonyQuestTracker passport={pp.passport} onOpen={openPassport} />}
       {/* World Canvas — fills remaining height */}
       <main
         className={`flex-1 relative overflow-hidden min-h-0 ${showParticipants ? 'mr-72' : ''}`}
