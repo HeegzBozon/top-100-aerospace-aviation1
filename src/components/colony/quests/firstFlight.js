@@ -89,4 +89,11 @@ export function title(p) {
 }
 
 // The next step to show on the tracker.
+// Campus XP: gameplay only, derived from completed quests, never stored or measured.
+export const XP_PER_LEVEL = 300;
+export const questXp = (q) => 100 + (q.reward && REWARDS[q.reward]?.kind !== 'item' ? 50 : 0) + (q.finale ? 250 : 0);
+export function xpOf(p) {
+  const xp = QUESTS.filter(q => isDone(p, q.id)).reduce((t, q) => t + questXp(q), 0);
+  return { xp, level: Math.floor(xp / XP_PER_LEVEL) + 1, into: xp % XP_PER_LEVEL };
+}
 export const nextQuest = (p) => QUESTS.find(q => !isDone(p, q.id) && !lockReason(p, q)) || null;

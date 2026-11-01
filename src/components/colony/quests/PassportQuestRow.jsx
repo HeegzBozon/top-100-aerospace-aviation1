@@ -1,5 +1,5 @@
 import { Check, Lock, Sparkles, Circle } from 'lucide-react';
-import { REWARDS, isDone, lockReason } from './firstFlight';
+import { REWARDS, isDone, lockReason, questXp } from './firstFlight';
 
 // One quest: done reads as won, the next one glows, locked ones keep their mystery.
 export default function PassportQuestRow({ passport, quest: q, isNext }) {
@@ -17,9 +17,10 @@ export default function PassportQuestRow({ passport, quest: q, isNext }) {
           {isNext ? `Go now · ${q.place}` : lock || (done ? `Chose: ${passport.quests[q.id].choice}` : q.place)}
         </p>
       </div>
-      {reward && reward.kind !== 'item' && (
-        <span className={`shrink-0 text-[9px] uppercase tracking-wider ${done ? 'text-editorial-gold' : 'text-editorial-cream/35'}`}>{done ? '★ won' : '+ reward'}</span>
-      )}
+      <span className={`shrink-0 text-right text-[9px] uppercase tracking-wider ${done ? 'text-editorial-gold' : 'text-editorial-cream/40'}`}>
+        {done ? `★ +${questXp(q)} XP` : `+${questXp(q)} XP`}
+        {reward && reward.kind !== 'item' && !done && <span className="block">+ reward</span>}
+      </span>
     </div>
   );
 }

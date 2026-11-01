@@ -23,6 +23,7 @@ const cellCenter = (col, row) => ({ x: col * CELL + CELL / 2, y: row * CELL + CE
 const clampCol = (c) => Math.max(0, Math.min(COLS - 1, c));
 const clampRow = (r) => Math.max(0, Math.min(ROWS - 1, r));
 import { stepCast } from './npcBrain';
+import { drawBeam, trackSpawns, SPAWN_MS } from './spawnFx';
 
 const zoneAt = (zones, col, row) =>
   zones.find(z => col >= z.col && col < z.col + z.w && row >= z.row && row < z.row + z.h) || null;
@@ -179,6 +180,12 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
       if (!hit) break;
       ly = hit.tag.y - h - 1;
     }
+    // Ease the plate to its stacked height so two plates trading places never flicker.
+    if (meta.cache) {
+      const prev = meta.cache[meta.id];
+      if (prev != null && Math.abs(prev - ly) < cell * 3) ly = Math.round(prev + (ly - prev) * 0.18);
+      meta.cache[meta.id] = ly;
+    }
     ctx.fillStyle = meta.me ? 'rgba(184,115,51,0.92)' : 'rgba(14,24,41,0.9)';
     ctx.beginPath(); ctx.roundRect ? ctx.roundRect(lx, ly, w, h, 4) : ctx.rect(lx, ly, w, h); ctx.fill();
     ctx.strokeStyle = meta.sub ? '#C9A87C' : 'rgba(184,115,51,0.85)';
@@ -271,10 +278,12 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       { id: 'me', col: s.vCol ?? s.playerCol, row: s.vRow ?? s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
       ...(() => {
         // The cast runs errands, looks around, and stops to chat with colleagues nearby.
-        if (s.brainRoom !== room) { s.brain = {}; s.brainRoom = room; }
+        if (s.brainRoom !== room) { s.brain = {}; s.brainRoom = room; s.spawn = {}; s.gone = {}; s.last = {}; }
         const occ = occupiedRef.current;
+        // Nobody steps onto a cell another character holds, so neighbours never shuffle through each other.
         stepCast(npcs, s.brain, performance.now(), (c, r) => c < 0 || r < 0 || c >= COLS || r >= ROWS || occ.has(`${c},${r}`)
-          || (c === s.playerCol && r === s.playerRow));
+          || (c === s.playerCol && r === s.playerRow)
+          || Object.values(s.brain).some(o => o.col === c && o.row === r));
         return npcs.map((n) => {
           const b = s.brain[n.id];
           return { id: `npc-${n.id}`, col: b.col, row: b.row, avatar: { image: n.sprite }, facing: b.facing, label: n.name, sub: n.role, line: b.mode === 'chat' ? b.line : null, npc: true };
@@ -293,6 +302,10 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     const now = performance.now();
     const plates = [];
     s.seen = s.seen || {};
+    s.plateY = s.plateY || {};
+    s.ready = !!s.born && now - s.born > 900;
+    trackSpawns(s, all, now);
+    s.last = {};
     all.sort((a, b) => a.row - b.row).forEach(p => {
       const k = `${p.col},${p.row}`;
       const seen = s.seen[p.id];
@@ -310,11 +323,19 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       const { x, y } = d;
       // The lobby is drawn in perspective: further back (higher up) reads smaller.
       const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
-      drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth, room === 'lobby' ? 1.3 : 1, walk,
-        { sub: p.sub, id: p.id, me: p.id === 'me', plates, line: p.line, npc: p.npc, now,
+      const sx = ox + x * sc, sy = oy + y * sc;
+      const sp = s.spawn[p.id] ? Math.min(1, (now - s.spawn[p.id]) / SPAWN_MS) : 1;
+      if (sp < 1) drawBeam(ctx, sx, sy, CELL * sc * depth, 1 - sp * 0.6, now);
+      s.last[p.id] = { x: sx, y: sy, cell: CELL * sc * depth };
+      ctx.globalAlpha = sp;
+      drawSprite(ctx, sx, sy, p.avatar, p.facing, p.label, sc, depth, (room === 'lobby' ? 1.3 : 1) * (0.25 + 0.75 * sp), walk,
+        { sub: p.sub, id: p.id, me: p.id === 'me', plates, line: p.line, npc: p.npc, now, cache: s.plateY,
           prox: p.id === 'me' ? 0.6 : Math.max(0, 1 - Math.hypot(p.col - s.playerCol, p.row - s.playerRow) / 10) });
     });
+    ctx.globalAlpha = 1;
     s.plates = plates;
+    // Whoever just left collapses back into their column of light.
+    Object.values(s.gone).forEach(g => drawBeam(ctx, g.x, g.y, g.cell, 1 - (now - g.at) / SPAWN_MS, now));
 
     // Room transition: the new room opens out of a closing iris of dark.
     if (!s.born) s.born = performance.now();

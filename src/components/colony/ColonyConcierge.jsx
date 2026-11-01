@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { X, SendHorizontal } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import DialogueBox from '@/components/colony/DialogueBox';
 import ConciergeAction from '@/components/colony/ConciergeAction';
@@ -107,7 +107,7 @@ Visitor now asks: ${question}`,
         <form onSubmit={(e) => { e.preventDefault(); ask(q); }} className="mt-2 flex flex-none gap-2">
           <input value={q} onChange={e => setQ(e.target.value)} maxLength={300} placeholder="Ask Matthew..." enterKeyHint="send" disabled={busy}
             className="min-w-0 flex-1 rounded-sm border-2 border-editorial-gold/60 bg-[#14283f] px-2 py-1.5 font-mono text-editorial-cream placeholder:text-editorial-cream/40 outline-none disabled:opacity-50" />
-          <button type="submit" disabled={busy} className="rounded-sm border-2 border-editorial-cream bg-editorial-copper px-3 font-mono text-xs font-bold text-editorial-cream disabled:opacity-50">ASK</button>
+          <button type="submit" disabled={busy || !q.trim()} aria-label="Send" className="flex w-10 items-center justify-center rounded-sm border-2 border-editorial-cream bg-editorial-copper text-editorial-cream disabled:opacity-50"><SendHorizontal className="h-4 w-4" /></button>
         </form>
       </div>
     </div>

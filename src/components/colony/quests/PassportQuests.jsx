@@ -23,6 +23,12 @@ export default function PassportQuests({ passport }) {
           <p className="mt-1 text-[11px] italic text-editorial-cream/60">{next ? `Up next: ${next.title} in the ${next.place}` : 'The First Flight is complete.'}</p>
         </div>
       </div>
+      {next && (
+        <div>
+          <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-editorial-gold">Up next</p>
+          <PassportQuestRow passport={passport} quest={next} isNext />
+        </div>
+      )}
       {[1, 2, 3, 4, 5].map(act => {
         const qs = QUESTS.filter(q => q.act === act);
         const n = qs.filter(q => isDone(passport, q.id)).length;
@@ -33,7 +39,7 @@ export default function PassportQuests({ passport }) {
               <span className="text-[10px] text-editorial-cream/50">{n === qs.length ? '✓ Cleared' : `${n}/${qs.length}`}</span>
             </div>
             <div className="mb-1 h-0.5 bg-white/10"><div className="h-full bg-editorial-gold transition-all" style={{ width: `${(n / qs.length) * 100}%` }} /></div>
-            {qs.map(q => <PassportQuestRow key={q.id} passport={passport} quest={q} isNext={next?.id === q.id} />)}
+            {qs.filter(q => q.id !== next?.id).map(q => <PassportQuestRow key={q.id} passport={passport} quest={q} />)}
           </div>
         );
       })}
