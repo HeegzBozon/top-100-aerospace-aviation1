@@ -46,6 +46,22 @@ export default function Colony() {
   const [panel, setPanel] = useState(null); // directory | chat | concierge
   const [myCell, setMyCell] = useState(null);
   const [chat, setChat] = useState([]);
+  const [mediaError, setMediaError] = useState('');
+
+  // Browsers hold back sound until the visitor touches the page; the first tap releases it.
+  useEffect(() => {
+    const unlock = () => document.querySelectorAll('audio, video').forEach((el) => el.play().catch(() => {}));
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('keydown', unlock);
+    return () => { window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); };
+  }, []);
+  const retryMedia = () => {
+    setMediaError('');
+    callRef.current?.startCamera?.().then(() => {
+      callRef.current.setLocalAudio(true); callRef.current.setLocalVideo(true);
+      setIsMuted(false); setIsCamOff(false);
+    }).catch(() => setMediaError('Still blocked. Check your browser and device permissions for this site.'));
+  };
 
   const activateZone = useCallback((z) => {
     if (!z) return false;
@@ -184,6 +200,12 @@ export default function Colony() {
       const next = { ...prev }; delete next[e.participant.session_id]; return next;
     }));
 
+    // Browser or device refused the camera/mic: say so instead of failing silently.
+    call.on('camera-error', (e) => {
+      setMediaError(e?.error?.msg || e?.errorMsg?.errorMsg || 'Camera or microphone is blocked. Allow access in your browser settings, then tap Retry.');
+    });
+    call.on('started-camera', () => setMediaError(''));
+
     call.on('error', (e) => {
       setErrorMsg(e?.errorMsg || 'An error occurred.');
       setCallState('error');
@@ -253,7 +275,9 @@ export default function Colony() {
     if (p.session_id === localSessionId) return true;
     if (!myCell) return false;
     const pos = positions[p.session_id];
-    return pos && pos.room === myCell.room && Math.hypot(pos.col - myCell.col, pos.row - myCell.row) <= NEAR;
+    // Someone whose position hasn't arrived yet is still heard and seen.
+    if (!pos) return true;
+    return pos.room === myCell.room && Math.hypot(pos.col - myCell.col, pos.row - myCell.row) <= NEAR;
   });
 
   if (callState === 'joining' || callState === 'lobby') {
@@ -311,6 +335,12 @@ export default function Colony() {
         {showAvatar && <ColonyAvatarPicker avatar={avatar} onSave={saveAvatar} onClose={() => setShowAvatar(false)} />}
 
         {!panel && <ColonyZoneCard zone={zone} onActivate={activateZone} />}
+        {mediaError && (
+          <div className="absolute left-3 right-3 top-24 z-30 mx-auto flex max-w-md items-center gap-2 rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 px-3 py-2 text-xs text-editorial-cream">
+            <span className="flex-1">{mediaError}</span>
+            <button type="button" onClick={retryMedia} className="rounded bg-editorial-copper px-2.5 py-1 font-semibold">Retry</button>
+          </div>
+        )}
         {panel === 'directory' && (
           <ColonyDirectory current={room} onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
         )}
