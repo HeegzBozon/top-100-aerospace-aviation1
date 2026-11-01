@@ -444,6 +444,28 @@ button:focus-visible {
   scroll-snap-align: start;
 }
 
+/* ===== SIDEWAYS — THE PSP FACE =====
+   A phone turned on its side: two handles, the glass between them, the menu bar across
+   its head. The body re-declares the geometry so every surface re-measures itself. */
+body.hh-landscape {
+  --hh-grip: 116px;
+  --hh-top: 8px;
+  --hh-nav: 32px;
+  --hh-bottom: 8px;
+  --hh-foot: 0px;
+  --hh-glass-inset: calc(var(--hh-grip) + env(safe-area-inset-left));
+  background: #070C16;
+}
+body.hh-landscape .hh-stage {
+  display: flex !important;
+  z-index: 2;
+  border-radius: 10px;
+  bottom: calc(8px + env(safe-area-inset-bottom));
+}
+body.hh-landscape .hh-viewer-foot {
+  display: none;
+}
+
 /* ===== THE KEYBOARD =====
    The one time the controls center is put away. The keyboard stands exactly where
    the chin stands, so the chin goes while a field is being written into, and the
