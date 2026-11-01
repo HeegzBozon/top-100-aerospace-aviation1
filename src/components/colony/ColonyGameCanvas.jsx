@@ -4,6 +4,7 @@ import { drawAvatar } from '@/components/colony/colonyAvatar';
 // ─── The Expo Hub map: one illustrated top-down plate, walked on a grid ───────
 // Everything is measured in the plate's native pixels (1024×576, 16px cells) and
 // scaled at draw time, so the whole height of the plate fits the screen.
+import { pickSpawn } from './colonySpawn';
 const NATIVE_W = 1024;
 const NATIVE_H = 576;
 const CELL = 16;
@@ -172,8 +173,15 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   ]);
 
   // Each room sets where a visitor steps in; the Main Hall opens at its globe entrance.
+  const prevRoomRef = useRef(null);
   useEffect(() => {
-    const at = start || START;
+    const others = [...occupiedRef.current].map(k => { const [col, row] = k.split(',').map(Number); return { col, row }; });
+    const wallSet = new Set(walls.flatMap(w => Array.from({ length: w.w * w.h }, (_, i) => `${w.col + (i % w.w)},${w.row + Math.floor(i / w.w)}`)));
+    const at = pickSpawn({
+      roomDef: { zones, start }, fromRoom: prevRoomRef.current, occupied: occupiedRef.current,
+      others: others.filter(o => !wallSet.has(`${o.col},${o.row}`)), cols: COLS, rows: ROWS, fallback: START,
+    });
+    prevRoomRef.current = room;
     stateRef.current.playerCol = at.col;
     stateRef.current.playerRow = at.row;
   }, [room]);
