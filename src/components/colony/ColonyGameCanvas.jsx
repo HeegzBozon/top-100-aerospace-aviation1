@@ -62,6 +62,50 @@ const getSprite = (url) => {
   return null;
 };
 
+// Hotspots: a copper beacon over each place you can visit, lit up when you stand in it.
+function drawHotspots(ctx, zones, activeKey, ox, oy, sc, now) {
+  (zones || []).forEach(z => {
+    const on = z.key === activeKey;
+    const x = ox + z.col * CELL * sc, y = oy + z.row * CELL * sc;
+    const w = z.w * CELL * sc, h = z.h * CELL * sc;
+    const pulse = 0.5 + 0.5 * Math.sin(now / 600 + z.col);
+    ctx.save();
+    if (on) {
+      ctx.fillStyle = 'rgba(201,168,124,0.16)';
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = 'rgba(201,168,124,0.9)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.strokeRect(x, y, w, h);
+      ctx.setLineDash([]);
+    }
+    // The beacon: a diamond floating over the spot.
+    const bx = Math.round(x + w / 2), by = Math.round(y + h / 2 - (on ? 0 : pulse * 3 * sc));
+    const r = Math.max(5, 5 * sc) * (on ? 1.3 : 1);
+    ctx.shadowColor = 'rgba(201,168,124,0.9)';
+    ctx.shadowBlur = 8 + pulse * 10;
+    ctx.fillStyle = on ? '#C9A87C' : `rgba(184,115,51,${0.65 + pulse * 0.35})`;
+    ctx.beginPath();
+    ctx.moveTo(bx, by - r); ctx.lineTo(bx + r, by); ctx.lineTo(bx, by + r); ctx.lineTo(bx - r, by);
+    ctx.closePath(); ctx.fill();
+    ctx.shadowBlur = 0;
+    if (on) {
+      const fs = Math.max(11, Math.round(6 * sc));
+      ctx.font = `600 ${fs}px sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const tw = Math.round(ctx.measureText(z.label).width + 14);
+      const ty = by - r - fs - 6;
+      ctx.fillStyle = 'rgba(30,58,90,0.92)';
+      ctx.fillRect(bx - Math.round(tw / 2), ty - Math.round(fs / 2) - 4, tw, fs + 8);
+      ctx.fillStyle = '#B87333';
+      ctx.fillRect(bx - Math.round(tw / 2), ty + Math.round(fs / 2) + 3, tw, 1);
+      ctx.fillStyle = '#FAF8F5';
+      ctx.fillText(z.label, bx, ty);
+    }
+    ctx.restore();
+  });
+}
+
 // Sprites are sized in map cells, so they scale with the plate on every screen.
 function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, walk = null) {
   const sc = sc0 * depth;
@@ -147,6 +191,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     ctx.imageSmoothingEnabled = true;
     const img = getImage(mapUrl);
     if (img?.complete && img.naturalWidth) ctx.drawImage(img, ox, oy, NATIVE_W * sc, NATIVE_H * sc);
+    drawHotspots(ctx, cbRef.current.zones, zoneRef.current?.key, ox, oy, sc, performance.now());
 
     const all = [
       { id: 'me', col: s.playerCol, row: s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },

@@ -7,6 +7,10 @@ export const COLONY_ROOMS = {
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/ff70af4fe_Top100AerospaceCampusLobby.png',
     zones: [
       { key: 'enter-campus', label: 'Enter the Campus', blurb: 'Walk through to the Main Hall.', room: 'hall', col: 26, row: 13, w: 13, h: 10 },
+      { key: 'concierge', label: 'TOP 100 Concierge', blurb: 'Your mission briefing: why, who, what and how.', to: '/mission-briefing', col: 7, row: 22, w: 14, h: 5 },
+      { key: 'campus-directory', label: 'Campus Directory', blurb: 'The Board: every surface on the platform.', to: '/board', col: 43, row: 18, w: 9, h: 8 },
+      { key: 'engine-exhibit', label: 'Engine Exhibit', blurb: 'Take the controls in the flight simulator.', to: '/play', col: 56, row: 18, w: 7, h: 7 },
+      { key: 'lobby-lounge', label: 'Members Lounge', blurb: 'AeroSync: the people you have met.', to: '/aerosync/people', col: 2, row: 28, w: 13, h: 6 },
     ],
   },
   hall: {
