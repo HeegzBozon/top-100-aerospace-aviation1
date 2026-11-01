@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { X, ArrowRight } from 'lucide-react';
 import DialogueBox from '@/components/colony/DialogueBox';
 import useColonyListPicker from '@/components/colony/useColonyListPicker';
@@ -12,6 +13,8 @@ export default function ColonyNpcDialogue({ npc, onAction, onClose, quest = null
     if (it.key === '__bye') onClose(); else if (it.key === '__quest') onQuest(); else onAction(it);
   };
   const cursorKey = useColonyListPicker({ items, onPick: pick, onClose });
+  // Keep the highlighted option on screen as the wheel moves through the list.
+  useEffect(() => { document.getElementById(`colony-list-${cursorKey}`)?.scrollIntoView({ block: 'nearest' }); }, [cursorKey]);
   return (
     <div className="absolute inset-x-3 bottom-3 z-30 mx-auto flex max-h-[85%] max-w-md flex-col overflow-hidden rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 shadow-xl">
       <div className="flex items-center gap-3 border-b border-editorial-copper/50 px-3 py-2">
@@ -22,12 +25,12 @@ export default function ColonyNpcDialogue({ npc, onAction, onClose, quest = null
         </div>
         <button type="button" onClick={onClose} aria-label="Close" className="text-editorial-cream/70"><X className="h-4 w-4" /></button>
       </div>
-      <div className="px-3 pt-2"><DialogueBox speaker={npc.name} text={`${npc.greeting} "${npc.signature}"`} /></div>
-      <ul className="overflow-y-auto p-2">
+      <div className="flex max-h-[38dvh] min-h-[88px] flex-col px-3 pt-2"><DialogueBox speaker={npc.name} text={`${npc.greeting} "${npc.signature}"`} /></div>
+      <ul className="min-h-[96px] shrink overflow-y-auto overscroll-contain p-2">
         {items.map(it => (
           <li key={it.key} id={`colony-list-${it.key}`}>
             <button type="button" onClick={() => pick(it)}
-              className={`flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm text-editorial-cream hover:bg-white/5 ${cursorKey === it.key ? 'bg-white/10 ring-1 ring-editorial-gold/70' : ''}`}>
+              className={`flex w-full items-center justify-between min-h-[44px] rounded px-3 py-2 text-left text-sm text-editorial-cream hover:bg-white/5 ${cursorKey === it.key ? 'bg-white/10 ring-1 ring-editorial-gold/70' : ''}`}>
               {it.label}<ArrowRight className="h-4 w-4 text-editorial-gold" />
             </button>
           </li>

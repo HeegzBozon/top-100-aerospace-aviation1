@@ -28,6 +28,7 @@ import ColonyPersonCard from '@/components/colony/ColonyPersonCard';
 import ColonyPassport from '@/components/colony/quests/ColonyPassport';
 import ColonyQuestTracker from '@/components/colony/quests/ColonyQuestTracker';
 import { useColonyMusic } from '@/components/colony/colonyMusic';
+import { playStampSfx } from '@/components/colony/colonySfx';
 import ColonyQuestStep from '@/components/colony/quests/ColonyQuestStep';
 import ColonyReconcile from '@/components/colony/quests/ColonyReconcile';
 import usePassport, { restoreFromLink } from '@/components/colony/quests/usePassport';
@@ -547,6 +548,7 @@ function ColonyRoom({ onReplayWelcome }) {
           <ColonyQuestStep key={activeQuest.id} quest={activeQuest} npc={activeNpc} onClose={() => setPanel('npc')}
             onComplete={(choice, i) => {
               pp.complete(activeQuest.id, choice);
+              if (activeQuest.reward) playStampSfx();
               setPanel(activeQuest.id === 'q01' ? 'passport' : null);
               if (activeQuest.rooms) { setZone(null); setRoom(activeQuest.rooms[i]); }
             }} />

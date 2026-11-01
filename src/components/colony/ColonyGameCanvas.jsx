@@ -143,7 +143,9 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   if (label) {
     // The nameplate: a navy plate with a copper rule, the name in serif and, for staff, the role in gold.
     // Compact and capped: the plate never outgrows the figure it names.
-    const fs = Math.min(12, Math.max(9, Math.round(cell * 0.36)));
+    // Proximity: plates grow as you walk up to someone (prox 0 far → 1 beside you).
+    const prox = meta.prox ?? 1;
+    const fs = Math.round(Math.max(10, Math.min(16, cell * 0.4)) * (0.82 + 0.32 * prox));
     const ss = Math.max(7, Math.round(fs * 0.68));
     if (label.length > 18) label = `${label.slice(0, 17)}…`;
     ctx.font = `600 ${fs}px Georgia, serif`;
@@ -183,7 +185,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
-  cbRef.current = { onMove, onZoneChange, zones, onPlate };
+  cbRef.current = { onMove, onZoneChange, zones, onPlate, npcs };
   const canvasRef = useRef(null);
   const stateRef = useRef({
     camX: 0, camY: 0, scale: 1,
@@ -287,7 +289,8 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       // The lobby is drawn in perspective: further back (higher up) reads smaller.
       const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
       drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth, room === 'lobby' ? 1.3 : 1, walk,
-        { sub: p.sub, id: p.id, me: p.id === 'me', plates });
+        { sub: p.sub, id: p.id, me: p.id === 'me', plates,
+          prox: p.id === 'me' ? 0.6 : Math.max(0, 1 - Math.hypot(p.col - s.playerCol, p.row - s.playerRow) / 10) });
     });
     s.plates = plates;
 
@@ -345,7 +348,14 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     if (lastPosRef.current !== key) {
       lastPosRef.current = key;
       cbRef.current.onMove?.(s.playerCol, s.playerRow, s.facing || 'down');
-      const zone = zoneAt(cbRef.current.zones, s.playerCol, s.playerRow);
+      // A door underfoot wins; otherwise the nearest character within reach offers to talk.
+      let zone = zoneAt(cbRef.current.zones, s.playerCol, s.playerRow);
+      if (!zone) {
+        const near = cbRef.current.npcs
+          .map(n => ({ n, d: Math.hypot(n.col - s.playerCol, n.row - s.playerRow) }))
+          .filter(x => x.d <= 2.5).sort((a, b) => a.d - b.d)[0];
+        if (near) zone = { key: `npc-${near.n.id}`, npc: near.n.id, label: `Talk to ${near.n.name}` };
+      }
       if (zone?.key !== zoneRef.current?.key) {
         zoneRef.current = zone;
         cbRef.current.onZoneChange?.(zone);
