@@ -163,6 +163,12 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     keys: {}, lastTime: 0, moveAccum: 0, initialized: false,
   });
   const rafRef = useRef(null);
+  const occupiedRef = useRef(new Set());
+  occupiedRef.current = new Set(
+    sprites
+      .filter(p => p.session_id !== localSessionId && positions[p.session_id] && (positions[p.session_id].room ?? 'lobby') === room)
+      .map(p => `${positions[p.session_id].col},${positions[p.session_id].row}`)
+  );
 
   // Each room sets where a visitor steps in; the Main Hall opens at its globe entrance.
   useEffect(() => {
@@ -271,8 +277,12 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       if (s.keys.ArrowRight || s.keys.d || stick.right) dc += 1;
       if (dr) s.facing = dr < 0 ? 'up' : 'down';
       if (dc) s.facing = dc < 0 ? 'left' : 'right';
-      s.playerCol = clampCol(s.playerCol + dc);
-      s.playerRow = clampRow(s.playerRow + dr);
+      // No two people share a cell: a step into someone else's square is refused.
+      const nc = clampCol(s.playerCol + dc), nr = clampRow(s.playerRow + dr);
+      const occ = occupiedRef.current;
+      if (!occ.has(`${nc},${nr}`)) { s.playerCol = nc; s.playerRow = nr; }
+      else if (!occ.has(`${nc},${s.playerRow}`)) s.playerCol = nc;
+      else if (!occ.has(`${s.playerCol},${nr}`)) s.playerRow = nr;
     }
 
     const key = `${s.playerCol},${s.playerRow}`;

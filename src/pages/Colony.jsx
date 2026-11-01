@@ -157,10 +157,21 @@ function ColonyRoom() {
   const avatarRef = useRef(DEFAULT_AVATAR);
   avatarRef.current = avatar;
   useEffect(() => {
-    base44.auth.me().then(u => u?.colony_avatar && setAvatar(cleanAvatar(u.colony_avatar))).catch(() => {});
+    // First visit (member or guest) with no avatar yet: open the maker straight away.
+    const guestAvatar = sessionStorage.getItem('colony-guest-avatar');
+    if (sessionStorage.getItem('colony-guest-name')) {
+      if (guestAvatar) setAvatar(cleanAvatar(JSON.parse(guestAvatar)));
+      else setShowAvatar(true);
+      return;
+    }
+    base44.auth.me().then(u => {
+      if (u?.colony_avatar) setAvatar(cleanAvatar(u.colony_avatar));
+      else setShowAvatar(true);
+    }).catch(() => {});
   }, []);
   const saveAvatar = useCallback(async (next) => {
     if (!sessionStorage.getItem('colony-guest-name')) await base44.auth.updateMe({ colony_avatar: next });
+    else sessionStorage.setItem('colony-guest-avatar', JSON.stringify(next));
     setAvatar(next);
     if (myPosRef.current) { myPosRef.current = { ...myPosRef.current, avatar: next }; sendPos(); }
   }, [sendPos]);
