@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import DialogueBox from '@/components/colony/DialogueBox';
-import ConciergeHandoff from '@/components/colony/ConciergeHandoff';
+import ConciergeAction from '@/components/colony/ConciergeAction';
+import { ACTION_SCHEMA, ACTION_GUIDE, findPeople } from '@/components/colony/conciergeActions';
 import { loadMemory, saveMemory, greetingFor } from '@/components/colony/conciergeMemory';
 
 const SCENE = 'https://media.base44.com/images/public/68996845be6727838fdb822e/eaf201fbe_PixelConciergeatAerospaceExpo.png';
@@ -25,9 +26,9 @@ export default function ColonyConcierge({ onClose }) {
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
   const user = useRef(null);
+  const [action, setAction] = useState(null);
 
   useEffect(() => {
-    document.body.classList.add('hh-badge');
     const m = loadMemory();
     m.visits += 1;
     base44.auth.me().catch(() => null).then(u => {
@@ -38,13 +39,13 @@ export default function ColonyConcierge({ onClose }) {
       saveMemory(m);
       setSuggestions(TOPICS.filter(t => !m.asked.includes(t)).slice(0, 3));
     });
-    return () => document.body.classList.remove('hh-badge');
   }, []);
 
   const ask = async (question) => {
     const m = mem.current;
     if (!question.trim() || busy || !m) return;
     setBusy(true);
+    setAction(null);
     setLine('Hmm, let me check the records...');
     const transcript = m.history.map(h => `${h.role}: ${h.text}`).join('\n') || '(none yet)';
     const res = await base44.integrations.Core.InvokeLLM({
@@ -55,16 +56,21 @@ Answer from information published on top100aero.space (search site:top100aero.sp
 Visitor: ${user.current?.full_name || 'a guest (not signed in)'}${user.current ? '' : ' — gently mention signing in when it would help them'}. Visit number ${m.visits}. Topics they've already asked about: ${m.asked.join('; ') || 'none'}.
 Conversation so far:\n${transcript}
 Rules: never repeat a point you already made in this conversation; build on what they already know and move them one step further in their journey (discover, nominate, claim a profile, attend events, request introductions). Keep it fresh, specific and useful. Campus rooms: Main Entrance, Main Hall, Innovation Expo (App Store), Space Pavilion (Events), Leadership Summit (Chamber of Commerce), Networking Lounge (AeroSync), Media Hub (Newsstand), Career Center (Classifieds). House style: a verified reputation graph and measurement platform, never an "awards list" or "ranking app"; "endorsers"/"community" not "followers", "endorsements" not "likes", "introductions" not "services"; the institution measures, it does not rank.
+You and the visitor's Superagent act as one guide: don't just explain, do it. ${ACTION_GUIDE}
 Also suggest 3 short follow-up questions the visitor might ask next that they have NOT asked yet.
 
 Visitor now asks: ${question}`,
       response_json_schema: {
         type: 'object',
-        properties: { reply: { type: 'string', description: 'Plain text, warm, at most 3 short sentences, like a video game character' }, follow_ups: { type: 'array', items: { type: 'string' } } },
+        properties: { reply: { type: 'string', description: 'Plain text, warm, at most 3 short sentences, like a video game character' }, follow_ups: { type: 'array', items: { type: 'string' } }, action: ACTION_SCHEMA },
       },
     }).catch(() => null);
     const reply = res?.reply?.trim() || "Sorry, my terminal is down for a moment. Try asking again.";
     setLine(reply);
+    const act = res?.action;
+    if (act?.kind === 'find_person' && act.person_name) {
+      setAction({ ...act, people: await findPeople(act.person_name).catch(() => []) });
+    } else if (act?.kind === 'navigate') setAction(act);
     if (res) {
       m.asked = [...m.asked.filter(a => a !== question), question];
       m.history = [...m.history, { role: 'Visitor', text: question }, { role: 'Matthew', text: reply }];
@@ -84,6 +90,7 @@ Visitor now asks: ${question}`,
       </div>
       <div className="flex min-h-0 flex-1 flex-col">
         <DialogueBox speaker="Matthew Higa · Founder" text={line || '...'}>
+          {!busy && <ConciergeAction action={action} />}
           {!busy && suggestions.length > 0 && (
             <div className="mt-2 space-y-1">
               {suggestions.map(t => (
@@ -100,7 +107,6 @@ Visitor now asks: ${question}`,
             className="min-w-0 flex-1 rounded-sm border-2 border-editorial-gold/60 bg-[#14283f] px-2 py-1.5 font-mono text-editorial-cream placeholder:text-editorial-cream/40 outline-none disabled:opacity-50" />
           <button type="submit" disabled={busy} className="rounded-sm border-2 border-editorial-cream bg-editorial-copper px-3 font-mono text-xs font-bold text-editorial-cream disabled:opacity-50">ASK</button>
         </form>
-        {user.current?.email && <ConciergeHandoff user={user.current} history={mem.current?.history || []} />}
       </div>
     </div>
   );
