@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import DialogueBox from '@/components/colony/DialogueBox';
+import ConciergeHandoff from '@/components/colony/ConciergeHandoff';
 import { loadMemory, saveMemory, greetingFor } from '@/components/colony/conciergeMemory';
 
 const SCENE = 'https://media.base44.com/images/public/68996845be6727838fdb822e/eaf201fbe_PixelConciergeatAerospaceExpo.png';
@@ -76,7 +77,7 @@ Visitor now asks: ${question}`,
 
   return (
     <div className="absolute inset-0 z-30 flex flex-col overflow-hidden bg-editorial-navy p-2">
-      <div className="relative min-h-0 flex-[0_1_34%] overflow-hidden rounded-md border-2 border-editorial-gold/70">
+      <div className="cc-scene relative min-h-0 flex-[0_1_34%] overflow-hidden rounded-md border-2 border-editorial-gold/70">
         <img src={SCENE} alt="Matthew Higa at the concierge desk" className="h-full w-full object-cover object-[45%_40%] [image-rendering:pixelated]" />
         <button type="button" onClick={onClose} aria-label="Leave the desk" className="absolute right-1.5 top-1.5 rounded bg-editorial-navy/80 p-1.5 text-editorial-cream"><X className="h-4 w-4" /></button>
         <span className="absolute left-1.5 top-1.5 rounded-sm bg-editorial-navy/80 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-editorial-gold">Private channel</span>
@@ -99,6 +100,7 @@ Visitor now asks: ${question}`,
             className="min-w-0 flex-1 rounded-sm border-2 border-editorial-gold/60 bg-[#14283f] px-2 py-1.5 font-mono text-editorial-cream placeholder:text-editorial-cream/40 outline-none disabled:opacity-50" />
           <button type="submit" disabled={busy} className="rounded-sm border-2 border-editorial-cream bg-editorial-copper px-3 font-mono text-xs font-bold text-editorial-cream disabled:opacity-50">ASK</button>
         </form>
+        {user.current?.email && <ConciergeHandoff user={user.current} history={mem.current?.history || []} />}
       </div>
     </div>
   );

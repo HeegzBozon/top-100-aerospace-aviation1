@@ -1709,6 +1709,12 @@ button:focus-visible {
   body.hh-badge.hh-keyboard .hh-stage {
     bottom: var(--hh-keyboard, 0px);
   }
+
+  /* iOS keys take most of the glass: the concierge's scene steps aside so the dialogue and the
+     field stay in view above them, and returns the moment the keys go. */
+  body.hh-keyboard .cc-scene {
+    display: none;
+  }
 }
 
 /* ===== THE FELLOW'S BOOK =====
