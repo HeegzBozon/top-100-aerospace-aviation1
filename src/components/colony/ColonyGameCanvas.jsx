@@ -152,7 +152,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   }
 }
 
-export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start, walls = [], fromRoom = null }) {
+export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start, walls = [], fromRoom = null, zoom = 1 }) {
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
@@ -187,7 +187,10 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   // Fit the plate's full height (or width, whichever is larger) — the widest view
   // that still leaves no empty desk around it.
   // Half again closer than fit: immersive, with a few buildings still in view.
-  const fitScale = (W, H) => Math.max(H / NATIVE_H, W / NATIVE_W) * 1.8;
+  // The lobby reads wide; the campus rooms closer. The visitor's own zoom multiplies both.
+  const zoomRef = useRef(zoom);
+  zoomRef.current = zoom;
+  const fitScale = (W, H) => Math.max(H / NATIVE_H, W / NATIVE_W) * (room === 'lobby' ? 1.2 : 1.8) * zoomRef.current;
 
   // Camera (in native px) centred on the player, held inside the plate's edges.
   const clampCam = (cx, cy, W, H, sc) => {
