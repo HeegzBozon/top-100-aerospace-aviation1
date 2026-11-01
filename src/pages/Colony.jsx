@@ -25,6 +25,8 @@ import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
 import { canHear, areaAt } from '@/components/colony/colonyAudio';
 import ColonyAreaChip from '@/components/colony/ColonyAreaChip';
 import StarAtlasPanel from '@/components/star-atlas/StarAtlasPanel';
+import HonoreeExhibit from '@/components/colony/HonoreeExhibit';
+import useHonoreeExhibits from '@/components/colony/useHonoreeExhibits';
 import ColonyOnboarding from '@/components/colony/ColonyOnboarding';
 // Daily throws an invalid-state error when a call is used before it has joined or after it is left.
 const inCall = (c) => { try { return c?.meetingState?.() === 'joined-meeting'; } catch { return false; } };
@@ -145,12 +147,13 @@ function ColonyRoom({ onReplayWelcome }) {
   const isGuest = me === null;
   const roomWalls = useColonyWalls(room);
   const meEmailRef = useRef(null);
-  const roomCast = castState.cast.filter(c => c.room === room && c.visibility === 'active');
+  const exhibits = useHonoreeExhibits(room, castState.cast);
+  const roomCast = [...castState.cast.filter(c => c.room === room && c.visibility === 'active'), ...exhibits];
   const roomZones = [
     ...COLONY_ROOMS[room].zones,
-    ...roomCast.map(c => ({ key: `npc-${c.id}`, npc: c.id, label: `Talk to ${c.name} · ${c.role}`, panel: 'npc', col: c.col - 1, row: c.row - 1, w: 3, h: 3 })),
+    ...roomCast.map(c => ({ key: `npc-${c.id}`, npc: c.id, label: c.honoree ? `Meet ${c.name}` : `Talk to ${c.name} · ${c.role}`, panel: 'npc', col: c.col - 1, row: c.row - 1, w: 3, h: 3 })),
   ];
-  const activeNpc = castState.cast.find(c => c.id === npcId);
+  const activeNpc = castState.cast.find(c => c.id === npcId) || exhibits.find(c => c.id === npcId);
   const activeQuest = activeNpc && pp.passport ? questFor(activeNpc.id, pp.passport) : null;
   const openPassport = useCallback(() => setPanel('passport'), []);
   const [missingFields, setMissingFields] = useState([]);
@@ -574,7 +577,10 @@ function ColonyRoom({ onReplayWelcome }) {
               if (activeQuest.rooms) { setZone(null); setRoom(activeQuest.rooms[i]); }
             }} />
         )}
-        {panel === 'npc' && activeNpc && (
+        {panel === 'npc' && activeNpc?.honoree && (
+          <HonoreeExhibit exhibit={activeNpc} passport={pp.passport} onSave={pp.update} onClose={() => setPanel(null)} />
+        )}
+        {panel === 'npc' && activeNpc && !activeNpc.honoree && (
           <ColonyNpcDialogue npc={activeNpc} onClose={() => setPanel(null)}
             quest={activeQuest && { title: activeQuest.title, lock: lockReason(pp.passport, activeQuest) }}
             onQuest={() => setPanel('quest')}
