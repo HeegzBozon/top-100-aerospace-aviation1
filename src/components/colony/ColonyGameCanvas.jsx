@@ -63,16 +63,21 @@ const getSprite = (url) => {
 };
 
 // Sprites are sized in map cells, so they scale with the plate on every screen.
-function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1) {
+function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, walk = null) {
   const sc = sc0 * depth;
   const cell = CELL * sc;
   const spr = avatar?.image && getSprite(avatar.image);
   const top = y + cell * 0.5 - cell * 2.1 * tall;
   // Stretch the figure upward from its feet.
   ctx.save();
-  ctx.translate(x, y + cell * 0.5);
-  ctx.scale(1, tall);
-  ctx.translate(-x, -(y + cell * 0.5));
+  // Mid-stride: a step bob, a sway from side to side, and a squash on each footfall.
+  const bob = walk === null ? 0 : -Math.abs(Math.sin(walk)) * cell * 0.18;
+  const sway = walk === null ? 0 : Math.sin(walk) * 0.09;
+  const squash = walk === null ? 1 : 1 - Math.abs(Math.cos(walk)) * 0.05;
+  ctx.translate(x, y + cell * 0.5 + bob);
+  ctx.rotate(sway);
+  ctx.scale(1 / squash, tall * squash);
+  ctx.translate(-x, -(y + cell * 0.5 + bob));
   if (spr) {
     const h = cell * 2.1, w = h * spr.width / spr.height;
     ctx.save();
@@ -142,8 +147,9 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     if (img?.complete && img.naturalWidth) ctx.drawImage(img, ox, oy, NATIVE_W * sc, NATIVE_H * sc);
 
     const all = [
-      { col: s.playerCol, row: s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
+      { id: 'me', col: s.playerCol, row: s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
       ...sprites.filter(p => (positions[p.session_id]?.room ?? 'lobby') === room).map((p, i) => ({
+        id: p.session_id,
         col: positions[p.session_id]?.col ?? clampCol(START.col + i + 1),
         row: positions[p.session_id]?.row ?? clampRow(START.row),
         avatar: positions[p.session_id]?.avatar,
@@ -151,11 +157,18 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
         label: p.user_name || 'Participant',
       })),
     ];
+    // Walking: anyone whose cell changed in the last moment is mid-stride.
+    const now = performance.now();
+    s.seen = s.seen || {};
     all.sort((a, b) => a.row - b.row).forEach(p => {
+      const k = `${p.col},${p.row}`;
+      const seen = s.seen[p.id];
+      if (!seen || seen.k !== k) s.seen[p.id] = { k, at: seen ? now : 0 };
+      const walk = now - s.seen[p.id].at < 260 ? now / 85 : null;
       const { x, y } = cellCenter(p.col, p.row);
       // The lobby is drawn in perspective: further back (higher up) reads smaller.
       const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
-      drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth, room === 'lobby' ? 1.3 : 1);
+      drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth, room === 'lobby' ? 1.3 : 1, walk);
     });
 
     // Room transition: the new room opens out of a closing iris of dark.
