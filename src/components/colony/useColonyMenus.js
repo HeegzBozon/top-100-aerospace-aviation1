@@ -5,8 +5,8 @@ import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 
 // The Colony's own File and Edit menus, registered with the machine's menu bar while the
 // campus is on the glass. File moves you around campus; Edit changes how you appear in it.
-export default function useColonyMenus({ room, zoom, setZoom, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, isCamOff, toggleCam, leave, participantCount, isAdmin, openEditor }) {
-  const state = { room, zoom, setZoom, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, isCamOff, toggleCam, leave, participantCount, isAdmin, openEditor };
+export default function useColonyMenus({ room, zoom, setZoom, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, isCamOff, toggleCam, leave, participantCount, isAdmin, openEditor, openCastEditor }) {
+  const state = { room, zoom, setZoom, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, isCamOff, toggleCam, leave, participantCount, isAdmin, openEditor, openCastEditor };
   const ref = useRef(state);
   ref.current = state;
 
@@ -44,7 +44,8 @@ export default function useColonyMenus({ room, zoom, setZoom, setRoom, openPanel
         ],
       }, ...(s.isAdmin ? [{
         key: 'colony-admin', label: 'Admin',
-        items: [{ key: 'colony-map-editor', label: 'Map editor', hint: 'Barriers for this room', icon: Map, onSelect: s.openEditor }],
+        items: [{ key: 'colony-map-editor', label: 'Map editor', hint: 'Barriers for this room', icon: Map, onSelect: s.openEditor },
+          { key: 'colony-cast-editor', label: 'Campus cast', hint: 'Dialogue and actions', icon: Map, onSelect: s.openCastEditor }],
       }] : []), {
         key: 'colony-view', label: `View · ${Math.round(s.zoom * 100)}%`,
         items: [

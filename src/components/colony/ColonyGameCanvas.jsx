@@ -65,7 +65,7 @@ const getSprite = (url) => {
 
 // Hotspots: a copper beacon over each place you can visit, lit up when you stand in it.
 function drawHotspots(ctx, zones, activeKey, ox, oy, sc, now) {
-  (zones || []).forEach(z => {
+  (zones || []).filter(z => !z.npc).forEach(z => {
     const on = z.key === activeKey;
     const x = ox + z.col * CELL * sc, y = oy + z.row * CELL * sc;
     const w = z.w * CELL * sc, h = z.h * CELL * sc;
@@ -152,7 +152,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   }
 }
 
-export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start, walls = [], fromRoom = null, zoom = 1 }) {
+export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start, walls = [], fromRoom = null, zoom = 1, npcs = [] }) {
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
@@ -224,6 +224,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
 
     const all = [
       { id: 'me', col: s.playerCol, row: s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
+      ...npcs.map(n => ({ id: `npc-${n.id}`, col: n.col, row: n.row, avatar: { image: n.sprite }, facing: 'down', label: n.name })),
       ...sprites.filter(p => (positions[p.session_id]?.room ?? 'lobby') === room).map((p, i) => ({
         id: p.session_id,
         col: positions[p.session_id]?.col ?? clampCol(START.col + i + 1),

@@ -1,0 +1,59 @@
+{
+  "name": "ColonyNpcConfig",
+  "type": "object",
+  "properties": {
+    "npc_id": {
+      "type": "string",
+      "description": "Stable cast id, e.g. 'vera'"
+    },
+    "greeting": {
+      "type": "string",
+      "description": "Override greeting dialogue"
+    },
+    "visibility_state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "hidden"
+      ],
+      "default": "active"
+    },
+    "hidden_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Action keys switched off"
+    },
+    "content_version": {
+      "type": "number",
+      "default": 1
+    },
+    "updated_by": {
+      "type": "string",
+      "description": "Email of the admin who last saved"
+    }
+  },
+  "required": [
+    "npc_id"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

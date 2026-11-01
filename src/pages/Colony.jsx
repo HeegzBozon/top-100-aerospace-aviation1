@@ -23,6 +23,9 @@ import ColonyOnboarding from '@/components/colony/ColonyOnboarding';
 // Daily throws an invalid-state error when a call is used before it has joined or after it is left.
 const inCall = (c) => { try { return c?.meetingState?.() === 'joined-meeting'; } catch { return false; } };
 import ColonyMapEditor from '@/components/colony/ColonyMapEditor';
+import ColonyNpcDialogue from '@/components/colony/ColonyNpcDialogue';
+import ColonyCastEditor from '@/components/colony/ColonyCastEditor';
+import useColonyCast from '@/components/colony/useColonyCast';
 import useColonyWalls from '@/components/colony/useColonyWalls';
 import useColonyMenus from '@/components/colony/useColonyMenus';
 import { registerPicker } from '@/components/handheld/handheldPicker';
@@ -53,7 +56,7 @@ export default function Colony() {
   const [member, setMember] = useState(null);
   return (
     <>
-      {access === 'in' && <ColonyRoom />}
+      {access === 'in' && <ColonyRoom onReplayWelcome={() => setAccess('onboard')} />}
       {access === 'onboard' && <ColonyOnboarding isGuest={!member} memberName={member?.full_name} onDone={() => setAccess('in')} />}
       {access === 'gate' && <ColonyGuestGate onGuest={() => setAccess('onboard')} />}
       {access === 'checking' && <ColonySplash />}
@@ -62,7 +65,9 @@ export default function Colony() {
   );
 }
 
-function ColonyRoom() {
+function ColonyRoom({ onReplayWelcome }) {
+  const castState = useColonyCast();
+  const [npcId, setNpcId] = useState(null);
   const callRef = useRef(null);
   const navigate = useNavigate();
   const [callState, setCallState] = useState('lobby'); // lobby | joining | joined | error
@@ -98,6 +103,13 @@ function ColonyRoom() {
   const [panel, setPanel] = useState(null); // directory | chat | concierge | editor
   const [isAdmin, setIsAdmin] = useState(false);
   const roomWalls = useColonyWalls(room);
+  const meEmailRef = useRef(null);
+  const roomCast = castState.cast.filter(c => c.room === room && c.visibility === 'active');
+  const roomZones = [
+    ...COLONY_ROOMS[room].zones,
+    ...roomCast.map(c => ({ key: `npc-${c.id}`, npc: c.id, label: `Talk to ${c.name} · ${c.role}`, panel: 'npc', col: c.col - 1, row: c.row - 1, w: 3, h: 3 })),
+  ];
+  const activeNpc = castState.cast.find(c => c.id === npcId);
   const [myCell, setMyCell] = useState(null);
   const [chat, setChat] = useState([]);
   const [mediaError, setMediaError] = useState('');
@@ -125,11 +137,13 @@ function ColonyRoom() {
 
   const activateZone = useCallback((z) => {
     if (!z) return false;
+    if (z.npc) { setNpcId(z.npc); setPanel('npc'); return true; }
+    if (z.replay) { onReplayWelcome(); return true; }
     if (z.panel) { setPanel(z.panel); return true; }
     setZone(null);
     if (z.room) setRoom(z.room); else navigate(z.to);
     return true;
-  }, [navigate]);
+  }, [navigate, onReplayWelcome]);
 
   // Enter on a keyboard walks through the door too (unless typing in a field).
   useEffect(() => {
@@ -211,6 +225,7 @@ function ColonyRoom() {
     }
     base44.auth.me().then(u => {
       setIsAdmin(u?.role === 'admin');
+      meEmailRef.current = u?.email;
       if (u?.colony_avatar) setAvatar(cleanAvatar(u.colony_avatar));
       else setShowAvatar(true);
     }).catch(() => {});
@@ -347,6 +362,7 @@ function ColonyRoom() {
     participantCount: Object.keys(participants).length,
     isAdmin,
     openEditor: () => { setShowAvatar(false); setPanel('editor'); },
+    openCastEditor: () => { setShowAvatar(false); setPanel('cast'); },
   });
 
   // Cleanup on unmount
@@ -443,7 +459,8 @@ function ColonyRoom() {
           key={room}
           room={room}
           mapUrl={COLONY_ROOMS[room].map}
-          zones={COLONY_ROOMS[room].zones}
+          zones={roomZones}
+          npcs={roomCast}
           walls={roomWalls.walls}
           fromRoom={fromRoomRef.current}
           zoom={zoom}
@@ -473,6 +490,14 @@ function ColonyRoom() {
             onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
         )}
         {panel === 'concierge' && <ColonyConcierge onClose={() => setPanel(null)} />}
+        {panel === 'npc' && activeNpc && (
+          <ColonyNpcDialogue npc={activeNpc} onClose={() => setPanel(null)}
+            onAction={(a) => { setPanel(null); activateZone(a); }} />
+        )}
+        {panel === 'cast' && isAdmin && (
+          <ColonyCastEditor cast={castState.cast} configs={castState.configs} onClose={() => setPanel(null)}
+            onSave={(id, data) => castState.save(id, data, meEmailRef.current)} />
+        )}
         {panel === 'editor' && isAdmin && (
           <ColonyMapEditor key={room} mapUrl={COLONY_ROOMS[room].map} label={COLONY_ROOMS[room].label} walls={roomWalls.walls}
             custom={roomWalls.custom} onSave={roomWalls.save} onReset={roomWalls.reset} onClose={() => setPanel(null)} />
