@@ -12,7 +12,7 @@ export default function ColonyQuestStep({ quest, npc, passport, onComplete, onCl
   const wrong = answer != null && quest.correct != null && answer !== quest.correct;
   const done = answer != null && !wrong;
   const items = done ? [{ key: 'ok', label: 'Continue' }]
-    : quest.choices.map((c, i) => ({ key: `c${i}`, label: c, i }));
+    : (quest.choices || []).map((c, i) => ({ key: `c${i}`, label: c, i }));
   const pick = (it) => {
     if (done) { onComplete(quest.choices[answer], answer); return; }
     setAnswer(it.i);
