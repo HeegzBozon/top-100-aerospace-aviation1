@@ -152,7 +152,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   }
 }
 
-export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start, walls = [] }) {
+export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start, walls = [], fromRoom = null }) {
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
@@ -173,15 +173,13 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   ]);
 
   // Each room sets where a visitor steps in; the Main Hall opens at its globe entrance.
-  const prevRoomRef = useRef(null);
   useEffect(() => {
     const others = [...occupiedRef.current].map(k => { const [col, row] = k.split(',').map(Number); return { col, row }; });
     const wallSet = new Set(walls.flatMap(w => Array.from({ length: w.w * w.h }, (_, i) => `${w.col + (i % w.w)},${w.row + Math.floor(i / w.w)}`)));
     const at = pickSpawn({
-      roomDef: { zones, start }, fromRoom: prevRoomRef.current, occupied: occupiedRef.current,
+      roomDef: { zones, start }, fromRoom, occupied: occupiedRef.current,
       others: others.filter(o => !wallSet.has(`${o.col},${o.row}`)), cols: COLS, rows: ROWS, fallback: START,
     });
-    prevRoomRef.current = room;
     stateRef.current.playerCol = at.col;
     stateRef.current.playerRow = at.row;
   }, [room]);

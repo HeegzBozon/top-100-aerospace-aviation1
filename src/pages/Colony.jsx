@@ -59,6 +59,10 @@ function ColonyRoom() {
   const [positions, setPositions] = useState({});
   const [zone, setZone] = useState(null);
   const [room, setRoom] = useState('lobby');
+  // The room just left, so the next room spawns you in front of the door you came through.
+  const fromRoomRef = useRef(null);
+  const lastRoomRef = useRef(room);
+  if (lastRoomRef.current !== room) { fromRoomRef.current = lastRoomRef.current; lastRoomRef.current = room; }
   const myPosRef = useRef(null);
   const [avatar, setAvatar] = useState(DEFAULT_AVATAR);
   const [showAvatar, setShowAvatar] = useState(false);
@@ -365,6 +369,7 @@ function ColonyRoom() {
           mapUrl={COLONY_ROOMS[room].map}
           zones={COLONY_ROOMS[room].zones}
           walls={COLONY_ROOMS[room].walls}
+          fromRoom={fromRoomRef.current}
           start={COLONY_ROOMS[room].start}
           localSessionId={localSessionId}
           positions={positions}
