@@ -37,7 +37,7 @@ export default function ColonyIntro() {
     return () => clearTimeout(t);
   }, [phase]);
 
-  useWheelConfirm(() => setPhase(p => (p === 'start' ? 'fade' : p)), phase === 'start');
+  useWheelConfirm(() => setPhase(p => (p === 'start' ? 'fade' : p)), phase === 'start', 'Start');
 
   if (phase === 'done') return null;
   return (
@@ -52,9 +52,9 @@ export default function ColonyIntro() {
         filter: phase === 'fade' ? 'blur(8px) brightness(1.3)' : 'none',
       }}
     >
-      <ColonySplash label="Going online…" />
+      <ColonySplash label={phase === 'hold' ? 'Going online…' : 'Ready to go online'} />
       {phase !== 'hold' && (
-        <button type="button" className="absolute inset-x-0 bottom-6 z-10 mx-auto w-fit bg-slate-950 px-4 py-2 font-heading text-lg font-bold uppercase tracking-[0.3em] text-editorial-gold hh-blink">
+        <button type="button" className="absolute inset-x-0 bottom-20 z-10 mx-auto w-fit bg-slate-950 px-4 py-2 font-heading text-lg font-bold uppercase tracking-[0.3em] text-editorial-gold hh-blink">
           Press Start
         </button>
       )}

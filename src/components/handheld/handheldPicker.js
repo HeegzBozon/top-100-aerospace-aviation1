@@ -54,7 +54,8 @@ export const registerPicker = (api) => {
   };
 };
 
-export const getPicker = () => stack[stack.length - 1] || null;
+// A modal picker (a title card, a cutscene) outranks anything registered after it.
+export const getPicker = () => [...stack].reverse().find((p) => p.modal) || stack[stack.length - 1] || null;
 
 // The surface calls this whenever its options or its cursor move.
 export const touchPicker = () => announce();

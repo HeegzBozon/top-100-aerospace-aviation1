@@ -20,17 +20,17 @@ import { Award, BookOpen, CalendarDays, Globe, Inbox, ListChecks, LogIn, Shield,
 // not drawn for a visitor.
 export const START_MENU = [
   // The Inbox first: what needs an answer, with the Newsstand read as its second tab.
-  { key: "inbox", index: "01", label: "Inbox", to: "/inbox", icon: Inbox, membersOnly: true },
+  // Colony: the live campus, still in beta.
+  { key: "colony", index: "01", label: "Go Online", to: "/colony", icon: Globe, progressLabel: "Beta" },
+  { key: "inbox", index: "02", label: "Inbox", to: "/inbox", icon: Inbox, membersOnly: true },
   // The committee's first act: putting names in. A Fellow arrives here to nominate, not
   // to file a ballot — the ballot has its own key, and its own pill on the cycle band.
-  { key: "nominate", index: "02", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
+  { key: "nominate", index: "03", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
   // The committee's second act: a Fellow putting their own hundred in order.
-  { key: "vote-surface", index: "03", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
+  { key: "vote-surface", index: "04", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
   // The circuit: every aerospace conference the network is holding rooms in, and the
   // workspace behind it for the organizers who stage them. Public — a visitor walks the
   // calendar and is asked for an account only when they stand in a room.
-  // Colony: the live campus, still in beta.
-  { key: "colony", index: "04", label: "Lobby", to: "/colony", icon: Globe, progressLabel: "Beta" },
   { key: "review", index: "05", label: "Review", to: "/review", icon: BookOpen },
   { key: "conferences", index: "06", label: "Events", to: "/conferences", icon: CalendarDays },
   // The house's trading floor, closing the row: the App Store and the Gift Shop under one

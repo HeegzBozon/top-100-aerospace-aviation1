@@ -1061,6 +1061,7 @@ export default function HandheldDeck() {
                 onSearch={steering ? null : openSearch}
                 onPlay={steering ? null : togglePlay}
                 onSelect={select}
+                selectLabel={picker?.enterLabel}
                 onHome={goHome}
                 steer={!!steering}
                 onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}

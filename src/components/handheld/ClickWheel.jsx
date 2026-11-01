@@ -67,6 +67,7 @@ export default function ClickWheel({
   onPlay,
   playing = false,
   onSelect,
+  selectLabel,
   onHome,
   // Steering: a surface that is driven by the ring itself — the field game — keeps
   // the same hardware but hands the wheel a different grammar. Its own four prints
@@ -431,7 +432,7 @@ export default function ClickWheel({
           className="relative text-[7.5px] font-extrabold uppercase tracking-[0.14em]"
           style={{ color: "var(--hh-key-ink)" }}
         >
-          Select
+          {selectLabel || "Select"}
         </span>
       </button>
     </div>
