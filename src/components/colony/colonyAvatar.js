@@ -41,6 +41,16 @@ export const cleanAvatar = (a = {}) => {
   return out;
 };
 
+// Guests get a fun mascot rather than a person: no gender, no skin tone, no human face.
+const MASCOTS = ['tiny round robot with antenna', 'friendly little rocket with stubby legs', 'chubby satellite buddy with solar-panel arms', 'cute floating comet blob with big eyes', 'small boxy rover with wheels and a happy screen face', 'puffy cloud creature wearing a pilot cap'];
+export const randomGuestAvatar = () => {
+  const r = (l) => l[Math.floor(Math.random() * l.length)];
+  return { ...DEFAULT_AVATAR, outfit: r(AVATAR_OPTIONS.outfit).key, accent: r(AVATAR_OPTIONS.accent).key, mascot: r(MASCOTS) };
+};
+export const guestAvatarPrompt = (a) =>
+  `8-bit retro pixel art game character sprite, full body, front facing, chunky pixels, limited 16-color palette, NES era style, solid flat pure green (#00FF00) background with no shadows, centered, no text. Character: a cute, fun ${a.mascot || r0()} mascot, not human, no gender, no skin, cheerful, aerospace themed, main color ${AVATAR_OPTIONS.accent.find(o => o.key === a.accent)?.label || 'Navy'} with copper details.`;
+const r0 = () => MASCOTS[0];
+
 // Prompt for the generated 8-bit portrait sprite.
 export const avatarPrompt = (a, description) => {
   const c = cleanAvatar(a);

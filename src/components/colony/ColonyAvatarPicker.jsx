@@ -1,16 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, X, RefreshCw, SlidersHorizontal } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import AvatarGenerator from '@/components/colony/AvatarGenerator';
-import { AVATAR_OPTIONS, cleanAvatar, drawAvatar } from '@/components/colony/colonyAvatar';
+import { AVATAR_OPTIONS, cleanAvatar, drawAvatar, randomGuestAvatar, guestAvatarPrompt, avatarPrompt } from '@/components/colony/colonyAvatar';
 
 const GROUPS = [['skin', 'Skin'], ['outfit', 'Outfit'], ['headgear', 'Headgear'], ['accent', 'Accent']];
 
 // Choose your Colony character from the curated kit.
-export default function ColonyAvatarPicker({ avatar, onSave, onClose }) {
+export default function ColonyAvatarPicker({ avatar, isGuest = false, onSave, onClose }) {
   const [draft, setDraft] = useState(cleanAvatar(avatar));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const ref = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [regen, setRegen] = useState(false);
+
+  // A fresh character in one tap: a new mascot for guests, a new portrait of the kit for members.
+  const regenerate = async () => {
+    setRegen(true); setError('');
+    try {
+      const kit = isGuest ? randomGuestAvatar() : draft;
+      const { url } = await base44.integrations.Core.GenerateImage({ prompt: isGuest ? guestAvatarPrompt(kit) : avatarPrompt(kit) });
+      setDraft(cleanAvatar({ ...kit, image: url }));
+    } catch { setError('Generation failed. Try again.'); }
+    setRegen(false);
+  };
 
   useEffect(() => {
     const ctx = ref.current.getContext('2d');
@@ -31,6 +45,16 @@ export default function ColonyAvatarPicker({ avatar, onSave, onClose }) {
         <button onClick={onClose} aria-label="Close"><X className="h-4 w-4" /></button>
       </div>
       <canvas ref={ref} width={96} height={96} className="mx-auto mb-2 block rounded bg-editorial-cream/10" />
+      {draft.image && <img src={draft.image} alt="Your character" className="mx-auto mb-2 h-20 w-20 rounded bg-editorial-cream object-contain [image-rendering:pixelated]" />}
+      <div className="mb-2 flex gap-2">
+        <button onClick={regenerate} disabled={regen} className="flex flex-1 items-center justify-center gap-1.5 rounded border border-editorial-gold py-1.5 text-xs font-semibold text-editorial-gold">
+          {regen ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />} Regenerate
+        </button>
+        <button onClick={() => setOpen(o => !o)} className="flex flex-1 items-center justify-center gap-1.5 rounded border border-editorial-cream/30 py-1.5 text-xs font-semibold">
+          <SlidersHorizontal className="h-3.5 w-3.5" /> {open ? 'Hide options' : 'Customize'}
+        </button>
+      </div>
+      {open && <>
       {GROUPS.map(([k, label]) => (
         <div key={k} className="mb-2">
           <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-editorial-gold">{label}</p>
@@ -45,6 +69,7 @@ export default function ColonyAvatarPicker({ avatar, onSave, onClose }) {
         </div>
       ))}
       <AvatarGenerator draft={draft} setDraft={setDraft} />
+      </>}
       {error && <p className="mb-2 text-xs text-red-300">{error}</p>}
       <button onClick={save} disabled={saving} className="flex w-full items-center justify-center gap-2 rounded bg-editorial-copper py-2 text-sm font-semibold">
         {saving && <Loader2 className="h-4 w-4 animate-spin" />} Save character

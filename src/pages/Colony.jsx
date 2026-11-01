@@ -22,7 +22,7 @@ import ColonyAreaChip from '@/components/colony/ColonyAreaChip';
 import useColonyMenus from '@/components/colony/useColonyMenus';
 import { registerPicker } from '@/components/handheld/handheldPicker';
 import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
-import { DEFAULT_AVATAR, cleanAvatar } from '@/components/colony/colonyAvatar';
+import { DEFAULT_AVATAR, cleanAvatar, randomGuestAvatar, guestAvatarPrompt } from '@/components/colony/colonyAvatar';
 import { base44 } from '@/api/base44Client';
 import ColonyOnline from '@/components/colony/ColonyOnline';
 import { setMenuBarStatus } from '@/components/shell/menuBarStatus';
@@ -179,8 +179,16 @@ function ColonyRoom() {
     // First visit (member or guest) with no avatar yet: open the maker straight away.
     const guestAvatar = sessionStorage.getItem('colony-guest-avatar');
     if (sessionStorage.getItem('colony-guest-name')) {
-      if (guestAvatar) setAvatar(cleanAvatar(JSON.parse(guestAvatar)));
-      else setShowAvatar(true);
+      if (guestAvatar) { setAvatar(cleanAvatar(JSON.parse(guestAvatar))); return; }
+      // A guest gets a mascot made for them straight away; they can customise it later.
+      const kit = randomGuestAvatar();
+      setAvatar(cleanAvatar(kit));
+      base44.integrations.Core.GenerateImage({ prompt: guestAvatarPrompt(kit) }).then(({ url }) => {
+        const next = cleanAvatar({ ...kit, image: url });
+        sessionStorage.setItem('colony-guest-avatar', JSON.stringify(next));
+        setAvatar(next);
+        if (myPosRef.current) { myPosRef.current = { ...myPosRef.current, avatar: next }; sendPos(); }
+      }).catch(() => {});
       return;
     }
     base44.auth.me().then(u => {
@@ -428,7 +436,7 @@ function ColonyRoom() {
           stickRef={stickRef}
           myAvatar={avatar}
         />
-        {showAvatar && <ColonyAvatarPicker avatar={avatar} onSave={saveAvatar} onClose={() => setShowAvatar(false)} />}
+        {showAvatar && <ColonyAvatarPicker avatar={avatar} isGuest={!!sessionStorage.getItem('colony-guest-name')} onSave={saveAvatar} onClose={() => setShowAvatar(false)} />}
 
         {!panel && <ColonyZoneCard zone={zone} onActivate={activateZone} />}
         {mediaError && (
