@@ -364,6 +364,7 @@ function ColonyRoom() {
           room={room}
           mapUrl={COLONY_ROOMS[room].map}
           zones={COLONY_ROOMS[room].zones}
+          walls={COLONY_ROOMS[room].walls}
           start={COLONY_ROOMS[room].start}
           localSessionId={localSessionId}
           positions={positions}

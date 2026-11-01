@@ -151,7 +151,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   }
 }
 
-export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start }) {
+export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start, walls = [] }) {
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
@@ -164,11 +164,12 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   });
   const rafRef = useRef(null);
   const occupiedRef = useRef(new Set());
-  occupiedRef.current = new Set(
-    sprites
+  occupiedRef.current = new Set([
+    ...walls.flatMap(w => Array.from({ length: w.w * w.h }, (_, i) => `${w.col + (i % w.w)},${w.row + Math.floor(i / w.w)}`)),
+    ...sprites
       .filter(p => p.session_id !== localSessionId && positions[p.session_id] && (positions[p.session_id].room ?? 'lobby') === room)
-      .map(p => `${positions[p.session_id].col},${positions[p.session_id].row}`)
-  );
+      .map(p => `${positions[p.session_id].col},${positions[p.session_id].row}`),
+  ]);
 
   // Each room sets where a visitor steps in; the Main Hall opens at its globe entrance.
   useEffect(() => {

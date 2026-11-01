@@ -6,11 +6,22 @@ export const COLONY_ROOMS = {
     label: 'Main Entrance',
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/f7aa33459_FuturisticTop100VotingHubLobby.png',
     zones: [
-      { key: 'enter-campus', label: 'Enter the Campus', blurb: 'Walk through to the Main Hall.', room: 'hall', col: 26, row: 13, w: 13, h: 10 },
-      { key: 'concierge', label: 'TOP 100 Concierge', blurb: 'Ask the concierge anything about TOP 100.', panel: 'concierge', col: 7, row: 22, w: 14, h: 5 },
-      { key: 'campus-directory', label: 'Campus Directory', blurb: 'Every virtual room on the campus, one step away.', panel: 'directory', col: 43, row: 18, w: 9, h: 8 },
-      { key: 'engine-exhibit', label: 'Engine Exhibit', blurb: 'Take the controls in the flight simulator.', to: '/play', col: 56, row: 18, w: 7, h: 7 },
-      { key: 'lobby-lounge', label: 'Members Lounge', blurb: 'Chat live with everyone in the Colony.', panel: 'chat', col: 2, row: 28, w: 13, h: 6 },
+      { key: 'enter-campus', label: 'Enter the Campus', blurb: 'Walk through to the Main Hall.', room: 'hall', col: 26, row: 14, w: 12, h: 9 },
+      { key: 'concierge', label: 'TOP 100 Concierge', blurb: 'Ask the concierge anything about TOP 100.', panel: 'concierge', col: 6, row: 25, w: 16, h: 3 },
+      { key: 'campus-directory', label: 'Campus Directory', blurb: 'Every virtual room on the campus, one step away.', panel: 'directory', col: 38, row: 25, w: 9, h: 3 },
+      { key: 'voting-hub', label: 'Voting Hub', blurb: 'Nominate, review and vote for the TOP 100.', to: '/selection-committee', col: 47, row: 26, w: 16, h: 4 },
+      { key: 'flight-exhibit', label: 'Flight Exhibit', blurb: 'Take the controls in the flight simulator.', to: '/play', col: 9, row: 28, w: 6, h: 3 },
+      { key: 'lobby-lounge', label: 'Members Lounge', blurb: 'Chat live with everyone in the Colony.', panel: 'chat', col: 0, row: 26, w: 9, h: 6 },
+    ],
+    // Cells nobody can walk into: the back wall, the concierge desk, the directory kiosk
+    // and the Voting Hub board. The doors' corridor stays open.
+    walls: [
+      { col: 0, row: 0, w: 64, h: 13 },
+      { col: 0, row: 13, w: 25, h: 8 },
+      { col: 39, row: 13, w: 25, h: 4 },
+      { col: 6, row: 21, w: 16, h: 4 },
+      { col: 39, row: 17, w: 8, h: 8 },
+      { col: 47, row: 17, w: 17, h: 9 },
     ],
   },
   hall: {
