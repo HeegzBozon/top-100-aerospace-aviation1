@@ -35,7 +35,7 @@ export default function ColonyQuestTracker({ passport, onOpen }) {
             <span className="yp-fill block h-full rounded-full" style={{ width: `${Math.max(3, (into / XP_PER_LEVEL) * 100)}%` }} />
           </span>
           <span className="mt-0.5 flex justify-between text-[8px] font-bold uppercase tracking-widest text-editorial-cream/55">
-            <span>{into}/{XP_PER_LEVEL} XP</span><span>Quests {done}/12 · Stamps {stampCount(passport)}/6</span>
+            <span>{into}/{XP_PER_LEVEL} XP</span><span>Quests {done}/12 · Stamps {stampCount(passport)}/6 · Stars {Object.keys(passport.stars || {}).length}</span>
           </span>
         </span>
         <ChevronDown className="h-3.5 w-3.5 shrink-0 text-editorial-gold/70" />

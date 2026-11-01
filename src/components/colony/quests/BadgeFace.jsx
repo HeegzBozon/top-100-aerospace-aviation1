@@ -32,7 +32,7 @@ export default function BadgeFace({ name, card, passport, isGuest }) {
             );
           })}
         </div>
-        <p className="mt-3 text-center text-[9px] font-bold uppercase tracking-[0.25em] text-editorial-gold">{title(passport)} · {got.filter(k => ICONS[k]).length}/9 seals</p>
+        <p className="mt-3 text-center text-[9px] font-bold uppercase tracking-[0.25em] text-editorial-gold">{title(passport)} · {got.filter(k => ICONS[k]).length}/9 seals · {Object.keys(passport?.stars || {}).length} stars lit</p>
       </div>
     </div>
   );

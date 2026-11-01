@@ -7,7 +7,7 @@ import { loadStars } from '@/components/star-atlas/starAtlas';
 // a few steps from their post. Placement is editorial (the approved trail order), never measured.
 const IMG = 'https://media.base44.com/images/public/68996845be6727838fdb822e/';
 const SPRITES = ['ccb18c95c', '4dbc8b153', 'e1d39cbd0', 'd59053e06'].map(k => `${IMG}${k}_generated_image.png`);
-const ROOM_FOR = { space: 'space-pavilion', aviation: 'hall', aerospace: 'innovation-expo', medicine: 'career-center', learning: 'leadership-summit' };
+import { zoneFor } from './honoreeZones';
 const BOOTHS = [[5, 0], [-5, 0], [5, 4], [-5, 4]];
 const PER_ROOM = 4;
 
@@ -25,14 +25,17 @@ export default function useHonoreeExhibits(room, cast) {
     const host = cast.find(c => c.room === room);
     if (!host) return;
     approvedTrails().then(async (trails) => {
-      const trail = trails.find(t => ROOM_FOR[(t.theme_key || '').split(':')[1]] === room);
-      if (!trail) return;
-      const stars = await loadStars((trail.nominee_ids || []).slice(0, PER_ROOM)).catch(() => []);
+      // Every approved star is placed by their own role, so a room hosts whoever fits it,
+      // whichever constellation they belong to.
+      const trailOf = {};
+      trails.forEach(t => (t.nominee_ids || []).forEach(id => { trailOf[id] ||= t; }));
+      const all = await loadStars(Object.keys(trailOf)).catch(() => []);
+      const stars = all.filter(n => zoneFor(n) === room).slice(0, PER_ROOM);
       const own = await base44.entities.HonoreeSprite.filter({ nominee_id: { $in: stars.map(n => n.id) } }).catch(() => []);
       const drawn = Object.fromEntries(own.map(s => [s.nominee_id, s.sprite_url]));
       if (!live) return;
       setExhibits(stars.map((n, i) => ({
-        id: `h-${n.id}`, honoree: n, trail, room, name: n.name, role: n.title || 'TOP 100 Honoree',
+        id: `h-${n.id}`, honoree: n, trail: trailOf[n.id], room, name: n.name, role: n.title || 'TOP 100 Honoree',
         col: host.col + BOOTHS[i][0], row: host.row + BOOTHS[i][1], sprite: drawn[n.id] || spriteFor(n.id),
       })));
     });
