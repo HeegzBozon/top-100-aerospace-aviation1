@@ -6,7 +6,7 @@ export const COLONY_ROOMS = {
     label: 'Main Entrance',
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/f7aa33459_FuturisticTop100VotingHubLobby.png',
     zones: [
-      { key: 'enter-campus', label: 'Enter the Campus', blurb: 'Walk through to the Main Hall.', room: 'hall', col: 26, row: 14, w: 12, h: 9 },
+      { key: 'enter-campus', label: 'Enter the Campus', blurb: 'Walk through to the Main Campus.', room: 'hall', col: 26, row: 14, w: 12, h: 9 },
       { key: 'concierge', label: 'TOP 100 Concierge', blurb: 'Ask the concierge anything about TOP 100.', panel: 'concierge', col: 6, row: 25, w: 16, h: 3 },
       { key: 'campus-directory', label: 'Campus Directory', blurb: 'Every virtual room on the campus, one step away.', panel: 'directory', col: 38, row: 25, w: 9, h: 3 },
       { key: 'voting-hub', label: 'Voting Hub', blurb: 'Nominate, review and vote for the TOP 100.', to: '/selection-committee', col: 47, row: 26, w: 16, h: 4 },
@@ -25,7 +25,7 @@ export const COLONY_ROOMS = {
     ],
   },
   hall: {
-    label: 'Main Hall',
+    label: 'Main Campus',
     // Visitors arrive through the globe entrance at the head of the hall.
     start: { col: 32, row: 14 },
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/da8f08016_AerospaceExpoHub_Top100.png',
@@ -56,7 +56,7 @@ export const COLONY_ROOMS = {
     label: 'Leadership Summit',
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/de65663c9_AerospaceLeadershipSummitHall.png',
     zones: [
-      { key: 'summit-exit', label: 'Summit Entrance', blurb: 'Head back out to the Main Hall.', room: 'hall', col: 28, row: 33, w: 8, h: 3 },
+      { key: 'summit-exit', label: 'Summit Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 33, w: 8, h: 3 },
       { key: 'summit-stage', label: 'Main Stage', blurb: 'The Chamber of Commerce.', to: '/chamber', col: 22, row: 8, w: 20, h: 9 },
     ],
   },
@@ -64,7 +64,7 @@ export const COLONY_ROOMS = {
     label: 'Media Hub',
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/f05d7b777_FuturisticAerospaceMediaHubFloorPlan.png',
     zones: [
-      { key: 'media-exit', label: 'Media Hub Entrance', blurb: 'Head back out to the Main Hall.', room: 'hall', col: 28, row: 31, w: 8, h: 5 },
+      { key: 'media-exit', label: 'Media Hub Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 31, w: 8, h: 5 },
       { key: 'media-studio', label: 'Main Studio', blurb: 'The Newsstand: editions, articles and dispatches.', to: '/newsstand', col: 22, row: 6, w: 20, h: 10 },
     ],
   },
@@ -72,7 +72,7 @@ export const COLONY_ROOMS = {
     label: 'Career Center',
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/be39c8054_FuturisticAerospaceCareerCenterHub.png',
     zones: [
-      { key: 'career-exit', label: 'Career Center Entrance', blurb: 'Head back out to the Main Hall.', room: 'hall', col: 28, row: 30, w: 8, h: 6 },
+      { key: 'career-exit', label: 'Career Center Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 30, w: 8, h: 6 },
       { key: 'job-board', label: 'Job Board', blurb: 'Classifieds: positions and mandates from Fellows.', to: '/classifieds', col: 2, row: 8, w: 10, h: 7 },
       { key: 'career-resources', label: 'Career Resources', blurb: 'The career center desk in the Chamber.', to: '/chamber', col: 54, row: 24, w: 9, h: 8 },
     ],
@@ -81,7 +81,7 @@ export const COLONY_ROOMS = {
     label: 'Networking Lounge',
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/460dc8d2e_AerospaceNetworkingLoungeoftheFuture.png',
     zones: [
-      { key: 'lounge-exit', label: 'Lounge Entrance', blurb: 'Head back out to the Main Hall.', room: 'hall', col: 28, row: 30, w: 8, h: 6 },
+      { key: 'lounge-exit', label: 'Lounge Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 30, w: 8, h: 6 },
       { key: 'lounge-hub', label: 'The Hub', blurb: 'AeroSync: the people you have met.', to: '/aerosync', col: 25, row: 10, w: 14, h: 9 },
       { key: 'lounge-events', label: 'Events & Meetups', blurb: 'Meetups hosted across the network.', to: '/meetups', col: 4, row: 30, w: 14, h: 4 },
       { key: 'lounge-people', label: 'People & Directory', blurb: 'Your people in AeroSync.', to: '/aerosync/people', col: 46, row: 30, w: 15, h: 4 },
@@ -91,7 +91,7 @@ export const COLONY_ROOMS = {
     label: 'Space Pavilion',
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/2ba9f7379_SpacePavilion_AerospaceInnovationExpo.png',
     zones: [
-      { key: 'pavilion-exit', label: 'Space Pavilion Entrance', blurb: 'Head back out to the Main Hall.', room: 'hall', col: 28, row: 30, w: 8, h: 6 },
+      { key: 'pavilion-exit', label: 'Space Pavilion Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 30, w: 8, h: 6 },
       { key: 'pavilion-keynote', label: 'Keynote Stage', blurb: 'Events: the conferences the network holds rooms in.', to: '/conferences', col: 25, row: 6, w: 14, h: 7 },
     ],
   },
@@ -99,7 +99,7 @@ export const COLONY_ROOMS = {
     label: 'Innovation Expo',
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/749cdb984_InnovationExpo_AerospaceShowcase.png',
     zones: [
-      { key: 'expo-exit', label: 'Expo Entrance', blurb: 'Head back out to the Main Hall.', room: 'hall', col: 28, row: 33, w: 8, h: 3 },
+      { key: 'expo-exit', label: 'Expo Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 33, w: 8, h: 3 },
       { key: 'innovation-hub', label: 'Innovation Hub', blurb: 'The App Store: tools that each do one job.', to: '/app-store', col: 26, row: 12, w: 12, h: 9 },
     ],
   },

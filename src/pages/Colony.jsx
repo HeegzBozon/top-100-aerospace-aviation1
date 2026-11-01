@@ -239,6 +239,8 @@ function ColonyRoom({ onReplayWelcome }) {
 
   useColonyGamepad(stickRef, {
     enter: () => activateZone(zoneRef.current),
+    voice: () => handleToggleMic(),
+    video: () => handleToggleCam(),
     back: () => {
       if (panel) return setPanel(null);
       if (roomRef.current === 'lobby') return;
@@ -490,7 +492,6 @@ function ColonyRoom({ onReplayWelcome }) {
       {/* Header */}
       {/* Room, character and campus moves live in the menu bar's File and Edit menus now */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 [&>*]:pointer-events-auto [&>*]:bg-transparent">
-        <ColonyVideoStrip participants={nearby} localSessionId={localSessionId} />
         <ColonyAreaChip
           roomLabel={COLONY_ROOMS[room]?.label}
           copy={roomCopy}
@@ -499,7 +500,10 @@ function ColonyRoom({ onReplayWelcome }) {
       </div>
 
       {!panel && <ColonyQuestTracker passport={pp.passport} onOpen={openPassport} />}
-      {(room === 'lobby' || room === 'hall') && <CampusSky />}
+      <div className="absolute bottom-2 right-0 z-30 flex max-w-[70%] flex-col items-end [&>div]:pt-0">
+        <ColonyVideoStrip participants={nearby} localSessionId={localSessionId} />
+      </div>
+      {room === 'hall' && <CampusSky />}
       <RoomSplash room={room} label={COLONY_ROOMS[room]?.label} />
       {celebrate && pp.passport && <QuestCelebration quest={celebrate} passport={pp.passport} onClose={() => setCelebrate(null)} />}
       {/* World Canvas — fills remaining height */}

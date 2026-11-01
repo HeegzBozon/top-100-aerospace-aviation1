@@ -5,7 +5,7 @@ const IMG = 'https://media.base44.com/images/public/68996845be6727838fdb822e/';
 // A title card each time the player walks into a room: its artwork, its name, one line.
 const MOODS = {
   lobby: { art: '03b9d64b8', line: 'Doors open. Your journey starts here.' },
-  hall: { art: 'aab7a1788', line: 'Six districts. One campus.' },
+  hall: { art: '240a071a8', line: 'Fresh air. Six districts. One campus.' },
   'innovation-expo': { art: 'b99da8084', line: 'Where tomorrow gets prototyped.' },
   'space-pavilion': { art: '6100e0ff6', line: 'The next frontier is calling.' },
   'leadership-summit': { art: '5f349a404', line: 'The summit is in session.' },
