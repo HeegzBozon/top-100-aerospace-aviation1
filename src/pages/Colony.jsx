@@ -24,6 +24,7 @@ import ColonyOnboarding from '@/components/colony/ColonyOnboarding';
 const inCall = (c) => { try { return c?.meetingState?.() === 'joined-meeting'; } catch { return false; } };
 import ColonyMapEditor from '@/components/colony/ColonyMapEditor';
 import ColonyNpcDialogue from '@/components/colony/ColonyNpcDialogue';
+import ColonyPersonCard from '@/components/colony/ColonyPersonCard';
 import ColonyCastEditor from '@/components/colony/ColonyCastEditor';
 import useColonyCast from '@/components/colony/useColonyCast';
 import useColonyWalls from '@/components/colony/useColonyWalls';
@@ -36,6 +37,8 @@ import ColonyOnline from '@/components/colony/ColonyOnline';
 import { setMenuBarStatus } from '@/components/shell/menuBarStatus';
 import { Loader2, Shirt } from 'lucide-react';
 
+// Panels that take the wheel, pad and arrow keys for themselves while open.
+const LIST_PANELS = ['directory', 'online', 'npc', 'person'];
 const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 
 export default function Colony() {
@@ -68,6 +71,7 @@ export default function Colony() {
 function ColonyRoom({ onReplayWelcome }) {
   const castState = useColonyCast();
   const [npcId, setNpcId] = useState(null);
+  const [personName, setPersonName] = useState('');
   const callRef = useRef(null);
   const navigate = useNavigate();
   const [callState, setCallState] = useState('lobby'); // lobby | joining | joined | error
@@ -166,7 +170,7 @@ function ColonyRoom({ onReplayWelcome }) {
 
   useEffect(() => {
     // A list panel (directory, online) takes the wheel itself while it is open.
-    if (callState !== 'joined' || panel === 'directory' || panel === 'online') return undefined;
+    if (callState !== 'joined' || LIST_PANELS.includes(panel)) return undefined;
     return registerPicker({
       labels: () => [],
       index: () => 0,
@@ -197,7 +201,7 @@ function ColonyRoom({ onReplayWelcome }) {
       if (roomRef.current === 'lobby') return;
       setZone(null); setRoom(roomRef.current === 'hall' ? 'lobby' : 'hall');
     },
-  }, callState === 'joined' && panel !== 'directory' && panel !== 'online');
+  }, callState === 'joined' && !LIST_PANELS.includes(panel));
 
   // Every step is broadcast to the room; a newcomer is told where we stand.
   const sendPos = useCallback((to = '*') => {
@@ -469,6 +473,12 @@ function ColonyRoom({ onReplayWelcome }) {
           positions={positions}
           onMove={handleMove}
           onZoneChange={setZone}
+          onPlate={(id) => {
+            setShowAvatar(false);
+            if (id.startsWith('npc-')) { setNpcId(id.slice(4)); setPanel('npc'); return; }
+            const p = participantList.find(x => x.session_id === id);
+            if (p) { setPersonName(p.user_name || 'Participant'); setPanel('person'); }
+          }}
           stickRef={stickRef}
           myAvatar={avatar}
         />
@@ -490,6 +500,10 @@ function ColonyRoom({ onReplayWelcome }) {
             onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
         )}
         {panel === 'concierge' && <ColonyConcierge onClose={() => setPanel(null)} />}
+        {panel === 'person' && (
+          <ColonyPersonCard name={personName} onClose={() => setPanel(null)}
+            onGo={(to) => { setPanel(null); navigate(to); }} onChat={() => setPanel('chat')} />
+        )}
         {panel === 'npc' && activeNpc && (
           <ColonyNpcDialogue npc={activeNpc} onClose={() => setPanel(null)}
             onAction={(a) => { setPanel(null); activateZone(a); }} />

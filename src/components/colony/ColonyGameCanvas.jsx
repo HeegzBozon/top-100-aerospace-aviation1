@@ -22,6 +22,8 @@ const getImage = (url) => {
 const cellCenter = (col, row) => ({ x: col * CELL + CELL / 2, y: row * CELL + CELL / 2 });
 const clampCol = (c) => Math.max(0, Math.min(COLS - 1, c));
 const clampRow = (r) => Math.max(0, Math.min(ROWS - 1, r));
+const NPC_DRIFT = [[0, 0], [1, 0], [1, 0], [0, 0], [0, 1], [0, 0], [-1, 0], [-1, 0], [0, 0], [0, -1]];
+
 const zoneAt = (zones, col, row) =>
   zones.find(z => col >= z.col && col < z.col + z.w && row >= z.row && row < z.row + z.h) || null;
 
@@ -108,7 +110,7 @@ function drawHotspots(ctx, zones, activeKey, ox, oy, sc, now) {
 }
 
 // Sprites are sized in map cells, so they scale with the plate on every screen.
-function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, walk = null) {
+function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, walk = null, meta = {}) {
   const sc = sc0 * depth;
   const cell = CELL * sc;
   const spr = avatar?.image && getSprite(avatar.image);
@@ -139,24 +141,39 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   ctx.textBaseline = 'middle';
 
   if (label) {
-    const name = label.split(' ')[0];
-    const fs = Math.max(10, Math.round(cell * 0.6));
-    ctx.font = `${fs}px sans-serif`;
-    const w = Math.round(ctx.measureText(name).width + 8);
+    // The nameplate: a navy plate with a copper rule, the name in serif and, for staff, the role in gold.
+    const fs = Math.max(10, Math.round(cell * 0.55));
+    const ss = Math.max(8, Math.round(fs * 0.7));
+    ctx.font = `600 ${fs}px Georgia, serif`;
+    const nw = ctx.measureText(label).width;
+    ctx.font = `700 ${ss}px sans-serif`;
+    const rw = meta.sub ? ctx.measureText(meta.sub.toUpperCase()).width : 0;
+    const w = Math.round(Math.max(nw, rw) + 14), h = meta.sub ? fs + ss + 9 : fs + 8;
     // Whole pixels: a tag drawn on fractions shimmers as the camera glides.
-    const lx = Math.round(x), ly = Math.round(top);
-    ctx.fillStyle = 'rgba(14,24,41,0.8)';
-    ctx.fillRect(lx - Math.round(w / 2), ly - fs - 4, w, fs + 4);
+    const lx = Math.round(x - w / 2), ly = Math.round(top - h - 3);
+    ctx.fillStyle = meta.me ? 'rgba(184,115,51,0.92)' : 'rgba(14,24,41,0.9)';
+    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(lx, ly, w, h, 4) : ctx.rect(lx, ly, w, h); ctx.fill();
+    ctx.strokeStyle = meta.sub ? '#C9A87C' : 'rgba(184,115,51,0.85)';
+    ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = '#B87333';
+    ctx.fillRect(lx + 4, ly + h - 2, w - 8, 1);
     ctx.fillStyle = '#faf8f5';
-    ctx.fillText(name, lx, ly - Math.round(fs / 2) - 2);
+    ctx.font = `600 ${fs}px Georgia, serif`;
+    ctx.fillText(label, Math.round(x), ly + fs / 2 + 4);
+    if (meta.sub) {
+      ctx.fillStyle = '#C9A87C';
+      ctx.font = `700 ${ss}px sans-serif`;
+      ctx.fillText(meta.sub.toUpperCase(), Math.round(x), ly + fs + ss / 2 + 5);
+    }
+    meta.plates?.push({ id: meta.id, x: lx, y: ly, w, h: Math.max(h, top + cell * 2.1 * tall - ly) });
   }
 }
 
-export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start, walls = [], fromRoom = null, zoom = 1, npcs = [] }) {
+export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start, walls = [], fromRoom = null, zoom = 1, npcs = [], onPlate }) {
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
-  cbRef.current = { onMove, onZoneChange, zones };
+  cbRef.current = { onMove, onZoneChange, zones, onPlate };
   const canvasRef = useRef(null);
   const stateRef = useRef({
     camX: 0, camY: 0, scale: 1,
@@ -224,7 +241,11 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
 
     const all = [
       { id: 'me', col: s.playerCol, row: s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
-      ...npcs.map(n => ({ id: `npc-${n.id}`, col: n.col, row: n.row, avatar: { image: n.sprite }, facing: 'down', label: n.name })),
+      ...npcs.map((n, i) => {
+        // Staff mill about their post: a short, unhurried step every few seconds, never far.
+        const [dc, dr] = NPC_DRIFT[(Math.floor(performance.now() / 2600) + i * 3) % NPC_DRIFT.length];
+        return { id: `npc-${n.id}`, col: n.col + dc, row: n.row + dr, avatar: { image: n.sprite }, facing: 'down', label: n.name, sub: n.role };
+      }),
       ...sprites.filter(p => (positions[p.session_id]?.room ?? 'lobby') === room).map((p, i) => ({
         id: p.session_id,
         col: positions[p.session_id]?.col ?? clampCol(START.col + i + 1),
@@ -236,6 +257,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     ];
     // Walking: anyone whose cell changed in the last moment is mid-stride.
     const now = performance.now();
+    const plates = [];
     s.seen = s.seen || {};
     all.sort((a, b) => a.row - b.row).forEach(p => {
       const k = `${p.col},${p.row}`;
@@ -254,8 +276,10 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       const { x, y } = d;
       // The lobby is drawn in perspective: further back (higher up) reads smaller.
       const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
-      drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth, room === 'lobby' ? 1.3 : 1, walk);
+      drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth, room === 'lobby' ? 1.3 : 1, walk,
+        { sub: p.sub, id: p.id, me: p.id === 'me', plates });
     });
+    s.plates = plates;
 
     // Room transition: the new room opens out of a closing iris of dark.
     if (!s.born) s.born = performance.now();
@@ -377,6 +401,10 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     const rect = canvas.getBoundingClientRect();
     const s = stateRef.current;
     const dpr = canvas.width / rect.width;
+    // A tap on a nameplate (or the figure under it) opens that person rather than walking.
+    const px = (e.clientX - rect.left) * dpr, py = (e.clientY - rect.top) * dpr;
+    const hit = [...(s.plates || [])].reverse().find(p => p.id !== 'me' && px >= p.x && px <= p.x + p.w && py >= p.y && py <= p.y + p.h);
+    if (hit) { cbRef.current.onPlate?.(hit.id); return; }
     const wx = ((e.clientX - rect.left) * dpr - canvas.width / 2) / s.scale + s.camX;
     const wy = ((e.clientY - rect.top) * dpr - canvas.height / 2) / s.scale + s.camY;
     if (wx < 0 || wy < 0 || wx >= NATIVE_W || wy >= NATIVE_H) return;
