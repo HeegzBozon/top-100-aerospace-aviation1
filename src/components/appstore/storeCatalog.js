@@ -6,7 +6,7 @@ import { Briefcase, Compass, FileText, Gauge, Map as MapIcon, Radar, Rocket, Use
 export const STORE_TOOLS = [
   {
     key: 'expo-hub',
-    name: 'Expo Hub',
+    name: 'Colony',
     kicker: 'Virtual campus',
     job: 'Walk the TOP 100 campus with other Fellows: the Innovation Expo, Space Pavilion, Networking Lounge and more, with video when you meet.',
     artifact: 'A live room you share by walking up to someone.',

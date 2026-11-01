@@ -1,4 +1,4 @@
-import { Award, BookOpen, CalendarDays, Inbox, ListChecks, LogIn, Shield, Store, UserPlus } from "lucide-react";
+import { Award, BookOpen, CalendarDays, Globe, Inbox, ListChecks, LogIn, Shield, Store, UserPlus } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -37,7 +37,9 @@ export const START_MENU = [
   // shelf is composed from the reader's own record, so there is nothing behind this key a
   // visitor cannot be shown.
   // The App Store now holds the Chamber of Commerce as one of its keys.
-  { key: "app-store", index: "06", label: "App Store", to: "/app-store", icon: Store },
+  // Colony: the live campus, still in beta.
+  { key: "colony", index: "06", label: "Go Online", to: "/colony", icon: Globe, progressLabel: "Beta" },
+  { key: "app-store", index: "07", label: "App Store", to: "/app-store", icon: Store },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -45,7 +47,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "07",
+  index: "08",
   label: "Admin",
   to: "/Admin",
   icon: Shield,

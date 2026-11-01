@@ -2,13 +2,18 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
 
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
-  const user = await base44.auth.me();
+  const member = await base44.auth.me().catch(() => null);
+  const { action, roomName, guestName } = await req.json();
 
-  if (!user) {
+  // Guests walk the campus under a name they choose, marked as guests.
+  const guest = String(guestName || '').trim().slice(0, 40);
+  if (!member && !guest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
-  const { action, roomName } = await req.json();
+  const user = member || {
+    full_name: `${guest} (Guest)`,
+    email: `guest-${crypto.randomUUID()}`,
+  };
   const DAILY_API_KEY = Deno.env.get('DAILY_API_KEY');
   const DAILY_BASE_URL = 'https://api.daily.co/v1';
 

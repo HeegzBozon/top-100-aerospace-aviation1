@@ -3,6 +3,9 @@ import Daily from '@daily-co/daily-js';
 import { useNavigate } from 'react-router-dom';
 import { colonyRoom } from '@/functions/colonyRoom';
 import ColonyLobby from '@/components/colony/ColonyLobby';
+import ColonySplash from '@/components/colony/ColonySplash';
+import ColonyIntro from '@/components/colony/ColonyIntro';
+import ColonyGuestGate from '@/components/colony/ColonyGuestGate';
 import ColonyHUD from '@/components/colony/ColonyHUD';
 import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
@@ -24,6 +27,24 @@ import { Loader2, Shirt } from 'lucide-react';
 const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 
 export default function Colony() {
+  const [access, setAccess] = useState('checking');
+  useEffect(() => {
+    base44.auth.isAuthenticated().then((ok) => {
+      if (ok) sessionStorage.removeItem('colony-guest-name');
+      setAccess(ok || sessionStorage.getItem('colony-guest-name') ? 'in' : 'gate');
+    });
+  }, []);
+  return (
+    <>
+      {access === 'in' && <ColonyRoom />}
+      {access === 'gate' && <ColonyGuestGate onGuest={() => setAccess('in')} />}
+      {access === 'checking' && <ColonySplash />}
+      <ColonyIntro />
+    </>
+  );
+}
+
+function ColonyRoom() {
   const callRef = useRef(null);
   const navigate = useNavigate();
   const [callState, setCallState] = useState('lobby'); // lobby | joining | joined | error
@@ -136,7 +157,7 @@ export default function Colony() {
     base44.auth.me().then(u => u?.colony_avatar && setAvatar(cleanAvatar(u.colony_avatar))).catch(() => {});
   }, []);
   const saveAvatar = useCallback(async (next) => {
-    await base44.auth.updateMe({ colony_avatar: next });
+    if (!sessionStorage.getItem('colony-guest-name')) await base44.auth.updateMe({ colony_avatar: next });
     setAvatar(next);
     if (myPosRef.current) { myPosRef.current = { ...myPosRef.current, avatar: next }; sendPos(); }
   }, [sendPos]);
@@ -170,7 +191,8 @@ export default function Colony() {
     setErrorMsg('');
 
     try {
-    const res = await colonyRoom({ action: 'get_or_create_room', roomName });
+    const guestName = sessionStorage.getItem('colony-guest-name') || undefined;
+    const res = await colonyRoom({ action: 'get_or_create_room', roomName, guestName });
     const { room, token } = res.data;
 
     const call = Daily.createCallObject({
@@ -281,14 +303,7 @@ export default function Colony() {
   });
 
   if (callState === 'joining' || callState === 'lobby') {
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-4">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-white animate-spin" />
-        </div>
-        <p className="text-slate-400 text-sm">Entering Colony…</p>
-      </div>
-    );
+    return <ColonySplash />;
   }
 
   if (callState === 'error') {
