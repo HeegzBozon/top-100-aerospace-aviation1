@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
-import { Compass, MessageCircle, MessagesSquare, Users, Shirt, LogOut, MapPin, Mic, MicOff, Video, VideoOff, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { Compass, MessageCircle, MessagesSquare, Users, Shirt, LogOut, MapPin, Mic, MicOff, Video, VideoOff, ZoomIn, ZoomOut, RotateCcw, Map } from 'lucide-react';
 import { registerSurfaceFileGroups, registerSurfaceEditGroups } from '@/components/shell/surfaceFileMenu';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 
 // The Colony's own File and Edit menus, registered with the machine's menu bar while the
 // campus is on the glass. File moves you around campus; Edit changes how you appear in it.
-export default function useColonyMenus({ room, zoom, setZoom, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, isCamOff, toggleCam, leave, participantCount }) {
-  const state = { room, zoom, setZoom, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, isCamOff, toggleCam, leave, participantCount };
+export default function useColonyMenus({ room, zoom, setZoom, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, isCamOff, toggleCam, leave, participantCount, isAdmin, openEditor }) {
+  const state = { room, zoom, setZoom, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, isCamOff, toggleCam, leave, participantCount, isAdmin, openEditor };
   const ref = useRef(state);
   ref.current = state;
 
@@ -42,7 +42,10 @@ export default function useColonyMenus({ room, zoom, setZoom, setRoom, openPanel
           { key: 'colony-mic', label: s.isMuted ? 'Turn voice on' : 'Mute voice', icon: s.isMuted ? Mic : MicOff, onSelect: s.toggleMic },
           { key: 'colony-cam', label: s.isCamOff ? 'Turn video on' : 'Turn video off', icon: s.isCamOff ? Video : VideoOff, onSelect: s.toggleCam },
         ],
-      }, {
+      }, ...(s.isAdmin ? [{
+        key: 'colony-admin', label: 'Admin',
+        items: [{ key: 'colony-map-editor', label: 'Map editor', hint: 'Barriers for this room', icon: Map, onSelect: s.openEditor }],
+      }] : []), {
         key: 'colony-view', label: `View · ${Math.round(s.zoom * 100)}%`,
         items: [
           { key: 'colony-zoom-in', label: 'Zoom in', icon: ZoomIn, disabled: s.zoom >= 2, onSelect: () => s.setZoom(z => Math.min(2, +(z + 0.25).toFixed(2))) },

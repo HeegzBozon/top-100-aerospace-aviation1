@@ -20,6 +20,8 @@ import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
 import { canHear, areaAt } from '@/components/colony/colonyAudio';
 import ColonyAreaChip from '@/components/colony/ColonyAreaChip';
 import ColonyOnboarding from '@/components/colony/ColonyOnboarding';
+import ColonyMapEditor from '@/components/colony/ColonyMapEditor';
+import useColonyWalls from '@/components/colony/useColonyWalls';
 import useColonyMenus from '@/components/colony/useColonyMenus';
 import { registerPicker } from '@/components/handheld/handheldPicker';
 import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
@@ -91,7 +93,9 @@ function ColonyRoom() {
   const stickRef = useRef({});
   const zoneRef = useRef(null);
   zoneRef.current = zone;
-  const [panel, setPanel] = useState(null); // directory | chat | concierge
+  const [panel, setPanel] = useState(null); // directory | chat | concierge | editor
+  const [isAdmin, setIsAdmin] = useState(false);
+  const roomWalls = useColonyWalls(room);
   const [myCell, setMyCell] = useState(null);
   const [chat, setChat] = useState([]);
   const [mediaError, setMediaError] = useState('');
@@ -204,6 +208,7 @@ function ColonyRoom() {
       return;
     }
     base44.auth.me().then(u => {
+      setIsAdmin(u?.role === 'admin');
       if (u?.colony_avatar) setAvatar(cleanAvatar(u.colony_avatar));
       else setShowAvatar(true);
     }).catch(() => {});
@@ -340,6 +345,8 @@ function ColonyRoom() {
     toggleCam: handleToggleCam,
     leave: handleLeave,
     participantCount: Object.keys(participants).length,
+    isAdmin,
+    openEditor: () => { setShowAvatar(false); setPanel('editor'); },
   });
 
   // Cleanup on unmount
@@ -437,7 +444,7 @@ function ColonyRoom() {
           room={room}
           mapUrl={COLONY_ROOMS[room].map}
           zones={COLONY_ROOMS[room].zones}
-          walls={COLONY_ROOMS[room].walls}
+          walls={roomWalls.walls}
           fromRoom={fromRoomRef.current}
           zoom={zoom}
           start={COLONY_ROOMS[room].start}
@@ -466,6 +473,10 @@ function ColonyRoom() {
             onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
         )}
         {panel === 'concierge' && <ColonyConcierge onClose={() => setPanel(null)} />}
+        {panel === 'editor' && isAdmin && (
+          <ColonyMapEditor key={room} mapUrl={COLONY_ROOMS[room].map} label={COLONY_ROOMS[room].label} walls={roomWalls.walls}
+            custom={roomWalls.custom} onSave={roomWalls.save} onReset={roomWalls.reset} onClose={() => setPanel(null)} />
+        )}
         {panel === 'chat' && <ColonyChat messages={chat} onSend={sendChat} onClose={() => setPanel(null)} />}
 
       </main>

@@ -283,7 +283,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       s.camX = c.x; s.camY = c.y; s.initialized = true;
     }
 
-    if (s.moveAccum >= 160) {
+    if (s.moveAccum >= 240) {
       s.moveAccum = 0;
       let dc = 0, dr = 0;
       const stick = stickRef?.current || {};

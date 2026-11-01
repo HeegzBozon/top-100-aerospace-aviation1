@@ -48,6 +48,8 @@ export const COLONY_ROOMS = {
       { col: 0, row: 20, w: 4, h: 3 },
       { col: 59, row: 21, w: 5, h: 3 },
       { col: 0, row: 33, w: 64, h: 3 },
+      // The TOP 100 seal in the middle of the plaza.
+      { col: 26, row: 15, w: 12, h: 8 },
     ],
   },
   'leadership-summit': {

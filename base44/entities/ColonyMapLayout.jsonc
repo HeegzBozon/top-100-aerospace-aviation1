@@ -1,0 +1,52 @@
+{
+  "name": "ColonyMapLayout",
+  "type": "object",
+  "properties": {
+    "room": {
+      "type": "string",
+      "description": "Colony room key, e.g. 'hall'"
+    },
+    "walls": {
+      "type": "array",
+      "description": "Barrier rectangles in grid cells; replaces the room's built-in walls",
+      "items": {
+        "type": "object",
+        "properties": {
+          "col": {
+            "type": "number"
+          },
+          "row": {
+            "type": "number"
+          },
+          "w": {
+            "type": "number"
+          },
+          "h": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "room"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
