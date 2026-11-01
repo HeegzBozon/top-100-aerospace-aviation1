@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Daily from '@daily-co/daily-js';
 import { useNavigate } from 'react-router-dom';
 import { colonyRoom } from '@/functions/colonyRoom';
@@ -15,6 +15,8 @@ import useColonyGamepad from '@/components/colony/useColonyGamepad';
 import ColonyDirectory from '@/components/colony/ColonyDirectory';
 import ColonyChat from '@/components/colony/ColonyChat';
 import ColonyConcierge from '@/components/colony/ColonyConcierge';
+import { buildBrief, briefSummary, coachingFor } from '@/components/colony/campusBrief';
+import { loadMissingFields } from '@/components/colony/conciergeDiscovery';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
 import { canHear, areaAt } from '@/components/colony/colonyAudio';
@@ -147,6 +149,9 @@ function ColonyRoom({ onReplayWelcome }) {
   const activeNpc = castState.cast.find(c => c.id === npcId);
   const activeQuest = activeNpc && pp.passport ? questFor(activeNpc.id, pp.passport) : null;
   const openPassport = useCallback(() => setPanel('passport'), []);
+  const [missingFields, setMissingFields] = useState([]);
+  useEffect(() => { loadMissingFields(me?.email).then(setMissingFields); }, [me]);
+  const brief = useMemo(() => pp.passport ? buildBrief(pp.passport, missingFields) : null, [pp.passport, missingFields]);
   useColonyMusic(room, (panel === 'npc' || panel === 'quest') && activeNpc ? activeNpc.id : null);
   const [myCell, setMyCell] = useState(null);
   const [chat, setChat] = useState([]);
@@ -536,7 +541,7 @@ function ColonyRoom({ onReplayWelcome }) {
           <ColonyOnline participants={participantList} positions={positions} localSessionId={localSessionId} myRoom={room}
             onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
         )}
-        {panel === 'concierge' && <ColonyConcierge onClose={() => setPanel(null)} />}
+        {panel === 'concierge' && <ColonyConcierge brief={briefSummary(brief)} onClose={() => setPanel(null)} />}
         {panel === 'person' && (
           <ColonyPersonCard name={personName} onClose={() => setPanel(null)}
             onGo={(to) => { setPanel(null); navigate(to); }} onChat={() => setPanel('chat')} />
@@ -559,6 +564,7 @@ function ColonyRoom({ onReplayWelcome }) {
           <ColonyNpcDialogue npc={activeNpc} onClose={() => setPanel(null)}
             quest={activeQuest && { title: activeQuest.title, lock: lockReason(pp.passport, activeQuest) }}
             onQuest={() => setPanel('quest')}
+            coaching={coachingFor(activeNpc.id, brief)}
             onAction={(a) => { setPanel(null); activateZone(a); }} />
         )}
         {panel === 'cast' && isAdmin && (

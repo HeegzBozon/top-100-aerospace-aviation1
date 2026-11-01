@@ -4,13 +4,15 @@ import DialogueBox from '@/components/colony/DialogueBox';
 import useColonyListPicker from '@/components/colony/useColonyListPicker';
 
 // One staff character, spoken to: portrait, greeting, and only their configured actions.
-export default function ColonyNpcDialogue({ npc, onAction, onClose, quest = null, onQuest }) {
+export default function ColonyNpcDialogue({ npc, onAction, onClose, quest = null, onQuest, coaching = null }) {
   // The First Flight comes first when this character has a step to give.
   const questItem = quest && { key: '__quest', label: quest.lock ? `★ ${quest.title} — ${quest.lock}` : `★ Quest: ${quest.title}`, disabled: !!quest.lock };
-  const items = [...(questItem ? [questItem] : []), ...npc.actions, { key: '__bye', label: 'Goodbye' }];
+  // A right-time prompt from the shared brief: optional, and always skippable.
+  const coachItem = coaching && !(coaching.action.panel === 'quest' && !questItem) && { ...coaching.action, label: `✦ ${coaching.action.label}` };
+  const items = [...(questItem ? [questItem] : []), ...(coachItem ? [coachItem] : []), ...npc.actions, { key: '__bye', label: 'Goodbye' }];
   const pick = (it) => {
     if (it.disabled) return;
-    if (it.key === '__bye') onClose(); else if (it.key === '__quest') onQuest(); else onAction(it);
+    if (it.key === '__bye') onClose(); else if (it.key === '__quest' || it.panel === 'quest') onQuest(); else onAction(it);
   };
   const cursorKey = useColonyListPicker({ items, onPick: pick, onClose });
   // Keep the highlighted option on screen as the wheel moves through the list.
@@ -25,7 +27,7 @@ export default function ColonyNpcDialogue({ npc, onAction, onClose, quest = null
         </div>
         <button type="button" onClick={onClose} aria-label="Close" className="text-editorial-cream/70"><X className="h-4 w-4" /></button>
       </div>
-      <div className="flex max-h-[38dvh] min-h-[88px] flex-col px-3 pt-2"><DialogueBox speaker={npc.name} text={`${npc.greeting} "${npc.signature}"`} /></div>
+      <div className="flex max-h-[38dvh] min-h-[88px] flex-col px-3 pt-2"><DialogueBox speaker={npc.name} text={coachItem ? `${npc.greeting} ${coaching.line}` : `${npc.greeting} "${npc.signature}"`} /></div>
       <ul className="min-h-[96px] shrink overflow-y-auto overscroll-contain p-2">
         {items.map(it => (
           <li key={it.key} id={`colony-list-${it.key}`}>
