@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Daily from '@daily-co/daily-js';
+import { useNavigate } from 'react-router-dom';
 import { colonyRoom } from '@/functions/colonyRoom';
 import ColonyLobby from '@/components/colony/ColonyLobby';
 import ColonyHUD from '@/components/colony/ColonyHUD';
 import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
 import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
+import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
+import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 import { Loader2, Maximize2, Minimize2 } from 'lucide-react';
 
 // ─── Video thumbnail overlay ───────────────────────────────────────────────────
@@ -50,6 +53,7 @@ function VideoThumbnailOverlay({ participants, localSessionId }) {
 
 export default function Colony() {
   const callRef = useRef(null);
+  const navigate = useNavigate();
   const [callState, setCallState] = useState('lobby'); // lobby | joining | joined | error
   const [participants, setParticipants] = useState({});
   const [localSessionId, setLocalSessionId] = useState(null);
@@ -57,6 +61,21 @@ export default function Colony() {
   const [isCamOff, setIsCamOff] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [positions, setPositions] = useState({});
+  const [zone, setZone] = useState(null);
+  const [room, setRoom] = useState('hall');
+  const myPosRef = useRef(null);
+
+  // Every step is broadcast to the room; a newcomer is told where we stand.
+  const sendPos = useCallback((to = '*') => {
+    if (callRef.current && myPosRef.current) callRef.current.sendAppMessage({ type: 'pos', ...myPosRef.current }, to);
+  }, []);
+  const roomRef = useRef('hall');
+  roomRef.current = room;
+  const handleMove = useCallback((col, row) => {
+    myPosRef.current = { col, row, room: roomRef.current };
+    sendPos();
+  }, [sendPos]);
 
   const syncParticipants = useCallback(() => {
     if (!callRef.current) return;
@@ -71,7 +90,7 @@ export default function Colony() {
       await callRef.current.destroy();
       callRef.current = null;
     }
-    setCallState('lobby');
+    navigate('/app-store');
     setParticipants({});
     setLocalSessionId(null);
     setShowParticipants(false);
@@ -81,6 +100,7 @@ export default function Colony() {
     setCallState('joining');
     setErrorMsg('');
 
+    try {
     const res = await colonyRoom({ action: 'get_or_create_room', roomName });
     const { room, token } = res.data;
 
@@ -100,6 +120,14 @@ export default function Colony() {
     ];
     SYNC_EVENTS.forEach((evt) => call.on(evt, syncParticipants));
 
+    call.on('app-message', (e) => {
+      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'hall' } }));
+    });
+    call.on('participant-joined', (e) => sendPos(e.participant.session_id));
+    call.on('participant-left', (e) => setPositions(prev => {
+      const next = { ...prev }; delete next[e.participant.session_id]; return next;
+    }));
+
     call.on('error', (e) => {
       setErrorMsg(e?.errorMsg || 'An error occurred.');
       setCallState('error');
@@ -108,7 +136,14 @@ export default function Colony() {
     await call.join({ url: room.url, token });
     setCallState('joined');
     syncParticipants();
-  }, [syncParticipants]);
+    sendPos();
+    } catch (e) {
+      callRef.current?.destroy();
+      callRef.current = null;
+      setErrorMsg(e?.errorMsg || e?.message || 'Could not enter the space. Check camera and microphone access.');
+      setCallState('error');
+    }
+  }, [syncParticipants, sendPos]);
 
   const handleToggleMic = useCallback(() => {
     if (!callRef.current) return;
@@ -134,13 +169,14 @@ export default function Colony() {
     };
   }, []);
 
+  // Everyone drops straight into the main hall.
+  useEffect(() => {
+    if (callState === 'lobby') handleJoin('colony-main');
+  }, [callState, handleJoin]);
+
   const participantList = Object.values(participants);
 
-  if (callState === 'lobby') {
-    return <ColonyLobby onJoin={handleJoin} isLoading={false} />;
-  }
-
-  if (callState === 'joining') {
+  if (callState === 'joining' || callState === 'lobby') {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-4">
         <div className="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center">
@@ -159,14 +195,14 @@ export default function Colony() {
           onClick={() => setCallState('lobby')}
           className="text-indigo-400 underline text-sm"
         >
-          Go back to lobby
+          Try again
         </button>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-slate-950 flex flex-col overflow-hidden">
+    <div className="hh-slide-window md:h-screen bg-slate-950 flex flex-col overflow-hidden">
       {/* Header */}
       <header className="flex-none flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 z-30">
         <div className="flex items-center gap-2">
@@ -185,8 +221,17 @@ export default function Colony() {
       >
         <ColonyGameCanvas
           sprites={participantList.filter(p => p.session_id !== localSessionId)}
+          key={room}
+          room={room}
+          mapUrl={COLONY_ROOMS[room].map}
+          zones={COLONY_ROOMS[room].zones}
           localSessionId={localSessionId}
+          positions={positions}
+          onMove={handleMove}
+          onZoneChange={setZone}
         />
+
+        <ColonyZoneCard zone={zone} onEnterRoom={(r) => { setZone(null); setRoom(r); }} />
 
         {/* Video thumbnail — bottom-right corner */}
         <VideoThumbnailOverlay
