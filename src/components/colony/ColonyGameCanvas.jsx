@@ -148,7 +148,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     all.sort((a, b) => a.row - b.row).forEach(p => {
       const { x, y } = cellCenter(p.col, p.row);
       // The lobby is drawn in perspective: further back (higher up) reads smaller.
-      const depth = room === 'lobby' ? 0.55 + 0.75 * (p.row / (ROWS - 1)) : 1;
+      const depth = room === 'lobby' ? 0.35 + 0.5 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
       drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth);
     });
 
