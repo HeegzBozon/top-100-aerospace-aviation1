@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Disc, Palette, Radio, Search } from "lucide-react";
+import { ArrowLeftRight, Disc, Palette, Radio, Search } from "lucide-react";
 import ClickWheel from "./ClickWheel";
 import ConsoleKeyBar from "./ConsoleKeyBar";
 import FaceButtons from "./FaceButtons";
@@ -112,12 +112,25 @@ export default function HandheldDeck() {
   // The machine's own two controls — the finish the case is wearing and the face it is
   // wearing it in — live in the Edit drawer. They were the two keys of the foot plate; the
   // plate is gone, so the drawer that means "change something" carries them.
+  // Turned sideways: the PSP face, with the wheel on whichever handle the reader chose.
+  const landscape = useLandscapeHandheld();
+  const [wheelRight, setWheelRight] = useState(() => localStorage.getItem("hh-wheel-side") === "right");
+  const flipGrips = useCallback(() => {
+    setWheelRight((r) => {
+      localStorage.setItem("hh-wheel-side", r ? "left" : "right");
+      return !r;
+    });
+  }, []);
+
   const consoleItems = useMemo(
     () => [
       { label: `Customize · ${finish.label}`, action: "finish", icon: Palette },
       { label: `Console face · ${modeLegend}`, action: "cycleMode", icon: radio ? Disc : Radio },
+      ...(landscape
+        ? [{ label: `Click wheel · ${wheelRight ? "Right" : "Left"} hand`, onSelect: flipGrips, icon: ArrowLeftRight }]
+        : []),
     ],
-    [finish.label, modeLegend, radio],
+    [finish.label, modeLegend, radio, landscape, wheelRight, flipGrips],
   );
 
   const menuGroups = groups;
@@ -247,8 +260,7 @@ export default function HandheldDeck() {
 
   useEffect(() => () => clearTimeout(flashTimer.current), []);
 
-  // Turned sideways: the PSP face. The body class re-measures the glass between the handles.
-  const landscape = useLandscapeHandheld();
+  // The body class re-measures the glass between the handles.
   useEffect(() => {
     document.body.classList.toggle("hh-landscape", landscape);
     return () => document.body.classList.remove("hh-landscape");
@@ -929,7 +941,7 @@ export default function HandheldDeck() {
       {!landscape && <HandheldScreenFrame />}
 
       {landscape && (
-        <LandscapeGrips menuBar={menuBarEl} wheel={wheelEl(116)} faceButtons={faceEl} onHome={goHome} onSearch={openSearch} />
+        <LandscapeGrips menuBar={menuBarEl} wheel={wheelEl(116)} faceButtons={faceEl} flipped={wheelRight} onHome={goHome} onSearch={openSearch} />
       )}
 
       {!landscape && !railHiddenOn(location.pathname) && (
