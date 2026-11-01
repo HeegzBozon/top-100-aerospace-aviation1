@@ -30,13 +30,24 @@ export const COLONY_ROOMS = {
     start: { col: 32, row: 9 },
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/da8f08016_AerospaceExpoHub_Top100.png',
     zones: [
-      { key: 'hall-exit', label: 'Main Entrance', blurb: 'Head back out to the lobby.', room: 'lobby', col: 28, row: 4, w: 8, h: 3 },
+      { key: 'hall-exit', label: 'Main Entrance', blurb: 'Head back out to the lobby.', room: 'lobby', col: 28, row: 7, w: 8, h: 2 },
       { key: 'innovation-expo', label: 'Innovation Expo', blurb: 'Step inside the aerospace showcase.', room: 'innovation-expo', col: 6, row: 1, w: 16, h: 9 },
       { key: 'space-pavilion', label: 'Space Pavilion', blurb: 'Step inside the pavilion.', room: 'space-pavilion', col: 46, row: 1, w: 13, h: 10 },
       { key: 'leadership-summit', label: 'Leadership Summit', blurb: 'Step inside the summit hall.', room: 'leadership-summit', col: 7, row: 14, w: 11, h: 6 },
       { key: 'networking-lounge', label: 'Networking Lounge', blurb: 'Step inside the lounge.', room: 'networking-lounge', col: 46, row: 13, w: 13, h: 8 },
       { key: 'media-hub', label: 'Media Hub', blurb: 'Step inside the studios.', room: 'media-hub', col: 4, row: 23, w: 14, h: 8 },
       { key: 'career-center', label: 'Career Center', blurb: 'Step inside the career floor.', room: 'career-center', col: 47, row: 24, w: 12, h: 7 },
+    ],
+    // The hall's solid parts: the facade flanking the entrance steps, the outer
+    // edges between buildings, and the foot of the campus. Every door stays open.
+    walls: [
+      { col: 22, row: 0, w: 6, h: 7 },
+      { col: 36, row: 0, w: 10, h: 7 },
+      { col: 0, row: 10, w: 6, h: 4 },
+      { col: 59, row: 11, w: 5, h: 2 },
+      { col: 0, row: 20, w: 4, h: 3 },
+      { col: 59, row: 21, w: 5, h: 3 },
+      { col: 0, row: 33, w: 64, h: 3 },
     ],
   },
   'leadership-summit': {
