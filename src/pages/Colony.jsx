@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Daily from '@daily-co/daily-js';
+import { useNavigate } from 'react-router-dom';
 import { colonyRoom } from '@/functions/colonyRoom';
 import ColonyLobby from '@/components/colony/ColonyLobby';
 import ColonyHUD from '@/components/colony/ColonyHUD';
@@ -51,6 +52,7 @@ function VideoThumbnailOverlay({ participants, localSessionId }) {
 
 export default function Colony() {
   const callRef = useRef(null);
+  const navigate = useNavigate();
   const [callState, setCallState] = useState('lobby'); // lobby | joining | joined | error
   const [participants, setParticipants] = useState({});
   const [localSessionId, setLocalSessionId] = useState(null);
@@ -84,7 +86,7 @@ export default function Colony() {
       await callRef.current.destroy();
       callRef.current = null;
     }
-    setCallState('lobby');
+    navigate('/app-store');
     setParticipants({});
     setLocalSessionId(null);
     setShowParticipants(false);
@@ -163,13 +165,14 @@ export default function Colony() {
     };
   }, []);
 
+  // Everyone drops straight into the main hall.
+  useEffect(() => {
+    if (callState === 'lobby') handleJoin('colony-main');
+  }, [callState, handleJoin]);
+
   const participantList = Object.values(participants);
 
-  if (callState === 'lobby') {
-    return <ColonyLobby onJoin={handleJoin} isLoading={false} />;
-  }
-
-  if (callState === 'joining') {
+  if (callState === 'joining' || callState === 'lobby') {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-4">
         <div className="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center">
@@ -188,7 +191,7 @@ export default function Colony() {
           onClick={() => setCallState('lobby')}
           className="text-indigo-400 underline text-sm"
         >
-          Go back to lobby
+          Try again
         </button>
       </div>
     );
