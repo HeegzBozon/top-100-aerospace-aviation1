@@ -55,7 +55,7 @@ function drawSprite(ctx, x, y, color, label, isLocal) {
   }
 }
 
-export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange }) {
+export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef }) {
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
@@ -130,10 +130,11 @@ export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sp
     if (s.moveAccum >= 90) {
       s.moveAccum = 0;
       let dc = 0, dr = 0;
-      if (s.keys.ArrowUp || s.keys.w) dr -= 1;
-      if (s.keys.ArrowDown || s.keys.s) dr += 1;
-      if (s.keys.ArrowLeft || s.keys.a) dc -= 1;
-      if (s.keys.ArrowRight || s.keys.d) dc += 1;
+      const stick = stickRef?.current || {};
+      if (s.keys.ArrowUp || s.keys.w || stick.up) dr -= 1;
+      if (s.keys.ArrowDown || s.keys.s || stick.down) dr += 1;
+      if (s.keys.ArrowLeft || s.keys.a || stick.left) dc -= 1;
+      if (s.keys.ArrowRight || s.keys.d || stick.right) dc += 1;
       s.playerCol = clampCol(s.playerCol + dc);
       s.playerRow = clampRow(s.playerRow + dr);
     }

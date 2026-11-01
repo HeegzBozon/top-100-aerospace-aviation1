@@ -9,47 +9,11 @@ import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
 import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
 import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
-import { Loader2, Maximize2, Minimize2 } from 'lucide-react';
+import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
+import { registerPicker } from '@/components/handheld/handheldPicker';
+import { Loader2 } from 'lucide-react';
 
-// ─── Video thumbnail overlay ───────────────────────────────────────────────────
-function VideoThumbnailOverlay({ participants, localSessionId }) {
-  const [expanded, setExpanded] = React.useState(false);
-  if (!participants.length) return null;
-
-  // Show local first, then remotes
-  const ordered = [
-    ...participants.filter(p => p.session_id === localSessionId),
-    ...participants.filter(p => p.session_id !== localSessionId),
-  ];
-
-  return (
-    <div className="absolute bottom-4 right-4 z-20 flex flex-col items-end gap-2">
-      <button
-        onClick={() => setExpanded(v => !v)}
-        aria-label={expanded ? 'Collapse video' : 'Expand video'}
-        className="self-end flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800/80 text-slate-300 text-xs hover:bg-slate-700/80 transition-colors"
-      >
-        {expanded ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
-        {expanded ? 'Collapse' : 'Expand'}
-      </button>
-      <div className={`flex flex-col gap-2 ${expanded ? 'w-56' : 'w-32'}`}>
-        {(expanded ? ordered : ordered.slice(0, 1)).map(p => (
-          <div key={p.session_id} className="rounded-xl overflow-hidden shadow-lg border border-slate-700">
-            <ColonyVideoTile
-              participant={p}
-              isLocal={p.session_id === localSessionId}
-            />
-          </div>
-        ))}
-        {!expanded && ordered.length > 1 && (
-          <div className="text-center text-xs text-slate-400 bg-slate-800/70 rounded-lg py-1">
-            +{ordered.length - 1} more
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 
 export default function Colony() {
   const callRef = useRef(null);
@@ -65,6 +29,38 @@ export default function Colony() {
   const [zone, setZone] = useState(null);
   const [room, setRoom] = useState('hall');
   const myPosRef = useRef(null);
+  // The click wheel, held as a joystick: the zone under the thumb is the way you walk.
+  const stickRef = useRef({});
+  const zoneRef = useRef(null);
+  zoneRef.current = zone;
+
+  useEffect(() => {
+    if (callState !== 'joined') return undefined;
+    return registerPicker({
+      labels: () => [],
+      index: () => 0,
+      goTo: () => null,
+      step: () => true,
+      page: () => null,
+      // The centre walks through the door you are standing at.
+      enter: () => {
+        const z = zoneRef.current;
+        if (!z) return false;
+        setZone(null);
+        if (z.room) setRoom(z.room); else navigate(z.to);
+        return true;
+      },
+      back: () => {
+        if (roomRef.current === 'hall') return false;
+        setZone(null); setRoom('hall');
+        return true;
+      },
+      steer: {
+        prints: WHEEL_PRINTS,
+        hold: (dir, on) => { stickRef.current[dir] = on; },
+      },
+    });
+  }, [callState, navigate]);
 
   // Every step is broadcast to the room; a newcomer is told where we stand.
   const sendPos = useCallback((to = '*') => {
@@ -204,14 +200,14 @@ export default function Colony() {
   return (
     <div className="hh-slide-window md:h-screen bg-slate-950 flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="flex-none flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 z-30">
+      <header className="flex-none flex items-center justify-between gap-3 px-3 py-1.5 bg-slate-900 border-b border-slate-800 z-30">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
             <span className="text-white text-xs font-bold">C</span>
           </div>
           <span className="text-white font-semibold text-sm">Colony</span>
         </div>
-        <span className="text-slate-400 text-xs">{participantList.length} in space</span>
+        <ColonyVideoStrip participants={participantList} localSessionId={localSessionId} />
       </header>
 
       {/* World Canvas — fills remaining height */}
@@ -229,15 +225,11 @@ export default function Colony() {
           positions={positions}
           onMove={handleMove}
           onZoneChange={setZone}
+          stickRef={stickRef}
         />
 
         <ColonyZoneCard zone={zone} onEnterRoom={(r) => { setZone(null); setRoom(r); }} />
 
-        {/* Video thumbnail — bottom-right corner */}
-        <VideoThumbnailOverlay
-          participants={participantList}
-          localSessionId={localSessionId}
-        />
       </main>
 
       {/* HUD */}

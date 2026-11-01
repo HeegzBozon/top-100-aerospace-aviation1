@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { MicOff, VideoOff } from 'lucide-react';
 
-export default function ColonyVideoTile({ participant, isLocal = false }) {
+export default function ColonyVideoTile({ participant, isLocal = false, compact = false }) {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
 
@@ -45,7 +45,7 @@ export default function ColonyVideoTile({ participant, isLocal = false }) {
     .toUpperCase();
 
   return (
-    <div className="relative rounded-xl overflow-hidden bg-slate-800 aspect-video flex items-center justify-center">
+    <div className={`relative overflow-hidden bg-slate-800 flex items-center justify-center ${compact ? 'h-full w-full' : 'rounded-xl aspect-video'}`} title={displayName}>
       {/* Hidden audio element for remote participants */}
       {!isLocal && (
         <audio ref={audioRef} autoPlay aria-hidden="true" />
@@ -63,14 +63,14 @@ export default function ColonyVideoTile({ participant, isLocal = false }) {
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-slate-900">
-          <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xl font-bold">
+          <div className={`rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold ${compact ? 'h-7 w-7 text-[10px]' : 'w-16 h-16 text-xl'}`}>
             {initials}
           </div>
         </div>
       )}
 
       {/* Name + Status Bar */}
-      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-2 py-1 bg-slate-950/60">
+      <div className={`absolute bottom-0 left-0 right-0 flex items-center justify-between px-2 py-1 bg-slate-950/60 ${compact ? 'hidden' : ''}`}>
         <span className="text-white text-xs font-medium truncate">
           {displayName}
           {isLocal && <span className="text-slate-400 ml-1">(You)</span>}
