@@ -8,6 +8,8 @@ import FaceButtons from "./FaceButtons";
 import { pressDigit, pressFaceKey } from "./handheldKeys";
 import { drawerHint } from "./faceHint";
 import ChinMenuBar from "./ChinMenuBar";
+import LandscapeGrips from "./LandscapeGrips";
+import useLandscapeHandheld from "@/hooks/useLandscapeHandheld";
 import ViewerFoot from "./ViewerFoot";
 import HandheldScreenFrame from "./HandheldScreenFrame";
 import HandheldBody from "./HandheldBody";
@@ -244,6 +246,13 @@ export default function HandheldDeck() {
   }, [clearance, foot]);
 
   useEffect(() => () => clearTimeout(flashTimer.current), []);
+
+  // Turned sideways: the PSP face. The body class re-measures the glass between the handles.
+  const landscape = useLandscapeHandheld();
+  useEffect(() => {
+    document.body.classList.toggle("hh-landscape", landscape);
+    return () => document.body.classList.remove("hh-landscape");
+  }, [landscape]);
 
   // Putting the console away stops its music: the speaker key is gone once the
   // device is off the glass, so the loop must not keep playing with no hand on it.
@@ -868,18 +877,62 @@ export default function HandheldDeck() {
     setBankChoice(bank === "CH" ? "FN" : "CH");
   }, [bank]);
 
+  const wheelEl = (size) => (
+    <ClickWheel
+      size={size}
+      onRotate={rotate}
+      onMenu={steering ? null : upOneLevel}
+      onPrev={steering ? null : () => stepSection(-1)}
+      onNext={steering ? null : () => stepSection(1)}
+      playing={playing || !!picker?.isPlaying?.()}
+      onSearch={steering ? null : openSearch}
+      onPlay={steering ? null : togglePlay}
+      onSelect={select}
+      selectLabel={picker?.enterLabel}
+      onHome={goHome}
+      steer={!!steering}
+      onSteer={steering ? (zone, on) => steering.hold(ZONE_DIR[zone], on) : null}
+      prints={steering?.prints}
+    />
+  );
+  const faceEl = (
+    <FaceButtons
+      onConfirm={() => faceKey("A", select)}
+      onBack={() => faceKey("B", back)}
+      onFile={() => faceKey("X", () => openBarDrawer("file"))}
+      onEdit={() => faceKey("Y", () => openBarDrawer("edit"))}
+    />
+  );
+  const menuBarEl = (
+    <ChinMenuBar
+      surface={surface}
+      module={radio && typed ? `#${typed}` : modules[moduleIndex]?.label}
+      menuOpen={menuOpen && menuMode !== "file" && menuMode !== "edit"}
+      fileOpen={menuMode === "file"}
+      editOpen={menuMode === "edit"}
+      onHome={goHome}
+      onMenu={upOneLevel}
+      onFile={() => openBarDrawer("file")}
+      onEdit={() => openBarDrawer("edit")}
+      onNotifications={openNotifications}
+      fileKey="X"
+      editKey="Y"
+    />
+  );
+
   return (
     <>
       {/* One moulding behind everything: the display, the bezel and the deck are
-          all set into the same body. */}
-      <HandheldBody />
+          all set into the same body. Sideways, the two handles are the body. */}
+      {!landscape && <HandheldBody />}
 
-      <HandheldScreenFrame />
+      {!landscape && <HandheldScreenFrame />}
 
-      {/* The glass's footer: the share at its left, the measure of where the wheel stands
-          ruled through the middle, the device's readout at its right. */}
+      {landscape && (
+        <LandscapeGrips menuBar={menuBarEl} wheel={wheelEl(116)} faceButtons={faceEl} onHome={goHome} onSearch={openSearch} />
+      )}
 
-      {!railHiddenOn(location.pathname) && (
+      {!landscape && !railHiddenOn(location.pathname) && (
         <ModuleRail modules={modules} index={moduleIndex} onJump={jumpToModule} />
       )}
 
@@ -945,7 +998,7 @@ export default function HandheldDeck() {
         onClose={() => setNotificationsOpen(false)}
       />
 
-      <nav
+      {!landscape && <nav
         aria-label="Handheld console controls"
         className="hh-chin fixed z-40 flex select-none flex-col md:hidden"
         style={{
@@ -1079,7 +1132,7 @@ export default function HandheldDeck() {
             </div>
           </>
         )}
-      </nav>
+      </nav>}
     </>
   );
 }

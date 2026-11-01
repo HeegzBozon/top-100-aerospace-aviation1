@@ -21,7 +21,7 @@ import { Award, BookOpen, CalendarDays, Globe, Inbox, ListChecks, LogIn, Shield,
 export const START_MENU = [
   // The Inbox first: what needs an answer, with the Newsstand read as its second tab.
   // Colony: the live campus, still in beta.
-  { key: "colony", index: "01", label: "Go Online", to: "/colony", icon: Globe, progressLabel: "Beta" },
+  { key: "colony", index: "01", label: "Go Live", to: "/colony", icon: Globe, progressLabel: "Beta" },
   { key: "inbox", index: "02", label: "Inbox", to: "/inbox", icon: Inbox, membersOnly: true },
   // The committee's first act: putting names in. A Fellow arrives here to nominate, not
   // to file a ballot — the ballot has its own key, and its own pill on the cycle band.
