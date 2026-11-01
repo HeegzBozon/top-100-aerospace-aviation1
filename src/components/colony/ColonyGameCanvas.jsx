@@ -190,7 +190,13 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   // The lobby reads wide; the campus rooms closer. The visitor's own zoom multiplies both.
   const zoomRef = useRef(zoom);
   zoomRef.current = zoom;
-  const fitScale = (W, H) => Math.max(H / NATIVE_H, W / NATIVE_W) * (room === 'lobby' ? 1.2 : 1.8) * zoomRef.current;
+  // Cover the screen, then zoom in — less on a wide desk, where covering already enlarges the plate.
+  const fitScale = (W, H) => {
+    const cover = Math.max(H / NATIVE_H, W / NATIVE_W);
+    const wide = W / (window.devicePixelRatio || 1) >= 900;
+    const close = room === 'lobby' ? (wide ? 1 : 1.2) : (wide ? 1.35 : 1.8);
+    return cover * close * zoomRef.current;
+  };
 
   // Camera (in native px) centred on the player, held inside the plate's edges.
   const clampCam = (cx, cy, W, H, sc) => {
@@ -307,8 +313,12 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     }
 
     const c = clampCam(target.x, target.y, canvas.width, canvas.height, s.scale);
-    s.camX += (c.x - s.camX) * 0.1;
-    s.camY += (c.y - s.camY) * 0.1;
+    // Same glide at any frame rate, and snap when close so the picture settles dead still.
+    const k = 1 - Math.pow(0.88, dt / 16.7);
+    s.camX += (c.x - s.camX) * k;
+    s.camY += (c.y - s.camY) * k;
+    if (Math.abs(c.x - s.camX) < 0.05) s.camX = c.x;
+    if (Math.abs(c.y - s.camY) < 0.05) s.camY = c.y;
 
     render();
     rafRef.current = requestAnimationFrame(loop);
@@ -320,8 +330,10 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     const setSize = () => {
       const parent = canvas.parentElement;
       if (!parent) return;
-      canvas.width = parent.clientWidth;
-      canvas.height = parent.clientHeight;
+      // Drawn at device resolution so a desk's retina screen stays sharp.
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(parent.clientWidth * dpr);
+      canvas.height = Math.round(parent.clientHeight * dpr);
     };
     let frame = 0;
     const schedule = () => {
@@ -358,8 +370,9 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const s = stateRef.current;
-    const wx = (e.clientX - rect.left - canvas.width / 2) / s.scale + s.camX;
-    const wy = (e.clientY - rect.top - canvas.height / 2) / s.scale + s.camY;
+    const dpr = canvas.width / rect.width;
+    const wx = ((e.clientX - rect.left) * dpr - canvas.width / 2) / s.scale + s.camX;
+    const wy = ((e.clientY - rect.top) * dpr - canvas.height / 2) / s.scale + s.camY;
     if (wx < 0 || wy < 0 || wx >= NATIVE_W || wy >= NATIVE_H) return;
     s.playerCol = clampCol(Math.floor(wx / CELL));
     s.playerRow = clampRow(Math.floor(wy / CELL));

@@ -7,7 +7,7 @@ import { AVATAR_OPTIONS, cleanAvatar, drawAvatar, randomGuestAvatar, guestAvatar
 const GROUPS = [['skin', 'Skin'], ['outfit', 'Outfit'], ['headgear', 'Headgear'], ['accent', 'Accent']];
 
 // Choose your Colony character from the curated kit.
-export default function ColonyAvatarPicker({ avatar, isGuest = false, onSave, onClose }) {
+export default function ColonyAvatarPicker({ avatar, isGuest = false, onSave, onClose, saveLabel = 'Save character' }) {
   const [draft, setDraft] = useState(cleanAvatar(avatar));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -72,7 +72,7 @@ export default function ColonyAvatarPicker({ avatar, isGuest = false, onSave, on
       </>}
       {error && <p className="mb-2 text-xs text-red-300">{error}</p>}
       <button onClick={save} disabled={saving} className="flex w-full items-center justify-center gap-2 rounded bg-editorial-copper py-2 text-sm font-semibold">
-        {saving && <Loader2 className="h-4 w-4 animate-spin" />} Save character
+        {saving && <Loader2 className="h-4 w-4 animate-spin" />} {saveLabel}
       </button>
     </div>
   );

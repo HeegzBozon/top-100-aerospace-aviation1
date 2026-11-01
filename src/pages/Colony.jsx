@@ -19,6 +19,7 @@ import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
 import { canHear, areaAt } from '@/components/colony/colonyAudio';
 import ColonyAreaChip from '@/components/colony/ColonyAreaChip';
+import ColonyOnboarding from '@/components/colony/ColonyOnboarding';
 import useColonyMenus from '@/components/colony/useColonyMenus';
 import { registerPicker } from '@/components/handheld/handheldPicker';
 import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
@@ -33,15 +34,24 @@ const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 export default function Colony() {
   const [access, setAccess] = useState('checking');
   useEffect(() => {
-    base44.auth.isAuthenticated().then((ok) => {
-      if (ok) sessionStorage.removeItem('colony-guest-name');
-      setAccess(ok || sessionStorage.getItem('colony-guest-name') ? 'in' : 'gate');
+    base44.auth.isAuthenticated().then(async (ok) => {
+      if (ok) {
+        sessionStorage.removeItem('colony-guest-name');
+        const u = await base44.auth.me();
+        setMember(u);
+        setAccess(u?.colony_avatar ? 'in' : 'onboard');
+        return;
+      }
+      const g = sessionStorage.getItem('colony-guest-name') && sessionStorage.getItem('colony-guest-avatar');
+      setAccess(g ? 'in' : 'gate');
     });
   }, []);
+  const [member, setMember] = useState(null);
   return (
     <>
       {access === 'in' && <ColonyRoom />}
-      {access === 'gate' && <ColonyGuestGate onGuest={() => setAccess('in')} />}
+      {access === 'onboard' && <ColonyOnboarding isGuest={!member} memberName={member?.full_name} onDone={() => setAccess('in')} />}
+      {access === 'gate' && <ColonyGuestGate onGuest={() => setAccess('onboard')} />}
       {access === 'checking' && <ColonySplash />}
       <ColonyIntro />
     </>
