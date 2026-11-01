@@ -9,7 +9,7 @@ export const COLONY_ROOMS = {
       { key: 'space-pavilion', label: 'Space Pavilion', blurb: 'Events: the conferences the network holds rooms in.', to: '/conferences', col: 46, row: 1, w: 13, h: 10 },
       { key: 'leadership-summit', label: 'Leadership Summit', blurb: 'Step inside the summit hall.', room: 'leadership-summit', col: 7, row: 14, w: 11, h: 6 },
       { key: 'networking-lounge', label: 'Networking Lounge', blurb: 'AeroSync: the people you have met.', to: '/aerosync', col: 46, row: 13, w: 13, h: 8 },
-      { key: 'media-hub', label: 'Media Hub', blurb: 'The Newsstand: editions, articles and dispatches.', to: '/newsstand', col: 4, row: 23, w: 14, h: 8 },
+      { key: 'media-hub', label: 'Media Hub', blurb: 'Step inside the studios.', room: 'media-hub', col: 4, row: 23, w: 14, h: 8 },
       { key: 'career-center', label: 'Career Center', blurb: 'Classifieds: positions and mandates from Fellows.', to: '/classifieds', col: 47, row: 24, w: 12, h: 7 },
     ],
   },
@@ -19,6 +19,14 @@ export const COLONY_ROOMS = {
     zones: [
       { key: 'summit-exit', label: 'Summit Entrance', blurb: 'Head back out to the Main Hall.', room: 'hall', col: 28, row: 33, w: 8, h: 3 },
       { key: 'summit-stage', label: 'Main Stage', blurb: 'The Chamber of Commerce.', to: '/chamber', col: 22, row: 8, w: 20, h: 9 },
+    ],
+  },
+  'media-hub': {
+    label: 'Media Hub',
+    map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/f05d7b777_FuturisticAerospaceMediaHubFloorPlan.png',
+    zones: [
+      { key: 'media-exit', label: 'Media Hub Entrance', blurb: 'Head back out to the Main Hall.', room: 'hall', col: 28, row: 31, w: 8, h: 5 },
+      { key: 'media-studio', label: 'Main Studio', blurb: 'The Newsstand: editions, articles and dispatches.', to: '/newsstand', col: 22, row: 6, w: 20, h: 10 },
     ],
   },
   'innovation-expo': {
