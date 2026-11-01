@@ -187,7 +187,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
   // Fit the plate's full height (or width, whichever is larger) — the widest view
   // that still leaves no empty desk around it.
   // Half again closer than fit: immersive, with a few buildings still in view.
-  const fitScale = (W, H) => Math.max(H / NATIVE_H, W / NATIVE_W) * 1.5;
+  const fitScale = (W, H) => Math.max(H / NATIVE_H, W / NATIVE_W) * 1.8;
 
   // Camera (in native px) centred on the player, held inside the plate's edges.
   const clampCam = (cx, cy, W, H, sc) => {

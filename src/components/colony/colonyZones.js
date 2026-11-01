@@ -27,10 +27,10 @@ export const COLONY_ROOMS = {
   hall: {
     label: 'Main Hall',
     // Visitors arrive through the globe entrance at the head of the hall.
-    start: { col: 32, row: 9 },
+    start: { col: 32, row: 14 },
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/da8f08016_AerospaceExpoHub_Top100.png',
     zones: [
-      { key: 'hall-exit', label: 'Main Entrance', blurb: 'Head back out to the lobby.', room: 'lobby', col: 28, row: 7, w: 8, h: 2 },
+      { key: 'hall-exit', label: 'Main Entrance', blurb: 'Head back out to the lobby.', room: 'lobby', col: 26, row: 9, w: 12, h: 4 },
       { key: 'innovation-expo', label: 'Innovation Expo', blurb: 'Step inside the aerospace showcase.', room: 'innovation-expo', col: 6, row: 1, w: 16, h: 9 },
       { key: 'space-pavilion', label: 'Space Pavilion', blurb: 'Step inside the pavilion.', room: 'space-pavilion', col: 46, row: 1, w: 13, h: 10 },
       { key: 'leadership-summit', label: 'Leadership Summit', blurb: 'Step inside the summit hall.', room: 'leadership-summit', col: 7, row: 14, w: 11, h: 6 },
