@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Loader2, Paperclip, Plus, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Camera, Loader2, Paperclip, Plus, X } from 'lucide-react';
+import { smartCapture } from './smartCapture';
 import { base44 } from '@/api/base44Client';
 import { entryContext } from './EntryDetail';
 
@@ -14,6 +15,7 @@ export default function InboxCapture({ user, onSaved }) {
   const [ask, setAsk] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [queue, setQueue] = useState(0);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const save = async () => {
@@ -34,10 +36,36 @@ export default function InboxCapture({ user, onSaved }) {
     setBusy(false);
   };
 
+  const quick = async (files) => {
+    if (!files.length) return;
+    setQueue((n) => n + files.length); setError('');
+    await Promise.all(files.map((f) => smartCapture(f, user)
+      .catch(() => setError('One capture could not be read. Try again or type it.'))
+      .finally(() => setQueue((n) => n - 1))));
+    onSaved();
+  };
+
+  useEffect(() => {
+    const onPaste = (e) => quick([...(e.clipboardData?.files || [])]);
+    window.addEventListener('paste', onPaste);
+    return () => window.removeEventListener('paste', onPaste);
+  });
+
   if (!open) return (
-    <button onClick={() => setOpen(true)} className="mb-3 flex w-full items-center justify-center gap-1.5 rounded border border-dashed border-editorial-copper/60 bg-white py-2 font-body text-[11px] font-semibold uppercase tracking-[0.16em] text-editorial-navy hover:bg-editorial-sand/50">
-      <Plus className="h-3.5 w-3.5 text-editorial-copper" /> Capture
-    </button>
+    <div className="mb-3">
+      <div className="flex gap-1.5">
+        <label className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded bg-editorial-copper py-2.5 font-body text-[11px] font-semibold uppercase tracking-[0.16em] text-editorial-cream">
+          {queue ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
+          {queue ? `Reading ${queue}…` : 'Capture screenshot'}
+          <input type="file" multiple accept="image/*,application/pdf" className="hidden"
+            onChange={(e) => { quick([...e.target.files]); e.target.value = ''; }} />
+        </label>
+        <button onClick={() => setOpen(true)} aria-label="Type an entry" className="flex w-11 items-center justify-center rounded border border-editorial-copper/60 bg-white">
+          <Plus className="h-4 w-4 text-editorial-copper" />
+        </button>
+      </div>
+      {error && <p className="mt-1.5 font-body text-xs text-destructive">{error}</p>}
+    </div>
   );
 
   return (
