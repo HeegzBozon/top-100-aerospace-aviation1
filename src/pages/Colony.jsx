@@ -12,7 +12,8 @@ import ColonyDirectory from '@/components/colony/ColonyDirectory';
 import ColonyChat from '@/components/colony/ColonyChat';
 import ColonyConcierge from '@/components/colony/ColonyConcierge';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
-import ColonyTopBar from '@/components/colony/ColonyTopBar';
+import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
+import useColonyMenus from '@/components/colony/useColonyMenus';
 import { registerPicker } from '@/components/handheld/handheldPicker';
 import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
 import { DEFAULT_AVATAR, cleanAvatar } from '@/components/colony/colonyAvatar';
@@ -196,6 +197,18 @@ export default function Colony() {
     setIsMuted((prev) => !prev);
   }, [isMuted]);
 
+  useColonyMenus({
+    room,
+    setRoom: (r) => { setPanel(null); setZone(null); setRoom(r); },
+    openPanel: (p) => { setShowAvatar(false); setPanel(p); },
+    toggleParticipants: () => setShowParticipants(v => !v),
+    toggleAvatar: () => { setPanel(null); setShowAvatar(v => !v); },
+    isMuted,
+    toggleMic: handleToggleMic,
+    leave: handleLeave,
+    participantCount: Object.keys(participants).length,
+  });
+
   const handleToggleCam = useCallback(() => {
     if (!callRef.current) return;
     callRef.current.setLocalVideo(isCamOff);
@@ -259,12 +272,10 @@ export default function Colony() {
   return (
     <div className="hh-slide-window md:h-screen bg-slate-950 flex flex-col overflow-hidden">
       {/* Header */}
-      <ColonyTopBar
-        roomLabel={COLONY_ROOMS[room].label}
-        onAvatar={() => setShowAvatar(v => !v)}
-        participants={nearby}
-        localSessionId={localSessionId}
-      />
+      {/* Room, character and campus moves live in the menu bar's File and Edit menus now */}
+      <div className="relative z-30 flex-none bg-editorial-navy">
+        <ColonyVideoStrip participants={nearby} localSessionId={localSessionId} />
+      </div>
 
       {/* World Canvas — fills remaining height */}
       <main
