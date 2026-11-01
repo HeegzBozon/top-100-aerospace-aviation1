@@ -1701,6 +1701,20 @@ button:focus-visible {
   body.hh-badge .hh-viewer-foot {
     display: none;
   }
+
+  /* A full-screen surface that carries a field still makes room for the keys. */
+  body.hh-badge.hh-keyboard {
+    --hh-bottom: var(--hh-keyboard, 0px);
+  }
+  body.hh-badge.hh-keyboard .hh-stage {
+    bottom: var(--hh-keyboard, 0px);
+  }
+
+  /* iOS keys take most of the glass: the concierge's scene steps aside so the dialogue and the
+     field stay in view above them, and returns the moment the keys go. */
+  body.hh-keyboard .cc-scene {
+    display: none;
+  }
 }
 
 /* ===== THE FELLOW'S BOOK =====

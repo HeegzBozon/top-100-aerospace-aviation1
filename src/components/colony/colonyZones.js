@@ -1,10 +1,25 @@
 // The Expo Hub's rooms and their buildings, in grid cells (16px of each 1024×576 plate).
 // A zone with `room` opens another map; a zone with `to` opens a surface.
 export const COLONY_ROOMS = {
+  // Where every visit begins: the main entrance, with the campus doors ahead.
+  lobby: {
+    label: 'Main Entrance',
+    map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/ff70af4fe_Top100AerospaceCampusLobby.png',
+    zones: [
+      { key: 'enter-campus', label: 'Enter the Campus', blurb: 'Walk through to the Main Hall.', room: 'hall', col: 26, row: 13, w: 13, h: 10 },
+      { key: 'concierge', label: 'TOP 100 Concierge', blurb: 'Ask the concierge anything about TOP 100.', panel: 'concierge', col: 7, row: 22, w: 14, h: 5 },
+      { key: 'campus-directory', label: 'Campus Directory', blurb: 'Every virtual room on the campus, one step away.', panel: 'directory', col: 43, row: 18, w: 9, h: 8 },
+      { key: 'engine-exhibit', label: 'Engine Exhibit', blurb: 'Take the controls in the flight simulator.', to: '/play', col: 56, row: 18, w: 7, h: 7 },
+      { key: 'lobby-lounge', label: 'Members Lounge', blurb: 'Chat live with everyone in the Colony.', panel: 'chat', col: 2, row: 28, w: 13, h: 6 },
+    ],
+  },
   hall: {
     label: 'Main Hall',
+    // Visitors arrive through the globe entrance at the head of the hall.
+    start: { col: 32, row: 9 },
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/da8f08016_AerospaceExpoHub_Top100.png',
     zones: [
+      { key: 'hall-exit', label: 'Main Entrance', blurb: 'Head back out to the lobby.', room: 'lobby', col: 28, row: 0, w: 8, h: 2 },
       { key: 'innovation-expo', label: 'Innovation Expo', blurb: 'Step inside the aerospace showcase.', room: 'innovation-expo', col: 6, row: 1, w: 16, h: 9 },
       { key: 'space-pavilion', label: 'Space Pavilion', blurb: 'Step inside the pavilion.', room: 'space-pavilion', col: 46, row: 1, w: 13, h: 10 },
       { key: 'leadership-summit', label: 'Leadership Summit', blurb: 'Step inside the summit hall.', room: 'leadership-summit', col: 7, row: 14, w: 11, h: 6 },

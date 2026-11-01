@@ -8,48 +8,20 @@ import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
 import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
 import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
+import useColonyGamepad from '@/components/colony/useColonyGamepad';
+import ColonyDirectory from '@/components/colony/ColonyDirectory';
+import ColonyChat from '@/components/colony/ColonyChat';
+import ColonyConcierge from '@/components/colony/ColonyConcierge';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
-import { Loader2, Maximize2, Minimize2 } from 'lucide-react';
+import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
+import useColonyMenus from '@/components/colony/useColonyMenus';
+import { registerPicker } from '@/components/handheld/handheldPicker';
+import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
+import { DEFAULT_AVATAR, cleanAvatar } from '@/components/colony/colonyAvatar';
+import { base44 } from '@/api/base44Client';
+import { Loader2, Shirt } from 'lucide-react';
 
-// ─── Video thumbnail overlay ───────────────────────────────────────────────────
-function VideoThumbnailOverlay({ participants, localSessionId }) {
-  const [expanded, setExpanded] = React.useState(false);
-  if (!participants.length) return null;
-
-  // Show local first, then remotes
-  const ordered = [
-    ...participants.filter(p => p.session_id === localSessionId),
-    ...participants.filter(p => p.session_id !== localSessionId),
-  ];
-
-  return (
-    <div className="absolute bottom-4 right-4 z-20 flex flex-col items-end gap-2">
-      <button
-        onClick={() => setExpanded(v => !v)}
-        aria-label={expanded ? 'Collapse video' : 'Expand video'}
-        className="self-end flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800/80 text-slate-300 text-xs hover:bg-slate-700/80 transition-colors"
-      >
-        {expanded ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
-        {expanded ? 'Collapse' : 'Expand'}
-      </button>
-      <div className={`flex flex-col gap-2 ${expanded ? 'w-56' : 'w-32'}`}>
-        {(expanded ? ordered : ordered.slice(0, 1)).map(p => (
-          <div key={p.session_id} className="rounded-xl overflow-hidden shadow-lg border border-slate-700">
-            <ColonyVideoTile
-              participant={p}
-              isLocal={p.session_id === localSessionId}
-            />
-          </div>
-        ))}
-        {!expanded && ordered.length > 1 && (
-          <div className="text-center text-xs text-slate-400 bg-slate-800/70 rounded-lg py-1">
-            +{ordered.length - 1} more
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 
 export default function Colony() {
   const callRef = useRef(null);
@@ -63,17 +35,114 @@ export default function Colony() {
   const [errorMsg, setErrorMsg] = useState('');
   const [positions, setPositions] = useState({});
   const [zone, setZone] = useState(null);
-  const [room, setRoom] = useState('hall');
+  const [room, setRoom] = useState('lobby');
   const myPosRef = useRef(null);
+  const [avatar, setAvatar] = useState(DEFAULT_AVATAR);
+  const [showAvatar, setShowAvatar] = useState(false);
+  // The click wheel, held as a joystick: the zone under the thumb is the way you walk.
+  const stickRef = useRef({});
+  const zoneRef = useRef(null);
+  zoneRef.current = zone;
+  const [panel, setPanel] = useState(null); // directory | chat | concierge
+  const [myCell, setMyCell] = useState(null);
+  const [chat, setChat] = useState([]);
+  const [mediaError, setMediaError] = useState('');
+
+  // Browsers hold back sound until the visitor touches the page; the first tap releases it.
+  useEffect(() => {
+    const unlock = () => document.querySelectorAll('audio, video').forEach((el) => el.play().catch(() => {}));
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('keydown', unlock);
+    return () => { window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); };
+  }, []);
+  const retryMedia = () => {
+    setMediaError('');
+    callRef.current?.startCamera?.().then(() => {
+      callRef.current.setLocalAudio(true); callRef.current.setLocalVideo(true);
+      setIsMuted(false); setIsCamOff(false);
+    }).catch(() => setMediaError('Still blocked. Check your browser and device permissions for this site.'));
+  };
+
+  const activateZone = useCallback((z) => {
+    if (!z) return false;
+    if (z.panel) { setPanel(z.panel); return true; }
+    setZone(null);
+    if (z.room) setRoom(z.room); else navigate(z.to);
+    return true;
+  }, [navigate]);
+
+  // Enter on a keyboard walks through the door too (unless typing in a field).
+  useEffect(() => {
+    if (callState !== 'joined') return undefined;
+    const onKey = (e) => {
+      if (e.key !== 'Enter' || panel) return;
+      if (['INPUT', 'TEXTAREA'].includes(e.target?.tagName)) return;
+      if (activateZone(zoneRef.current)) e.preventDefault();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [callState, panel, activateZone]);
+
+  const sendChat = useCallback((text) => {
+    const name = callRef.current?.participants()?.local?.user_name || 'Member';
+    const id = `${Date.now()}-${Math.random()}`;
+    callRef.current?.sendAppMessage({ type: 'chat', id, text, name }, '*');
+    setChat(prev => [...prev, { id, text, name, mine: true }].slice(-100));
+  }, []);
+
+  useEffect(() => {
+    if (callState !== 'joined') return undefined;
+    return registerPicker({
+      labels: () => [],
+      index: () => 0,
+      goTo: () => null,
+      step: () => true,
+      page: () => null,
+      // The centre walks through the door you are standing at.
+      enter: () => {
+        return activateZone(zoneRef.current);
+      },
+      back: () => {
+        if (panel) { setPanel(null); return true; }
+        if (roomRef.current === 'lobby') return false;
+        setZone(null); setRoom(roomRef.current === 'hall' ? 'lobby' : 'hall');
+        return true;
+      },
+      steer: {
+        prints: WHEEL_PRINTS,
+        hold: (dir, on) => { stickRef.current[dir] = on; },
+      },
+    });
+  }, [callState, activateZone, panel]);
+
+  useColonyGamepad(stickRef, {
+    enter: () => activateZone(zoneRef.current),
+    back: () => {
+      if (panel) return setPanel(null);
+      if (roomRef.current === 'lobby') return;
+      setZone(null); setRoom(roomRef.current === 'hall' ? 'lobby' : 'hall');
+    },
+  }, callState === 'joined');
 
   // Every step is broadcast to the room; a newcomer is told where we stand.
   const sendPos = useCallback((to = '*') => {
     if (callRef.current && myPosRef.current) callRef.current.sendAppMessage({ type: 'pos', ...myPosRef.current }, to);
   }, []);
-  const roomRef = useRef('hall');
+  const roomRef = useRef('lobby');
   roomRef.current = room;
-  const handleMove = useCallback((col, row) => {
-    myPosRef.current = { col, row, room: roomRef.current };
+  const avatarRef = useRef(DEFAULT_AVATAR);
+  avatarRef.current = avatar;
+  useEffect(() => {
+    base44.auth.me().then(u => u?.colony_avatar && setAvatar(cleanAvatar(u.colony_avatar))).catch(() => {});
+  }, []);
+  const saveAvatar = useCallback(async (next) => {
+    await base44.auth.updateMe({ colony_avatar: next });
+    setAvatar(next);
+    if (myPosRef.current) { myPosRef.current = { ...myPosRef.current, avatar: next }; sendPos(); }
+  }, [sendPos]);
+  const handleMove = useCallback((col, row, facing) => {
+    myPosRef.current = { col, row, facing, room: roomRef.current, avatar: avatarRef.current };
+    setMyCell({ col, row, room: roomRef.current });
     sendPos();
   }, [sendPos]);
 
@@ -121,12 +190,21 @@ export default function Colony() {
     SYNC_EVENTS.forEach((evt) => call.on(evt, syncParticipants));
 
     call.on('app-message', (e) => {
-      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'hall' } }));
+      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'lobby', facing: e.data.facing, avatar: e.data.avatar } }));
+      if (e?.data?.type === 'chat' && typeof e.data.text === 'string') {
+        setChat(prev => [...prev, { id: e.data.id, text: e.data.text.slice(0, 500), name: String(e.data.name || 'Member').slice(0, 60) }].slice(-100));
+      }
     });
     call.on('participant-joined', (e) => sendPos(e.participant.session_id));
     call.on('participant-left', (e) => setPositions(prev => {
       const next = { ...prev }; delete next[e.participant.session_id]; return next;
     }));
+
+    // Browser or device refused the camera/mic: say so instead of failing silently.
+    call.on('camera-error', (e) => {
+      setMediaError(e?.error?.msg || e?.errorMsg?.errorMsg || 'Camera or microphone is blocked. Allow access in your browser settings, then tap Retry.');
+    });
+    call.on('started-camera', () => setMediaError(''));
 
     call.on('error', (e) => {
       setErrorMsg(e?.errorMsg || 'An error occurred.');
@@ -157,6 +235,20 @@ export default function Colony() {
     setIsCamOff((prev) => !prev);
   }, [isCamOff]);
 
+  useColonyMenus({
+    room,
+    setRoom: (r) => { setPanel(null); setZone(null); setRoom(r); },
+    openPanel: (p) => { setShowAvatar(false); setPanel(p); },
+    toggleParticipants: () => setShowParticipants(v => !v),
+    toggleAvatar: () => { setPanel(null); setShowAvatar(v => !v); },
+    isMuted,
+    toggleMic: handleToggleMic,
+    isCamOff,
+    toggleCam: handleToggleCam,
+    leave: handleLeave,
+    participantCount: Object.keys(participants).length,
+  });
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -175,6 +267,18 @@ export default function Colony() {
   }, [callState, handleJoin]);
 
   const participantList = Object.values(participants);
+  // Video is proximity based: you see and hear only people standing near you in the same room.
+  // At the concierge desk the channel is private, so only you are on the reel.
+  const NEAR = 8;
+  // The concierge desk carries no video at all.
+  const nearby = panel === 'concierge' ? [] : participantList.filter(p => {
+    if (p.session_id === localSessionId) return true;
+    if (!myCell) return false;
+    const pos = positions[p.session_id];
+    // Someone whose position hasn't arrived yet is still heard and seen.
+    if (!pos) return true;
+    return pos.room === myCell.room && Math.hypot(pos.col - myCell.col, pos.row - myCell.row) <= NEAR;
+  });
 
   if (callState === 'joining' || callState === 'lobby') {
     return (
@@ -202,17 +306,12 @@ export default function Colony() {
   }
 
   return (
-    <div className="hh-slide-window md:h-screen bg-slate-950 flex flex-col overflow-hidden">
+    <div className="hh-slide-window md:h-screen bg-slate-950 relative flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="flex-none flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 z-30">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
-            <span className="text-white text-xs font-bold">C</span>
-          </div>
-          <span className="text-white font-semibold text-sm">Colony</span>
-        </div>
-        <span className="text-slate-400 text-xs">{participantList.length} in space</span>
-      </header>
+      {/* Room, character and campus moves live in the menu bar's File and Edit menus now */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 [&>*]:pointer-events-auto [&>*]:bg-transparent">
+        <ColonyVideoStrip participants={nearby} localSessionId={localSessionId} />
+      </div>
 
       {/* World Canvas — fills remaining height */}
       <main
@@ -225,23 +324,34 @@ export default function Colony() {
           room={room}
           mapUrl={COLONY_ROOMS[room].map}
           zones={COLONY_ROOMS[room].zones}
+          start={COLONY_ROOMS[room].start}
           localSessionId={localSessionId}
           positions={positions}
           onMove={handleMove}
           onZoneChange={setZone}
+          stickRef={stickRef}
+          myAvatar={avatar}
         />
+        {showAvatar && <ColonyAvatarPicker avatar={avatar} onSave={saveAvatar} onClose={() => setShowAvatar(false)} />}
 
-        <ColonyZoneCard zone={zone} onEnterRoom={(r) => { setZone(null); setRoom(r); }} />
+        {!panel && <ColonyZoneCard zone={zone} onActivate={activateZone} />}
+        {mediaError && (
+          <div className="absolute left-3 right-3 top-24 z-30 mx-auto flex max-w-md items-center gap-2 rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 px-3 py-2 text-xs text-editorial-cream">
+            <span className="flex-1">{mediaError}</span>
+            <button type="button" onClick={retryMedia} className="rounded bg-editorial-copper px-2.5 py-1 font-semibold">Retry</button>
+          </div>
+        )}
+        {panel === 'directory' && (
+          <ColonyDirectory current={room} onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
+        )}
+        {panel === 'concierge' && <ColonyConcierge onClose={() => setPanel(null)} />}
+        {panel === 'chat' && <ColonyChat messages={chat} onSend={sendChat} onClose={() => setPanel(null)} />}
 
-        {/* Video thumbnail — bottom-right corner */}
-        <VideoThumbnailOverlay
-          participants={participantList}
-          localSessionId={localSessionId}
-        />
       </main>
 
       {/* HUD */}
-      <ColonyHUD
+      {/* Put away while a panel with a field is open, so its input is never covered */}
+      {!panel && <ColonyHUD
         isMuted={isMuted}
         isCamOff={isCamOff}
         onToggleMic={handleToggleMic}
@@ -249,7 +359,7 @@ export default function Colony() {
         onLeave={handleLeave}
         participantCount={participantList.length}
         onToggleParticipants={() => setShowParticipants((prev) => !prev)}
-      />
+      />}
 
       {/* Participant Sidebar */}
       {showParticipants && (

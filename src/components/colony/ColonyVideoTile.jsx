@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { MicOff, VideoOff } from 'lucide-react';
 
-export default function ColonyVideoTile({ participant, isLocal = false }) {
+export default function ColonyVideoTile({ participant, isLocal = false, compact = false }) {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
 
@@ -45,7 +45,7 @@ export default function ColonyVideoTile({ participant, isLocal = false }) {
     .toUpperCase();
 
   return (
-    <div className="relative rounded-xl overflow-hidden bg-slate-800 aspect-video flex items-center justify-center">
+    <div className={`relative overflow-hidden bg-editorial-navy flex items-center justify-center ${compact ? 'h-full w-full' : 'rounded-xl aspect-video'}`} title={displayName}>
       {/* Hidden audio element for remote participants */}
       {!isLocal && (
         <audio ref={audioRef} autoPlay aria-hidden="true" />
@@ -62,16 +62,16 @@ export default function ColonyVideoTile({ participant, isLocal = false }) {
           aria-label={`Video of ${displayName}`}
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-slate-900">
-          <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xl font-bold">
+        <div className="w-full h-full flex items-center justify-center bg-[#14283f]">
+          <div className={`rounded-full border border-editorial-gold/70 bg-editorial-navy flex items-center justify-center font-heading text-editorial-gold ${compact ? 'h-8 w-8 text-xs' : 'w-16 h-16 text-xl'}`}>
             {initials}
           </div>
         </div>
       )}
 
       {/* Name + Status Bar */}
-      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-2 py-1 bg-slate-950/60">
-        <span className="text-white text-xs font-medium truncate">
+      <div className={`absolute bottom-0 left-0 right-0 flex items-center justify-between bg-editorial-navy/75 ${compact ? 'px-1.5 py-0.5' : 'px-2 py-1'}`}>
+        <span className={`text-editorial-cream font-medium truncate ${compact ? 'text-[9px]' : 'text-xs'}`}>
           {displayName}
           {isLocal && <span className="text-slate-400 ml-1">(You)</span>}
         </span>
