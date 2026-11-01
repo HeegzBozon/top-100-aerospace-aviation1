@@ -63,11 +63,16 @@ const getSprite = (url) => {
 };
 
 // Sprites are sized in map cells, so they scale with the plate on every screen.
-function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1) {
+function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1) {
   const sc = sc0 * depth;
   const cell = CELL * sc;
   const spr = avatar?.image && getSprite(avatar.image);
-  const top = y - cell * 1.6;
+  const top = y + cell * 0.5 - cell * 2.1 * tall;
+  // Stretch the figure upward from its feet.
+  ctx.save();
+  ctx.translate(x, y + cell * 0.5);
+  ctx.scale(1, tall);
+  ctx.translate(-x, -(y + cell * 0.5));
   if (spr) {
     const h = cell * 2.1, w = h * spr.width / spr.height;
     ctx.save();
@@ -79,6 +84,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1) {
     ctx.drawImage(spr, x - w / 2, y + cell * 0.5 - h, w, h);
     ctx.restore();
   } else drawAvatar(ctx, x, y, avatar, facing, Math.max(1.5, sc * 1.2));
+  ctx.restore();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
@@ -149,7 +155,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       const { x, y } = cellCenter(p.col, p.row);
       // The lobby is drawn in perspective: further back (higher up) reads smaller.
       const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
-      drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth);
+      drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth, room === 'lobby' ? 1.3 : 1);
     });
 
     // Room transition: the new room opens out of a closing iris of dark.
