@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { colonyRoom } from '@/functions/colonyRoom';
 import ColonyLobby from '@/components/colony/ColonyLobby';
 import ColonySplash from '@/components/colony/ColonySplash';
+import ColonyIntro from '@/components/colony/ColonyIntro';
 import ColonyHUD from '@/components/colony/ColonyHUD';
 import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
@@ -25,6 +26,10 @@ import { Loader2, Shirt } from 'lucide-react';
 const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 
 export default function Colony() {
+  return <><ColonyRoom /><ColonyIntro /></>;
+}
+
+function ColonyRoom() {
   const callRef = useRef(null);
   const navigate = useNavigate();
   const [callState, setCallState] = useState('lobby'); // lobby | joining | joined | error

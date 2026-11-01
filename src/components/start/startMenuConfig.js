@@ -37,9 +37,9 @@ export const START_MENU = [
   // shelf is composed from the reader's own record, so there is nothing behind this key a
   // visitor cannot be shown.
   // The App Store now holds the Chamber of Commerce as one of its keys.
-  { key: "app-store", index: "06", label: "App Store", to: "/app-store", icon: Store },
   // Colony: the live campus, still in beta.
-  { key: "colony", index: "07", label: "Go Online", to: "/colony", icon: Globe, progressLabel: "Beta" },
+  { key: "colony", index: "06", label: "Go Online", to: "/colony", icon: Globe, progressLabel: "Beta" },
+  { key: "app-store", index: "07", label: "App Store", to: "/app-store", icon: Store },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
