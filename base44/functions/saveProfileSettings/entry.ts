@@ -122,6 +122,10 @@ export default async function (req) {
       patch.six_word_story = String(body.six_word_story).slice(0, 60);
     }
 
+    for (const f of ['about_me', 'who_id_like_to_meet']) {
+      if (body[f] !== undefined) patch[f] = String(body[f]).slice(0, 600);
+    }
+
     if (body.activity_seen_at !== undefined) {
       patch.activity_seen_at = body.activity_seen_at;
     }
