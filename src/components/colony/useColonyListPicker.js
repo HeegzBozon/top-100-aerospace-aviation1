@@ -32,6 +32,19 @@ export default function useColonyListPicker({ items, onPick, onClose }) {
       back: () => { live.current.onClose(); return true; },
     });
 
+    // Arrow keys, Enter and Escape walk the list too, and are kept from walking the player.
+    const onKey = (e) => {
+      if (e.target?.closest?.('input, textarea, select, [contenteditable]')) return;
+      const k = e.key;
+      if (k === 'ArrowUp' || k === 'w') land(live.current.cursor - 1);
+      else if (k === 'ArrowDown' || k === 's') land(live.current.cursor + 1);
+      else if (k === 'Enter' || k === ' ') pick();
+      else if (k === 'Escape') live.current.onClose();
+      else if (!['ArrowLeft', 'ArrowRight', 'a', 'd'].includes(k)) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+    };
+    window.addEventListener('keydown', onKey, true);
+
     let raf;
     const prev = {};
     const loop = () => {
@@ -49,7 +62,7 @@ export default function useColonyListPicker({ items, onPick, onClose }) {
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
-    return () => { off(); cancelAnimationFrame(raf); };
+    return () => { off(); cancelAnimationFrame(raf); window.removeEventListener('keydown', onKey, true); };
   }, []);
 
   useEffect(() => { touchPicker(); }, [cursor, items.length]);

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { X, SendHorizontal } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import DialogueBox from '@/components/colony/DialogueBox';
 import ConciergeAction from '@/components/colony/ConciergeAction';
@@ -22,7 +22,7 @@ const TOPICS = [
 
 // The concierge desk: a private 1:1 channel between the visitor and the platform. It remembers
 // the visitor's journey, so it greets them by where they left off and never repeats itself.
-export default function ColonyConcierge({ onClose }) {
+export default function ColonyConcierge({ onClose, brief = '' }) {
   const mem = useRef(null);
   const [line, setLine] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -61,6 +61,7 @@ export default function ColonyConcierge({ onClose }) {
       prompt: `You are Matthew Higa, founder of TOP 100 Aerospace & Aviation, speaking in first person as the concierge at the TOP 100 virtual campus (the Colony). This is a private 1:1 channel with one visitor.
 Answer from information published on top100aero.space (search site:top100aero.space). If the site does not cover it, say so and point to where on the platform to look.
 Visitor: ${user.current?.full_name || 'a guest (not signed in)'}${user.current ? '' : ' — gently mention signing in when it would help them'}. Visit number ${m.visits}. Topics they've already asked about: ${m.asked.join('; ') || 'none'}.
+What the campus cast knows from the player's passport (shared knowledge; use it to personalise, never to judge, and never present inferences as verified facts): ${brief || 'nothing yet'}
 Conversation so far:\n${transcript}
 Rules: never repeat a point you already made in this conversation; build on what they already know and move them one step further in their journey (discover, nominate, claim a profile, attend events, request introductions). Keep it fresh, specific and useful. Campus rooms: Main Entrance, Main Hall, Innovation Expo (App Store), Space Pavilion (Events), Leadership Summit (Chamber of Commerce), Networking Lounge (AeroSync), Media Hub (Newsstand), Career Center (Classifieds). House style: a verified reputation graph and measurement platform, never an "awards list" or "ranking app"; "endorsers"/"community" not "followers", "endorsements" not "likes", "introductions" not "services"; the institution measures, it does not rank.
 You and the visitor's Superagent act as one guide: don't just explain, do it. ${ACTION_GUIDE}
@@ -106,7 +107,7 @@ Visitor now asks: ${question}`,
         <form onSubmit={(e) => { e.preventDefault(); ask(q); }} className="mt-2 flex flex-none gap-2">
           <input value={q} onChange={e => setQ(e.target.value)} maxLength={300} placeholder="Ask Matthew..." enterKeyHint="send" disabled={busy}
             className="min-w-0 flex-1 rounded-sm border-2 border-editorial-gold/60 bg-[#14283f] px-2 py-1.5 font-mono text-editorial-cream placeholder:text-editorial-cream/40 outline-none disabled:opacity-50" />
-          <button type="submit" disabled={busy} className="rounded-sm border-2 border-editorial-cream bg-editorial-copper px-3 font-mono text-xs font-bold text-editorial-cream disabled:opacity-50">ASK</button>
+          <button type="submit" disabled={busy || !q.trim()} aria-label="Send" className="flex w-10 items-center justify-center rounded-sm border-2 border-editorial-cream bg-editorial-copper text-editorial-cream disabled:opacity-50"><SendHorizontal className="h-4 w-4" /></button>
         </form>
       </div>
     </div>

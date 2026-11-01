@@ -180,6 +180,9 @@ export default function ClickWheel({
     else onSearch?.();
   };
 
+  // The ring is a joystick by default: four arrows around the select button.
+  const wheelPrints = prints || { up: "▲", left: "◀", right: "▶", down: "▼" };
+
   const endDrag = (event) => {
     const ring = ringRef.current;
     drag.current.active = false;
@@ -307,7 +310,7 @@ export default function ClickWheel({
         onKeyDown={handleKey}
         className="hh-key hh-wheel absolute inset-0 rounded-full outline-none ring-offset-2"
       >
-        {prints ? (
+        {wheelPrints ? (
           /* A surface that steers with the ring puts its own four prints on it: the
              same flat plastic, printed with the directions instead of the keys. */
           <>
@@ -315,25 +318,25 @@ export default function ClickWheel({
               className="absolute left-1/2 top-[7px] -translate-x-1/2 text-[14px] font-bold leading-none transition-transform"
               style={{ color: print(zone === "menu"), transform: zone === "menu" ? "translateX(-50%) scale(0.86)" : undefined }}
             >
-              {prints.up}
+              {wheelPrints.up}
             </span>
             <span
               className="absolute left-[10px] top-1/2 -translate-y-1/2 text-[14px] font-bold leading-none transition-transform"
               style={{ color: print(zone === "prev"), transform: zone === "prev" ? "translateY(-50%) scale(0.86)" : undefined }}
             >
-              {prints.left}
+              {wheelPrints.left}
             </span>
             <span
               className="absolute right-[10px] top-1/2 -translate-y-1/2 text-[14px] font-bold leading-none transition-transform"
               style={{ color: print(zone === "next"), transform: zone === "next" ? "translateY(-50%) scale(0.86)" : undefined }}
             >
-              {prints.right}
+              {wheelPrints.right}
             </span>
             <span
               className="absolute bottom-[7px] left-1/2 -translate-x-1/2 text-[14px] font-bold leading-none transition-transform"
               style={{ color: print(zone === "play"), transform: zone === "play" ? "translateX(-50%) scale(0.86)" : undefined }}
             >
-              {prints.down}
+              {wheelPrints.down}
             </span>
           </>
         ) : (

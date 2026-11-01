@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
 
 // Xbox / standard gamepad: left stick or d-pad walks, A opens the door you stand at, B steps back.
-export default function useColonyGamepad(stickRef, { enter, back }, active) {
-  const actions = useRef({ enter, back });
-  actions.current = { enter, back };
+// X toggles your voice and Y your camera.
+export default function useColonyGamepad(stickRef, actionsIn, active) {
+  const actions = useRef(actionsIn);
+  actions.current = actionsIn;
 
   useEffect(() => {
     if (!active) return undefined;
@@ -20,7 +21,9 @@ export default function useColonyGamepad(stickRef, { enter, back }, active) {
         });
         if (b(0) && !prev.a) actions.current.enter?.();
         if (b(1) && !prev.b) actions.current.back?.();
-        prev.a = b(0); prev.b = b(1);
+        if (b(2) && !prev.x) actions.current.voice?.();
+        if (b(3) && !prev.y) actions.current.video?.();
+        prev.a = b(0); prev.b = b(1); prev.x = b(2); prev.y = b(3);
       }
       raf = requestAnimationFrame(loop);
     };

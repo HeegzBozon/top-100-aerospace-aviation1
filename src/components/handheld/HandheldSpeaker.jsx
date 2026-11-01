@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { blip, buzz } from "./handheldSound";
-import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying } from "./consoleMusic";
+import { playPlaylist, stopPlaylist, nextTrack, currentTrack, isPlaying, onTrackChange } from "./consoleMusic";
 
 // The case speaker, and the machine's own record.
 //
@@ -20,6 +20,7 @@ export default function HandheldSpeaker({ onAnnounce, onSoundOn }) {
   const advanced = useRef(false);
 
   useEffect(() => () => clearTimeout(holdTimer.current), []);
+  useEffect(() => onTrackChange(setTrack), []);
 
   const unmute = () => {
     // Music is the loudest thing the device does, so asking for it also brings

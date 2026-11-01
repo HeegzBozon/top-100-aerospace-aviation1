@@ -1,0 +1,71 @@
+{
+  "name": "Constellation",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Trail name, e.g. 'Engineers of the New Space Age'"
+    },
+    "story": {
+      "type": "string",
+      "description": "One or two sentences Orion reads aloud when the trail opens"
+    },
+    "theme_key": {
+      "type": "string",
+      "description": "What the draft was grouped by, e.g. discipline:space_rd"
+    },
+    "nominee_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Ordered honorees (stars) on this trail. Editorial only; never read by discovery, ranking or scoring."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "approved"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

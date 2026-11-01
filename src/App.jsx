@@ -124,6 +124,7 @@ const ConferenceHostApply = lazy(() => import('@/pages/ConferenceHostApply'));
 const ReferralRespond = lazy(() => import('@/pages/ReferralRespond'));
 const Inbox = lazy(() => import('@/pages/Inbox'));
 const OAuthConsent = lazy(() => import('@/pages/OAuthConsent'));
+const StarAtlasStudio = lazy(() => import('@/pages/StarAtlasStudio'));
 
 
 // Every surface is an application the machine runs: the shell draws the chrome and
@@ -167,6 +168,7 @@ const AuthenticatedApp = () => {
       {/* A desk is housed in the desk machine: everything below renders inside its tube */}
       <Route element={<DesktopShell />}>
       <Route path="/inbox" element={<Inbox />} />
+      <Route path="/star-atlas-studio" element={<StarAtlasStudio />} />
       {/* Everyone opens on the start screen: the surfaces a Fellow is entitled to, and
           the way in for whoever is not one yet — the same machine either way. */}
       <Route path="/" element={<StartScreen />} />
