@@ -288,6 +288,7 @@ export default function Colony() {
           room={room}
           mapUrl={COLONY_ROOMS[room].map}
           zones={COLONY_ROOMS[room].zones}
+          start={COLONY_ROOMS[room].start}
           localSessionId={localSessionId}
           positions={positions}
           onMove={handleMove}

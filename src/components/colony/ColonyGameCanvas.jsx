@@ -151,7 +151,7 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   }
 }
 
-export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar }) {
+export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar, start }) {
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
@@ -163,6 +163,13 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     keys: {}, lastTime: 0, moveAccum: 0, initialized: false,
   });
   const rafRef = useRef(null);
+
+  // Each room sets where a visitor steps in; the Main Hall opens at its globe entrance.
+  useEffect(() => {
+    const at = start || START;
+    stateRef.current.playerCol = at.col;
+    stateRef.current.playerRow = at.row;
+  }, [room]);
 
   // Fit the plate's full height (or width, whichever is larger) — the widest view
   // that still leaves no empty desk around it.
