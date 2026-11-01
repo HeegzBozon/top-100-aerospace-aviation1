@@ -17,6 +17,8 @@ import ColonyChat from '@/components/colony/ColonyChat';
 import ColonyConcierge from '@/components/colony/ColonyConcierge';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
+import { canHear, areaAt } from '@/components/colony/colonyAudio';
+import ColonyAreaChip from '@/components/colony/ColonyAreaChip';
 import useColonyMenus from '@/components/colony/useColonyMenus';
 import { registerPicker } from '@/components/handheld/handheldPicker';
 import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
@@ -64,6 +66,8 @@ function ColonyRoom() {
   const [room, setRoom] = useState('lobby');
   const [zoom, setZoom] = useState(1);
   const joinedRoomRef = useRef(null);
+  // Which copy of a full room you were placed in (1 = the room itself).
+  const [roomCopy, setRoomCopy] = useState(1);
   // The room just left, so the next room spawns you in front of the door you came through.
   const fromRoomRef = useRef(null);
   const lastRoomRef = useRef(room);
@@ -236,6 +240,7 @@ function ColonyRoom() {
     const guestName = sessionStorage.getItem('colony-guest-name') || undefined;
     const res = await colonyRoom({ action: 'get_or_create_room', roomName, guestName });
     const { room, token } = res.data;
+    setRoomCopy(res.data.copy || 1);
 
     const call = Daily.createCallObject({
       audioSource: true,
@@ -345,7 +350,6 @@ function ColonyRoom() {
   }, [callState, onlineCount]);
   // Video is proximity based: you see and hear only people standing near you in the same room.
   // At the concierge desk the channel is private, so only you are on the reel.
-  const NEAR = 8;
   // The concierge desk carries no video at all.
   const nearby = panel === 'concierge' ? [] : participantList.filter(p => {
     if (p.session_id === localSessionId) return true;
@@ -353,7 +357,7 @@ function ColonyRoom() {
     const pos = positions[p.session_id];
     // Someone whose position hasn't arrived yet is still heard and seen.
     if (!pos) return true;
-    return pos.room === myCell.room && Math.hypot(pos.col - myCell.col, pos.row - myCell.row) <= NEAR;
+    return canHear(myCell, pos);
   });
 
   // Stream only the nearby people's audio and video; everyone else stays present on the
@@ -395,6 +399,11 @@ function ColonyRoom() {
       {/* Room, character and campus moves live in the menu bar's File and Edit menus now */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 [&>*]:pointer-events-auto [&>*]:bg-transparent">
         <ColonyVideoStrip participants={nearby} localSessionId={localSessionId} />
+        <ColonyAreaChip
+          roomLabel={COLONY_ROOMS[room]?.label}
+          copy={roomCopy}
+          area={myCell ? areaAt(myCell.room, myCell.col, myCell.row) : null}
+        />
       </div>
 
       {/* World Canvas — fills remaining height */}

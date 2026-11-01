@@ -23,7 +23,18 @@ Deno.serve(async (req) => {
   };
 
   if (action === 'get_or_create_room') {
-    const name = /^colony-[a-z0-9-]{1,40}$/.test(roomName || '') ? roomName : 'colony-main';
+    const base = /^colony-[a-z0-9-]{1,40}$/.test(roomName || '') ? roomName : 'colony-main';
+
+    // Overflow: when a room is nearly full, newcomers go to the next copy of it.
+    const CAP = 190;
+    let name = base;
+    let copy = 1;
+    for (; copy <= 10; copy++) {
+      name = copy === 1 ? base : `${base}-${copy}`;
+      const pres = await fetch(`${DAILY_BASE_URL}/rooms/${name}/presence`, { headers });
+      const count = pres.ok ? ((await pres.json()).total_count || 0) : 0;
+      if (count < CAP) break;
+    }
 
     // Try to get existing room
     const getRoomRes = await fetch(`${DAILY_BASE_URL}/rooms/${name}`, { headers });
@@ -74,6 +85,7 @@ Deno.serve(async (req) => {
     return Response.json({
       room,
       token: tokenData.token,
+      copy,
       userName: user.full_name || user.email,
       userEmail: user.email,
     });
