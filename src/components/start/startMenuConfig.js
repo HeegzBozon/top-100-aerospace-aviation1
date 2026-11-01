@@ -29,16 +29,16 @@ export const START_MENU = [
   // The circuit: every aerospace conference the network is holding rooms in, and the
   // workspace behind it for the organizers who stage them. Public — a visitor walks the
   // calendar and is asked for an account only when they stand in a room.
-  { key: "review", index: "04", label: "Review", to: "/review", icon: BookOpen },
-  { key: "conferences", index: "05", label: "Events", to: "/conferences", icon: CalendarDays },
+  // Colony: the live campus, still in beta.
+  { key: "colony", index: "04", label: "Lobby", to: "/colony", icon: Globe, progressLabel: "Beta" },
+  { key: "review", index: "05", label: "Review", to: "/review", icon: BookOpen },
+  { key: "conferences", index: "06", label: "Events", to: "/conferences", icon: CalendarDays },
   // The house's trading floor, closing the row: the App Store and the Gift Shop under one
   // roof rather than as two keys on a menu that only has room for programs. It is itself a
   // menu — turn to walk its two counters, # to open one. Public: every artifact on the
   // shelf is composed from the reader's own record, so there is nothing behind this key a
   // visitor cannot be shown.
   // The App Store now holds the Chamber of Commerce as one of its keys.
-  // Colony: the live campus, still in beta.
-  { key: "colony", index: "06", label: "Go Online", to: "/colony", icon: Globe, progressLabel: "Beta" },
   { key: "app-store", index: "07", label: "App Store", to: "/app-store", icon: Store },
 ];
 
