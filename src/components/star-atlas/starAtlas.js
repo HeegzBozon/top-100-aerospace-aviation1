@@ -13,6 +13,15 @@ export const REFLECTIONS = [
   { key: 'impact', label: 'Who they lift with them' },
 ];
 
+// Draft themes matched against the free-text industry field (discipline is mostly unset).
+export const DRAFT_THEMES = [
+  { key: 'space', title: 'Explorers of the Final Frontier', pattern: 'space|satellite|orbit|launch' },
+  { key: 'aviation', title: 'Keepers of Flight', pattern: 'aviation|airline|flight|pilot|airport' },
+  { key: 'aerospace', title: 'Engineers of the Airframe', pattern: 'aerospace|engineering|defen' },
+  { key: 'medicine', title: 'Healers of the High Frontier', pattern: 'medic|health' },
+  { key: 'learning', title: 'Teachers and Researchers', pattern: 'academ|educat|research|universit' },
+];
+
 export const DISCIPLINE_TITLES = {
   space_rd: 'Explorers of Space R&D', commercial_aviation: 'Keepers of Commercial Flight', defense: 'Guardians of Defense',
   manufacturing: 'Builders of the Airframe', operations: 'Masters of Operations', engineering: 'Engineers of the Frontier',
