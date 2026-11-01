@@ -16,7 +16,7 @@ export const REWARDS = {
   wings: { label: 'Wings of Recognition', kind: 'wings' },
 };
 
-const STAMPS = ['innovation', 'exploration', 'leadership', 'storytelling', 'opportunity', 'connection'];
+export const STAMPS = ['innovation', 'exploration', 'leadership', 'storytelling', 'opportunity', 'connection'];
 
 // Each quest: who gives it, where, the line they say, and the choice that completes it.
 export const QUESTS = [

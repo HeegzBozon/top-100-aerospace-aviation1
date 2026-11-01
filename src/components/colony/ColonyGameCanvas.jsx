@@ -22,7 +22,7 @@ const getImage = (url) => {
 const cellCenter = (col, row) => ({ x: col * CELL + CELL / 2, y: row * CELL + CELL / 2 });
 const clampCol = (c) => Math.max(0, Math.min(COLS - 1, c));
 const clampRow = (r) => Math.max(0, Math.min(ROWS - 1, r));
-const NPC_DRIFT = [[0, 0], [1, 0], [1, 0], [0, 0], [0, 1], [0, 0], [-1, 0], [-1, 0], [0, 0], [0, -1]];
+import { stepCast } from './npcBrain';
 
 const zoneAt = (zones, col, row) =>
   zones.find(z => col >= z.col && col < z.col + z.w && row >= z.row && row < z.row + z.h) || null;
@@ -120,7 +120,9 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   // Mid-stride: a step bob, a sway from side to side, and a squash on each footfall.
   const bob = walk === null ? 0 : -Math.abs(Math.sin(walk)) * cell * 0.04;
   const sway = walk === null ? 0 : Math.sin(walk) * 0.02;
-  const squash = 1;
+  // Standing still, the cast breathes; mid-step, each footfall squashes the figure a touch.
+  const t = meta.now || 0;
+  const squash = walk !== null ? 1 - Math.abs(Math.cos(walk)) * 0.035 : meta.npc ? 1 + Math.sin(t / 520 + x) * 0.012 : 1;
   ctx.translate(x, y + cell * 0.5 + bob);
   ctx.rotate(sway);
   ctx.scale(1 / squash, tall * squash);
@@ -133,8 +135,22 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
     ctx.ellipse(x, y + cell * 0.45, w * 0.4, cell * 0.15, 0, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(0,0,0,0.3)';
     ctx.fill();
+    // Facing: the portrait turns to the side it is walking or talking towards; a chat adds a nod.
+    if (facing === 'left') { ctx.translate(x * 2, 0); ctx.scale(-1, 1); }
+    if (meta.line) { const nod = Math.sin(t / 180) * 0.03; ctx.translate(x, y + cell * 0.5); ctx.rotate(nod); ctx.translate(-x, -(y + cell * 0.5)); }
     ctx.drawImage(spr, x - w / 2, y + cell * 0.5 - h, w, h);
     ctx.restore();
+    if (meta.line) {
+      ctx.save();
+      const bx = x + w * 0.35, by = y + cell * 0.5 - h - cell * 0.1;
+      ctx.font = `700 ${Math.max(10, Math.round(cell * 0.35))}px sans-serif`;
+      const tw = ctx.measureText(meta.line).width + 10, th = Math.max(14, cell * 0.5);
+      ctx.fillStyle = '#faf8f5'; ctx.strokeStyle = '#B87333'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(bx, by - th, tw, th, 6) : ctx.rect(bx, by - th, tw, th); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#1e3a5a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(meta.line, bx + tw / 2, by - th / 2);
+      ctx.restore();
+    }
   } else drawAvatar(ctx, x, y, avatar, facing, Math.max(1.5, sc * 1.2));
   ctx.restore();
   ctx.textAlign = 'center';
@@ -253,11 +269,17 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
 
     const all = [
       { id: 'me', col: s.vCol ?? s.playerCol, row: s.vRow ?? s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
-      ...npcs.map((n, i) => {
-        // Staff mill about their post: a short, unhurried step every few seconds, never far.
-        const [dc, dr] = NPC_DRIFT[(Math.floor(performance.now() / 2600) + i * 3) % NPC_DRIFT.length];
-        return { id: `npc-${n.id}`, col: n.col + dc, row: n.row + dr, avatar: { image: n.sprite }, facing: 'down', label: n.name, sub: n.role };
-      }),
+      ...(() => {
+        // The cast runs errands, looks around, and stops to chat with colleagues nearby.
+        if (s.brainRoom !== room) { s.brain = {}; s.brainRoom = room; }
+        const occ = occupiedRef.current;
+        stepCast(npcs, s.brain, performance.now(), (c, r) => c < 0 || r < 0 || c >= COLS || r >= ROWS || occ.has(`${c},${r}`)
+          || (c === s.playerCol && r === s.playerRow));
+        return npcs.map((n) => {
+          const b = s.brain[n.id];
+          return { id: `npc-${n.id}`, col: b.col, row: b.row, avatar: { image: n.sprite }, facing: b.facing, label: n.name, sub: n.role, line: b.mode === 'chat' ? b.line : null, npc: true };
+        });
+      })(),
       ...sprites.filter(p => (positions[p.session_id]?.room ?? 'lobby') === room).map((p, i) => ({
         id: p.session_id,
         col: positions[p.session_id]?.col ?? clampCol(START.col + i + 1),
@@ -289,7 +311,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       // The lobby is drawn in perspective: further back (higher up) reads smaller.
       const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
       drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth, room === 'lobby' ? 1.3 : 1, walk,
-        { sub: p.sub, id: p.id, me: p.id === 'me', plates,
+        { sub: p.sub, id: p.id, me: p.id === 'me', plates, line: p.line, npc: p.npc, now,
           prox: p.id === 'me' ? 0.6 : Math.max(0, 1 - Math.hypot(p.col - s.playerCol, p.row - s.playerRow) / 10) });
     });
     s.plates = plates;
@@ -352,7 +374,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       let zone = zoneAt(cbRef.current.zones, s.playerCol, s.playerRow);
       if (!zone) {
         const near = cbRef.current.npcs
-          .map(n => ({ n, d: Math.hypot(n.col - s.playerCol, n.row - s.playerRow) }))
+          .map(n => { const b = s.brain?.[n.id] || n; return { n, d: Math.hypot(b.col - s.playerCol, b.row - s.playerRow) }; })
           .filter(x => x.d <= 2.5).sort((a, b) => a.d - b.d)[0];
         if (near) zone = { key: `npc-${near.n.id}`, npc: near.n.id, label: `Talk to ${near.n.name}` };
       }

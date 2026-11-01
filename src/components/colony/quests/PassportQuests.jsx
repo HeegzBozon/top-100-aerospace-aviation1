@@ -1,11 +1,10 @@
-import { REWARDS, QUESTS, ACTS, earned, stampCount, title, nextQuest, isDone } from './firstFlight';
+import { QUESTS, ACTS, stampCount, title, nextQuest, isDone } from './firstFlight';
 import PassportQuestRow from './PassportQuestRow';
 
 const ring = (pct) => ({ background: `conic-gradient(#C9A87C ${pct * 3.6}deg, rgba(255,255,255,0.08) 0)` });
 
 // The checklist: a filling ring, the reward shelf, then each act with its own bar.
 export default function PassportQuests({ passport }) {
-  const got = earned(passport);
   const next = nextQuest(passport);
   const done = QUESTS.filter(q => q.act < 5 && isDone(passport, q.id)).length;
   const pct = Math.round((done / 12) * 100);
@@ -23,13 +22,6 @@ export default function PassportQuests({ passport }) {
           <p className="text-xs text-editorial-cream">{stampCount(passport)}/6 Discovery Stamps</p>
           <p className="mt-1 text-[11px] italic text-editorial-cream/60">{next ? `Up next: ${next.title} in the ${next.place}` : 'The First Flight is complete.'}</p>
         </div>
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {Object.entries(REWARDS).filter(([, r]) => r.kind !== 'item').map(([k, r]) => (
-          <span key={k} className={`rounded-full border px-2 py-0.5 text-[10px] ${got.includes(k) ? 'border-editorial-gold bg-editorial-gold/25 text-editorial-cream shadow-[0_0_8px_rgba(201,168,124,0.5)]' : 'border-dashed border-editorial-cream/25 text-editorial-cream/35'}`}>
-            {got.includes(k) ? `★ ${r.label}` : '? ? ?'}
-          </span>
-        ))}
       </div>
       {[1, 2, 3, 4, 5].map(act => {
         const qs = QUESTS.filter(q => q.act === act);

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { title } from './firstFlight';
+import BadgeFace from './BadgeFace';
 
 const FIELDS = [
   { key: 'title', label: 'Title', max: 80, ph: 'Propulsion Engineer' },
@@ -21,14 +21,7 @@ export default function PassportCard({ passport, isGuest, onSave }) {
   };
   return (
     <div className="space-y-3">
-      <div className="rounded-md border border-editorial-copper bg-editorial-cream p-4 text-editorial-navy">
-        <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-editorial-label">TOP 100 Campus · {isGuest ? 'Temporary badge' : 'Member badge'}</p>
-        <p className="mt-2 font-heading text-xl">{(isGuest ? name : passport.name) || 'Your name'}</p>
-        <p className="text-sm">{card.title || 'Title'}{card.organization ? ` · ${card.organization}` : ''}</p>
-        {card.tagline && <p className="mt-1 text-xs italic opacity-80">{card.tagline}</p>}
-        <div className="mt-3 h-px bg-editorial-copper" />
-        <p className="mt-1 text-[10px] uppercase tracking-widest text-editorial-label">{title(passport)}</p>
-      </div>
+      <BadgeFace name={isGuest ? name : passport.name} card={card} passport={passport} isGuest={isGuest} />
       {isGuest && (
         <label className="block text-xs text-editorial-cream/70">Name
           <input value={name} maxLength={60} onChange={e => { setName(e.target.value); setSaved(false); }}
