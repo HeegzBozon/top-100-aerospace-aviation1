@@ -97,11 +97,13 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
     const name = label.split(' ')[0];
     const fs = Math.max(10, Math.round(cell * 0.6));
     ctx.font = `${fs}px sans-serif`;
-    const w = ctx.measureText(name).width + 8;
+    const w = Math.round(ctx.measureText(name).width + 8);
+    // Whole pixels: a tag drawn on fractions shimmers as the camera glides.
+    const lx = Math.round(x), ly = Math.round(top);
     ctx.fillStyle = 'rgba(14,24,41,0.8)';
-    ctx.fillRect(x - w / 2, top - fs - 4, w, fs + 4);
+    ctx.fillRect(lx - Math.round(w / 2), ly - fs - 4, w, fs + 4);
     ctx.fillStyle = '#faf8f5';
-    ctx.fillText(name, x, top - fs / 2 - 2);
+    ctx.fillText(name, lx, ly - Math.round(fs / 2) - 2);
   }
 }
 
@@ -165,7 +167,12 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       const seen = s.seen[p.id];
       if (!seen || seen.k !== k) s.seen[p.id] = { k, at: seen ? now : 0 };
       const walk = now - s.seen[p.id].at < 260 ? now / 85 : null;
-      const { x, y } = cellCenter(p.col, p.row);
+      // Glide between cells instead of snapping, so the figure and its tag move as one.
+      const tgt = cellCenter(p.col, p.row);
+      s.disp = s.disp || {};
+      const d = s.disp[p.id] || (s.disp[p.id] = { ...tgt });
+      d.x += (tgt.x - d.x) * 0.3; d.y += (tgt.y - d.y) * 0.3;
+      const { x, y } = d;
       // The lobby is drawn in perspective: further back (higher up) reads smaller.
       const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
       drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc, depth, room === 'lobby' ? 1.3 : 1, walk);

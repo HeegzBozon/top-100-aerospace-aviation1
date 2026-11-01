@@ -9,7 +9,7 @@ import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
 import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
 import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
-import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
+import ColonyTopBar from '@/components/colony/ColonyTopBar';
 import { registerPicker } from '@/components/handheld/handheldPicker';
 import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
 import { DEFAULT_AVATAR, cleanAvatar } from '@/components/colony/colonyAvatar';
@@ -215,18 +215,12 @@ export default function Colony() {
   return (
     <div className="hh-slide-window md:h-screen bg-slate-950 flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="flex-none flex items-center justify-between gap-3 px-3 py-1.5 bg-slate-900 border-b border-slate-800 z-30">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
-            <span className="text-white text-xs font-bold">C</span>
-          </div>
-          <span className="text-white font-semibold text-sm">Colony</span>
-          <button onClick={() => setShowAvatar(v => !v)} aria-label="Your character" className="ml-1 rounded p-1 text-editorial-gold hover:bg-white/10">
-            <Shirt className="h-4 w-4" />
-          </button>
-        </div>
-        <ColonyVideoStrip participants={participantList} localSessionId={localSessionId} />
-      </header>
+      <ColonyTopBar
+        roomLabel={COLONY_ROOMS[room].label}
+        onAvatar={() => setShowAvatar(v => !v)}
+        participants={participantList}
+        localSessionId={localSessionId}
+      />
 
       {/* World Canvas — fills remaining height */}
       <main
