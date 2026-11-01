@@ -29,11 +29,8 @@ export const START_MENU = [
   // The circuit: every aerospace conference the network is holding rooms in, and the
   // workspace behind it for the organizers who stage them. Public — a visitor walks the
   // calendar and is asked for an account only when they stand in a room.
-  { key: "conferences", index: "04", label: "Events", to: "/conferences", icon: CalendarDays },
-  // Review, closing the committee's row: the surface a Fellow comes back to look at rather
-  // than to do. Its own tabs are the deep links — orientation, My Network, the record, the
-  // published edition and the archive — so nothing waits behind the key in front of it.
-  { key: "review", index: "05", label: "Review", to: "/review", icon: BookOpen },
+  { key: "review", index: "04", label: "Review", to: "/review", icon: BookOpen },
+  { key: "conferences", index: "05", label: "Events", to: "/conferences", icon: CalendarDays },
   // The house's trading floor, closing the row: the App Store and the Gift Shop under one
   // roof rather than as two keys on a menu that only has room for programs. It is itself a
   // menu — turn to walk its two counters, # to open one. Public: every artifact on the

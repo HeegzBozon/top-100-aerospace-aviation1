@@ -124,13 +124,12 @@ export default function NotificationCenter({ isOpen, onClose }) {
   });
 
   const handleNotificationClick = (notification) => {
-    if (!notification.read) {
+    if (!notification.read && !notification.isPendingNominee) {
       markAsReadMutation.mutate(notification.id);
     }
-    if (notification.action_url) {
-      onClose();
-      navigate(notification.action_url);
-    }
+    // Anything without its own destination is answered from the Inbox.
+    onClose();
+    navigate(notification.action_url || '/inbox');
   };
 
   // Filter and sort notifications
@@ -196,7 +195,7 @@ export default function NotificationCenter({ isOpen, onClose }) {
         animate={{ opacity: 1, y: 0 }}
         className={`p-4 transition-all ${
           !notification.read ? 'bg-blue-50/50' : 'bg-white hover:bg-gray-50'
-        } ${notification.action_url ? 'cursor-pointer' : ''}`}
+        } cursor-pointer`}
         onClick={() => handleNotificationClick(notification)}
       >
         <div className="flex items-start gap-3">
@@ -449,10 +448,13 @@ export default function NotificationCenter({ isOpen, onClose }) {
             </ScrollArea>
 
             {/* Footer */}
-            <div className="p-3 border-t border-gray-200 bg-gray-50 text-center">
-              <p className="text-xs text-gray-500">
-                🛩️ Stay informed. Stay ahead.
-              </p>
+            <div className="p-3 border-t border-gray-200 bg-editorial-cream">
+              <button
+                onClick={() => { onClose(); navigate('/inbox'); }}
+                className="w-full rounded bg-editorial-copper px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-editorial-cream hover:opacity-90"
+              >
+                Open Inbox
+              </button>
             </div>
           </motion.div>
         </>

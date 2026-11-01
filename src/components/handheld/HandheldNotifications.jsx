@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { Bell } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { blip, buzz } from "./handheldSound";
+import NotificationGroupRow from "./NotificationGroupRow";
+import PinnedEdition from "./PinnedEdition";
 
 // What has come in for this Fellow, drawn inside the glass like the cartridge
-// menu: the same well of phosphor, the same sheet of light over it. Tapping a
-// transmission opens what it points at and marks it read.
+// menu. Transmissions of one kind are stacked together; tapping one opens what it
+// points at (or the Inbox) and marks it read.
 export default function HandheldNotifications({ open, onClose }) {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
@@ -36,9 +38,24 @@ export default function HandheldNotifications({ open, onClose }) {
     };
   }, [open]);
 
+  const groups = useMemo(() => {
+    const map = new Map();
+    items.forEach((item) => {
+      const key = item.title || "Notification";
+      if (!map.has(key)) map.set(key, { title: key, items: [] });
+      map.get(key).items.push(item);
+    });
+    return [...map.values()];
+  }, [items]);
+
   if (!open) return null;
 
   const unread = items.filter((item) => !item.read).length;
+
+  const goTo = (url) => {
+    onClose();
+    navigate(url);
+  };
 
   const openItem = (item) => {
     blip("select");
@@ -47,11 +64,44 @@ export default function HandheldNotifications({ open, onClose }) {
       setItems((prev) => prev.map((row) => (row.id === item.id ? { ...row, read: true } : row)));
       base44.entities.Notification.update(item.id, { read: true }).catch(() => {});
     }
-    if (item.action_url) {
-      onClose();
-      navigate(item.action_url);
-    }
+    goTo(item.action_url || "/inbox");
   };
+
+  const renderItem = (item) => (
+    <button
+      key={item.id}
+      type="button"
+      onClick={() => openItem(item)}
+      className="flex w-full flex-col items-start gap-1 px-3 py-2.5 text-left"
+      style={{
+        borderBottom: "1px solid rgb(var(--hh-metal-rgb) / 0.16)",
+        background: item.read ? "transparent" : "rgb(var(--hh-lcd-rgb) / 0.10)",
+      }}
+    >
+      <span className="flex w-full items-center gap-2">
+        <span
+          className={`h-[5px] w-[5px] shrink-0 rounded-full ${item.read ? "" : "hh-blink"}`}
+          style={{ background: item.read ? "var(--hh-lcd-soft)" : "var(--hh-lcd-bright)" }}
+        />
+        <span
+          className="flex-1 truncate text-[11.5px] font-semibold leading-tight"
+          style={{ color: item.read ? "var(--hh-lcd)" : "var(--hh-lcd-bright)" }}
+        >
+          {item.title}
+        </span>
+      </span>
+      <span className="line-clamp-2 text-[10px] leading-snug" style={{ color: "var(--hh-lcd-soft)" }}>
+        {item.message}
+      </span>
+      <span
+        className="flex w-full items-center justify-between text-[7px] font-bold uppercase tracking-[0.24em]"
+        style={{ color: "var(--hh-lcd-soft)" }}
+      >
+        {moment(item.created_date).fromNow()}
+        {!item.read ? <span style={{ color: "var(--hh-lcd-bright)" }}>New</span> : null}
+      </span>
+    </button>
+  );
 
   return (
     <div
@@ -70,7 +120,6 @@ export default function HandheldNotifications({ open, onClose }) {
       role="dialog"
       aria-label="Notifications"
     >
-      {/* Title bar */}
       <div
         className="flex items-center justify-between px-3 py-2"
         style={{ borderBottom: "1px solid rgb(var(--hh-metal-rgb) / 0.28)" }}
@@ -108,60 +157,24 @@ export default function HandheldNotifications({ open, onClose }) {
             </p>
           </div>
         ) : (
-          items.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => openItem(item)}
-              className="flex w-full flex-col items-start gap-1 px-3 py-2.5 text-left"
-              style={{
-                borderBottom: "1px solid rgb(var(--hh-metal-rgb) / 0.16)",
-                background: item.read ? "transparent" : "rgb(var(--hh-lcd-rgb, 169 196 108) / 0.10)",
-              }}
-            >
-              <span className="flex w-full items-center gap-2">
-                <span
-                  className={`h-[5px] w-[5px] shrink-0 rounded-full ${item.read ? "" : "hh-blink"}`}
-                  style={{ background: item.read ? "var(--hh-lcd-soft)" : "var(--hh-lcd-bright)" }}
-                />
-                <span
-                  className="flex-1 truncate text-[11.5px] font-semibold leading-tight"
-                  style={{ color: item.read ? "var(--hh-lcd)" : "var(--hh-lcd-bright)" }}
-                >
-                  {item.title}
-                </span>
-              </span>
-
-              <span
-                className="line-clamp-2 text-[10px] leading-snug"
-                style={{ color: "var(--hh-lcd-soft)" }}
-              >
-                {item.message}
-              </span>
-
-              <span
-                className="flex w-full items-center justify-between text-[7px] font-bold uppercase tracking-[0.24em]"
-                style={{ color: "var(--hh-lcd-soft)" }}
-              >
-                {moment(item.created_date).fromNow()}
-                {!item.read ? <span style={{ color: "var(--hh-lcd-bright)" }}>New</span> : null}
-              </span>
-            </button>
-          ))
+          [<PinnedEdition key="pinned" onOpen={() => goTo("/Top100Women2025")} />].concat(groups.map((group) => (
+            <NotificationGroupRow key={group.title} group={group} renderItem={renderItem} />
+          )))
         )}
       </div>
 
-      {/* Footer — the way out */}
       <div
         className="flex items-center justify-between px-3 py-2"
         style={{ borderTop: "1px solid rgb(var(--hh-metal-rgb) / 0.24)", background: "rgba(7,16,9,0.35)" }}
       >
-        <span
+        <button
+          type="button"
+          onClick={() => goTo("/inbox")}
           className="text-[7px] font-bold uppercase tracking-[0.22em]"
-          style={{ color: "var(--hh-lcd-soft)" }}
+          style={{ color: "var(--hh-metal-1)" }}
         >
-          ● Open · B Back
-        </span>
+          Open Inbox →
+        </button>
         <button
           type="button"
           onClick={onClose}
