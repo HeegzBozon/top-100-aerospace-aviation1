@@ -6,6 +6,7 @@ import ColonyHUD from '@/components/colony/ColonyHUD';
 import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
 import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
+import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
 import { Loader2, Maximize2, Minimize2 } from 'lucide-react';
 
 // ─── Video thumbnail overlay ───────────────────────────────────────────────────
@@ -57,6 +58,18 @@ export default function Colony() {
   const [isCamOff, setIsCamOff] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [positions, setPositions] = useState({});
+  const [zone, setZone] = useState(null);
+  const myPosRef = useRef(null);
+
+  // Every step is broadcast to the room; a newcomer is told where we stand.
+  const sendPos = useCallback((to = '*') => {
+    if (callRef.current && myPosRef.current) callRef.current.sendAppMessage({ type: 'pos', ...myPosRef.current }, to);
+  }, []);
+  const handleMove = useCallback((col, row) => {
+    myPosRef.current = { col, row };
+    sendPos();
+  }, [sendPos]);
 
   const syncParticipants = useCallback(() => {
     if (!callRef.current) return;
@@ -101,6 +114,14 @@ export default function Colony() {
     ];
     SYNC_EVENTS.forEach((evt) => call.on(evt, syncParticipants));
 
+    call.on('app-message', (e) => {
+      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row } }));
+    });
+    call.on('participant-joined', (e) => sendPos(e.participant.session_id));
+    call.on('participant-left', (e) => setPositions(prev => {
+      const next = { ...prev }; delete next[e.participant.session_id]; return next;
+    }));
+
     call.on('error', (e) => {
       setErrorMsg(e?.errorMsg || 'An error occurred.');
       setCallState('error');
@@ -109,13 +130,14 @@ export default function Colony() {
     await call.join({ url: room.url, token });
     setCallState('joined');
     syncParticipants();
+    sendPos();
     } catch (e) {
       callRef.current?.destroy();
       callRef.current = null;
       setErrorMsg(e?.errorMsg || e?.message || 'Could not enter the space. Check camera and microphone access.');
       setCallState('error');
     }
-  }, [syncParticipants]);
+  }, [syncParticipants, sendPos]);
 
   const handleToggleMic = useCallback(() => {
     if (!callRef.current) return;
@@ -193,7 +215,12 @@ export default function Colony() {
         <ColonyGameCanvas
           sprites={participantList.filter(p => p.session_id !== localSessionId)}
           localSessionId={localSessionId}
+          positions={positions}
+          onMove={handleMove}
+          onZoneChange={setZone}
         />
+
+        <ColonyZoneCard zone={zone} />
 
         {/* Video thumbnail — bottom-right corner */}
         <VideoThumbnailOverlay

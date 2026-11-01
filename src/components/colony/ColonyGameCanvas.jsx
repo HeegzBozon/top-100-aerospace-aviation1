@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { zoneAt } from './colonyZones';
 
 // ─── The Expo Hub map: one illustrated top-down plate, walked on a grid ───────
 const MAP_URL = 'https://media.base44.com/images/public/68996845be6727838fdb822e/da8f08016_AerospaceExpoHub_Top100.png';
@@ -49,7 +50,11 @@ function drawSprite(ctx, x, y, color, label, isLocal) {
   }
 }
 
-export default function ColonyGameCanvas({ sprites = [], localSessionId = null }) {
+export default function ColonyGameCanvas({ sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange }) {
+  const lastPosRef = useRef(null);
+  const zoneRef = useRef(null);
+  const cbRef = useRef({});
+  cbRef.current = { onMove, onZoneChange };
   const canvasRef = useRef(null);
   const stateRef = useRef({
     camX: 0, camY: 0,
@@ -80,7 +85,8 @@ export default function ColonyGameCanvas({ sprites = [], localSessionId = null }
     const all = [
       { col: s.playerCol, row: s.playerRow, color: '#1e3a5a', label: 'You', isLocal: true },
       ...sprites.map((p, i) => ({
-        col: clampCol(START.col + i + 1), row: clampRow(START.row + 1),
+        col: positions[p.session_id]?.col ?? clampCol(START.col + i + 1),
+        row: positions[p.session_id]?.row ?? clampRow(START.row + 1),
         color: ['#b87333', '#c9a87c', '#4a6f99', '#8f5c2c'][i % 4],
         label: p.user_name || 'Participant',
         isLocal: p.session_id === localSessionId,
@@ -90,7 +96,7 @@ export default function ColonyGameCanvas({ sprites = [], localSessionId = null }
       const { x, y } = cellCenter(p.col, p.row);
       drawSprite(ctx, x + ox, y + oy, p.color, p.label, p.isLocal);
     });
-  }, [sprites, localSessionId]);
+  }, [sprites, localSessionId, positions]);
 
   const loop = useCallback((time) => {
     const s = stateRef.current;
@@ -115,6 +121,17 @@ export default function ColonyGameCanvas({ sprites = [], localSessionId = null }
       if (s.keys.ArrowRight || s.keys.d) dc += 1;
       s.playerCol = clampCol(s.playerCol + dc);
       s.playerRow = clampRow(s.playerRow + dr);
+    }
+
+    const key = `${s.playerCol},${s.playerRow}`;
+    if (lastPosRef.current !== key) {
+      lastPosRef.current = key;
+      cbRef.current.onMove?.(s.playerCol, s.playerRow);
+      const zone = zoneAt(s.playerCol, s.playerRow);
+      if (zone?.key !== zoneRef.current?.key) {
+        zoneRef.current = zone;
+        cbRef.current.onZoneChange?.(zone);
+      }
     }
 
     const c = clampCam(target.x, target.y, canvas.width, canvas.height);
