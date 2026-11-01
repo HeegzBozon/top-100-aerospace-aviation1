@@ -223,9 +223,10 @@ export default function Colony() {
   // Video is proximity based: you see and hear only people standing near you in the same room.
   // At the concierge desk the channel is private, so only you are on the reel.
   const NEAR = 8;
-  const nearby = participantList.filter(p => {
+  // The concierge desk carries no video at all.
+  const nearby = panel === 'concierge' ? [] : participantList.filter(p => {
     if (p.session_id === localSessionId) return true;
-    if (panel === 'concierge' || !myCell) return false;
+    if (!myCell) return false;
     const pos = positions[p.session_id];
     return pos && pos.room === myCell.room && Math.hypot(pos.col - myCell.col, pos.row - myCell.row) <= NEAR;
   });
