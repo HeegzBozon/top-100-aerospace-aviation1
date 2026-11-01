@@ -14,7 +14,7 @@ export default function ColonyQuestTracker({ passport, onOpen }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [onOpen]);
   if (!passport) return null;
-  const done = QUESTS.filter(q => isDone(passport, q.id)).length;
+  const done = QUESTS.filter(q => q.act < 5 && isDone(passport, q.id)).length;
   const next = nextQuest(passport);
   return (
     <button type="button" onClick={onOpen} aria-label="Open quest checklist"

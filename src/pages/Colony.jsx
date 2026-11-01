@@ -16,6 +16,8 @@ import ColonyDirectory from '@/components/colony/ColonyDirectory';
 import ColonyChat from '@/components/colony/ColonyChat';
 import ColonyConcierge from '@/components/colony/ColonyConcierge';
 import { buildBrief, briefSummary, coachingFor } from '@/components/colony/campusBrief';
+import RoomSplash from '@/components/colony/RoomSplash';
+import QuestCelebration from '@/components/colony/quests/QuestCelebration';
 import { loadMissingFields } from '@/components/colony/conciergeDiscovery';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
@@ -150,6 +152,7 @@ function ColonyRoom({ onReplayWelcome }) {
   const activeQuest = activeNpc && pp.passport ? questFor(activeNpc.id, pp.passport) : null;
   const openPassport = useCallback(() => setPanel('passport'), []);
   const [missingFields, setMissingFields] = useState([]);
+  const [celebrate, setCelebrate] = useState(null);
   useEffect(() => { loadMissingFields(me?.email).then(setMissingFields); }, [me]);
   const brief = useMemo(() => pp.passport ? buildBrief(pp.passport, missingFields) : null, [pp.passport, missingFields]);
   useColonyMusic(room, (panel === 'npc' || panel === 'quest') && activeNpc ? activeNpc.id : null);
@@ -495,6 +498,8 @@ function ColonyRoom({ onReplayWelcome }) {
       </div>
 
       {!panel && <ColonyQuestTracker passport={pp.passport} onOpen={openPassport} />}
+      <RoomSplash room={room} label={COLONY_ROOMS[room]?.label} />
+      {celebrate && pp.passport && <QuestCelebration quest={celebrate} passport={pp.passport} onClose={() => setCelebrate(null)} />}
       {/* World Canvas — fills remaining height */}
       <main
         className={`flex-1 relative overflow-hidden min-h-0 ${showParticipants ? 'mr-72' : ''}`}
@@ -556,6 +561,7 @@ function ColonyRoom({ onReplayWelcome }) {
               pp.complete(activeQuest.id, choice);
               pp.discover(discoveryFor(activeQuest, choice));
               if (activeQuest.reward) playStampSfx();
+              setCelebrate(activeQuest);
               setPanel(activeQuest.id === 'q01' ? 'passport' : null);
               if (activeQuest.rooms) { setZone(null); setRoom(activeQuest.rooms[i]); }
             }} />
@@ -564,7 +570,7 @@ function ColonyRoom({ onReplayWelcome }) {
           <ColonyNpcDialogue npc={activeNpc} onClose={() => setPanel(null)}
             quest={activeQuest && { title: activeQuest.title, lock: lockReason(pp.passport, activeQuest) }}
             onQuest={() => setPanel('quest')}
-            coaching={coachingFor(activeNpc.id, brief)}
+            coaching={(c => c?.action.panel === 'quest' && activeQuest?.act !== 5 ? null : c)(coachingFor(activeNpc.id, brief))}
             onAction={(a) => { setPanel(null); activateZone(a); }} />
         )}
         {panel === 'cast' && isAdmin && (

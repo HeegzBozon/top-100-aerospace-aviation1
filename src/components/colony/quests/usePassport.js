@@ -24,6 +24,8 @@ export default function usePassport(member) {
   }, [member]);
 
   const persist = useCallback(async (next) => {
+    // Held at once, so two saves in a row (a completion, then its discovery) never undo each other.
+    ref.current = next;
     setPassport(next);
     if (member) await base44.auth.updateMe({ colony_passport: next });
     else saveLocal(next);

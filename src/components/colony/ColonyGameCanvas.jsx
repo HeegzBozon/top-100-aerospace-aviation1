@@ -252,7 +252,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     drawHotspots(ctx, cbRef.current.zones, zoneRef.current?.key, ox, oy, sc, performance.now());
 
     const all = [
-      { id: 'me', col: s.playerCol, row: s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
+      { id: 'me', col: s.vCol ?? s.playerCol, row: s.vRow ?? s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
       ...npcs.map((n, i) => {
         // Staff mill about their post: a short, unhurried step every few seconds, never far.
         const [dc, dr] = NPC_DRIFT[(Math.floor(performance.now() / 2600) + i * 3) % NPC_DRIFT.length];
@@ -362,9 +362,16 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       }
     }
 
-    const c = clampCam(target.x, target.y, canvas.width, canvas.height, s.scale);
+    // The sprite walks between cells at the step rate instead of hopping, and a jump of more
+    // than two cells (a spawn or a tap-to-walk) lands at once.
+    const step = dt / 240;
+    const glide = (v, t) => (v == null || Math.abs(t - v) > 2) ? t : v + Math.sign(t - v) * Math.min(Math.abs(t - v), step);
+    s.vCol = glide(s.vCol, s.playerCol);
+    s.vRow = glide(s.vRow, s.playerRow);
+    const seen = cellCenter(s.vCol, s.vRow);
+    const c = clampCam(seen.x, seen.y, canvas.width, canvas.height, s.scale);
     // Same glide at any frame rate, and snap when close so the picture settles dead still.
-    const k = 1 - Math.pow(0.88, dt / 16.7);
+    const k = 1 - Math.pow(0.82, dt / 16.7);
     s.camX += (c.x - s.camX) * k;
     s.camY += (c.y - s.camY) * k;
     if (Math.abs(c.x - s.camX) < 0.05) s.camX = c.x;
