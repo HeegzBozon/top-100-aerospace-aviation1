@@ -8,6 +8,7 @@ import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
 import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
 import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
+import useColonyGamepad from '@/components/colony/useColonyGamepad';
 import ColonyDirectory from '@/components/colony/ColonyDirectory';
 import ColonyChat from '@/components/colony/ColonyChat';
 import ColonyConcierge from '@/components/colony/ColonyConcierge';
@@ -97,6 +98,15 @@ export default function Colony() {
       },
     });
   }, [callState, activateZone, panel]);
+
+  useColonyGamepad(stickRef, {
+    enter: () => activateZone(zoneRef.current),
+    back: () => {
+      if (panel) return setPanel(null);
+      if (roomRef.current === 'lobby') return;
+      setZone(null); setRoom(roomRef.current === 'hall' ? 'lobby' : 'hall');
+    },
+  }, callState === 'joined');
 
   // Every step is broadcast to the room; a newcomer is told where we stand.
   const sendPos = useCallback((to = '*') => {
@@ -197,6 +207,12 @@ export default function Colony() {
     setIsMuted((prev) => !prev);
   }, [isMuted]);
 
+  const handleToggleCam = useCallback(() => {
+    if (!callRef.current) return;
+    callRef.current.setLocalVideo(isCamOff);
+    setIsCamOff((prev) => !prev);
+  }, [isCamOff]);
+
   useColonyMenus({
     room,
     setRoom: (r) => { setPanel(null); setZone(null); setRoom(r); },
@@ -205,15 +221,11 @@ export default function Colony() {
     toggleAvatar: () => { setPanel(null); setShowAvatar(v => !v); },
     isMuted,
     toggleMic: handleToggleMic,
+    isCamOff,
+    toggleCam: handleToggleCam,
     leave: handleLeave,
     participantCount: Object.keys(participants).length,
   });
-
-  const handleToggleCam = useCallback(() => {
-    if (!callRef.current) return;
-    callRef.current.setLocalVideo(isCamOff);
-    setIsCamOff((prev) => !prev);
-  }, [isCamOff]);
 
   // Cleanup on unmount
   useEffect(() => {

@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
-import { Compass, MessageCircle, MessagesSquare, Users, Shirt, LogOut, MapPin, Mic, MicOff } from 'lucide-react';
+import { Compass, MessageCircle, MessagesSquare, Users, Shirt, LogOut, MapPin, Mic, MicOff, Video, VideoOff } from 'lucide-react';
 import { registerSurfaceFileGroups, registerSurfaceEditGroups } from '@/components/shell/surfaceFileMenu';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 
 // The Colony's own File and Edit menus, registered with the machine's menu bar while the
 // campus is on the glass. File moves you around campus; Edit changes how you appear in it.
-export default function useColonyMenus({ room, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, leave, participantCount }) {
-  const state = { room, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, leave, participantCount };
+export default function useColonyMenus({ room, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, isCamOff, toggleCam, leave, participantCount }) {
+  const state = { room, setRoom, openPanel, toggleParticipants, toggleAvatar, isMuted, toggleMic, isCamOff, toggleCam, leave, participantCount };
   const ref = useRef(state);
   ref.current = state;
 
@@ -39,7 +39,8 @@ export default function useColonyMenus({ room, setRoom, openPanel, togglePartici
         key: 'colony-me', label: 'You in Colony',
         items: [
           { key: 'colony-avatar', label: 'Customize character', hint: 'Outfit, skin, portrait', icon: Shirt, onSelect: s.toggleAvatar },
-          { key: 'colony-mic', label: s.isMuted ? 'Unmute microphone' : 'Mute microphone', icon: s.isMuted ? Mic : MicOff, onSelect: s.toggleMic },
+          { key: 'colony-mic', label: s.isMuted ? 'Turn voice on' : 'Mute voice', icon: s.isMuted ? Mic : MicOff, onSelect: s.toggleMic },
+          { key: 'colony-cam', label: s.isCamOff ? 'Turn video on' : 'Turn video off', icon: s.isCamOff ? Video : VideoOff, onSelect: s.toggleCam },
         ],
       }];
     };
