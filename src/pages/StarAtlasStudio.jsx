@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Loader2, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StudioTrailCard from '@/components/star-atlas/StudioTrailCard';
+import SpriteForge from '@/components/star-atlas/SpriteForge';
 import { DRAFT_THEMES } from '@/components/star-atlas/starAtlas';
 
 // Editorial desk for the Star Atlas: constellations are drafted from the record, then approved
@@ -60,6 +61,7 @@ export default function StarAtlasStudio() {
           {drafting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}{drafting ? 'Drafting…' : 'Draft from the record'}
         </Button>
         {note && <p className="border-l-2 border-editorial-copper bg-white px-3 py-2 text-sm text-editorial-navy">{note}</p>}
+        <SpriteForge trails={trails} />
         {trails.length === 0 ? (
           <div className="border border-dashed border-editorial-copper/50 bg-white p-8 text-center">
             <p className="font-heading text-lg text-editorial-navy">No constellations yet</p>

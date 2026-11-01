@@ -28,10 +28,12 @@ export default function useHonoreeExhibits(room, cast) {
       const trail = trails.find(t => ROOM_FOR[(t.theme_key || '').split(':')[1]] === room);
       if (!trail) return;
       const stars = await loadStars((trail.nominee_ids || []).slice(0, PER_ROOM)).catch(() => []);
+      const own = await base44.entities.HonoreeSprite.filter({ nominee_id: { $in: stars.map(n => n.id) } }).catch(() => []);
+      const drawn = Object.fromEntries(own.map(s => [s.nominee_id, s.sprite_url]));
       if (!live) return;
       setExhibits(stars.map((n, i) => ({
         id: `h-${n.id}`, honoree: n, trail, room, name: n.name, role: n.title || 'TOP 100 Honoree',
-        col: host.col + BOOTHS[i][0], row: host.row + BOOTHS[i][1], sprite: spriteFor(n.id),
+        col: host.col + BOOTHS[i][0], row: host.row + BOOTHS[i][1], sprite: drawn[n.id] || spriteFor(n.id),
       })));
     });
     return () => { live = false; };

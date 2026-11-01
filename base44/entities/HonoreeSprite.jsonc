@@ -1,0 +1,40 @@
+{
+  "name": "HonoreeSprite",
+  "type": "object",
+  "properties": {
+    "nominee_id": {
+      "type": "string",
+      "description": "Nominee this campus sprite depicts"
+    },
+    "sprite_url": {
+      "type": "string",
+      "description": "Pixel-art sprite generated from the honoree's public headshot. Display only; never read by discovery, ranking or scoring."
+    },
+    "source_photo_url": {
+      "type": "string",
+      "description": "Headshot the sprite was drawn from"
+    }
+  },
+  "required": [
+    "nominee_id",
+    "sprite_url"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
