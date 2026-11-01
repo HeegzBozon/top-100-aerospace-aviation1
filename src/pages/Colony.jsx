@@ -25,6 +25,12 @@ const inCall = (c) => { try { return c?.meetingState?.() === 'joined-meeting'; }
 import ColonyMapEditor from '@/components/colony/ColonyMapEditor';
 import ColonyNpcDialogue from '@/components/colony/ColonyNpcDialogue';
 import ColonyPersonCard from '@/components/colony/ColonyPersonCard';
+import ColonyPassport from '@/components/colony/quests/ColonyPassport';
+import ColonyQuestStep from '@/components/colony/quests/ColonyQuestStep';
+import ColonyReconcile from '@/components/colony/quests/ColonyReconcile';
+import usePassport, { restoreFromLink } from '@/components/colony/quests/usePassport';
+import { loadLocal } from '@/components/colony/quests/passportStore';
+import { questFor, lockReason } from '@/components/colony/quests/firstFlight';
 import ColonyCastEditor from '@/components/colony/ColonyCastEditor';
 import useColonyCast from '@/components/colony/useColonyCast';
 import useColonyWalls from '@/components/colony/useColonyWalls';
@@ -38,19 +44,34 @@ import { setMenuBarStatus } from '@/components/shell/menuBarStatus';
 import { Loader2, Shirt } from 'lucide-react';
 
 // Panels that take the wheel, pad and arrow keys for themselves while open.
-const LIST_PANELS = ['directory', 'online', 'npc', 'person'];
+const LIST_PANELS = ['directory', 'online', 'npc', 'person', 'quest', 'passport'];
 const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 
 export default function Colony() {
   const [access, setAccess] = useState('checking');
+  const [restoreError, setRestoreError] = useState('');
   useEffect(() => {
-    base44.auth.isAuthenticated().then(async (ok) => {
+    (async () => {
+      // A private save link: restore that passport onto this device first.
+      const token = new URLSearchParams(window.location.search).get('save');
+      if (token) {
+        await restoreFromLink(token).catch(() => setRestoreError('That save link could not be found. Starting fresh.'));
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+      return base44.auth.isAuthenticated();
+    })().then(async (ok) => {
       if (ok) {
         sessionStorage.removeItem('colony-guest-name');
         const u = await base44.auth.me();
         setMember(u);
         setAccess(u?.colony_avatar ? 'in' : 'onboard');
         return;
+      }
+      // A returning guest: their passport on this device carries their name and character.
+      const local = loadLocal();
+      if (!sessionStorage.getItem('colony-guest-name') && local?.name && local?.avatar) {
+        sessionStorage.setItem('colony-guest-name', local.name);
+        sessionStorage.setItem('colony-guest-avatar', JSON.stringify(local.avatar));
       }
       const g = sessionStorage.getItem('colony-guest-name') && sessionStorage.getItem('colony-guest-avatar');
       setAccess(g ? 'in' : 'gate');
@@ -63,6 +84,9 @@ export default function Colony() {
       {access === 'onboard' && <ColonyOnboarding isGuest={!member} memberName={member?.full_name} onDone={() => setAccess('in')} />}
       {access === 'gate' && <ColonyGuestGate onGuest={() => setAccess('onboard')} />}
       {access === 'checking' && <ColonySplash />}
+      {restoreError && access !== 'checking' && (
+        <button type="button" onClick={() => setRestoreError('')} className="fixed inset-x-4 top-16 z-50 mx-auto max-w-sm rounded bg-editorial-navy px-3 py-2 text-xs text-editorial-cream ring-1 ring-editorial-copper">{restoreError} ✕</button>
+      )}
       <ColonyIntro />
     </>
   );
@@ -106,6 +130,9 @@ function ColonyRoom({ onReplayWelcome }) {
   zoneRef.current = zone;
   const [panel, setPanel] = useState(null); // directory | chat | concierge | editor
   const [isAdmin, setIsAdmin] = useState(false);
+  const [me, setMe] = useState(undefined);
+  const pp = usePassport(me);
+  const isGuest = me === null;
   const roomWalls = useColonyWalls(room);
   const meEmailRef = useRef(null);
   const roomCast = castState.cast.filter(c => c.room === room && c.visibility === 'active');
@@ -114,6 +141,7 @@ function ColonyRoom({ onReplayWelcome }) {
     ...roomCast.map(c => ({ key: `npc-${c.id}`, npc: c.id, label: `Talk to ${c.name} · ${c.role}`, panel: 'npc', col: c.col - 1, row: c.row - 1, w: 3, h: 3 })),
   ];
   const activeNpc = castState.cast.find(c => c.id === npcId);
+  const activeQuest = activeNpc && pp.passport ? questFor(activeNpc.id, pp.passport) : null;
   const [myCell, setMyCell] = useState(null);
   const [chat, setChat] = useState([]);
   const [mediaError, setMediaError] = useState('');
@@ -215,6 +243,7 @@ function ColonyRoom({ onReplayWelcome }) {
     // First visit (member or guest) with no avatar yet: open the maker straight away.
     const guestAvatar = sessionStorage.getItem('colony-guest-avatar');
     if (sessionStorage.getItem('colony-guest-name')) {
+      setMe(null);
       if (guestAvatar) { setAvatar(cleanAvatar(JSON.parse(guestAvatar))); return; }
       // A guest gets a mascot made for them straight away; they can customise it later.
       const kit = randomGuestAvatar();
@@ -228,6 +257,7 @@ function ColonyRoom({ onReplayWelcome }) {
       return;
     }
     base44.auth.me().then(u => {
+      setMe(u);
       setIsAdmin(u?.role === 'admin');
       meEmailRef.current = u?.email;
       if (u?.colony_avatar) setAvatar(cleanAvatar(u.colony_avatar));
@@ -236,7 +266,7 @@ function ColonyRoom({ onReplayWelcome }) {
   }, []);
   const saveAvatar = useCallback(async (next) => {
     if (!sessionStorage.getItem('colony-guest-name')) await base44.auth.updateMe({ colony_avatar: next });
-    else sessionStorage.setItem('colony-guest-avatar', JSON.stringify(next));
+    else { sessionStorage.setItem('colony-guest-avatar', JSON.stringify(next)); pp.update({ avatar: next }); }
     setAvatar(next);
     if (myPosRef.current) { myPosRef.current = { ...myPosRef.current, avatar: next }; sendPos(); }
   }, [sendPos]);
@@ -504,8 +534,22 @@ function ColonyRoom({ onReplayWelcome }) {
           <ColonyPersonCard name={personName} onClose={() => setPanel(null)}
             onGo={(to) => { setPanel(null); navigate(to); }} onChat={() => setPanel('chat')} />
         )}
+        {pp.pendingGuest && <ColonyReconcile guest={pp.pendingGuest} onClaim={pp.claimGuest} onLeave={pp.leaveGuest} />}
+        {panel === 'passport' && (
+          <ColonyPassport passport={pp.passport} isGuest={isGuest} onSave={pp.update} makeLink={pp.makeLink} onClose={() => setPanel(null)} />
+        )}
+        {panel === 'quest' && activeQuest && activeNpc && (
+          <ColonyQuestStep key={activeQuest.id} quest={activeQuest} npc={activeNpc} onClose={() => setPanel('npc')}
+            onComplete={(choice, i) => {
+              pp.complete(activeQuest.id, choice);
+              setPanel(activeQuest.id === 'q01' ? 'passport' : null);
+              if (activeQuest.rooms) { setZone(null); setRoom(activeQuest.rooms[i]); }
+            }} />
+        )}
         {panel === 'npc' && activeNpc && (
           <ColonyNpcDialogue npc={activeNpc} onClose={() => setPanel(null)}
+            quest={activeQuest && { title: activeQuest.title, lock: lockReason(pp.passport, activeQuest) }}
+            onQuest={() => setPanel('quest')}
             onAction={(a) => { setPanel(null); activateZone(a); }} />
         )}
         {panel === 'cast' && isAdmin && (

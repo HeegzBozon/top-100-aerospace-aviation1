@@ -3,9 +3,14 @@ import DialogueBox from '@/components/colony/DialogueBox';
 import useColonyListPicker from '@/components/colony/useColonyListPicker';
 
 // One staff character, spoken to: portrait, greeting, and only their configured actions.
-export default function ColonyNpcDialogue({ npc, onAction, onClose }) {
-  const items = [...npc.actions, { key: '__bye', label: 'Goodbye' }];
-  const pick = (it) => (it.key === '__bye' ? onClose() : onAction(it));
+export default function ColonyNpcDialogue({ npc, onAction, onClose, quest = null, onQuest }) {
+  // The First Flight comes first when this character has a step to give.
+  const questItem = quest && { key: '__quest', label: quest.lock ? `★ ${quest.title} — ${quest.lock}` : `★ Quest: ${quest.title}`, disabled: !!quest.lock };
+  const items = [...(questItem ? [questItem] : []), ...npc.actions, { key: '__bye', label: 'Goodbye' }];
+  const pick = (it) => {
+    if (it.disabled) return;
+    if (it.key === '__bye') onClose(); else if (it.key === '__quest') onQuest(); else onAction(it);
+  };
   const cursorKey = useColonyListPicker({ items, onPick: pick, onClose });
   return (
     <div className="absolute inset-x-3 bottom-3 z-30 mx-auto flex max-h-[85%] max-w-md flex-col overflow-hidden rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 shadow-xl">

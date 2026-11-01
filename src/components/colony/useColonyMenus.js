@@ -18,6 +18,7 @@ export default function useColonyMenus({ room, zoom, setZoom, setRoom, openPanel
         {
           key: 'colony-campus', label: `Campus · ${here?.label || 'Colony'}`,
           items: [
+            { key: 'colony-passport', label: 'Campus Passport', hint: 'The First Flight · badge', icon: Compass, onSelect: () => s.openPanel('passport') },
             { key: 'colony-concierge', label: 'Ask the concierge', hint: 'Private, 1:1', icon: MessageCircle, onSelect: () => s.openPanel('concierge') },
             { key: 'colony-directory', label: 'Campus directory', hint: 'Jump to any room', icon: Compass, onSelect: () => s.openPanel('directory') },
             { key: 'colony-chat', label: 'Room chat', icon: MessagesSquare, onSelect: () => s.openPanel('chat') },

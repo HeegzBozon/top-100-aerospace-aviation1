@@ -1,0 +1,43 @@
+{
+  "name": "ColonySave",
+  "type": "object",
+  "properties": {
+    "token": {
+      "type": "string",
+      "description": "Unguessable save token; the only key to this record"
+    },
+    "data": {
+      "type": "object",
+      "description": "Portable passport: display name, card, avatar and quest progress. No email or account id."
+    },
+    "last_used_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "token"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
