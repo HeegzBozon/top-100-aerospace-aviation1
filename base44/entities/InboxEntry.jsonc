@@ -1,0 +1,58 @@
+{
+  "name": "InboxEntry",
+  "description": "Something a Fellow captured into their Inbox by hand: a note, an upload, a task or a contact to keep a relationship moving.",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "note",
+        "upload",
+        "task",
+        "contact"
+      ],
+      "default": "note"
+    },
+    "title": {
+      "type": "string",
+      "description": "One line naming the entry"
+    },
+    "body": {
+      "type": "string",
+      "description": "Notes, context or the conversation so far"
+    },
+    "person_name": {
+      "type": "string",
+      "description": "Who this is about, if anyone"
+    },
+    "file_uri": {
+      "type": "string",
+      "description": "Private file URI of an upload"
+    },
+    "file_name": {
+      "type": "string"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When to follow up"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

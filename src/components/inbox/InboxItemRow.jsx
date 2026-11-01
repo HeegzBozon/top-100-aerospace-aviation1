@@ -10,7 +10,7 @@ export default function InboxItemRow({ item, state, onSet, active, onOpen }) {
   const key = 'flex h-8 w-8 items-center justify-center rounded border border-editorial-navy/15 text-editorial-navy/70 hover:border-editorial-copper hover:text-editorial-copper';
   return (
     <li id={`inbox-row-${item.key}`} className={`-mx-3 flex items-center gap-1.5 border-b border-l-2 border-b-editorial-navy/10 px-3 py-2.5 md:-mx-4 md:gap-3 md:px-4 md:py-3 last:border-b-0 ${active ? 'border-l-editorial-copper bg-editorial-sand/60' : 'border-l-transparent'}`}>
-      <Link to={item.to || '#'} onClick={item.enquiry ? (e) => { e.preventDefault(); onOpen(item.key); } : undefined} className="min-w-0 flex-1 pr-1">
+      <Link to={item.to || '#'} onClick={item.enquiry || item.entry ? (e) => { e.preventDefault(); onOpen(item.key); } : undefined} className="min-w-0 flex-1 pr-1">
         <p className="truncate font-body text-sm font-semibold text-editorial-navy">
           {pinned && <Pin className="mr-1 inline h-3 w-3 text-editorial-copper" />}{item.title}
         </p>
