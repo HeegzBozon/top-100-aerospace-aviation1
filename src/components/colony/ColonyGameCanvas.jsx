@@ -349,7 +349,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     <canvas
       ref={canvasRef}
       onClick={handleCanvasClick}
-      aria-label="Aerospace Expo Hub map"
+      aria-label="Colony map"
       className="w-full h-full block cursor-pointer outline-none focus:ring-2 focus:ring-editorial-copper"
       tabIndex={0}
     />

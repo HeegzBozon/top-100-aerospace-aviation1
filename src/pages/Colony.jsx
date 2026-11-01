@@ -3,6 +3,7 @@ import Daily from '@daily-co/daily-js';
 import { useNavigate } from 'react-router-dom';
 import { colonyRoom } from '@/functions/colonyRoom';
 import ColonyLobby from '@/components/colony/ColonyLobby';
+import ColonySplash from '@/components/colony/ColonySplash';
 import ColonyHUD from '@/components/colony/ColonyHUD';
 import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
@@ -281,14 +282,7 @@ export default function Colony() {
   });
 
   if (callState === 'joining' || callState === 'lobby') {
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-4">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-white animate-spin" />
-        </div>
-        <p className="text-slate-400 text-sm">Entering Colony…</p>
-      </div>
-    );
+    return <ColonySplash />;
   }
 
   if (callState === 'error') {
