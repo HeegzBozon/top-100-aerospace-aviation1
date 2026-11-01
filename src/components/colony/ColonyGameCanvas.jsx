@@ -55,7 +55,7 @@ function drawSprite(ctx, x, y, color, label, isLocal) {
   }
 }
 
-export default function ColonyGameCanvas({ mapUrl, zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange }) {
+export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange }) {
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
@@ -70,7 +70,8 @@ export default function ColonyGameCanvas({ mapUrl, zones = [], sprites = [], loc
 
   // Fit the plate's full height (or width, whichever is larger) — the widest view
   // that still leaves no empty desk around it.
-  const fitScale = (W, H) => Math.max(H / NATIVE_H, W / NATIVE_W);
+  // Half again closer than fit: immersive, with a few buildings still in view.
+  const fitScale = (W, H) => Math.max(H / NATIVE_H, W / NATIVE_W) * 1.5;
 
   // Camera (in native px) centred on the player, held inside the plate's edges.
   const clampCam = (cx, cy, W, H, sc) => {
@@ -97,7 +98,7 @@ export default function ColonyGameCanvas({ mapUrl, zones = [], sprites = [], loc
 
     const all = [
       { col: s.playerCol, row: s.playerRow, color: '#1e3a5a', label: 'You', isLocal: true },
-      ...sprites.map((p, i) => ({
+      ...sprites.filter(p => (positions[p.session_id]?.room ?? 'hall') === room).map((p, i) => ({
         col: positions[p.session_id]?.col ?? clampCol(START.col + i + 1),
         row: positions[p.session_id]?.row ?? clampRow(START.row),
         color: ['#b87333', '#c9a87c', '#4a6f99', '#8f5c2c'][i % 4],
@@ -109,7 +110,7 @@ export default function ColonyGameCanvas({ mapUrl, zones = [], sprites = [], loc
       const { x, y } = cellCenter(p.col, p.row);
       drawSprite(ctx, ox + x * sc, oy + y * sc, p.color, p.label, p.isLocal);
     });
-  }, [mapUrl, sprites, localSessionId, positions]);
+  }, [mapUrl, room, sprites, localSessionId, positions]);
 
   const loop = useCallback((time) => {
     const s = stateRef.current;

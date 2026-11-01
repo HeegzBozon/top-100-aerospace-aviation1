@@ -70,8 +70,10 @@ export default function Colony() {
   const sendPos = useCallback((to = '*') => {
     if (callRef.current && myPosRef.current) callRef.current.sendAppMessage({ type: 'pos', ...myPosRef.current }, to);
   }, []);
+  const roomRef = useRef('hall');
+  roomRef.current = room;
   const handleMove = useCallback((col, row) => {
-    myPosRef.current = { col, row };
+    myPosRef.current = { col, row, room: roomRef.current };
     sendPos();
   }, [sendPos]);
 
@@ -119,7 +121,7 @@ export default function Colony() {
     SYNC_EVENTS.forEach((evt) => call.on(evt, syncParticipants));
 
     call.on('app-message', (e) => {
-      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row } }));
+      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'hall' } }));
     });
     call.on('participant-joined', (e) => sendPos(e.participant.session_id));
     call.on('participant-left', (e) => setPositions(prev => {
@@ -220,6 +222,7 @@ export default function Colony() {
         <ColonyGameCanvas
           sprites={participantList.filter(p => p.session_id !== localSessionId)}
           key={room}
+          room={room}
           mapUrl={COLONY_ROOMS[room].map}
           zones={COLONY_ROOMS[room].zones}
           localSessionId={localSessionId}
