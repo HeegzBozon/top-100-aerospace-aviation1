@@ -2,25 +2,44 @@ import { useEffect, useState } from 'react';
 import ColonySplash from './ColonySplash';
 
 const KEY = 'colony-intro-seen';
-const HOLD_MS = 2200;
+const HOLD_MS = 3000;
 const FADE_MS = 800;
 
-// The cinematic title plate: held once per session, then dissolved into the lobby
-// with a soft zoom and blur, like a dream lifting.
+// The title plate: loads for 3s, then flashes PRESS START until tapped, a key or a pad button.
 export default function ColonyIntro() {
   const [phase, setPhase] = useState(() => (sessionStorage.getItem(KEY) ? 'done' : 'hold'));
 
   useEffect(() => {
-    if (phase === 'done') return undefined;
+    if (phase !== 'hold') return undefined;
     sessionStorage.setItem(KEY, '1');
-    const a = setTimeout(() => setPhase('fade'), HOLD_MS);
-    const b = setTimeout(() => setPhase('done'), HOLD_MS + FADE_MS);
-    return () => { clearTimeout(a); clearTimeout(b); };
-  }, []);
+    const t = setTimeout(() => setPhase('start'), HOLD_MS);
+    return () => clearTimeout(t);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== 'start') return undefined;
+    const go = () => setPhase('fade');
+    window.addEventListener('keydown', go);
+    let raf;
+    const poll = () => {
+      const pad = [...(navigator.getGamepads?.() || [])].find(Boolean);
+      if (pad?.buttons.some((b) => b.pressed)) return go();
+      raf = requestAnimationFrame(poll);
+    };
+    raf = requestAnimationFrame(poll);
+    return () => { window.removeEventListener('keydown', go); cancelAnimationFrame(raf); };
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== 'fade') return undefined;
+    const t = setTimeout(() => setPhase('done'), FADE_MS);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   if (phase === 'done') return null;
   return (
     <div
+      onClick={() => phase === 'start' && setPhase('fade')}
       className="fixed inset-0 z-[60] transition-all ease-out"
       style={{
         transitionDuration: `${FADE_MS}ms`,
@@ -30,6 +49,11 @@ export default function ColonyIntro() {
       }}
     >
       <ColonySplash label="Going online…" />
+      {phase !== 'hold' && (
+        <button type="button" className="absolute inset-x-0 bottom-8 mx-auto w-fit bg-slate-950 px-4 py-2 font-heading text-lg font-bold uppercase tracking-[0.3em] text-editorial-gold hh-blink">
+          Press Start
+        </button>
+      )}
     </div>
   );
 }

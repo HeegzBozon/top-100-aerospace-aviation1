@@ -4,7 +4,7 @@ export const COLONY_ROOMS = {
   // Where every visit begins: the main entrance, with the campus doors ahead.
   lobby: {
     label: 'Main Entrance',
-    map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/ff70af4fe_Top100AerospaceCampusLobby.png',
+    map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/f7aa33459_FuturisticTop100VotingHubLobby.png',
     zones: [
       { key: 'enter-campus', label: 'Enter the Campus', blurb: 'Walk through to the Main Hall.', room: 'hall', col: 26, row: 13, w: 13, h: 10 },
       { key: 'concierge', label: 'TOP 100 Concierge', blurb: 'Ask the concierge anything about TOP 100.', panel: 'concierge', col: 7, row: 22, w: 14, h: 5 },

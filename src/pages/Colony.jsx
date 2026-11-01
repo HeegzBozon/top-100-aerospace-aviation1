@@ -70,6 +70,12 @@ function ColonyRoom() {
   const [myCell, setMyCell] = useState(null);
   const [chat, setChat] = useState([]);
   const [mediaError, setMediaError] = useState('');
+  // Notices clear themselves after a few seconds.
+  useEffect(() => {
+    if (!mediaError) return undefined;
+    const t = setTimeout(() => setMediaError(''), 8000);
+    return () => clearTimeout(t);
+  }, [mediaError]);
 
   // Browsers hold back sound until the visitor touches the page; the first tap releases it.
   useEffect(() => {
@@ -373,6 +379,7 @@ function ColonyRoom() {
           <div className="absolute left-3 right-3 top-24 z-30 mx-auto flex max-w-md items-center gap-2 rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 px-3 py-2 text-xs text-editorial-cream">
             <span className="flex-1">{mediaError}</span>
             <button type="button" onClick={retryMedia} className="rounded bg-editorial-copper px-2.5 py-1 font-semibold">Retry</button>
+            <button type="button" onClick={() => setMediaError('')} aria-label="Dismiss" className="px-1 text-editorial-cream/70">✕</button>
           </div>
         )}
         {panel === 'directory' && (
