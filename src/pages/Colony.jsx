@@ -8,6 +8,8 @@ import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
 import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
 import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
+import ColonyDirectory from '@/components/colony/ColonyDirectory';
+import ColonyChat from '@/components/colony/ColonyChat';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 import ColonyTopBar from '@/components/colony/ColonyTopBar';
 import { registerPicker } from '@/components/handheld/handheldPicker';
@@ -38,6 +40,35 @@ export default function Colony() {
   const stickRef = useRef({});
   const zoneRef = useRef(null);
   zoneRef.current = zone;
+  const [panel, setPanel] = useState(null); // directory | chat
+  const [chat, setChat] = useState([]);
+
+  const activateZone = useCallback((z) => {
+    if (!z) return false;
+    if (z.panel) { setPanel(z.panel); return true; }
+    setZone(null);
+    if (z.room) setRoom(z.room); else navigate(z.to);
+    return true;
+  }, [navigate]);
+
+  // Enter on a keyboard walks through the door too (unless typing in a field).
+  useEffect(() => {
+    if (callState !== 'joined') return undefined;
+    const onKey = (e) => {
+      if (e.key !== 'Enter' || panel) return;
+      if (['INPUT', 'TEXTAREA'].includes(e.target?.tagName)) return;
+      if (activateZone(zoneRef.current)) e.preventDefault();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [callState, panel, activateZone]);
+
+  const sendChat = useCallback((text) => {
+    const name = callRef.current?.participants()?.local?.user_name || 'Member';
+    const id = `${Date.now()}-${Math.random()}`;
+    callRef.current?.sendAppMessage({ type: 'chat', id, text, name }, '*');
+    setChat(prev => [...prev, { id, text, name, mine: true }].slice(-100));
+  }, []);
 
   useEffect(() => {
     if (callState !== 'joined') return undefined;
@@ -49,13 +80,10 @@ export default function Colony() {
       page: () => null,
       // The centre walks through the door you are standing at.
       enter: () => {
-        const z = zoneRef.current;
-        if (!z) return false;
-        setZone(null);
-        if (z.room) setRoom(z.room); else navigate(z.to);
-        return true;
+        return activateZone(zoneRef.current);
       },
       back: () => {
+        if (panel) { setPanel(null); return true; }
         if (roomRef.current === 'lobby') return false;
         setZone(null); setRoom(roomRef.current === 'hall' ? 'lobby' : 'hall');
         return true;
@@ -65,7 +93,7 @@ export default function Colony() {
         hold: (dir, on) => { stickRef.current[dir] = on; },
       },
     });
-  }, [callState, navigate]);
+  }, [callState, activateZone, panel]);
 
   // Every step is broadcast to the room; a newcomer is told where we stand.
   const sendPos = useCallback((to = '*') => {
@@ -133,6 +161,9 @@ export default function Colony() {
 
     call.on('app-message', (e) => {
       if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'lobby', facing: e.data.facing, avatar: e.data.avatar } }));
+      if (e?.data?.type === 'chat' && typeof e.data.text === 'string') {
+        setChat(prev => [...prev, { id: e.data.id, text: e.data.text.slice(0, 500), name: String(e.data.name || 'Member').slice(0, 60) }].slice(-100));
+      }
     });
     call.on('participant-joined', (e) => sendPos(e.participant.session_id));
     call.on('participant-left', (e) => setPositions(prev => {
@@ -242,7 +273,11 @@ export default function Colony() {
         />
         {showAvatar && <ColonyAvatarPicker avatar={avatar} onSave={saveAvatar} onClose={() => setShowAvatar(false)} />}
 
-        <ColonyZoneCard zone={zone} onEnterRoom={(r) => { setZone(null); setRoom(r); }} />
+        {!panel && <ColonyZoneCard zone={zone} onActivate={activateZone} />}
+        {panel === 'directory' && (
+          <ColonyDirectory current={room} onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
+        )}
+        {panel === 'chat' && <ColonyChat messages={chat} onSend={sendChat} onClose={() => setPanel(null)} />}
 
       </main>
 
