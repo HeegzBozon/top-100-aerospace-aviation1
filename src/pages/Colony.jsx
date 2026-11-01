@@ -17,6 +17,7 @@ import ColonyChat from '@/components/colony/ColonyChat';
 import ColonyConcierge from '@/components/colony/ColonyConcierge';
 import { buildBrief, briefSummary, coachingFor } from '@/components/colony/campusBrief';
 import RoomSplash from '@/components/colony/RoomSplash';
+import CampusSky from '@/components/colony/CampusSky';
 import QuestCelebration from '@/components/colony/quests/QuestCelebration';
 import { loadMissingFields } from '@/components/colony/conciergeDiscovery';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
@@ -498,6 +499,7 @@ function ColonyRoom({ onReplayWelcome }) {
       </div>
 
       {!panel && <ColonyQuestTracker passport={pp.passport} onOpen={openPassport} />}
+      {(room === 'lobby' || room === 'hall') && <CampusSky />}
       <RoomSplash room={room} label={COLONY_ROOMS[room]?.label} />
       {celebrate && pp.passport && <QuestCelebration quest={celebrate} passport={pp.passport} onClose={() => setCelebrate(null)} />}
       {/* World Canvas — fills remaining height */}

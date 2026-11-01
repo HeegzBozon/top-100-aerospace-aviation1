@@ -199,6 +199,11 @@ button:focus-visible {
   --font-display: var(--brand-font-serif);
 }
 
+@keyframes sky-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(160vw); }
+}
+
 /* ===== YEAR PROGRESS — SAND FALL ===== */
 .yp-fill {
   background: linear-gradient(90deg, #a38965, #c9a87c 25%, #e8cf9e 50%, #c9a87c 75%, #a38965);
