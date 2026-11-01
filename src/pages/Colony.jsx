@@ -22,6 +22,8 @@ import { registerPicker } from '@/components/handheld/handheldPicker';
 import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
 import { DEFAULT_AVATAR, cleanAvatar } from '@/components/colony/colonyAvatar';
 import { base44 } from '@/api/base44Client';
+import ColonyOnline from '@/components/colony/ColonyOnline';
+import { setMenuBarStatus } from '@/components/shell/menuBarStatus';
 import { Loader2, Shirt } from 'lucide-react';
 
 const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
@@ -112,7 +114,8 @@ function ColonyRoom() {
   }, []);
 
   useEffect(() => {
-    if (callState !== 'joined') return undefined;
+    // A list panel (directory, online) takes the wheel itself while it is open.
+    if (callState !== 'joined' || panel === 'directory' || panel === 'online') return undefined;
     return registerPicker({
       labels: () => [],
       index: () => 0,
@@ -143,7 +146,7 @@ function ColonyRoom() {
       if (roomRef.current === 'lobby') return;
       setZone(null); setRoom(roomRef.current === 'hall' ? 'lobby' : 'hall');
     },
-  }, callState === 'joined');
+  }, callState === 'joined' && panel !== 'directory' && panel !== 'online');
 
   // Every step is broadcast to the room; a newcomer is told where we stand.
   const sendPos = useCallback((to = '*') => {
@@ -289,6 +292,11 @@ function ColonyRoom() {
   }, [callState, handleJoin]);
 
   const participantList = Object.values(participants);
+  const onlineCount = participantList.length;
+  useEffect(() => {
+    if (callState !== 'joined') return undefined;
+    return setMenuBarStatus({ count: onlineCount, onClick: () => { setShowAvatar(false); setPanel((p) => (p === 'online' ? null : 'online')); } });
+  }, [callState, onlineCount]);
   // Video is proximity based: you see and hear only people standing near you in the same room.
   // At the concierge desk the channel is private, so only you are on the reel.
   const NEAR = 8;
@@ -358,6 +366,10 @@ function ColonyRoom() {
         )}
         {panel === 'directory' && (
           <ColonyDirectory current={room} onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
+        )}
+        {panel === 'online' && (
+          <ColonyOnline participants={participantList} positions={positions} localSessionId={localSessionId} myRoom={room}
+            onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
         )}
         {panel === 'concierge' && <ColonyConcierge onClose={() => setPanel(null)} />}
         {panel === 'chat' && <ColonyChat messages={chat} onSend={sendChat} onClose={() => setPanel(null)} />}

@@ -1,6 +1,7 @@
 import { Bell, Home } from "lucide-react";
 import ViewAsCell from "@/components/shell/ViewAsCell";
 import MenuBarClock from "@/components/shell/MenuBarClock";
+import { useMenuBarStatus } from "@/components/shell/menuBarStatus";
 
 // The menubar: the strip across the head of the picture, cloned from the desk the
 // machine imitates. It leads the way a desk machine's bar does — home, then File, then
@@ -95,6 +96,7 @@ export default function MenuBar({
   className = "",
   style,
 }) {
+  const status = useMenuBarStatus();
   return (
     <div
       className={`mb-bar select-none ${className}`}
@@ -139,6 +141,14 @@ export default function MenuBar({
 
       {showViewAs ? (
         <ViewAsCell viewingAsVisitor={viewingAsVisitor} onToggle={onToggleViewAs} />
+      ) : null}
+
+      {status ? (
+        <button type="button" role="menuitem" onClick={status.onClick} aria-label={`${status.count} online — see who and where`}
+          className="mb-cell flex shrink-0 items-center gap-1.5 px-2 text-[8px] font-bold uppercase tracking-[0.16em]" style={{ color: "var(--mb-ink-strong)" }}>
+          <span className="h-[5px] w-[5px] rounded-full bg-emerald-400" aria-hidden="true" />
+          {status.count}
+        </button>
       ) : null}
 
       <BarKey label="Notifications" onClick={onNotifications}>

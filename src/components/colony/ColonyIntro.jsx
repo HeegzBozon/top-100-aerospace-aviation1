@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import ColonySplash from './ColonySplash';
 
 const KEY = 'colony-intro-seen';
-const HOLD_MS = 3500;
-const FADE_MS = 1200;
+const HOLD_MS = 2200;
+const FADE_MS = 800;
 
 // The cinematic title plate: held once per session, then dissolved into the lobby
 // with a soft zoom and blur, like a dream lifting.
