@@ -295,7 +295,8 @@ export default function Colony() {
       </main>
 
       {/* HUD */}
-      <ColonyHUD
+      {/* Put away while a panel with a field is open, so its input is never covered */}
+      {!panel && <ColonyHUD
         isMuted={isMuted}
         isCamOff={isCamOff}
         onToggleMic={handleToggleMic}
@@ -303,7 +304,7 @@ export default function Colony() {
         onLeave={handleLeave}
         participantCount={participantList.length}
         onToggleParticipants={() => setShowParticipants((prev) => !prev)}
-      />
+      />}
 
       {/* Participant Sidebar */}
       {showParticipants && (

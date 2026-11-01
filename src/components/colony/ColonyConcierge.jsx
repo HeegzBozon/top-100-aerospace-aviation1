@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import DialogueBox from '@/components/colony/DialogueBox';
 
 const SCENE = 'https://media.base44.com/images/public/68996845be6727838fdb822e/eaf201fbe_PixelConciergeatAerospaceExpo.png';
-const GREETING = "Aloha, welcome to TOP 100 Aerospace & Aviation! This desk is just you and me. Pick a topic, or type a question.";
+const GREETING = "Aloha, I'm Matthew Higa, founder of TOP 100 Aerospace & Aviation and your concierge. This desk is a private line, just you and me. Pick a topic, or type a question.";
 const TOPICS = [
   'What is TOP 100 Aerospace & Aviation?',
   'How do nominations and the selection work?',
@@ -31,7 +31,7 @@ export default function ColonyConcierge({ onClose }) {
     const res = await base44.integrations.Core.InvokeLLM({
       model: 'gemini_3_flash',
       add_context_from_internet: true,
-      prompt: `You are the friendly concierge at the TOP 100 Aerospace & Aviation virtual campus (the Colony). Answer ONLY from information published on top100aero.space (search site:top100aero.space). If the site does not cover it, say so and suggest where on the platform to look. Campus rooms: Main Entrance, Main Hall, Innovation Expo (App Store), Space Pavilion (Events/conferences), Leadership Summit (Chamber of Commerce), Networking Lounge (AeroSync), Media Hub (Newsstand), Career Center (Classifieds and career resources). House style: the platform is a verified reputation graph and measurement platform, never an "awards list" or "ranking app"; say "endorsers"/"community" not "followers", "endorsements" not "likes"; the institution measures, it does not rank. Reply in plain text, warm and concise, at most 3 short sentences, like a video game character.\n\nVisitor: ${question}`,
+      prompt: `You are Matthew Higa, founder of TOP 100 Aerospace & Aviation, speaking in first person as the friendly concierge at the TOP 100 Aerospace & Aviation virtual campus (the Colony). Answer ONLY from information published on top100aero.space (search site:top100aero.space). If the site does not cover it, say so and suggest where on the platform to look. Campus rooms: Main Entrance, Main Hall, Innovation Expo (App Store), Space Pavilion (Events/conferences), Leadership Summit (Chamber of Commerce), Networking Lounge (AeroSync), Media Hub (Newsstand), Career Center (Classifieds and career resources). House style: the platform is a verified reputation graph and measurement platform, never an "awards list" or "ranking app"; say "endorsers"/"community" not "followers", "endorsements" not "likes"; the institution measures, it does not rank. Reply in plain text, warm and concise, at most 3 short sentences, like a video game character.\n\nVisitor: ${question}`,
     }).catch(() => "Sorry, my terminal is down for a moment. Try asking again.");
     setLine(String(res).trim());
     setQ('');
@@ -46,7 +46,7 @@ export default function ColonyConcierge({ onClose }) {
         <span className="absolute left-1.5 top-1.5 rounded-sm bg-editorial-navy/80 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-editorial-gold">Private channel</span>
       </div>
       <div className="flex min-h-0 flex-1 flex-col">
-        <DialogueBox speaker="Concierge" text={line}>
+        <DialogueBox speaker="Matthew Higa · Founder" text={line}>
           {!busy && (
             <div className="mt-2 space-y-1">
               {TOPICS.map(t => (
