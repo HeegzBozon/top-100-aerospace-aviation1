@@ -25,7 +25,9 @@ const zoneAt = (zones, col, row) =>
   zones.find(z => col >= z.col && col < z.col + z.w && row >= z.row && row < z.row + z.h) || null;
 
 function drawSprite(ctx, x, y, avatar, facing, label) {
-  drawAvatar(ctx, x, y, avatar, facing, 2);
+  const img = avatar?.image && getImage(avatar.image);
+  if (img?.complete && img.naturalWidth) ctx.drawImage(img, x - 14, y - 26, 28, 34);
+  else drawAvatar(ctx, x, y, avatar, facing, 2);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 

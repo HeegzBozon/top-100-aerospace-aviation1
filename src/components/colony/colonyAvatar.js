@@ -33,9 +33,20 @@ export const DEFAULT_AVATAR = { skin: 's2', outfit: 'flightsuit', headgear: 'non
 const pick = (list, key) => list.find(o => o.key === key) || list[0];
 
 // Only known keys survive — anything else falls back to the default.
-export const cleanAvatar = (a = {}) => Object.fromEntries(
-  Object.keys(DEFAULT_AVATAR).map(k => [k, AVATAR_OPTIONS[k].some(o => o.key === a?.[k]) ? a[k] : DEFAULT_AVATAR[k]]),
-);
+export const cleanAvatar = (a = {}) => {
+  const out = Object.fromEntries(
+    Object.keys(DEFAULT_AVATAR).map(k => [k, AVATAR_OPTIONS[k].some(o => o.key === a?.[k]) ? a[k] : DEFAULT_AVATAR[k]]),
+  );
+  if (typeof a?.image === 'string' && a.image.startsWith('https://')) out.image = a.image;
+  return out;
+};
+
+// Prompt for the generated 8-bit portrait sprite.
+export const avatarPrompt = (a, description) => {
+  const c = cleanAvatar(a);
+  const label = (k) => AVATAR_OPTIONS[k].find(o => o.key === c[k])?.label;
+  return `8-bit retro pixel art game character sprite, full body, front facing, chunky pixels, limited 16-color palette, NES era style, plain flat cream background, centered, no text. Character: aerospace professional, ${label('skin')} skin tone, wearing a ${label('outfit')}, headgear: ${label('headgear')}, accent color ${label('accent')}. ${description ? `Details: ${description}.` : ''} If a reference photo is provided, match the person's hair, face and look in pixel form.`;
+};
 
 // A small pixel character, centred on (x, y) at its feet-ish middle, facing a direction.
 export function drawAvatar(ctx, x, y, avatar, facing = 'down', p = 2) {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Loader2, X } from 'lucide-react';
+import AvatarGenerator from '@/components/colony/AvatarGenerator';
 import { AVATAR_OPTIONS, cleanAvatar, drawAvatar } from '@/components/colony/colonyAvatar';
 
 const GROUPS = [['skin', 'Skin'], ['outfit', 'Outfit'], ['headgear', 'Headgear'], ['accent', 'Accent']];
@@ -43,6 +44,7 @@ export default function ColonyAvatarPicker({ avatar, onSave, onClose }) {
           </div>
         </div>
       ))}
+      <AvatarGenerator draft={draft} setDraft={setDraft} />
       {error && <p className="mb-2 text-xs text-red-300">{error}</p>}
       <button onClick={save} disabled={saving} className="flex w-full items-center justify-center gap-2 rounded bg-editorial-copper py-2 text-sm font-semibold">
         {saving && <Loader2 className="h-4 w-4 animate-spin" />} Save character
