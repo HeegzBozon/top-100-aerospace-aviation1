@@ -23,14 +23,21 @@ Deno.serve(async (req) => {
   };
 
   if (action === 'get_or_create_room') {
-    const name = roomName || 'colony-main';
+    const name = /^colony-[a-z0-9-]{1,40}$/.test(roomName || '') ? roomName : 'colony-main';
 
     // Try to get existing room
     const getRoomRes = await fetch(`${DAILY_BASE_URL}/rooms/${name}`, { headers });
 
     let room;
+    // Each campus room is its own call; a room holds up to 200 people.
     if (getRoomRes.ok) {
       room = await getRoomRes.json();
+      if (room?.config?.max_participants !== 200) {
+        const upd = await fetch(`${DAILY_BASE_URL}/rooms/${name}`, {
+          method: 'POST', headers, body: JSON.stringify({ properties: { max_participants: 200 } }),
+        });
+        if (upd.ok) room = await upd.json();
+      }
     } else {
       // Create room
       const createRes = await fetch(`${DAILY_BASE_URL}/rooms`, {
@@ -41,7 +48,7 @@ Deno.serve(async (req) => {
           properties: {
             enable_chat: true,
             enable_screenshare: true,
-            max_participants: 50,
+            max_participants: 200,
           },
         }),
       });

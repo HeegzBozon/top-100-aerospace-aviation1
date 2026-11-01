@@ -54,12 +54,16 @@ function ColonyRoom() {
   const [localSessionId, setLocalSessionId] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isCamOff, setIsCamOff] = useState(false);
+  // Carried across room changes, so a new room's call starts the way you left the last.
+  const mutedRef = useRef(isMuted); mutedRef.current = isMuted;
+  const camOffRef = useRef(isCamOff); camOffRef.current = isCamOff;
   const [showParticipants, setShowParticipants] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [positions, setPositions] = useState({});
   const [zone, setZone] = useState(null);
   const [room, setRoom] = useState('lobby');
   const [zoom, setZoom] = useState(1);
+  const joinedRoomRef = useRef(null);
   // The room just left, so the next room spawns you in front of the door you came through.
   const fromRoomRef = useRef(null);
   const lastRoomRef = useRef(room);
@@ -212,8 +216,21 @@ function ColonyRoom() {
   }, []);
 
   const handleJoin = useCallback(async (roomName) => {
-    setCallState('joining');
+    // Walking into another room hands you to that room's call: the old one is left
+    // quietly, without returning to the splash.
+    const switching = !!callRef.current;
+    if (!switching) setCallState('joining');
     setErrorMsg('');
+    joinedRoomRef.current = roomName;
+    if (switching) {
+      const old = callRef.current;
+      callRef.current = null;
+      await old.leave().catch(() => {});
+      await old.destroy().catch(() => {});
+      setParticipants({});
+      setPositions({});
+      setChat([]);
+    }
 
     try {
     const guestName = sessionStorage.getItem('colony-guest-name') || undefined;
@@ -223,6 +240,8 @@ function ColonyRoom() {
     const call = Daily.createCallObject({
       audioSource: true,
       videoSource: true,
+      // Only the people standing near you are streamed down (see the proximity effect).
+      subscribeToTracksAutomatically: false,
     });
     callRef.current = call;
 
@@ -258,7 +277,7 @@ function ColonyRoom() {
       setCallState('error');
     });
 
-    await call.join({ url: room.url, token });
+    await call.join({ url: room.url, token, startAudioOff: mutedRef.current, startVideoOff: camOffRef.current });
     setCallState('joined');
     syncParticipants();
     sendPos();
@@ -310,10 +329,13 @@ function ColonyRoom() {
     };
   }, []);
 
-  // Everyone drops straight into the main hall.
+  // Everyone drops straight into the call of the room they stand in, and changes call
+  // when they change room.
+  const callNameFor = (r) => (r === 'lobby' ? 'colony-main' : `colony-${r}`);
   useEffect(() => {
-    if (callState === 'lobby') handleJoin('colony-main');
-  }, [callState, handleJoin]);
+    if (callState === 'lobby') handleJoin(callNameFor(room));
+    else if (callState === 'joined' && joinedRoomRef.current !== callNameFor(room)) handleJoin(callNameFor(room));
+  }, [callState, room, handleJoin]);
 
   const participantList = Object.values(participants);
   const onlineCount = participantList.length;
@@ -333,6 +355,21 @@ function ColonyRoom() {
     if (!pos) return true;
     return pos.room === myCell.room && Math.hypot(pos.col - myCell.col, pos.row - myCell.row) <= NEAR;
   });
+
+  // Stream only the nearby people's audio and video; everyone else stays present on the
+  // map but costs nothing to receive. This is what lets a room hold a crowd.
+  const nearbyKey = nearby.map(p => p.session_id).sort().join(',');
+  useEffect(() => {
+    const call = callRef.current;
+    if (!call || callState !== 'joined') return;
+    const near = new Set(nearbyKey.split(','));
+    const updates = {};
+    Object.values(call.participants()).forEach((p) => {
+      if (p.local) return;
+      updates[p.session_id] = { setSubscribedTracks: near.has(p.session_id) };
+    });
+    if (Object.keys(updates).length) call.updateParticipants(updates);
+  }, [nearbyKey, participantList.length, callState]);
 
   if (callState === 'joining' || callState === 'lobby') {
     return <ColonySplash />;
