@@ -3,9 +3,11 @@ import { ArrowRight, Award } from 'lucide-react';
 import DialogueBox from '@/components/colony/DialogueBox';
 import useColonyListPicker from '@/components/colony/useColonyListPicker';
 import { REWARDS } from './firstFlight';
+import { lineFor } from './discovery';
+import QuestAnswerInput from './QuestAnswerInput';
 
 // One quest, played out with its character: their line, a choice, and the reward.
-export default function ColonyQuestStep({ quest, npc, onComplete, onClose }) {
+export default function ColonyQuestStep({ quest, npc, passport, onComplete, onClose }) {
   const [answer, setAnswer] = useState(null);
   const wrong = answer != null && quest.correct != null && answer !== quest.correct;
   const done = answer != null && !wrong;
@@ -17,7 +19,16 @@ export default function ColonyQuestStep({ quest, npc, onComplete, onClose }) {
   };
   const cursorKey = useColonyListPicker({ items, onPick: pick, onClose });
   const reward = REWARDS[quest.reward];
-  const text = done ? (quest.explain || 'Logged in your Campus Passport.') : wrong ? 'Not quite. Try again.' : `${quest.line} ${quest.prompt}`;
+  const text = done ? (quest.explain || 'Logged in your Campus Passport.') : wrong ? 'Not quite. Try again.' : `${lineFor(quest, passport)} ${quest.prompt}`;
+  if (quest.input) return (
+    <div className="absolute inset-x-3 bottom-3 z-30 mx-auto flex max-h-[85%] max-w-md flex-col overflow-y-auto rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 shadow-xl">
+      <div className="px-3 pt-3">
+        <p className="text-[10px] uppercase tracking-widest text-editorial-gold">The Origin Story · {quest.title}</p>
+        <div className="mt-2"><DialogueBox speaker={npc.name} text={`${quest.line} ${quest.prompt}`} /></div>
+      </div>
+      <QuestAnswerInput onAnswer={(a) => onComplete(a, 0)} />
+    </div>
+  );
   return (
     <div className="absolute inset-x-3 bottom-3 z-30 mx-auto flex max-h-[85%] max-w-md flex-col overflow-hidden rounded-lg border border-editorial-copper/60 bg-editorial-navy/95 shadow-xl">
       <div className="flex items-center gap-3 border-b border-editorial-copper/50 px-3 py-2">

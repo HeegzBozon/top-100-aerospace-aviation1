@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { PATHWAYS } from './discovery';
 import { emptyPassport, loadLocal, saveLocal, clearLocal, hasGuestProgress, mergeInto, portable } from './passportStore';
 
 // The player's Campus Passport. A member's lives on their account; a guest's lives on this
@@ -36,6 +37,14 @@ export default function usePassport(member) {
     persist({ ...cur, quests: { ...cur.quests, [qid]: { choice, at: new Date().toISOString() } } });
   }, [persist]);
 
+  // A discovery answer waits in the Record tab for the player's review.
+  const discover = useCallback((d) => {
+    const cur = ref.current;
+    if (!cur || !d) return;
+    const extra = d.key === 'pathway' ? { pathways: [...new Set([...(cur.pathways || []), PATHWAYS.find(x => x.label === d.value)?.key].filter(Boolean))] } : {};
+    persist({ ...cur, ...extra, discoveries: { ...cur.discoveries, [d.key]: d }, updated: Date.now() });
+  }, [persist]);
+
   const claimGuest = useCallback(async () => {
     await persist(mergeInto(ref.current, pendingGuest));
     clearLocal();
@@ -59,7 +68,7 @@ export default function usePassport(member) {
     return `${window.location.origin}/colony?save=${token}`;
   }, [persist]);
 
-  return { passport, update, complete, pendingGuest, claimGuest, leaveGuest, makeLink };
+  return { passport, update, complete, discover, pendingGuest, claimGuest, leaveGuest, makeLink };
 }
 
 // A save link opened on this device: restore the passport before the campus loads.

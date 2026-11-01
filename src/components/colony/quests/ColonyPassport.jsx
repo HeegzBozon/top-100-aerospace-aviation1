@@ -3,8 +3,9 @@ import { X, Loader2 } from 'lucide-react';
 import PassportQuests from './PassportQuests';
 import PassportCard from './PassportCard';
 import PassportSave from './PassportSave';
+import PassportRecord from './PassportRecord';
 
-const TABS = [{ key: 'quests', label: 'Quests' }, { key: 'card', label: 'Badge' }, { key: 'save', label: 'Save' }];
+const TABS = [{ key: 'quests', label: 'Quests' }, { key: 'record', label: 'Record' }, { key: 'card', label: 'Badge' }, { key: 'save', label: 'Save' }];
 
 // The Campus Passport: the First Flight tracker, the badge, and how to keep it.
 export default function ColonyPassport({ passport, isGuest, onSave, makeLink, onClose, initialTab = 'quests' }) {
@@ -24,6 +25,7 @@ export default function ColonyPassport({ passport, isGuest, onSave, makeLink, on
       <div className="flex-1 overflow-y-auto p-3">
         {!passport ? <Loader2 className="mx-auto h-5 w-5 animate-spin text-editorial-gold" />
           : tab === 'quests' ? <PassportQuests passport={passport} />
+          : tab === 'record' ? <PassportRecord passport={passport} isGuest={isGuest} onSave={onSave} />
           : tab === 'card' ? <PassportCard passport={passport} isGuest={isGuest} onSave={onSave} />
           : <PassportSave isGuest={isGuest} makeLink={makeLink} />}
       </div>

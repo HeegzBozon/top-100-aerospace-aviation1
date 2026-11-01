@@ -16,7 +16,7 @@ export default function PassportQuests({ passport }) {
           ))}
         </div>
       </div>
-      {[1, 2, 3, 4].map(act => (
+      {[1, 2, 3, 4, 5].map(act => (
         <div key={act}>
           <p className="mb-1 text-[10px] uppercase tracking-widest text-editorial-gold">{ACTS[act]}</p>
           {QUESTS.filter(q => q.act === act).map(q => {

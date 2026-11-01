@@ -1,6 +1,7 @@
 // The First Flight (TOP100-NARRATIVE-001). A gameplay journey only: nothing here is read by
 // measurement, scoring, directory placement or recognition, and the practice ballot is a
 // tutorial that never reaches the official system.
+import { PATHWAYS, ORIGIN } from './discovery';
 
 export const REWARDS = {
   innovation: { label: 'Innovation Stamp', kind: 'stamp' },
@@ -21,7 +22,7 @@ const STAMPS = ['innovation', 'exploration', 'leadership', 'storytelling', 'oppo
 export const QUESTS = [
   { id: 'q01', act: 1, npc: 'founder', place: 'Main Entrance', title: 'Aloha, Adventurer!', reward: 'passport',
     line: 'Aloha! This campus is a community shaping the future of flight. Take this Campus Passport. Walk with the arrows or the wheel, and press the centre at any door.',
-    prompt: 'How will you find your way?', choices: ['I will follow the passport', 'I will explore on my own', 'I will ask the staff'] },
+    prompt: 'What brings you to the TOP 100 Universe?', choices: [...PATHWAYS.map(x => x.label), 'Just exploring'] },
   { id: 'q02', act: 1, npc: 'atlas', place: 'Main Hall', title: 'Find Your Bearings',
     line: 'Navigation online. Six districts surround this hall: the Expo, the Space Pavilion, the Summit, the Media Hub, the Career Center and the Lounge.',
     prompt: 'Select your first destination.', choices: ['Innovation Expo', 'Space Pavilion', 'Leadership Summit', 'Media Hub', 'Career Center', 'Networking Lounge'],
@@ -59,9 +60,10 @@ export const QUESTS = [
   { id: 'q12', act: 4, npc: 'founder', place: 'Main Entrance', title: 'The First Flight Ceremony', reward: 'wings', finale: true,
     line: 'Atlas confirms six Discovery Stamps and two emblems. Welcome, Campus Explorer. These Wings are a gameplay achievement, not an official TOP 100 honoree designation.',
     prompt: 'Accept your Wings?', choices: ['Accept the Wings of Recognition'] },
+  ...ORIGIN,
 ];
 
-export const ACTS = { 1: 'Act I · Welcome to the Universe', 2: 'Act II · The Six Districts', 3: 'Act III · The Legacy of Flight', 4: 'Act IV · Earn Your Wings' };
+export const ACTS = { 1: 'Act I · Welcome to the Universe', 2: 'Act II · The Six Districts', 3: 'Act III · The Legacy of Flight', 4: 'Act IV · Earn Your Wings', 5: 'Arc II · The Origin Story' };
 
 export const isDone = (p, id) => !!p?.quests?.[id];
 export const earned = (p) => QUESTS.filter(q => q.reward && isDone(p, q.id)).map(q => q.reward);
@@ -73,6 +75,8 @@ export const stampCount = (p) => STAMPS.filter(s => earned(p).includes(s)).lengt
 export function lockReason(p, q) {
   if (q.id !== 'q01' && !isDone(p, 'q01')) return 'Meet the Founder at the Main Entrance first.';
   if (q.finale && !finaleReady(p)) return 'Collect all six Discovery Stamps and both emblems first.';
+  // The Origin Story opens after Echo's First Flight step, or at once for a storyteller.
+  if (q.act === 5 && !isDone(p, 'q07') && !(p?.pathways || []).includes('story')) return 'Visit Echo in the Media Hub first.';
   return null;
 }
 

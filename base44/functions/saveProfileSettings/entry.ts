@@ -126,6 +126,16 @@ export default async function (req) {
       if (body[f] !== undefined) patch[f] = String(body[f]).slice(0, 600);
     }
 
+    // Documentary interview answers: allowlisted prompts only, merged into what is there.
+    if (body.documentary_prompts !== undefined) {
+      const DOC_PROMPTS = ['first_light', 'turning_point', 'hardest_problem', 'what_next'];
+      const merged = {};
+      for (const [k, v] of Object.entries(body.documentary_prompts || {})) {
+        if (DOC_PROMPTS.includes(k)) merged[k] = String(v).slice(0, 600);
+      }
+      patch.documentary_prompts = merged;
+    }
+
     if (body.activity_seen_at !== undefined) {
       patch.activity_seen_at = body.activity_seen_at;
     }
@@ -206,6 +216,9 @@ export default async function (req) {
     });
 
     let record;
+    if (patch.documentary_prompts && existing?.length) {
+      patch.documentary_prompts = { ...(existing[0].documentary_prompts || {}), ...patch.documentary_prompts };
+    }
     if (existing && existing.length) {
       record = await base44.asServiceRole.entities.FellowProfileSettings.update(existing[0].id, patch);
     } else {

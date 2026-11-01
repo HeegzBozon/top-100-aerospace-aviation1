@@ -34,6 +34,7 @@ import ColonyReconcile from '@/components/colony/quests/ColonyReconcile';
 import usePassport, { restoreFromLink } from '@/components/colony/quests/usePassport';
 import { loadLocal } from '@/components/colony/quests/passportStore';
 import { questFor, lockReason } from '@/components/colony/quests/firstFlight';
+import { discoveryFor } from '@/components/colony/quests/discovery';
 import ColonyCastEditor from '@/components/colony/ColonyCastEditor';
 import useColonyCast from '@/components/colony/useColonyCast';
 import useColonyWalls from '@/components/colony/useColonyWalls';
@@ -545,9 +546,10 @@ function ColonyRoom({ onReplayWelcome }) {
           <ColonyPassport passport={pp.passport} isGuest={isGuest} onSave={pp.update} makeLink={pp.makeLink} onClose={() => setPanel(null)} />
         )}
         {panel === 'quest' && activeQuest && activeNpc && (
-          <ColonyQuestStep key={activeQuest.id} quest={activeQuest} npc={activeNpc} onClose={() => setPanel('npc')}
+          <ColonyQuestStep key={activeQuest.id} quest={activeQuest} npc={activeNpc} passport={pp.passport} onClose={() => setPanel('npc')}
             onComplete={(choice, i) => {
               pp.complete(activeQuest.id, choice);
+              pp.discover(discoveryFor(activeQuest, choice));
               if (activeQuest.reward) playStampSfx();
               setPanel(activeQuest.id === 'q01' ? 'passport' : null);
               if (activeQuest.rooms) { setZone(null); setRoom(activeQuest.rooms[i]); }
