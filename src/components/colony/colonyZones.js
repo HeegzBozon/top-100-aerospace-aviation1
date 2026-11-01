@@ -6,7 +6,7 @@ export const COLONY_ROOMS = {
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/da8f08016_AerospaceExpoHub_Top100.png',
     zones: [
       { key: 'innovation-expo', label: 'Innovation Expo', blurb: 'Step inside the aerospace showcase.', room: 'innovation-expo', col: 6, row: 1, w: 16, h: 9 },
-      { key: 'space-pavilion', label: 'Space Pavilion', blurb: 'Events: the conferences the network holds rooms in.', to: '/conferences', col: 46, row: 1, w: 13, h: 10 },
+      { key: 'space-pavilion', label: 'Space Pavilion', blurb: 'Step inside the pavilion.', room: 'space-pavilion', col: 46, row: 1, w: 13, h: 10 },
       { key: 'leadership-summit', label: 'Leadership Summit', blurb: 'Step inside the summit hall.', room: 'leadership-summit', col: 7, row: 14, w: 11, h: 6 },
       { key: 'networking-lounge', label: 'Networking Lounge', blurb: 'Step inside the lounge.', room: 'networking-lounge', col: 46, row: 13, w: 13, h: 8 },
       { key: 'media-hub', label: 'Media Hub', blurb: 'Step inside the studios.', room: 'media-hub', col: 4, row: 23, w: 14, h: 8 },
@@ -46,6 +46,14 @@ export const COLONY_ROOMS = {
       { key: 'lounge-hub', label: 'The Hub', blurb: 'AeroSync: the people you have met.', to: '/aerosync', col: 25, row: 10, w: 14, h: 9 },
       { key: 'lounge-events', label: 'Events & Meetups', blurb: 'Meetups hosted across the network.', to: '/meetups', col: 4, row: 30, w: 14, h: 4 },
       { key: 'lounge-people', label: 'People & Directory', blurb: 'Your people in AeroSync.', to: '/aerosync/people', col: 46, row: 30, w: 15, h: 4 },
+    ],
+  },
+  'space-pavilion': {
+    label: 'Space Pavilion',
+    map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/2ba9f7379_SpacePavilion_AerospaceInnovationExpo.png',
+    zones: [
+      { key: 'pavilion-exit', label: 'Space Pavilion Entrance', blurb: 'Head back out to the Main Hall.', room: 'hall', col: 28, row: 30, w: 8, h: 6 },
+      { key: 'pavilion-keynote', label: 'Keynote Stage', blurb: 'Events: the conferences the network holds rooms in.', to: '/conferences', col: 25, row: 6, w: 14, h: 7 },
     ],
   },
   'innovation-expo': {
