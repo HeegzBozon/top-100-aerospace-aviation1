@@ -8,6 +8,7 @@ import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 import ColonyParticipantList from '@/components/colony/ColonyParticipantList';
 import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
 import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
+import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 import { Loader2, Maximize2, Minimize2 } from 'lucide-react';
 
 // ─── Video thumbnail overlay ───────────────────────────────────────────────────
@@ -62,6 +63,7 @@ export default function Colony() {
   const [errorMsg, setErrorMsg] = useState('');
   const [positions, setPositions] = useState({});
   const [zone, setZone] = useState(null);
+  const [room, setRoom] = useState('hall');
   const myPosRef = useRef(null);
 
   // Every step is broadcast to the room; a newcomer is told where we stand.
@@ -217,13 +219,16 @@ export default function Colony() {
       >
         <ColonyGameCanvas
           sprites={participantList.filter(p => p.session_id !== localSessionId)}
+          key={room}
+          mapUrl={COLONY_ROOMS[room].map}
+          zones={COLONY_ROOMS[room].zones}
           localSessionId={localSessionId}
           positions={positions}
           onMove={handleMove}
           onZoneChange={setZone}
         />
 
-        <ColonyZoneCard zone={zone} />
+        <ColonyZoneCard zone={zone} onEnterRoom={(r) => { setZone(null); setRoom(r); }} />
 
         {/* Video thumbnail — bottom-right corner */}
         <VideoThumbnailOverlay
