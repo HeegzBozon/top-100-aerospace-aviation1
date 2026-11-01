@@ -41,7 +41,8 @@ export default function Colony() {
   const stickRef = useRef({});
   const zoneRef = useRef(null);
   zoneRef.current = zone;
-  const [panel, setPanel] = useState(null); // directory | chat
+  const [panel, setPanel] = useState(null); // directory | chat | concierge
+  const [myCell, setMyCell] = useState(null);
   const [chat, setChat] = useState([]);
 
   const activateZone = useCallback((z) => {
@@ -114,6 +115,7 @@ export default function Colony() {
   }, [sendPos]);
   const handleMove = useCallback((col, row, facing) => {
     myPosRef.current = { col, row, facing, room: roomRef.current, avatar: avatarRef.current };
+    setMyCell({ col, row, room: roomRef.current });
     sendPos();
   }, [sendPos]);
 
@@ -218,6 +220,15 @@ export default function Colony() {
   }, [callState, handleJoin]);
 
   const participantList = Object.values(participants);
+  // Video is proximity based: you see and hear only people standing near you in the same room.
+  // At the concierge desk the channel is private, so only you are on the reel.
+  const NEAR = 8;
+  const nearby = participantList.filter(p => {
+    if (p.session_id === localSessionId) return true;
+    if (panel === 'concierge' || !myCell) return false;
+    const pos = positions[p.session_id];
+    return pos && pos.room === myCell.room && Math.hypot(pos.col - myCell.col, pos.row - myCell.row) <= NEAR;
+  });
 
   if (callState === 'joining' || callState === 'lobby') {
     return (
@@ -250,7 +261,7 @@ export default function Colony() {
       <ColonyTopBar
         roomLabel={COLONY_ROOMS[room].label}
         onAvatar={() => setShowAvatar(v => !v)}
-        participants={participantList}
+        participants={nearby}
         localSessionId={localSessionId}
       />
 
