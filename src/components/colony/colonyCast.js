@@ -20,7 +20,7 @@ export const COLONY_CAST = [
     actions: [
       { key: 'nominate', label: 'Submit a nomination', to: '/selection-committee' },
       { key: 'process', label: 'Explore the selection process', to: '/review' },
-      { key: 'claim', label: 'Claim my profile', to: '/record' },
+      { key: 'claim', label: 'Claim my profile', to: '/ClaimProfile' },
     ] },
   { id: 'quinn', name: 'Quinn', role: 'Voting Commissioner', room: 'lobby', col: 50, row: 31, sprite: IMG + '7bf617b64_generated_image.png',
     signature: 'Your voice helps shape the future.',
