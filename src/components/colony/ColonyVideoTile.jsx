@@ -45,7 +45,7 @@ export default function ColonyVideoTile({ participant, isLocal = false, compact 
     .toUpperCase();
 
   return (
-    <div className={`relative overflow-hidden bg-slate-800 flex items-center justify-center ${compact ? 'h-full w-full' : 'rounded-xl aspect-video'}`} title={displayName}>
+    <div className={`relative overflow-hidden bg-editorial-navy flex items-center justify-center ${compact ? 'h-full w-full' : 'rounded-xl aspect-video'}`} title={displayName}>
       {/* Hidden audio element for remote participants */}
       {!isLocal && (
         <audio ref={audioRef} autoPlay aria-hidden="true" />
@@ -62,16 +62,16 @@ export default function ColonyVideoTile({ participant, isLocal = false, compact 
           aria-label={`Video of ${displayName}`}
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-slate-900">
-          <div className={`rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold ${compact ? 'h-7 w-7 text-[10px]' : 'w-16 h-16 text-xl'}`}>
+        <div className="w-full h-full flex items-center justify-center bg-[#14283f]">
+          <div className={`rounded-full border border-editorial-gold/70 bg-editorial-navy flex items-center justify-center font-heading text-editorial-gold ${compact ? 'h-8 w-8 text-xs' : 'w-16 h-16 text-xl'}`}>
             {initials}
           </div>
         </div>
       )}
 
       {/* Name + Status Bar */}
-      <div className={`absolute bottom-0 left-0 right-0 flex items-center justify-between px-2 py-1 bg-slate-950/60 ${compact ? 'hidden' : ''}`}>
-        <span className="text-white text-xs font-medium truncate">
+      <div className={`absolute bottom-0 left-0 right-0 flex items-center justify-between bg-editorial-navy/75 ${compact ? 'px-1.5 py-0.5' : 'px-2 py-1'}`}>
+        <span className={`text-editorial-cream font-medium truncate ${compact ? 'text-[9px]' : 'text-xs'}`}>
           {displayName}
           {isLocal && <span className="text-slate-400 ml-1">(You)</span>}
         </span>

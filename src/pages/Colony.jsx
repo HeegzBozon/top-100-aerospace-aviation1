@@ -10,6 +10,7 @@ import ColonyGameCanvas from '@/components/colony/ColonyGameCanvas';
 import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
 import ColonyDirectory from '@/components/colony/ColonyDirectory';
 import ColonyChat from '@/components/colony/ColonyChat';
+import ColonyConcierge from '@/components/colony/ColonyConcierge';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 import ColonyTopBar from '@/components/colony/ColonyTopBar';
 import { registerPicker } from '@/components/handheld/handheldPicker';
@@ -277,6 +278,7 @@ export default function Colony() {
         {panel === 'directory' && (
           <ColonyDirectory current={room} onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
         )}
+        {panel === 'concierge' && <ColonyConcierge onClose={() => setPanel(null)} />}
         {panel === 'chat' && <ColonyChat messages={chat} onSend={sendChat} onClose={() => setPanel(null)} />}
 
       </main>
