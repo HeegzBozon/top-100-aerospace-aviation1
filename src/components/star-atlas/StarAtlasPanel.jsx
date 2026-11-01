@@ -3,7 +3,7 @@ import { ChevronLeft, X, Loader2, Sparkles } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import AtlasTrail from './AtlasTrail';
 import AtlasStarCard from './AtlasStarCard';
-import { litIn } from './starAtlas';
+import AtlasTrailList from './AtlasTrailList';
 
 // Orion's Star Atlas, read inside the campus: constellations → stars → one story at a time.
 export default function StarAtlasPanel({ passport, onSave, onClose }) {
@@ -29,8 +29,8 @@ export default function StarAtlasPanel({ passport, onSave, onClose }) {
         <button type="button" onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-editorial-cream/70" /></button>
       </div>
       <div className="flex-1 overflow-y-auto p-3">
-        {star ? <AtlasStarCard key={star.id} nominee={star} lit={!!passport?.stars?.[star.id]} onLight={light} />
-          : trail ? <AtlasTrail constellation={trail} passport={passport} onOpen={setStar} />
+        {star ? <AtlasStarCard key={star.id} nominee={star} lit={!!passport?.stars?.[star.id]} onLight={light} onBack={() => setStar(null)} />
+          : trail ? <AtlasTrail constellation={trail} passport={passport} onOpen={setStar} onClose={() => setTrail(null)} />
           : !trails ? <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-editorial-gold" /></div>
           : trails.length === 0 ? (
             <div className="py-8 text-center">
@@ -38,23 +38,7 @@ export default function StarAtlasPanel({ passport, onSave, onClose }) {
               <p className="mt-2 font-heading text-editorial-cream">The sky is being charted.</p>
               <p className="text-xs text-editorial-cream/60">Orion's first constellations open soon. Every star has a story.</p>
             </div>
-          ) : (
-            <div className="space-y-2">
-              <p className="text-xs text-editorial-cream/70">Every star is an honoree. Read their story to light it.</p>
-              {trails.map(t => {
-                const n = t.nominee_ids?.length || 0, lit = litIn(passport, t);
-                return (
-                  <button key={t.id} type="button" onClick={() => setTrail(t)} className="block w-full rounded-sm border border-editorial-cream/15 bg-white/5 p-3 text-left">
-                    <span className="flex items-center justify-between gap-2">
-                      <span className="font-heading text-sm text-editorial-cream">{t.title}</span>
-                      <span className={`text-[10px] font-bold ${lit === n && n ? 'text-editorial-gold' : 'text-editorial-cream/50'}`}>{lit === n && n ? '★ Charted' : `${lit}/${n}`}</span>
-                    </span>
-                    <span className="mt-1.5 block h-1 overflow-hidden rounded-full bg-white/10"><span className="block h-full bg-editorial-gold" style={{ width: `${n ? (lit / n) * 100 : 0}%` }} /></span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          ) : <AtlasTrailList trails={trails} passport={passport} onOpen={setTrail} onClose={onClose} />}
       </div>
     </div>
   );

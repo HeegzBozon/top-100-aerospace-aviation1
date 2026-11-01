@@ -3,8 +3,25 @@ import { base44 } from '@/api/base44Client';
 // Star Atlas: honorees discovered by reading their stories. Gameplay only — a lit star
 // carries zero weight in nominations, voting, measurement or tiers, and never implies endorsement.
 export const STAR_XP = 40;
-export const READ_MS = 6000;
-export const STAR_FIELDS = ['id', 'name', 'title', 'company', 'avatar_url', 'photo_url', 'description', 'bio', 'linkedin_proudest_achievement', 'impact_summary', 'discipline'];
+export const STAR_FIELDS = ['id', 'name', 'title', 'company', 'industry', 'country', 'avatar_url', 'photo_url', 'description', 'bio', 'linkedin_proudest_achievement', 'impact_summary', 'discipline'];
+
+// Average adult reading pace; each card holds long enough to be read, never less than 4s.
+const WPM = 230;
+export const dwellMs = (text) => Math.max(4000, Math.round(((text || '').split(/\s+/).length / WPM) * 60000) + 1200);
+
+// Story sections cut into glass-sized cards on sentence boundaries (~260 chars each).
+export function storyCards(n) {
+  const out = [];
+  storyOf(n).forEach(({ label, text }) => {
+    let buf = '';
+    (text.match(/[^.!?]+[.!?]*\s*/g) || [text]).forEach(s => {
+      if (buf && (buf + s).length > 260) { out.push({ label, text: buf.trim() }); buf = ''; }
+      buf += s;
+    });
+    if (buf.trim()) out.push({ label, text: buf.trim() });
+  });
+  return out.map((c, i, all) => ({ ...c, part: all.filter(x => x.label === c.label).length > 1 ? all.slice(0, i + 1).filter(x => x.label === c.label).length : 0 }));
+}
 
 // Curated reflections: what stood out. Never free text.
 export const REFLECTIONS = [
