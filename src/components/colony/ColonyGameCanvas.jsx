@@ -1,133 +1,33 @@
 import { useEffect, useRef, useCallback } from 'react';
 
-// ─── Isometric projection constants ───────────────────────────────────────────
-const TILE_W = 64;
-const TILE_H = 32;
-const TILE_DEPTH = 14;
+// ─── The Expo Hub map: one illustrated top-down plate, walked on a grid ───────
+const MAP_URL = 'https://media.base44.com/images/public/68996845be6727838fdb822e/da8f08016_AerospaceExpoHub_Top100.png';
+const SCALE = 2;              // the plate is drawn at twice its native size
+const WORLD_W = 1024 * SCALE;
+const WORLD_H = 576 * SCALE;
+const CELL = 32;
+const COLS = Math.floor(WORLD_W / CELL);
+const ROWS = Math.floor(WORLD_H / CELL);
+const START = { col: Math.floor(COLS / 2), row: Math.floor(ROWS * 0.72) };
 
-const MAP_SIZE = 100;
+const mapImage = typeof Image !== 'undefined' ? new Image() : null;
+if (mapImage) mapImage.src = MAP_URL;
 
-// ─── Procedurally generate a 100×100 map ──────────────────────────────────────
-function generateMap(size) {
-  const map = [];
-  for (let r = 0; r < size; r++) {
-    const row = [];
-    for (let c = 0; c < size; c++) {
-      // Border = stone
-      if (r === 0 || r === size - 1 || c === 0 || c === size - 1) {
-        row.push('stone');
-      // Cross paths at center
-      } else if (r === Math.floor(size / 2) || c === Math.floor(size / 2)) {
-        row.push('path');
-      // Water ponds
-      } else if (
-        (r >= 10 && r <= 15 && c >= 10 && c <= 15) ||
-        (r >= 30 && r <= 36 && c >= 60 && c <= 66) ||
-        (r >= 65 && r <= 72 && c >= 20 && c <= 27) ||
-        (r >= 70 && r <= 76 && c >= 70 && c <= 76)
-      ) {
-        row.push('water');
-      // Sand patches
-      } else if (
-        (r >= 20 && r <= 25 && c >= 35 && c <= 45) ||
-        (r >= 55 && r <= 60 && c >= 55 && c <= 65)
-      ) {
-        row.push('sand');
-      } else {
-        row.push('grass');
-      }
-    }
-    map.push(row);
-  }
-  return map;
-}
+const cellCenter = (col, row) => ({ x: col * CELL + CELL / 2, y: row * CELL + CELL / 2 });
+const clampCol = (c) => Math.max(0, Math.min(COLS - 1, c));
+const clampRow = (r) => Math.max(0, Math.min(ROWS - 1, r));
 
-const DEMO_MAP = generateMap(MAP_SIZE);
-const MAP_ROWS = MAP_SIZE;
-const MAP_COLS = MAP_SIZE;
-
-// ─── Tile palette ──────────────────────────────────────────────────────────────
-const TILE_TYPES = {
-  grass: { top: '#5a8a3c', left: '#3d6128', right: '#4a7230' },
-  water: { top: '#3a7bd5', left: '#2558a8', right: '#2d67bf' },
-  stone: { top: '#8a8a8a', left: '#5a5a5a', right: '#6e6e6e' },
-  sand:  { top: '#c8b560', left: '#9e8e3a', right: '#b3a148' },
-  path:  { top: '#b08050', left: '#7a5535', right: '#8e6640' },
-};
-
-// ─── Grid → screen (camera-space) ─────────────────────────────────────────────
-// camX/camY are world-space pixel offsets. The canvas center is always the cam target.
-function gridToScreen(col, row, camX, camY, canvasW, canvasH) {
-  const worldX = (col - row) * (TILE_W / 2);
-  const worldY = (col + row) * (TILE_H / 2);
-  return {
-    x: worldX - camX + canvasW / 2,
-    y: worldY - camY + canvasH / 2,
-  };
-}
-
-// ─── Grid → world (no canvas dependency) ──────────────────────────────────────
-function gridToWorld(col, row) {
-  return {
-    wx: (col - row) * (TILE_W / 2),
-    wy: (col + row) * (TILE_H / 2),
-  };
-}
-
-// ─── Draw one isometric tile ──────────────────────────────────────────────────
-function drawTile(ctx, sx, sy, fillTop, fillLeft, fillRight) {
-  const hw = TILE_W / 2;
-  const hh = TILE_H / 2;
-
+function drawSprite(ctx, x, y, color, label, isLocal) {
   ctx.beginPath();
-  ctx.moveTo(sx, sy);
-  ctx.lineTo(sx + hw, sy + hh);
-  ctx.lineTo(sx, sy + TILE_H);
-  ctx.lineTo(sx - hw, sy + hh);
-  ctx.closePath();
-  ctx.fillStyle = fillTop;
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(0,0,0,0.12)';
-  ctx.lineWidth = 0.5;
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(sx - hw, sy + hh);
-  ctx.lineTo(sx, sy + TILE_H);
-  ctx.lineTo(sx, sy + TILE_H + TILE_DEPTH);
-  ctx.lineTo(sx - hw, sy + hh + TILE_DEPTH);
-  ctx.closePath();
-  ctx.fillStyle = fillLeft;
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(sx + hw, sy + hh);
-  ctx.lineTo(sx, sy + TILE_H);
-  ctx.lineTo(sx, sy + TILE_H + TILE_DEPTH);
-  ctx.lineTo(sx + hw, sy + hh + TILE_DEPTH);
-  ctx.closePath();
-  ctx.fillStyle = fillRight;
-  ctx.fill();
-  ctx.stroke();
-}
-
-// ─── Draw sprite ──────────────────────────────────────────────────────────────
-function drawSprite(ctx, col, row, camX, camY, canvasW, canvasH, color, label, isLocal) {
-  const { x, y } = gridToScreen(col, row, camX, camY, canvasW, canvasH);
-  const cx = x;
-  const cy = y + TILE_H / 2;
-
-  ctx.beginPath();
-  ctx.ellipse(cx, cy + 2, 14, 6, 0, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.ellipse(x, y + 12, 12, 5, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
   ctx.fill();
 
   ctx.beginPath();
-  ctx.arc(cx, cy - 14, 14, 0, Math.PI * 2);
+  ctx.arc(x, y, 13, 0, Math.PI * 2);
   ctx.fillStyle = color;
   ctx.fill();
-  ctx.strokeStyle = isLocal ? '#ffffff' : 'rgba(255,255,255,0.5)';
+  ctx.strokeStyle = isLocal ? '#ffffff' : 'rgba(255,255,255,0.6)';
   ctx.lineWidth = isLocal ? 2.5 : 1.5;
   ctx.stroke();
 
@@ -136,154 +36,115 @@ function drawSprite(ctx, col, row, camX, camY, canvasW, canvasH, color, label, i
   ctx.font = `bold ${isLocal ? 11 : 9}px sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(initials, cx, cy - 14);
+  ctx.fillText(initials, x, y);
 
   if (label) {
-    ctx.font = '10px sans-serif';
-    ctx.fillStyle = isLocal ? '#ffffff' : '#e0e0e0';
-    ctx.textAlign = 'center';
-    ctx.fillText(label.split(' ')[0], cx, cy - 32);
+    const name = label.split(' ')[0];
+    ctx.font = '11px sans-serif';
+    const w = ctx.measureText(name).width + 10;
+    ctx.fillStyle = 'rgba(14,24,41,0.8)';
+    ctx.fillRect(x - w / 2, y - 34, w, 16);
+    ctx.fillStyle = '#faf8f5';
+    ctx.fillText(name, x, y - 26);
   }
 }
 
-// ─── Main Component ────────────────────────────────────────────────────────────
 export default function ColonyGameCanvas({ sprites = [], localSessionId = null }) {
   const canvasRef = useRef(null);
-
-  // Camera is stored as world-space coordinates (what world point is at canvas center)
   const stateRef = useRef({
-    camX: 0,
-    camY: 0,
-    playerCol: Math.floor(MAP_SIZE / 2),
-    playerRow: Math.floor(MAP_SIZE / 2),
-    keys: {},
-    lastTime: 0,
-    moveAccum: 0,
-    initialized: false,
+    camX: 0, camY: 0,
+    playerCol: START.col, playerRow: START.row,
+    keys: {}, lastTime: 0, moveAccum: 0, initialized: false,
   });
   const rafRef = useRef(null);
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // Camera centred on the player, held inside the plate's edges.
+  const clampCam = (cx, cy, W, H) => ({
+    x: WORLD_W <= W ? WORLD_W / 2 : Math.max(W / 2, Math.min(WORLD_W - W / 2, cx)),
+    y: WORLD_H <= H ? WORLD_H / 2 : Math.max(H / 2, Math.min(WORLD_H - H / 2, cy)),
+  });
+
   const render = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || canvas.width === 0 || canvas.height === 0) return;
     const ctx = canvas.getContext('2d');
-    const { camX, camY } = stateRef.current;
-    const W = canvas.width;
-    const H = canvas.height;
+    const s = stateRef.current;
+    const W = canvas.width, H = canvas.height;
+    const ox = W / 2 - s.camX, oy = H / 2 - s.camY;
 
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#1a2a3a';
+    ctx.fillStyle = '#0e1829';
     ctx.fillRect(0, 0, W, H);
+    ctx.imageSmoothingEnabled = false;
+    if (mapImage?.complete && mapImage.naturalWidth) ctx.drawImage(mapImage, ox, oy, WORLD_W, WORLD_H);
 
-    // Frustum cull — only draw tiles visible on screen (with padding)
-    const pad = 4;
-    for (let row = 0; row < MAP_ROWS; row++) {
-      for (let col = 0; col < MAP_COLS; col++) {
-        const { x, y } = gridToScreen(col, row, camX, camY, W, H);
-        if (x < -TILE_W * pad || x > W + TILE_W * pad) continue;
-        if (y < -TILE_H * pad || y > H + TILE_H * pad) continue;
-        const tile = TILE_TYPES[DEMO_MAP[row][col]] || TILE_TYPES.grass;
-        drawTile(ctx, x, y, tile.top, tile.left, tile.right);
-      }
-    }
-
-    const allSprites = [
-      {
-        col: stateRef.current.playerCol,
-        row: stateRef.current.playerRow,
-        color: '#6366f1',
-        label: 'You',
-        isLocal: true,
-      },
-      ...sprites.map((s, i) => ({
-        col: Math.min(MAP_COLS - 2, Math.floor(MAP_SIZE / 2) + i + 1),
-        row: Math.min(MAP_ROWS - 2, Math.floor(MAP_SIZE / 2) + i + 1),
-        color: ['#ec4899', '#f59e0b', '#10b981', '#ef4444'][i % 4],
-        label: s.user_name || 'Participant',
-        isLocal: s.session_id === localSessionId,
+    const all = [
+      { col: s.playerCol, row: s.playerRow, color: '#1e3a5a', label: 'You', isLocal: true },
+      ...sprites.map((p, i) => ({
+        col: clampCol(START.col + i + 1), row: clampRow(START.row + 1),
+        color: ['#b87333', '#c9a87c', '#4a6f99', '#8f5c2c'][i % 4],
+        label: p.user_name || 'Participant',
+        isLocal: p.session_id === localSessionId,
       })),
     ];
-
-    allSprites
-      .sort((a, b) => (a.col + a.row) - (b.col + b.row))
-      .forEach(s => drawSprite(ctx, s.col, s.row, camX, camY, W, H, s.color, s.label, s.isLocal));
+    all.sort((a, b) => a.row - b.row).forEach(p => {
+      const { x, y } = cellCenter(p.col, p.row);
+      drawSprite(ctx, x + ox, y + oy, p.color, p.label, p.isLocal);
+    });
   }, [sprites, localSessionId]);
 
-  // ── Game loop ─────────────────────────────────────────────────────────────
   const loop = useCallback((time) => {
     const s = stateRef.current;
-    const dt = Math.min(time - s.lastTime, 100); // cap to prevent spiral on tab blur
+    const dt = Math.min(time - s.lastTime, 100);
     s.lastTime = time;
     s.moveAccum += dt;
-
     const canvas = canvasRef.current;
     if (!canvas) { rafRef.current = requestAnimationFrame(loop); return; }
 
-    // ── Snap camera on first valid frame (canvas has real dimensions) ──────
-    if (!s.initialized && canvas.width > 0 && canvas.height > 0) {
-      const { wx, wy } = gridToWorld(s.playerCol, s.playerRow);
-      s.camX = wx;
-      s.camY = wy;
-      s.initialized = true;
+    const target = cellCenter(s.playerCol, s.playerRow);
+    if (!s.initialized && canvas.width > 0) {
+      const c = clampCam(target.x, target.y, canvas.width, canvas.height);
+      s.camX = c.x; s.camY = c.y; s.initialized = true;
     }
 
-    // ── Movement ──────────────────────────────────────────────────────────
-    const MOVE_INTERVAL = 180;
-    if (s.moveAccum >= MOVE_INTERVAL) {
+    if (s.moveAccum >= 120) {
       s.moveAccum = 0;
       let dc = 0, dr = 0;
-      if (s.keys['ArrowUp']    || s.keys['w']) { dc -= 1; dr -= 1; }
-      if (s.keys['ArrowDown']  || s.keys['s']) { dc += 1; dr += 1; }
-      if (s.keys['ArrowLeft']  || s.keys['a']) { dc -= 1; dr += 1; }
-      if (s.keys['ArrowRight'] || s.keys['d']) { dc += 1; dr -= 1; }
-      if (dc !== 0 || dr !== 0) {
-        s.playerCol = Math.max(1, Math.min(MAP_COLS - 2, s.playerCol + dc));
-        s.playerRow = Math.max(1, Math.min(MAP_ROWS - 2, s.playerRow + dr));
-      }
+      if (s.keys.ArrowUp || s.keys.w) dr -= 1;
+      if (s.keys.ArrowDown || s.keys.s) dr += 1;
+      if (s.keys.ArrowLeft || s.keys.a) dc -= 1;
+      if (s.keys.ArrowRight || s.keys.d) dc += 1;
+      s.playerCol = clampCol(s.playerCol + dc);
+      s.playerRow = clampRow(s.playerRow + dr);
     }
 
-    // ── Camera lerp toward player's world position ─────────────────────────
-    // Target = world-space position of the player tile center
-    const { wx: targetX, wy: targetY } = gridToWorld(s.playerCol, s.playerRow);
-    s.camX += (targetX - s.camX) * 0.08;
-    s.camY += (targetY - s.camY) * 0.08;
+    const c = clampCam(target.x, target.y, canvas.width, canvas.height);
+    s.camX += (c.x - s.camX) * 0.1;
+    s.camY += (c.y - s.camY) * 0.1;
 
     render();
     rafRef.current = requestAnimationFrame(loop);
   }, [render]);
 
-  // ── Resize canvas ─────────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const setSize = () => {
       const parent = canvas.parentElement;
       if (!parent) return;
-      canvas.width  = parent.clientWidth;
+      canvas.width = parent.clientWidth;
       canvas.height = parent.clientHeight;
     };
-    // Sized on the next frame rather than inside the notification itself: writing
-    // the canvas while the browser is still delivering resize notifications is what
-    // raises the "undelivered notifications" loop.
     let frame = 0;
     const schedule = () => {
       if (frame) return;
-      frame = requestAnimationFrame(() => {
-        frame = 0;
-        setSize();
-      });
+      frame = requestAnimationFrame(() => { frame = 0; setSize(); });
     };
     setSize();
     const observer = new ResizeObserver(schedule);
     observer.observe(canvas.parentElement);
-    return () => {
-      if (frame) cancelAnimationFrame(frame);
-      observer.disconnect();
-    };
+    return () => { if (frame) cancelAnimationFrame(frame); observer.disconnect(); };
   }, []);
 
-  // ── Keyboard ──────────────────────────────────────────────────────────────
   useEffect(() => {
     const onKeyDown = (e) => {
       stateRef.current.keys[e.key] = true;
@@ -298,41 +159,29 @@ export default function ColonyGameCanvas({ sprites = [], localSessionId = null }
     };
   }, []);
 
-  // ── RAF loop ──────────────────────────────────────────────────────────────
   useEffect(() => {
     rafRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(rafRef.current);
   }, [loop]);
 
-  // ── Click-to-move ─────────────────────────────────────────────────────────
   const handleCanvasClick = useCallback((e) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    const { camX, camY } = stateRef.current;
-    const W = canvas.width;
-    const H = canvas.height;
-
-    // Inverse: screen → world → grid
-    const worldX = mx - W / 2 + camX;
-    const worldY = my - H / 2 + camY;
-    const col = Math.round((worldX / (TILE_W / 2) + worldY / (TILE_H / 2)) / 2);
-    const row = Math.round((worldY / (TILE_H / 2) - worldX / (TILE_W / 2)) / 2);
-
-    if (col >= 1 && col <= MAP_COLS - 2 && row >= 1 && row <= MAP_ROWS - 2) {
-      stateRef.current.playerCol = col;
-      stateRef.current.playerRow = row;
-    }
+    const s = stateRef.current;
+    const wx = e.clientX - rect.left - canvas.width / 2 + s.camX;
+    const wy = e.clientY - rect.top - canvas.height / 2 + s.camY;
+    if (wx < 0 || wy < 0 || wx >= WORLD_W || wy >= WORLD_H) return;
+    s.playerCol = clampCol(Math.floor(wx / CELL));
+    s.playerRow = clampRow(Math.floor(wy / CELL));
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
       onClick={handleCanvasClick}
-      aria-label="Colony isometric world"
-      className="w-full h-full block cursor-pointer outline-none focus:ring-2 focus:ring-indigo-500"
+      aria-label="Aerospace Expo Hub map"
+      className="w-full h-full block cursor-pointer outline-none focus:ring-2 focus:ring-editorial-copper"
       tabIndex={0}
     />
   );

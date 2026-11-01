@@ -1,9 +1,19 @@
-import { Briefcase, Compass, FileText, Gauge, Radar, Rocket, Users } from 'lucide-react';
+import { Briefcase, Compass, FileText, Gauge, Map as MapIcon, Radar, Rocket, Users } from 'lucide-react';
 
 // The App Store's catalog. One entry per micro-tool: what it is, the single job it does,
 // and the artifact it hands back. Only a tool with status 'available' carries a way in —
 // a listed tool that is still being built is described, never opened.
 export const STORE_TOOLS = [
+  {
+    key: 'expo-hub',
+    name: 'Expo Hub',
+    kicker: 'Virtual campus',
+    job: 'Walk the TOP 100 campus with other Fellows: the Innovation Expo, Space Pavilion, Networking Lounge and more, with video when you meet.',
+    artifact: 'A live room you share by walking up to someone.',
+    status: 'available',
+    to: '/colony',
+    icon: MapIcon,
+  },
   {
     key: 'ground-control',
     name: 'Ground Control',
