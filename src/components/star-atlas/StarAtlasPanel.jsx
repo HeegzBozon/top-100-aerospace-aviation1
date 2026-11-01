@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import AtlasTrail from './AtlasTrail';
 import AtlasStarCard from './AtlasStarCard';
 import AtlasTrailList from './AtlasTrailList';
+import StarCollected from './StarCollected';
 
 // Orion's Star Atlas, read inside the campus: constellations → stars → one story at a time.
 export default function StarAtlasPanel({ passport, onSave, onClose }) {
@@ -16,8 +17,10 @@ export default function StarAtlasPanel({ passport, onSave, onClose }) {
   }, []);
 
   const light = (reflection) => {
+    if (!passport?.stars?.[star.id]) setCollected(star);
     onSave({ stars: { ...(passport?.stars || {}), [star.id]: { c: trail.id, r: reflection, at: new Date().toISOString() } } });
   };
+  const [collected, setCollected] = useState(null);
   const back = () => (star ? setStar(null) : setTrail(null));
   const title = star ? trail.title : trail ? trail.title : 'The Star Atlas';
 
@@ -40,6 +43,7 @@ export default function StarAtlasPanel({ passport, onSave, onClose }) {
             </div>
           ) : <AtlasTrailList trails={trails} passport={passport} onOpen={setTrail} onClose={onClose} />}
       </div>
+      {collected && <StarCollected nominee={collected} trail={trail} passport={passport} onClose={() => { setCollected(null); setStar(null); }} />}
     </div>
   );
 }
