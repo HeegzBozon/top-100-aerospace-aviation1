@@ -27,8 +27,9 @@ export function mergeInto(account, guest) {
   Object.entries(a.card || {}).forEach(([k, v]) => { if (v) card[k] = v; });
   const discoveries = { ...guest.discoveries, ...a.discoveries };
   const pathways = [...new Set([...(guest.pathways || []), ...(a.pathways || [])])];
-  return { ...a, quests, card, discoveries, pathways, guest_id: a.guest_id || guest.guest_id, updated: Date.now() };
+  const stars = { ...guest.stars, ...a.stars };
+  return { ...a, quests, card, discoveries, pathways, stars, guest_id: a.guest_id || guest.guest_id, updated: Date.now() };
 }
 
 // What the save link carries: progress and the card, never an email or account id.
-export const portable = (p) => ({ v: 1, guest_id: p.guest_id, name: (p.name || '').slice(0, 60), card: p.card, avatar: p.avatar, quests: p.quests, pathways: p.pathways, discoveries: p.discoveries });
+export const portable = (p) => ({ v: 1, guest_id: p.guest_id, name: (p.name || '').slice(0, 60), card: p.card, avatar: p.avatar, quests: p.quests, pathways: p.pathways, discoveries: p.discoveries, stars: p.stars });

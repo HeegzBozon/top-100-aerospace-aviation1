@@ -61,6 +61,7 @@ export const COLONY_CAST = [
     signature: 'The next frontier is calling.',
     greeting: 'Mission control is live. Launches, satellites and the conferences behind them.',
     actions: [
+      { key: 'atlas', label: 'Open the Star Atlas', panel: 'atlas' },
       { key: 'globe', label: 'Intelligence globe', to: '/intelligence-globe' },
       { key: 'conf', label: 'Conferences', to: '/conferences' },
       { key: 'artemis', label: 'Artemis mission brief', to: '/artemis-mission-brief' },

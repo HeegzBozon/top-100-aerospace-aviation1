@@ -24,6 +24,7 @@ import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
 import { canHear, areaAt } from '@/components/colony/colonyAudio';
 import ColonyAreaChip from '@/components/colony/ColonyAreaChip';
+import StarAtlasPanel from '@/components/star-atlas/StarAtlasPanel';
 import ColonyOnboarding from '@/components/colony/ColonyOnboarding';
 // Daily throws an invalid-state error when a call is used before it has joined or after it is left.
 const inCall = (c) => { try { return c?.meetingState?.() === 'joined-meeting'; } catch { return false; } };
@@ -558,6 +559,7 @@ function ColonyRoom({ onReplayWelcome }) {
             onGo={(to) => { setPanel(null); navigate(to); }} onChat={() => setPanel('chat')} />
         )}
         {pp.pendingGuest && <ColonyReconcile guest={pp.pendingGuest} onClaim={pp.claimGuest} onLeave={pp.leaveGuest} />}
+        {panel === 'atlas' && <StarAtlasPanel passport={pp.passport} onSave={pp.update} onClose={() => setPanel(null)} />}
         {panel === 'passport' && (
           <ColonyPassport passport={pp.passport} isGuest={isGuest} onSave={pp.update} makeLink={pp.makeLink} onClose={() => setPanel(null)} />
         )}

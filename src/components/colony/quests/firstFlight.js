@@ -93,7 +93,8 @@ export function title(p) {
 export const XP_PER_LEVEL = 300;
 export const questXp = (q) => 100 + (q.reward && REWARDS[q.reward]?.kind !== 'item' ? 50 : 0) + (q.finale ? 250 : 0);
 export function xpOf(p) {
-  const xp = QUESTS.filter(q => isDone(p, q.id)).reduce((t, q) => t + questXp(q), 0);
+  // Each Star Atlas star lit adds 40 XP.
+  const xp = QUESTS.filter(q => isDone(p, q.id)).reduce((t, q) => t + questXp(q), 0) + Object.keys(p?.stars || {}).length * 40;
   return { xp, level: Math.floor(xp / XP_PER_LEVEL) + 1, into: xp % XP_PER_LEVEL };
 }
 export const nextQuest = (p) => QUESTS.find(q => !isDone(p, q.id) && !lockReason(p, q)) || null;
