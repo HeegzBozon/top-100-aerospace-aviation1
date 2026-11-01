@@ -265,7 +265,9 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     const ctx = canvas.getContext('2d');
     const s = stateRef.current;
     const W = canvas.width, H = canvas.height, sc = s.scale;
-    const ox = W / 2 - s.camX * sc, oy = H / 2 - s.camY * sc;
+    // Whole-pixel camera offset: the map and every figure snap to the same grid, so nothing
+    // shimmers against the floor while the camera eases after the player.
+    const ox = Math.round(W / 2 - s.camX * sc), oy = Math.round(H / 2 - s.camY * sc);
 
     ctx.fillStyle = '#0e1829';
     ctx.fillRect(0, 0, W, H);
@@ -275,7 +277,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     drawHotspots(ctx, cbRef.current.zones, zoneRef.current?.key, ox, oy, sc, performance.now());
 
     const all = [
-      { id: 'me', col: s.vCol ?? s.playerCol, row: s.vRow ?? s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
+      { id: 'me', col: s.playerCol, row: s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
       ...(() => {
         // The cast runs errands, looks around, and stops to chat with colleagues nearby.
         if (s.brainRoom !== room) { s.brain = {}; s.brainRoom = room; s.spawn = {}; s.gone = {}; s.last = {}; }
@@ -323,7 +325,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       const { x, y } = d;
       // The lobby is drawn in perspective: further back (higher up) reads smaller.
       const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
-      const sx = ox + x * sc, sy = oy + y * sc;
+      const sx = Math.round(ox + x * sc), sy = Math.round(oy + y * sc);
       const sp = s.spawn[p.id] ? Math.min(1, (now - s.spawn[p.id]) / SPAWN_MS) : 1;
       if (sp < 1) drawBeam(ctx, sx, sy, CELL * sc * depth, 1 - sp * 0.6, now);
       s.last[p.id] = { x: sx, y: sy, cell: CELL * sc * depth };
