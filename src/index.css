@@ -448,7 +448,7 @@ button:focus-visible {
    A phone turned on its side: two handles, the glass between them, the menu bar across
    its head. The body re-declares the geometry so every surface re-measures itself. */
 body.hh-landscape {
-  --hh-grip: 168px;
+  --hh-grip: 116px;
   --hh-top: 8px;
   --hh-nav: 32px;
   --hh-bottom: 8px;
@@ -458,6 +458,7 @@ body.hh-landscape {
 }
 body.hh-landscape .hh-stage {
   display: flex !important;
+  z-index: 2;
   border-radius: 10px;
   bottom: calc(8px + env(safe-area-inset-bottom));
 }

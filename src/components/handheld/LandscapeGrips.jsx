@@ -8,13 +8,13 @@ function Grip({ side, children }) {
   return (
     <nav
       aria-label={`${left ? "Left" : "Right"} handle`}
-      className="hh-body hh-grain fixed z-40 flex select-none flex-col items-center justify-center gap-4 overflow-hidden"
+      className="hh-body hh-grain fixed z-40 flex select-none flex-col items-center justify-center gap-2 overflow-hidden"
       style={{
         top: 6,
         bottom: 6,
         [side]: "calc(env(safe-area-inset-" + side + ") + 4px)",
         width: "calc(var(--hh-grip) - 10px)",
-        borderRadius: left ? "64px 18px 18px 64px" : "18px 64px 64px 18px",
+        borderRadius: left ? "44px 12px 12px 44px" : "12px 44px 44px 12px",
       }}
     >
       {/* the copper seam where the handle meets the glass */}
@@ -49,7 +49,7 @@ export default function LandscapeGrips({ menuBar, wheel, faceButtons, flipped, o
       <div
         aria-hidden="true"
         className="hh-body pointer-events-none fixed z-[1]"
-        style={{ top: 2, bottom: 2, left: "calc(var(--hh-grip) - 24px)", right: "calc(var(--hh-grip) - 24px)", borderRadius: 22 }}
+        style={{ top: 2, bottom: 2, left: "calc(var(--hh-grip) - 16px)", right: "calc(var(--hh-grip) - 16px)", borderRadius: 22 }}
       />
 
       <div className="fixed z-40" style={{ top: 8, height: 30, left: "var(--hh-glass-inset)", right: "var(--hh-glass-inset)" }}>
@@ -57,12 +57,11 @@ export default function LandscapeGrips({ menuBar, wheel, faceButtons, flipped, o
       </div>
 
       <Grip side={wheelSide}>
-        <span className="hh-engrave text-[7px] font-bold uppercase tracking-[0.3em] text-[var(--hh-ink-soft)]">TOP 100</span>
         {wheel}
       </Grip>
 
       <Grip side={keysSide}>
-        {faceButtons}
+        <div className="origin-center scale-[0.82]">{faceButtons}</div>
         <div className="flex gap-3">
           <button type="button" onClick={onHome} aria-label="Home" className={small}><Home className="h-4 w-4" /></button>
           <button type="button" onClick={onSearch} aria-label="Search the console" className={small}><Search className="h-4 w-4" /></button>

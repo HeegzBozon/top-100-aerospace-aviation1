@@ -941,7 +941,7 @@ export default function HandheldDeck() {
       {!landscape && <HandheldScreenFrame />}
 
       {landscape && (
-        <LandscapeGrips menuBar={menuBarEl} wheel={wheelEl(116)} faceButtons={faceEl} flipped={wheelRight} onHome={goHome} onSearch={openSearch} />
+        <LandscapeGrips menuBar={menuBarEl} wheel={wheelEl(96)} faceButtons={faceEl} flipped={wheelRight} onHome={goHome} onSearch={openSearch} />
       )}
 
       {!landscape && !railHiddenOn(location.pathname) && (
