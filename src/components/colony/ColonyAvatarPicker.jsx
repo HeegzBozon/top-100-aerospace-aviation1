@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Loader2, X, RefreshCw, SlidersHorizontal } from 'lucide-react';
+import { Loader2, X, Shuffle, SlidersHorizontal } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import AvatarGenerator from '@/components/colony/AvatarGenerator';
 import { AVATAR_OPTIONS, cleanAvatar, drawAvatar, randomGuestAvatar, guestAvatarPrompt, avatarPrompt } from '@/components/colony/colonyAvatar';
@@ -44,11 +44,11 @@ export default function ColonyAvatarPicker({ avatar, isGuest = false, onSave, on
         <p className="font-heading text-lg">Your character</p>
         <button onClick={onClose} aria-label="Close"><X className="h-4 w-4" /></button>
       </div>
-      <canvas ref={ref} width={96} height={96} className="mx-auto mb-2 block rounded bg-editorial-cream/10" />
-      {draft.image && <img src={draft.image} alt="Your character" className="mx-auto mb-2 h-20 w-20 rounded bg-editorial-cream object-contain [image-rendering:pixelated]" />}
+      <canvas ref={ref} width={96} height={96} className={`mx-auto mb-2 rounded bg-editorial-cream/10 ${draft.image ? 'hidden' : 'block'}`} />
+      {draft.image && <img src={draft.image} alt="Your character" className="mx-auto mb-2 h-32 w-32 rounded bg-editorial-cream object-contain [image-rendering:pixelated]" />}
       <div className="mb-2 flex gap-2">
         <button onClick={regenerate} disabled={regen} className="flex flex-1 items-center justify-center gap-1.5 rounded border border-editorial-gold py-1.5 text-xs font-semibold text-editorial-gold">
-          {regen ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />} Regenerate
+          {regen ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Shuffle className="h-3.5 w-3.5" />} Shuffle
         </button>
         <button onClick={() => setOpen(o => !o)} className="flex flex-1 items-center justify-center gap-1.5 rounded border border-editorial-cream/30 py-1.5 text-xs font-semibold">
           <SlidersHorizontal className="h-3.5 w-3.5" /> {open ? 'Hide options' : 'Customize'}

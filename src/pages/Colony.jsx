@@ -73,7 +73,9 @@ function ColonyRoom() {
   const [errorMsg, setErrorMsg] = useState('');
   const [positions, setPositions] = useState({});
   const [zone, setZone] = useState(null);
-  const [room, setRoom] = useState('lobby');
+  // Pick up where you left off: the last room you stood in is remembered on this device.
+  const [room, setRoom] = useState(() => localStorage.getItem('colony-room') || 'lobby');
+  useEffect(() => { localStorage.setItem('colony-room', room); }, [room]);
   const [zoom, setZoom] = useState(1);
   const joinedRoomRef = useRef(null);
   // Which copy of a full room you were placed in (1 = the room itself).
