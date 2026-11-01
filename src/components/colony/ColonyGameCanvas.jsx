@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { drawAvatar } from '@/components/colony/colonyAvatar';
 
 // ─── The Expo Hub map: one illustrated top-down plate, walked on a grid ───────
 // Everything is measured in the plate's native pixels (1024×576, 16px cells) and
@@ -23,26 +24,10 @@ const clampRow = (r) => Math.max(0, Math.min(ROWS - 1, r));
 const zoneAt = (zones, col, row) =>
   zones.find(z => col >= z.col && col < z.col + z.w && row >= z.row && row < z.row + z.h) || null;
 
-function drawSprite(ctx, x, y, color, label, isLocal) {
-  ctx.beginPath();
-  ctx.ellipse(x, y + 9, 9, 4, 0, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(x, y, 10, 0, Math.PI * 2);
-  ctx.fillStyle = color;
-  ctx.fill();
-  ctx.strokeStyle = isLocal ? '#ffffff' : 'rgba(255,255,255,0.6)';
-  ctx.lineWidth = isLocal ? 2 : 1.5;
-  ctx.stroke();
-
-  const initials = (label || '?').split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 9px sans-serif';
+function drawSprite(ctx, x, y, avatar, facing, label) {
+  drawAvatar(ctx, x, y, avatar, facing, 2);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(initials, x, y);
 
   if (label) {
     const name = label.split(' ')[0];
@@ -55,7 +40,7 @@ function drawSprite(ctx, x, y, color, label, isLocal) {
   }
 }
 
-export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef }) {
+export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar }) {
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
@@ -97,20 +82,20 @@ export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sp
     if (img?.complete && img.naturalWidth) ctx.drawImage(img, ox, oy, NATIVE_W * sc, NATIVE_H * sc);
 
     const all = [
-      { col: s.playerCol, row: s.playerRow, color: '#1e3a5a', label: 'You', isLocal: true },
+      { col: s.playerCol, row: s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
       ...sprites.filter(p => (positions[p.session_id]?.room ?? 'hall') === room).map((p, i) => ({
         col: positions[p.session_id]?.col ?? clampCol(START.col + i + 1),
         row: positions[p.session_id]?.row ?? clampRow(START.row),
-        color: ['#b87333', '#c9a87c', '#4a6f99', '#8f5c2c'][i % 4],
+        avatar: positions[p.session_id]?.avatar,
+        facing: positions[p.session_id]?.facing || 'down',
         label: p.user_name || 'Participant',
-        isLocal: p.session_id === localSessionId,
       })),
     ];
     all.sort((a, b) => a.row - b.row).forEach(p => {
       const { x, y } = cellCenter(p.col, p.row);
-      drawSprite(ctx, ox + x * sc, oy + y * sc, p.color, p.label, p.isLocal);
+      drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label);
     });
-  }, [mapUrl, room, sprites, localSessionId, positions]);
+  }, [mapUrl, room, sprites, positions, myAvatar]);
 
   const loop = useCallback((time) => {
     const s = stateRef.current;
@@ -135,6 +120,8 @@ export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sp
       if (s.keys.ArrowDown || s.keys.s || stick.down) dr += 1;
       if (s.keys.ArrowLeft || s.keys.a || stick.left) dc -= 1;
       if (s.keys.ArrowRight || s.keys.d || stick.right) dc += 1;
+      if (dr) s.facing = dr < 0 ? 'up' : 'down';
+      if (dc) s.facing = dc < 0 ? 'left' : 'right';
       s.playerCol = clampCol(s.playerCol + dc);
       s.playerRow = clampRow(s.playerRow + dr);
     }
@@ -142,7 +129,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sp
     const key = `${s.playerCol},${s.playerRow}`;
     if (lastPosRef.current !== key) {
       lastPosRef.current = key;
-      cbRef.current.onMove?.(s.playerCol, s.playerRow);
+      cbRef.current.onMove?.(s.playerCol, s.playerRow, s.facing || 'down');
       const zone = zoneAt(cbRef.current.zones, s.playerCol, s.playerRow);
       if (zone?.key !== zoneRef.current?.key) {
         zoneRef.current = zone;

@@ -11,7 +11,10 @@ import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
 import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
 import { registerPicker } from '@/components/handheld/handheldPicker';
-import { Loader2 } from 'lucide-react';
+import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
+import { DEFAULT_AVATAR, cleanAvatar } from '@/components/colony/colonyAvatar';
+import { base44 } from '@/api/base44Client';
+import { Loader2, Shirt } from 'lucide-react';
 
 const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 
@@ -29,6 +32,8 @@ export default function Colony() {
   const [zone, setZone] = useState(null);
   const [room, setRoom] = useState('hall');
   const myPosRef = useRef(null);
+  const [avatar, setAvatar] = useState(DEFAULT_AVATAR);
+  const [showAvatar, setShowAvatar] = useState(false);
   // The click wheel, held as a joystick: the zone under the thumb is the way you walk.
   const stickRef = useRef({});
   const zoneRef = useRef(null);
@@ -68,8 +73,18 @@ export default function Colony() {
   }, []);
   const roomRef = useRef('hall');
   roomRef.current = room;
-  const handleMove = useCallback((col, row) => {
-    myPosRef.current = { col, row, room: roomRef.current };
+  const avatarRef = useRef(DEFAULT_AVATAR);
+  avatarRef.current = avatar;
+  useEffect(() => {
+    base44.auth.me().then(u => u?.colony_avatar && setAvatar(cleanAvatar(u.colony_avatar))).catch(() => {});
+  }, []);
+  const saveAvatar = useCallback(async (next) => {
+    await base44.auth.updateMe({ colony_avatar: next });
+    setAvatar(next);
+    if (myPosRef.current) { myPosRef.current = { ...myPosRef.current, avatar: next }; sendPos(); }
+  }, [sendPos]);
+  const handleMove = useCallback((col, row, facing) => {
+    myPosRef.current = { col, row, facing, room: roomRef.current, avatar: avatarRef.current };
     sendPos();
   }, [sendPos]);
 
@@ -117,7 +132,7 @@ export default function Colony() {
     SYNC_EVENTS.forEach((evt) => call.on(evt, syncParticipants));
 
     call.on('app-message', (e) => {
-      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'hall' } }));
+      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'hall', facing: e.data.facing, avatar: e.data.avatar } }));
     });
     call.on('participant-joined', (e) => sendPos(e.participant.session_id));
     call.on('participant-left', (e) => setPositions(prev => {
@@ -206,6 +221,9 @@ export default function Colony() {
             <span className="text-white text-xs font-bold">C</span>
           </div>
           <span className="text-white font-semibold text-sm">Colony</span>
+          <button onClick={() => setShowAvatar(v => !v)} aria-label="Your character" className="ml-1 rounded p-1 text-editorial-gold hover:bg-white/10">
+            <Shirt className="h-4 w-4" />
+          </button>
         </div>
         <ColonyVideoStrip participants={participantList} localSessionId={localSessionId} />
       </header>
@@ -226,7 +244,9 @@ export default function Colony() {
           onMove={handleMove}
           onZoneChange={setZone}
           stickRef={stickRef}
+          myAvatar={avatar}
         />
+        {showAvatar && <ColonyAvatarPicker avatar={avatar} onSave={saveAvatar} onClose={() => setShowAvatar(false)} />}
 
         <ColonyZoneCard zone={zone} onEnterRoom={(r) => { setZone(null); setRoom(r); }} />
 
