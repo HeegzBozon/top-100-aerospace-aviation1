@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import ColonySplash from './ColonySplash';
+import useWheelConfirm from './useWheelConfirm';
 
 const KEY = 'colony-intro-seen';
 const HOLD_MS = 3000;
@@ -36,12 +37,15 @@ export default function ColonyIntro() {
     return () => clearTimeout(t);
   }, [phase]);
 
+  useWheelConfirm(() => setPhase(p => (p === 'start' ? 'fade' : p)), phase === 'start');
+
   if (phase === 'done') return null;
   return (
     <div
       onClick={() => phase === 'start' && setPhase('fade')}
-      className="fixed inset-0 z-[60] transition-all ease-out"
+      className="as-frame transition-all ease-out"
       style={{
+        zIndex: 90,
         transitionDuration: `${FADE_MS}ms`,
         opacity: phase === 'fade' ? 0 : 1,
         transform: phase === 'fade' ? 'scale(1.08)' : 'scale(1)',
@@ -50,7 +54,7 @@ export default function ColonyIntro() {
     >
       <ColonySplash label="Going online…" />
       {phase !== 'hold' && (
-        <button type="button" className="absolute inset-x-0 bottom-8 mx-auto w-fit bg-slate-950 px-4 py-2 font-heading text-lg font-bold uppercase tracking-[0.3em] text-editorial-gold hh-blink">
+        <button type="button" className="absolute inset-x-0 bottom-6 z-10 mx-auto w-fit bg-slate-950 px-4 py-2 font-heading text-lg font-bold uppercase tracking-[0.3em] text-editorial-gold hh-blink">
           Press Start
         </button>
       )}

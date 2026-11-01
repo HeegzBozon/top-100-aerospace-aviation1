@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import DialogueBox from '@/components/colony/DialogueBox';
+import useWheelConfirm from '@/components/colony/useWheelConfirm';
 import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
 import { cleanAvatar, randomGuestAvatar, guestAvatarPrompt, avatarPrompt, DEFAULT_AVATAR } from '@/components/colony/colonyAvatar';
 
@@ -47,6 +48,8 @@ export default function ColonyOnboarding({ isGuest, memberName, onDone }) {
   };
 
   const advance = () => setStep(s => (s === 1 && !isGuest ? 3 : s + 1));
+  // The wheel's centre moves the dialogue on; on the name step it submits the name.
+  useWheelConfirm(() => { if (step === 2 && isGuest) { if (name.trim()) advance(); } else advance(); }, step < 4);
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-editorial-navy">

@@ -20,6 +20,8 @@ import ColonyVideoStrip from '@/components/colony/ColonyVideoStrip';
 import { canHear, areaAt } from '@/components/colony/colonyAudio';
 import ColonyAreaChip from '@/components/colony/ColonyAreaChip';
 import ColonyOnboarding from '@/components/colony/ColonyOnboarding';
+// Daily throws an invalid-state error when a call is used before it has joined or after it is left.
+const inCall = (c) => { try { return c?.meetingState?.() === 'joined-meeting'; } catch { return false; } };
 import ColonyMapEditor from '@/components/colony/ColonyMapEditor';
 import useColonyWalls from '@/components/colony/useColonyWalls';
 import useColonyMenus from '@/components/colony/useColonyMenus';
@@ -144,7 +146,7 @@ function ColonyRoom() {
   const sendChat = useCallback((text) => {
     const name = callRef.current?.participants()?.local?.user_name || 'Member';
     const id = `${Date.now()}-${Math.random()}`;
-    callRef.current?.sendAppMessage({ type: 'chat', id, text, name }, '*');
+    inCall(callRef.current) && callRef.current.sendAppMessage({ type: 'chat', id, text, name }, '*');
     setChat(prev => [...prev, { id, text, name, mine: true }].slice(-100));
   }, []);
 
@@ -185,7 +187,7 @@ function ColonyRoom() {
 
   // Every step is broadcast to the room; a newcomer is told where we stand.
   const sendPos = useCallback((to = '*') => {
-    if (callRef.current && myPosRef.current) callRef.current.sendAppMessage({ type: 'pos', ...myPosRef.current }, to);
+    if (inCall(callRef.current) && myPosRef.current) callRef.current.sendAppMessage({ type: 'pos', ...myPosRef.current }, to);
   }, []);
   const roomRef = useRef('lobby');
   roomRef.current = room;
@@ -320,14 +322,12 @@ function ColonyRoom() {
   }, [syncParticipants, sendPos]);
 
   const handleToggleMic = useCallback(() => {
-    if (!callRef.current) return;
-    callRef.current.setLocalAudio(isMuted);
+    if (inCall(callRef.current)) callRef.current.setLocalAudio(isMuted);
     setIsMuted((prev) => !prev);
   }, [isMuted]);
 
   const handleToggleCam = useCallback(() => {
-    if (!callRef.current) return;
-    callRef.current.setLocalVideo(isCamOff);
+    if (inCall(callRef.current)) callRef.current.setLocalVideo(isCamOff);
     setIsCamOff((prev) => !prev);
   }, [isCamOff]);
 
@@ -392,7 +392,7 @@ function ColonyRoom() {
   const nearbyKey = nearby.map(p => p.session_id).sort().join(',');
   useEffect(() => {
     const call = callRef.current;
-    if (!call || callState !== 'joined') return;
+    if (!inCall(call) || callState !== 'joined') return;
     const near = new Set(nearbyKey.split(','));
     const updates = {};
     Object.values(call.participants()).forEach((p) => {

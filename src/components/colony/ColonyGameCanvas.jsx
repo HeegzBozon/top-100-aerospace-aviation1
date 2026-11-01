@@ -116,9 +116,9 @@ function drawSprite(ctx, x, y, avatar, facing, label, sc0, depth = 1, tall = 1, 
   // Stretch the figure upward from its feet.
   ctx.save();
   // Mid-stride: a step bob, a sway from side to side, and a squash on each footfall.
-  const bob = walk === null ? 0 : -Math.abs(Math.sin(walk)) * cell * 0.18;
-  const sway = walk === null ? 0 : Math.sin(walk) * 0.09;
-  const squash = walk === null ? 1 : 1 - Math.abs(Math.cos(walk)) * 0.05;
+  const bob = walk === null ? 0 : -Math.abs(Math.sin(walk)) * cell * 0.04;
+  const sway = walk === null ? 0 : Math.sin(walk) * 0.02;
+  const squash = 1;
   ctx.translate(x, y + cell * 0.5 + bob);
   ctx.rotate(sway);
   ctx.scale(1 / squash, tall * squash);
@@ -240,12 +240,16 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       const k = `${p.col},${p.row}`;
       const seen = s.seen[p.id];
       if (!seen || seen.k !== k) s.seen[p.id] = { k, at: seen ? now : 0 };
-      const walk = now - s.seen[p.id].at < 260 ? now / 85 : null;
+      const walk = now - s.seen[p.id].at < 260 ? now / 120 : null;
       // Glide between cells instead of snapping, so the figure and its tag move as one.
       const tgt = cellCenter(p.col, p.row);
       s.disp = s.disp || {};
       const d = s.disp[p.id] || (s.disp[p.id] = { ...tgt });
-      d.x += (tgt.x - d.x) * 0.3; d.y += (tgt.y - d.y) * 0.3;
+      // Constant walking speed (one cell per step interval), so strides never surge and stall.
+      const dx = tgt.x - d.x, dy = tgt.y - d.y, dist = Math.hypot(dx, dy);
+      const stepPx = (CELL / 240) * (s.frameDt || 16.7);
+      if (dist <= stepPx || dist > CELL * 4) { d.x = tgt.x; d.y = tgt.y; }
+      else { d.x += (dx / dist) * stepPx; d.y += (dy / dist) * stepPx; }
       const { x, y } = d;
       // The lobby is drawn in perspective: further back (higher up) reads smaller.
       const depth = room === 'lobby' ? 1.3 + 1.85 * Math.pow(p.row / (ROWS - 1), 1.4) : 1;
@@ -272,6 +276,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     const s = stateRef.current;
     const dt = Math.min(time - s.lastTime, 100);
     s.lastTime = time;
+    s.frameDt = dt;
     s.moveAccum += dt;
     const canvas = canvasRef.current;
     if (!canvas) { rafRef.current = requestAnimationFrame(loop); return; }
