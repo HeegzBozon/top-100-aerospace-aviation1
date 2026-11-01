@@ -6,6 +6,7 @@ import InboxMetrics from './InboxMetrics';
 import InboxControls, { SORTS } from './InboxControls';
 import useInboxPicker from './useInboxPicker';
 import Newsstand from '@/pages/Newsstand';
+import InboxCapture from './InboxCapture';
 
 import { BUNDLES, STAGES, inFilter } from './inboxFunnel';
 
@@ -61,6 +62,7 @@ export default function InboxTriage({ user }) {
       ) : tab === 'funnel' ? (
         <InboxMetrics items={items} states={states} filter={filter} onFilter={(f) => { setFilter(f); setTab('inbox'); }} />
       ) : (<>
+      <InboxCapture user={user} onSaved={reload} />
       <InboxControls views={VIEWS} view={view} setView={setView} sort={sort} setSort={setSort}
         filter={filter} setFilter={setFilter} />
       {rows.length === 0 ? (
@@ -71,7 +73,7 @@ export default function InboxTriage({ user }) {
           </p>
         </div>
       ) : shown.map((b) => (
-        <InboxBundle key={b.key} label={b.label} states={states} onSet={setState} showSweep={view === 'inbox'} cursorKey={cursorKey}
+        <InboxBundle key={b.key} ownerEmail={user.email} label={b.label} states={states} onSet={setState} showSweep={view === 'inbox'} cursorKey={cursorKey}
           openKey={openKey} onOpen={toggle} onEnquiryStatus={setEnquiryStatus}
           items={visible.filter((i) => i.bundle === b.key)} />
       ))}

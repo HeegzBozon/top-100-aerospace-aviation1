@@ -32,7 +32,13 @@ export default function useInbox(user) {
         base44.entities.InboxItemState.list('-updated_date', 500),
       ]);
       const noms = await base44.entities.NominationIntake.filter({ nominator_email: user.email }, '-created_date', 100).catch(() => []);
+      const entries = await base44.entities.InboxEntry.list('-created_date', 100).catch(() => []);
       const next = [
+        ...entries.map((e) => ({
+          key: `entry:${e.id}`, bundle: 'captured', at: e.created_date, person: e.kind === 'task',
+          title: e.person_name ? `${e.title} · ${e.person_name}` : e.title,
+          fact: `${e.kind[0].toUpperCase()}${e.kind.slice(1)}${e.due_date ? ` · follow up ${e.due_date}` : ''}`, entry: e,
+        })),
         ...refs.map((r) => ({
           key: `referral:${r.id}`, bundle: 'referrals', at: r.updated_date,
           title: `${r.subject_name || 'Someone'} → ${r.recipient_name || 'a contact'}`,

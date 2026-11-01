@@ -1,9 +1,10 @@
 import { Fragment } from 'react';
 import InboxItemRow from './InboxItemRow';
 import EnquiryDetail from './EnquiryDetail';
+import EntryDetail from './EntryDetail';
 
 // A bundle: one heading, its items, and a sweep that marks every unpinned item done.
-export default function InboxBundle({ label, items, states, onSet, showSweep, cursorKey, openKey, onOpen, onEnquiryStatus }) {
+export default function InboxBundle({ ownerEmail, label, items, states, onSet, showSweep, cursorKey, openKey, onOpen, onEnquiryStatus }) {
   if (!items.length) return null;
   const sweep = () => items.filter((i) => !states[i.key]?.pinned).forEach((i) => onSet(i.key, { done: true }));
   return (
@@ -19,6 +20,7 @@ export default function InboxBundle({ label, items, states, onSet, showSweep, cu
       <ul>{items.map((i) => (
         <Fragment key={i.key}>
           <InboxItemRow item={i} state={states[i.key]} onSet={onSet} active={i.key === cursorKey} onOpen={onOpen} />
+          {openKey === i.key && i.entry && <EntryDetail item={i} ownerEmail={ownerEmail} />}
           {openKey === i.key && i.enquiry && <EnquiryDetail item={i} enquiry={i.enquiry} onStatus={(s) => onEnquiryStatus(i, s)} />}
         </Fragment>
       ))}</ul>

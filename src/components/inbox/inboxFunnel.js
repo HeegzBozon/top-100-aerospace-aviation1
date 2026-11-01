@@ -2,6 +2,7 @@
 // the middle, and the commitments at the foot.
 export const STAGES = [
   { key: 'top', label: 'Top of funnel', bundles: [
+    { key: 'captured', label: 'Captured' },
     { key: 'introductions', label: 'Intros' },
     { key: 'referrals', label: 'Referrals' },
     { key: 'nominations', label: 'Nominations' },
