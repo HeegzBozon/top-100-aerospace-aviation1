@@ -270,10 +270,10 @@ export default function Colony() {
   }
 
   return (
-    <div className="hh-slide-window md:h-screen bg-slate-950 flex flex-col overflow-hidden">
+    <div className="hh-slide-window md:h-screen bg-slate-950 relative flex flex-col overflow-hidden">
       {/* Header */}
       {/* Room, character and campus moves live in the menu bar's File and Edit menus now */}
-      <div className="relative z-30 flex-none bg-editorial-navy">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 [&>*]:pointer-events-auto [&>*]:bg-transparent">
         <ColonyVideoStrip participants={nearby} localSessionId={localSessionId} />
       </div>
 
