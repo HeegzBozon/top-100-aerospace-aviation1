@@ -81,6 +81,7 @@ export default function Colony() {
     setCallState('joining');
     setErrorMsg('');
 
+    try {
     const res = await colonyRoom({ action: 'get_or_create_room', roomName });
     const { room, token } = res.data;
 
@@ -108,6 +109,12 @@ export default function Colony() {
     await call.join({ url: room.url, token });
     setCallState('joined');
     syncParticipants();
+    } catch (e) {
+      callRef.current?.destroy();
+      callRef.current = null;
+      setErrorMsg(e?.errorMsg || e?.message || 'Could not enter the space. Check camera and microphone access.');
+      setCallState('error');
+    }
   }, [syncParticipants]);
 
   const handleToggleMic = useCallback(() => {
@@ -166,7 +173,7 @@ export default function Colony() {
   }
 
   return (
-    <div className="h-screen bg-slate-950 flex flex-col overflow-hidden">
+    <div className="hh-slide-window md:h-screen bg-slate-950 flex flex-col overflow-hidden">
       {/* Header */}
       <header className="flex-none flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 z-30">
         <div className="flex items-center gap-2">
