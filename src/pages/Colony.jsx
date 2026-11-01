@@ -30,7 +30,7 @@ export default function Colony() {
   const [errorMsg, setErrorMsg] = useState('');
   const [positions, setPositions] = useState({});
   const [zone, setZone] = useState(null);
-  const [room, setRoom] = useState('hall');
+  const [room, setRoom] = useState('lobby');
   const myPosRef = useRef(null);
   const [avatar, setAvatar] = useState(DEFAULT_AVATAR);
   const [showAvatar, setShowAvatar] = useState(false);
@@ -56,8 +56,8 @@ export default function Colony() {
         return true;
       },
       back: () => {
-        if (roomRef.current === 'hall') return false;
-        setZone(null); setRoom('hall');
+        if (roomRef.current === 'lobby') return false;
+        setZone(null); setRoom(roomRef.current === 'hall' ? 'lobby' : 'hall');
         return true;
       },
       steer: {
@@ -71,7 +71,7 @@ export default function Colony() {
   const sendPos = useCallback((to = '*') => {
     if (callRef.current && myPosRef.current) callRef.current.sendAppMessage({ type: 'pos', ...myPosRef.current }, to);
   }, []);
-  const roomRef = useRef('hall');
+  const roomRef = useRef('lobby');
   roomRef.current = room;
   const avatarRef = useRef(DEFAULT_AVATAR);
   avatarRef.current = avatar;
@@ -132,7 +132,7 @@ export default function Colony() {
     SYNC_EVENTS.forEach((evt) => call.on(evt, syncParticipants));
 
     call.on('app-message', (e) => {
-      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'hall', facing: e.data.facing, avatar: e.data.avatar } }));
+      if (e?.data?.type === 'pos') setPositions(prev => ({ ...prev, [e.fromId]: { col: e.data.col, row: e.data.row, room: e.data.room || 'lobby', facing: e.data.facing, avatar: e.data.avatar } }));
     });
     call.on('participant-joined', (e) => sendPos(e.participant.session_id));
     call.on('participant-left', (e) => setPositions(prev => {

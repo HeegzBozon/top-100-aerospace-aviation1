@@ -24,25 +24,76 @@ const clampRow = (r) => Math.max(0, Math.min(ROWS - 1, r));
 const zoneAt = (zones, col, row) =>
   zones.find(z => col >= z.col && col < z.col + z.w && row >= z.row && row < z.row + z.h) || null;
 
-function drawSprite(ctx, x, y, avatar, facing, label) {
-  const img = avatar?.image && getImage(avatar.image);
-  if (img?.complete && img.naturalWidth) ctx.drawImage(img, x - 14, y - 26, 28, 34);
-  else drawAvatar(ctx, x, y, avatar, facing, 2);
+// A generated portrait, keyed out: the flat background colour (read from the corners)
+// becomes transparent and the figure is trimmed to its own bounds. Cached per URL.
+const spriteCache = {};
+const getSprite = (url) => {
+  if (typeof Image === 'undefined') return null;
+  if (spriteCache[url] !== undefined) return spriteCache[url];
+  spriteCache[url] = null;
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    const w = 128, h = Math.round(128 * img.naturalHeight / img.naturalWidth);
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.imageSmoothingEnabled = false;
+    x.drawImage(img, 0, 0, w, h);
+    let data;
+    try { data = x.getImageData(0, 0, w, h); } catch { spriteCache[url] = c; return; }
+    const d = data.data;
+    const corners = [0, w - 1, (h - 1) * w, h * w - 1].map(i => [d[i * 4], d[i * 4 + 1], d[i * 4 + 2]]);
+    const bg = corners.reduce((a, b) => a.map((v, i) => v + b[i] / 4), [0, 0, 0]);
+    let minX = w, minY = h, maxX = 0, maxY = 0;
+    for (let i = 0; i < w * h; i++) {
+      const dist = Math.abs(d[i * 4] - bg[0]) + Math.abs(d[i * 4 + 1] - bg[1]) + Math.abs(d[i * 4 + 2] - bg[2]);
+      if (dist < 60) d[i * 4 + 3] = 0;
+      else { const px = i % w, py = (i / w) | 0; minX = Math.min(minX, px); maxX = Math.max(maxX, px); minY = Math.min(minY, py); maxY = Math.max(maxY, py); }
+    }
+    x.putImageData(data, 0, 0);
+    if (maxX <= minX) { spriteCache[url] = c; return; }
+    const t = document.createElement('canvas');
+    t.width = maxX - minX + 1; t.height = maxY - minY + 1;
+    t.getContext('2d').drawImage(c, minX, minY, t.width, t.height, 0, 0, t.width, t.height);
+    spriteCache[url] = t;
+  };
+  img.src = url;
+  return null;
+};
+
+// Sprites are sized in map cells, so they scale with the plate on every screen.
+function drawSprite(ctx, x, y, avatar, facing, label, sc) {
+  const cell = CELL * sc;
+  const spr = avatar?.image && getSprite(avatar.image);
+  const top = y - cell * 1.6;
+  if (spr) {
+    const h = cell * 2.1, w = h * spr.width / spr.height;
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    ctx.beginPath();
+    ctx.ellipse(x, y + cell * 0.45, w * 0.4, cell * 0.15, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fill();
+    ctx.drawImage(spr, x - w / 2, y + cell * 0.5 - h, w, h);
+    ctx.restore();
+  } else drawAvatar(ctx, x, y, avatar, facing, Math.max(1.5, sc * 1.2));
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
   if (label) {
     const name = label.split(' ')[0];
-    ctx.font = '10px sans-serif';
+    const fs = Math.max(10, Math.round(cell * 0.6));
+    ctx.font = `${fs}px sans-serif`;
     const w = ctx.measureText(name).width + 8;
     ctx.fillStyle = 'rgba(14,24,41,0.8)';
-    ctx.fillRect(x - w / 2, y - 28, w, 14);
+    ctx.fillRect(x - w / 2, top - fs - 4, w, fs + 4);
     ctx.fillStyle = '#faf8f5';
-    ctx.fillText(name, x, y - 21);
+    ctx.fillText(name, x, top - fs / 2 - 2);
   }
 }
 
-export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar }) {
+export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], sprites = [], localSessionId = null, positions = {}, onMove, onZoneChange, stickRef, myAvatar }) {
   const lastPosRef = useRef(null);
   const zoneRef = useRef(null);
   const cbRef = useRef({});
@@ -85,7 +136,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sp
 
     const all = [
       { col: s.playerCol, row: s.playerRow, avatar: myAvatar, facing: s.facing, label: 'You' },
-      ...sprites.filter(p => (positions[p.session_id]?.room ?? 'hall') === room).map((p, i) => ({
+      ...sprites.filter(p => (positions[p.session_id]?.room ?? 'lobby') === room).map((p, i) => ({
         col: positions[p.session_id]?.col ?? clampCol(START.col + i + 1),
         row: positions[p.session_id]?.row ?? clampRow(START.row),
         avatar: positions[p.session_id]?.avatar,
@@ -95,7 +146,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'hall', zones = [], sp
     ];
     all.sort((a, b) => a.row - b.row).forEach(p => {
       const { x, y } = cellCenter(p.col, p.row);
-      drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label);
+      drawSprite(ctx, ox + x * sc, oy + y * sc, p.avatar, p.facing, p.label, sc);
     });
   }, [mapUrl, room, sprites, positions, myAvatar]);
 
