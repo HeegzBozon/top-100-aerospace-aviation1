@@ -25,7 +25,7 @@ export const START_MENU = [
   // The directory, split: the campus rooms live inside Colony; the people live on AeroSync.
   { key: "people", index: "02", label: "People", to: "/aerosync/people", icon: Users },
   { key: "media-hub", index: "03", label: "Media Hub", to: "/media-hub", icon: Newspaper },
-  { key: "inbox", index: "04", label: "Inbox", to: "/inbox", icon: Inbox, membersOnly: true },
+  { key: "inbox", index: "04", label: "Seasonal Planning", to: "/seasonal-planning", icon: Inbox, membersOnly: true },
   // The committee's first act: putting names in. A Fellow arrives here to nominate, not
   // to file a ballot — the ballot has its own key, and its own pill on the cycle band.
   { key: "nominate", index: "05", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },

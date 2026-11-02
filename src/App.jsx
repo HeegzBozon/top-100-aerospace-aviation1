@@ -169,7 +169,8 @@ const AuthenticatedApp = () => {
       <Route element={<HandheldShell />}>
       {/* A desk is housed in the desk machine: everything below renders inside its tube */}
       <Route element={<DesktopShell />}>
-      <Route path="/inbox" element={<Inbox />} />
+      <Route path="/seasonal-planning" element={<Inbox />} />
+      <Route path="/inbox" element={<Navigate to="/seasonal-planning" replace />} />
       <Route path="/star-atlas-studio" element={<StarAtlasStudio />} />
       {/* Everyone opens on the start screen: the surfaces a Fellow is entitled to, and
           the way in for whoever is not one yet — the same machine either way. */}
