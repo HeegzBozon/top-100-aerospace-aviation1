@@ -19,7 +19,8 @@ export default function InboxMetrics({ items, states, filter, onFilter }) {
     const done = mine.filter((i) => states[i.key]?.done).length;
     const waiting = mine.filter((i) => !states[i.key]?.done && i.person
       && !(states[i.key]?.snoozed_until && new Date(states[i.key].snoozed_until).getTime() > now)).length;
-    return { open: mine.length - done, waiting, done };
+    const open = mine.filter((i) => !states[i.key]?.done);
+    return { open: open.length, waiting, done, received: open.filter((i) => i.dir === 'in').length, sent: open.filter((i) => i.dir === 'out').length };
   };
   const pick = (f) => onFilter(filter === f ? 'all' : f);
 

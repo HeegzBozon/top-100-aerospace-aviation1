@@ -38,33 +38,33 @@ export default function useInbox(user) {
         ...demos.map((m) => {
           const incoming = m.recipient_email === user.email;
           return {
-            key: `demo:${m.id}`, bundle: 'demos', at: m.created_date, person: incoming && m.status === 'requested',
+            key: `demo:${m.id}`, bundle: 'demos', dir: incoming ? 'in' : 'out', at: m.created_date, person: incoming && m.status === 'requested',
             title: `Demo with ${incoming ? (m.requester_name || m.requester_email) : (m.recipient_name || m.recipient_email)}`,
             fact: `${new Date(m.start_time).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })} · ${m.status === 'accepted' ? 'Confirmed' : 'Awaiting reply'}`,
             to: '/aerosync/meetings',
           };
         }),
         ...entries.map((e) => ({
-          key: `entry:${e.id}`, bundle: 'captured', at: e.created_date, person: e.kind === 'task',
+          key: `entry:${e.id}`, bundle: 'captured', dir: 'out', at: e.created_date, person: e.kind === 'task',
           title: e.person_name ? `${e.title} · ${e.person_name}` : e.title,
           fact: `${e.kind[0].toUpperCase()}${e.kind.slice(1)}${e.due_date ? ` · follow up ${e.due_date}` : ''}`, entry: e,
         })),
         ...refs.map((r) => ({
-          key: `referral:${r.id}`, bundle: 'referrals', at: r.updated_date,
+          key: `referral:${r.id}`, bundle: 'referrals', dir: 'out', at: r.updated_date,
           title: `${r.subject_name || 'Someone'} → ${r.recipient_name || 'a contact'}`,
           fact: REFERRAL_STEP[r.status], person: r.status === 'consented', to: '/conferences/attend',
         })),
         ...intros.map((i) => ({
-          key: `intro:${i.id}`, bundle: 'introductions', at: i.created_date, person: true,
+          key: `intro:${i.id}`, bundle: 'introductions', dir: 'in', at: i.created_date, person: true,
           title: `${i.requester_name || i.requester_email} asks for an introduction`,
           fact: i.target_title || i.message || 'Introduction request', to: '/Profile?surface=availability',
         })),
         ...noms.map((n) => ({
-          key: `nomination:${n.id}`, bundle: 'nominations', at: n.created_date, person: false,
+          key: `nomination:${n.id}`, bundle: 'nominations', dir: 'out', at: n.created_date, person: false,
           title: `You nominated ${n.nominee_name}`, fact: NOMINATION_STEP[n.status] || 'Received', to: '/selection-committee',
         })),
         ...enquiries.map((q) => ({
-          key: `enquiry:${q.id}`, bundle: enquiryBundle(q), at: q.created_date, person: q.status === 'new',
+          key: `enquiry:${q.id}`, bundle: enquiryBundle(q), dir: 'in', at: q.created_date, person: q.status === 'new',
           title: `${q.sender_name || q.sender_email}${q.sender_org ? ` · ${q.sender_org}` : ''}`,
           fact: `${ENQUIRY_STEP[q.status]}${q.timeline ? ` · ${TIMELINE[q.timeline]}` : ''}`, enquiry: q,
         })),
