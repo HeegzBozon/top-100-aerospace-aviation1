@@ -43,8 +43,10 @@ export default function useNewsstand() {
       // The spotlights are the honorees themselves: each one's own page. Read in name order,
       // so the stand implies no standing of its own.
       base44.entities.Nominee.filter({ status: 'active' }, { sort: 'name', limit: 100 }),
+      // Release notes have one source: released platform-scope status updates.
+      base44.entities.StatusUpdate.filter({ scope: 'platform', status: 'released' }, { sort: '-released_at', limit: 50 }),
     ])
-      .then(([issues, bulletins, nominees]) => {
+      .then(([issues, bulletins, nominees, notes]) => {
         const allIssues = rows(issues);
         setStock({
           loading: false,
@@ -53,6 +55,7 @@ export default function useNewsstand() {
           edition: chooseWomenIssue(allIssues),
           bulletins: rows(bulletins),
           nominees: rows(nominees),
+          notes: rows(notes),
         });
       })
       .catch((error) => {
@@ -62,6 +65,7 @@ export default function useNewsstand() {
           issues: [],
           bulletins: [],
           nominees: [],
+          notes: [],
         });
       });
   }, []);
@@ -172,7 +176,18 @@ export default function useNewsstand() {
       // series itself rather than from platform bulletins.
       newsletter: newsletterNotes(),
       // And the notes pinned by the door: what the platform itself shipped.
-      release: stocked.filter((bulletin) => bulletin.scope === 'platform').map(asBulletin),
+      release: (stock.notes || []).map((note) => ({
+        key: `note-${note.id}`,
+        rack: 'release',
+        kicker: note.season_name || 'Platform note',
+        title: note.title,
+        meta: [note.author_name, dayLabel(note.released_at || note.created_date)].filter(Boolean).join(' · '),
+        teaser: firstLine(note.body || '', 170),
+        body: note.body || '',
+        html: false,
+        link: '',
+        expandable: true,
+      })),
     };
   }, [stock, wire]);
 

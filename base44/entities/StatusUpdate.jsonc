@@ -37,6 +37,10 @@
     },
     "author_name": {
       "type": "string"
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Id of the legacy record this note was copied from (e.g. 'Release:<id>'). Makes the migration safe to re-run."
     }
   },
   "required": [
