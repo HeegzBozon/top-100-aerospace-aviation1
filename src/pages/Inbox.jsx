@@ -30,12 +30,12 @@ export default function Inbox() {
         <div className="pd-rule mb-3 mt-2 w-12 md:mb-6 md:mt-3" />
         <div className="mb-2 flex max-w-sm gap-1 rounded-full bg-editorial-sand p-0.5">
           {[['platform', 'TOP 100 Platform'], ['personal', 'My Season']].map(([k, l]) => (
-            <button key={k} onClick={() => { setBoard(k); if (k === 'personal' && tab === 'triage') setTab('board'); }}
+            <button key={k} onClick={() => { setBoard(k); if (k === 'platform' && tab === 'triage') setTab('board'); }}
               className={`flex-1 rounded-full py-1.5 font-body text-[11px] font-semibold ${board === k ? 'bg-editorial-navy text-editorial-cream' : 'text-editorial-navy'}`}>{l}</button>
           ))}
         </div>
-        <div role="tablist" className={`mb-3 grid max-w-sm ${board === 'platform' ? 'grid-cols-4' : 'grid-cols-3'} rounded border border-editorial-navy/15 bg-white p-0.5`}>
-          {[['board', 'Board'], ['calendar', 'Calendar'], ['releases', board === 'platform' ? 'Releases' : 'Updates'], ...(board === 'platform' ? [['triage', 'Triage']] : [])].map(([k, l]) => (
+        <div role="tablist" className={`mb-3 grid max-w-sm ${board === 'personal' ? 'grid-cols-4' : 'grid-cols-3'} rounded border border-editorial-navy/15 bg-white p-0.5`}>
+          {[['board', 'Board'], ['calendar', 'Calendar'], ['releases', board === 'platform' ? 'Releases' : 'Updates'], ...(board === 'personal' ? [['triage', 'Triage']] : [])].map(([k, l]) => (
             <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
               className={`rounded py-1.5 font-body text-[11px] font-semibold uppercase tracking-[0.16em] ${tab === k ? 'bg-editorial-navy text-editorial-cream' : 'text-editorial-navy'}`}>{l}</button>
           ))}

@@ -13,7 +13,7 @@ export const AEROSYNC_MENU = [
   { key: 'scan', index: '01', label: 'Scan', to: '/aerosync/scan', icon: Camera },
   // Cards, following and the desk are one surface: all three are the people a Fellow keeps,
   // and who among them has a door open. Held as three tabs on one page.
-  { key: 'people', index: '02', label: 'People', to: '/aerosync/people', icon: Users },
+  { key: 'people', index: '02', label: 'Directory', to: '/aerosync/people', icon: Users },
   { key: 'dashboard', index: '03', label: 'Dashboard', to: '/board', icon: LayoutGrid },
 ];
 
@@ -22,5 +22,5 @@ export const AEROSYNC_MENU = [
 // carries.
 export const AEROSYNC_ACTIONS = [
   { key: 'scan', label: 'Scan' },
-  { key: 'people', label: 'People' },
+  { key: 'people', label: 'Directory' },
 ];

@@ -57,7 +57,7 @@ export default function ColonyBoot({ onDone }) {
 
   return (
     <div className="as-frame" style={{ zIndex: 95 }}>
-      <ColonySplash label={ready ? 'Ready to go online' : 'Going online…'} />
+      <ColonySplash ready={ready} label={ready ? 'Connected' : 'Connecting…'} />
       {ready && (
         <div className="absolute inset-x-0 bottom-20 z-10 flex flex-col items-center gap-3 as-rise">
           {options.map((o, i) => (

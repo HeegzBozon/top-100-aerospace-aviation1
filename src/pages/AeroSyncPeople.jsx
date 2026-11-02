@@ -5,6 +5,8 @@ import useConferenceContacts from '@/components/crm/useConferenceContacts';
 import FollowingLedger from '@/components/following/FollowingLedger';
 import Classifieds from '@/pages/Classifieds';
 import { C } from '@/components/crm/crmConfig';
+import CampusDirectoryTab from '@/components/aerosync/CampusDirectoryTab';
+import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 
 const TABS = [
   { key: 'cards', label: 'My Network' },
@@ -26,11 +28,15 @@ export default function AeroSyncPeople() {
     return TAB_KEYS.includes(asked) ? asked : 'cards';
   });
 
+  const [section, setSection] = useState(() =>
+    new URLSearchParams(window.location.search).get('tab') === 'campus' ? 'campus' : 'people');
+
   const readout = useMemo(() => {
+    if (section === 'campus') return `${Object.keys(COLONY_ROOMS).length} rooms on campus`;
     if (tab === 'desk') return 'Three desks · offers, term sheets, notices';
     if (crm.state.loading) return 'Reading your people';
     return `${crm.total} contact${crm.total === 1 ? '' : 's'} kept · private to you`;
-  }, [tab, crm.state.loading, crm.total]);
+  }, [section, tab, crm.state.loading, crm.total]);
 
   return (
     <div className="min-h-screen" style={{ background: C.cream }}>
@@ -41,12 +47,21 @@ export default function AeroSyncPeople() {
               AeroSync
             </p>
             <h1 className="mt-1 font-heading text-2xl md:text-4xl" style={{ color: C.navy }}>
-              People
+              Directory
             </h1>
           </div>
           <p className="text-[11px]" style={{ color: C.muted }}>{readout}</p>
         </header>
 
+        <div role="tablist" aria-label="Directory" className="mt-4 flex max-w-sm gap-1 rounded-full p-0.5" style={{ background: C.border }}>
+          {[['campus', 'Campus Directory'], ['people', 'People']].map(([k, l]) => (
+            <button key={k} type="button" role="tab" aria-selected={section === k} onClick={() => setSection(k)}
+              className="flex-1 rounded-full py-1.5 text-[11px] font-semibold"
+              style={section === k ? { background: C.navy, color: C.cream } : { color: C.navy }}>{l}</button>
+          ))}
+        </div>
+
+        {section === 'campus' ? <div className="mt-4"><CampusDirectoryTab /></div> : <>
         <div
           role="tablist"
           aria-label="People"
@@ -80,6 +95,7 @@ export default function AeroSyncPeople() {
             <Classifieds embedded />
           )}
         </div>
+        </>}
 
         <div className="h-24" />
       </div>
