@@ -45,7 +45,8 @@ export default function InboxTriage({ user }) {
     </p>
   );
 
-  const label = filter === 'all' ? 'item in the funnel' : `item in ${(BUNDLES.find((b) => b.key === filter) || STAGES.find((s) => s.key === filter)).label.toLowerCase()}`;
+  const named = BUNDLES.find((b) => b.key === filter) || STAGES.find((s) => s.key === filter);
+  const label = filter === 'all' ? 'item in the funnel' : named ? `item in ${named.label.toLowerCase()}` : 'item in this part of the funnel';
 
   return (
     <div>
