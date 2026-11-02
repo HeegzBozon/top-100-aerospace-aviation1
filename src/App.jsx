@@ -1,5 +1,6 @@
 import './App.css'
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
+import ColonyBoot, { bootSeen } from '@/components/colony/ColonyBoot';
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -105,6 +106,7 @@ const CareerCopilot = lazy(() => import('@/pages/CareerCopilot'));
 const Chamber = lazy(() => import('@/pages/Chamber'));
 const ChamberPractice = lazy(() => import('@/pages/ChamberPractice'));
 const Newsstand = lazy(() => import('@/pages/Newsstand'));
+const MediaHub = lazy(() => import('@/pages/MediaHub'));
 const ChamberOffice = lazy(() => import('@/pages/ChamberOffice'));
 const AppStore = lazy(() => import('@/pages/AppStore'));
 const AppStoreShelf = lazy(() => import('@/pages/AppStoreShelf'));
@@ -167,7 +169,8 @@ const AuthenticatedApp = () => {
       <Route element={<HandheldShell />}>
       {/* A desk is housed in the desk machine: everything below renders inside its tube */}
       <Route element={<DesktopShell />}>
-      <Route path="/inbox" element={<Inbox />} />
+      <Route path="/seasonal-planning" element={<Inbox />} />
+      <Route path="/inbox" element={<Navigate to="/seasonal-planning" replace />} />
       <Route path="/star-atlas-studio" element={<StarAtlasStudio />} />
       {/* Everyone opens on the start screen: the surfaces a Fellow is entitled to, and
           the way in for whoever is not one yet — the same machine either way. */}
@@ -238,6 +241,7 @@ const AuthenticatedApp = () => {
           articles inside them, the dispatches Fellows file, and every release note about
           the platform itself. */}
       <Route path="/newsstand" element={<Newsstand />} />
+      <Route path="/media-hub" element={<MediaHub />} />
       {/* The App Store: micro-tools, each doing one job and handing back an artifact */}
       <Route path="/app-store" element={<AppStore />} />
       <Route path="/app-store/shelf" element={<AppStoreShelf />} />
@@ -378,6 +382,12 @@ const AuthenticatedApp = () => {
    every reader, so the lock is gone and the viewport stays as the document declares it
    — a low-vision reader can magnify the page again (WCAG 1.4.4). */
 
+// Splash first (Colony plate + two paths), then the welcome card over the chosen surface.
+function BootSequence() {
+  const [booted, setBooted] = useState(() => bootSeen());
+  return booted ? <AppSplash /> : <ColonyBoot onDone={() => setBooted(true)} />;
+}
+
 function App() {
   // Force HMR cache clear
   return (
@@ -387,7 +397,7 @@ function App() {
           <Router>
             <NavigationTracker />
             {/* The title card plays once per session, over everything */}
-            <AppSplash />
+            <BootSequence />
             <AuthenticatedApp />
           </Router>
           <Toaster />
