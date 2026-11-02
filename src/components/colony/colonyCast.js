@@ -42,7 +42,7 @@ export const COLONY_CAST = [
       { key: 'career', label: 'Career Center', room: 'career-center' },
       { key: 'lounge', label: 'Networking Lounge', room: 'networking-lounge' },
     ] },
-  { id: 'aurora', name: 'Aurora', role: 'Keeper of the Laurels', room: 'hall', col: 24, row: 28, sprite: IMG + '65309d487_generated_image.png',
+  { id: 'aurora', name: 'Aurora', role: 'Keeper of the Laurels', room: 'media-hub', col: 32, row: 17, sprite: IMG + '65309d487_generated_image.png',
     signature: 'Excellence deserves to be remembered.',
     greeting: 'This plaza is our hall of honour. Every honoree is on the record.',
     actions: [

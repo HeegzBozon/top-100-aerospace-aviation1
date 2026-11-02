@@ -33,6 +33,7 @@ const inCall = (c) => { try { return c?.meetingState?.() === 'joined-meeting'; }
 import ColonyMapEditor from '@/components/colony/ColonyMapEditor';
 import ColonyNpcDialogue from '@/components/colony/ColonyNpcDialogue';
 import ColonyPersonCard from '@/components/colony/ColonyPersonCard';
+import ColonyNearbyBar from '@/components/colony/ColonyNearbyBar';
 import ColonyPassport from '@/components/colony/quests/ColonyPassport';
 import ColonyQuestTracker from '@/components/colony/quests/ColonyQuestTracker';
 import { useColonyMusic } from '@/components/colony/colonyMusic';
@@ -508,6 +509,11 @@ function ColonyRoom({ onReplayWelcome }) {
         />
       </div>
 
+      {!panel && (
+        <ColonyNearbyBar people={nearby.filter(p => p.session_id !== localSessionId)}
+          onPick={(p) => { setPersonName(p.user_name || 'Participant'); setPanel('person'); }}
+          onChat={() => setPanel('chat')} />
+      )}
       {!panel && <ColonyQuestTracker passport={pp.passport} onOpen={openPassport} />}
       <div className={`absolute bottom-20 right-0 z-40 flex max-w-[70%] flex-col items-end [&>div]:pt-0 ${showParticipants ? 'md:right-72' : ''}`}>
         <ColonyVideoStrip participants={nearby} localSessionId={localSessionId} />
