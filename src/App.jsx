@@ -106,6 +106,7 @@ const CareerCopilot = lazy(() => import('@/pages/CareerCopilot'));
 const Chamber = lazy(() => import('@/pages/Chamber'));
 const ChamberPractice = lazy(() => import('@/pages/ChamberPractice'));
 const Newsstand = lazy(() => import('@/pages/Newsstand'));
+const MediaHub = lazy(() => import('@/pages/MediaHub'));
 const ChamberOffice = lazy(() => import('@/pages/ChamberOffice'));
 const AppStore = lazy(() => import('@/pages/AppStore'));
 const AppStoreShelf = lazy(() => import('@/pages/AppStoreShelf'));
@@ -239,6 +240,7 @@ const AuthenticatedApp = () => {
           articles inside them, the dispatches Fellows file, and every release note about
           the platform itself. */}
       <Route path="/newsstand" element={<Newsstand />} />
+      <Route path="/media-hub" element={<MediaHub />} />
       {/* The App Store: micro-tools, each doing one job and handing back an artifact */}
       <Route path="/app-store" element={<AppStore />} />
       <Route path="/app-store/shelf" element={<AppStoreShelf />} />

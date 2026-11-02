@@ -1,4 +1,4 @@
-import { Award, BookOpen, CalendarDays, Globe, Inbox, ListChecks, LogIn, Shield, Store, UserPlus } from "lucide-react";
+import { Award, BookOpen, CalendarDays, Globe, Inbox, ListChecks, LogIn, Newspaper, Shield, Store, UserPlus, Users } from "lucide-react";
 
 // The start screen: the platform as a title screen, the surfaces a Fellow meets,
 // in order. The dashboard is the map; everything else is one step off it. Every
@@ -21,25 +21,28 @@ import { Award, BookOpen, CalendarDays, Globe, Inbox, ListChecks, LogIn, Shield,
 export const START_MENU = [
   // The Inbox first: what needs an answer, with the Newsstand read as its second tab.
   // Colony: the live campus, still in beta.
-  { key: "colony", index: "01", label: "Go Live", to: "/colony", icon: Globe, progressLabel: "Beta" },
-  { key: "inbox", index: "02", label: "Inbox", to: "/inbox", icon: Inbox, membersOnly: true },
+  { key: "colony", index: "01", label: "Campus", to: "/colony", icon: Globe, progressLabel: "Beta" },
+  // The directory, split: the campus rooms live inside Colony; the people live on AeroSync.
+  { key: "people", index: "02", label: "People", to: "/aerosync/people", icon: Users },
+  { key: "media-hub", index: "03", label: "Media Hub", to: "/media-hub", icon: Newspaper },
+  { key: "inbox", index: "04", label: "Inbox", to: "/inbox", icon: Inbox, membersOnly: true },
   // The committee's first act: putting names in. A Fellow arrives here to nominate, not
   // to file a ballot — the ballot has its own key, and its own pill on the cycle band.
-  { key: "nominate", index: "03", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
+  { key: "nominate", index: "05", label: "Nominate", to: "/selection-committee?tab=nominate", icon: Award },
   // The committee's second act: a Fellow putting their own hundred in order.
-  { key: "vote-surface", index: "04", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
+  { key: "vote-surface", index: "06", label: "Vote", to: "/selection-committee?tab=vote", icon: ListChecks, membersOnly: true },
   // The circuit: every aerospace conference the network is holding rooms in, and the
   // workspace behind it for the organizers who stage them. Public — a visitor walks the
   // calendar and is asked for an account only when they stand in a room.
-  { key: "review", index: "05", label: "Review", to: "/review", icon: BookOpen },
-  { key: "conferences", index: "06", label: "Events", to: "/conferences", icon: CalendarDays },
+  { key: "review", index: "07", label: "Review", to: "/review", icon: BookOpen },
+  { key: "conferences", index: "08", label: "Events", to: "/conferences", icon: CalendarDays },
   // The house's trading floor, closing the row: the App Store and the Gift Shop under one
   // roof rather than as two keys on a menu that only has room for programs. It is itself a
   // menu — turn to walk its two counters, # to open one. Public: every artifact on the
   // shelf is composed from the reader's own record, so there is nothing behind this key a
   // visitor cannot be shown.
   // The App Store now holds the Chamber of Commerce as one of its keys.
-  { key: "app-store", index: "07", label: "App Store", to: "/app-store", icon: Store },
+  { key: "app-store", index: "09", label: "App Store", to: "/app-store", icon: Store },
 ];
 
 // Administration, held back from the row: the surface the few who run the platform
@@ -47,7 +50,7 @@ export const START_MENU = [
 // whatever they are entitled to.
 export const ADMIN_MENU = {
   key: "admin",
-  index: "08",
+  index: "10",
   label: "Admin",
   to: "/Admin",
   icon: Shield,
