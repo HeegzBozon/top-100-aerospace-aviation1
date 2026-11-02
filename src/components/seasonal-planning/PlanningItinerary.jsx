@@ -1,25 +1,24 @@
-import { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { Loader2 } from 'lucide-react';
 import PlanningDay from './PlanningDay';
 import { PLANNING_DAYS } from './planningDays';
+import usePlanningSteps from './usePlanningSteps';
 
-// The PI Planning event as two modules. Progress is kept on the member's own account,
-// separately for each board and season.
+// The PI Planning event as two modules. The platform itinerary is shared and kept by
+// admins; the personal one belongs to each member.
 export default function PlanningItinerary({ user, scope, season }) {
-  const key = `${scope}:${season?.name || season || 'current'}`;
-  const [all, setAll] = useState(user?.planning_progress || {});
-  const done = all[key] || [];
+  const seasonKey = String(season?.name || season || 'current');
+  const { records, loading, error, save } = usePlanningSteps(user, scope, seasonKey);
+  const canEdit = scope === 'personal' || user.role === 'admin';
 
-  const toggle = (step) => {
-    const nextDone = done.includes(step) ? done.filter((s) => s !== step) : [...done, step];
-    const next = { ...all, [key]: nextDone };
-    setAll(next);
-    base44.auth.updateMe({ planning_progress: next });
-  };
+  if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-5 w-5 animate-spin text-editorial-navy" /></div>;
+  if (error) return <p className="py-10 text-center font-body text-sm text-editorial-navy/70">{error}</p>;
 
   return (
-    <div className="grid gap-3 md:grid-cols-2">
-      {PLANNING_DAYS.map((day) => <PlanningDay key={day.key} day={day} done={done} onToggle={toggle} />)}
+    <div>
+      {!canEdit && <p className="mb-2 font-body text-[11px] text-editorial-navy/60">The platform itinerary is kept by the admins. Read-only.</p>}
+      <div className="grid items-start gap-3 md:grid-cols-2">
+        {PLANNING_DAYS.map((day) => <PlanningDay key={day.key} day={day} records={records} canEdit={canEdit} onSave={save} />)}
+      </div>
     </div>
   );
 }
