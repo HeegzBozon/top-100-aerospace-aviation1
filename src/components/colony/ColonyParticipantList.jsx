@@ -46,7 +46,7 @@ export default function ColonyParticipantList({ participants, localSessionId, on
     <aside
       role="complementary"
       aria-label="Participants"
-      className="fixed right-0 top-0 bottom-0 z-40 w-72 bg-slate-900 border-l border-slate-700 flex flex-col"
+      className="absolute right-0 top-0 bottom-0 z-[60] w-72 bg-slate-900 border-l border-slate-700 flex flex-col"
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
         <h2 className="text-white font-semibold text-sm">

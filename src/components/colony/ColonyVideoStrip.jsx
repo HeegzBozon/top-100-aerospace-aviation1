@@ -3,7 +3,8 @@ import ColonyVideoTile from '@/components/colony/ColonyVideoTile';
 
 const live = (p, kind) => {
   const t = p?.tracks?.[kind];
-  return !!t?.persistentTrack && t.state === 'playable';
+  // Local tracks can report 'sendable' or 'loading' while the camera is live.
+  return !!t?.persistentTrack && !['off', 'blocked', 'interrupted'].includes(t.state);
 };
 
 // The room's faces: a tile for everyone whose camera is on, and a slim chip for everyone

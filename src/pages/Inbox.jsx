@@ -6,6 +6,7 @@ import PIBoard from '@/components/seasonal-planning/PIBoard';
 import SeasonHeader from '@/components/seasonal-planning/SeasonHeader';
 import SeasonCalendar from '@/components/seasonal-planning/SeasonCalendar';
 import PersonalBoard from '@/components/seasonal-planning/PersonalBoard';
+import PlanningItinerary from '@/components/seasonal-planning/PlanningItinerary';
 import ReleaseNotes from '@/components/seasonal-planning/ReleaseNotes';
 import { seasonFor } from '@/components/seasonal-planning/seasons';
 
@@ -34,8 +35,8 @@ export default function Inbox() {
               className={`flex-1 rounded-full py-1.5 font-body text-[11px] font-semibold ${board === k ? 'bg-editorial-navy text-editorial-cream' : 'text-editorial-navy'}`}>{l}</button>
           ))}
         </div>
-        <div role="tablist" className={`mb-3 grid max-w-sm ${board === 'personal' ? 'grid-cols-4' : 'grid-cols-3'} rounded border border-editorial-navy/15 bg-white p-0.5`}>
-          {[['board', 'Board'], ['calendar', 'Calendar'], ['releases', board === 'platform' ? 'Releases' : 'Updates'], ...(board === 'personal' ? [['triage', 'Triage']] : [])].map(([k, l]) => (
+        <div role="tablist" className={`mb-3 grid max-w-lg ${board === 'personal' ? 'grid-cols-5' : 'grid-cols-4'} rounded border border-editorial-navy/15 bg-white p-0.5`}>
+          {[['board', 'Board'], ['planning', 'Planning'], ['calendar', 'Calendar'], ['releases', board === 'platform' ? 'Releases' : 'Updates'], ...(board === 'personal' ? [['triage', 'Triage']] : [])].map(([k, l]) => (
             <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
               className={`rounded py-1.5 font-body text-[11px] font-semibold uppercase tracking-[0.16em] ${tab === k ? 'bg-editorial-navy text-editorial-cream' : 'text-editorial-navy'}`}>{l}</button>
           ))}
@@ -44,6 +45,7 @@ export default function Inbox() {
         {tab === 'board' && (board === 'platform' ? <PIBoard isAdmin={user.role === 'admin'} season={season} /> : <PersonalBoard user={user} season={season} />)}
         {tab === 'releases' && <ReleaseNotes key={board} user={user} scope={board} season={season} />}
         {tab === 'calendar' && <SeasonCalendar season={season} />}
+        {tab === 'planning' && <PlanningItinerary key={board} user={user} scope={board} season={season} />}
         {tab === 'triage' && <InboxTriage user={user} />}
       </div>
     </div>

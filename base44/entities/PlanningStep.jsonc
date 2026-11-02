@@ -1,0 +1,132 @@
+{
+  "name": "PlanningStep",
+  "type": "object",
+  "properties": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "platform",
+        "personal"
+      ],
+      "description": "Platform = shared, admin-edited; personal = the owner's own"
+    },
+    "season_key": {
+      "type": "string",
+      "description": "Season the planning event belongs to"
+    },
+    "step_key": {
+      "type": "string",
+      "description": "Agenda item key from the itinerary"
+    },
+    "done": {
+      "type": "boolean",
+      "default": false
+    },
+    "title": {
+      "type": "string",
+      "description": "Edited title; empty uses the default"
+    },
+    "detail": {
+      "type": "string",
+      "description": "Edited description; empty uses the default"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-form evidence, notes, outcomes"
+    },
+    "attachments": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "file_uri": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "External link instead of a file"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "scope",
+    "season_key",
+    "step_key"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.scope": "platform"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.scope": "personal"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "$and": [
+            {
+              "data.scope": "personal"
+            },
+            {
+              "created_by_id": "{{user.id}}"
+            }
+          ]
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "$and": [
+            {
+              "data.scope": "personal"
+            },
+            {
+              "created_by_id": "{{user.id}}"
+            }
+          ]
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

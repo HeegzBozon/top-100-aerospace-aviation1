@@ -53,7 +53,7 @@ export const QUESTS = [
   { id: 'q10', act: 3, npc: 'sterling', place: 'Leadership Summit', title: 'Building Better Futures', reward: 'partnership',
     line: 'Organizations support TOP 100 as Patrons of Record. Their support funds programs; it never buys placement.',
     prompt: 'Which community initiative would you learn about?', choices: ['Scholarships', 'Conference rooms', 'The archive'] },
-  { id: 'q11', act: 3, npc: 'aurora', place: 'Main Campus', title: 'The Hall of Legends', reward: 'legacy',
+  { id: 'q11', act: 3, npc: 'aurora', place: 'Media Hub', title: 'The Hall of Legends', reward: 'legacy',
     line: 'Recognition here is a measured record, kept across every season. Past honorees stand in this plaza.',
     prompt: 'What does recognition represent?', choices: ['A verified record of impact', 'A popularity contest', 'A paid placement'], correct: 0,
     explain: 'A verified record. Recognition is measured, never bought.' },

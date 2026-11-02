@@ -33,6 +33,7 @@ const inCall = (c) => { try { return c?.meetingState?.() === 'joined-meeting'; }
 import ColonyMapEditor from '@/components/colony/ColonyMapEditor';
 import ColonyNpcDialogue from '@/components/colony/ColonyNpcDialogue';
 import ColonyPersonCard from '@/components/colony/ColonyPersonCard';
+import ColonyNearbyBar from '@/components/colony/ColonyNearbyBar';
 import ColonyPassport from '@/components/colony/quests/ColonyPassport';
 import ColonyQuestTracker from '@/components/colony/quests/ColonyQuestTracker';
 import { useColonyMusic } from '@/components/colony/colonyMusic';
@@ -497,7 +498,7 @@ function ColonyRoom({ onReplayWelcome }) {
   }
 
   return (
-    <div className="hh-slide-window md:h-screen bg-slate-950 relative flex flex-col overflow-hidden">
+    <div className="hh-slide-window md:h-[calc(100%-41px)] bg-slate-950 relative flex flex-col overflow-hidden">
       {/* Header */}
       {/* Room, character and campus moves live in the menu bar's File and Edit menus now */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 [&>*]:pointer-events-auto [&>*]:bg-transparent">
@@ -508,8 +509,13 @@ function ColonyRoom({ onReplayWelcome }) {
         />
       </div>
 
+      {!panel && (
+        <ColonyNearbyBar people={nearby.filter(p => p.session_id !== localSessionId)}
+          onPick={(p) => { setPersonName(p.user_name || 'Participant'); setPanel('person'); }}
+          onChat={() => setPanel('chat')} />
+      )}
       {!panel && <ColonyQuestTracker passport={pp.passport} onOpen={openPassport} />}
-      <div className="absolute bottom-2 right-0 z-30 flex max-w-[70%] flex-col items-end [&>div]:pt-0">
+      <div className={`absolute bottom-20 right-0 z-40 flex max-w-[70%] flex-col items-end [&>div]:pt-0 ${showParticipants ? 'md:right-72' : ''}`}>
         <ColonyVideoStrip participants={nearby} localSessionId={localSessionId} />
       </div>
       {room === 'hall' && <CampusSky />}

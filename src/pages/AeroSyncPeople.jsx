@@ -1,102 +1,70 @@
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ContactRolodex from '@/components/crm/ContactRolodex';
+import { useState } from 'react';
 import useConferenceContacts from '@/components/crm/useConferenceContacts';
-import FollowingLedger from '@/components/following/FollowingLedger';
-import Classifieds from '@/pages/Classifieds';
 import { C } from '@/components/crm/crmConfig';
 import CampusDirectoryTab from '@/components/aerosync/CampusDirectoryTab';
-import { COLONY_ROOMS } from '@/components/colony/colonyZones';
+import { DIRECTORY_TABS } from '@/components/directory/directoryConfig';
+import useDirectoryIntel from '@/components/directory/useDirectoryIntel';
+import PeopleTab from '@/components/directory/PeopleTab';
+import WhatTab from '@/components/directory/WhatTab';
+import WhenTab from '@/components/directory/WhenTab';
+import WhyTab from '@/components/directory/WhyTab';
+import useProfileLink from '@/components/directory/useProfileLink';
+import ProfileMeter from '@/components/directory/ProfileMeter';
+import { WhoPrompt, WherePrompt, MeetDraft } from '@/components/directory/TabPrompts';
 
-const TABS = [
-  { key: 'cards', label: 'My Network' },
-  { key: 'following', label: 'Following' },
-  { key: 'desk', label: 'Classifieds' },
-];
+const PEOPLE_SUBTABS = ['cards', 'following', 'desk'];
 
-const TAB_KEYS = TABS.map((item) => item.key);
-
-// AeroSync's People: the cards a Fellow captured, the names they follow, and the desk of who
-// has a door open — read as one surface. All three are the same work, knowing who matters, so
-// they are three tabs on one page rather than three keys on the title screen. Scanning lives on
-// its own surface; every way into it from here leads there.
+// The Directory: the platform read as five questions — who, what, when, where, why. It
+// teaches a newcomer what is here, and the "why" it asks back tailors the rest to them.
 export default function AeroSyncPeople() {
-  const navigate = useNavigate();
   const crm = useConferenceContacts();
+  const { intel, save, signedIn, loading } = useDirectoryIntel();
+  const asked = new URLSearchParams(window.location.search).get('tab');
   const [tab, setTab] = useState(() => {
-    const asked = new URLSearchParams(window.location.search).get('tab');
-    return TAB_KEYS.includes(asked) ? asked : 'cards';
+    if (asked === 'campus') return 'where';
+    if (PEOPLE_SUBTABS.includes(asked)) return 'who';
+    return DIRECTORY_TABS.some((t) => t.key === asked) ? asked : 'who';
   });
-
-  const [section, setSection] = useState(() =>
-    new URLSearchParams(window.location.search).get('tab') === 'campus' ? 'campus' : 'people');
-
-  const readout = useMemo(() => {
-    if (section === 'campus') return `${Object.keys(COLONY_ROOMS).length} rooms on campus`;
-    if (tab === 'desk') return 'Three desks · offers, term sheets, notices';
-    if (crm.state.loading) return 'Reading your people';
-    return `${crm.total} contact${crm.total === 1 ? '' : 's'} kept · private to you`;
-  }, [section, tab, crm.state.loading, crm.total]);
+  const profile = useProfileLink();
+  const untold = signedIn && !loading && !intel.stage && !intel.goals.length;
 
   return (
     <div className="min-h-screen" style={{ background: C.cream }}>
       <div className="mx-auto w-full max-w-5xl px-4 py-6 md:px-8 md:py-12">
-        <header className="flex flex-wrap items-end justify-between gap-2">
-          <div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: C.copper }}>
-              AeroSync
-            </p>
-            <h1 className="mt-1 font-heading text-2xl md:text-4xl" style={{ color: C.navy }}>
-              Directory
-            </h1>
-          </div>
-          <p className="text-[11px]" style={{ color: C.muted }}>{readout}</p>
-        </header>
+        <p className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: C.copper }}>AeroSync</p>
+        <h1 className="mt-1 font-heading text-2xl md:text-4xl" style={{ color: C.navy }}>Directory</h1>
 
-        <div role="tablist" aria-label="Directory" className="mt-4 flex max-w-sm gap-1 rounded-full p-0.5" style={{ background: C.border }}>
-          {[['campus', 'Campus Directory'], ['people', 'People']].map(([k, l]) => (
-            <button key={k} type="button" role="tab" aria-selected={section === k} onClick={() => setSection(k)}
-              className="flex-1 rounded-full py-1.5 text-[11px] font-semibold"
-              style={section === k ? { background: C.navy, color: C.cream } : { color: C.navy }}>{l}</button>
-          ))}
-        </div>
-
-        {section === 'campus' ? <div className="mt-4"><CampusDirectoryTab /></div> : <>
-        <div
-          role="tablist"
-          aria-label="People"
-          className="mt-5 flex flex-wrap items-center gap-1"
-          style={{ borderBottom: `1px solid ${C.border}` }}
-        >
-          {TABS.map((item) => {
-            const active = tab === item.key;
+        <div role="tablist" aria-label="Directory" className="mt-5 grid grid-cols-5 gap-1">
+          {DIRECTORY_TABS.map((t) => {
+            const on = tab === t.key;
             return (
-              <button
-                key={item.key}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setTab(item.key)}
-                className="rounded-t-lg px-3 py-2 text-[9.5px] font-bold uppercase tracking-[0.16em]"
-                style={active ? { color: C.navy, boxShadow: `inset 0 -2px 0 ${C.copper}` } : { color: C.muted }}
-              >
-                {item.key === 'cards' ? `My Network (${crm.total})` : item.label}
+              <button key={t.key} type="button" role="tab" aria-selected={on} onClick={() => setTab(t.key)}
+                className="relative rounded-lg px-1 py-2 text-center transition-colors"
+                style={on ? { background: C.navy, color: C.cream } : { background: '#fff', color: C.navy, border: `1px solid ${C.border}` }}>
+                <span className="block font-heading text-sm md:text-lg">{t.q}</span>
+                <span className="block text-[8.5px] font-bold uppercase tracking-[0.14em] opacity-70">{t.label}</span>
+                {t.key === 'why' && untold && <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full" style={{ background: C.copper }} />}
               </button>
             );
           })}
         </div>
 
-        <div className="mt-3">
-          {tab === 'cards' ? (
-            <ContactRolodex crm={crm} onCapture={() => navigate('/aerosync/scan')} />
-          ) : tab === 'following' ? (
-            <FollowingLedger />
-          ) : (
-            <Classifieds embedded />
-          )}
-        </div>
-        </>}
+        {signedIn && profile.settings && <ProfileMeter settings={profile.settings} intel={intel} />}
 
+        {untold && tab !== 'why' && (
+          <button type="button" onClick={() => setTab('why')} className="mt-3 w-full rounded-lg p-3 text-left text-[12px]"
+            style={{ border: `1px dashed ${C.copper}`, color: C.navy }}>
+            Tell us why you're here, and the Directory will put what helps you first. →
+          </button>
+        )}
+
+        <div className="mt-5">
+          {tab === 'who' && <><WhoPrompt {...profile} /><PeopleTab crm={crm} initial={asked} /></>}
+          {tab === 'what' && <><MeetDraft {...profile} goals={intel.goals} /><WhatTab goals={intel.goals} /></>}
+          {tab === 'when' && <WhenTab />}
+          {tab === 'where' && <><WherePrompt {...profile} /><CampusDirectoryTab /></>}
+          {tab === 'why' && <WhyTab intel={intel} save={save} signedIn={signedIn} onDone={() => setTab('what')} />}
+        </div>
         <div className="h-24" />
       </div>
     </div>

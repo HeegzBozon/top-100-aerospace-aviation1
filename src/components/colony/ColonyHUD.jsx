@@ -11,7 +11,7 @@ export default function ColonyHUD({
   onToggleParticipants,
 }) {
   return (
-    <div className="imac-bar fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-3 p-4 bg-gradient-to-t from-slate-950/90 to-transparent">
+    <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-50 flex [&>*]:pointer-events-auto items-center justify-center gap-3 p-4 bg-gradient-to-t from-slate-950/90 to-transparent">
       {/* Participant Count */}
       <button
         onClick={onToggleParticipants}
