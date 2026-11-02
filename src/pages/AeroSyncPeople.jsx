@@ -8,6 +8,9 @@ import PeopleTab from '@/components/directory/PeopleTab';
 import WhatTab from '@/components/directory/WhatTab';
 import WhenTab from '@/components/directory/WhenTab';
 import WhyTab from '@/components/directory/WhyTab';
+import useProfileLink from '@/components/directory/useProfileLink';
+import ProfileMeter from '@/components/directory/ProfileMeter';
+import { WhoPrompt, WherePrompt, MeetDraft } from '@/components/directory/TabPrompts';
 
 const PEOPLE_SUBTABS = ['cards', 'following', 'desk'];
 
@@ -22,6 +25,7 @@ export default function AeroSyncPeople() {
     if (PEOPLE_SUBTABS.includes(asked)) return 'who';
     return DIRECTORY_TABS.some((t) => t.key === asked) ? asked : 'who';
   });
+  const profile = useProfileLink();
   const untold = signedIn && !loading && !intel.stage && !intel.goals.length;
 
   return (
@@ -45,6 +49,8 @@ export default function AeroSyncPeople() {
           })}
         </div>
 
+        {signedIn && profile.settings && <ProfileMeter settings={profile.settings} intel={intel} />}
+
         {untold && tab !== 'why' && (
           <button type="button" onClick={() => setTab('why')} className="mt-3 w-full rounded-lg p-3 text-left text-[12px]"
             style={{ border: `1px dashed ${C.copper}`, color: C.navy }}>
@@ -53,10 +59,10 @@ export default function AeroSyncPeople() {
         )}
 
         <div className="mt-5">
-          {tab === 'who' && <PeopleTab crm={crm} initial={asked} />}
-          {tab === 'what' && <WhatTab goals={intel.goals} />}
+          {tab === 'who' && <><WhoPrompt {...profile} /><PeopleTab crm={crm} initial={asked} /></>}
+          {tab === 'what' && <><MeetDraft {...profile} goals={intel.goals} /><WhatTab goals={intel.goals} /></>}
           {tab === 'when' && <WhenTab />}
-          {tab === 'where' && <CampusDirectoryTab />}
+          {tab === 'where' && <><WherePrompt {...profile} /><CampusDirectoryTab /></>}
           {tab === 'why' && <WhyTab intel={intel} save={save} signedIn={signedIn} onDone={() => setTab('what')} />}
         </div>
         <div className="h-24" />
