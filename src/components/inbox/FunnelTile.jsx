@@ -8,6 +8,7 @@ export default function FunnelTile({ label, m, on, hidden, editing, custom, onCl
         className={`w-full rounded border px-1.5 py-1 text-center ${on ? 'border-editorial-copper bg-editorial-navy text-editorial-cream' : 'border-editorial-navy/15 bg-white text-editorial-navy'} ${custom ? 'border-dashed' : ''}`}>
         <p className={`truncate text-[8px] font-bold uppercase tracking-[0.12em] ${on ? 'text-editorial-gold' : 'text-editorial-label'}`}>{label}</p>
         <p className="font-heading text-lg leading-tight">{m.open}</p>
+        <p className={`truncate font-body text-[9px] ${on ? 'text-editorial-cream/70' : 'text-editorial-navy/60'}`}>{m.received} received · {m.sent} sent</p>
         <p className={`truncate font-body text-[9px] ${on ? 'text-editorial-cream/70' : 'text-editorial-navy/60'}`}>{m.waiting} you · {m.done} done</p>
       </button>
       {editing && (

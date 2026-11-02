@@ -1,4 +1,4 @@
-import { Camera, LayoutGrid, Users } from 'lucide-react';
+import { CalendarDays, Camera, LayoutGrid, Users } from 'lucide-react';
 
 // The AeroSync title screen: the CRM as a cartridge of its own, the features a Fellow meets
 // inside it, in order. Each key lands on a surface of its own — the title screen holds the
@@ -14,13 +14,15 @@ export const AEROSYNC_MENU = [
   // Cards, following and the desk are one surface: all three are the people a Fellow keeps,
   // and who among them has a door open. Held as three tabs on one page.
   { key: 'people', index: '02', label: 'Directory', to: '/aerosync/people', icon: Users },
-  { key: 'dashboard', index: '03', label: 'Dashboard', to: '/board', icon: LayoutGrid },
+  { key: 'meetings', index: '03', label: 'Book a Meeting', to: '/aerosync/meetings', icon: CalendarDays },
+  { key: 'dashboard', index: '04', label: 'Dashboard', to: '/board', icon: LayoutGrid },
 ];
 
 // The two the title screen asks for, read as one row above the keys: the capture, which is
 // what the CRM is for, and the people it fills. Both are shortcuts onto keys the grid already
 // carries.
 export const AEROSYNC_ACTIONS = [
+  { key: 'meetings', label: 'Book a Meeting' },
   { key: 'scan', label: 'Scan' },
   { key: 'people', label: 'Directory' },
 ];

@@ -1,0 +1,120 @@
+{
+  "name": "MeetingRequest",
+  "type": "object",
+  "properties": {
+    "requester_email": {
+      "type": "string",
+      "description": "Who asked for the meeting"
+    },
+    "requester_name": {
+      "type": "string"
+    },
+    "recipient_email": {
+      "type": "string",
+      "description": "Who the meeting is with"
+    },
+    "recipient_name": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "intro",
+        "demo",
+        "follow_up",
+        "catch_up"
+      ],
+      "default": "intro"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 30
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "video",
+        "in_person",
+        "colony"
+      ],
+      "default": "video"
+    },
+    "agenda": {
+      "type": "string",
+      "description": "What the meeting is for, max 400 chars"
+    },
+    "meeting_link": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "accepted",
+        "declined",
+        "cancelled"
+      ],
+      "default": "requested"
+    },
+    "source": {
+      "type": "string",
+      "description": "Where it was booked from, e.g. 'colony' or 'aerosync'"
+    }
+  },
+  "required": [
+    "requester_email",
+    "recipient_email",
+    "start_time"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "data.recipient_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.requester_email": "{{user.email}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "data.recipient_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
