@@ -1,5 +1,6 @@
 import './App.css'
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
+import ColonyBoot, { bootSeen } from '@/components/colony/ColonyBoot';
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -378,6 +379,12 @@ const AuthenticatedApp = () => {
    every reader, so the lock is gone and the viewport stays as the document declares it
    — a low-vision reader can magnify the page again (WCAG 1.4.4). */
 
+// Splash first (Colony plate + two paths), then the welcome card over the chosen surface.
+function BootSequence() {
+  const [booted, setBooted] = useState(() => bootSeen());
+  return booted ? <AppSplash /> : <ColonyBoot onDone={() => setBooted(true)} />;
+}
+
 function App() {
   // Force HMR cache clear
   return (
@@ -387,7 +394,7 @@ function App() {
           <Router>
             <NavigationTracker />
             {/* The title card plays once per session, over everything */}
-            <AppSplash />
+            <BootSequence />
             <AuthenticatedApp />
           </Router>
           <Toaster />
