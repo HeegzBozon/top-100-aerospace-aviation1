@@ -247,7 +247,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     const cover = Math.max(H / NATIVE_H, W / NATIVE_W);
     const wide = W / (window.devicePixelRatio || 1) >= 900;
     const close = room === 'lobby' ? (wide ? 1 : 1.2) : (wide ? 1.35 : 1.8);
-    return cover * close * zoomRef.current;
+    return cover * close * zoomRef.current * (stateRef.current.wheelZoom || 1);
   };
 
   // Camera (in native px) centred on the player, held inside the plate's edges.
@@ -371,14 +371,22 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       s.camX = c.x; s.camY = c.y; s.initialized = true;
     }
 
-    if (s.moveAccum >= 240) {
+    if (s.moveAccum >= 200) {
       s.moveAccum = 0;
       let dc = 0, dr = 0;
       const stick = stickRef?.current || {};
-      if (s.keys.ArrowUp || s.keys.w || stick.up) dr -= 1;
-      if (s.keys.ArrowDown || s.keys.s || stick.down) dr += 1;
-      if (s.keys.ArrowLeft || s.keys.a || stick.left) dc -= 1;
-      if (s.keys.ArrowRight || s.keys.d || stick.right) dc += 1;
+      if (s.keys.ArrowUp || s.keys.w || s.keys.W || stick.up) dr -= 1;
+      if (s.keys.ArrowDown || s.keys.s || s.keys.S || stick.down) dr += 1;
+      if (s.keys.ArrowLeft || s.keys.a || s.keys.A || stick.left) dc -= 1;
+      if (s.keys.ArrowRight || s.keys.d || s.keys.D || stick.right) dc += 1;
+      // Any steering cancels a click-to-walk; otherwise keep walking toward the clicked cell.
+      if (dc || dr) s.goal = null;
+      else if (s.goal) {
+        dc = Math.sign(s.goal.col - s.playerCol); dr = Math.sign(s.goal.row - s.playerRow);
+        if (!dc && !dr) s.goal = null;
+      }
+      // Moving hands the camera back from a drag-pan.
+      if (dc || dr) s.panHome = true;
       if (dr) s.facing = dr < 0 ? 'up' : 'down';
       if (dc) s.facing = dc < 0 ? 'left' : 'right';
       // No two people share a cell: a step into someone else's square is refused.
@@ -387,6 +395,7 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       if (!occ.has(`${nc},${nr}`)) { s.playerCol = nc; s.playerRow = nr; }
       else if (!occ.has(`${nc},${s.playerRow}`)) s.playerCol = nc;
       else if (!occ.has(`${s.playerCol},${nr}`)) s.playerRow = nr;
+      else s.goal = null; // blocked: stop rather than push against the wall
     }
 
     const key = `${s.playerCol},${s.playerRow}`;
@@ -409,14 +418,21 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
 
     // The sprite walks between cells at the step rate instead of hopping, and a jump of more
     // than two cells (a spawn or a tap-to-walk) lands at once.
-    const step = dt / 240;
+    const step = dt / 200;
     const glide = (v, t) => (v == null || Math.abs(t - v) > 2) ? t : v + Math.sign(t - v) * Math.min(Math.abs(t - v), step);
     s.vCol = glide(s.vCol, s.playerCol);
     s.vRow = glide(s.vRow, s.playerRow);
     const seen = cellCenter(s.vCol, s.vRow);
-    const c = clampCam(seen.x, seen.y, canvas.width, canvas.height, s.scale);
-    // Same glide at any frame rate, and snap when close so the picture settles dead still.
-    const k = 1 - Math.pow(0.82, dt / 16.7);
+    // A drag-pan offsets the view; it eases home as soon as the player walks.
+    s.pan = s.pan || { x: 0, y: 0 };
+    if (s.panHome && !s.dragging) {
+      s.pan.x *= Math.pow(0.85, dt / 16.7); s.pan.y *= Math.pow(0.85, dt / 16.7);
+      if (Math.hypot(s.pan.x, s.pan.y) < 0.5) { s.pan.x = 0; s.pan.y = 0; s.panHome = false; }
+    }
+    const c = clampCam(seen.x + s.pan.x, seen.y + s.pan.y, canvas.width, canvas.height, s.scale);
+    if (s.dragging) { s.camX = c.x; s.camY = c.y; }
+    // Tight follow: the glide already smooths the motion, so the camera stays locked to it.
+    const k = 1 - Math.pow(0.7, dt / 16.7);
     s.camX += (c.x - s.camX) * k;
     s.camY += (c.y - s.camY) * k;
     if (Math.abs(c.x - s.camX) < 0.05) s.camX = c.x;
@@ -450,13 +466,29 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      stateRef.current.keys[e.key] = true;
+      if (['INPUT', 'TEXTAREA'].includes(e.target?.tagName)) return;
+      const s = stateRef.current;
+      // The first press steps at once instead of waiting for the next tick.
+      if (!e.repeat && !Object.values(s.keys).some(Boolean)) s.moveAccum = 1000;
+      s.keys[e.key] = true;
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) e.preventDefault();
     };
     const onKeyUp = (e) => { stateRef.current.keys[e.key] = false; };
+    const onBlur = () => { stateRef.current.keys = {}; };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', onBlur);
+    // Desktop: the wheel zooms the view in and out around the player.
+    const canvas = canvasRef.current;
+    const onWheel = (e) => {
+      e.preventDefault();
+      const s = stateRef.current;
+      s.wheelZoom = Math.max(0.75, Math.min(2, (s.wheelZoom || 1) * (e.deltaY < 0 ? 1.1 : 1 / 1.1)));
+    };
+    canvas?.addEventListener('wheel', onWheel, { passive: false });
     return () => {
+      window.removeEventListener('blur', onBlur);
+      canvas?.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
     };
@@ -467,9 +499,32 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     return () => cancelAnimationFrame(rafRef.current);
   }, [loop]);
 
+  // Desktop drag-to-pan: press and drag to look around; a short press still counts as a click.
+  const onPointerDown = useCallback((e) => {
+    if (e.pointerType !== 'mouse') return;
+    const s = stateRef.current;
+    s.drag = { x: e.clientX, y: e.clientY, moved: false, pan: { ...(s.pan || { x: 0, y: 0 }) } };
+  }, []);
+  const onPointerMove = useCallback((e) => {
+    const s = stateRef.current, d = s.drag, canvas = canvasRef.current;
+    if (!d || !canvas) return;
+    const dx = e.clientX - d.x, dy = e.clientY - d.y;
+    if (!d.moved && Math.hypot(dx, dy) < 6) return;
+    d.moved = true; s.dragging = true; s.panHome = false;
+    const dpr = canvas.width / canvas.getBoundingClientRect().width;
+    s.pan = { x: d.pan.x - (dx * dpr) / s.scale, y: d.pan.y - (dy * dpr) / s.scale };
+  }, []);
+  const onPointerUp = useCallback(() => {
+    const s = stateRef.current;
+    s.dragging = false;
+    if (s.drag?.moved) s.suppressClick = true;
+    s.drag = null;
+  }, []);
+
   const handleCanvasClick = useCallback((e) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    if (stateRef.current.suppressClick) { stateRef.current.suppressClick = false; return; }
     const rect = canvas.getBoundingClientRect();
     const s = stateRef.current;
     const dpr = canvas.width / rect.width;
@@ -480,14 +535,19 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
     const wx = ((e.clientX - rect.left) * dpr - canvas.width / 2) / s.scale + s.camX;
     const wy = ((e.clientY - rect.top) * dpr - canvas.height / 2) / s.scale + s.camY;
     if (wx < 0 || wy < 0 || wx >= NATIVE_W || wy >= NATIVE_H) return;
-    s.playerCol = clampCol(Math.floor(wx / CELL));
-    s.playerRow = clampRow(Math.floor(wy / CELL));
+    // Walk there step by step rather than teleporting.
+    s.goal = { col: clampCol(Math.floor(wx / CELL)), row: clampRow(Math.floor(wy / CELL)) };
+    s.panHome = true;
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
       onClick={handleCanvasClick}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerLeave={onPointerUp}
       aria-label="Colony map"
       className="w-full h-full block cursor-pointer outline-none focus:ring-2 focus:ring-editorial-copper"
       tabIndex={0}

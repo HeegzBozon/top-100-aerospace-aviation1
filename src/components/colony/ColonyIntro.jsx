@@ -8,7 +8,9 @@ const FADE_MS = 800;
 
 // The title plate: loads for 3s, then flashes PRESS START until tapped, a key or a pad button.
 export default function ColonyIntro() {
-  const [phase, setPhase] = useState(() => (sessionStorage.getItem(KEY) ? 'done' : 'hold'));
+  // A direct link into a room (?room=) skips the title plate and walks straight in.
+  const [phase, setPhase] = useState(() =>
+    (sessionStorage.getItem(KEY) || new URLSearchParams(window.location.search).get('room') ? 'done' : 'hold'));
 
   useEffect(() => {
     if (phase !== 'hold') return undefined;

@@ -7,7 +7,7 @@ import { C } from '@/components/crm/crmConfig';
 export default function CampusDirectoryTab() {
   const navigate = useNavigate();
   const last = localStorage.getItem('colony-room');
-  const go = (key) => { localStorage.setItem('colony-room', key); navigate('/colony'); };
+  const go = (key) => { localStorage.setItem('colony-room', key); navigate(`/colony?room=${key}`); };
 
   return (
     <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">

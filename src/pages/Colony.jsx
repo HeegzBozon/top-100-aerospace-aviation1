@@ -123,7 +123,12 @@ function ColonyRoom({ onReplayWelcome }) {
   const [positions, setPositions] = useState({});
   const [zone, setZone] = useState(null);
   // Pick up where you left off: the last room you stood in is remembered on this device.
-  const [room, setRoom] = useState(() => localStorage.getItem('colony-room') || 'lobby');
+  const [room, setRoom] = useState(() => {
+    const asked = new URLSearchParams(window.location.search).get('room');
+    if (asked && COLONY_ROOMS[asked]) return asked;
+    const saved = localStorage.getItem('colony-room');
+    return saved && COLONY_ROOMS[saved] ? saved : 'lobby';
+  });
   useEffect(() => { localStorage.setItem('colony-room', room); }, [room]);
   const [zoom, setZoom] = useState(1);
   const joinedRoomRef = useRef(null);

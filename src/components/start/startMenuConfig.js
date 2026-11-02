@@ -23,7 +23,7 @@ export const START_MENU = [
   // Colony: the live campus, still in beta.
   { key: "colony", index: "01", label: "Campus", to: "/colony", icon: Globe, progressLabel: "Beta" },
   // The directory, split: the campus rooms live inside Colony; the people live on AeroSync.
-  { key: "people", index: "02", label: "People", to: "/aerosync/people", icon: Users },
+  { key: "people", index: "02", label: "Directory", to: "/aerosync/people", icon: Users },
   { key: "media-hub", index: "03", label: "Media Hub", to: "/media-hub", icon: Newspaper },
   { key: "inbox", index: "04", label: "Seasonal Planning", to: "/seasonal-planning", icon: Inbox, membersOnly: true },
   // The committee's first act: putting names in. A Fellow arrives here to nominate, not
