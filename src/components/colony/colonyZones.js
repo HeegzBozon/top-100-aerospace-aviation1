@@ -1,3 +1,5 @@
+import { mediaHubZones } from '@/components/media-hub/mediaRooms';
+
 // The Expo Hub's rooms and their buildings, in grid cells (16px of each 1024×576 plate).
 // A zone with `room` opens another map; a zone with `to` opens a surface.
 export const COLONY_ROOMS = {
@@ -65,7 +67,7 @@ export const COLONY_ROOMS = {
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/f05d7b777_FuturisticAerospaceMediaHubFloorPlan.png',
     zones: [
       { key: 'media-exit', label: 'Media Hub Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 31, w: 8, h: 5 },
-      { key: 'media-studio', label: 'Main Studio', blurb: 'The Newsstand: editions, articles and dispatches.', to: '/newsstand', col: 22, row: 6, w: 20, h: 10 },
+      ...mediaHubZones(),
     ],
   },
   'career-center': {

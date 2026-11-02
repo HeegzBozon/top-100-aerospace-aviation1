@@ -108,6 +108,7 @@ const Chamber = lazy(() => import('@/pages/Chamber'));
 const ChamberPractice = lazy(() => import('@/pages/ChamberPractice'));
 const Newsstand = lazy(() => import('@/pages/Newsstand'));
 const MediaHub = lazy(() => import('@/pages/MediaHub'));
+const MediaRoom = lazy(() => import('@/pages/MediaRoom'));
 const ChamberOffice = lazy(() => import('@/pages/ChamberOffice'));
 const AppStore = lazy(() => import('@/pages/AppStore'));
 const AppStoreShelf = lazy(() => import('@/pages/AppStoreShelf'));
@@ -244,6 +245,7 @@ const AuthenticatedApp = () => {
           the platform itself. */}
       <Route path="/newsstand" element={<Newsstand />} />
       <Route path="/media-hub" element={<MediaHub />} />
+      <Route path="/media-hub/:roomKey" element={<MediaRoom />} />
       {/* The App Store: micro-tools, each doing one job and handing back an artifact */}
       <Route path="/app-store" element={<AppStore />} />
       <Route path="/app-store/shelf" element={<AppStoreShelf />} />
