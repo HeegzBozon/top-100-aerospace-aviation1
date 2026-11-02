@@ -33,7 +33,17 @@ export default function useInbox(user) {
       ]);
       const noms = await base44.entities.NominationIntake.filter({ nominator_email: user.email }, '-created_date', 100).catch(() => []);
       const entries = await base44.entities.InboxEntry.list('-created_date', 100).catch(() => []);
+      const demos = await base44.entities.MeetingRequest.filter({ purpose: 'demo', status: { $in: ['requested', 'accepted'] } }, '-start_time', 100).catch(() => []);
       const next = [
+        ...demos.map((m) => {
+          const incoming = m.recipient_email === user.email;
+          return {
+            key: `demo:${m.id}`, bundle: 'demos', at: m.created_date, person: incoming && m.status === 'requested',
+            title: `Demo with ${incoming ? (m.requester_name || m.requester_email) : (m.recipient_name || m.recipient_email)}`,
+            fact: `${new Date(m.start_time).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })} · ${m.status === 'accepted' ? 'Confirmed' : 'Awaiting reply'}`,
+            to: '/aerosync/meetings',
+          };
+        }),
         ...entries.map((e) => ({
           key: `entry:${e.id}`, bundle: 'captured', at: e.created_date, person: e.kind === 'task',
           title: e.person_name ? `${e.title} · ${e.person_name}` : e.title,

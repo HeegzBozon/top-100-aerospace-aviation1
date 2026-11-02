@@ -8,6 +8,7 @@ export const STAGES = [
     { key: 'nominations', label: 'Nominations' },
   ] },
   { key: 'mid', label: 'Mid funnel', bundles: [
+    { key: 'demos', label: 'Demo' },
     { key: 'proposals', label: 'Proposals' },
     { key: 'deals', label: 'Deals' },
   ] },

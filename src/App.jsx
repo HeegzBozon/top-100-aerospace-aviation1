@@ -99,6 +99,7 @@ const StartScreen = lazy(() => import('@/pages/StartScreen'));
 const AeroSyncPeople = lazy(() => import('@/pages/AeroSyncPeople'));
 const AeroSyncScan = lazy(() => import('@/pages/AeroSyncScan'));
 const AeroSyncRooms = lazy(() => import('@/pages/AeroSyncRooms'));
+const AeroSyncMeetings = lazy(() => import('@/pages/AeroSyncMeetings'));
 const AeroSyncFollowing = lazy(() => import('@/pages/AeroSyncFollowing'));
 const AeroSyncTitle = lazy(() => import('@/pages/AeroSyncTitle'));
 const MissionBriefing = lazy(() => import('@/pages/MissionBriefing'));
@@ -223,6 +224,7 @@ const AuthenticatedApp = () => {
           the Scan surface: the old addresses land on the People they belong to. */}
       <Route path="/aerosync/contacts" element={<Navigate to="/aerosync/people" replace />} />
       <Route path="/aerosync/rooms" element={<AeroSyncRooms />} />
+      <Route path="/aerosync/meetings" element={<AeroSyncMeetings />} />
       <Route path="/aerosync/following" element={<AeroSyncFollowing />} />
       {/* The networking page is retired: its work lives on AeroSync's surfaces now */}
       <Route path="/networking" element={<Navigate to="/aerosync" replace />} />

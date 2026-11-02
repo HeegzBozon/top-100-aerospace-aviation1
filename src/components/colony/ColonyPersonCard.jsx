@@ -4,6 +4,7 @@ import ColonyListPanel from '@/components/colony/ColonyListPanel';
 export default function ColonyPersonCard({ name, onGo, onChat, onClose }) {
   const q = encodeURIComponent(name);
   const items = [
+    { key: 'meet', label: 'Book a meeting', to: `/aerosync/meetings?with=${q}&from=colony` },
     { key: 'people', label: 'Find in AeroSync People', to: `/aerosync/people?q=${q}` },
     { key: 'following', label: 'My following ledger', to: '/aerosync/following' },
     { key: 'scan', label: 'Exchange cards (Scan)', to: '/aerosync/scan' },
