@@ -2,17 +2,19 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, ChevronRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
+import { inSeason } from './seasons';
 
 const COLUMNS = [
   { key: 'backlog', label: 'Backlog' },
-  { key: 'next_up', label: 'Committed this PI' },
+  { key: 'next_up', label: 'Committed this season' },
   { key: 'in_progress', label: 'In flight' },
   { key: 'done', label: 'Released' },
 ];
 const NEXT = { backlog: 'next_up', next_up: 'in_progress', in_progress: 'done' };
 
-// The PI board: the platform roadmap read as a SAFe Program Increment, ordered by WSJF.
-export default function PIBoard({ isAdmin }) {
+// The season board: the platform roadmap for one season, ordered by WSJF. Dated items show in
+// the season they land in; undated work stays on every season's board until it is released.
+export default function PIBoard({ isAdmin, season }) {
   const qc = useQueryClient();
   const { data, isLoading, error } = useQuery({
     queryKey: ['pi-board'],
@@ -27,9 +29,10 @@ export default function PIBoard({ isAdmin }) {
 
   if (isLoading) return <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-editorial-copper" /></div>;
   if (error) return <p className="py-8 text-center font-body text-sm text-editorial-navy/70">The board could not be loaded. Try again shortly.</p>;
-  if (!data?.length) return (
+  const rows = (data || []).filter((i) => i.target_date ? inSeason(i.target_date, season) : i.status !== 'done');
+  if (!rows.length) return (
     <div className="rounded border border-dashed border-editorial-copper/50 bg-white px-4 py-10 text-center">
-      <p className="font-heading text-xl text-editorial-navy">The increment is unplanned.</p>
+      <p className="font-heading text-xl text-editorial-navy">{season.name} is unplanned.</p>
       <p className="mt-1 font-body text-sm text-editorial-navy/60">Roadmap items appear here once they are added to the backlog.</p>
     </div>
   );
@@ -37,7 +40,7 @@ export default function PIBoard({ isAdmin }) {
   return (
     <div className="grid gap-3 md:grid-cols-4">
       {COLUMNS.map((c) => {
-        const items = data.filter((i) => (i.status || 'backlog') === c.key);
+        const items = rows.filter((i) => (i.status || 'backlog') === c.key);
         return (
           <section key={c.key} className="rounded border border-editorial-navy/10 bg-white p-2">
             <h2 className="pd-label mb-2 flex justify-between">{c.label}<span>{items.length}</span></h2>
