@@ -4,7 +4,11 @@
   "properties": {
     "booking_id": {
       "type": "string",
-      "description": "Reference to the Booking entity"
+      "description": "Reference to the Booking entity, when the payment is for a booking"
+    },
+    "product": {
+      "type": "string",
+      "description": "What was bought, taken from the checkout session metadata: 'booking', 'pro_membership', 'ground_control_starter', 'archive_donation', 'featured_job', 'featured_service', or a payment plan id"
     },
     "payer_email": {
       "type": "string",
@@ -17,6 +21,10 @@
     "currency": {
       "type": "string",
       "default": "usd"
+    },
+    "stripe_session_id": {
+      "type": "string",
+      "description": "Checkout Session id. The webhook's idempotency key: one order, one payment record."
     },
     "stripe_payment_intent_id": {
       "type": "string",
@@ -46,9 +54,29 @@
     }
   },
   "required": [
-    "booking_id",
     "amount_cents",
-    "stripe_payment_intent_id",
     "status"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }
