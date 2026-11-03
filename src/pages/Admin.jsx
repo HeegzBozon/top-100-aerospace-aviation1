@@ -32,6 +32,7 @@ const AvailabilityManager       = lazy(() => import('@/components/admin/Availabi
 const ClaimsReviewManager       = lazy(() => import('@/components/admin/ClaimsReviewManager'));
 const UserMergeManager          = lazy(() => import('@/components/admin/UserMergeManager'));
 const SalesAnalytics            = lazy(() => import('@/components/admin/SalesAnalytics'));
+const GodsEye                   = lazy(() => import('@/components/admin/GodsEye'));
 const SMEAssignmentPanel        = lazy(() => import('@/components/admin/SMEAssignmentPanel'));
 const StartupReviewPanel        = lazy(() => import('@/components/admin/StartupReviewPanel'));
 const AcceleratorManagement     = lazy(() => import('@/components/admin/AcceleratorManagement'));
@@ -332,6 +333,8 @@ export default function Admin() {
         return <RailItemManager />;
       case 'sales':
         return <SalesAnalytics />;
+      case 'gods-eye':
+        return <GodsEye />;
       default:
         return (
           <div className="py-16 text-center text-[var(--muted)]">

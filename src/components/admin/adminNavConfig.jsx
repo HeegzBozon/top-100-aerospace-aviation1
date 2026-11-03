@@ -27,6 +27,7 @@ import {
     TrendingUp,
     Activity,
     Mic,
+    Eye,
 } from 'lucide-react';
 
 /**
@@ -110,6 +111,7 @@ export const ADMIN_SECTIONS = [
         icon: Settings,
         tabs: [
             { id: 'dashboard', label: 'Mission Control', icon: LayoutDashboard, component: 'AdminCommandCenter' },
+            { id: 'gods-eye', label: "God's Eye", icon: Eye, component: 'GodsEye' },
             { id: 'seasonal-planning', label: 'Seasonal Planning', icon: ClipboardList, component: 'SeasonalPlanningDashboard' },
             { id: 'settings', label: 'Platform Settings', icon: Settings, component: 'PlatformSettings' },
             { id: 'rail-items', label: 'Icon Rail', icon: Columns, component: 'RailItemManager' },

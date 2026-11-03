@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { PLAYLIST, loadPlaylist } from '@/components/handheld/consoleMusic';
+import { STATION_1993 } from '@/components/handheld/stations1993';
 
 // The campus soundtrack: every room has its own playlist, and each character carries a
 // theme that takes over while you are talking with them. Written as note data, like the
@@ -30,15 +31,18 @@ const T = {
   spark: t('Spark Theme', 'house', 128, 0.06, [[62, 66, 69, 73], [59, 62, 66, 69], [55, 59, 62, 66], [57, 61, 64, 68]], { hatsA: 'x.o.x.o.x.o.x.o.' }),
 };
 
+// The 1993 side, by name, so a room can lean on it without knowing the indices.
+const [coastline, vhs, atrium, lullaby, chrome] = STATION_1993;
+
 export const ROOM_PLAYLISTS = {
-  lobby: [T.concourse, T.arrivals, PLAYLIST[0]],
-  hall: [T.arrivals, T.concourse, PLAYLIST[2]],
-  'innovation-expo': [T.cleanroom, PLAYLIST[3], T.spark],
-  'space-pavilion': [T.lowOrbit, T.wonder, PLAYLIST[2]],
+  lobby: [T.concourse, coastline, T.arrivals, PLAYLIST[0]],
+  hall: [T.arrivals, chrome, T.concourse, PLAYLIST[2]],
+  'innovation-expo': [T.cleanroom, PLAYLIST[3], T.spark, vhs],
+  'space-pavilion': [T.lowOrbit, T.wonder, lullaby, PLAYLIST[2]],
   'leadership-summit': [T.podium, T.resolve, PLAYLIST[4]],
-  'media-hub': [T.onAir, PLAYLIST[1], T.cleanroom],
-  'career-center': [T.openDesk, PLAYLIST[0], T.podium],
-  'networking-lounge': [T.nightLounge, T.openDesk, PLAYLIST[2]],
+  'media-hub': [T.onAir, PLAYLIST[1], T.cleanroom, atrium],
+  'career-center': [T.openDesk, PLAYLIST[0], T.podium, vhs],
+  'networking-lounge': [T.nightLounge, T.openDesk, atrium, PLAYLIST[2]],
 };
 
 const NPC_THEMES = {

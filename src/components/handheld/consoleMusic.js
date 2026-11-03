@@ -1,4 +1,5 @@
 import { shellAudio } from "./handheldSound";
+import { STATION_1993 } from "./stations1993";
 
 // The console's onboard music: five instrumental loops — three house, two lo-fi —
 // written as note data rather than loaded as files, so the device carries its own
@@ -108,7 +109,24 @@ export const PLAYLIST = [
     bass: [ROOT, null, null, null, null, null, FIFTH, null, ROOT, null, null, null, BELOW, null, null, FIFTH],
     keys: "...x..x....x..x.",
   },
+  // The record turns over: the second side is 1993 — synthwave, dreamwave, vaporwave and
+  // chillsynth, so the device's own station carries the whole late-night dial.
+  ...STATION_1993,
 ];
+
+// How each genre on the record is mixed: how hard the kick sits, how bright the hats run,
+// how far the bass leans forward, and how much vinyl is under it. The 1993 side is mixed
+// the way those records were — a softer kick, the hat wide open, the bass carrying the
+// top line, and the tape pulled back under everything.
+const MIX = {
+  "lo-fi": { kick: 0.42, hat: 0.035, bass: 0.2, vinyl: 0.14 },
+  house: { kick: 0.5, hat: 0.042, bass: 0.24, vinyl: 0.06 },
+  synthwave: { kick: 0.55, hat: 0.05, bass: 0.27, vinyl: 0.04 },
+  dreamwave: { kick: 0.46, hat: 0.038, bass: 0.23, vinyl: 0.05 },
+  vaporwave: { kick: 0.4, hat: 0.03, bass: 0.2, vinyl: 0.16 },
+  chillsynth: { kick: 0.44, hat: 0.036, bass: 0.22, vinyl: 0.1 },
+};
+const mix = (kind) => MIX[kind] || MIX.house;
 
 let ctx = null;
 let master = null;
@@ -134,7 +152,10 @@ let ctxBound = false;
 
 const hz = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 const drift = () => (Math.random() - 0.5) * DRIFT;
-const lofi = () => queue[index].kind === "lo-fi";
+// The slow, wide genres take the darker voices: a longer kick, a brushed clap, the pad
+// an octave-down mood under the keys.
+const SOFT_KINDS = new Set(["lo-fi", "vaporwave", "dreamwave"]);
+const lofi = () => SOFT_KINDS.has(queue[index].kind);
 
 // A gain that rises fast and falls away — every voice in here is built on it.
 function env(gain, at, level, attack, decay) {
@@ -375,17 +396,19 @@ function playStep(at) {
   const beat = 60 / track.bpm / 4;
   const busy = isBSection(bar);
 
-  if (track.kick[step] === "x") kick(at, track.kind === "lo-fi" ? 0.42 : 0.5);
+  const levels = mix(track.kind);
+
+  if (track.kick[step] === "x") kick(at, levels.kick);
   if (track.clap[step] === "x") clap(at);
 
   const hats = busy ? track.hatsB : track.hatsA;
   if (hats[step] === "o") hat(at, true, 0.055);
-  else if (hats[step] === "x") hat(at, false, track.kind === "lo-fi" ? 0.035 : 0.042);
+  else if (hats[step] === "x") hat(at, false, levels.hat);
 
   if (busy && track.perc[step] === "x") struck(at, 0.05, 0.06, 2500, 1.5);
 
   const offset = track.bass[step];
-  if (offset != null) bassNote(at, chord[0] + offset, beat * 1.7, track.kind === "lo-fi" ? 0.2 : 0.24);
+  if (offset != null) bassNote(at, chord[0] + offset, beat * 1.7, levels.bass);
 
   if (track.keys[step] === "x") {
     const voicing = busy ? chord : chord.slice(0, 4);
@@ -396,7 +419,7 @@ function playStep(at) {
   if (busy && step === 0) pad(at, chord, beat * STEPS);
 
   // The record itself: a crackle under everything, denser on the lo-fi loops.
-  if (Math.random() < (track.kind === "lo-fi" ? 0.14 : 0.06)) {
+  if (Math.random() < levels.vinyl) {
     struck(at + Math.random() * beat, 0.02, 0.004, 2400 + Math.random() * 2400, 0.7);
   }
 }
