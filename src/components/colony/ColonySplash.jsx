@@ -20,7 +20,7 @@ export default function ColonySplash({ label = 'Entering Colony…', ready = fal
   return (
     <div className={`${fill ? 'absolute inset-0' : 'relative min-h-screen'} overflow-hidden bg-slate-950`}>
       <Plate className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
-      <Plate alt="TOP 100 Aerospace & Aviation 2026" className="absolute inset-0 h-full w-full object-contain" />
+      <Plate alt="TOP 100 Aerospace & Aviation 2026" className="absolute inset-0 h-full w-full object-cover object-center lg:object-contain" />
       <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-gradient-to-t from-slate-950/90 to-transparent pb-8 pt-16">
         {ready
           ? <CircleCheck className="h-4 w-4 text-editorial-gold" />
