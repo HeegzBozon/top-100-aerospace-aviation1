@@ -4,12 +4,10 @@ import { AlertCircle, FileText, Plus, RefreshCw } from 'lucide-react';
 import { INV, STATUS_TONE, dayLabel, invoiceText, money, nextNumber } from '@/components/admin/invoicing/invoiceConfig';
 import InvoiceComposer from '@/components/admin/invoicing/InvoiceComposer';
 import InvoiceSheet from '@/components/admin/invoicing/InvoiceSheet';
-
-const TILES = [
-  { key: 'sent', label: 'Outstanding', accent: '#c9a87c' },
-  { key: 'paid', label: 'Settled', accent: '#7ec89a' },
-  { key: 'draft', label: 'In draft', accent: '#8fb2cc' },
-];
+import DeskMasthead from '@/components/admin/desk/DeskMasthead';
+import DeskTabs from '@/components/admin/desk/DeskTabs';
+import DeskTile from '@/components/admin/desk/DeskTile';
+import BenefitsTease from '@/components/admin/desk/BenefitsTease';
 
 // The invoicing desk: notes become bills, bills get sent, and what is owed is read off
 // the top of the page. Every bill is one record, edited on its own sheet.
@@ -21,6 +19,7 @@ export default function InvoicingDesk() {
   const [sending, setSending] = useState(false);
   const [notice, setNotice] = useState('');
   const [copied, setCopied] = useState(false);
+  const [tab, setTab] = useState('invoices');
 
   const load = useCallback(async () => {
     setState('loading');
@@ -109,6 +108,9 @@ export default function InvoicingDesk() {
       sent: of('sent').reduce((sum, inv) => sum + (inv.total_cents || 0), 0),
       paid: of('paid').reduce((sum, inv) => sum + (inv.total_cents || 0), 0),
       draft: of('draft').length,
+      issued: invoices.length,
+      paidCount: of('paid').length,
+      square: invoices.length > 0 && invoices.every((inv) => inv.status === 'paid'),
     };
   }, [invoices]);
 
@@ -145,14 +147,11 @@ export default function InvoicingDesk() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold" style={{ color: INV.ink }}>Invoicing</h2>
-          <p className="text-sm" style={{ color: INV.soft }}>
-            Write the notes you already have, and the desk turns them into a bill the client can be sent.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <DeskMasthead
+        kicker="Invoicing"
+        title="The House Ledger"
+        blurb="Write the notes you already have and the desk drafts the bill. Every figure here is money the house has earned or is owed."
+      >
           <button
             onClick={load}
             className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium"
@@ -167,19 +166,41 @@ export default function InvoicingDesk() {
           >
             <Plus className="h-4 w-4" /> New invoice
           </button>
-        </div>
+      </DeskMasthead>
+
+      <DeskTabs
+        tabs={[
+          { key: 'invoices', label: 'Invoices' },
+          { key: 'benefits', label: 'Benefits', soon: true },
+        ]}
+        value={tab}
+        onChange={setTab}
+      />
+
+      {tab === 'invoices' && (
+      <>
+      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+        <DeskTile label="Outstanding" value={money(summary.sent)} note="Sent, not yet settled" />
+        <DeskTile
+          label="Settled"
+          value={money(summary.paid)}
+          note={`${summary.paidCount} of ${summary.issued} bills cleared`}
+          meter={summary.issued ? summary.paidCount / summary.issued : 0}
+        />
+        <DeskTile
+          label="In draft"
+          value={summary.draft}
+          note={summary.draft ? 'Waiting on a signature' : 'Nothing unposted'}
+          tone="#8f5c2c"
+        />
       </div>
 
-      <div className="grid grid-cols-3 gap-2.5">
-        {TILES.map((tile) => (
-          <div key={tile.key} className="rounded-xl p-3.5" style={{ background: INV.surface, border: `1px solid ${INV.line}` }}>
-            <p className="mb-1.5 text-[10px] uppercase leading-none tracking-wider" style={{ color: '#6b8199' }}>{tile.label}</p>
-            <p className="text-lg font-bold leading-none tabular-nums" style={{ color: tile.accent }}>
-              {tile.key === 'draft' ? summary.draft : money(summary[tile.key])}
-            </p>
-          </div>
-        ))}
-      </div>
+      {summary.square && (
+        <div className="flex items-center gap-2.5">
+          <span className="desk-stamp" style={{ color: '#7ec89a' }}>House square</span>
+          <span className="text-[10px]" style={{ color: INV.soft }}>Every bill issued has been settled.</span>
+        </div>
+      )}
 
       {state === 'loading' && (
         <div className="flex items-center gap-2 rounded-xl px-3 py-6 text-sm" style={{ background: INV.surface, border: `1px solid ${INV.line}`, color: INV.soft }}>
@@ -198,10 +219,10 @@ export default function InvoicingDesk() {
       )}
 
       {state === 'ready' && invoices.length === 0 && (
-        <div className="rounded-xl px-4 py-10 text-center" style={{ background: INV.surface, border: `1px dashed ${INV.line}` }}>
-          <FileText className="mx-auto h-5 w-5" style={{ color: INV.soft }} />
-          <p className="mt-2 text-sm font-semibold" style={{ color: INV.ink }}>No invoices yet.</p>
-          <p className="mx-auto mt-1 max-w-sm text-xs" style={{ color: INV.soft }}>
+        <div className="desk-plate px-4 py-10 text-center">
+          <FileText className="mx-auto h-5 w-5" style={{ color: '#c9a87c' }} />
+          <p className="mt-2 font-heading text-base" style={{ color: '#f5efe4' }}>The ledger is empty.</p>
+          <p className="mx-auto mt-1.5 max-w-sm text-xs leading-relaxed" style={{ color: '#7d94aa' }}>
             Press New invoice, paste in the notes you already wrote, and the desk drafts the bill for you to check.
           </p>
         </div>
@@ -216,8 +237,7 @@ export default function InvoicingDesk() {
                 setNotice('');
                 setView({ mode: 'sheet', invoice });
               }}
-              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-white/[0.04]"
-              style={{ background: INV.surface, border: `1px solid ${INV.line}` }}
+              className="desk-plate flex w-full items-center gap-3 px-3 py-2.5 text-left transition hover:brightness-110"
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold" style={{ color: INV.ink }}>
@@ -228,9 +248,11 @@ export default function InvoicingDesk() {
                   {invoice.invoice_number} · issued {dayLabel(invoice.issue_date)} · due {dayLabel(invoice.due_date)}
                 </p>
               </div>
-              <div className="flex flex-shrink-0 flex-col items-end">
-                <span className="text-sm font-bold tabular-nums" style={{ color: INV.ink }}>{money(invoice.total_cents)}</span>
-                <span className="text-[9px] uppercase tracking-[0.16em]" style={{ color: STATUS_TONE[invoice.status] }}>
+              <div className="flex flex-shrink-0 flex-col items-end gap-1">
+                <span className="font-heading text-[15px] leading-none tabular-nums" style={{ color: '#f5efe4' }}>
+                  {money(invoice.total_cents)}
+                </span>
+                <span className="desk-stamp" style={{ color: STATUS_TONE[invoice.status] }}>
                   {invoice.status}
                 </span>
               </div>
@@ -238,6 +260,10 @@ export default function InvoicingDesk() {
           ))}
         </div>
       )}
+      </>
+      )}
+
+      {tab === 'benefits' && <BenefitsTease />}
     </div>
   );
 }

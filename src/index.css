@@ -1917,3 +1917,91 @@ body.hh-landscape .hh-viewer-foot {
     animation: none;
   }
 }
+
+/* ===== THE HOUSE DESKS — TIMECARD & INVOICING =====
+   The two chores of the working house, kept as printed instruments rather than as
+   admin panels: navy plates with a copper hairline, ivory faces for the figures, a
+   wax seal for what has not opened yet, and a rubber stamp for what has been filed.
+   Every tone is a brand token, so the desks are recast with the house. */
+.desk-plate {
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(168deg, #1d2a39 0%, #141d28 58%, #0d141c 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 34px -26px rgba(3, 8, 15, 0.95);
+}
+
+/* The figure's own face: warm ivory, lit from above, edged in copper. */
+.desk-face {
+  border-radius: 5px;
+  background: linear-gradient(180deg, #fffdf9 0%, #f7f1e6 64%, #efe5d5 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-copper-rgb) / 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 14px 28px -22px rgba(4, 9, 18, 0.9);
+}
+
+/* A rubber stamp, struck slightly off square. */
+.desk-stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-family: var(--font-body);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transform: rotate(-2.5deg);
+  box-shadow: inset 0 0 0 1px currentColor;
+  opacity: 0.92;
+}
+
+/* The seal on an envelope that has not been opened. */
+.desk-seal {
+  border-radius: 9999px;
+  background: radial-gradient(circle at 34% 26%, #d99a5d 0%, #b87333 48%, #7e4a1c 100%);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.38),
+    inset 0 -5px 9px rgba(60, 30, 10, 0.5),
+    0 12px 24px -14px rgba(4, 9, 18, 0.95);
+}
+
+/* The rule under a masthead: copper into rose gold, running out to nothing. */
+.desk-rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--editorial-copper-rgb) / 0.9) 0%,
+    rgb(var(--editorial-gold-rgb) / 0.34) 46%,
+    rgb(var(--editorial-gold-rgb) / 0) 100%
+  );
+}
+
+/* A measure of the chore done: copper into rose gold on a recessed track. */
+.desk-meter {
+  height: 3px;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: rgba(250, 248, 245, 0.14);
+}
+.desk-face .desk-meter {
+  background: rgb(var(--editorial-navy-rgb) / 0.16);
+}
+.desk-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #8f5c2c 0%, #b87333 46%, #e8cf9e 100%);
+  transition: width 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .desk-meter > span {
+    transition: none;
+  }
+}

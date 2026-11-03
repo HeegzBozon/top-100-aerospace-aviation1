@@ -8,6 +8,9 @@ import TimecardRow from '@/components/admin/timecard/TimecardRow';
 import WorklogImport from '@/components/admin/timecard/WorklogImport';
 import WorklogReview from '@/components/admin/timecard/WorklogReview';
 import SchedulePanel from '@/components/admin/timecard/SchedulePanel';
+import DeskMasthead from '@/components/admin/desk/DeskMasthead';
+import DeskTabs from '@/components/admin/desk/DeskTabs';
+import BenefitsTease from '@/components/admin/desk/BenefitsTease';
 
 // The desk the platform's own hours and receipts are kept on: one ledger of time and
 // expenses, filed against a project, settled through approval. Admin-only — the record
@@ -84,29 +87,11 @@ export default function TimecardDesk() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold" style={{ color: TC.ink }}>Timecard &amp; Expenses</h2>
-          <p className="text-sm" style={{ color: TC.soft }}>
-            Hours and receipts on one ledger, filed against a project and settled through approval.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-0.5 rounded-lg p-0.5" style={{ border: `1px solid ${TC.line}` }}>
-            {[
-              ['ledger', 'Ledger'],
-              ['schedule', 'Schedule'],
-            ].map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => setView(key)}
-                className="rounded-md px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider"
-                style={view === key ? { background: TC.copper, color: '#fff' } : { color: TC.soft }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+      <DeskMasthead
+        kicker="Timecard & Expenses"
+        title="The Flight Log"
+        blurb="Hours flown, receipts filed, and the rota that staffs the rooms. Chores, kept like a logbook."
+      >
           {view === 'ledger' && (
           <button
             onClick={load}
@@ -139,10 +124,20 @@ export default function TimecardDesk() {
           >
             <Plus className="h-4 w-4" /> New entry
           </button>)}
-        </div>
-      </div>
+      </DeskMasthead>
 
-      {view !== 'ledger' && <SchedulePanel />}
+      <DeskTabs
+        tabs={[
+          { key: 'ledger', label: 'Ledger' },
+          { key: 'schedule', label: 'Schedule' },
+          { key: 'benefits', label: 'Benefits', soon: true },
+        ]}
+        value={view}
+        onChange={setView}
+      />
+
+      {view === 'schedule' && <SchedulePanel />}
+      {view === 'benefits' && <BenefitsTease />}
 
       {view === 'ledger' && (
       <>
@@ -218,14 +213,11 @@ export default function TimecardDesk() {
       )}
 
       {state === 'ready' && shown.length === 0 && (
-        <div
-          className="rounded-xl px-4 py-10 text-center"
-          style={{ background: TC.surface, border: `1px dashed ${TC.line}` }}
-        >
-          <p className="text-sm font-semibold" style={{ color: TC.ink }}>
-            {entries.length ? 'Nothing filed under this filter.' : 'The ledger is empty.'}
+        <div className="desk-plate px-4 py-10 text-center">
+          <p className="font-heading text-base" style={{ color: '#f5efe4' }}>
+            {entries.length ? 'Nothing filed under this filter.' : 'The logbook is empty.'}
           </p>
-          <p className="mx-auto mt-1 max-w-sm text-xs" style={{ color: TC.soft }}>
+          <p className="mx-auto mt-1.5 max-w-sm text-xs leading-relaxed" style={{ color: '#7d94aa' }}>
             {entries.length
               ? 'Switch the filter, or file a new entry against the project it belongs to.'
               : 'File the first entry — hours worked, or a receipt that needs paying back.'}

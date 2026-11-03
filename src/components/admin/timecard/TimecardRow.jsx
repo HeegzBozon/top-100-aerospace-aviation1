@@ -23,7 +23,7 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
   const range = start && end ? `${start} – ${end}` : '';
 
   return (
-    <div className="rounded-xl" style={{ background: TC.surface, border: `1px solid ${TC.line}` }}>
+    <div className="desk-plate overflow-hidden">
       <div className="flex items-start gap-3 px-3 py-2.5">
         <div
           className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg"
@@ -68,8 +68,10 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
         </div>
 
         <div className="flex flex-shrink-0 flex-col items-end gap-1">
-          <p className="text-sm font-bold tabular-nums" style={{ color: TC.ink }}>{money(amountOf(entry))}</p>
-          <span className="text-[9px] uppercase tracking-[0.16em]" style={{ color: STATUS_TONE[entry.status] || TC.soft }}>
+          <p className="font-heading text-[15px] leading-none tabular-nums" style={{ color: '#f5efe4' }}>
+            {money(amountOf(entry))}
+          </p>
+          <span className="desk-stamp" style={{ color: STATUS_TONE[entry.status] || TC.soft }}>
             {entry.status}
           </span>
         </div>
