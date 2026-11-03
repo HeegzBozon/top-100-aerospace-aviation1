@@ -2005,3 +2005,102 @@ body.hh-landscape .hh-viewer-foot {
     transition: none;
   }
 }
+
+/* ===== THE ARCADE — THE CABINETS OF THE EAST WING =====
+   A cabinet is read the way one is read from the floor: a marquee across the head, a
+   brass hairline round the plate, and a window of dark glass with the fine scanline of a
+   tube over it. Nothing moves on its own but the light crossing the marquee, and that
+   stops for a reader who asks it to. */
+.arcade-plate {
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0) 40%),
+    linear-gradient(168deg, #1d2a39 0%, #141d28 58%, #0d141c 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 36px -26px rgba(3, 8, 15, 0.95);
+}
+
+.arcade-marquee {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0c1622 0%, #091019 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgb(var(--editorial-copper-rgb) / 0.55);
+}
+.arcade-marquee::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.16) 46%, transparent 62%);
+  transform: translateX(-120%);
+}
+.arcade-plate:hover .arcade-marquee::after,
+.arcade-plate:focus-visible .arcade-marquee::after {
+  animation: arcade-sheen 1.4s ease-out;
+}
+@keyframes arcade-sheen {
+  to { transform: translateX(120%); }
+}
+
+/* The window the machine is played in. */
+.arcade-glass {
+  background: radial-gradient(120% 120% at 50% 0%, #0b1a27 0%, #050c14 72%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-copper-rgb) / 0.35),
+    inset 0 10px 22px -14px rgba(0, 0, 0, 0.9),
+    0 20px 40px -28px rgba(3, 8, 15, 0.95);
+}
+.arcade-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 3px);
+  opacity: 0.5;
+}
+
+/* The picture itself: it takes the width it is given, so a desk and a handheld play the
+   same machine. Pointer coordinates are mapped back to the tube's own size by the game. */
+.arcade-canvas {
+  display: block;
+  border-radius: 6px;
+  border: 1px solid rgb(var(--editorial-copper-rgb) / 0.5);
+  background: #050b12;
+  box-shadow: 0 0 24px -8px rgb(var(--editorial-copper-rgb) / 0.6);
+}
+
+/* The cabinet's keys, moulded like the console's chin — it is the same thumb. */
+.arcade-key {
+  border-radius: 5px;
+  background: linear-gradient(180deg, var(--hh-pad-1) 0%, var(--hh-pad-2) 100%);
+  color: var(--hh-pad-ink);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(3, 6, 13, 0.30),
+    0 1px 0 rgba(3, 6, 13, 0.36);
+}
+.arcade-key:active {
+  box-shadow: inset 0 2px 4px rgba(3, 6, 13, 0.44);
+}
+.arcade-key:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(var(--editorial-gold-rgb) / 0.7);
+}
+
+.arcade-record {
+  border-radius: 5px;
+  border: 1px solid rgb(var(--editorial-gold-rgb) / 0.35);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arcade-plate:hover .arcade-marquee::after,
+  .arcade-plate:focus-visible .arcade-marquee::after {
+    animation: none;
+  }
+}

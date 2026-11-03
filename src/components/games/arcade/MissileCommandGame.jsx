@@ -11,7 +11,10 @@ const DEFENSE_SPEED = 6;
 const EXPLOSION_MAX_RADIUS = 40;
 const EXPLOSION_DURATION = 30;
 
-export default function MissileCommandGame() {
+// Played inside the Arcade's cabinet (src/components/arcade/ArcadeStage.jsx). The score
+// is offered up as it changes so the house record can be kept, and the picture takes
+// whatever width the cabinet gives it — a tap is mapped back to the tube's own size.
+export default function MissileCommandGame({ onScore }) {
   const canvasRef = useRef(null);
   const gameRef = useRef(null);
   const [score, setScore] = useState(0);
@@ -20,6 +23,8 @@ export default function MissileCommandGame() {
   const [citiesLeft, setCitiesLeft] = useState(6);
   const [gameOver, setGameOver] = useState(false);
   const [started, setStarted] = useState(false);
+
+  useEffect(() => { onScore?.(score); }, [score]);
 
   const initGame = () => ({
     cities: [
@@ -65,9 +70,11 @@ export default function MissileCommandGame() {
       const game = gameRef.current;
       if (game.gameOver || game.silo.ammo <= 0) return;
 
+      // The picture is drawn at the tube's size and may be shown smaller (a handheld,
+      // a narrow cabinet), so a tap is read back in the tube's own coordinates.
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const x = (e.clientX - rect.left) * (GAME_WIDTH / rect.width);
+      const y = (e.clientY - rect.top) * (GAME_HEIGHT / rect.height);
 
       // Don't allow targeting below cities
       if (y > GAME_HEIGHT - 60) return;
@@ -306,44 +313,46 @@ export default function MissileCommandGame() {
   }, [started]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-gray-900 p-4">
+    <div className="relative flex w-full flex-col items-center justify-center p-3">
       {!started ? (
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Missile Command</h2>
-          <p className="text-gray-400 mb-2">Click to launch defensive missiles</p>
-          <p className="text-gray-400 mb-6">Protect your cities from incoming attacks!</p>
+        <div className="py-10 text-center">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-editorial-gold/80">Attract mode</p>
+          <h2 className="mb-3 mt-2 font-heading text-3xl text-editorial-cream">Missile Command</h2>
+          <p className="mb-1 text-sm text-editorial-cream/60">Tap the sky to launch an interceptor.</p>
+          <p className="mb-6 text-sm text-editorial-cream/60">Six cities. Keep them lit.</p>
           <button
             onClick={resetGame}
-            className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-colors"
+            className="rounded border border-editorial-copper/70 bg-editorial-copper/20 px-8 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-editorial-cream transition-colors hover:bg-editorial-copper/35"
           >
-            Start Game
+            Insert coin
           </button>
         </div>
       ) : (
         <>
-          <div className="flex justify-between w-[600px] mb-4 text-white">
-            <div className="text-lg">Score: <span className="font-bold text-yellow-400">{score}</span></div>
-            <div className="text-lg">Wave: <span className="font-bold text-blue-400">{wave}</span></div>
-            <div className="text-lg">Ammo: <span className="font-bold text-green-400">{ammo}</span></div>
-            <div className="text-lg">Cities: <span className="font-bold text-cyan-400">{citiesLeft}</span></div>
+          <div className="mb-3 flex w-full max-w-[600px] flex-wrap justify-between gap-2 text-sm text-editorial-cream">
+            <div>Score: <span className="font-bold text-editorial-gold">{score}</span></div>
+            <div>Wave: <span className="font-bold text-editorial-cream">{wave}</span></div>
+            <div>Ammo: <span className="font-bold text-editorial-cream/70">{ammo}</span></div>
+            <div>Cities: <span className="font-bold text-editorial-cream/70">{citiesLeft}</span></div>
           </div>
           <canvas
             ref={canvasRef}
             width={GAME_WIDTH}
             height={GAME_HEIGHT}
-            className="border-2 border-blue-500 rounded-lg cursor-crosshair"
+            className="arcade-canvas h-auto w-full max-w-[600px] cursor-crosshair"
           />
           {gameOver && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/70">
               <div className="text-center">
-                <h2 className="text-4xl font-bold text-white mb-4">Game Over!</h2>
-                <p className="text-xl text-blue-400 mb-2">Wave Reached: {wave}</p>
-                <p className="text-2xl text-yellow-400 mb-6">Final Score: {score}</p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-editorial-gold/80">Machine closed</p>
+                <h2 className="mb-2 mt-1 font-heading text-4xl text-editorial-cream">Game over</h2>
+                <p className="mb-1 text-sm text-editorial-cream/60">Wave {wave}</p>
+                <p className="mb-6 font-heading text-2xl text-editorial-gold">{score.toLocaleString()}</p>
                 <button
                   onClick={resetGame}
-                  className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-colors"
+                  className="rounded border border-editorial-copper/70 bg-editorial-copper/20 px-8 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-editorial-cream transition-colors hover:bg-editorial-copper/35"
                 >
-                  Play Again
+                  Play again
                 </button>
               </div>
             </div>

@@ -1,5 +1,5 @@
 import {
-  Award, BookOpen, Briefcase, Calendar, CalendarCheck, CalendarDays, Compass, GraduationCap,
+  Award, BookOpen, Briefcase, Calendar, CalendarCheck, CalendarDays, Compass, Gamepad2, GraduationCap,
   Globe2, Heart, Info, Landmark, Layers, LayoutGrid, LogIn, LogOut, Mail,
   MessageCircle, Network, Newspaper, PartyPopper, Radar, Rocket, Scissors, Send, Shield,
   ShoppingBag, Ticket, Trophy, User, UserPlus, Users,
@@ -73,6 +73,7 @@ export const APP_GROUPS = [
       { label: "Local Legends", to: "/local-legends", icon: Users },
       { label: "Mission Theatre", to: "/LaunchParty", icon: Ticket },
       { label: "Launch Parties", to: "/launch-parties", icon: PartyPopper },
+      { label: "The Arcade", to: "/arcade", icon: Gamepad2 },
       { label: "2030 Vision", to: "/2030-vision", icon: Landmark },
       { label: "About", to: "/about", icon: Info },
     ],

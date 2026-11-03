@@ -38,6 +38,7 @@ export const COLONY_ROOMS = {
       { key: 'leadership-summit', label: 'Leadership Summit', blurb: 'Step inside the summit hall.', room: 'leadership-summit', col: 7, row: 14, w: 11, h: 6 },
       { key: 'networking-lounge', label: 'Networking Lounge', blurb: 'Step inside the lounge.', room: 'networking-lounge', col: 46, row: 13, w: 13, h: 8 },
       { key: 'media-hub', label: 'Media Hub', blurb: 'Step inside the studios.', room: 'media-hub', col: 4, row: 23, w: 14, h: 8 },
+      { key: 'arcade', label: 'The Arcade', blurb: 'Three cabinets kept in the east wing.', room: 'arcade', col: 21, row: 25, w: 15, h: 6 },
       { key: 'career-center', label: 'Career Center', blurb: 'Step inside the career floor.', room: 'career-center', col: 47, row: 24, w: 12, h: 7 },
     ],
     // The hall's solid parts: the facade flanking the entrance steps, the outer
@@ -104,6 +105,21 @@ export const COLONY_ROOMS = {
     zones: [
       { key: 'expo-exit', label: 'Expo Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 33, w: 8, h: 3 },
       { key: 'innovation-hub', label: 'Innovation Hub', blurb: 'The App Store: tools that each do one job.', to: '/app-store', col: 26, row: 12, w: 12, h: 9 },
+    ],
+  },
+  // The east wing: three cabinets, the board the house keeps its records on, and the
+  // chess tables. A cabinet opens in the room rather than sending you to the surface,
+  // so the floor stays behind the glass while a game is played.
+  arcade: {
+    label: 'The Arcade',
+    map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/e53dce092_generated_image.png',
+    zones: [
+      { key: 'arcade-exit', label: 'Arcade Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 31, w: 8, h: 4 },
+      { key: 'cabinet-sentinel', label: 'Sentinel', blurb: 'Hold the line above the terminator.', panel: 'arcade', cabinet: 'sentinel', col: 6, row: 6, w: 9, h: 6 },
+      { key: 'cabinet-belt-run', label: 'Belt Run', blurb: 'Thread the debris field.', panel: 'arcade', cabinet: 'belt-run', col: 27, row: 6, w: 9, h: 6 },
+      { key: 'cabinet-guardian', label: 'Guardian', blurb: 'Six cities under the arc.', panel: 'arcade', cabinet: 'guardian', col: 48, row: 6, w: 9, h: 6 },
+      { key: 'record-board', label: 'The Record Board', blurb: 'What each cabinet has seen this season.', panel: 'arcade', col: 24, row: 18, w: 16, h: 5 },
+      { key: 'chess-tables', label: 'Chess Tables', blurb: 'Take a board in the TOP 100 chess club.', to: '/ChessClub', col: 4, row: 25, w: 11, h: 4 },
     ],
   },
 };

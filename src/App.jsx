@@ -41,6 +41,7 @@ const LinkedInManager         = lazy(() => import('@/pages/LinkedInManager'));
 const LaunchParty             = lazy(() => import('@/pages/LaunchParty'));
 const LaunchParties           = lazy(() => import('@/pages/LaunchParties'));
 const LaunchPartyRoom         = lazy(() => import('@/pages/LaunchPartyRoom'));
+const Arcade                  = lazy(() => import('@/pages/Arcade'));
 const Top100AerospaceAviationTV = lazy(() => import('@/pages/Top100AerospaceAviationTV'));
 const Top100TV = lazy(() => import('@/pages/Top100TV'));
 const PaymentPlan = lazy(() => import('@/pages/PaymentPlan'));
@@ -203,6 +204,9 @@ const AuthenticatedApp = () => {
           own door. A party is watched in the theatre, so both point back at it. */}
       <Route path="/launch-parties" element={<LaunchParties />} />
       <Route path="/launch-party/:code" element={<LaunchPartyRoom />} />
+      {/* The Arcade: three cabinets kept in the east wing of the campus, played here
+          and in the room itself (/Colony?room=arcade). */}
+      <Route path="/arcade" element={<Arcade />} />
       <Route path="/AgentSkillRegistry" element={<AgentSkillRegistry />} />
       <Route path="/agent-skills" element={<AgentSkillRegistry />} />
       <Route path="/terms" element={<TermsOfService />} />

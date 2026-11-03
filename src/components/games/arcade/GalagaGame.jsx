@@ -11,7 +11,10 @@ const ENEMY_HEIGHT = 25;
 const ENEMY_ROWS = 4;
 const ENEMY_COLS = 8;
 
-export default function GalagaGame() {
+// Played inside the Arcade's cabinet (src/components/arcade/ArcadeStage.jsx). The score
+// is offered up as it changes so the house record can be kept, and the picture takes
+// whatever width the cabinet gives it — a desk and a handheld play the same machine.
+export default function GalagaGame({ onScore }) {
   const canvasRef = useRef(null);
   const gameRef = useRef({
     player: { x: GAME_WIDTH / 2 - PLAYER_WIDTH / 2, y: GAME_HEIGHT - 60 },
@@ -31,6 +34,8 @@ export default function GalagaGame() {
   const [lives, setLives] = useState(3);
   const [gameOver, setGameOver] = useState(false);
   const [started, setStarted] = useState(false);
+
+  useEffect(() => { onScore?.(score); }, [score]);
 
   const initEnemies = () => {
     const enemies = [];
@@ -260,21 +265,22 @@ export default function GalagaGame() {
   }, [started]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-gray-900 p-4">
+    <div className="relative flex w-full flex-col items-center justify-center p-3">
       {!started ? (
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Space Invaders</h2>
-          <p className="text-gray-400 mb-6">Use Arrow Keys or A/D to move, Space to shoot</p>
+        <div className="py-10 text-center">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-editorial-gold/80">Attract mode</p>
+          <h2 className="mb-3 mt-2 font-heading text-3xl text-editorial-cream">Space Invaders</h2>
+          <p className="mb-6 text-sm text-editorial-cream/60">Arrow keys or A and D to move. Space to fire.</p>
           <button
             onClick={resetGame}
-            className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-colors"
+            className="rounded border border-editorial-copper/70 bg-editorial-copper/20 px-8 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-editorial-cream transition-colors hover:bg-editorial-copper/35"
           >
-            Start Game
+            Insert coin
           </button>
         </div>
       ) : (
         <>
-          <div className="flex justify-between w-[600px] mb-4 text-white">
+          <div className="mb-3 flex w-full max-w-[600px] justify-between text-editorial-cream">
             <div className="text-lg">Score: <span className="font-bold text-yellow-400">{score}</span></div>
             <div className="text-lg">Lives: <span className="font-bold text-red-400">{"❤️".repeat(lives)}</span></div>
           </div>
@@ -282,18 +288,19 @@ export default function GalagaGame() {
             ref={canvasRef}
             width={GAME_WIDTH}
             height={GAME_HEIGHT}
-            className="border-2 border-purple-500 rounded-lg"
+            className="arcade-canvas h-auto w-full max-w-[600px]"
           />
           {gameOver && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/70">
               <div className="text-center">
-                <h2 className="text-4xl font-bold text-white mb-4">Game Over!</h2>
-                <p className="text-2xl text-yellow-400 mb-6">Final Score: {score}</p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-editorial-gold/80">Machine closed</p>
+                <h2 className="mb-2 mt-1 font-heading text-4xl text-editorial-cream">Game over</h2>
+                <p className="mb-6 font-heading text-2xl text-editorial-gold">{score.toLocaleString()}</p>
                 <button
                   onClick={resetGame}
-                  className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-colors"
+                  className="rounded border border-editorial-copper/70 bg-editorial-copper/20 px-8 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-editorial-cream transition-colors hover:bg-editorial-copper/35"
                 >
-                  Play Again
+                  Play again
                 </button>
               </div>
             </div>

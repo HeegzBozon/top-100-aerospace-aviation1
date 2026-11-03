@@ -30,7 +30,7 @@ export const RAIL_FALLBACK = CORE_NAV_ITEMS.map((item) => ({
 }));
 
 export const MORE_FALLBACK = [
-  { label: "Play", to: "/Arcade", icon: Gamepad2 },
+  { label: "The Arcade", to: "/arcade", icon: Gamepad2 },
   { label: "Launch Party", to: "/LaunchParty", icon: Rocket },
 ];
 

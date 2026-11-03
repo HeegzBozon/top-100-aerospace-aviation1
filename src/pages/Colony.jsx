@@ -15,6 +15,7 @@ import useColonyGamepad from '@/components/colony/useColonyGamepad';
 import ColonyDirectory from '@/components/colony/ColonyDirectory';
 import ColonyChat from '@/components/colony/ColonyChat';
 import ColonyTheatrePanel from '@/components/colony/ColonyTheatrePanel';
+import ColonyArcadePanel from '@/components/colony/ColonyArcadePanel';
 import ColonyConcierge from '@/components/colony/ColonyConcierge';
 import { buildBrief, briefSummary, coachingFor } from '@/components/colony/campusBrief';
 import RoomSplash from '@/components/colony/RoomSplash';
@@ -58,7 +59,9 @@ import { setMenuBarStatus } from '@/components/shell/menuBarStatus';
 import { Loader2, Shirt } from 'lucide-react';
 
 // Panels that take the wheel, pad and arrow keys for themselves while open.
-const LIST_PANELS = ['directory', 'online', 'npc', 'person', 'quest', 'passport'];
+// Panels that take the controls themselves while they are open. The Arcade is one: its
+// cabinets read the same keys the wheel would otherwise walk with.
+const LIST_PANELS = ['directory', 'online', 'npc', 'person', 'quest', 'passport', 'arcade'];
 const WHEEL_PRINTS = { up: '▲', left: '◀', right: '▶', down: '▼' };
 
 export default function Colony() {
@@ -147,7 +150,9 @@ function ColonyRoom({ onReplayWelcome }) {
   const stickRef = useRef({});
   const zoneRef = useRef(null);
   zoneRef.current = zone;
-  const [panel, setPanel] = useState(null); // directory | chat | concierge | editor
+  const [panel, setPanel] = useState(null); // directory | chat | concierge | theatre | arcade | editor
+  // Which cabinet was walked up to, when the Arcade is the panel that opened.
+  const [cabinet, setCabinet] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [me, setMe] = useState(undefined);
   const pp = usePassport(me);
@@ -197,7 +202,7 @@ function ColonyRoom({ onReplayWelcome }) {
     if (!z) return false;
     if (z.npc) { setNpcId(z.npc); setPanel('npc'); return true; }
     if (z.replay) { onReplayWelcome(); return true; }
-    if (z.panel) { setPanel(z.panel); return true; }
+    if (z.panel) { setCabinet(z.cabinet || null); setPanel(z.panel); return true; }
     setZone(null);
     if (z.room) setRoom(z.room); else navigate(z.to);
     return true;
@@ -609,6 +614,7 @@ function ColonyRoom({ onReplayWelcome }) {
         )}
         {panel === 'chat' && <ColonyChat messages={chat} onSend={sendChat} onClose={() => setPanel(null)} />}
         {panel === 'theatre' && <ColonyTheatrePanel onClose={() => setPanel(null)} />}
+        {panel === 'arcade' && <ColonyArcadePanel initialCabinet={cabinet} onClose={() => setPanel(null)} />}
 
       </main>
 
