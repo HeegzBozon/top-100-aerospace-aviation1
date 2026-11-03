@@ -5,11 +5,12 @@ import usePromotionCopy from '@/components/magazine/promotion/usePromotionCopy';
 import { PROMOTION_ASSETS } from '@/components/magazine/promotion/promotionChannels';
 import SharedBriefEditor from '@/components/magazine/promotion/SharedBriefEditor';
 import PromotionAssetCard from '@/components/magazine/promotion/PromotionAssetCard';
+import PrCoachPanel from '@/components/magazine/promotion/PrCoachPanel';
 
 // The promotion set for one issue: one brief, six assets, written to agree with each other
 // and editable one field at a time.
 export default function PromotionCopyStudio({ issue, articles = [], pages = [] }) {
-  const { brief, setBrief, rebuildBrief, drafts, status, error, generate, updateField } =
+  const { brief, setBrief, rebuildBrief, drafts, status, error, generate, updateField, notes, setNotes } =
     usePromotionCopy({ issue, articles, pages });
 
   const generating = status === 'generating';
@@ -25,8 +26,9 @@ export default function PromotionCopyStudio({ issue, articles = [], pages = [] }
         page, an email, a Reel caption and a Shorts caption. Nothing is posted from here, this writes the
         copy for you to paste.
       </p>
-
       <SharedBriefEditor brief={brief} onChange={setBrief} onRebuild={rebuildBrief} disabled={generating} />
+
+      <PrCoachPanel notes={notes} onChange={setNotes} issueTitle={issue?.title} disabled={generating} />
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <button

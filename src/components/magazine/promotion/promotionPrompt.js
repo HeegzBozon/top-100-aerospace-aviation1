@@ -3,12 +3,33 @@
 // One brief in, six aligned drafts out. The house rules live here rather than in the
 // brief, so an editor rewriting the facts cannot accidentally loosen the language.
 
-export const buildPromotionPrompt = (brief) => `You are the editorial studio of TOP 100 Aerospace & Aviation, an institutional publication for women in aerospace and aviation. You are writing the promotion set that announces one issue.
+// The guardrails a PR advisor would hand a writer. They are stated as rules rather than
+// left to taste, because the failure mode is not bad prose: it is a celebratory post
+// landing the morning after an accident.
+const CONTEXT_RULES = `
+PR CONTEXT — the editor's note on the mood this set goes out into. It is an instruction to you, never
+copy for the reader: never quote it, never mention that context exists, never name the event unless it
+tells you to. Where it conflicts with any stylistic instruction below, it wins.
+---
+`;
+
+export const buildPromotionPrompt = (brief, context = '') => `You are the editorial studio of TOP 100 Aerospace & Aviation, an institutional publication for women in aerospace and aviation. You are writing the promotion set that announces one issue.
 
 THE BRIEF — the only source of facts. Do not invent names, numbers, dates, quotes, or sponsors; if a detail is not in the brief, leave it out.
 ---
 ${brief}
 ---
+${context.trim() ? `${CONTEXT_RULES}${context.trim()}
+---
+
+WHEN THE CONTEXT NAMES A RECENT LOSS, ACCIDENT, GROUNDING OR CONTROVERSY IN THE INDUSTRY
+- The register is measured. No triumph, no momentum language, no urgency.
+- Banned in that case: "soar", "sky-high", "taking off", "on fire", "blazing", "explosive", "unstoppable", "record-breaking", "the only list that matters", "celebrate", "congratulations", "making history". Reach for plain, quiet words instead.
+- Do not refer to the event itself, name anyone involved, describe a cause, or imply our community was part of it. A reader must not be able to tell what happened from our copy.
+- Lead with the people and the work: who they are, what they built, why it matters. Short sentences. No countdown, no scarcity.
+- If the context asks for an acknowledgement, place exactly one calm sentence, without naming the event, at the top of the article and in the email. Never in the captions, never twice.
+- No image direction, no hashtag, and no emoji that could be read as the event.
+` : ''}
 
 HOUSE VOICE
 - Editorial, warm, aspirational. The register of a fashion masthead applied to a space programme: "Vogue meets NASA". Institutional, not social. Authority first, enthusiasm second.

@@ -15,6 +15,7 @@ export default function usePromotionCopy({ issue, articles = [], pages = [] }) {
 
   const [brief, setBriefState] = useState(() => session.get(issueId)?.brief ?? seed);
   const [drafts, setDrafts] = useState(() => session.get(issueId)?.drafts ?? null);
+  const [notes, setNotesState] = useState(() => session.get(issueId)?.notes ?? '');
   const [status, setStatus] = useState('idle'); // idle | generating | done | error
   const [error, setError] = useState(null);
 
@@ -23,6 +24,7 @@ export default function usePromotionCopy({ issue, articles = [], pages = [] }) {
     const saved = session.get(issueId);
     setBriefState(saved?.brief ?? seed);
     setDrafts(saved?.drafts ?? null);
+    setNotesState(saved?.notes ?? '');
     setStatus('idle');
     setError(null);
   }, [issueId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -35,6 +37,13 @@ export default function usePromotionCopy({ issue, articles = [], pages = [] }) {
   const rebuildBrief = useCallback(() => {
     setBrief(seed);
   }, [setBrief, seed]);
+
+  // The PR context is the editor's own note, so it is never rebuilt from the issue and
+  // survives "Rebuild from issue" along with everything else they have written.
+  const setNotes = useCallback((value) => {
+    setNotesState(value);
+    session.set(issueId, { ...(session.get(issueId) || {}), notes: value });
+  }, [issueId]);
 
   const updateField = useCallback((assetKey, fieldKey, value) => {
     setDrafts((previous) => {
@@ -57,18 +66,18 @@ export default function usePromotionCopy({ issue, articles = [], pages = [] }) {
 
     try {
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: buildPromotionPrompt(brief),
+        prompt: buildPromotionPrompt(brief, notes),
         response_json_schema: promotionSchema(),
       });
       const next = normalizeDrafts(response);
       setDrafts(next);
-      session.set(issueId, { brief, drafts: next });
+      session.set(issueId, { ...(session.get(issueId) || {}), brief, drafts: next });
       setStatus('done');
     } catch (err) {
       setError(err?.message || 'The set could not be written. Try again in a moment.');
       setStatus('error');
     }
-  }, [brief, issueId]);
+  }, [brief, notes, issueId]);
 
-  return { brief, setBrief, rebuildBrief, drafts, status, error, generate, updateField };
+  return { brief, setBrief, rebuildBrief, drafts, status, error, generate, updateField, notes, setNotes };
 }
