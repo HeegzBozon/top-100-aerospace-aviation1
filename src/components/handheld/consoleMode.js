@@ -19,18 +19,11 @@ export const AUTO = "auto";
 
 const STORAGE_KEY = "top100-console-mode";
 
-// Which face a surface is written in. Numbers are the tell: work that is numbered is
-// walked on a numbered keypad; anything read by the screenful is the wheel's.
-const RADIO_SURFACES = [
-  { match: (path) => path === "/" || path === "/start", reason: "a numbered key field" },
-];
-// Everywhere else the click wheel is the default face.
-
-export function autoModeFor(pathname = "/") {
-  const found = RADIO_SURFACES.find((entry) => entry.match(pathname));
-  return found
-    ? { mode: RADIO, reason: found.reason }
-    : { mode: WHEEL, reason: "read by the screenful" };
+// Which face a surface is written in. The click wheel is the machine's face by default
+// — the title screen included, whose menu the ring walks key by key. The radio is a
+// face the reader puts on with the MODE key, never one the machine assumes for them.
+export function autoModeFor() {
+  return { mode: WHEEL, reason: "read by the screenful" };
 }
 
 const read = () => {
