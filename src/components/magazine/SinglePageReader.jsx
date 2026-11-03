@@ -1,18 +1,54 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { List, X, Share2 } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
 import ReaderModeToggle from '@/components/magazine/ReaderModeToggle';
 import PageScrollRail from '@/components/magazine/PageScrollRail';
+import { issuePageUrl, pageFromUrl, writePageToUrl } from '@/components/magazine/issueDeepLink';
+import { useToast } from '@/components/ui/use-toast';
 
 // Single-page reading mode: every page of the issue set down one under the next as a long
 // editorial scroll. On a desk each page keeps the proportion of a printed page — the
 // column is wide enough to read at an arm's length, not a phone column in the middle of
 // the screen — and the ways to read it sit in the bar at the top rather than over the page.
 export default function SinglePageReader({ pages, articles = [], issue, mode, onModeChange }) {
+  const { toast } = useToast();
   const [showContents, setShowContents] = useState(false);
   const sectionRefs = useRef([]);
   const totalPages = pages.length;
+  // The page the reader is standing on: what the address bar and the Share control carry,
+  // and where a link that names a page lands.
+  const [currentPage, setCurrentPage] = useState(() => pageFromUrl({ total: pages.length }) ?? 0);
+  const landed = useRef(false);
+
+  // A link that names a page lands on it: the issue is laid out as one long scroll, so the
+  // page is walked to once the pages are set down.
+  useEffect(() => {
+    if (landed.current || !pages.length) return;
+    landed.current = true;
+    const linked = pageFromUrl({ total: pages.length });
+    if (linked === null) return;
+    requestAnimationFrame(() => sectionRefs.current[linked]?.scrollIntoView({ block: 'start' }));
+  }, [pages.length]);
+
+  // Which page the reading has reached: the one crossing the middle of the window.
+  useEffect(() => {
+    if (!pages.length) return undefined;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const idx = Number(entry.target.dataset.pageIndex);
+        if (Number.isFinite(idx)) setCurrentPage(idx);
+      });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    sectionRefs.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, [pages.length]);
+
+  useEffect(() => {
+    if (totalPages < 1) return;
+    writePageToUrl(currentPage);
+  }, [currentPage, totalPages]);
 
   const chapterIndex = useMemo(() => {
     return pages
@@ -30,9 +66,25 @@ export default function SinglePageReader({ pages, articles = [], issue, mode, on
     setShowContents(false);
   }, []);
 
-  const share = () => {
-    if (navigator.share) navigator.share({ title: issue.title, url: window.location.href });
-    else navigator.clipboard?.writeText(window.location.href);
+  // Handing on the page under the reader: the link names it, so whoever opens it arrives
+  // at this page rather than at the front of the issue.
+  const share = async () => {
+    const url = issuePageUrl(currentPage);
+    const label = pages[currentPage]?.chapter_label || `Page ${currentPage + 1}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: issue.title, text: `${label} · page ${currentPage + 1}`, url });
+        return;
+      } catch {
+        // Dismissed, or no sheet on this machine: it is copied instead.
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: 'Link copied', description: `${issue.title} · ${label}` });
+    } catch {
+      toast({ title: 'Could not copy the link', description: url, variant: 'destructive' });
+    }
   };
 
   if (!pages.length) {
@@ -61,7 +113,12 @@ export default function SinglePageReader({ pages, articles = [], issue, mode, on
           <button onClick={() => setShowContents(true)} className="rounded-full p-2 hover:bg-black/5" aria-label="Contents">
             <List className="h-4 w-4" style={{ color: P.navy }} />
           </button>
-          <button onClick={share} className="rounded-full p-2 hover:bg-black/5" aria-label="Share">
+          <button
+            onClick={share}
+            className="rounded-full p-2 hover:bg-black/5"
+            aria-label={`Share this page — copy a link that opens page ${currentPage + 1}`}
+            title={`Link to page ${currentPage + 1}`}
+          >
             <Share2 className="h-4 w-4" style={{ color: P.navy }} />
           </button>
         </div>
@@ -74,6 +131,7 @@ export default function SinglePageReader({ pages, articles = [], issue, mode, on
             <section
               key={page.id || idx}
               ref={(el) => (sectionRefs.current[idx] = el)}
+              data-page-index={idx}
               className="scroll-mt-16"
             >
               <div
@@ -89,6 +147,8 @@ export default function SinglePageReader({ pages, articles = [], issue, mode, on
                   page={page}
                   issue={issue}
                   articles={articles}
+                  pages={pages}
+                  onGoToPage={scrollToPage}
                   pageNumber={idx + 1}
                   totalPages={totalPages}
                 />

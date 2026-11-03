@@ -174,6 +174,9 @@ export default function PageComposer({ issue, pages, articles, onCreate, onUpdat
                           <>
                             <input value={block.url || ''} onChange={(e) => updateBlock(idx, 'url', e.target.value)} placeholder="Image URL" className="mag-input text-xs" />
                             <input value={block.caption || ''} onChange={(e) => updateBlock(idx, 'caption', e.target.value)} placeholder="Caption (optional)" className="mag-input text-xs" />
+                            {/* The narrator's line. Two or more images in a row that carry one
+                                are set as a panel sheet and played in beats. */}
+                            <input value={block.text || ''} onChange={(e) => updateBlock(idx, 'text', e.target.value)} placeholder="Panel narration — two or more in a row make a panel sheet (optional)" className="mag-input text-xs" />
                           </>
                         ) : block.type === 'pull_quote' ? (
                           <>

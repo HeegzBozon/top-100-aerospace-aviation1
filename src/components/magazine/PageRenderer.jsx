@@ -7,27 +7,75 @@ import FaceSpread from '@/components/magazine/FaceSpread';
 import PageImageBand from '@/components/magazine/PageImageBand';
 import Centerfold from '@/components/magazine/Centerfold';
 import HouseAdPage from '@/components/magazine/HouseAdPage';
+import AdAstraPage from '@/components/magazine/AdAstraPage';
 import { CENTERFOLD_LABEL, HOUSE_AD_LABEL, PATRON_LABEL } from '@/components/magazine/editionBands';
 import HonoreeLink, { nomineeIndex, resolveNomineeId } from '@/components/magazine/HonoreeLink';
 import MagazineLink, { TextWithLinks } from '@/components/magazine/MagazineLink';
 import { usePageTeleprompter, PAGE_SCROLL_ATTR } from '@/components/magazine/pageTeleprompter';
+import { useReadAlong, READ_ALONG_ATTR } from '@/components/magazine/readAlong';
+import ReadAlongCursor from '@/components/magazine/ReadAlongCursor';
+import TipJar from '@/components/magazine/TipJar';
+import PanelGrid from '@/components/magazine/PanelGrid';
 
 // The blocks that make up a page's head: what pins to the top of the frame while the body
 // runs beneath it.
 const HEAD_TYPES = ['kicker', 'heading', 'byline'];
 
+// A run of two or more consecutive image blocks that carry narration and no attribution is a
+// panel sheet: the page's comic grammar, gathered here so the page can play it in beats.
+const asPanel = (block) => block.type === 'image' && block.url && block.text && !block.attribution;
+
+function groupPanels(blocks) {
+  const items = [];
+  for (let i = 0; i < blocks.length; i += 1) {
+    if (!asPanel(blocks[i])) {
+      items.push({ index: i, block: blocks[i] });
+      continue;
+    }
+    let end = i;
+    while (end < blocks.length && asPanel(blocks[end])) end += 1;
+    if (end - i >= 2) {
+      items.push({ index: i, panels: blocks.slice(i, end) });
+      i = end - 1;
+    } else {
+      items.push({ index: i, block: blocks[i] });
+    }
+  }
+  return items;
+}
+
 // Renders a single magazine page's content based on its layout type and blocks.
 // Used by both the flipbook and single-page reader.
-export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, onOverflow }) {
+export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, progress = null, onOverflow, readAlong = false, reading = true, active = true, pages = [], onGoToPage }) {
+  // A page carries something to read only if it sets body copy — the same words its dwell
+  // is reckoned from. Every other kind of page is looked at, so read along leaves it alone
+  // and the roll it had before stands.
+  const pageBlocks = page.content_blocks || [];
+  const hasCopy = pageBlocks.some((block) => block.type === 'body' || block.type === 'pull_quote');
+  // One page at a time: with read along on, only the page standing under the film is read.
+  // Any other page on the glass is looked at, not read, and keeps the behaviour it had.
+  const following = readAlong && hasCopy && reading && active;
+
   // A page that runs past its frame rolls under the reader as a teleprompter at reading
   // pace — while the issue plays as a film and while it is read by hand. A page can be put
   // on hold on its own: the roll of the left-hand page has nothing to do with the right's.
   const { ref: scrollRef, overflow } = usePageTeleprompter({
     playing,
     pageKey: page?.id || pageNumber,
-    autoscroll,
+    // Read along draws the frame after the word, so the roll stands down: one hand on the
+    // page at a time, never two pulling the same scroll against each other.
+    autoscroll: autoscroll && !following,
     speed,
     paused,
+  });
+  // Read along: the same clock the page is held for, pointed at the type.
+  const { cursor } = useReadAlong({
+    containerRef: scrollRef,
+    pageKey: page?.id || pageNumber,
+    enabled: following,
+    playing,
+    paused,
+    speed,
   });
   // The reader only offers a hold to a page that actually runs past its frame, so the
   // page tells the book whether it has anything to roll.
@@ -36,7 +84,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     onOverflow?.(rollKey, overflow > 0);
   }, [onOverflow, rollKey, overflow]);
 
-  const blocks = page.content_blocks || [];
+  const blocks = pageBlocks;
   const bg = page.background_image_url;
   const credits = issue.cover_credits || {};
   // The people this page is about, resolved once: a page stores names, the profile is
@@ -62,6 +110,23 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     return (
       <div className="relative w-full h-full overflow-hidden" style={{ background: P.navy }}>
         {bg && <img src={bg} alt="" className="absolute inset-0 w-full h-full object-cover" />}
+        {/* The closing address, printed into the foot of the plate. A scrim of the issue's
+            own navy means the founder's line reads whatever the photograph is doing
+            beneath it, and the rose gold rule across the head of the band makes it part of
+            the plate rather than a button dropped on top of it. */}
+        <div
+          className="absolute inset-x-0 bottom-0 flex flex-col items-center px-8 pb-7 pt-20"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(7,15,31,0) 0%, rgba(7,15,31,0.62) 42%, rgba(7,15,31,0.92) 100%)',
+          }}
+        >
+          <span
+            className="mb-5 h-px w-full max-w-[180px]"
+            style={{ background: `linear-gradient(90deg, transparent, ${P.gold}90, transparent)` }}
+          />
+          <TipJar />
+        </div>
       </div>
     );
   }
@@ -260,6 +325,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     return (
       <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
         <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+          <ReadAlongCursor cursor={cursor} />
           <div className="px-6 pb-6 pt-7 sm:px-8">
             {kicker?.text && (
               <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.4em]" style={{ color: P.copper }}>{kicker.text}</p>
@@ -300,16 +366,19 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   }
 
   // Colophon
+  // Ad Astra: the back of the book — the issue's calls to action gathered with the part and
+  // page each came from, then the issue's own parts, then the colophon.
   if (page.layout_type === 'colophon') {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center" style={{ background: P.cream }}>
-        <div className="w-10 h-px mb-6" style={{ background: P.copper }} />
-        <p className="font-serif text-base mb-4" style={{ color: P.navy }}>Ad Astra</p>
-        <p className="text-xs leading-relaxed max-w-xs" style={{ color: 'rgba(30,58,90,0.6)' }}>
-          {issue.colophon || 'TOP 100 Aerospace & Aviation. An institutional publication.'}
-        </p>
-        <div className="w-10 h-px mt-6" style={{ background: P.copper }} />
-      </div>
+      <AdAstraPage
+        page={page}
+        issue={issue}
+        pages={pages}
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+        scrollRef={scrollRef}
+        onGoToPage={onGoToPage}
+      />
     );
   }
 
@@ -347,6 +416,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     return (
       <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
         <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+          <ReadAlongCursor cursor={cursor} />
           {image?.url ? (
             <figure className="relative">
               {/* The crop steps from side to side down the run, so a wall of portraits
@@ -451,13 +521,19 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   return (
     <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
       <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+        <ReadAlongCursor cursor={cursor} />
         {headEnd > 0 && (
           <PinnedPageHead className="px-6 sm:px-8">
             {blocks.slice(0, headEnd).map((block, i) => <BlockRenderer key={i} block={block} />)}
           </PinnedPageHead>
         )}
         <div className="px-6 pb-6 pt-4 sm:px-8">
-          {blocks.slice(headEnd).map((block, i) => <BlockRenderer key={headEnd + i} block={block} lead={headEnd + i === leadBody} />)}
+          {groupPanels(blocks.slice(headEnd)).map((item) => (
+            item.panels
+              // A sheet of panels — the page's own beats, unfolded as the issue plays.
+              ? <PanelGrid key={`panels-${item.index}`} panels={item.panels} progress={playing ? progress : null} />
+              : <BlockRenderer key={item.index} block={item.block} lead={headEnd + item.index === leadBody} />
+          ))}
         </div>
       </div>
       {/* Page number footer */}
@@ -490,6 +566,7 @@ function BlockRenderer({ block, lead = false }) {
         <p
           className={`leading-relaxed mb-3 ${lead ? 'text-[13px] sm:text-[15px]' : 'text-xs sm:text-sm'} ${opened ? 'first-letter:float-left first-letter:font-serif first-letter:text-[2.6rem] first-letter:leading-[0.78] first-letter:pr-1.5 first-letter:text-[#B87333]' : ''}`}
           style={{ color: 'rgba(30,58,90,0.8)' }}
+          {...{ [READ_ALONG_ATTR]: '' }}
         >
           <TextWithLinks
             text={block.text}
@@ -528,7 +605,13 @@ function BlockRenderer({ block, lead = false }) {
     case 'pull_quote':
       return (
         <blockquote className="my-4 pl-4" style={{ borderLeft: `3px solid ${P.gold}` }}>
-          <p className="font-serif text-base italic leading-relaxed" style={{ color: P.navy }}>{block.text}</p>
+          <p
+            className="font-serif text-base italic leading-relaxed"
+            style={{ color: P.navy }}
+            {...{ [READ_ALONG_ATTR]: '' }}
+          >
+            {block.text}
+          </p>
           {block.attribution && <p className="text-xs mt-2" style={{ color: P.copper }}>— {block.attribution}</p>}
         </blockquote>
       );

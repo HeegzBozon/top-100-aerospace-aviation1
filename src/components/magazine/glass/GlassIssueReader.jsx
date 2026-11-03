@@ -3,7 +3,7 @@ import { BookOpen, List } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { useNavHint } from '@/components/handheld/faceHint';
-import { useCinematicPlayback, PLAYBACK_SPEEDS } from '@/components/magazine/useCinematicPlayback';
+import { useCinematicPlayback, PLAYBACK_SPEEDS, SKIM_SPEED } from '@/components/magazine/useCinematicPlayback';
 import { buildIssueContents, buildNameIndex, foldLabel } from '@/components/magazine/glass/glassIssueEntries';
 import GlassIssuePage from '@/components/magazine/glass/GlassIssuePage';
 import GlassNameIndex from '@/components/magazine/glass/GlassNameIndex';
@@ -13,6 +13,7 @@ import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
 import { loadEditionNominees } from '@/components/publication/useTop100WomenNominees';
 import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
 import { clearIssueProgress, readIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
+import { pageFromUrl, writePageToUrl } from '@/components/magazine/issueDeepLink';
 
 const getStage = () => document.querySelector('[data-handheld-screen]') || document.querySelector('.hh-stage');
 
@@ -34,17 +35,35 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   // The contents are walked by the keys printed for the face on the case.
   const keyHint = useNavHint();
 
+  // A link that names a page arrives already standing on it, rather than on the contents.
+  const linked = useMemo(() => pageFromUrl({ total }), [total]);
+
   // Play as film arrives with the film already running, so it opens on the page rather
   // than on the contents.
-  const [view, setView] = useState(() => (isPlaying ? 'page' : 'contents'));
+  const [view, setView] = useState(() => (isPlaying || linked !== null ? 'page' : 'contents'));
   // The place is read back where the issue was left, so Resume opens on the spread it was
-  // put down at — and Start over hands back the cover instead.
+  // put down at — and Start over hands back the cover instead. A named page wins over both.
   const [position, setPosition] = useState(() => {
     if (restart) return 1;
+    if (linked !== null) return Math.min(linked + 1, Math.max(total, 1));
     const place = readIssueProgress(issue?.id)?.page || 0;
     return Math.min(place + 1, Math.max(total, 1));
   });
   const [cursor, setCursor] = useState(0);
+  // Read along: the page followed word by word at reading pace.
+  const [readAlong, setReadAlong] = useState(false);
+
+  // Switching it on slows a skimmed issue to one and starts the film, because a page turned
+  // every second and a half is not a page anyone can follow a word through.
+  const toggleReadAlong = () => {
+    const next = !readAlong;
+    setReadAlong(next);
+    if (next) {
+      if (speed === SKIM_SPEED) setSpeed(1);
+      setIsPlaying(true);
+      if (view === 'contents') setView('page');
+    }
+  };
 
   const contents = useMemo(() => {
     if (isPdf) {
@@ -99,6 +118,13 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     if (!issue?.id || total < 1) return;
     saveIssueProgress(issue.id, { page: position - 1, total, title: issue.title });
   }, [issue?.id, issue?.title, position, total]);
+
+  // The address follows the page on the glass as it does on the desk, so a link copied
+  // out of this machine opens the issue where this reader was standing.
+  useEffect(() => {
+    if (total < 1 || view !== 'page') return;
+    writePageToUrl(position - 1);
+  }, [position, total, view]);
 
   // What has been opened in this sitting. Kept on the glass and nowhere else: it is the
   // record of one reading, not a property of the issue.
@@ -311,6 +337,7 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
       <GlassIssuePage
         issue={issue}
         page={openPage}
+        pages={pages}
         pdf={isPdf}
         signedUrl={signedUrl}
         articles={articles}
@@ -323,6 +350,8 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
           const i = PLAYBACK_SPEEDS.indexOf(speed);
           setSpeed(PLAYBACK_SPEEDS[(i + 1) % PLAYBACK_SPEEDS.length]);
         }}
+        readAlong={readAlong}
+        onToggleReadAlong={toggleReadAlong}
         progress={progress}
         onTurn={turn}
         onJumpSection={() => {

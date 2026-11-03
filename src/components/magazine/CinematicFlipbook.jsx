@@ -6,12 +6,27 @@ import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
 import FlipPage, { PAGE_RATIO } from '@/components/magazine/FlipPage';
 import ReaderModeToggle from '@/components/magazine/ReaderModeToggle';
-import { useCinematicPlayback } from '@/components/magazine/useCinematicPlayback';
-import { PlayPauseButton, SpeedSelector, PlaybackProgress } from '@/components/magazine/PlaybackControls';
+import PageNotes from '@/components/magazine/comments/PageNotes';
+import {
+  useCinematicPlayback,
+  SKIM_SPEED,
+  computePageDwell,
+  isTimedSpeed,
+  timedSeconds,
+  timelineDwells,
+} from '@/components/magazine/useCinematicPlayback';
+import { PlayPauseButton, SpeedSelector, PlaybackProgress, ReadAlongToggle } from '@/components/magazine/PlaybackControls';
 import ReadProgressMeter from '@/components/magazine/ReadProgressMeter';
 import PageScrollRail from '@/components/magazine/PageScrollRail';
 import { clearIssueProgress, readIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
 import { readIssueBookmarks, removeIssueBookmark, toggleIssueBookmark } from '@/lib/issueBookmarks';
+import { issuePageUrl, pageFromUrl, writePageToUrl } from '@/components/magazine/issueDeepLink';
+import { useToast } from '@/components/ui/use-toast';
+
+// A page carries something to read only if it sets body copy — the same words its dwell is
+// reckoned from.
+const carriesCopy = (page) =>
+  (page?.content_blocks || []).some((block) => block.type === 'body' || block.type === 'pull_quote');
 
 // The open issue on a desk: two pages held wide, turned by hand or rolled as a film.
 //
@@ -44,6 +59,10 @@ export default function CinematicFlipbook({
   // they were reading rather than on the cover for the second time.
   const [currentPage, setCurrentPage] = useState(() => {
     if (restart) return 0;
+    // A link that names a page opens on that page; only a link that names none reopens the
+    // issue where this reader left it.
+    const linked = pageFromUrl({ total: pages.length });
+    if (linked !== null) return linked;
     const place = readIssueProgress(issue?.id)?.page || 0;
     return Math.min(place, Math.max(pages.length - 1, 0));
   });
@@ -53,12 +72,30 @@ export default function CinematicFlipbook({
   // page order. Kept on this machine, and only ever their own.
   const [bookmarks, setBookmarks] = useState(() => readIssueBookmarks(issue?.id));
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [frameHeight, setFrameHeight] = useState(null);
   const [stage, setStage] = useState({ width: 0, height: 0 });
   // The roll belongs to the page, not to the book: a spread can hold one page that runs
   // past its frame and one that does not, and either can be put on hold by itself.
   const [pausedPages, setPausedPages] = useState({});
   const [rollable, setRollable] = useState({});
+  // Read along: the page followed word by word at reading pace. The desk still holds two
+  // pages wide — a spread is not given up for it — but only one of the two is the page
+  // being read, so the words are followed one page at a time and never in two columns.
+  const [readAlong, setReadAlong] = useState(false);
+
+  // Switching it on slows a skimmed issue to one and starts the film, because a page turned
+  // every second and a half is not a page anyone can follow a word through.
+  const toggleReadAlong = useCallback(() => {
+    setReadAlong((on) => {
+      if (!on) {
+        // Neither a skim nor a timed film is a pace a word can be followed at.
+        if (speed === SKIM_SPEED || isTimedSpeed(speed)) setSpeed(1);
+        setIsPlaying(true);
+      }
+      return !on;
+    });
+  }, [speed, setSpeed, setIsPlaying]);
 
   const reportOverflow = useCallback((key, hasOverflow) => {
     setRollable((prev) => (Boolean(prev[key]) === hasOverflow ? prev : { ...prev, [key]: hasOverflow }));
@@ -73,8 +110,12 @@ export default function CinematicFlipbook({
     if (bookRef.current?.pageFlip) setTotalPages(bookRef.current.pageFlip().getPageCount());
   }, []);
 
-  const flipPrev = useCallback(() => bookRef.current?.pageFlip()?.flipPrev(), []);
-  const flipNext = useCallback(() => bookRef.current?.pageFlip()?.flipNext(), []);
+  const flipPrev = useCallback(() => {
+    return bookRef.current?.pageFlip()?.flipPrev();
+  }, []);
+  const flipNext = useCallback(() => {
+    return bookRef.current?.pageFlip()?.flipNext();
+  }, []);
 
   // The tube is the measure. The machine's menu strip is already at the head of the tube,
   // so the reader claims what is left under it and no more: the picture fits the screen the
@@ -131,16 +172,30 @@ export default function CinematicFlipbook({
     speed,
   });
 
+  // A timed film turns its pages on its own clock, so a page's roll is scaled to the beat it is
+  // actually given rather than to reading pace — the words finish as the page turns.
+  const timedDwells = useMemo(
+    () => (isTimedSpeed(speed) ? timelineDwells(pages, timedSeconds(speed)) : null),
+    [speed, pages],
+  );
+  const pagePace = useCallback((idx) => {
+    const reading = typeof speed === 'number' && speed > 0 ? speed : 1;
+    if (readAlong || !timedDwells) return reading;
+    return Math.max(1, computePageDwell(pages[idx]) / Math.max(timedDwells[idx] || 1, 1));
+  }, [readAlong, speed, timedDwells, pages]);
+
   // The largest spread the stage holds: two pages side by side with margin enough for the
   // turn's shadow, or one page when the stage is too narrow to hold two.
   const dims = useMemo(() => {
     const availW = Math.max(0, stage.width - 72);
     const availH = Math.max(0, stage.height - 8);
     if (availW < 240 || availH < 240) return null;
-    const pageW = Math.floor(Math.min(availW / 2, availH / PAGE_RATIO));
+    // A desk holds two pages wide: a spread shares the stage between them. A single-plate
+    // issue has nothing to share it with.
+    const pageW = Math.floor(Math.min(pages.length === 1 ? availW : availW / 2, availH / PAGE_RATIO));
     if (pageW < 160) return null;
     return { width: pageW, height: Math.floor(pageW * PAGE_RATIO) };
-  }, [stage]);
+  }, [stage, pages.length]);
 
   const goToPage = useCallback((idx) => {
     const flip = bookRef.current?.pageFlip();
@@ -160,6 +215,16 @@ export default function CinematicFlipbook({
     [currentPage]
   );
 
+  // Which of the two pages on the desk is the one being read: the page on the left of the
+  // spread, or the right when the left is a plate with no copy to follow. One page at a
+  // time — the facing page is looked at, exactly as it was before read along was switched on.
+  const readAlongPage = useMemo(() => {
+    if (!readAlong) return -1;
+    if (carriesCopy(pages[currentPage])) return currentPage;
+    if (carriesCopy(pages[currentPage + 1])) return currentPage + 1;
+    return currentPage;
+  }, [readAlong, pages, currentPage]);
+
   // Reading it again: this reader's pass on this issue is wiped as the issue opens, so the
   // title screen reads Start again rather than the pass just finished.
   useEffect(() => {
@@ -173,6 +238,14 @@ export default function CinematicFlipbook({
     if (!issue?.id || totalPages < 1) return;
     saveIssueProgress(issue.id, { page: currentPage, total: totalPages, title: issue.title });
   }, [issue?.id, issue?.title, currentPage, totalPages]);
+
+  // The address bar carries the page being read. Nothing is navigated — the entry is
+  // rewritten in place — so the link a reader copies out of the browser, and the one the
+  // Share control hands over, both open the issue on this page.
+  useEffect(() => {
+    if (totalPages < 1) return;
+    writePageToUrl(currentPage);
+  }, [currentPage, totalPages]);
 
   // Putting the issue down on purpose: the place is written and the reader is handed back
   // to the title screen, where the edition key reads Resume.
@@ -207,10 +280,26 @@ export default function CinematicFlipbook({
     ? Math.min(100, Math.round((currentPage / (totalPages - 1)) * 100))
     : 0;
 
-  const share = useCallback(() => {
-    if (navigator.share) navigator.share({ title: issue.title, url: window.location.href });
-    else navigator.clipboard?.writeText(window.location.href);
-  }, [issue.title]);
+  // Handing on the page under the reader: the link names the spread, so whoever opens it
+  // arrives at this page of the issue rather than at its cover.
+  const share = useCallback(async () => {
+    const url = issuePageUrl(currentPage);
+    const said = `${bookmarkLabel(currentPage)} · page ${currentPage + 1}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: issue.title, text: said, url });
+        return;
+      } catch {
+        // Dismissed, or no sheet on this machine: it is copied instead.
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: 'Link copied', description: `${issue.title} · ${said}` });
+    } catch {
+      toast({ title: 'Could not copy the link', description: url, variant: 'destructive' });
+    }
+  }, [currentPage, issue.title, bookmarkLabel, toast]);
 
   // Build chapter index for the contents panel
   const chapterIndex = useMemo(() => {
@@ -269,7 +358,8 @@ export default function CinematicFlipbook({
             onClick={share}
             className="flex h-8 w-8 items-center justify-center rounded-full transition-all hover:bg-white/10"
             style={{ color: P.cream }}
-            aria-label="Share"
+            aria-label={`Share this page — copy a link that opens page ${currentPage + 1}`}
+            title={`Link to page ${currentPage + 1}`}
           >
             <Share2 className="h-4 w-4" />
           </button>
@@ -278,8 +368,35 @@ export default function CinematicFlipbook({
 
       {/* The spread, held in the middle of the stage */}
       <div ref={stageRef} className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
-        {dims && (
-          <HTMLFlipBook
+        {dims && (pages.length === 1 && pages[0] ? (
+          // A single-plate issue: the one page it carries stands alone at the size of a
+          // printed page. An issue of any length is always held two pages wide.
+          <div className="relative" style={{ width: dims.width, height: dims.height }}>
+            <FlipPage>
+              <PageRenderer
+                page={pages[currentPage]}
+                issue={issue}
+                articles={articles}
+                pageNumber={currentPage + 1}
+                totalPages={totalPages}
+                playing={isPlaying}
+                autoscroll
+                reading
+                readAlong
+                pages={pages}
+                onGoToPage={goToPage}
+                speed={pagePace(currentPage)}
+                paused={Boolean(pausedPages[pages[currentPage]?.id || currentPage + 1])}
+                progress={isPlaying ? progress : null}
+                onOverflow={reportOverflow}
+              />
+            </FlipPage>
+            <PageScrollRail
+              pageKey={pages[currentPage]?.id || currentPage + 1}
+              tone={pages[currentPage]?.layout_type === 'profile' ? 'night' : 'paper'}
+            />
+          </div>
+        ) : <HTMLFlipBook
             key={`${dims.width}x${dims.height}`}
             ref={bookRef}
             width={dims.width}
@@ -327,8 +444,15 @@ export default function CinematicFlipbook({
                       totalPages={totalPages}
                       playing={isPlaying && open}
                       autoscroll={open}
-                      speed={typeof speed === 'number' ? speed : 1}
+                      active={open}
+                      readAlong={readAlong && i === readAlongPage}
+                      pages={pages}
+                      onGoToPage={goToPage}
+                      speed={pagePace(i)}
                       paused={paused}
+                      // The beat of the turn, handed to the page being played: its panels
+                      // unfold one at a time rather than arriving as a finished sheet.
+                      progress={i === currentPage ? progress : null}
                       onOverflow={reportOverflow}
                     />
                   </FlipPage>
@@ -408,6 +532,7 @@ export default function CinematicFlipbook({
           {isPlaying ? `${Math.round(progress * 100)}%` : ''}
         </span>
         <SpeedSelector speed={speed} onChange={setSpeed} />
+        <ReadAlongToggle on={readAlong} onToggle={toggleReadAlong} />
         <button
           onClick={flipNext}
           disabled={currentPage >= totalPages - 1}
@@ -429,6 +554,21 @@ export default function CinematicFlipbook({
           <Bookmark className="h-4 w-4" fill={markedHere ? P.gold : 'none'} />
           <span className="hidden sm:inline">{markedHere ? 'Marked' : 'Mark'}</span>
         </button>
+        {/* The margin of the page under the reader: a private note to the masthead, kept
+            with the rest of what a reader keeps for themselves — the mark beside it, the
+            chapters after it. */}
+        <PageNotes
+          issue={issue}
+          page={pages[currentPage]}
+          articles={articles}
+          pageNumber={currentPage + 1}
+          marks={bookmarks}
+          markedHere={markedHere}
+          onToggleMark={toggleBookmark}
+          onGoToPage={goToPage}
+          onDropMark={dropBookmark}
+          onPause={() => setIsPlaying(false)}
+        />
         {/* The issue by its parts: the chapters, read in one list and stepped into
             whole rather than a page at a time */}
         <button
@@ -459,49 +599,14 @@ export default function CinematicFlipbook({
         <div className="fixed inset-0 z-30 flex justify-end" style={{ background: 'rgba(7,15,31,0.6)' }} onClick={() => setShowContents(false)}>
           <div className="h-full w-full max-w-xs overflow-y-auto p-6" style={{ background: P.navy }} onClick={(e) => e.stopPropagation()}>
             <div className="mb-6 flex items-center justify-between">
-              <h3 className="font-serif text-lg" style={{ color: P.cream }}>Contents</h3>
+              <h3 className="font-serif text-lg" style={{ color: P.cream }}>Chapters</h3>
               <button onClick={() => setShowContents(false)} className="rounded-full p-1 hover:bg-white/10" aria-label="Close contents">
                 <X className="h-4 w-4" style={{ color: P.cream }} />
               </button>
             </div>
 
-            {/* The reader's own ribbons, before the issue's own parts */}
-            <div className="mb-6">
-              <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: P.gold }}>
-                Bookmarks
-              </p>
-              {bookmarks.length ? (
-                <div className="space-y-1">
-                  {bookmarks.map((mark) => (
-                    <div key={mark.page} className="flex items-center gap-1 rounded-lg hover:bg-white/5">
-                      <button
-                        onClick={() => goToPage(mark.page)}
-                        className="min-w-0 flex-1 px-3 py-2 text-left"
-                      >
-                        <p className="truncate text-sm" style={{ color: P.cream }}>
-                          {mark.label || 'Marked spread'}
-                        </p>
-                        <p className="mt-0.5 text-[10px]" style={{ color: 'rgba(250,248,245,0.4)' }}>
-                          Page {String(mark.page + 1).padStart(2, '0')}
-                        </p>
-                      </button>
-                      <button
-                        onClick={() => dropBookmark(mark.page)}
-                        className="mr-1 rounded-full p-1.5 transition-colors hover:bg-white/10"
-                        aria-label={`Remove the bookmark on page ${mark.page + 1}`}
-                      >
-                        <X className="h-3 w-3" style={{ color: 'rgba(250,248,245,0.5)' }} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="px-3 text-[11px] leading-relaxed" style={{ color: 'rgba(250,248,245,0.42)' }}>
-                  Nothing marked yet. The ribbon in the foot band marks the spread you are on.
-                </p>
-              )}
-            </div>
-
+            {/* The issue's own parts. The reader's ribbons are kept in the margin, with
+                their notes, where a spread can be marked and unmarked. */}
             <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: P.gold }}>
               Chapters
             </p>

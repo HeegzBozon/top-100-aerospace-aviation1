@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 
 // How long a page is held, so a film of the issue can be read rather than watched.
 //
@@ -34,6 +34,10 @@ export function computePageDwell(page) {
       case 'heading':    dwell += 800; break;
       case 'kicker':     dwell += 400; break;
       case 'byline':     dwell += 300; break;
+      // A panel is looked at and then read: the picture takes a beat of its own, and the
+      // narrator's line takes the time its words take. A plate tile (which carries an
+      // attribution — a name and a standing) is only looked at.
+      case 'image':      dwell += wordsIn(b.text) * READ_MS_PER_WORD + (b.text && !b.attribution ? 900 : 300); break;
       default: break;
     }
   }
@@ -61,8 +65,66 @@ export const PLAYBACK_OPTIONS = [
 
 export const PLAYBACK_SPEEDS = PLAYBACK_OPTIONS.map((o) => o.value);
 
-export const speedLabel = (speed) =>
-  PLAYBACK_OPTIONS.find((o) => o.value === speed)?.label ?? `${speed}×`;
+// Timed: the issue played in a set length, rather than at a set pace.
+//
+// A reader who says "give me this book in a minute" is not asking for a faster skim — a
+// metronome flicking every page for the same beat, which reads as neither film nor book. They
+// are asking for the whole issue to land inside a known time, which means the pages are given
+// unequal time on purpose: a cover is allowed to hold, a divider is allowed to snap past, a
+// dense spread breathes a beat longer than a bare one. That unevenness is the rhythm, and it
+// is reckoned from the book itself, so the same minute plays the same way twice.
+export const TIME_PREFIX = 'time-';
+export const TIME_PRESETS = [30, 45, 60, 90];
+const TIME_MIN = 15;              // a whole issue cannot be told in less
+const TIME_MAX = 3600;
+// However tight the budget, a page is held long enough to register as a page rather than a
+// flicker — so a very short run simply takes the time it needs.
+const MIN_TIMED_DWELL = 700;
+
+// How much of the run each kind of page is allowed to weigh.
+const TYPE_WEIGHT = {
+  cover: 2.6,
+  masthead: 1.3,
+  toc: 1.1,
+  chapter_divider: 0.55,
+  pull_quote: 1.2,
+  feature_spread: 1.4,
+  profile: 1.15,
+  colophon: 1.1,
+  back_cover: 0.9,
+};
+
+export const isTimedSpeed = (speed) => typeof speed === 'string' && speed.startsWith(TIME_PREFIX);
+
+export const timedSeconds = (speed) =>
+  (isTimedSpeed(speed) ? Math.round(Number(speed.slice(TIME_PREFIX.length))) || 0 : 0);
+
+export const timedSpeed = (seconds) =>
+  `${TIME_PREFIX}${Math.min(TIME_MAX, Math.max(TIME_MIN, Math.round(Number(seconds) || 0)))}`;
+
+// A page's share of a timed run: its kind, and how much there is to read once the page is
+// open — a long spread is given more of the minute than a plate of portraits.
+export function pageWeight(page) {
+  if (!page) return 1;
+  const base = TYPE_WEIGHT[page.layout_type] ?? 1;
+  const words = (page.content_blocks || []).reduce((count, block) => count + wordsIn(block.text), 0);
+  return base * (1 + Math.min(words, 600) / 1400);
+}
+
+// The beats a timed run hands out, one per page — the timeline a timed issue is played on.
+export function timelineDwells(pages, seconds) {
+  const list = pages || [];
+  if (!list.length) return [];
+  const weights = list.map(pageWeight);
+  const total = weights.reduce((sum, weight) => sum + weight, 0) || list.length;
+  const budget = Math.max(Number(seconds) || 0, 0) * 1000;
+  return weights.map((weight) => Math.max(MIN_TIMED_DWELL, (budget * weight) / total));
+}
+
+export const speedLabel = (speed) => {
+  if (isTimedSpeed(speed)) return `${timedSeconds(speed)}s`;
+  return PLAYBACK_OPTIONS.find((o) => o.value === speed)?.label ?? `${speed}×`;
+};
 
 /**
  * Cinematic autoplay hook. Drives a single `goNext` callback on a per-page
@@ -84,8 +146,18 @@ export function useCinematicPlayback({ currentPageIndex, totalPages, goNext, pag
 
   const page = pages?.[currentPageIndex];
   const baseDwell = computePageDwell(page);
-  // A skimmed page is not read, so it is not held for its words: one short beat each.
-  const adjustedDwell = speed === SKIM_SPEED ? SKIM_DWELL : baseDwell / (speed || 1);
+  const timed = isTimedSpeed(speed);
+  const timeline = useMemo(
+    () => (timed ? timelineDwells(pages, timedSeconds(speed)) : null),
+    [timed, speed, pages],
+  );
+  // A timed run gives each page the beat the timeline hands it; a skimmed page is not read, so
+  // it is not held for its words either — one short beat each.
+  const adjustedDwell = timed
+    ? (timeline?.[currentPageIndex] ?? MIN_TIMED_DWELL)
+    : speed === SKIM_SPEED
+      ? SKIM_DWELL
+      : baseDwell / (speed || 1);
 
   useEffect(() => {
     setProgress(0);
