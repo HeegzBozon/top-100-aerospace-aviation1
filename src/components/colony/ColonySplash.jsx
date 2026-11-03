@@ -4,15 +4,23 @@ import { Loader2, CircleCheck } from 'lucide-react';
 const PORTRAIT = 'https://media.base44.com/images/public/68996845be6727838fdb822e/8965182c5_Top100Aerospace2026Campus.png';
 const LANDSCAPE = 'https://media.base44.com/images/public/68996845be6727838fdb822e/1307348d0_Top100AerospaceAviation2026.png';
 
-// Colony's loading screen: the adventure plate, with the connection status at its foot.
-// While connecting the mark spins; once ready it settles into a lit check.
-export default function ColonySplash({ label = 'Entering Colony…', ready = false }) {
+function Plate({ className, alt = '' }) {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950">
-      <picture>
-        <source media="(orientation: landscape)" srcSet={LANDSCAPE} />
-        <img src={PORTRAIT} alt="TOP 100 Aerospace & Aviation Universe" className="absolute inset-0 h-full w-full object-cover" />
-      </picture>
+    <picture>
+      <source media="(orientation: landscape)" srcSet={LANDSCAPE} />
+      <img src={PORTRAIT} alt={alt} className={className} />
+    </picture>
+  );
+}
+
+// Colony's loading screen: the whole plate is always shown (never cropped), set over a
+// blurred copy of itself so any leftover space is filled with the same sky.
+// `fill` sizes it to its parent frame instead of the viewport.
+export default function ColonySplash({ label = 'Entering Colony…', ready = false, fill = false }) {
+  return (
+    <div className={`${fill ? 'absolute inset-0' : 'relative min-h-screen'} overflow-hidden bg-slate-950`}>
+      <Plate className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
+      <Plate alt="TOP 100 Aerospace & Aviation 2026" className="absolute inset-0 h-full w-full object-contain" />
       <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-gradient-to-t from-slate-950/90 to-transparent pb-8 pt-16">
         {ready
           ? <CircleCheck className="h-4 w-4 text-editorial-gold" />

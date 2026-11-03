@@ -54,7 +54,7 @@ export default function ColonyIntro() {
         filter: phase === 'fade' ? 'blur(8px) brightness(1.3)' : 'none',
       }}
     >
-      <ColonySplash ready={phase !== 'hold'} label={phase === 'hold' ? 'Connecting…' : 'Connected'} />
+      <ColonySplash fill ready={phase !== 'hold'} label={phase === 'hold' ? 'Connecting…' : 'Connected'} />
       {phase !== 'hold' && (
         <button type="button" className="absolute inset-x-0 bottom-20 z-10 mx-auto w-fit bg-slate-950 px-4 py-2 font-heading text-lg font-bold uppercase tracking-[0.3em] text-editorial-gold hh-blink">
           Press Start
