@@ -11,6 +11,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // Only editorial body copy is paced — the paragraphs the page's dwell is already reckoned
 // from, marked with data-read-along. Covers, plates, dividers and the page's own keys carry
 // nothing to follow, so they show no cursor and keep the behaviour they had.
+//
+// One page at a time: the hook is switched on only for the page being read. Every other
+// page on the glass — the other half of a spread, a page held out of the film — is left
+// exactly as it was, with no mark, no clock and nothing rolling it.
 export const READ_ALONG_ATTR = 'data-read-along';
 
 const MS_PER_WORD = 260;      // ≈ 230 words a minute, the pace a page is held at
@@ -60,11 +64,17 @@ function boxOf(container, word) {
     const box = range.getBoundingClientRect();
     if (!box.width && !box.height) return null;
     const frame = container.getBoundingClientRect();
+    // A page is composed at one design size and drawn scaled to the frame it is given (see
+    // FlipPage), so a word's rect is in the drawn size while the scroller counts in the
+    // composed one. Dividing by the ratio it was drawn at puts the mark back where the word
+    // actually sits, at the size the word actually is.
+    const scale = container.offsetWidth ? frame.width / container.offsetWidth : 1;
+    const at = scale || 1;
     return {
-      top: box.top - frame.top + container.scrollTop,
-      left: box.left - frame.left + container.scrollLeft,
-      width: box.width,
-      height: box.height,
+      top: (box.top - frame.top - container.clientTop * at) / at + container.scrollTop,
+      left: (box.left - frame.left - container.clientLeft * at) / at + container.scrollLeft,
+      width: box.width / at,
+      height: box.height / at,
     };
   } catch {
     return null;
@@ -74,7 +84,6 @@ function boxOf(container, word) {
 export function useReadAlong({
   containerRef,
   pageKey,
-  active = true,
   enabled = false,
   playing = false,
   paused = false,
@@ -87,7 +96,8 @@ export function useReadAlong({
   const wordsRef = useRef([]);
   const pace = typeof speed === 'number' && speed > 0 ? speed : 1;
 
-  // Collect the page's copy whenever the page changes or read along is switched on.
+  // Collect the page's copy when the page becomes the one being read, and let go of it the
+  // moment the film moves on: a page that is not being read holds no mark at all.
   useEffect(() => {
     const el = containerRef.current;
     wordsRef.current = el && enabled ? wordsOf(el) : [];
@@ -100,11 +110,6 @@ export function useReadAlong({
       el.style.position = 'relative';
     }
   }, [containerRef, enabled, pageKey]);
-
-  // A page turned back to is read again from its head.
-  useEffect(() => {
-    if (active) setIndex(0);
-  }, [active]);
 
   // Find the word, put the mark on it, and keep it in the band.
   useEffect(() => {
@@ -121,14 +126,15 @@ export function useReadAlong({
       return;
     }
     setCursor({ ...box, at: at + 1, total: words.length });
-    // Only a page standing open is drawn after, and only a page that has a frame height to
-    // be drawn into: a page held out of the spread measures nothing to roll towards.
+    // The page is drawn after the word — the only thing allowed to roll a page while it is
+    // being read, so the roll it had is stood down for as long as the mark is on it.
     const band = el.clientHeight;
+    if (!band) return;
     const fromTop = box.top - el.scrollTop;
-    if (active && band > 0 && (fromTop < band * BAND_IN || fromTop + box.height > band * BAND_OUT)) {
+    if (fromTop < band * BAND_IN || fromTop + box.height > band * BAND_OUT) {
       el.scrollTop = Math.max(box.top - band * BAND_AT, 0);
     }
-  }, [containerRef, enabled, index, pageKey, active]);
+  }, [containerRef, enabled, index, pageKey]);
 
   // The clock: one word at its time, with the held beats a reader takes anyway.
   useEffect(() => {
@@ -163,8 +169,10 @@ export function useReadAlong({
     const words = wordsRef.current;
     if (!el || !words.length) return;
     const frame = el.getBoundingClientRect();
-    const px = x - frame.left + el.scrollLeft;
-    const py = y - frame.top + el.scrollTop;
+    const scale = el.offsetWidth ? frame.width / el.offsetWidth : 1;
+    const at = scale || 1;
+    const px = (x - frame.left - el.clientLeft * at) / at + el.scrollLeft;
+    const py = (y - frame.top - el.clientTop * at) / at + el.scrollTop;
     let best = 0;
     let nearest = Infinity;
     words.forEach((word, i) => {

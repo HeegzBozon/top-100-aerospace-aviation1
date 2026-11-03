@@ -59,8 +59,10 @@ export default function CinematicFlipbook({
   // past its frame and one that does not, and either can be put on hold by itself.
   const [pausedPages, setPausedPages] = useState({});
   const [rollable, setRollable] = useState({});
-  // Read along: the spread followed word by word at reading pace.
+  // Read along: the page followed word by word at reading pace. It is a page read, not a
+  // spread turned, so the issue is held one page on the glass and stepped by one.
   const [readAlong, setReadAlong] = useState(false);
+  const singlePage = readAlong;
 
   // Switching it on slows a skimmed issue to one and starts the film, because a page turned
   // every second and a half is not a page anyone can follow a word through.
@@ -87,8 +89,16 @@ export default function CinematicFlipbook({
     if (bookRef.current?.pageFlip) setTotalPages(bookRef.current.pageFlip().getPageCount());
   }, []);
 
-  const flipPrev = useCallback(() => bookRef.current?.pageFlip()?.flipPrev(), []);
-  const flipNext = useCallback(() => bookRef.current?.pageFlip()?.flipNext(), []);
+  // One page at a time while read along is on, so a turn is a page and not a spread: the
+  // word being read is the only page on the glass, and the only page that rolls.
+  const flipPrev = useCallback(() => {
+    if (singlePage) return setCurrentPage((at) => Math.max(at - 1, 0));
+    return bookRef.current?.pageFlip()?.flipPrev();
+  }, [singlePage]);
+  const flipNext = useCallback(() => {
+    if (singlePage) return setCurrentPage((at) => Math.min(at + 1, totalPages - 1));
+    return bookRef.current?.pageFlip()?.flipNext();
+  }, [singlePage, totalPages]);
 
   // The tube is the measure. The machine's menu strip is already at the head of the tube,
   // so the reader claims what is left under it and no more: the picture fits the screen the
@@ -151,12 +161,19 @@ export default function CinematicFlipbook({
     const availW = Math.max(0, stage.width - 72);
     const availH = Math.max(0, stage.height - 8);
     if (availW < 240 || availH < 240) return null;
-    const pageW = Math.floor(Math.min(availW / 2, availH / PAGE_RATIO));
+    // One page read takes the whole stage it is read in; a spread shares it between two.
+    const pageW = Math.floor(Math.min(singlePage ? availW : availW / 2, availH / PAGE_RATIO));
     if (pageW < 160) return null;
     return { width: pageW, height: Math.floor(pageW * PAGE_RATIO) };
-  }, [stage]);
+  }, [stage, singlePage]);
 
   const goToPage = useCallback((idx) => {
+    // Read along has no book to turn: the page under the film is simply moved to.
+    if (singlePage) {
+      setCurrentPage(Math.max(0, Math.min(idx, Math.max(totalPages - 1, 0))));
+      setShowContents(false);
+      return;
+    }
     const flip = bookRef.current?.pageFlip();
     // A jump of any length — back to the cover, or into another chapter — is a turn to a
     // page, not a walk to it: the book lands on it rather than flicking past the pages in
@@ -164,7 +181,7 @@ export default function CinematicFlipbook({
     if (flip?.turnToPage) flip.turnToPage(idx);
     else flip?.flip(idx, 'top');
     setShowContents(false);
-  }, []);
+  }, [singlePage, totalPages]);
 
   // The spread standing open: the cover alone, then the pair held wide beside it. Both
   // pages of the pair are the page being read, so both roll under the film while it plays
@@ -292,8 +309,32 @@ export default function CinematicFlipbook({
 
       {/* The spread, held in the middle of the stage */}
       <div ref={stageRef} className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
-        {dims && (
-          <HTMLFlipBook
+        {dims && (singlePage && pages[currentPage] ? (
+          // Read along: one page on the glass at the size of a printed page — the only page
+          // rolling and the only page marked. Nothing else is on the desk to be followed.
+          <div className="relative" style={{ width: dims.width, height: dims.height }}>
+            <FlipPage>
+              <PageRenderer
+                page={pages[currentPage]}
+                issue={issue}
+                articles={articles}
+                pageNumber={currentPage + 1}
+                totalPages={totalPages}
+                playing={isPlaying}
+                autoscroll
+                reading
+                readAlong
+                speed={typeof speed === 'number' ? speed : 1}
+                paused={Boolean(pausedPages[pages[currentPage]?.id || currentPage + 1])}
+                onOverflow={reportOverflow}
+              />
+            </FlipPage>
+            <PageScrollRail
+              pageKey={pages[currentPage]?.id || currentPage + 1}
+              tone={pages[currentPage]?.layout_type === 'profile' ? 'night' : 'paper'}
+            />
+          </div>
+        ) : <HTMLFlipBook
             key={`${dims.width}x${dims.height}`}
             ref={bookRef}
             width={dims.width}

@@ -20,12 +20,15 @@ const HEAD_TYPES = ['kicker', 'heading', 'byline'];
 
 // Renders a single magazine page's content based on its layout type and blocks.
 // Used by both the flipbook and single-page reader.
-export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, onOverflow, readAlong = false, active = true }) {
+export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, onOverflow, readAlong = false, reading = true, active = true }) {
   // A page carries something to read only if it sets body copy — the same words its dwell
   // is reckoned from. Every other kind of page is looked at, so read along leaves it alone
   // and the roll it had before stands.
   const pageBlocks = page.content_blocks || [];
   const hasCopy = pageBlocks.some((block) => block.type === 'body' || block.type === 'pull_quote');
+  // One page at a time: with read along on, only the page standing under the film is read.
+  // Any other page on the glass is looked at, not read, and keeps the behaviour it had.
+  const following = readAlong && hasCopy && reading && active;
 
   // A page that runs past its frame rolls under the reader as a teleprompter at reading
   // pace — while the issue plays as a film and while it is read by hand. A page can be put
@@ -35,7 +38,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     pageKey: page?.id || pageNumber,
     // Read along draws the frame after the word, so the roll stands down: one hand on the
     // page at a time, never two pulling the same scroll against each other.
-    autoscroll: autoscroll && !(readAlong && hasCopy),
+    autoscroll: autoscroll && !following,
     speed,
     paused,
   });
@@ -43,8 +46,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   const { cursor } = useReadAlong({
     containerRef: scrollRef,
     pageKey: page?.id || pageNumber,
-    active,
-    enabled: readAlong && hasCopy,
+    enabled: following,
     playing,
     paused,
     speed,
