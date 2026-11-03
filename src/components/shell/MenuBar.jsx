@@ -1,4 +1,4 @@
-import { Bell, Home } from "lucide-react";
+import { Bell, ChevronLeft, Home } from "lucide-react";
 import ViewAsCell from "@/components/shell/ViewAsCell";
 import MenuBarClock from "@/components/shell/MenuBarClock";
 import { useMenuBarStatus } from "@/components/shell/menuBarStatus";
@@ -79,6 +79,7 @@ export default function MenuBar({
   fileOpen = false,
   editOpen = false,
   onHome,
+  onBack,
   onMenu,
   onFile,
   onEdit,
@@ -106,6 +107,11 @@ export default function MenuBar({
     >
       {/* The way home, printed the way a machine prints it: one glyph, at the head
           of the strip, where a hand looks for it first. */}
+      {onBack && (
+        <BarKey label="Back" onClick={onBack}>
+          <ChevronLeft className="h-[17px] w-[17px]" strokeWidth={2} />
+        </BarKey>
+      )}
       <BarKey label="Home" onClick={onHome}>
         <Home className="h-[15px] w-[15px]" strokeWidth={1.8} />
       </BarKey>

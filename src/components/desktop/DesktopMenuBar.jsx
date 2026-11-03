@@ -85,6 +85,7 @@ export default function DesktopMenuBar() {
         fileOpen={open === "file"}
         editOpen={open === "edit"}
         onHome={home}
+        onBack={() => { setOpen(null); window.history.length > 1 ? navigate(-1) : navigate("/"); }}
         onMenu={() => toggle("surface")}
         onFile={() => toggle("file")}
         onEdit={() => toggle("edit")}
@@ -99,7 +100,7 @@ export default function DesktopMenuBar() {
         open={open !== null}
         groups={drawer}
         locationKey={locationKey}
-        style={{ left: SEAT_PAD + KEY_CELL + drawerOffset }}
+        style={{ left: SEAT_PAD + KEY_CELL * 2 + drawerOffset }}
         onGo={go}
         onClose={() => setOpen(null)}
       />
