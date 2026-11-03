@@ -1,0 +1,97 @@
+{
+  "name": "SponsorSlot",
+  "type": "object",
+  "properties": {
+    "publication": {
+      "type": "string",
+      "default": "newsletter",
+      "description": "Which publication the slot belongs to. Newsletter is the only inventory sold in this launch."
+    },
+    "issue_number": {
+      "type": "number",
+      "description": "Public issue number the slot sits in, e.g. 44. Empty for a block of inventory sold without a named issue."
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Send date of the issue the slot is placed in."
+    },
+    "ad_close_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Last day a Patron can commit assets for this slot."
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "founding",
+        "standard",
+        "flagship",
+        "quarterly",
+        "annual",
+        "house",
+        "unpriced"
+      ],
+      "description": "Which rung of the rate card this slot is sold on."
+    },
+    "rate_amount": {
+      "type": "number",
+      "description": "Published rate in whole dollars. Empty while the rung is unpriced."
+    },
+    "rate_note": {
+      "type": "string",
+      "description": "Printed qualifier under the rate, e.g. 'Founding rate, first two issues'."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "held",
+        "sold",
+        "delivered",
+        "released",
+        "house"
+      ],
+      "default": "open",
+      "description": "Inventory state. A slot is only 'sold' once a deal reaches committed; it is 'delivered' once the issue shipped."
+    },
+    "patron_deal_id": {
+      "type": "string",
+      "description": "The PatronDeal holding this slot."
+    },
+    "patron_name": {
+      "type": "string",
+      "description": "Public credit name printed with the slot once delivered. Never set before the agreement is signed."
+    },
+    "calendar_year": {
+      "type": "number",
+      "description": "Cycle year the slot belongs to."
+    },
+    "decision_ref": {
+      "type": "string",
+      "description": "Decision register key that governs this slot's rate, e.g. 'DEC7'."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal note. Never rendered publicly."
+    }
+  },
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

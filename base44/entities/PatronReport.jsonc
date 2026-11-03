@@ -1,0 +1,110 @@
+{
+  "name": "PatronReport",
+  "type": "object",
+  "properties": {
+    "deal_id": {
+      "type": "string",
+      "description": "PatronDeal the report belongs to."
+    },
+    "issue_number": {
+      "type": "number"
+    },
+    "window": {
+      "type": "string",
+      "enum": [
+        "48h",
+        "7d"
+      ],
+      "description": "Which promised report this is. Both are owed on every paid send."
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "sent_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Delivered numbers. A blank field means not measured, never zero.",
+      "properties": {
+        "email_sends": {
+          "type": "number"
+        },
+        "email_opens": {
+          "type": "number"
+        },
+        "article_views": {
+          "type": "number"
+        },
+        "tracked_clicks": {
+          "type": "number"
+        },
+        "linkedin_impressions": {
+          "type": "number"
+        },
+        "new_opt_ins": {
+          "type": "number"
+        },
+        "qualified_leads": {
+          "type": "number"
+        }
+      }
+    },
+    "source_note": {
+      "type": "string",
+      "description": "Where each number came from, with the date pulled. LinkedIn figures are estimates and are labelled as such."
+    },
+    "method_note": {
+      "type": "string",
+      "description": "How the number was counted, so a buyer can repeat it."
+    },
+    "caveats": {
+      "type": "string",
+      "description": "What this report does not prove. Required on every report: no guaranteed reach is sold."
+    },
+    "no_reader_data": {
+      "type": "boolean",
+      "default": true,
+      "description": "Confirms no reader contact data is shared with the Patron. Must stay true."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent"
+      ],
+      "default": "draft"
+    },
+    "prepared_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "deal_id",
+    "window"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "name": "PatronClick",
+  "type": "object",
+  "properties": {
+    "deal_id": {
+      "type": "string",
+      "description": "PatronDeal whose tracked link was followed."
+    },
+    "slot_id": {
+      "type": "string"
+    },
+    "issue_number": {
+      "type": "number"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "issue",
+        "linkedin",
+        "volume",
+        "media_kit"
+      ],
+      "description": "Which deliverable carried the link. This is what makes a report possible."
+    },
+    "destination_host": {
+      "type": "string",
+      "description": "Host the reader was sent to. The full destination is held on the deal, not copied per click."
+    },
+    "referrer": {
+      "type": "string"
+    },
+    "clicked_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "deal_id",
+    "channel"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
