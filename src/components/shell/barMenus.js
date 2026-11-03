@@ -1,5 +1,5 @@
 import {
-  Briefcase, Home, LayoutGrid, ListChecks, LogIn, Radar, Send, Shield, UserCog, UserPlus,
+  BookOpen, Briefcase, Home, LayoutGrid, ListChecks, LogIn, Radar, Send, Shield, UserCog, UserPlus,
 } from "lucide-react";
 import { START_MENU } from "@/components/start/startMenuConfig";
 
@@ -48,6 +48,7 @@ export const EDIT_GROUPS = [
       { label: "Log in", action: "signin", icon: LogIn, visitorsOnly: true },
       { label: "Join", action: "join", icon: UserPlus, visitorsOnly: true },
       { label: "Admin portal", to: "/Admin", icon: Shield, adminOnly: true },
+      { label: "Magazine Studio", to: "/magazine-studio", icon: BookOpen, adminOnly: true },
     ],
   },
 ];
