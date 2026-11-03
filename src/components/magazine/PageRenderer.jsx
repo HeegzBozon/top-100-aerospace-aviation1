@@ -86,9 +86,21 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     return (
       <div className="relative w-full h-full overflow-hidden" style={{ background: P.navy }}>
         {bg && <img src={bg} alt="" className="absolute inset-0 w-full h-full object-cover" />}
-        {/* The founder's tip jar, kept at the foot of the plate where a closing page prints
-            its last address: the one thing a reader who has finished the issue can do. */}
-        <div className="absolute inset-x-0 bottom-5 flex justify-center px-5">
+        {/* The closing address, printed into the foot of the plate. A scrim of the issue's
+            own navy means the founder's line reads whatever the photograph is doing
+            beneath it, and the rose gold rule across the head of the band makes it part of
+            the plate rather than a button dropped on top of it. */}
+        <div
+          className="absolute inset-x-0 bottom-0 flex flex-col items-center px-8 pb-7 pt-20"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(7,15,31,0) 0%, rgba(7,15,31,0.62) 42%, rgba(7,15,31,0.92) 100%)',
+          }}
+        >
+          <span
+            className="mb-5 h-px w-full max-w-[180px]"
+            style={{ background: `linear-gradient(90deg, transparent, ${P.gold}90, transparent)` }}
+          />
           <TipJar />
         </div>
       </div>
