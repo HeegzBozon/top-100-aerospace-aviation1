@@ -66,6 +66,7 @@ export const CONTENT_BLOCK_TYPES = [
   { key: 'body', label: 'Body Text', icon: 'AlignLeft' },
   { key: 'image', label: 'Image', icon: 'Image' },
   { key: 'pull_quote', label: 'Pull Quote', icon: 'Quote' },
+  { key: 'cta', label: 'Button / Link', icon: 'MousePointerClick' },
   { key: 'divider', label: 'Divider', icon: 'Minus' },
   { key: 'spacer', label: 'Spacer', icon: 'MoveVertical' },
 ];

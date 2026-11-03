@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, ChevronUp, ChevronDown, Type, Heading, AlignLeft, Image, Quote, Minus, MoveVertical, User, Sparkles } from 'lucide-react';
+import { Plus, Trash2, ChevronUp, ChevronDown, Type, Heading, AlignLeft, Image, Quote, Minus, MoveVertical, User, Sparkles, MousePointerClick } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, PAGE_LAYOUTS, CONTENT_BLOCK_TYPES, layoutLabel } from '@/components/magazine/magazineConfig';
 
-const BLOCK_ICONS = { Type, Heading, AlignLeft, Image, Quote, Minus, MoveVertical, User };
+const BLOCK_ICONS = { Type, Heading, AlignLeft, Image, Quote, Minus, MoveVertical, User, MousePointerClick };
 
 export default function PageComposer({ issue, pages, articles, onCreate, onUpdate, onDelete, onGenerate }) {
   const [selectedPageId, setSelectedPageId] = useState(pages[0]?.id || null);
@@ -189,6 +189,11 @@ export default function PageComposer({ issue, pages, articles, onCreate, onUpdat
                               <option value={3}>H3</option>
                             </select>
                           </div>
+                        ) : block.type === 'cta' ? (
+                          <>
+                            <input value={block.text || ''} onChange={(e) => updateBlock(idx, 'text', e.target.value)} placeholder="Button label" className="mag-input text-xs" />
+                            <input value={block.url || ''} onChange={(e) => updateBlock(idx, 'url', e.target.value)} placeholder="/selection-committee or https://…" className="mag-input text-xs" />
+                          </>
                         ) : block.type === 'spacer' || block.type === 'divider' ? (
                           <p className="text-xs italic" style={{ color: 'rgba(30,58,90,0.4)' }}>{block.type === 'spacer' ? '— spacer —' : '— divider —'}</p>
                         ) : (

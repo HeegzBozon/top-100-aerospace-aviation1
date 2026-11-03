@@ -46,7 +46,8 @@
               "divider",
               "spacer",
               "kicker",
-              "byline"
+              "byline",
+              "cta"
             ]
           },
           "text": {
@@ -67,7 +68,7 @@
         }
       },
       "default": [],
-      "description": "Ordered content blocks for native composition. Each block is a laid-out editorial element."
+      "description": "Ordered content blocks for native composition. Each block is a laid-out editorial element. A 'cta' block carries its button label in text and its destination in url (an app path such as /selection-committee, or an external https address)."
     },
     "background_image_url": {
       "type": "string",

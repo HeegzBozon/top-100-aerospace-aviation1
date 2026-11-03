@@ -9,6 +9,7 @@ import Centerfold from '@/components/magazine/Centerfold';
 import HouseAdPage from '@/components/magazine/HouseAdPage';
 import { CENTERFOLD_LABEL, HOUSE_AD_LABEL, PATRON_LABEL } from '@/components/magazine/editionBands';
 import HonoreeLink, { nomineeIndex, resolveNomineeId } from '@/components/magazine/HonoreeLink';
+import MagazineLink, { TextWithLinks } from '@/components/magazine/MagazineLink';
 import { usePageTeleprompter, PAGE_SCROLL_ATTR } from '@/components/magazine/pageTeleprompter';
 
 // The blocks that make up a page's head: what pins to the top of the frame while the body
@@ -461,7 +462,11 @@ function BlockRenderer({ block, lead = false }) {
     case 'heading':
       return <h2 className="font-serif text-lg sm:text-xl leading-tight mb-3" style={{ color: P.navy }}>{block.text}</h2>;
     case 'byline':
-      return <p className="text-xs italic mb-4" style={{ color: P.copper }}>{block.text}</p>;
+      return (
+        <p className="text-xs italic mb-4" style={{ color: P.copper }}>
+          <TextWithLinks text={block.text} linkClassName="underline decoration-1 underline-offset-2" linkStyle={{ color: P.copper }} />
+        </p>
+      );
     case 'body': {
       // The page's opening paragraph is set with a drop cap, the way a magazine opens
       // a story — dropped only when it opens on a letter, never on a figure.
@@ -471,8 +476,31 @@ function BlockRenderer({ block, lead = false }) {
           className={`leading-relaxed mb-3 ${lead ? 'text-[13px] sm:text-[15px]' : 'text-xs sm:text-sm'} ${opened ? 'first-letter:float-left first-letter:font-serif first-letter:text-[2.6rem] first-letter:leading-[0.78] first-letter:pr-1.5 first-letter:text-[#B87333]' : ''}`}
           style={{ color: 'rgba(30,58,90,0.8)' }}
         >
-          {block.text}
+          <TextWithLinks
+            text={block.text}
+            linkClassName="underline decoration-1 underline-offset-2"
+            linkStyle={{ color: P.copper }}
+          />
         </p>
+      );
+    }
+    case 'cta': {
+      // The page's own action: an address printed as a key rather than as body copy, so a
+      // reader who has just been told what to do can do it without leaving the paper.
+      return (
+        <div className="mb-4">
+          <MagazineLink
+            href={block.url}
+            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] transition-opacity hover:opacity-85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ background: P.copper, color: P.cream, outlineColor: P.navy }}
+          >
+            {block.text || 'Read more'}
+            <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+          </MagazineLink>
+          {block.caption && (
+            <p className="mt-1.5 text-[10px]" style={{ color: 'rgba(30,58,90,0.45)' }}>{block.caption}</p>
+          )}
+        </div>
       );
     }
     case 'image':
