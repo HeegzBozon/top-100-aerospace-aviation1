@@ -8,6 +8,7 @@ import IssueBlueprint from '@/components/magazine/IssueBlueprint';
 import ArticleInventory from '@/components/magazine/ArticleInventory';
 import PageComposer from '@/components/magazine/PageComposer';
 import PreviewPublish from '@/components/magazine/PreviewPublish';
+import ExportIssueVideo from '@/components/magazine/ExportIssueVideo';
 import StudioGlass from '@/components/magazine/StudioGlass';
 import { alchemizeTop100Women2025, rebindEdition } from '@/components/magazine/alchemizeEdition';
 import { loadEditionNominees } from '@/components/publication/useTop100WomenNominees';
@@ -581,13 +582,17 @@ export default function MagazineStudio() {
             onGenerate={generatePages}
           />
         ) : (
-          <PreviewPublish
-            issue={selectedIssue}
-            articles={articles}
-            pages={pages}
-            onPublish={publishIssue}
-            onUnpublish={unpublishIssue}
-          />
+          <div className="space-y-6">
+            <PreviewPublish
+              issue={selectedIssue}
+              articles={articles}
+              pages={pages}
+              onPublish={publishIssue}
+              onUnpublish={unpublishIssue}
+            />
+            {/* The issue as a file an editor can hand on: rendered here, downloaded here. */}
+            <ExportIssueVideo issue={selectedIssue} pages={pages} articles={articles} />
+          </div>
         )}
       </div>
     </div>
