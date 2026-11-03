@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { AlertCircle, Plus, RefreshCw } from 'lucide-react';
+import { AlertCircle, ClipboardPaste, Plus, RefreshCw } from 'lucide-react';
 import { TC } from '@/components/admin/timecard/timecardConfig';
 import TimecardSummary from '@/components/admin/timecard/TimecardSummary';
 import TimecardEntryForm from '@/components/admin/timecard/TimecardEntryForm';
 import TimecardRow from '@/components/admin/timecard/TimecardRow';
+import WorklogImport from '@/components/admin/timecard/WorklogImport';
+import WorklogReview from '@/components/admin/timecard/WorklogReview';
 
 // The desk the platform's own hours and receipts are kept on: one ledger of time and
 // expenses, filed against a project, settled through approval. Admin-only — the record
@@ -15,6 +17,9 @@ export default function TimecardDesk() {
   const [error, setError] = useState('');
   const [draft, setDraft] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [importing, setImporting] = useState(false);
+  const [parsed, setParsed] = useState(null);
+  const [duplicate, setDuplicate] = useState(null);
 
   const load = useCallback(async () => {
     setState('loading');
@@ -44,22 +49,33 @@ export default function TimecardDesk() {
     setDraft(null);
   };
 
+  // A reviewed session is filed once, carrying the clock times the log reported and the
+  // split across the jobs inside it.
+  const saveImported = async (payload) => {
+    const created = await base44.entities.Timecard.create(payload);
+    setEntries((prev) => [created, ...prev]);
+    setParsed(null);
+    setDuplicate(null);
+  };
+
   const remove = async (entry) => {
     if (!window.confirm(`Delete "${entry.description}"?`)) return;
     await base44.entities.Timecard.delete(entry.id);
     setEntries((prev) => prev.filter((e) => e.id !== entry.id));
   };
 
-  const shown = useMemo(
-    () => (filter === 'all' ? entries : entries.filter((e) => e.kind === filter)),
-    [entries, filter],
-  );
+  const shown = useMemo(() => {
+    if (filter === 'all') return entries;
+    if (filter === 'worklog') return entries.filter((e) => e.source === 'worklog');
+    return entries.filter((e) => e.kind === filter);
+  }, [entries, filter]);
 
   const counts = useMemo(
     () => ({
       all: entries.length,
       time: entries.filter((e) => e.kind === 'time').length,
       expense: entries.filter((e) => e.kind === 'expense').length,
+      worklog: entries.filter((e) => e.source === 'worklog').length,
     }),
     [entries],
   );
@@ -82,6 +98,21 @@ export default function TimecardDesk() {
             <RefreshCw className="h-3.5 w-3.5" /> Re-read
           </button>
           <button
+            onClick={() => {
+              setParsed(null);
+              setDuplicate(null);
+              setImporting((open) => !open);
+            }}
+            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium"
+            style={
+              importing
+                ? { background: 'rgba(184,115,51,0.22)', color: TC.ink, border: `1px solid ${TC.copper}` }
+                : { background: 'rgba(255,255,255,0.06)', color: TC.ink, border: `1px solid ${TC.line}` }
+            }
+          >
+            <ClipboardPaste className="h-3.5 w-3.5" /> Import work log
+          </button>
+          <button
             onClick={() => setDraft({})}
             className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold"
             style={{ background: TC.copper, color: '#fff' }}
@@ -92,6 +123,29 @@ export default function TimecardDesk() {
       </div>
 
       <TimecardSummary entries={entries} />
+
+      {importing && (
+        <WorklogImport
+          onCancel={() => setImporting(false)}
+          onParsed={(worklog, match) => {
+            setParsed(worklog);
+            setDuplicate(match);
+            setImporting(false);
+          }}
+        />
+      )}
+
+      {parsed && (
+        <WorklogReview
+          initial={parsed}
+          duplicate={duplicate}
+          onCancel={() => {
+            setParsed(null);
+            setDuplicate(null);
+          }}
+          onSave={saveImported}
+        />
+      )}
 
       {draft !== null && (
         <TimecardEntryForm
@@ -105,6 +159,7 @@ export default function TimecardDesk() {
         {[
           ['all', 'All'],
           ['time', 'Hours'],
+          ['worklog', 'Sessions'],
           ['expense', 'Expenses'],
         ].map(([key, label]) => (
           <button

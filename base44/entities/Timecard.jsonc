@@ -81,6 +81,74 @@
     "notes": {
       "type": "string",
       "description": "Internal note. Never printed on a report."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "worklog"
+      ],
+      "default": "manual",
+      "description": "How the entry reached the ledger: typed by hand, or read out of a work log the person kept elsewhere. A worklog session carries the session's own clock times and its task breakdown."
+    },
+    "session_start": {
+      "type": "string",
+      "description": "The wall-clock time the session began, as local time on entry_date (e.g. 2026-11-02T09:00). Empty when the log states no start."
+    },
+    "session_end": {
+      "type": "string",
+      "description": "The wall-clock time the session ended, as local time on entry_date. Empty when the log states no end."
+    },
+    "timezone": {
+      "type": "string",
+      "description": "The zone the session's clock times are read in, e.g. America/Los_Angeles. Held so a timestamp is never read as UTC by accident."
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Elapsed wall-clock minutes the source reported for the session. This is the measured figure; it is not active typing time, and it is kept apart from the task split below."
+    },
+    "task_lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "minutes": {
+            "type": "number"
+          },
+          "estimated": {
+            "type": "boolean",
+            "default": true
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "The discrete jobs inside a session. 'estimated' is true when the source gave no minutes for that job and the split was allocated across the session \u2014 an allocation, never a measurement."
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "What the session produced: drafts, files, links or decisions, kept with the session as evidence."
+    },
+    "source_fingerprint": {
+      "type": "string",
+      "description": "Stable hash of the session's date, clock times, project and summary. Second import of the same log is recognised by it."
+    },
+    "source_label": {
+      "type": "string",
+      "description": "Where the session was read from: a pasted log, or the name of the file it was exported to."
+    },
+    "source_text": {
+      "type": "string",
+      "description": "The original work log text, kept for audit so the filed session can be read back against what was written."
     }
   },
   "required": [
