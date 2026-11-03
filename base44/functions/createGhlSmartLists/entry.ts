@@ -45,6 +45,41 @@ const SMART_LISTS = [
   },
 ];
 
+// THE PATRON PIPELINE — one smart list per lifecycle stage.
+//
+// The stage sync writes `Patron: <stage>` on every advance, so the segment a Patron sits in
+// is always the stage the record says. The lists below are filters over tags the desk
+// already writes; they are never a second source of truth.
+const PATRON_STAGE_TAGS = [
+  ['identified', 'Identified'],
+  ['touched', 'Touched'],
+  ['replied', 'Replied'],
+  ['qualified', 'Qualified'],
+  ['pitched', 'Pitched'],
+  ['committed', 'Committed'],
+  ['contracted', 'Contracted'],
+  ['paid', 'Paid'],
+  ['delivered', 'Delivered'],
+  ['reported', 'Reported'],
+  ['renewed', 'Renewed'],
+  ['declined', 'Declined'],
+];
+
+// Every tag the patron functions write, in one place: the door writes the inquiry tags, the
+// stage sync writes the stage tag and the attribution tag.
+const PATRON_TAGS = [
+  'Patron Inquiry',
+  'Patron of Record',
+  'Trigger: Patron Qualification',
+  ...PATRON_STAGE_TAGS.map(([key]) => `Patron: ${key}`),
+];
+
+const PATRON_LISTS = PATRON_STAGE_TAGS.map(([key, label]) => ({
+  name: `💼 Patron · ${label}`,
+  description: `Patron of Record deals at the ${label} stage. Filtered on the tag "Patron: ${key}", written by the stage sync.`,
+  filterTag: `Patron: ${key}`,
+}));
+
 // Email templates for each smart list
 const EMAIL_TEMPLATES = [
   {
@@ -132,7 +167,9 @@ Deno.serve(async (req) => {
     if (action === 'preview') {
       return Response.json({
         message: 'Smart list and email template definitions ready. Call with action="create" to apply in GHL.',
-        smart_lists: SMART_LISTS.map(l => l.name),
+        smart_lists: [...SMART_LISTS, ...PATRON_LISTS].map(l => l.name),
+        patron_tags: PATRON_TAGS,
+        patron_stage_filters: PATRON_LISTS.map(l => ({ name: l.name, filter: `tag contains "${l.filterTag}"` })),
         email_templates: EMAIL_TEMPLATES.map(e => ({ subject: e.subject, for_list: e.listName })),
         note: 'GHL Smart Lists are tag-based filters. Contacts receive the tag when they subscribe via the newsletter form on each page. The smart lists are then defined in GHL using the tag filter: Settings → Smart Lists → Create. This function documents the tag strategy.',
       });
@@ -140,7 +177,7 @@ Deno.serve(async (req) => {
 
     // Attempt to create smart lists via GHL API if supported
     const results = [];
-    for (const list of SMART_LISTS) {
+    for (const list of [...SMART_LISTS, ...PATRON_LISTS]) {
       // GHL smart list creation via API (v2)
       const res = await ghlRequest(`/contacts/smart-lists`, {
         method: 'POST',
@@ -160,9 +197,24 @@ Deno.serve(async (req) => {
       results.push({ list: list.name, ok: res.ok, status: res.status, response: res.data });
     }
 
+    // Smart lists have no public create endpoint in GHL v2, so the lists themselves are made
+    // in the provider's UI against the tags below. The tags ARE writable, so they are created
+    // here first-class — a stage list exists the moment a Patron carries its stage tag.
+    const tagResults = [];
+    for (const tag of PATRON_TAGS) {
+      const res = await ghlRequest(`/locations/${Deno.env.get('GOHIGHLEVEL_LOCATION_ID')}/tags`, {
+        method: 'POST',
+        body: JSON.stringify({ name: tag }),
+      });
+      tagResults.push({ tag, ok: res.ok, status: res.status });
+    }
+
     return Response.json({
       success: true,
       results,
+      tag_results: tagResults,
+      patron_tags: PATRON_TAGS,
+      patron_stage_filters: PATRON_LISTS.map(l => ({ name: l.name, filter: `tag contains "${l.filterTag}"` })),
       email_templates: EMAIL_TEMPLATES,
       instructions: 'If smart list API is not available for your GHL plan, create them manually in GHL: Contacts → Smart Lists → New → Filter by Tag = [tag name]',
     });

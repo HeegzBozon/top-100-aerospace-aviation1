@@ -1,0 +1,97 @@
+{
+  "name": "Patron Reports Due",
+  "description": "When a Patron deal is delivered, opens the 48-hour and 7-day reports against it and tells the desk when each one falls due.",
+  "trigger": {
+    "condition": "${ .trigger.data.stage == \"delivered\" and .trigger.old_data.stage != \"delivered\" }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "PatronDeal"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "patron_reports_due",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "open_reports": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "patronReports",
+            "args": {
+              "action": "open",
+              "deal_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "wait_48h",
+          "x-base44": {
+            "title": "Open both reports",
+            "description": "48h and 7d, clicks counted from the link"
+          }
+        }
+      },
+      {
+        "wait_48h": {
+          "wait": "P2D",
+          "then": "notify_48h",
+          "x-base44": {
+            "title": "48 hours",
+            "description": "The first report comes due"
+          }
+        }
+      },
+      {
+        "notify_48h": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "patronReports",
+            "args": {
+              "action": "due",
+              "deal_id": "${ .trigger.entity_id }",
+              "window": "48h"
+            }
+          },
+          "then": "wait_7d",
+          "x-base44": {
+            "title": "Tell the desk",
+            "description": "48-hour report is due"
+          }
+        }
+      },
+      {
+        "wait_7d": {
+          "wait": "P5D",
+          "then": "notify_7d",
+          "x-base44": {
+            "title": "Five more days",
+            "description": "Seven days from delivery"
+          }
+        }
+      },
+      {
+        "notify_7d": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "patronReports",
+            "args": {
+              "action": "due",
+              "deal_id": "${ .trigger.entity_id }",
+              "window": "7d"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Tell the desk",
+            "description": "7-day report is due"
+          }
+        }
+      }
+    ]
+  }
+}
