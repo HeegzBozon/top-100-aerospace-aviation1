@@ -23,16 +23,8 @@ const STORAGE_KEY = "top100-console-mode";
 // walked on a numbered keypad; anything read by the screenful is the wheel's.
 const RADIO_SURFACES = [
   { match: (path) => path === "/" || path === "/start", reason: "a numbered key field" },
-  { match: (path) => path.startsWith("/selection-committee"), reason: "a numbered ballot" },
-  { match: (path) => path.startsWith("/magazine/"), reason: "an issue is numbered pages" },
-  { match: (path) => path.startsWith("/archive"), reason: "numbered volumes" },
-  { match: (path) => path.startsWith("/Top100Women2025"), reason: "a numbered roster" },
-  { match: (path) => path.startsWith("/profiles/"), reason: "a numbered record" },
-  { match: (path) => path.startsWith("/viralpost"), reason: "a series, in order" },
-  { match: (path) => path.startsWith("/top100-list"), reason: "a numbered list" },
-  { match: (path) => path.startsWith("/editions/"), reason: "a numbered edition" },
-  { match: (path) => path.startsWith("/classifieds"), reason: "a numbered board" },
 ];
+// Everywhere else the click wheel is the default face.
 
 export function autoModeFor(pathname = "/") {
   const found = RADIO_SURFACES.find((entry) => entry.match(pathname));

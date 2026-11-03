@@ -1,5 +1,7 @@
 import { Loader2, CircleCheck } from 'lucide-react';
 
+const APP_VERSION = '2026.11';
+
 // Portrait plate for tall screens (phones), landscape plate for wide ones (desks).
 const PORTRAIT = 'https://media.base44.com/images/public/68996845be6727838fdb822e/1307348d0_Top100AerospaceAviation2026.png';
 const LANDSCAPE = 'https://media.base44.com/images/public/68996845be6727838fdb822e/8965182c5_Top100Aerospace2026Campus.png';
@@ -21,6 +23,10 @@ export default function ColonySplash({ label = 'Entering Colony…', ready = fal
     <div className={`${fill ? 'absolute inset-0' : 'relative min-h-screen'} overflow-hidden bg-slate-950`}>
       <Plate className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
       <Plate alt="TOP 100 Aerospace & Aviation 2026" className="absolute inset-0 h-full w-full object-cover object-center lg:object-contain" />
+      <a href="/seasonal-planning?tab=releases" onClick={(e) => e.stopPropagation()}
+        className="absolute right-3 top-3 z-10 rounded px-1.5 py-0.5 font-body text-[9px] font-semibold uppercase tracking-[0.2em] text-editorial-cream/50 transition-colors hover:text-editorial-gold">
+        v{APP_VERSION}
+      </a>
       <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-gradient-to-t from-slate-950/90 to-transparent pb-8 pt-16">
         {ready
           ? <CircleCheck className="h-4 w-4 text-editorial-gold" />

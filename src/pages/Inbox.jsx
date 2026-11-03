@@ -13,7 +13,7 @@ import { seasonFor } from '@/components/seasonal-planning/seasons';
 // Seasonal Planning: the Program Increment board, with the former Inbox kept as its triage desk.
 export default function Inbox() {
   const [user, setUser] = useState(null);
-  const [tab, setTab] = useState('board');
+  const [tab, setTab] = useState(() => new URLSearchParams(window.location.search).get('tab') || 'board');
   const [board, setBoard] = useState('platform');
   const [season, setSeason] = useState(() => seasonFor());
 
