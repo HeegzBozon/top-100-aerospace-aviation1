@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Plus, Trash2, FileText, FileUp, Crown } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, SECTION_TYPES, SECTION_GROUPS, ASSEMBLY_MODES, THEME_ACCENTS, DEFAULT_SECTIONS, VOLUME_IV_BLUEPRINT, sectionGroupLabel } from '@/components/magazine/magazineConfig';
 import PdfUploadPanel from '@/components/magazine/PdfUploadPanel';
+import CoverArtPanel from '@/components/magazine/CoverArtPanel';
 
 let sectionIdCounter = 0;
 
-export default function IssueBlueprint({ issue, articles, pages, onUpdate }) {
+export default function IssueBlueprint({ issue, articles, pages, onUpdate, onReload }) {
   const [title, setTitle] = useState(issue.title || '');
   const [subtitle, setSubtitle] = useState(issue.subtitle || '');
   const [coverKicker, setCoverKicker] = useState(issue.cover_kicker || '');
-  const [coverUrl, setCoverUrl] = useState(issue.cover_image_url || '');
   const [coverCredits, setCoverCredits] = useState(issue.cover_credits || {});
   const [preface, setPreface] = useState(issue.preface || '');
   const [colophon, setColophon] = useState(issue.colophon || '');
@@ -22,7 +22,7 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate }) {
     setSaving(true);
     try {
       await onUpdate(issue.id, {
-        title, subtitle, cover_kicker: coverKicker, cover_image_url: coverUrl,
+        title, subtitle, cover_kicker: coverKicker,
         cover_credits: coverCredits, preface, colophon, sections,
         assembly_mode: assemblyMode, theme_accent: themeAccent,
       });
@@ -106,9 +106,6 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate }) {
         <Field label="Cover Kicker">
           <input value={coverKicker} onChange={(e) => setCoverKicker(e.target.value)} className="mag-input" placeholder="The 2026 Edition" />
         </Field>
-        <Field label="Cover Image URL">
-          <input value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} className="mag-input" placeholder="https://..." />
-        </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Theme Accent">
             <select value={themeAccent} onChange={(e) => setThemeAccent(e.target.value)} className="mag-input">
@@ -121,6 +118,11 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate }) {
             </select>
           </Field>
         </div>
+      </Section>
+
+      {/* Covers — uploaded here, and shown to every reader from the issue itself */}
+      <Section title="Covers" subtitle="Front cover and back cover, uploaded as finished plates">
+        <CoverArtPanel issue={issue} pages={pages} onUpdate={onUpdate} onReload={onReload} />
       </Section>
 
       {/* Cover Credits */}

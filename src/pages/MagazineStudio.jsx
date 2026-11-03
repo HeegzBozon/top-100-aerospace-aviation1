@@ -555,7 +555,13 @@ export default function MagazineStudio() {
             <Loader2 className="w-6 h-6 animate-spin" style={{ color: P.navy }} />
           </div>
         ) : tab === 'blueprint' ? (
-          <IssueBlueprint issue={selectedIssue} articles={articles} pages={pages} onUpdate={updateIssue} />
+          <IssueBlueprint
+            issue={selectedIssue}
+            articles={articles}
+            pages={pages}
+            onUpdate={updateIssue}
+            onReload={() => loadDetail(selectedIssue.id)}
+          />
         ) : tab === 'articles' ? (
           <ArticleInventory
             issue={selectedIssue}

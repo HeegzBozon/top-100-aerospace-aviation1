@@ -56,6 +56,16 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     return <HouseAdPage blocks={blocks} label={pageMark} pageNumber={pageNumber} totalPages={totalPages} />;
   }
 
+  // The back cover: the finished plate closes the book exactly as it is printed, with no
+  // type drawn over it and no folio in its corner.
+  if (page.layout_type === 'back_cover') {
+    return (
+      <div className="relative w-full h-full overflow-hidden" style={{ background: P.navy }}>
+        {bg && <img src={bg} alt="" className="absolute inset-0 w-full h-full object-cover" />}
+      </div>
+    );
+  }
+
   // Cover page. A cover with a photograph is led by it; a cover without one is set in
   // type — the masthead mark, the issue, the rule, and the credit stack — which is how
   // an institutional publication covers an edition rather than leaving a navy blank.

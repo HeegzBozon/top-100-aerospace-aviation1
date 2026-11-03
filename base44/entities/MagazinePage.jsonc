@@ -18,6 +18,7 @@
       "type": "string",
       "enum": [
         "cover",
+        "back_cover",
         "masthead",
         "toc",
         "article",
@@ -29,7 +30,7 @@
         "pdf_page"
       ],
       "default": "article",
-      "description": "Page layout template."
+      "description": "Page layout template. 'back_cover' is the finished closing plate, printed full bleed with no type or folio drawn over it."
     },
     "content_blocks": {
       "type": "array",

@@ -48,6 +48,7 @@ export const ARTICLE_STATUSES = [
 
 export const PAGE_LAYOUTS = [
   { key: 'cover', label: 'Cover', description: 'Full-bleed issue cover' },
+  { key: 'back_cover', label: 'Back Cover', description: 'Full-bleed closing plate' },
   { key: 'masthead', label: 'Masthead', description: 'Institutional masthead spread' },
   { key: 'toc', label: 'Table of Contents', description: 'Issue contents with page numbers and credits' },
   { key: 'article', label: 'Article', description: 'Standard article page' },
