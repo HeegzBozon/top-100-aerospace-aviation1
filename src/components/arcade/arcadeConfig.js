@@ -38,7 +38,28 @@ export const CABINETS = [
   },
 ];
 
-export const cabinetById = (id) => CABINETS.find((c) => c.id === id) || null;
+// THE SIMULATOR.
+//
+// The fourth machine is not a cabinet with a score: it is the flight simulator, kept open
+// beside them. It answers to the same hall, files a sortie, and runs as its own surface, so
+// the campaign is read at full height rather than squeezed into a window of dark glass.
+export const SIMULATOR = {
+  id: 'the-sim',
+  label: 'The Simulator',
+  mechanism: 'Flight Simulator',
+  blurb: 'The campaigns, the dice, the debrief. Take an aircraft up and see what kind of pilot the record says you are.',
+  controls: 'Read the scene, choose, and roll for the hard ones.',
+  accent: '#9ec5e0',
+  to: '/play',
+  recordLabel: 'sorties',
+};
+
+export const MACHINES = [...CABINETS, SIMULATOR];
+
+export const cabinetById = (id) => MACHINES.find((c) => c.id === id) || null;
+
+// A machine that opens a surface of its own rather than a game in the glass.
+export const isSurfaceCabinet = (cabinet) => !!cabinet?.to;
 
 // Whether a cabinet is steered by keys or aimed at with a pointer.
 export const isAimCabinet = (cabinet) => cabinet?.mechanism === 'Missile Command';

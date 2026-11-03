@@ -8,7 +8,12 @@ import { cabinetById } from "@/components/arcade/arcadeConfig";
 // a cabinet on this page are the same cabinet.
 export default function Arcade() {
   const asked = new URLSearchParams(window.location.search).get("cabinet");
-  const [active, setActive] = useState(() => cabinetById(asked));
+  // Only a machine that runs in the glass is opened here; the simulator is its own surface
+  // and is reached from its plate in the hall.
+  const [active, setActive] = useState(() => {
+    const found = cabinetById(asked);
+    return found?.component ? found : null;
+  });
 
   return (
     <div className="min-h-full bg-editorial-navy">

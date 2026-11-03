@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { noteRecord } from './arcadeProgress';
 
 // THE HOUSE RECORD.
 //
@@ -32,6 +33,8 @@ export default function useArcadeRecords() {
     } catch {
       // A machine with no store simply keeps no record.
     }
+    // The same number stands as a cabinet badge milestone on the passport's East Wing shelf.
+    noteRecord(cabinetId, score);
     return true;
   }, [records]);
 

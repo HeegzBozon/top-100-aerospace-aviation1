@@ -29,7 +29,7 @@ export default function PassportQuests({ passport }) {
           <PassportQuestRow passport={passport} quest={next} isNext />
         </div>
       )}
-      {[1, 2, 3, 4, 5].map(act => {
+      {[1, 2, 3, 4, 5, 6].map(act => {
         const qs = QUESTS.filter(q => q.act === act);
         const n = qs.filter(q => isDone(passport, q.id)).length;
         return (

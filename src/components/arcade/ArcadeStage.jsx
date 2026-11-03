@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { ArrowLeft, Trophy } from 'lucide-react';
 import TouchKeys from './TouchKeys';
 import useArcadeRecords from './useArcadeRecords';
+import { notePlay } from './arcadeProgress';
 
 // The keys a cabinet is asked for. Sentinel and Belt Run are steered; Guardian is aimed
 // at with a finger, so it is handed no pad at all.
@@ -24,6 +26,9 @@ export default function ArcadeStage({ cabinet, onExit, embedded = false }) {
   const { records, submit } = useArcadeRecords();
   const keys = KEY_SETS[cabinet.id] || [];
   const Game = cabinet.component;
+
+  // A turn at a machine is what the passport's East Wing quests and the cabinet badges read.
+  useEffect(() => { notePlay(cabinet.id); }, [cabinet.id]);
 
   // Every point the machine counts is offered to the house record; it keeps whichever
   // stands highest, so a record can be set mid-run and the cabinet says so at once.

@@ -2,6 +2,7 @@
 // measurement, scoring, directory placement or recognition, and the practice ballot is a
 // tutorial that never reaches the official system.
 import { PATHWAYS, ORIGIN } from './discovery';
+import { arcadeQuestDone, arcadeXpOf, readProgress } from '@/components/arcade/arcadeProgress';
 
 export const REWARDS = {
   innovation: { label: 'Innovation Stamp', kind: 'stamp' },
@@ -61,11 +62,27 @@ export const QUESTS = [
     line: 'Atlas confirms six Discovery Stamps and two emblems. Welcome, Campus Explorer. These Wings are a gameplay achievement, not an official TOP 100 honoree designation.',
     prompt: 'Accept your Wings?', choices: ['Accept the Wings of Recognition'] },
   ...ORIGIN,
+  // ACT VI — THE EAST WING.
+  //
+  // The arcade is not given by a character: these three complete themselves the moment the
+  // milestone is struck at a machine, so the passport reads the hall without asking it. They
+  // are optional, carry no reward, and the Wings never wait on them.
+  { id: 'q13', act: 6, place: 'The Arcade', title: 'Take a Machine', optional: true,
+    line: 'The east wing keeps three cabinets and the simulator. Any one of them will do.',
+    prompt: 'Take a turn at a machine.' },
+  { id: 'q14', act: 6, place: 'The Arcade', title: 'Put a Number on the Board', optional: true,
+    line: 'The board belongs to the room. Give it something to hold.',
+    prompt: 'Set a record on any cabinet.' },
+  { id: 'q15', act: 6, place: 'The Simulator', title: 'Take the Simulator Up', optional: true,
+    line: 'The simulator is the fourth machine. Read a campaign and fly it.',
+    prompt: 'Start a simulator campaign.' },
 ];
 
-export const ACTS = { 1: 'Act I · Welcome to the Universe', 2: 'Act II · The Six Districts', 3: 'Act III · The Legacy of Flight', 4: 'Act IV · Earn Your Wings', 5: 'Arc II · The Origin Story' };
+export const ACTS = { 1: 'Act I · Welcome to the Universe', 2: 'Act II · The Six Districts', 3: 'Act III · The Legacy of Flight', 4: 'Act IV · Earn Your Wings', 5: 'Arc II · The Origin Story', 6: 'Act VI · The East Wing' };
 
-export const isDone = (p, id) => !!p?.quests?.[id];
+// A quest is done when it is written into the passport, or — for the East Wing — when the
+// machine itself says the milestone was struck.
+export const isDone = (p, id) => !!p?.quests?.[id] || arcadeQuestDone(id);
 export const earned = (p) => QUESTS.filter(q => q.reward && isDone(p, q.id)).map(q => q.reward);
 export const finaleReady = (p) => QUESTS.filter(q => q.id !== 'q12' && REWARDS[q.reward]?.kind !== 'item')
   .filter(q => q.reward).every(q => isDone(p, q.id));
@@ -93,8 +110,11 @@ export function title(p) {
 export const XP_PER_LEVEL = 300;
 export const questXp = (q) => 100 + (q.reward && REWARDS[q.reward]?.kind !== 'item' ? 50 : 0) + (q.finale ? 250 : 0);
 export function xpOf(p) {
-  // Each Star Atlas star lit adds 40 XP.
-  const xp = QUESTS.filter(q => isDone(p, q.id)).reduce((t, q) => t + questXp(q), 0) + Object.keys(p?.stars || {}).length * 40;
+  // Each Star Atlas star lit adds 40 XP, and every turn taken at a machine in the east wing
+  // adds the hall's own allowance — all of it gameplay, none of it measured.
+  const xp = QUESTS.filter(q => isDone(p, q.id)).reduce((t, q) => t + questXp(q), 0)
+    + Object.keys(p?.stars || {}).length * 40
+    + arcadeXpOf(readProgress());
   return { xp, level: Math.floor(xp / XP_PER_LEVEL) + 1, into: xp % XP_PER_LEVEL };
 }
 export const nextQuest = (p) => QUESTS.find(q => !isDone(p, q.id) && !lockReason(p, q)) || null;
