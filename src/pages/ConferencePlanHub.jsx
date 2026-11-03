@@ -52,6 +52,14 @@ export default function ConferencePlanHub() {
             <p className="mt-3 text-[9.5px] leading-relaxed" style={{ color: 'rgba(250,248,245,0.55)' }}>
               TOP 100 may earn a commission on bookings, at no cost to you.
             </p>
+            <Link
+              to="/travel-advisory"
+              className="mt-3 block border-t pt-3 text-[10px] leading-relaxed"
+              style={{ borderColor: 'rgba(250,248,245,0.18)', color: 'rgba(250,248,245,0.78)' }}
+            >
+              <span className="font-bold uppercase tracking-[0.16em]" style={{ color: '#c9a87c' }}>Coming soon</span>
+              <span className="mt-1 block">Field Notes, and a Fora travel advisor for bigger trips. Join the waitlist →</span>
+            </Link>
           </div>
         </section>
       </div>

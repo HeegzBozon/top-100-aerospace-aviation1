@@ -122,6 +122,7 @@ const Review = lazy(() => import('@/pages/Review'));
 const Conferences = lazy(() => import('@/pages/Conferences'));
 const ConferencePlanHub = lazy(() => import('@/pages/ConferencePlanHub'));
 const ConferenceDiscover = lazy(() => import('@/pages/ConferenceDiscover'));
+const TravelAdvisory = lazy(() => import('@/pages/TravelAdvisory'));
 const ConferenceAttend = lazy(() => import('@/pages/ConferenceAttend'));
 const ConferenceJourney = lazy(() => import('@/pages/ConferenceJourney'));
 const ConferenceDetail = lazy(() => import('@/pages/ConferenceDetail'));
@@ -272,6 +273,8 @@ const AuthenticatedApp = () => {
       <Route path="/conferences" element={<Conferences />} />
       <Route path="/conferences/plan" element={<ConferencePlanHub />} />
       <Route path="/conferences/discover" element={<ConferenceDiscover />} />
+      {/* Field Notes and the Fora advisory desk: the travel section, before it opens */}
+      <Route path="/travel-advisory" element={<TravelAdvisory />} />
       <Route path="/conferences/attend" element={<ConferenceAttend />} />
       {/* One conference, worked from the inside: plan, targets, capture, debrief, follow up */}
       <Route path="/conferences/attend/:roomId" element={<ConferenceJourney />} />
