@@ -5,7 +5,7 @@ import ArcadeBadges from './ArcadeBadges';
 import { MACHINES } from './arcadeConfig';
 import useArcadeRecords from './useArcadeRecords';
 import useArcadeProgress from './useArcadeProgress';
-import { earnedIds } from './arcadeProgress';
+import { earnedIds, ARCADE_BADGES } from './arcadeProgress';
 
 const format = (n) => (n ? n.toLocaleString() : 'not yet set');
 
@@ -96,8 +96,8 @@ export default function ArcadeHall({ onPlay, embedded = false }) {
           </div>
           <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] text-editorial-cream/45">
             <Trophy className="h-3 w-3 text-editorial-gold/80" />
-            {badges.length} of 7 cabinet badges struck. A house record is a thing you set in a room, not a leaderboard
-            you climb.
+            {badges.length} of {ARCADE_BADGES.length} cabinet badges struck. A house record is a thing you set in a
+            room, not a leaderboard you climb.
           </p>
         </section>
       </div>

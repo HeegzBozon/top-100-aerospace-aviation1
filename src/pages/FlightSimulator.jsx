@@ -11,6 +11,7 @@ import DebriefReportPanel from '@/components/flight-sim/DebriefReportPanel';
 import TransitionInterlude from '@/components/flight-sim/TransitionInterlude';
 import { CAMPAIGNS } from '@/components/flight-sim/campaigns';
 import { classifyProfile } from '@/components/flight-sim/classifyProfile';
+import { noteSortie } from '@/components/arcade/arcadeProgress';
 import { ChevronLeft } from 'lucide-react';
 
 export const GAME_PHASES = {
@@ -59,6 +60,9 @@ export default function FlightSimulator() {
   }, [phase, currentSceneIndex]);
 
   const startCampaign = (campaignId) => {
+    // The simulator is the fourth machine in the Arcade: a campaign under way is a sortie,
+    // and it is filed with the hall so its plate and the passport's East Wing can read it.
+    noteSortie();
     const campaign = CAMPAIGNS[campaignId];
     const initialStats = { ...campaign.baseStats };
     setSession({

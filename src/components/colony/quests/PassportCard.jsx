@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import BadgeFace from './BadgeFace';
+import ArcadeBadges from '@/components/arcade/ArcadeBadges';
+import useArcadeProgress from '@/components/arcade/useArcadeProgress';
 
 const FIELDS = [
   { key: 'title', label: 'Title', max: 80, ph: 'Propulsion Engineer' },
@@ -14,6 +16,7 @@ export default function PassportCard({ passport, isGuest, onSave }) {
   const [card, setCard] = useState(passport.card || {});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const { progress } = useArcadeProgress();
   const save = async () => {
     setSaving(true);
     await onSave(isGuest ? { name: name.trim().slice(0, 60), card } : { card });
@@ -22,6 +25,9 @@ export default function PassportCard({ passport, isGuest, onSave }) {
   return (
     <div className="space-y-3">
       <BadgeFace name={isGuest ? name : passport.name} card={card} passport={passport} isGuest={isGuest} />
+      <div className="rounded border border-white/10 bg-white/[0.03] p-3">
+        <ArcadeBadges progress={progress} />
+      </div>
       {isGuest && (
         <label className="block text-xs text-editorial-cream/70">Name
           <input value={name} maxLength={60} onChange={e => { setName(e.target.value); setSaved(false); }}

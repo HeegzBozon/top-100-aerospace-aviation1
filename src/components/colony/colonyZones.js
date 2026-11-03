@@ -115,11 +115,12 @@ export const COLONY_ROOMS = {
     map: 'https://media.base44.com/images/public/68996845be6727838fdb822e/e53dce092_generated_image.png',
     zones: [
       { key: 'arcade-exit', label: 'Arcade Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 31, w: 8, h: 4 },
-      { key: 'cabinet-sentinel', label: 'Sentinel', blurb: 'Hold the line above the terminator.', panel: 'arcade', cabinet: 'sentinel', col: 6, row: 6, w: 9, h: 6 },
-      { key: 'cabinet-belt-run', label: 'Belt Run', blurb: 'Thread the debris field.', panel: 'arcade', cabinet: 'belt-run', col: 27, row: 6, w: 9, h: 6 },
-      { key: 'cabinet-guardian', label: 'Guardian', blurb: 'Six cities under the arc.', panel: 'arcade', cabinet: 'guardian', col: 48, row: 6, w: 9, h: 6 },
-      { key: 'record-board', label: 'The Record Board', blurb: 'What each cabinet has seen this season.', panel: 'arcade', col: 24, row: 18, w: 16, h: 5 },
-      { key: 'chess-tables', label: 'Chess Tables', blurb: 'Take a board in the TOP 100 chess club.', to: '/ChessClub', col: 4, row: 25, w: 11, h: 4 },
+      { key: 'cabinet-sentinel', label: 'Sentinel', blurb: 'Hold the line above the terminator.', panel: 'arcade', cabinet: 'sentinel', col: 8, row: 5, w: 9, h: 6 },
+      { key: 'cabinet-belt-run', label: 'Belt Run', blurb: 'Thread the debris field.', panel: 'arcade', cabinet: 'belt-run', col: 27, row: 5, w: 9, h: 6 },
+      { key: 'cabinet-guardian', label: 'Guardian', blurb: 'Six cities under the arc.', panel: 'arcade', cabinet: 'guardian', col: 46, row: 5, w: 9, h: 6 },
+      { key: 'cabinet-sim', label: 'The Simulator', blurb: 'Take a campaign up in the flight simulator.', to: '/play', col: 53, row: 18, w: 8, h: 8 },
+      { key: 'record-board', label: 'The Record Board', blurb: 'What each machine has seen this season.', panel: 'arcade', col: 2, row: 14, w: 6, h: 9 },
+      { key: 'chess-tables', label: 'Chess Tables', blurb: 'Take a board in the TOP 100 chess club.', to: '/ChessClub', col: 4, row: 26, w: 10, h: 4 },
     ],
   },
 };
