@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import IssueExportButtons from '@/components/magazine/IssueExportButtons';
+import PromotionCopyStudio from '@/components/magazine/promotion/PromotionCopyStudio';
 import { Link } from 'react-router-dom';
 import { Check, AlertCircle, Eye, Send, ArrowUpRight, RotateCcw } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, ARTICLE_STATUSES, articleStatusLabel, articleStatusColor } from '@/components/magazine/magazineConfig';
@@ -119,6 +120,9 @@ export default function PreviewPublish({ issue, articles, pages, onPublish, onUn
           Resolve the items above before publishing.
         </p>
       )}
+
+      {/* The announcement the issue goes out with: one brief, six assets. */}
+      <PromotionCopyStudio issue={issue} articles={articles} pages={pages} />
     </div>
   );
 }
