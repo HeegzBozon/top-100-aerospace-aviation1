@@ -7,6 +7,7 @@ import SceneView from '@/components/flight-sim/SceneView';
 import DiceRoll from '@/components/flight-sim/DiceRoll';
 import SignalLog from '@/components/flight-sim/SignalLog';
 import PostMissionJourney from '@/components/flight-sim/PostMissionJourney';
+import DebriefReportPanel from '@/components/flight-sim/DebriefReportPanel';
 import TransitionInterlude from '@/components/flight-sim/TransitionInterlude';
 import { CAMPAIGNS } from '@/components/flight-sim/campaigns';
 import { classifyProfile } from '@/components/flight-sim/classifyProfile';
@@ -25,15 +26,20 @@ export default function FlightSimulator() {
   const [searchParams] = useSearchParams();
   const [phase, setPhase] = useState(GAME_PHASES.SELECT);
   const [debriefStatus, setDebriefStatus] = useState(null);
+  const [debriefReport, setDebriefReport] = useState('');
 
   useEffect(() => {
     if (searchParams.get('debrief') === 'success') {
       setDebriefStatus('success');
       const sessionId = searchParams.get('session_id');
       if (sessionId) {
-        // Trigger report generation after Stripe redirect
+        // The report the buyer paid for is read in place, not sent into the void.
         import('@/functions/generateFlightDebriefReport').then(({ generateFlightDebriefReport }) => {
-          generateFlightDebriefReport({ stripe_session_id: sessionId }).catch(() => {});
+          generateFlightDebriefReport({ stripe_session_id: sessionId })
+            .then((res) => {
+              if (res?.data?.report) setDebriefReport(res.data.report);
+            })
+            .catch(() => setDebriefStatus('failed'));
         });
       }
     }
@@ -170,6 +176,18 @@ export default function FlightSimulator() {
           </button>
         )}
       </nav>
+
+      {debriefReport ? (
+        <DebriefReportPanel report={debriefReport} />
+      ) : debriefStatus === 'success' ? (
+        <p className="px-6 pt-10 text-center text-xs font-semibold uppercase tracking-[0.2em] text-[#c9a87c]">
+          Payment received · preparing your debrief…
+        </p>
+      ) : debriefStatus === 'failed' ? (
+        <p className="px-6 pt-10 text-center text-xs text-red-400">
+          Your payment went through but the debrief could not be prepared. Contact us and we will send it.
+        </p>
+      ) : null}
 
       <AnimatePresence mode="wait">
         {phase === GAME_PHASES.SELECT && (

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowRight, Check } from 'lucide-react';
 import { createGroundControlStarterCheckout } from '@/functions/createGroundControlStarterCheckout';
+import useEntitlements from '@/hooks/useEntitlements';
 
 const TIERS = [
   { name: 'Starter', price: '$97', best: 'Run it yourself — the Loom starter kit', rows: ['Missed-call text-back', 'One pipeline', '500 texts / 5,000 emails', 'Dashboard access', 'Community support'], cta: 'subscribe' },
@@ -11,15 +12,23 @@ const TIERS = [
 
 export default function GroundControlPricing() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { groundControl: subscribed } = useEntitlements();
 
   const startStarter = async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await createGroundControlStarterCheckout();
-      if (res?.url) window.location.href = res.url;
+      if (res?.data?.url) {
+        window.location.href = res.data.url;
+        return;
+      }
+      setError('Could not open checkout. Please try again.');
     } catch {
-      setLoading(false);
+      setError('Could not open checkout. Please try again.');
     }
+    setLoading(false);
   };
 
   return (
@@ -45,18 +54,28 @@ export default function GroundControlPricing() {
                 ))}
               </ul>
               {t.cta === 'subscribe' && (
-                <button
-                  onClick={startStarter}
-                  disabled={loading}
-                  className="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#07111f] transition-transform hover:scale-[1.02] disabled:opacity-70 pt-6"
-                  style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}
-                >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Start for $97/mo <ArrowRight className="h-4 w-4" /></>}
-                </button>
+                subscribed ? (
+                  <p className="mt-auto flex items-center justify-center gap-2 rounded-full border border-[#c9a87c]/50 px-5 py-3 pt-6 text-xs font-bold uppercase tracking-[0.16em] text-[#c9a87c]">
+                    <Check className="h-4 w-4" /> Active · Starter
+                  </p>
+                ) : (
+                  <button
+                    onClick={startStarter}
+                    disabled={loading}
+                    className="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#07111f] transition-transform hover:scale-[1.02] disabled:opacity-70 pt-6"
+                    style={{ background: 'linear-gradient(135deg, #c9a87c, #d8b98d)' }}
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Start for $97/mo <ArrowRight className="h-4 w-4" /></>}
+                  </button>
+                )
               )}
             </div>
           ))}
         </div>
+
+        {error && (
+          <p className="mt-4 text-center text-xs font-medium text-red-400">{error}</p>
+        )}
 
         <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
           <p className="text-[11px] leading-relaxed text-white/55">

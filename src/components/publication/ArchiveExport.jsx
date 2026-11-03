@@ -4,6 +4,7 @@ import { FileText, Download, Loader2, CheckCircle, BookOpen, Database, Lock, Hea
 
 import { User } from '@/entities/User';
 import { createArchiveCheckout } from '@/functions/createArchiveCheckout';
+import { checkEntitlements } from '@/functions/checkEntitlements';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -36,8 +37,10 @@ export default function ArchiveExport({ nominees, title = "TOP 100 Women in Aero
         // Admins always bypass paywall
         if (currentUser?.role === 'admin') {
           setHasPurchased(true);
-        } else {
-          setHasPurchased(currentUser?.archive_export_purchased === true);
+        } else if (currentUser) {
+          // The ledger is the only proof of purchase: a browser cannot grant itself the archive.
+          const entitlement = await checkEntitlements({});
+          setHasPurchased(entitlement?.data?.archiveExport === true);
         }
       } catch {
         setUser(null);
@@ -73,19 +76,6 @@ export default function ArchiveExport({ nominees, title = "TOP 100 Women in Aero
       setCheckoutLoading(false);
     }
   };
-
-  // Check for successful purchase on mount
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('export_success') === 'true' && user) {
-      // Mark user as having purchased
-      User.updateMyUserData({ archive_export_purchased: true }).then(() => {
-        setHasPurchased(true);
-        // Clean URL
-        window.history.replaceState({}, '', window.location.pathname);
-      });
-    }
-  }, [user]);
 
   const generatePDF = () => {
     setExporting('pdf');

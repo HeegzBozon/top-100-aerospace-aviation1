@@ -5,6 +5,7 @@ import { Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { createProMembershipCheckout } from '@/functions/createProMembershipCheckout';
+import useEntitlements from '@/hooks/useEntitlements';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -17,6 +18,8 @@ export default function AccessTierCard({ tier, index }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  // Asked only on the Pro card: the paid membership is a ledger fact, not a browser flag.
+  const { pro: proMember } = useEntitlements(popular);
 
   const handleCTA = async () => {
     setError(null);
@@ -147,6 +150,14 @@ export default function AccessTierCard({ tier, index }) {
         </p>
       )}
 
+      {proMember ? (
+        <div
+          className="flex w-full items-center justify-center gap-2 rounded-md border py-2.5 text-sm font-bold"
+          style={{ borderColor: GOLD, color: NAVY, background: 'white', fontFamily: "'Montserrat', sans-serif" }}
+        >
+          <Check className="h-4 w-4" style={{ color: GOLD }} /> Active — Pro Member
+        </div>
+      ) : (
       <Button
         onClick={handleCTA}
         disabled={loading}
@@ -164,6 +175,7 @@ export default function AccessTierCard({ tier, index }) {
       >
         {loading ? 'Redirecting to Stripe…' : tier.cta}
       </Button>
+      )}
     </motion.div>
   );
 }

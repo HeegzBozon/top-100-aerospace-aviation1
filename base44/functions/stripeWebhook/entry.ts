@@ -59,13 +59,23 @@ export default async function (req) {
 
     const metadata = session.metadata || {};
     const bookingId = session.client_reference_id || metadata.booking_id || null;
+    // The ledger's product key. Every checkout flow names its purchase differently in
+    // Stripe metadata, so it is normalised here, once, into the keys the entitlement
+    // check reads by — the buyer's access depends on this name.
     const product =
-      metadata.product ||
-      metadata.product_type ||
-      metadata.plan_id ||
-      metadata.type ||
-      metadata.tier ||
-      (bookingId ? 'booking' : 'purchase');
+      metadata.product === 'pro_membership' ? 'pro_membership'
+        : metadata.product === 'ground_control_starter' ? 'ground_control_starter'
+          : metadata.product_type === 'archive_donation' ? 'archive_donation'
+            : metadata.tier && metadata.campaign_id ? 'flight_debrief'
+              : bookingId ? 'booking'
+                : metadata.product || metadata.product_type || metadata.type || 'purchase';
+    const payerEmail = (
+      session.customer_details?.email ||
+      session.customer_email ||
+      metadata.user_email ||
+      metadata.email ||
+      ''
+    ).toLowerCase();
 
     if (bookingId) {
       await base44.asServiceRole.entities.Booking.update(bookingId, {
@@ -89,7 +99,6 @@ export default async function (req) {
 
     const payment = {
       product,
-      payer_email: session.customer_details?.email || session.customer_email || metadata.user_email || metadata.email,
       amount_cents: session.amount_total || 0,
       currency: session.currency || 'usd',
       stripe_session_id: session.id,
@@ -98,6 +107,7 @@ export default async function (req) {
       provider_amount_cents: session.amount_total || 0,
       commission_rate: 0,
     };
+    if (payerEmail) payment.payer_email = payerEmail;
     if (bookingId) payment.booking_id = bookingId;
     if (typeof session.payment_intent === 'string') {
       payment.stripe_payment_intent_id = session.payment_intent;

@@ -109,13 +109,18 @@ Deno.serve(async (req) => {
 
     const reportText = typeof report === 'string' ? report : String(report);
 
-    // Send via email
-    await base44.asServiceRole.integrations.Core.SendEmail({
-      to: meta.email,
-      from_name: 'TOP 100 Aerospace & Aviation',
-      subject: `Your Flight Debrief: ${meta.classification}`,
-      body: `Hi ${meta.name || 'Pilot'},\n\nYour Flight Debrief report is ready.\n\n---\n\n${reportText}\n\n---\n\nTOP 100 Aerospace & Aviation\ntop100aero.space`,
-    });
+    // Send via email. A refused address must not cost the buyer the report they paid
+    // for: the copy is returned either way, and the email is the bonus.
+    try {
+      await base44.asServiceRole.integrations.Core.SendEmail({
+        to: meta.email,
+        from_name: 'TOP 100 Aerospace & Aviation',
+        subject: `Your Flight Debrief: ${meta.classification}`,
+        body: `Hi ${meta.name || 'Pilot'},\n\nYour Flight Debrief report is ready.\n\n---\n\n${reportText}\n\n---\n\nTOP 100 Aerospace & Aviation\ntop100aero.space`,
+      });
+    } catch (emailError) {
+      console.error('Debrief email could not be sent:', emailError.message);
+    }
 
     return Response.json({ success: true, report: reportText });
   } catch (error) {
