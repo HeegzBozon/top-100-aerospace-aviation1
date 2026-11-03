@@ -86,6 +86,9 @@ export const COLONY_ROOMS = {
     zones: [
       { key: 'lounge-exit', label: 'Lounge Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 30, w: 8, h: 6 },
       { key: 'lounge-hub', label: 'The Hub', blurb: 'AeroSync: the people you have met.', to: '/aerosync', col: 25, row: 10, w: 14, h: 9 },
+      // The cabinets stand in the community corner of the lounge, where the talking happens:
+      // a game opens in the room rather than sending anyone back out to the campus.
+      { key: 'lounge-arcade', label: 'The Arcade', blurb: 'Three cabinets kept in the corner of the lounge.', panel: 'arcade', col: 3, row: 10, w: 14, h: 9 },
       { key: 'lounge-events', label: 'Events & Meetups', blurb: 'Meetups hosted across the network.', to: '/meetups', col: 4, row: 30, w: 14, h: 4 },
       { key: 'lounge-people', label: 'People & Directory', blurb: 'Your people in AeroSync.', to: '/aerosync/people', col: 46, row: 30, w: 15, h: 4 },
     ],
