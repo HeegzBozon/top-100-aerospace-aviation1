@@ -18,7 +18,7 @@ export default function DeskTile({ label, value, note, meter, tone = '#1e3a5a' }
         </div>
       )}
       {note && (
-        <p className="mt-1.5 text-[10px] leading-tight" style={{ color: 'rgba(30,58,90,0.62)' }}>
+        <p className="mt-1.5 text-[10px] leading-tight" style={{ color: 'rgba(30,58,90,0.8)' }}>
           {note}
         </p>
       )}

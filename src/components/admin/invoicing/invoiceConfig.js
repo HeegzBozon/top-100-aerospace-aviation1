@@ -7,7 +7,8 @@ export const INV = {
   raised: '#0e141b',
   line: 'rgba(255,255,255,0.08)',
   ink: '#d4e0ec',
-  soft: '#5d7a94',
+  // The ledger's quiet voice. Bright enough to read on the navy plate it is set on.
+  soft: '#a3b8c9',
   copper: '#b87333',
   gold: '#c9a87c',
   paper: '#faf8f5',
@@ -15,10 +16,10 @@ export const INV = {
 };
 
 export const STATUS_TONE = {
-  draft: '#5d7a94',
+  draft: '#a3b8c9',
   sent: '#c9a87c',
   paid: '#7ec89a',
-  void: '#8a7a7a',
+  void: '#b0a7a7',
 };
 
 export const money = (cents) =>

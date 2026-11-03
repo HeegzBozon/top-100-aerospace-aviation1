@@ -191,7 +191,7 @@ export default function TimecardDesk() {
           <p className="font-heading text-base" style={{ color: '#f5efe4' }}>
             {entries.length ? 'Nothing filed under this filter.' : 'The logbook is empty.'}
           </p>
-          <p className="mx-auto mt-1.5 max-w-sm text-xs leading-relaxed" style={{ color: '#7d94aa' }}>
+          <p className="mx-auto mt-1.5 max-w-sm text-xs leading-relaxed" style={{ color: '#a3b8c9' }}>
             {entries.length
               ? 'Switch the filter, or file a new entry against the project it belongs to.'
               : 'File the first entry — hours worked, or a receipt that needs paying back.'}

@@ -12,7 +12,7 @@ export default function DeskMasthead({ kicker, title, blurb, children }) {
             {title}
           </h2>
           {blurb && (
-            <p className="mt-2 max-w-xl text-xs leading-relaxed" style={{ color: '#7d94aa' }}>
+            <p className="mt-2 max-w-xl text-xs leading-relaxed" style={{ color: '#a3b8c9' }}>
               {blurb}
             </p>
           )}

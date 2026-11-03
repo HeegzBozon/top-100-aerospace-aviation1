@@ -9,6 +9,9 @@ const CACHE_KEY = 'upcoming';
 const UPSTREAM = [
   'https://ll.thespacedevs.com/2.3.0/launches/upcoming/',
   'https://ll.thespacedevs.com/2.2.0/launch/upcoming/',
+  // The library's development host keeps its own quota. When the production hosts answer
+  // 429 to the whole campus at once, this one still hands back the programme.
+  'https://lldev.thespacedevs.com/2.2.0/launch/upcoming/',
 ];
 
 function trim(l) {
@@ -34,11 +37,18 @@ function trim(l) {
 // A second provider, in the same shape as the first. The launch library throttles a whole
 // campus reading the programme at once; this one does not, so the theatre keeps playing.
 function fromRocketLaunch(l) {
-  const iso = l.t0
-    ? new Date(l.t0).toISOString()
-    : l.sort_date
-      ? new Date(Number(l.sort_date) * 1000).toISOString()
-      : null;
+  // This feed prints "2026-11-04T01:28Z" — minute precision, no seconds — which the JS
+  // date parser refuses outright. The seconds are put back before it is read, so a
+  // perfectly good launch is not thrown away as undated.
+  const withSeconds = (value) =>
+    /T\d{2}:\d{2}Z$/.test(value) ? value.replace(/Z$/, ':00Z') : value;
+  const parsed = l.t0 ? new Date(withSeconds(l.t0)) : null;
+  const iso =
+    parsed && !Number.isNaN(parsed.getTime())
+      ? parsed.toISOString()
+      : l.sort_date
+        ? new Date(Number(l.sort_date) * 1000).toISOString()
+        : null;
   const media = Array.isArray(l.media) ? l.media.find((m) => m?.url) : null;
   return {
     id: `rl-${l.id}`,
@@ -64,22 +74,25 @@ function fromRocketLaunch(l) {
 async function readUpstream(limit) {
   for (const base of UPSTREAM) {
     try {
-      const res = await fetch(`${base}?limit=${limit}&mode=normal`, {
-        headers: { Accept: 'application/json' },
+      const res = await fetch(`${base}?limit=${limit}&mode=detailed`, {
+        headers: { Accept: 'application/json', 'User-Agent': 'TOP100Aerospace/1.0 (mission theatre)' },
         signal: AbortSignal.timeout(8000),
       });
-      if (!res.ok) continue;
+      if (!res.ok) {
+        console.error(`launch feed ${base} answered ${res.status}`);
+        continue;
+      }
       const data = await res.json();
       const raw = Array.isArray(data?.results) ? data.results : [];
       if (raw.length) return raw.map(trim);
-    } catch {
-      // try the next host
+    } catch (err) {
+      console.error(`launch feed ${base} failed: ${err?.message || err}`);
     }
   }
 
   try {
     const res = await fetch('https://fdo.rocketlaunch.live/json/launches/next/20', {
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json', 'User-Agent': 'TOP100Aerospace/1.0 (mission theatre)' },
       signal: AbortSignal.timeout(8000),
     });
     if (res.ok) {
@@ -87,9 +100,12 @@ async function readUpstream(limit) {
       const raw = Array.isArray(data?.result) ? data.result : [];
       const list = raw.map(fromRocketLaunch).filter((l) => l.net);
       if (list.length) return list.slice(0, limit);
+      console.error(`rocketlaunch answered ${raw.length} launches, none of them dated`);
+    } else {
+      console.error(`rocketlaunch answered ${res.status}`);
     }
-  } catch {
-    // nothing left to try
+  } catch (err) {
+    console.error(`rocketlaunch failed: ${err?.message || err}`);
   }
 
   return null;

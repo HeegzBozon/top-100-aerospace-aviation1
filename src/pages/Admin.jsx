@@ -33,8 +33,7 @@ const ClaimsReviewManager       = lazy(() => import('@/components/admin/ClaimsRe
 const UserMergeManager          = lazy(() => import('@/components/admin/UserMergeManager'));
 const SalesAnalytics            = lazy(() => import('@/components/admin/SalesAnalytics'));
 const GodsEye                   = lazy(() => import('@/components/admin/GodsEye'));
-const TimecardDesk              = lazy(() => import('@/components/admin/timecard/TimecardDesk'));
-const InvoicingDesk             = lazy(() => import('@/components/admin/invoicing/InvoicingDesk'));
+const HouseDesk                 = lazy(() => import('@/components/admin/desk/HouseDesk'));
 const SMEAssignmentPanel        = lazy(() => import('@/components/admin/SMEAssignmentPanel'));
 const StartupReviewPanel        = lazy(() => import('@/components/admin/StartupReviewPanel'));
 const AcceleratorManagement     = lazy(() => import('@/components/admin/AcceleratorManagement'));
@@ -337,10 +336,14 @@ export default function Admin() {
         return <SalesAnalytics />;
       case 'gods-eye':
         return <GodsEye />;
+      // The house's paperwork is one desk now: hours, rota, bills and the diary. The old
+      // two addresses still resolve, each landing on the page it used to be.
+      case 'house-desk':
+        return <HouseDesk />;
       case 'timecard':
-        return <TimecardDesk />;
+        return <HouseDesk initialTab="ledger" />;
       case 'invoicing':
-        return <InvoicingDesk />;
+        return <HouseDesk initialTab="invoices" />;
       default:
         return (
           <div className="py-16 text-center text-[var(--muted)]">

@@ -4,10 +4,8 @@ import { AlertCircle, FileText, Plus, RefreshCw } from 'lucide-react';
 import { INV, STATUS_TONE, dayLabel, invoiceText, money, nextNumber } from '@/components/admin/invoicing/invoiceConfig';
 import InvoiceComposer from '@/components/admin/invoicing/InvoiceComposer';
 import InvoiceSheet from '@/components/admin/invoicing/InvoiceSheet';
-import DeskMasthead from '@/components/admin/desk/DeskMasthead';
-import DeskTabs from '@/components/admin/desk/DeskTabs';
+import DeskPanelBar from '@/components/admin/desk/DeskPanelBar';
 import DeskTile from '@/components/admin/desk/DeskTile';
-import BenefitsTease from '@/components/admin/desk/BenefitsTease';
 
 // The invoicing desk: notes become bills, bills get sent, and what is owed is read off
 // the top of the page. Every bill is one record, edited on its own sheet.
@@ -19,7 +17,6 @@ export default function InvoicingDesk() {
   const [sending, setSending] = useState(false);
   const [notice, setNotice] = useState('');
   const [copied, setCopied] = useState(false);
-  const [tab, setTab] = useState('invoices');
 
   const load = useCallback(async () => {
     setState('loading');
@@ -147,38 +144,23 @@ export default function InvoicingDesk() {
 
   return (
     <div className="space-y-4">
-      <DeskMasthead
-        kicker="Invoicing"
-        title="The House Ledger"
-        blurb="Write the notes you already have and the desk drafts the bill. Every figure here is money the house has earned or is owed."
-      >
-          <button
-            onClick={load}
-            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium"
-            style={{ background: 'rgba(255,255,255,0.06)', color: INV.ink, border: `1px solid ${INV.line}` }}
-          >
-            <RefreshCw className="h-3.5 w-3.5" /> Re-read
-          </button>
-          <button
-            onClick={() => setView({ mode: 'compose' })}
-            className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold"
-            style={{ background: INV.copper, color: '#fff' }}
-          >
-            <Plus className="h-4 w-4" /> New invoice
-          </button>
-      </DeskMasthead>
+      <DeskPanelBar label="Invoices" note={`${summary.issued} issued`}>
+        <button
+          onClick={load}
+          className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
+          style={{ border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }}
+        >
+          <RefreshCw className="h-3 w-3" /> Re-read
+        </button>
+        <button
+          onClick={() => setView({ mode: 'compose' })}
+          className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
+          style={{ background: '#b87333', color: '#fdf8f0' }}
+        >
+          <Plus className="h-3.5 w-3.5" /> New invoice
+        </button>
+      </DeskPanelBar>
 
-      <DeskTabs
-        tabs={[
-          { key: 'invoices', label: 'Invoices' },
-          { key: 'benefits', label: 'Benefits', soon: true },
-        ]}
-        value={tab}
-        onChange={setTab}
-      />
-
-      {tab === 'invoices' && (
-      <>
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
         <DeskTile label="Outstanding" value={money(summary.sent)} note="Sent, not yet settled" />
         <DeskTile
@@ -222,7 +204,7 @@ export default function InvoicingDesk() {
         <div className="desk-plate px-4 py-10 text-center">
           <FileText className="mx-auto h-5 w-5" style={{ color: '#c9a87c' }} />
           <p className="mt-2 font-heading text-base" style={{ color: '#f5efe4' }}>The ledger is empty.</p>
-          <p className="mx-auto mt-1.5 max-w-sm text-xs leading-relaxed" style={{ color: '#7d94aa' }}>
+          <p className="mx-auto mt-1.5 max-w-sm text-xs leading-relaxed" style={{ color: '#a3b8c9' }}>
             Press New invoice, paste in the notes you already wrote, and the desk drafts the bill for you to check.
           </p>
         </div>
@@ -260,10 +242,6 @@ export default function InvoicingDesk() {
           ))}
         </div>
       )}
-      </>
-      )}
-
-      {tab === 'benefits' && <BenefitsTease />}
     </div>
   );
 }
