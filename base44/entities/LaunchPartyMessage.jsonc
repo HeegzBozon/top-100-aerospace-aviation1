@@ -2,9 +2,13 @@
   "name": "LaunchPartyMessage",
   "type": "object",
   "properties": {
+    "party_id": {
+      "type": "string",
+      "description": "The LaunchParty room the line was said in. Empty when the line was said in the theatre's open room for a mission that has no party."
+    },
     "launch_id": {
       "type": "string",
-      "description": "LL2 launch ID this message belongs to"
+      "description": "Launch library id of the mission on the pad when the line was said."
     },
     "author_name": {
       "type": "string",
@@ -12,7 +16,7 @@
     },
     "author_email": {
       "type": "string",
-      "description": "Email of sender"
+      "description": "Email of sender, stamped from the signed-in member and never from the form."
     },
     "text": {
       "type": "string",
@@ -28,5 +32,50 @@
     "launch_id",
     "author_email",
     "text"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

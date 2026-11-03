@@ -1,0 +1,115 @@
+{
+  "name": "LaunchParty",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "What the gathering is called on the invitation, e.g. 'Artemis III: the night watch'."
+    },
+    "invite_code": {
+      "type": "string",
+      "description": "Durable code printed in the invitation link, e.g. 'artemis-iii-night-watch-8f3k2'. It is how a guest reaches the room."
+    },
+    "launch_id": {
+      "type": "string",
+      "description": "The launch library id of the mission the party is held for."
+    },
+    "launch_name": {
+      "type": "string",
+      "description": "The mission's name as the launch library reads it, held with the party so the room has a subject even when the feed is quiet."
+    },
+    "provider": {
+      "type": "string",
+      "description": "Launch service provider, as read from the mission."
+    },
+    "rocket": {
+      "type": "string",
+      "description": "Launch vehicle, as read from the mission."
+    },
+    "pad": {
+      "type": "string",
+      "description": "Where the mission lifts from, as read from the mission."
+    },
+    "net": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The mission's own clock: the scheduled lift-off."
+    },
+    "opens_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the room opens and the guest list starts arriving. Normally half an hour before the pad."
+    },
+    "host_name": {
+      "type": "string",
+      "description": "The Fellow whose name is on the invitation. Display only; the host is anchored on created_by_id."
+    },
+    "venue": {
+      "type": "string",
+      "description": "Where the party is held, e.g. 'The Mission Theatre, online'."
+    },
+    "note": {
+      "type": "string",
+      "description": "One line the host adds for their guests: what to bring, what to wear, what to watch for."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "live",
+        "wrapped",
+        "cancelled"
+      ],
+      "default": "scheduled",
+      "description": "Where the gathering stands: on the books, on the air, closed, or called off."
+    }
+  },
+  "required": [
+    "title",
+    "invite_code",
+    "launch_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
