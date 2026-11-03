@@ -1,8 +1,8 @@
 import { Loader2, CircleCheck } from 'lucide-react';
 
 // Portrait plate for tall screens (phones), landscape plate for wide ones (desks).
-const PORTRAIT = 'https://media.base44.com/images/public/68996845be6727838fdb822e/8965182c5_Top100Aerospace2026Campus.png';
-const LANDSCAPE = 'https://media.base44.com/images/public/68996845be6727838fdb822e/1307348d0_Top100AerospaceAviation2026.png';
+const PORTRAIT = 'https://media.base44.com/images/public/68996845be6727838fdb822e/1307348d0_Top100AerospaceAviation2026.png';
+const LANDSCAPE = 'https://media.base44.com/images/public/68996845be6727838fdb822e/8965182c5_Top100Aerospace2026Campus.png';
 
 function Plate({ className, alt = '' }) {
   return (
