@@ -20,7 +20,7 @@ export default function RoomSplash({ room, label }) {
   if (!show) return null;
   const m = MOODS[room] || MOODS.hall;
   return (
-    <div onClick={() => setShow(false)} className="as-veil absolute inset-0 z-40 flex flex-col items-center justify-end overflow-hidden bg-editorial-navy pb-10 text-center">
+    <div onClick={() => setShow(false)} className="as-veil absolute inset-0 z-40 flex flex-col items-center justify-end overflow-hidden bg-editorial-navy pb-24 text-center">
       <img src={`${IMG}${m.art}_generated_image.png`} alt="" className="doc-still absolute inset-0 h-full w-full object-cover" style={{ imageRendering: 'pixelated' }} />
       <div className="absolute inset-0 bg-gradient-to-t from-[#070c16] via-[#070c16]/40 to-transparent" />
       <p className="as-rise relative text-[10px] font-bold uppercase tracking-[0.3em] text-editorial-gold">Now entering</p>

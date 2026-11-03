@@ -11,6 +11,7 @@ import WhyTab from '@/components/directory/WhyTab';
 import useProfileLink from '@/components/directory/useProfileLink';
 import ProfileMeter from '@/components/directory/ProfileMeter';
 import { WhoPrompt, WherePrompt, MeetDraft } from '@/components/directory/TabPrompts';
+import DirectoryGuestNote from '@/components/directory/DirectoryGuestNote';
 
 const PEOPLE_SUBTABS = ['cards', 'following', 'desk'];
 
@@ -59,7 +60,12 @@ export default function AeroSyncPeople() {
         )}
 
         <div className="mt-5">
-          {tab === 'who' && <><WhoPrompt {...profile} /><PeopleTab crm={crm} initial={asked} /></>}
+          {tab === 'who' && (
+            <>
+              <WhoPrompt {...profile} />
+              {signedIn === false ? <DirectoryGuestNote /> : <PeopleTab crm={crm} initial={asked} />}
+            </>
+          )}
           {tab === 'what' && <><MeetDraft {...profile} goals={intel.goals} /><WhatTab goals={intel.goals} /></>}
           {tab === 'when' && <WhenTab />}
           {tab === 'where' && <><WherePrompt {...profile} /><CampusDirectoryTab /></>}

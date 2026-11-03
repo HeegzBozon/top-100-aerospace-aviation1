@@ -6,6 +6,7 @@ import ReferralDesk from '../referrals/ReferralDesk';
 import useConferenceOkr from './useConferenceOkr';
 import OkrEditor from './OkrEditor';
 import { METRICS } from './okrTemplates';
+import { useAuth } from '@/lib/AuthContext';
 
 // The title screen's dashboard: the Fellow's own objective, its key results measured
 // against private readings, and the circuit's state. None of it feeds measurement.
@@ -25,12 +26,18 @@ function KeyResult({ label, value, target }) {
 }
 
 export default function ConferenceScorecard({ loading, failed, counts }) {
+  const { user } = useAuth();
   const { okr, saved, values, save } = useConferenceOkr();
   const [editing, setEditing] = useState(false);
   const [deskOpen, setDeskOpen] = useState(false);
   const desk = useReferrals();
   const circuit = loading || failed;
   const read = (m) => (m === 'declared' ? (circuit ? null : counts.declared) : values.loading ? null : values[m]);
+
+  // A Fellow's own scorecard — their objective, their private readings. A visitor has none of
+  // these, so it is not drawn at all: an empty tracker under the circuit reads as a dashboard
+  // that failed to load rather than as the public calendar.
+  if (!user) return null;
 
   return (
     <section className="cfs-readout overflow-hidden rounded-[9px]">

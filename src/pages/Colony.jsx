@@ -586,7 +586,8 @@ function ColonyRoom({ onReplayWelcome }) {
         {pp.pendingGuest && <ColonyReconcile guest={pp.pendingGuest} onClaim={pp.claimGuest} onLeave={pp.leaveGuest} />}
         {panel === 'atlas' && <StarAtlasPanel passport={pp.passport} onSave={pp.update} onClose={() => setPanel(null)} />}
         {panel === 'passport' && (
-          <ColonyPassport passport={pp.passport} isGuest={isGuest} onSave={pp.update} makeLink={pp.makeLink} onClose={() => setPanel(null)} />
+          <ColonyPassport passport={pp.passport} isGuest={isGuest} onSave={pp.update} makeLink={pp.makeLink} onClose={() => setPanel(null)}
+            onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
         )}
         {panel === 'quest' && activeQuest && activeNpc && (
           <ColonyQuestStep key={activeQuest.id} quest={activeQuest} npc={activeNpc} passport={pp.passport} onClose={() => setPanel('npc')}

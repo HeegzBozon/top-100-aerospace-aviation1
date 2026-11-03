@@ -4,7 +4,7 @@ import PassportQuestRow from './PassportQuestRow';
 const ring = (pct) => ({ background: `conic-gradient(#C9A87C ${pct * 3.6}deg, rgba(255,255,255,0.08) 0)` });
 
 // The checklist: a filling ring, the reward shelf, then each act with its own bar.
-export default function PassportQuests({ passport }) {
+export default function PassportQuests({ passport, onGo }) {
   const next = nextQuest(passport);
   const done = QUESTS.filter(q => q.act < 5 && isDone(passport, q.id)).length;
   const pct = Math.round((done / 12) * 100);
@@ -26,7 +26,7 @@ export default function PassportQuests({ passport }) {
       {next && (
         <div>
           <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-editorial-gold">Up next</p>
-          <PassportQuestRow passport={passport} quest={next} isNext />
+          <PassportQuestRow passport={passport} quest={next} isNext onGo={onGo} />
         </div>
       )}
       {[1, 2, 3, 4, 5, 6].map(act => {

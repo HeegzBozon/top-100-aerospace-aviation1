@@ -3,6 +3,7 @@
 // tutorial that never reaches the official system.
 import { PATHWAYS, ORIGIN } from './discovery';
 import { arcadeQuestDone, arcadeXpOf, readProgress } from '@/components/arcade/arcadeProgress';
+import { COLONY_ROOMS } from '@/components/colony/colonyZones';
 
 export const REWARDS = {
   innovation: { label: 'Innovation Stamp', kind: 'stamp' },
@@ -83,6 +84,11 @@ export const ACTS = { 1: 'Act I · Welcome to the Universe', 2: 'Act II · The S
 // A quest is done when it is written into the passport, or — for the East Wing — when the
 // machine itself says the milestone was struck.
 export const isDone = (p, id) => !!p?.quests?.[id] || arcadeQuestDone(id);
+
+// The room a quest's place stands for, so "Go now" walks the visitor there rather than
+// only naming the room they are already standing in.
+export const roomForPlace = (place) =>
+  Object.entries(COLONY_ROOMS).find(([, room]) => room.label === place)?.[0] || null;
 export const earned = (p) => QUESTS.filter(q => q.reward && isDone(p, q.id)).map(q => q.reward);
 export const finaleReady = (p) => QUESTS.filter(q => q.id !== 'q12' && REWARDS[q.reward]?.kind !== 'item')
   .filter(q => q.reward).every(q => isDone(p, q.id));
