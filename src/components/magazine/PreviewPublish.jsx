@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import IssueExportButtons from '@/components/magazine/IssueExportButtons';
 import { Link } from 'react-router-dom';
 import { Check, AlertCircle, Eye, Send, ArrowUpRight, RotateCcw } from 'lucide-react';
 import { MAGAZINE_PALETTE as P, ARTICLE_STATUSES, articleStatusLabel, articleStatusColor } from '@/components/magazine/magazineConfig';
@@ -46,6 +47,8 @@ export default function PreviewPublish({ issue, articles, pages, onPublish, onUn
           {isPublished ? `Published ${new Date(issue.published_date).toLocaleDateString()}` : 'This issue is in draft'}
         </p>
       </div>
+
+      <IssueExportButtons issue={issue} pages={pages} />
 
       {/* Readiness Checklist */}
       {!isPublished && (
