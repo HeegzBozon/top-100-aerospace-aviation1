@@ -3,6 +3,7 @@ import { Loader2, Star } from 'lucide-react';
 import { loadStars } from '@/components/star-atlas/starAtlas';
 import { cardsFrom } from './cardModel';
 import StarCardFace from './StarCardFace';
+import CardStudy from './CardStudy';
 
 // THE COLLECTION
 //
@@ -13,6 +14,7 @@ export default function CardCollection({ passport, onGo }) {
   const ids = Object.keys(passport?.stars || {});
   const [cards, setCards] = useState(null);
   const [failed, setFailed] = useState(false);
+  const [openId, setOpenId] = useState(null);
   const key = ids.join(',');
 
   useEffect(() => {
@@ -64,6 +66,12 @@ export default function CardCollection({ passport, onGo }) {
     );
   }
 
+  // One card, taken out of the drawer and read at size — both sides of it.
+  const opened = openId ? cards.find((c) => c.id === openId) : null;
+  if (opened) {
+    return <CardStudy card={opened} litAt={passport?.stars?.[opened.id]?.at} onClose={() => setOpenId(null)} />;
+  }
+
   return (
     <div>
       <div className="flex items-baseline justify-between">
@@ -72,11 +80,20 @@ export default function CardCollection({ passport, onGo }) {
       </div>
       <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-3">
         {cards.map((card) => (
-          <StarCardFace key={card.id} card={card} litAt={passport?.stars?.[card.id]?.at} compact />
+          <button
+            key={card.id}
+            type="button"
+            onClick={() => setOpenId(card.id)}
+            aria-label={`Open the card for ${card.name}`}
+            className="rounded-md text-left transition-transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-editorial-gold"
+          >
+            <StarCardFace card={card} litAt={passport?.stars?.[card.id]?.at} compact />
+          </button>
         ))}
       </div>
       <p className="mt-3 text-[10px] leading-relaxed text-editorial-cream/45">
-        A card is a record held, not a standing. Cards carry no weight in nomination, measurement or tiers.
+        Open a card to turn it over. A card is a record held, not a standing — nothing on either side
+        carries weight in nomination, measurement or tiers.
       </p>
     </div>
   );

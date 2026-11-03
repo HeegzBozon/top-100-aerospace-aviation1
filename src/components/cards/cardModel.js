@@ -72,19 +72,24 @@ export const tierOf = (n) => {
   return TIERS.archival;
 };
 
-export const cardOf = (n) => ({
-  id: n.id,
-  name: n.name || 'Unnamed star',
-  role: n.title || n.professional_role || '',
-  org: n.company || n.organization || '',
-  country: n.country || '',
-  face: n.avatar_url || n.photo_url || '',
-  line: n.description || n.impact_summary || '',
-  serial: serialFor(n.id),
-  tier: tierOf(n),
-  accent: accentFor(n),
-  stats: metricRows(n.impact_metrics || {}).slice(0, 3),
-});
+export const cardOf = (n) => {
+  const metrics = metricRows(n?.impact_metrics || {});
+  return {
+    id: n.id,
+    name: n.name || 'Unnamed star',
+    role: n.title || n.professional_role || '',
+    org: n.company || n.organization || '',
+    country: n.country || '',
+    face: n.avatar_url || n.photo_url || '',
+    line: n.description || n.impact_summary || '',
+    serial: serialFor(n.id),
+    tier: tierOf(n),
+    accent: accentFor(n),
+    // What the face has room for, and what the reverse prints in full.
+    stats: metrics.slice(0, 3),
+    record: { metrics, verified: !!(n?.verified || n?.is_verified) },
+  };
+};
 
 // The collection a passport holds: the stars it has lit, in the order they were lit, read
 // as cards. Only ids are carried on the passport, so this is where a card gains its face.
