@@ -55,7 +55,7 @@ export default function TheatreChat({ launchId, partyId = '', title = 'Room chat
     });
     return () => {
       alive = false;
-      unsubscribe();
+      if (typeof unsubscribe === 'function') unsubscribe();
     };
   }, [me, load, partyId, launchId]);
 

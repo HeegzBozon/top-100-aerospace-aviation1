@@ -85,7 +85,11 @@ export default async function (req) {
       settled.forEach((outcome, n) => {
         const to = batch[n];
         if (outcome.status === 'rejected') {
-          results.push({ email: to, sent: false, reason: 'The mail service did not answer.' });
+          results.push({
+            email: to,
+            sent: false,
+            reason: outcome.reason?.message || 'The mail service did not answer.',
+          });
           return;
         }
         const res = outcome.value || {};
