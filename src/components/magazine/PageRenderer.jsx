@@ -60,13 +60,17 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   // type — the masthead mark, the issue, the rule, and the credit stack — which is how
   // an institutional publication covers an edition rather than leaving a navy blank.
   if (page.layout_type === 'cover') {
+    // A cover supplied as finished artwork carries its own type, so it is shown as printed;
+    // a cover composed here draws the masthead, the issue and the rule over the plate.
+    const drawCopy = (page.content_blocks || []).length > 0;
     return (
       <div className="relative w-full h-full overflow-hidden" style={{ background: P.navy }}>
         {bg && <img src={bg} alt="" className="absolute inset-0 w-full h-full object-cover" />}
-        {bg && (
+        {bg && drawCopy && (
           <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(7,15,31,0.3) 0%, rgba(7,15,31,0.7) 100%)' }} />
         )}
         <div className="relative w-full h-full flex flex-col items-center justify-center p-8 text-center">
+          {!drawCopy ? null : <>
           {!bg && (
             <>
               <span className="absolute" style={{ inset: '14px', border: `1px solid ${P.gold}45` }} />
@@ -96,6 +100,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
               {credits.writer && <p className="text-[10px]" style={{ color: 'rgba(250,248,245,0.5)' }}>Written by {credits.writer}</p>}
             </div>
           )}
+          </>}
         </div>
       </div>
     );

@@ -75,7 +75,7 @@ export const COLONY_CAST = [
     ] },
   { id: 'sterling', name: 'Sterling', role: 'Director of Partnerships', room: 'leadership-summit', col: 44, row: 20, sprite: IMG + 'd876ac4ef_generated_image.png',
     signature: 'Great partnerships build legacies.',
-    greeting: 'This is our patrons lounge. Partnerships here are introductions first.',
+    greeting: 'This is our sponsors lounge. Partnerships here are introductions first.',
     actions: [
       { key: 'chamber', label: 'Visit the Chamber', to: '/chamber' },
       { key: 'membership', label: 'Membership', to: '/Membership' },

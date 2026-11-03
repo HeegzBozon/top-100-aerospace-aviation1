@@ -112,10 +112,10 @@ export const FAQ_ROWS = [
   },
   {
     key: 'patrons',
-    label: 'Who are the Patrons of Record?',
+    label: 'Who are the Sponsors of Record?',
     body: [
-      'The bodies that make rooms, editions and convenings possible. They are attributed as Patron of Record — never as sponsorship, and never as a position.',
-      'Patronage confers zero selection weight and is never read by discovery or scoring.',
+      'The bodies that make rooms, editions and convenings possible. They are attributed as Sponsor of Record — never as a position, and never read by measurement.',
+      'Sponsorship confers zero selection weight and is never read by discovery or scoring.',
     ],
   },
   {

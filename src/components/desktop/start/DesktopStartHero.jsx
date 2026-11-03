@@ -36,7 +36,7 @@ export default function DesktopStartHero({ phase }) {
             style={{ background: "linear-gradient(90deg, #B87333, #C9A87C)" }}
           />
           <p className="font-heading text-[14.5px] italic tracking-[0.015em] text-editorial-cream/60">
-            Measured, not ranked.
+            Higher, Further, Faster.
           </p>
         </div>
       </div>

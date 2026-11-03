@@ -45,7 +45,7 @@ export default function PatronAudienceLedger() {
             </ul>
           </div>
           <p className="text-[11.5px] leading-relaxed" style={{ color: P.muted }}>
-            These are the same figures the reports are written against, so a Patron can compare what was
+            These are the same figures the reports are written against, so a sponsor can compare what was
             promised here with what was delivered afterwards. If a number moves, this page is dated again
             rather than quietly corrected.
           </p>

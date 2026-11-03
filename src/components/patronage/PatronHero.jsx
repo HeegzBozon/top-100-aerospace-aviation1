@@ -17,15 +17,15 @@ export default function PatronHero() {
         <div className="h-px w-16 md:w-28" style={{ background: `linear-gradient(90deg, ${P.copper}, ${P.gold} 60%, transparent)` }} />
 
         <p className="mt-4 text-[8.5px] font-bold uppercase tracking-[0.34em] text-editorial-cream/55 md:text-[10px]">
-          The publication &middot; Patronage
+          The publication &middot; Sponsorship
         </p>
 
         <h1 className="mt-3 max-w-[19ch] font-heading text-[2.4rem] leading-[0.98] tracking-[-0.01em] text-editorial-cream md:text-[4.2rem]">
-          Become a Patron of Record
+          Become a Sponsor of Record
         </h1>
 
         <p className="mt-5 max-w-[46ch] text-[13px] leading-relaxed text-editorial-cream/75 md:text-[15px]">
-          A governance-first publication and index, with a published 2027 calendar. Patronage puts your name
+          A governance-first publication and index, with a published 2027 calendar. Sponsorship puts your name
           against the work we do, in the issue, on the community feed, and in the Volume.
         </p>
 

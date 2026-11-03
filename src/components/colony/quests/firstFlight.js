@@ -51,7 +51,7 @@ export const QUESTS = [
     line: 'Our community guidelines are simple: be generous, be specific, ask before you introduce. Introducing yourself is always optional.',
     prompt: 'Which guideline will you keep first?', choices: ['Be generous', 'Be specific', 'Ask before I introduce'] },
   { id: 'q10', act: 3, npc: 'sterling', place: 'Leadership Summit', title: 'Building Better Futures', reward: 'partnership',
-    line: 'Organizations support TOP 100 as Patrons of Record. Their support funds programs; it never buys placement.',
+    line: 'Organizations support TOP 100 as Sponsors of Record. Their support funds programs; it never buys placement.',
     prompt: 'Which community initiative would you learn about?', choices: ['Scholarships', 'Conference rooms', 'The archive'] },
   { id: 'q11', act: 3, npc: 'aurora', place: 'Media Hub', title: 'The Hall of Legends', reward: 'legacy',
     line: 'Recognition here is a measured record, kept across every season. Past honorees stand in this plaza.',

@@ -29,7 +29,7 @@ export default function PublicationIndex({ items, cursorKey, onOpen, discovered,
         Women in Aerospace &amp; Aviation
       </p>
       <p className="mt-2 max-w-xs text-[12px] leading-relaxed" style={{ color: `${brandColors.ink}75` }}>
-        One hundred names. Thousands of nominations. Measured, not ranked.
+        One hundred names. Thousands of nominations. Higher, Further, Faster.
       </p>
 
       <div className="mt-4">

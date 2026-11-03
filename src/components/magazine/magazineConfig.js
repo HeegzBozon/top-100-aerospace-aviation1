@@ -126,7 +126,7 @@ export const VOLUME_IV_BLUEPRINT = {
     // ── Departments ──
     { id: 'sec-dept-signals', name: 'Signals', section_type: 'evergreen', section_group: 'front_of_book', order: 4 },
     { id: 'sec-dept-alumni', name: 'Alumni', section_type: 'evergreen', section_group: 'front_of_book', order: 5 },
-    { id: 'sec-dept-patrons', name: 'Patron of Record', section_type: 'evergreen', section_group: 'front_of_book', order: 6 },
+    { id: 'sec-dept-patrons', name: 'Sponsor of Record', section_type: 'evergreen', section_group: 'front_of_book', order: 6 },
     // ── The Well ──
     { id: 'sec-well-cover-story', name: 'Cover Story', section_type: 'feature', section_group: 'well', order: 7 },
     { id: 'sec-well-the-100', name: 'The 100', section_type: 'profile', section_group: 'well', order: 8 },

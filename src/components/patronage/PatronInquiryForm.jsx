@@ -223,7 +223,7 @@ export default function PatronInquiryForm() {
               {status === 'sending' ? 'Sending' : 'Send'}
             </button>
             <p className="max-w-[36ch] text-[9.5px] leading-relaxed" style={{ color: P.faint }}>
-              We use these details to answer you, and nothing else. No reader data is shared with any Patron.
+              We use these details to answer you, and nothing else. No reader data is shared with any sponsor.
             </p>
           </div>
         </form>

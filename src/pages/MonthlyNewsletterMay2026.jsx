@@ -76,7 +76,7 @@ export default function MonthlyNewsletterMay2026() {
               ))}
             </div>
 
-            <Paragraph>Ten Fellows. One mission. All measured, not ranked. See the full Artemis alumni feature at <a href="https://top100aero.space/artemis-2" className="text-[#c9a87c] underline decoration-[#c9a87c]/40 underline-offset-4">top100aero.space/artemis-2</a>.</Paragraph>
+            <Paragraph>Ten Fellows. One mission. Higher, Further, Faster. See the full Artemis alumni feature at <a href="https://top100aero.space/artemis-2" className="text-[#c9a87c] underline decoration-[#c9a87c]/40 underline-offset-4">top100aero.space/artemis-2</a>.</Paragraph>
             <Paragraph>Elsewhere in space: Lunar Gateway has been cancelled, reshaping the entire Artemis architecture and opening commercial lunar access to a more direct competitive field. China has filed for approximately 200,000 satellite slots with the ITU. SpaceX has roughly 9,400 active Starlinks, recently approved for 7,500 more. Starship V3 completed its first integrated flight test in January.</Paragraph>
             <Paragraph>A SpaceX IPO targeting an approximately $800B valuation may be the largest in history. And Starlink&apos;s documented battlefield role in the Iran war has settled the strategic case for sovereign satellite capacity for every major power on Earth.</Paragraph>
             <QuoteBand>Timelines that were measured in decades are now measured in years.</QuoteBand>

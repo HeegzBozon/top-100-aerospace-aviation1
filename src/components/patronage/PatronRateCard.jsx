@@ -8,8 +8,8 @@ import { P, SLOT_CALENDAR, TIER_LABELS, day, money } from './patronConfig';
 
 const STATUS_COPY = {
   open: { label: 'Open', color: P.copper },
-  sold: { label: 'Patron in place', color: 'rgba(30,58,90,0.45)' },
-  delivered: { label: 'Patron in place', color: 'rgba(30,58,90,0.45)' },
+  sold: { label: 'Sponsor in place', color: 'rgba(30,58,90,0.45)' },
+  delivered: { label: 'Sponsor in place', color: 'rgba(30,58,90,0.45)' },
   house: { label: 'House placement', color: 'rgba(30,58,90,0.45)' },
   held: { label: 'On hold', color: 'rgba(30,58,90,0.45)' },
   unpriced: { label: 'Rate under review', color: 'rgba(30,58,90,0.45)' },
@@ -134,11 +134,11 @@ export default function PatronRateCard() {
         )}
 
         <p className="mt-5 text-[10.5px] leading-relaxed" style={{ color: P.muted }}>
-          Any placement carrying a Patron's own words or link is printed with a{' '}
+          Any placement carrying a sponsor's own words or link is printed with a{' '}
           <span className="font-bold uppercase tracking-[0.14em]" style={{ color: P.navy }}>
             paid placement
           </span>{' '}
-          label, and the credit itself always reads <span className="font-bold" style={{ color: P.navy }}>Patron of Record</span>.
+          label, and the credit itself always reads <span className="font-bold" style={{ color: P.navy }}>Sponsor of Record</span>.
           Both lines stay visible, never in fine print.
         </p>
       </div>

@@ -17,7 +17,7 @@ export default function PatronBundle() {
             </h2>
           </div>
           <p className="max-w-[34ch] text-[11px] leading-relaxed" style={{ color: P.muted }}>
-            One Patron per issue. Category exclusive within that issue only.
+            One sponsor per issue. Category exclusive within that issue only.
           </p>
         </div>
 
@@ -42,7 +42,7 @@ export default function PatronBundle() {
         </ul>
 
         <p className="mt-6 border-l-2 pl-4 text-[11px] leading-relaxed" style={{ borderColor: P.gold, color: P.muted }}>
-          We can decline any placement. No Patron reviews editorial before it sends, and no Patron influences
+          We can decline any placement. No sponsor reviews editorial before it sends, and no sponsor influences
           a topic or who is featured. There is no guaranteed reach: a make-good is offered only for a missed
           send date or our own error.
         </p>

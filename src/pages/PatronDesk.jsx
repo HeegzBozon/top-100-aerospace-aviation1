@@ -28,8 +28,8 @@ const TABS = [
 
 export default function PatronDesk() {
   usePatronMeta({
-    title: 'Patron desk | TOP 100 Aerospace & Aviation',
-    description: 'Internal. The Patron of Record lifecycle, its inventory, its reports and its register.',
+    title: 'Sponsor desk | TOP 100 Aerospace & Aviation',
+    description: 'Internal. The Sponsor of Record lifecycle, its inventory, its reports and its register.',
     path: '/patronage/desk',
     noindex: true,
   });
@@ -95,7 +95,7 @@ export default function PatronDesk() {
                 Internal &middot; The publication
               </p>
               <h1 className="mt-1.5 font-heading text-[1.7rem] leading-none md:text-[2.2rem]" style={{ color: P.navy }}>
-                Patron desk
+                Sponsor desk
               </h1>
               <p className="mt-1.5 text-[10.5px]" style={{ color: P.muted }}>
                 Attribution, never placement. Every advance is gated.

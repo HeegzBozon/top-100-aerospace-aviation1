@@ -46,7 +46,7 @@ export const APP_GROUPS = [
       { label: "TOP 100 Women 2025", to: "/women-2025", icon: Trophy, shelf: true },
       { label: "Season Archive", to: "/ArchiveLanding", icon: BookOpen },
       { label: "Top Viral Posts", to: "/viralpost2026", icon: Newspaper },
-      { label: "Patrons", to: "/Sponsors", icon: Heart },
+      { label: "Sponsors", to: "/Sponsors", icon: Heart },
     ],
   },
   {

@@ -147,10 +147,10 @@ export const BOARD_COLUMNS = [
       },
       {
         key: "patrons",
-        title: "Patrons of Record",
+        title: "Sponsors of Record",
         blurb: "The institutions standing behind the platform.",
         to: "/Sponsors",
-        action: "Meet the patrons",
+        action: "Meet the sponsors",
       },
     ],
   },

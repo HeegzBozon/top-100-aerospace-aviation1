@@ -16,7 +16,7 @@ export const GUIDED_BAND = 30;
 // renderer — can tell a placement from editorial without a second field on the record.
 export const CENTERFOLD_LABEL = 'Centerfold';
 export const HOUSE_AD_LABEL = 'House Advertisement';
-export const PATRON_LABEL = 'Patron of Record';
+export const PATRON_LABEL = 'Sponsor of Record';
 
 export const SPREADS_IN_OPENING = 3;
 
@@ -79,6 +79,6 @@ export const PATRON_PLACEMENT = {
   kicker: PATRON_LABEL,
   heading: 'This placement is held',
   body:
-    'Reserved for the patron of this edition. Patronage supports the publication — printing, the platform, and the work of measurement. It carries no weight in the measure, and it never sets the order of this book.',
-  byline: 'A Patron of Record placement, held open',
+    'Reserved for the sponsor of this edition. Sponsorship supports the publication — printing, the platform, and the work of measurement. It carries no weight in the measure, and it never sets the order of this book.',
+  byline: 'A Sponsor of Record placement, held open',
 };

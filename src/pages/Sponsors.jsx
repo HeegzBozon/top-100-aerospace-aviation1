@@ -29,7 +29,7 @@ const sponsorshipTracks = [
         benefits: [
             'Named visibility boost',
             'Authority Piece underwrite',
-            'Time Capsule patronage',
+            'Time Capsule sponsorship',
             'Fellow Accelerator Program'
         ]
     },
@@ -52,8 +52,8 @@ const sponsorshipTracks = [
     },
     {
         id: 'institution',
-        title: 'Sponsor the Institution (Patron)',
-        subtitle: 'Patron of record',
+        title: 'Sponsor the Institution',
+        subtitle: 'Sponsor of Record',
         price: '$10K – $150K / year',
         priceNote: '',
         color: '#a74242',

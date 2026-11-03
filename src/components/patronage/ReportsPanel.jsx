@@ -280,7 +280,7 @@ export default function ReportsPanel({ deals, reports, user, onChanged }) {
                 </button>
                 <p className="text-[9.5px]" style={{ color: P.faint }}>
                   {report.no_reader_data === false
-                    ? 'Reader data sharing is switched on. That is never allowed on a Patron report.'
+                    ? 'Reader data sharing is switched on. That is never allowed on a sponsor report.'
                     : 'No reader contact data. Audience numbers only.'}
                 </p>
               </div>

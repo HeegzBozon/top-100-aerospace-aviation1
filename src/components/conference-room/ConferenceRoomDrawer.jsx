@@ -153,7 +153,7 @@ export default function ConferenceRoomDrawer({ room, attendees, user, accent, op
           {room.patron_of_record_name && (
             <div className="flex items-center gap-1.5 rounded-lg px-2 py-1.5" style={{ background: `${B.gold}12`, border: `1px solid ${B.gold}33` }}>
               <Crown className="w-3 h-3 shrink-0" style={{ color: B.gold }} />
-              <span className="text-[10px] font-semibold" style={{ color: B.gold }}>Patron of Record</span>
+              <span className="text-[10px] font-semibold" style={{ color: B.gold }}>Sponsor of Record</span>
               <span className="text-[10px]" style={{ color: B.navy }}>{room.patron_of_record_name}</span>
             </div>
           )}

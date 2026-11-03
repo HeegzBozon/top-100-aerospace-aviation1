@@ -182,7 +182,7 @@ export default function DecisionRegister({ decisions, user, onChanged }) {
           The register is empty
         </h2>
         <p className="mx-auto mt-2 max-w-[46ch] text-[11.5px] leading-relaxed" style={{ color: P.muted }}>
-          Every gate on this desk traces back to a decision somebody still has to make: whether Patrons carry
+          Every gate on this desk traces back to a decision somebody still has to make: whether sponsors carry
           any vote weight, what the credit is called, what the rates are. Load the register to work them in order.
         </p>
         <button

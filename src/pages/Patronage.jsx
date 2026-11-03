@@ -14,9 +14,9 @@ import { P } from '@/components/patronage/patronConfig';
 // Fellow, and should not have to become one to ask a question.
 export default function Patronage() {
   usePatronMeta({
-    title: 'Become a Patron of Record | TOP 100 Aerospace & Aviation',
+    title: 'Become a Sponsor of Record | TOP 100 Aerospace & Aviation',
     description:
-      'Patronage in the TOP 100 Aerospace & Aviation publication: one issue slot, a native post, a Volume credit and two written reports. Attribution, never placement.',
+      'Sponsorship in the TOP 100 Aerospace & Aviation publication: one issue slot, a native post, a Volume credit and two written reports. Attribution, never placement.',
   });
 
   // The desk is not advertised to buyers. It is only a door for the people who work it.

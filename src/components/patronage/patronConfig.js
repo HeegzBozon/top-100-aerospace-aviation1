@@ -18,15 +18,15 @@ export const P = {
 };
 
 export const FIREWALL_LINE =
-  'Patronage is attribution, never placement. No Patron has any influence on the index, the measurement, or who is featured.';
+  'Sponsorship is attribution, never placement. No sponsor has any influence on the index, the measurement, or who is featured.';
 
 export const PAID_LABEL = 'Paid placement';
 
 export const FIREWALL_DUTIES = [
-  'No Patron reviews editorial, and none sees a draft before it sends.',
-  'No Patron chooses a topic, a Fellow, a nominee, or a position in any issue.',
-  'Patronage confers no vote weight, no standing, and nothing in the measurement.',
-  'No reader contact data is ever shared with a Patron.',
+  'No sponsor reviews editorial, and none sees a draft before it sends.',
+  'No sponsor chooses a topic, a Fellow, a nominee, or a position in any issue.',
+  'Sponsorship confers no vote weight, no standing, and nothing in the measurement.',
+  'No reader contact data is ever shared with a sponsor.',
 ];
 
 export const LIFECYCLE = [
@@ -219,10 +219,10 @@ export function localBlockers(deal, stage) {
 export const DECISION_SEED = [
   {
     key: 'DEC1',
-    title: 'Do Patrons carry any vote weight?',
-    question: 'Does production give a Patron of Record any weight in selection?',
+    title: 'Do sponsors carry any vote weight?',
+    question: 'Does production give a Sponsor of Record any weight in selection?',
     context:
-      'The issue copy says patronage carries zero selection weight. The reference PRD names sponsors among groups with differential vote weight. One of the two is wrong, and the wrong one is published.',
+      'The issue copy says sponsorship carries zero selection weight. The reference PRD names sponsors among groups with differential vote weight. One of the two is wrong, and the wrong one is published.',
     options: [
       { label: 'No weight, and correct the PRD', detail: 'Production gives sponsors no weight. The reference PRD is amended to match what ships.', recommended: true, consequence: 'The published claim becomes true, and the Volume can be sold beside the reveal.' },
       { label: 'Some weight, and stop saying zero', detail: 'Sponsors keep a tier weight. The public line is rewritten to describe reality.', consequence: 'Every firewall asset is rewritten before #42 sends.' },
@@ -238,7 +238,7 @@ export const DECISION_SEED = [
     title: 'The offer ladder',
     question: 'How do newsletter slots relate to the annual tiers?',
     context:
-      'The issue invites patronage through the Chamber, the playbook sells newsletter slots, and the canonical tiers start at $10K. Three prices with no ladder between them.',
+      'The issue invites sponsorship through the Chamber, the playbook sells newsletter slots, and the canonical tiers start at $10K. Three prices with no ladder between them.',
     options: [
       { label: 'Slots are the entry rung', detail: 'Slot spend credits toward an annual tier. A Volume credit comes only with the flagship or a tier.', recommended: true, consequence: 'One price list, one path upward, no $1,500 offer standing beside a $10K one.' },
       { label: 'Slots stand alone', detail: 'Slots are a separate product with no path into the tiers.', consequence: 'Every slot is a one-time sale, and the renewal ask has nothing to offer.' },
@@ -252,14 +252,14 @@ export const DECISION_SEED = [
   {
     key: 'DEC4',
     title: 'What the credit is called',
-    question: 'Is "Patron of Record" enough to disclose a paid placement?',
+    question: 'Is "Sponsor of Record" enough to disclose a paid placement?',
     context:
-      'A name or logo alone is unlikely to signal advertising. "Patron of Record" is the credit; the disclosure has to be a separate, plain label.',
+      'A name or logo alone is unlikely to signal advertising. "Sponsor of Record" is the credit; the disclosure has to be a separate, plain label.',
     options: [
-      { label: 'Patron of Record, plus a paid label', detail: 'The credit reads Patron of Record. Any placement carrying the Patron\'s own words or link also carries a plain paid label.', recommended: true, consequence: 'Attribution and disclosure are two lines doing two jobs.' },
-      { label: 'Patron of Record alone', detail: 'One line, treated as sufficient disclosure.', consequence: 'Carries legal risk on any placement with sponsor-supplied copy.' },
+      { label: 'Sponsor of Record, plus a paid label', detail: 'The credit reads Sponsor of Record. Any placement carrying the sponsor\'s own words or link also carries a plain paid label.', recommended: true, consequence: 'Attribution and disclosure are two lines doing two jobs.' },
+      { label: 'Sponsor of Record alone', detail: 'One line, treated as sufficient disclosure.', consequence: 'Carries legal risk on any placement with sponsor-supplied copy.' },
     ],
-    recommendation: 'Patron of Record as the credit, with a paid label on any placement the Patron writes.',
+    recommendation: 'Sponsor of Record as the credit, with a paid label on any placement the sponsor writes.',
     approver_name: 'Katja',
     approver_role: 'Firewall and disclosure',
     blocks: ['paid_label', 'public_copy'],

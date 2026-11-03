@@ -324,7 +324,7 @@ const joyFundTiers = [
   { amount: '$100', name: 'Supporter' },
   { amount: '$250', name: 'Contributor' },
   { amount: '$500', name: 'Champion' },
-  { amount: '$1,000', name: 'Patron' },
+  { amount: '$1,000', name: 'Benefactor' },
   { amount: '$2,500', name: 'Mission Partner' },
   { amount: '$5,000', name: 'Mission Sponsor — you funded the room' },
   { amount: '$5,000+', name: 'Ad Astra — named, on the record' },

@@ -74,10 +74,10 @@ export default function DealPlacement({ deal, user, onChanged }) {
     <>
       <div className={`${DESK.card} p-4`} style={{ borderColor: P.hair }}>
         <p className={DESK.label} style={{ color: P.copper }}>
-          The Patron's material
+          The sponsor's material
         </p>
         <p className="mt-1 text-[10px] leading-relaxed" style={{ color: P.muted }}>
-          Only the Patron's own placement is built from this. Nothing here reaches an editorial page.
+          Only the sponsor's own placement is built from this. Nothing here reaches an editorial page.
         </p>
 
         <div className="mt-2.5 grid gap-2 md:grid-cols-2">

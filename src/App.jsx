@@ -257,7 +257,7 @@ const AuthenticatedApp = () => {
       <Route path="/press-kit" element={<PressKitStudio />} />
       <Route path="/press-kit/:shareCode" element={<PressKitPublic />} />
       {/* The public media kit, and the desk the lifecycle is worked from. Attribution,
-          never placement: the offer is Patron of Record, and the desk behind it is
+          never placement: the offer is Sponsor of Record, and the desk behind it is
           admin-only and unindexed. */}
       <Route path="/patronage" element={<Patronage />} />
       <Route path="/patronage/desk" element={<PatronDesk />} />
