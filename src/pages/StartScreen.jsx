@@ -15,6 +15,7 @@ import NotifyMe from '@/components/start/NotifyMe';
 import TitleVotePill from '@/components/start/TitleVotePill';
 import TitleCardQr from '@/components/start/TitleCardQr';
 import StartSurfaceKeys from '@/components/start/StartSurfaceKeys';
+import AdminQuickActions from '@/components/start/AdminQuickActions';
 import { ACCOUNT_KEYS, NOTIFY_OPTION, START_MENU, startMenuFor, VOTE_OPTION } from '@/components/start/startMenuConfig';
 
 const LIVE_PHASES = ['nominations_open', 'voting_open', 'review', 'rollover'];
@@ -236,6 +237,7 @@ export default function StartScreen() {
           vote={vote}
           notifyOpen={notifyOpen}
           onNotifyChange={setNotifyOpen}
+          adminActions={<AdminQuickActions variant="desk" />}
         />
       </div>
 
@@ -274,7 +276,10 @@ export default function StartScreen() {
                 <div className="min-w-0 flex-1">
                   <StartMark />
                 </div>
-                <TitleCardQr user={user} />
+                <div className="flex shrink-0 items-start gap-2">
+                  <AdminQuickActions />
+                  <TitleCardQr user={user} />
+                </div>
               </div>
 
               {/* The cycle on one band, then the two asks on one row: both read under the

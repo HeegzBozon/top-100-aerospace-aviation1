@@ -23,6 +23,7 @@ export default function DesktopStartScreen({
   vote,
   notifyOpen,
   onNotifyChange,
+  adminActions = null,
 }) {
   return (
     /* The plate is measured against the tube rather than the window: the cover fills
@@ -33,6 +34,9 @@ export default function DesktopStartScreen({
       style={{ background: phase.sky }}
     >
       <DesktopStartSky phase={phase} />
+
+      {/* The operator's key, held in the cover's top corner: drawn only for an admin. */}
+      {adminActions && <div className="absolute right-6 top-6 z-30">{adminActions}</div>}
 
       <div className="relative mx-auto flex min-h-[calc(100vh-var(--imac-top)-var(--imac-bottom))] w-full max-w-[1180px] flex-col px-12 pb-32 pt-9 xl:px-16">
         <DesktopStartRail phase={phase} />

@@ -33,6 +33,7 @@ const ClaimsReviewManager       = lazy(() => import('@/components/admin/ClaimsRe
 const UserMergeManager          = lazy(() => import('@/components/admin/UserMergeManager'));
 const SalesAnalytics            = lazy(() => import('@/components/admin/SalesAnalytics'));
 const GodsEye                   = lazy(() => import('@/components/admin/GodsEye'));
+const TimecardDesk              = lazy(() => import('@/components/admin/timecard/TimecardDesk'));
 const SMEAssignmentPanel        = lazy(() => import('@/components/admin/SMEAssignmentPanel'));
 const StartupReviewPanel        = lazy(() => import('@/components/admin/StartupReviewPanel'));
 const AcceleratorManagement     = lazy(() => import('@/components/admin/AcceleratorManagement'));
@@ -335,6 +336,8 @@ export default function Admin() {
         return <SalesAnalytics />;
       case 'gods-eye':
         return <GodsEye />;
+      case 'timecard':
+        return <TimecardDesk />;
       default:
         return (
           <div className="py-16 text-center text-[var(--muted)]">

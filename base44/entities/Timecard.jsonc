@@ -1,0 +1,113 @@
+{
+  "name": "Timecard",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "time",
+        "expense"
+      ],
+      "default": "time",
+      "description": "Whether the entry records hours worked or money spent."
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The day the hours were worked or the expense incurred."
+    },
+    "description": {
+      "type": "string",
+      "description": "What the hours or the expense were for."
+    },
+    "payee": {
+      "type": "string",
+      "description": "Who the entry belongs to: the person who worked the hours, or the vendor paid for the expense."
+    },
+    "project": {
+      "type": "string",
+      "description": "The project or cost centre the entry is filed against."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "editorial",
+        "research",
+        "production",
+        "travel",
+        "lodging",
+        "meals",
+        "software",
+        "equipment",
+        "services",
+        "other"
+      ],
+      "default": "other",
+      "description": "Curated category for reporting."
+    },
+    "hours": {
+      "type": "number",
+      "description": "Hours worked (time entries only)."
+    },
+    "rate_cents": {
+      "type": "number",
+      "description": "Hourly rate in cents (time entries only)."
+    },
+    "amount_cents": {
+      "type": "number",
+      "description": "The money the entry carries in cents: hours x rate for time, the receipt total for an expense."
+    },
+    "billable": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the entry is recoverable from a client."
+    },
+    "reimbursable": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether an expense is to be paid back to the person who incurred it."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "submitted",
+        "approved",
+        "paid"
+      ],
+      "default": "draft",
+      "description": "Where the entry stands in settlement."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal note. Never printed on a report."
+    }
+  },
+  "required": [
+    "kind",
+    "entry_date",
+    "description"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
