@@ -3,12 +3,26 @@ import { X, Loader2, Feather, AlertCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import CommentThread from '@/components/magazine/comments/CommentThread';
+import PageMarks from '@/components/magazine/comments/PageMarks';
 
 // The page's margin, opened: a private desk between the reader and the masthead.
 //
 // It reads as the back of a letter rather than a feed — one page named at the head, the
 // reader's notes below it, and nothing that reports activity to anybody else.
-export default function PageNotesPanel({ onClose, issue, pageNumber, pageLabel, notes }) {
+export default function PageNotesPanel({
+  onClose,
+  issue,
+  pageNumber,
+  pageLabel,
+  notes,
+  tab = 'notes',
+  onTab,
+  marks = [],
+  markedHere,
+  onToggleMark,
+  onGoTo,
+  onDropMark,
+}) {
   const [body, setBody] = useState('');
   const { user, ready, loading, error, sending, threads, isAdmin, addNote, addReply, retry } = notes;
 
@@ -51,14 +65,47 @@ export default function PageNotesPanel({ onClose, issue, pageNumber, pageLabel, 
               <X className="h-4 w-4" style={{ color: P.cream }} />
             </button>
           </div>
-          <p className="mt-3 text-[10px] leading-relaxed" style={{ color: 'rgba(250,248,245,0.5)' }}>
-            {isAdmin
-              ? 'Readers’ private threads on this page. Only the reader and the masthead can read them.'
-              : 'Only you and the masthead can read this.'}
-          </p>
+          {tab === 'notes' && (
+            <p className="mt-3 text-[10px] leading-relaxed" style={{ color: 'rgba(250,248,245,0.5)' }}>
+              {isAdmin
+                ? 'Readers’ private threads on this page. Only the reader and the masthead can read them.'
+                : 'Only you and the masthead can read this.'}
+            </p>
+          )}
+
+          {/* The two things a reader keeps for themselves, held in the one margin */}
+          <div className="mt-4 flex gap-1" role="tablist" aria-label="Your margin">
+            {[
+              { key: 'notes', label: 'Notes' },
+              { key: 'marks', label: marks.length ? `Marks · ${marks.length}` : 'Marks' },
+            ].map((entry) => (
+              <button
+                key={entry.key}
+                role="tab"
+                aria-selected={tab === entry.key}
+                onClick={() => onTab?.(entry.key)}
+                className="rounded-full px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.18em] transition-colors"
+                style={tab === entry.key
+                  ? { background: 'rgba(201,168,124,0.16)', color: P.cream, boxShadow: 'inset 0 0 0 1px rgba(201,168,124,0.55)' }
+                  : { color: 'rgba(250,248,245,0.55)' }}
+              >
+                {entry.label}
+              </button>
+            ))}
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto px-6 py-6">
+          {tab === 'marks' ? (
+            <PageMarks
+              marks={marks}
+              markedHere={markedHere}
+              onToggleMark={onToggleMark}
+              onGoTo={onGoTo}
+              onDrop={onDropMark}
+            />
+          ) : (
+          <>
           {!ready && (
             <div className="flex items-center gap-2 text-[11px]" style={{ color: 'rgba(250,248,245,0.6)' }}>
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -157,6 +204,8 @@ export default function PageNotesPanel({ onClose, issue, pageNumber, pageLabel, 
                 )}
               </div>
             </>
+          )}
+          </>
           )}
         </div>
       </aside>

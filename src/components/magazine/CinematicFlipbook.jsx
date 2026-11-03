@@ -295,6 +295,12 @@ export default function CinematicFlipbook({
             page={pages[currentPage]}
             articles={articles}
             pageNumber={currentPage + 1}
+            marks={bookmarks}
+            markedHere={markedHere}
+            onToggleMark={toggleBookmark}
+            onGoToPage={goToPage}
+            onDropMark={dropBookmark}
+            onPause={() => setIsPlaying(false)}
           />
           <button
             onClick={() => setShowContents(true)}
@@ -525,49 +531,14 @@ export default function CinematicFlipbook({
         <div className="fixed inset-0 z-30 flex justify-end" style={{ background: 'rgba(7,15,31,0.6)' }} onClick={() => setShowContents(false)}>
           <div className="h-full w-full max-w-xs overflow-y-auto p-6" style={{ background: P.navy }} onClick={(e) => e.stopPropagation()}>
             <div className="mb-6 flex items-center justify-between">
-              <h3 className="font-serif text-lg" style={{ color: P.cream }}>Contents</h3>
+              <h3 className="font-serif text-lg" style={{ color: P.cream }}>Chapters</h3>
               <button onClick={() => setShowContents(false)} className="rounded-full p-1 hover:bg-white/10" aria-label="Close contents">
                 <X className="h-4 w-4" style={{ color: P.cream }} />
               </button>
             </div>
 
-            {/* The reader's own ribbons, before the issue's own parts */}
-            <div className="mb-6">
-              <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: P.gold }}>
-                Bookmarks
-              </p>
-              {bookmarks.length ? (
-                <div className="space-y-1">
-                  {bookmarks.map((mark) => (
-                    <div key={mark.page} className="flex items-center gap-1 rounded-lg hover:bg-white/5">
-                      <button
-                        onClick={() => goToPage(mark.page)}
-                        className="min-w-0 flex-1 px-3 py-2 text-left"
-                      >
-                        <p className="truncate text-sm" style={{ color: P.cream }}>
-                          {mark.label || 'Marked spread'}
-                        </p>
-                        <p className="mt-0.5 text-[10px]" style={{ color: 'rgba(250,248,245,0.4)' }}>
-                          Page {String(mark.page + 1).padStart(2, '0')}
-                        </p>
-                      </button>
-                      <button
-                        onClick={() => dropBookmark(mark.page)}
-                        className="mr-1 rounded-full p-1.5 transition-colors hover:bg-white/10"
-                        aria-label={`Remove the bookmark on page ${mark.page + 1}`}
-                      >
-                        <X className="h-3 w-3" style={{ color: 'rgba(250,248,245,0.5)' }} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="px-3 text-[11px] leading-relaxed" style={{ color: 'rgba(250,248,245,0.42)' }}>
-                  Nothing marked yet. The ribbon in the foot band marks the spread you are on.
-                </p>
-              )}
-            </div>
-
+            {/* The issue's own parts. The reader's ribbons are kept in the margin, with
+                their notes, where a spread can be marked and unmarked. */}
             <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: P.gold }}>
               Chapters
             </p>
