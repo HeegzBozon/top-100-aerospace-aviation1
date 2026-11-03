@@ -1,0 +1,48 @@
+{
+  "name": "LaunchFeedCache",
+  "type": "object",
+  "properties": {
+    "feed": {
+      "type": "string",
+      "description": "Which feed this row holds, e.g. 'upcoming'."
+    },
+    "launches": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "The last good payload read from the launch library, kept so the theatre still has a programme when the upstream feed throttles us."
+    },
+    "fetched_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the payload was read from upstream. Drives the freshness check."
+    }
+  },
+  "required": [
+    "feed"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

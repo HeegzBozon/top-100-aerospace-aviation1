@@ -7,10 +7,7 @@ import TimecardEntryForm from '@/components/admin/timecard/TimecardEntryForm';
 import TimecardRow from '@/components/admin/timecard/TimecardRow';
 import WorklogImport from '@/components/admin/timecard/WorklogImport';
 import WorklogReview from '@/components/admin/timecard/WorklogReview';
-import SchedulePanel from '@/components/admin/timecard/SchedulePanel';
-import DeskMasthead from '@/components/admin/desk/DeskMasthead';
-import DeskTabs from '@/components/admin/desk/DeskTabs';
-import BenefitsTease from '@/components/admin/desk/BenefitsTease';
+import DeskPanelBar from '@/components/admin/desk/DeskPanelBar';
 
 // The desk the platform's own hours and receipts are kept on: one ledger of time and
 // expenses, filed against a project, settled through approval. Admin-only — the record
@@ -24,7 +21,6 @@ export default function TimecardDesk() {
   const [importing, setImporting] = useState(false);
   const [parsed, setParsed] = useState(null);
   const [duplicate, setDuplicate] = useState(null);
-  const [view, setView] = useState('ledger');
 
   const load = useCallback(async () => {
     setState('loading');
@@ -87,60 +83,38 @@ export default function TimecardDesk() {
 
   return (
     <div className="space-y-4">
-      <DeskMasthead
-        kicker="Timecard & Expenses"
-        title="The Flight Log"
-        blurb="Hours flown, receipts filed, and the rota that staffs the rooms. Chores, kept like a logbook."
-      >
-          {view === 'ledger' && (
-          <button
-            onClick={load}
-            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium"
-            style={{ background: 'rgba(255,255,255,0.06)', color: TC.ink, border: `1px solid ${TC.line}` }}
-          >
-            <RefreshCw className="h-3.5 w-3.5" /> Re-read
-          </button>)}
-          {view === 'ledger' && (
-          <button
-            onClick={() => {
-              setParsed(null);
-              setDuplicate(null);
-              setImporting((open) => !open);
-            }}
-            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium"
-            style={
-              importing
-                ? { background: 'rgba(184,115,51,0.22)', color: TC.ink, border: `1px solid ${TC.copper}` }
-                : { background: 'rgba(255,255,255,0.06)', color: TC.ink, border: `1px solid ${TC.line}` }
-            }
-          >
-            <ClipboardPaste className="h-3.5 w-3.5" /> Import work log
-          </button>)}
-          {view === 'ledger' && (
-          <button
-            onClick={() => setDraft({})}
-            className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold"
-            style={{ background: TC.copper, color: '#fff' }}
-          >
-            <Plus className="h-4 w-4" /> New entry
-          </button>)}
-      </DeskMasthead>
+      <DeskPanelBar label="Hours & Expenses" note={`${entries.length} filed`}>
+        <button
+          onClick={load}
+          className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
+          style={{ border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }}
+        >
+          <RefreshCw className="h-3 w-3" /> Re-read
+        </button>
+        <button
+          onClick={() => {
+            setParsed(null);
+            setDuplicate(null);
+            setImporting((open) => !open);
+          }}
+          className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
+          style={
+            importing
+              ? { background: 'rgba(184,115,51,0.22)', border: '1px solid #b87333', color: '#f5efe4' }
+              : { border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }
+          }
+        >
+          <ClipboardPaste className="h-3 w-3" /> Import work log
+        </button>
+        <button
+          onClick={() => setDraft({})}
+          className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
+          style={{ background: '#b87333', color: '#fdf8f0' }}
+        >
+          <Plus className="h-3.5 w-3.5" /> New entry
+        </button>
+      </DeskPanelBar>
 
-      <DeskTabs
-        tabs={[
-          { key: 'ledger', label: 'Ledger' },
-          { key: 'schedule', label: 'Schedule' },
-          { key: 'benefits', label: 'Benefits', soon: true },
-        ]}
-        value={view}
-        onChange={setView}
-      />
-
-      {view === 'schedule' && <SchedulePanel />}
-      {view === 'benefits' && <BenefitsTease />}
-
-      {view === 'ledger' && (
-      <>
       <TimecardSummary entries={entries} />
 
       {importing && (
@@ -231,8 +205,6 @@ export default function TimecardDesk() {
             <TimecardRow key={entry.id} entry={entry} onEdit={setDraft} onDelete={remove} />
           ))}
         </div>
-      )}
-      </>
       )}
     </div>
   );

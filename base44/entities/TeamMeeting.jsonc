@@ -1,0 +1,99 @@
+{
+  "name": "TeamMeeting",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "What the meeting is called on the diary."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "sync",
+        "review",
+        "one_to_one",
+        "standup",
+        "other"
+      ],
+      "default": "sync",
+      "description": "The sort of meeting this is. Display only."
+    },
+    "start_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the meeting begins, in the house's own wall-clock time."
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 30,
+      "description": "How long the meeting runs, in minutes."
+    },
+    "attendees": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Names of the people expected at the table. Kept as names so a typed guest needs no account."
+    },
+    "attendee_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Email of each attendee who has an account, in the same order as names. Used to find clashes and away days."
+    },
+    "room_key": {
+      "type": "string",
+      "description": "The campus room the meeting is held in, keyed to the Colony rooms. Empty when it is not on campus."
+    },
+    "agenda": {
+      "type": "string",
+      "description": "What is to be settled in the room."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "booked",
+        "done",
+        "cancelled"
+      ],
+      "default": "booked",
+      "description": "Where the booking stands."
+    },
+    "booked_by_email": {
+      "type": "string",
+      "description": "Who put the meeting on the diary."
+    },
+    "booked_by_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "start_at"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

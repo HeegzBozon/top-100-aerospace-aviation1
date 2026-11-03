@@ -95,6 +95,7 @@ export const COLONY_ROOMS = {
     zones: [
       { key: 'pavilion-exit', label: 'Space Pavilion Entrance', blurb: 'Head back out to the Main Campus.', room: 'hall', col: 28, row: 30, w: 8, h: 6 },
       { key: 'pavilion-keynote', label: 'Keynote Stage', blurb: 'Events: the conferences the network holds rooms in.', to: '/conferences', col: 25, row: 6, w: 14, h: 7 },
+      { key: 'pavilion-theatre', label: 'Mission Theatre', blurb: 'The broadcast, the bill, and the next mission off the pad.', panel: 'theatre', col: 20, row: 15, w: 24, h: 10 },
     ],
   },
   'innovation-expo': {

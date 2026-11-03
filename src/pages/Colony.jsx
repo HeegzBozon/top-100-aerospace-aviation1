@@ -14,6 +14,7 @@ import ColonyZoneCard from '@/components/colony/ColonyZoneCard';
 import useColonyGamepad from '@/components/colony/useColonyGamepad';
 import ColonyDirectory from '@/components/colony/ColonyDirectory';
 import ColonyChat from '@/components/colony/ColonyChat';
+import ColonyTheatrePanel from '@/components/colony/ColonyTheatrePanel';
 import ColonyConcierge from '@/components/colony/ColonyConcierge';
 import { buildBrief, briefSummary, coachingFor } from '@/components/colony/campusBrief';
 import RoomSplash from '@/components/colony/RoomSplash';
@@ -607,6 +608,7 @@ function ColonyRoom({ onReplayWelcome }) {
             custom={roomWalls.custom} onSave={roomWalls.save} onReset={roomWalls.reset} onClose={() => setPanel(null)} />
         )}
         {panel === 'chat' && <ColonyChat messages={chat} onSend={sendChat} onClose={() => setPanel(null)} />}
+        {panel === 'theatre' && <ColonyTheatrePanel onClose={() => setPanel(null)} />}
 
       </main>
 
