@@ -13,6 +13,7 @@ import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
 import { loadEditionNominees } from '@/components/publication/useTop100WomenNominees';
 import GlassStudioList from '@/components/magazine/glass/GlassStudioList';
 import { clearIssueProgress, readIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
+import { pageFromUrl, writePageToUrl } from '@/components/magazine/issueDeepLink';
 
 const getStage = () => document.querySelector('[data-handheld-screen]') || document.querySelector('.hh-stage');
 
@@ -34,13 +35,17 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
   // The contents are walked by the keys printed for the face on the case.
   const keyHint = useNavHint();
 
+  // A link that names a page arrives already standing on it, rather than on the contents.
+  const linked = useMemo(() => pageFromUrl({ total }), [total]);
+
   // Play as film arrives with the film already running, so it opens on the page rather
   // than on the contents.
-  const [view, setView] = useState(() => (isPlaying ? 'page' : 'contents'));
+  const [view, setView] = useState(() => (isPlaying || linked !== null ? 'page' : 'contents'));
   // The place is read back where the issue was left, so Resume opens on the spread it was
-  // put down at — and Start over hands back the cover instead.
+  // put down at — and Start over hands back the cover instead. A named page wins over both.
   const [position, setPosition] = useState(() => {
     if (restart) return 1;
+    if (linked !== null) return Math.min(linked + 1, Math.max(total, 1));
     const place = readIssueProgress(issue?.id)?.page || 0;
     return Math.min(place + 1, Math.max(total, 1));
   });
@@ -113,6 +118,13 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     if (!issue?.id || total < 1) return;
     saveIssueProgress(issue.id, { page: position - 1, total, title: issue.title });
   }, [issue?.id, issue?.title, position, total]);
+
+  // The address follows the page on the glass as it does on the desk, so a link copied
+  // out of this machine opens the issue where this reader was standing.
+  useEffect(() => {
+    if (total < 1 || view !== 'page') return;
+    writePageToUrl(position - 1);
+  }, [position, total, view]);
 
   // What has been opened in this sitting. Kept on the glass and nowhere else: it is the
   // record of one reading, not a property of the issue.

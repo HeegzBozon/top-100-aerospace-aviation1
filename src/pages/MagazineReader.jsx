@@ -14,6 +14,7 @@ import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
 import { useToast } from '@/components/ui/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SKIM_SPEED } from '@/components/magazine/useCinematicPlayback';
+import { pageFromUrl } from '@/components/magazine/issueDeepLink';
 
 export default function MagazineReader() {
   const { issueId } = useParams();
@@ -24,7 +25,9 @@ export default function MagazineReader() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [opened, setOpened] = useState(false);
+  // A link that names a page goes straight to it: the opening is not played in front of
+  // someone who was sent to a particular spread.
+  const [opened, setOpened] = useState(() => pageFromUrl() !== null);
   // The title screen's Start over: the issue opens at its cover with the last pass wiped,
   // rather than at the spread it was left on.
   const [restart, setRestart] = useState(false);

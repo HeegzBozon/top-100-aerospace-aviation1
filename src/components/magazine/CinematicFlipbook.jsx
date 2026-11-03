@@ -20,6 +20,8 @@ import ReadProgressMeter from '@/components/magazine/ReadProgressMeter';
 import PageScrollRail from '@/components/magazine/PageScrollRail';
 import { clearIssueProgress, readIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
 import { readIssueBookmarks, removeIssueBookmark, toggleIssueBookmark } from '@/lib/issueBookmarks';
+import { issuePageUrl, pageFromUrl, writePageToUrl } from '@/components/magazine/issueDeepLink';
+import { useToast } from '@/components/ui/use-toast';
 
 // A page carries something to read only if it sets body copy — the same words its dwell is
 // reckoned from.
@@ -57,6 +59,10 @@ export default function CinematicFlipbook({
   // they were reading rather than on the cover for the second time.
   const [currentPage, setCurrentPage] = useState(() => {
     if (restart) return 0;
+    // A link that names a page opens on that page; only a link that names none reopens the
+    // issue where this reader left it.
+    const linked = pageFromUrl({ total: pages.length });
+    if (linked !== null) return linked;
     const place = readIssueProgress(issue?.id)?.page || 0;
     return Math.min(place, Math.max(pages.length - 1, 0));
   });
@@ -66,6 +72,7 @@ export default function CinematicFlipbook({
   // page order. Kept on this machine, and only ever their own.
   const [bookmarks, setBookmarks] = useState(() => readIssueBookmarks(issue?.id));
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [frameHeight, setFrameHeight] = useState(null);
   const [stage, setStage] = useState({ width: 0, height: 0 });
   // The roll belongs to the page, not to the book: a spread can hold one page that runs
@@ -232,6 +239,14 @@ export default function CinematicFlipbook({
     saveIssueProgress(issue.id, { page: currentPage, total: totalPages, title: issue.title });
   }, [issue?.id, issue?.title, currentPage, totalPages]);
 
+  // The address bar carries the page being read. Nothing is navigated — the entry is
+  // rewritten in place — so the link a reader copies out of the browser, and the one the
+  // Share control hands over, both open the issue on this page.
+  useEffect(() => {
+    if (totalPages < 1) return;
+    writePageToUrl(currentPage);
+  }, [currentPage, totalPages]);
+
   // Putting the issue down on purpose: the place is written and the reader is handed back
   // to the title screen, where the edition key reads Resume.
   const saveAndExit = useCallback(() => {
@@ -265,10 +280,26 @@ export default function CinematicFlipbook({
     ? Math.min(100, Math.round((currentPage / (totalPages - 1)) * 100))
     : 0;
 
-  const share = useCallback(() => {
-    if (navigator.share) navigator.share({ title: issue.title, url: window.location.href });
-    else navigator.clipboard?.writeText(window.location.href);
-  }, [issue.title]);
+  // Handing on the page under the reader: the link names the spread, so whoever opens it
+  // arrives at this page of the issue rather than at its cover.
+  const share = useCallback(async () => {
+    const url = issuePageUrl(currentPage);
+    const said = `${bookmarkLabel(currentPage)} · page ${currentPage + 1}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: issue.title, text: said, url });
+        return;
+      } catch {
+        // Dismissed, or no sheet on this machine: it is copied instead.
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: 'Link copied', description: `${issue.title} · ${said}` });
+    } catch {
+      toast({ title: 'Could not copy the link', description: url, variant: 'destructive' });
+    }
+  }, [currentPage, issue.title, bookmarkLabel, toast]);
 
   // Build chapter index for the contents panel
   const chapterIndex = useMemo(() => {
@@ -327,7 +358,8 @@ export default function CinematicFlipbook({
             onClick={share}
             className="flex h-8 w-8 items-center justify-center rounded-full transition-all hover:bg-white/10"
             style={{ color: P.cream }}
-            aria-label="Share"
+            aria-label={`Share this page — copy a link that opens page ${currentPage + 1}`}
+            title={`Link to page ${currentPage + 1}`}
           >
             <Share2 className="h-4 w-4" />
           </button>
