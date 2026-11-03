@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TC, CATEGORIES, STATUSES, today } from '@/components/admin/timecard/timecardConfig';
+import RoomsWorkedField from '@/components/admin/timecard/RoomsWorkedField';
 
 const FIELD =
   'w-full rounded-lg px-2.5 py-2 text-sm outline-none focus:ring-1';
@@ -23,6 +24,8 @@ const blank = (kind = 'time') => ({
   reimbursable: false,
   status: 'draft',
   notes: '',
+  event_title: '',
+  rooms_worked: [],
 });
 
 // One sheet for both kinds of entry: the kind sets which figures are asked for, and
@@ -80,6 +83,13 @@ export default function TimecardEntryForm({ entry = null, onCancel, onSave }) {
       amount_cents: form.kind === 'time' ? Math.round(hours * rate * 100) : Math.round(amount * 100),
       billable: !!form.billable,
       reimbursable: !!form.reimbursable,
+      event_title: form.kind === 'time' ? form.event_title.trim() : '',
+      rooms_worked:
+        form.kind === 'time'
+          ? (form.rooms_worked || [])
+              .filter((room) => room.room_key)
+              .map((room) => ({ room_key: room.room_key, minutes: Math.round(Number(room.minutes) || 0) }))
+          : [],
       status: form.status,
       notes: form.notes.trim(),
     };
@@ -196,6 +206,26 @@ export default function TimecardEntryForm({ entry = null, onCancel, onSave }) {
           Reimbursable
         </label>
       </div>
+
+      {form.kind === 'time' && (
+        <div className="space-y-2.5">
+          <RoomsWorkedField
+            rooms={form.rooms_worked}
+            hours={form.hours}
+            onChange={(rooms) => setForm((prev) => ({ ...prev, rooms_worked: rooms }))}
+          />
+          <label className="block">
+            <span className="text-[10px] uppercase tracking-wider" style={{ color: TC.soft }}>Event covered</span>
+            <input
+              value={form.event_title}
+              onChange={set('event_title')}
+              className={FIELD}
+              style={fieldStyle}
+              placeholder="Leave blank when the hours were not held for an event"
+            />
+          </label>
+        </div>
+      )}
 
       <label className="block">
         <span className="text-[10px] uppercase tracking-wider" style={{ color: TC.soft }}>Note</span>

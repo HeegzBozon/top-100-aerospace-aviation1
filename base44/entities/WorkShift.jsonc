@@ -1,0 +1,92 @@
+{
+  "name": "WorkShift",
+  "type": "object",
+  "properties": {
+    "person": {
+      "type": "string",
+      "description": "Who the row belongs to: the person scheduled, away, or available."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "shift",
+        "vacation",
+        "sick",
+        "out",
+        "availability"
+      ],
+      "default": "shift",
+      "description": "What the row is. 'shift' is a dated stint of work; 'vacation', 'sick' and 'out' are dated absences; 'availability' is one day of the person's general weekly pattern and carries weekday instead of a date."
+    },
+    "shift_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The day a shift or an absence falls on. Empty on availability rows."
+    },
+    "weekday": {
+      "type": "number",
+      "description": "Day of the week for an availability row: 0 = Monday through 6 = Sunday. Empty on dated rows."
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Wall-clock start of the shift or the availability window, local to the person (e.g. 09:00)."
+    },
+    "end_time": {
+      "type": "string",
+      "description": "Wall-clock end of the shift or the availability window, local to the person (e.g. 13:00)."
+    },
+    "timezone": {
+      "type": "string",
+      "description": "The zone the clock times are read in, e.g. America/Los_Angeles."
+    },
+    "room_key": {
+      "type": "string",
+      "description": "The campus room the shift is posted to, keyed to the Colony rooms (hall, innovation-expo, media-hub, \u2026). Used to see which rooms are staffed."
+    },
+    "event_title": {
+      "type": "string",
+      "description": "The event or programme the shift covers, when the room is being held for one. Display and staffing only; never read by discovery, ranking or scoring."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "worked",
+        "covered",
+        "cancelled"
+      ],
+      "default": "scheduled",
+      "description": "Where a dated shift stands: on the rota, worked, handed to cover, or called off."
+    },
+    "note": {
+      "type": "string",
+      "description": "Short note shown with the row \u2014 why someone is out, who is covering, what the shift is for."
+    }
+  },
+  "required": [
+    "person",
+    "kind"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

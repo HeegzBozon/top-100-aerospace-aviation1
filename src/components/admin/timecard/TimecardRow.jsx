@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp, Clock, Pencil, Receipt, Trash2 } from 'lucide-react';
 import { TC, STATUS_TONE, amountOf, dayLabel, money } from '@/components/admin/timecard/timecardConfig';
 import { minutesLabel } from '@/components/admin/timecard/worklogConfig';
+import { roomLabel } from '@/components/admin/timecard/scheduleConfig';
 
 const clockOf = (value) => (value ? String(value).slice(11, 16) : '');
 
@@ -13,7 +14,8 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
   const Glyph = isTime ? Clock : Receipt;
   const tasks = Array.isArray(entry.task_lines) ? entry.task_lines : [];
   const deliverables = Array.isArray(entry.deliverables) ? entry.deliverables : [];
-  const hasDetail = tasks.length > 0 || deliverables.length > 0 || !!entry.source_label;
+  const rooms = Array.isArray(entry.rooms_worked) ? entry.rooms_worked : [];
+  const hasDetail = tasks.length > 0 || deliverables.length > 0 || rooms.length > 0 || !!entry.source_label;
   const [open, setOpen] = useState(false);
 
   const start = clockOf(entry.session_start);
@@ -44,6 +46,14 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
                 session
               </span>
             )}
+            {entry.event_title && (
+              <span
+                className="rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em]"
+                style={{ color: '#8fd3e8', border: '1px solid rgba(143,211,232,0.35)' }}
+              >
+                {entry.event_title}
+              </span>
+            )}
           </div>
           <p className="mt-0.5 text-[11px]" style={{ color: TC.soft }}>
             {dayLabel(entry.entry_date)}
@@ -52,6 +62,7 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
             {isTime ? ` · ${(entry.hours || 0).toFixed(2)} h` : ` · ${entry.category || 'other'}`}
             {entry.billable ? ' · billable' : ''}
             {entry.reimbursable ? ' · reimbursable' : ''}
+            {rooms.length > 0 ? ` · ${rooms.map((room) => roomLabel(room.room_key)).join(', ')}` : ''}
           </p>
           {entry.notes && <p className="mt-1 text-[11px] italic" style={{ color: '#4e677d' }}>{entry.notes}</p>}
         </div>
@@ -108,6 +119,17 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
                   >
                     {task.estimated === false ? 'logged' : 'est.'}
                   </span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {rooms.length > 0 && (
+            <ul className="space-y-0.5">
+              {rooms.map((room, index) => (
+                <li key={index} className="flex items-baseline gap-2 text-[11px]">
+                  <span className="tabular-nums" style={{ color: TC.soft }}>{minutesLabel(room.minutes)}</span>
+                  <span className="min-w-0 flex-1" style={{ color: '#a8bed2' }}>{roomLabel(room.room_key)}</span>
                 </li>
               ))}
             </ul>

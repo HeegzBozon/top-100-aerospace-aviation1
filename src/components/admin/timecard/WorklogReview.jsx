@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AlertTriangle, Clock, Plus, Trash2 } from 'lucide-react';
 import { CATEGORIES, STATUSES, TC } from '@/components/admin/timecard/timecardConfig';
+import RoomsWorkedField from '@/components/admin/timecard/RoomsWorkedField';
 import {
   hoursFromMinutes,
   minutesLabel,
@@ -51,6 +52,8 @@ export default function WorklogReview({ initial, duplicate, onCancel, onSave }) 
 
   const dropTask = (index) =>
     setReview((prev) => ({ ...prev, tasks: prev.tasks.filter((_, i) => i !== index) }));
+
+  const setRooms = (rooms) => setReview((prev) => ({ ...prev, rooms_worked: rooms }));
 
   const reported = Math.round(Number(review.duration_minutes) || 0);
   const split = splitMinutes(review);
@@ -253,6 +256,21 @@ export default function WorklogReview({ initial, duplicate, onCancel, onSave }) 
             </button>
           </div>
         ))}
+      </div>
+
+      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <RoomsWorkedField rooms={review.rooms_worked} hours={hoursFromMinutes(reported)} onChange={setRooms} />
+        </div>
+        <Field title="Event covered" span>
+          <input
+            value={review.event_title}
+            onChange={set('event_title')}
+            className={FIELD}
+            style={fieldStyle}
+            placeholder="Held a room for an event — name it here"
+          />
+        </Field>
       </div>
 
       <Field title="Deliverables (one per line)">

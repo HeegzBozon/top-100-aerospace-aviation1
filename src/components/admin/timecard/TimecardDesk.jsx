@@ -7,6 +7,7 @@ import TimecardEntryForm from '@/components/admin/timecard/TimecardEntryForm';
 import TimecardRow from '@/components/admin/timecard/TimecardRow';
 import WorklogImport from '@/components/admin/timecard/WorklogImport';
 import WorklogReview from '@/components/admin/timecard/WorklogReview';
+import SchedulePanel from '@/components/admin/timecard/SchedulePanel';
 
 // The desk the platform's own hours and receipts are kept on: one ledger of time and
 // expenses, filed against a project, settled through approval. Admin-only — the record
@@ -20,6 +21,7 @@ export default function TimecardDesk() {
   const [importing, setImporting] = useState(false);
   const [parsed, setParsed] = useState(null);
   const [duplicate, setDuplicate] = useState(null);
+  const [view, setView] = useState('ledger');
 
   const load = useCallback(async () => {
     setState('loading');
@@ -90,13 +92,30 @@ export default function TimecardDesk() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0.5 rounded-lg p-0.5" style={{ border: `1px solid ${TC.line}` }}>
+            {[
+              ['ledger', 'Ledger'],
+              ['schedule', 'Schedule'],
+            ].map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => setView(key)}
+                className="rounded-md px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider"
+                style={view === key ? { background: TC.copper, color: '#fff' } : { color: TC.soft }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {view === 'ledger' && (
           <button
             onClick={load}
             className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium"
             style={{ background: 'rgba(255,255,255,0.06)', color: TC.ink, border: `1px solid ${TC.line}` }}
           >
             <RefreshCw className="h-3.5 w-3.5" /> Re-read
-          </button>
+          </button>)}
+          {view === 'ledger' && (
           <button
             onClick={() => {
               setParsed(null);
@@ -111,17 +130,22 @@ export default function TimecardDesk() {
             }
           >
             <ClipboardPaste className="h-3.5 w-3.5" /> Import work log
-          </button>
+          </button>)}
+          {view === 'ledger' && (
           <button
             onClick={() => setDraft({})}
             className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold"
             style={{ background: TC.copper, color: '#fff' }}
           >
             <Plus className="h-4 w-4" /> New entry
-          </button>
+          </button>)}
         </div>
       </div>
 
+      {view !== 'ledger' && <SchedulePanel />}
+
+      {view === 'ledger' && (
+      <>
       <TimecardSummary entries={entries} />
 
       {importing && (
@@ -215,6 +239,8 @@ export default function TimecardDesk() {
             <TimecardRow key={entry.id} entry={entry} onEdit={setDraft} onDelete={remove} />
           ))}
         </div>
+      )}
+      </>
       )}
     </div>
   );

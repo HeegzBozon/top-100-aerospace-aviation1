@@ -31,6 +31,8 @@ export const reviewOf = (draft = {}) => ({
   description: draft.summary || '',
   payee: draft.person || '',
   project: draft.project || '',
+  event_title: draft.event_title || '',
+  rooms_worked: [],
   category: CATEGORIES.includes(draft.category) ? draft.category : 'editorial',
   rate: '',
   billable: true,
@@ -90,6 +92,10 @@ export const payloadOf = (review) => {
       .split('\n')
       .map((line) => line.trim())
       .filter(Boolean),
+    event_title: (review.event_title || '').trim(),
+    rooms_worked: (review.rooms_worked || [])
+      .filter((room) => room.room_key)
+      .map((room) => ({ room_key: room.room_key, minutes: Math.round(Number(room.minutes) || 0) })),
     source_fingerprint: review.fingerprint,
     source_label: review.source_label,
     source_text: review.source_text,

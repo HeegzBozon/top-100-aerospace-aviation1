@@ -138,6 +138,28 @@
       "default": [],
       "description": "What the session produced: drafts, files, links or decisions, kept with the session as evidence."
     },
+    "rooms_worked": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "room_key": {
+            "type": "string",
+            "description": "The campus room (a Colony room key such as hall, innovation-expo, media-hub) the time was spent in."
+          },
+          "minutes": {
+            "type": "number",
+            "description": "Minutes recorded in that room. Rooms do not have to add up to the session: part of a shift can be off the floor."
+          }
+        }
+      },
+      "default": [],
+      "description": "Where the hours were actually spent on campus, one stint per room. Kept apart from the task split: a job can be done from any room, and a room can hold several jobs. Never read by discovery, ranking or scoring."
+    },
+    "event_title": {
+      "type": "string",
+      "description": "The event or programme the hours were worked under, when the room was being held for one. Display and staffing only."
+    },
     "source_fingerprint": {
       "type": "string",
       "description": "Stable hash of the session's date, clock times, project and summary. Second import of the same log is recognised by it."
