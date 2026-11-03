@@ -37,6 +37,19 @@ export default function GalagaGame({ onScore }) {
 
   useEffect(() => { onScore?.(score); }, [score]);
 
+  // The console's centre and its A key reach the machine as a Space press, so a cabinet can
+  // be opened from the hardware as well as from the coin key on the glass.
+  useEffect(() => {
+    if (started) return undefined;
+    const onKey = (e) => {
+      if (e.key !== ' ' && e.key !== 'Enter') return;
+      e.preventDefault();
+      resetGame();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [started]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const initEnemies = () => {
     const enemies = [];
     for (let row = 0; row < ENEMY_ROWS; row++) {
@@ -267,10 +280,10 @@ export default function GalagaGame({ onScore }) {
   return (
     <div className="relative flex w-full flex-col items-center justify-center p-3">
       {!started ? (
-        <div className="py-10 text-center">
+        <div className="py-6 text-center md:py-10">
           <p className="text-[10px] uppercase tracking-[0.3em] text-editorial-gold/80">Attract mode</p>
-          <h2 className="mb-3 mt-2 font-heading text-3xl text-editorial-cream">Space Invaders</h2>
-          <p className="mb-6 text-sm text-editorial-cream/60">Arrow keys or A and D to move. Space to fire.</p>
+          <h2 className="mb-2 mt-1 font-heading text-2xl text-editorial-cream md:mb-3 md:mt-2 md:text-3xl">Space Invaders</h2>
+          <p className="mb-5 text-xs text-editorial-cream/60 md:mb-6 md:text-sm">Steer left and right. Fire to answer.</p>
           <button
             onClick={resetGame}
             className="rounded border border-editorial-copper/70 bg-editorial-copper/20 px-8 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-editorial-cream transition-colors hover:bg-editorial-copper/35"
@@ -280,15 +293,18 @@ export default function GalagaGame({ onScore }) {
         </div>
       ) : (
         <>
-          <div className="mb-3 flex w-full max-w-[600px] justify-between text-editorial-cream">
-            <div className="text-lg">Score: <span className="font-bold text-yellow-400">{score}</span></div>
-            <div className="text-lg">Lives: <span className="font-bold text-red-400">{"❤️".repeat(lives)}</span></div>
+          <div className="mb-2 flex w-full max-w-[600px] justify-between text-[11px] text-editorial-cream md:mb-3 md:text-lg">
+            <div>Score: <span className="font-bold text-yellow-400">{score}</span></div>
+            <div>Lives: <span className="font-bold text-red-400">{"❤️".repeat(lives)}</span></div>
           </div>
+          {/* The picture keeps its 6:5 plate and sits inside the glass it is given: it is
+              measured from the height of the glass as well as its width, so the cabinet's
+              keys are never pushed below the screen on a phone. */}
           <canvas
             ref={canvasRef}
             width={GAME_WIDTH}
             height={GAME_HEIGHT}
-            className="arcade-canvas h-auto w-full max-w-[600px]"
+            className="arcade-canvas mx-auto block h-auto max-h-[44vh] w-auto max-w-full touch-none md:max-h-[62vh]"
           />
           {gameOver && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/70">

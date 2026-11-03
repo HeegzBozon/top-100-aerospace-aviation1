@@ -26,6 +26,19 @@ export default function MissileCommandGame({ onScore }) {
 
   useEffect(() => { onScore?.(score); }, [score]);
 
+  // The console's centre and its A key reach the machine as a Space press: the cabinet opens
+  // from the hardware, and the battery is fired by tapping the glass itself.
+  useEffect(() => {
+    if (started) return undefined;
+    const onKey = (e) => {
+      if (e.key !== ' ' && e.key !== 'Enter') return;
+      e.preventDefault();
+      resetGame();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [started]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const initGame = () => ({
     cities: [
       { x: 60, alive: true },
@@ -315,11 +328,11 @@ export default function MissileCommandGame({ onScore }) {
   return (
     <div className="relative flex w-full flex-col items-center justify-center p-3">
       {!started ? (
-        <div className="py-10 text-center">
+        <div className="py-6 text-center md:py-10">
           <p className="text-[10px] uppercase tracking-[0.3em] text-editorial-gold/80">Attract mode</p>
-          <h2 className="mb-3 mt-2 font-heading text-3xl text-editorial-cream">Missile Command</h2>
-          <p className="mb-1 text-sm text-editorial-cream/60">Tap the sky to launch an interceptor.</p>
-          <p className="mb-6 text-sm text-editorial-cream/60">Six cities. Keep them lit.</p>
+          <h2 className="mb-2 mt-1 font-heading text-2xl text-editorial-cream md:mb-3 md:mt-2 md:text-3xl">Missile Command</h2>
+          <p className="mb-1 text-xs text-editorial-cream/60 md:text-sm">Tap the sky to launch an interceptor.</p>
+          <p className="mb-5 text-xs text-editorial-cream/60 md:mb-6 md:text-sm">Six cities. Keep them lit.</p>
           <button
             onClick={resetGame}
             className="rounded border border-editorial-copper/70 bg-editorial-copper/20 px-8 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-editorial-cream transition-colors hover:bg-editorial-copper/35"
@@ -329,7 +342,7 @@ export default function MissileCommandGame({ onScore }) {
         </div>
       ) : (
         <>
-          <div className="mb-3 flex w-full max-w-[600px] flex-wrap justify-between gap-2 text-sm text-editorial-cream">
+          <div className="mb-2 flex w-full max-w-[600px] flex-wrap justify-between gap-x-3 gap-y-1 text-[11px] text-editorial-cream md:mb-3 md:text-sm">
             <div>Score: <span className="font-bold text-editorial-gold">{score}</span></div>
             <div>Wave: <span className="font-bold text-editorial-cream">{wave}</span></div>
             <div>Ammo: <span className="font-bold text-editorial-cream/70">{ammo}</span></div>
@@ -339,7 +352,7 @@ export default function MissileCommandGame({ onScore }) {
             ref={canvasRef}
             width={GAME_WIDTH}
             height={GAME_HEIGHT}
-            className="arcade-canvas h-auto w-full max-w-[600px] cursor-crosshair"
+            className="arcade-canvas mx-auto block h-auto max-h-[44vh] w-auto max-w-full cursor-crosshair touch-none md:max-h-[62vh]"
           />
           {gameOver && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/70">
