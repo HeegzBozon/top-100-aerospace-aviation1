@@ -215,7 +215,7 @@ export function buildEntryFields({ entry, issue, articles = [] }) {
       { key: 'subtitle', label: 'Issue subtitle', kind: 'text', value: issue.subtitle || '' },
       { key: 'cover_kicker', label: 'Cover line', kind: 'text', value: issue.cover_kicker || '' },
       { key: 'preface', label: "Editor's letter", kind: 'long', value: issue.preface || '' },
-      { key: 'colophon', label: 'Colophon', kind: 'long', value: issue.colophon || '' },
+      { key: 'colophon', label: 'Ad Astra', kind: 'long', value: issue.colophon || '' },
     ];
   }
 

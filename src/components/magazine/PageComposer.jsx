@@ -56,7 +56,7 @@ export default function PageComposer({ issue, pages, articles, onCreate, onUpdat
           <div>
             <h3 className="text-sm font-serif mb-2" style={{ color: P.navy }}>Pages ({pages.length})</h3>
             <div className="flex gap-1.5">
-              <button onClick={onGenerate} className="mag-btn-primary text-xs px-3 py-1.5" title="Auto-generate cover, TOC, article pages, and colophon from the issue blueprint and articles">
+              <button onClick={onGenerate} className="mag-btn-primary text-xs px-3 py-1.5" title="Auto-generate cover, TOC, article pages, and Ad Astra from the issue blueprint and articles">
                 <Sparkles className="w-3.5 h-3.5 inline mr-1" /> Generate
               </button>
               <button onClick={handleCreate} className="text-xs px-3 py-1.5 rounded-full transition-all hover:opacity-80" style={{ border: `1px solid ${P.navy}30`, color: P.navy }}>

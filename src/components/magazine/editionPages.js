@@ -532,7 +532,7 @@ export function buildEditionPages(issue, articles, blockMap, fields = {}) {
     layout_type: 'colophon',
     status: 'draft',
     content_blocks: [
-      { type: 'heading', text: 'Colophon', level: 1 },
+      { type: 'heading', text: 'Ad Astra', level: 1 },
       { type: 'body', text: issue.colophon || '' },
     ],
   });

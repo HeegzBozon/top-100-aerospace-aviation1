@@ -335,7 +335,7 @@ export function downloadIssuePdf({ issue = {}, pages = [], articles = [] } = {})
     doc.text(`${INSTITUTION} · ${index + 2}`, margin, height - 10);
   });
 
-  // ── Colophon ──
+  // ── Ad Astra (the closing page) ──
   if (words(issue.colophon)) {
     doc.addPage();
     const leaf = openLeaf(doc);
@@ -343,6 +343,10 @@ export function downloadIssuePdf({ issue = {}, pages = [], articles = [] } = {})
     doc.setDrawColor(...GOLD);
     doc.line(margin, closeY, width - margin, closeY);
     closeY += 9;
+    doc.setFont('times', 'normal').setFontSize(15).setTextColor(...GOLD);
+    doc.text('Ad Astra', margin, closeY);
+    closeY += 14;
+    doc.setTextColor(...MUTED);
     flow(doc, issue.colophon, { x: margin, y: closeY, measure, margin, height, size: 10, leading: 5.6, color: MUTED });
   }
 

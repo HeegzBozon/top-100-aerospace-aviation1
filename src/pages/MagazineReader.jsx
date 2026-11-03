@@ -13,6 +13,7 @@ import useIssueEditMenu from '@/components/magazine/glass/useIssueEditMenu';
 import useIssueFileMenu from '@/components/magazine/glass/useIssueFileMenu';
 import { useToast } from '@/components/ui/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { SKIM_SPEED } from '@/components/magazine/useCinematicPlayback';
 
 export default function MagazineReader() {
   const { issueId } = useParams();
@@ -30,7 +31,9 @@ export default function MagazineReader() {
   const [mode, setMode] = useState('flipbook'); // flipbook | single
   const [pdfSignedUrl, setPdfSignedUrl] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  // Every issue, volume and flipbook opens with its film on Skim: a quick pass through the
+  // book first, and the reader slows it down where a page earns the time.
+  const [playbackSpeed, setPlaybackSpeed] = useState(SKIM_SPEED);
 
   // Load issue and pages
   useEffect(() => {

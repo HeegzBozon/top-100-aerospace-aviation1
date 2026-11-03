@@ -8,7 +8,7 @@ export default function ColophonSpread({ edition, nominee, settings, accent }) {
       <div className="h-1 w-16 mb-8" style={{ background: accent }} />
 
       <div className="text-[10px] font-bold uppercase tracking-[0.3em] mb-4" style={{ color: B.gold }}>
-        Colophon
+        Ad Astra
       </div>
 
       <h3 className="text-2xl mb-6" style={{ color: B.cream, fontFamily: "'Playfair Display', Georgia, serif" }}>

@@ -288,7 +288,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     return (
       <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center" style={{ background: P.cream }}>
         <div className="w-10 h-px mb-6" style={{ background: P.copper }} />
-        <p className="font-serif text-base mb-4" style={{ color: P.navy }}>Colophon</p>
+        <p className="font-serif text-base mb-4" style={{ color: P.navy }}>Ad Astra</p>
         <p className="text-xs leading-relaxed max-w-xs" style={{ color: 'rgba(30,58,90,0.6)' }}>
           {issue.colophon || 'TOP 100 Aerospace & Aviation. An institutional publication.'}
         </p>

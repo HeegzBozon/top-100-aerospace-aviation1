@@ -210,11 +210,11 @@ export default function IssueBlueprint({ issue, articles, pages, onUpdate }) {
       </Section>
 
       {/* Editor's Letter & Colophon */}
-      <Section title="Editor's Letter & Colophon">
+      <Section title="Editor's Letter & Ad Astra">
         <Field label="Editor's Letter (Preface)">
           <textarea value={preface} onChange={(e) => setPreface(e.target.value)} rows={5} className="mag-input" placeholder="The opening letter from the editor..." />
         </Field>
-        <Field label="Colophon (Closing)">
+        <Field label="Ad Astra (Closing)">
           <textarea value={colophon} onChange={(e) => setColophon(e.target.value)} rows={3} className="mag-input" placeholder="Closing institutional matter..." />
         </Field>
       </Section>

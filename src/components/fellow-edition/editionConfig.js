@@ -4,7 +4,7 @@
 
 export const LOCKED_SPREADS = [
   { key: 'cover', label: 'Cover', lock: 'first' },
-  { key: 'colophon', label: 'Colophon', lock: 'last' },
+  { key: 'colophon', label: 'Ad Astra', lock: 'last' },
 ];
 
 export const SPREADS = [

@@ -14,7 +14,7 @@ export function pageLabel(page) {
   if (page.layout_type === 'toc') return 'Contents';
   const heading = (page.content_blocks || []).find((block) => block.type === 'heading' && block.text)?.text;
   if (heading) return heading;
-  if (page.layout_type === 'colophon') return 'Colophon';
+  if (page.layout_type === 'colophon') return 'Ad Astra';
   return layoutLabel(page.layout_type);
 }
 

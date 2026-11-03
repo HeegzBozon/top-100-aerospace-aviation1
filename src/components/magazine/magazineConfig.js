@@ -18,7 +18,7 @@ export const SECTION_TYPES = [
   { key: 'profile', label: 'Profile', description: 'Fellow or Nominee profile features' },
   { key: 'feature', label: 'Feature', description: 'Major editorial features' },
   { key: 'results', label: 'Results', description: 'Official measurement results' },
-  { key: 'colophon', label: 'Colophon', description: 'Closing institutional matter' },
+  { key: 'colophon', label: 'Ad Astra', description: 'Closing institutional matter' },
 ];
 
 export const SECTION_GROUPS = [
@@ -55,7 +55,7 @@ export const PAGE_LAYOUTS = [
   { key: 'profile', label: 'Profile', description: 'Profile portrait page' },
   { key: 'chapter_divider', label: 'Chapter Divider', description: 'Section break with chapter label' },
   { key: 'pull_quote', label: 'Pull Quote', description: 'Full-bleed breakaway quote' },
-  { key: 'colophon', label: 'Colophon', description: 'Closing colophon' },
+  { key: 'colophon', label: 'Ad Astra', description: 'Closing page' },
   { key: 'pdf_page', label: 'PDF Page', description: 'Rendered PDF page (PDF mode)' },
 ];
 
@@ -104,7 +104,7 @@ export const DEFAULT_SECTIONS = [
   { id: 'sec-features', name: 'Features', section_type: 'feature', order: 2 },
   { id: 'sec-profiles', name: 'Profiles', section_type: 'profile', order: 3 },
   { id: 'sec-results', name: 'The Measurement', section_type: 'results', order: 4 },
-  { id: 'sec-colophon', name: 'Colophon', section_type: 'colophon', order: 5 },
+  { id: 'sec-colophon', name: 'Ad Astra', section_type: 'colophon', order: 5 },
 ];
 
 // Volume IV flagship blueprint — the September-issue model.
