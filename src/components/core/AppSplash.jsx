@@ -18,7 +18,8 @@ export default function AppSplash() {
   const [phase] = useState(() => hourPhase());
   const [line] = useState(() => pickLine(phase));
   const [hint] = useState(() => pickHint());
-  const [who, setWho] = useState(() => ({ back: isReturningVisitor(), first: "" }));
+  // Read before the visit is marked, so a first visit is never greeted as a return.
+  const [who, setWho] = useState(() => ({ back: false, first: "" }));
   const [leaving, setLeaving] = useState(false);
   const [gone, setGone] = useState(false);
 
@@ -26,6 +27,8 @@ export default function AppSplash() {
 
   // A welcome, and the first mark this device leaves.
   useEffect(() => {
+    const returning = isReturningVisitor();
+    setWho((prev) => ({ ...prev, back: returning }));
     markVisit();
     // The static card in index.html has been on screen since the document arrived.
     // This card is now painted over it, so the handover can be made.

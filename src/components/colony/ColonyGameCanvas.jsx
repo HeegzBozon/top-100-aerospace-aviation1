@@ -405,9 +405,11 @@ export default function ColonyGameCanvas({ mapUrl, room = 'lobby', zones = [], s
       // A door underfoot wins; otherwise the nearest character within reach offers to talk.
       let zone = zoneAt(cbRef.current.zones, s.playerCol, s.playerRow);
       if (!zone) {
+        // Standing beside someone is one cell away: a walking character passing nearby never
+        // puts a talk prompt on screen, and a prompt that is no longer true goes away.
         const near = cbRef.current.npcs
           .map(n => { const b = s.brain?.[n.id] || n; return { n, d: Math.hypot(b.col - s.playerCol, b.row - s.playerRow) }; })
-          .filter(x => x.d <= 2.5).sort((a, b) => a.d - b.d)[0];
+          .filter(x => x.d <= 1.5).sort((a, b) => a.d - b.d)[0];
         if (near) zone = { key: `npc-${near.n.id}`, npc: near.n.id, label: `Talk to ${near.n.name}` };
       }
       if (zone?.key !== zoneRef.current?.key) {

@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import DialogueBox from '@/components/colony/DialogueBox';
 import useWheelConfirm from '@/components/colony/useWheelConfirm';
 import ColonyAvatarPicker from '@/components/colony/ColonyAvatarPicker';
-import { cleanAvatar, randomGuestAvatar, guestAvatarPrompt, avatarPrompt, DEFAULT_AVATAR } from '@/components/colony/colonyAvatar';
+import { cleanAvatar, randomGuestAvatar, DEFAULT_AVATAR } from '@/components/colony/colonyAvatar';
 
 const SCENE = 'https://media.base44.com/images/public/68996845be6727838fdb822e/9ba8ca48d_AerospaceConciergeWelcomeHub.png';
 
@@ -19,22 +19,18 @@ export default function ColonyOnboarding({ isGuest, memberName, onDone }) {
   const who = name.trim().split(' ')[0] || 'friend';
 
   const lines = [
-    "Aloha, and welcome to the TOP 100 Aerospace & Aviation campus! I'm Matthew, your concierge.",
+    "Welcome to the TOP 100 Aerospace & Aviation campus. The guide at this desk is an AI concierge — everything here is open to look around.",
     "This is where the people shaping aerospace meet, talk and get introduced. Every room has someone worth knowing.",
     isGuest ? "Before I let you through, what should everyone call you?" : `Great to have you here, ${who}.`,
     `${who}! Love it. Now let's make the character you'll walk the campus as.`,
   ];
 
-  // Make a first character the moment we reach the avatar step.
+  // A first character from the kit, drawn at once: nothing is generated, and nothing is
+  // spent, unless the visitor asks for a portrait from the character panel.
   useEffect(() => {
     if (step !== 4 || started.current) return;
     started.current = true;
-    setBusy(true);
-    const kit = isGuest ? randomGuestAvatar() : DEFAULT_AVATAR;
-    base44.integrations.Core.GenerateImage({ prompt: isGuest ? guestAvatarPrompt(kit) : avatarPrompt(kit) })
-      .then(({ url }) => setAvatar(cleanAvatar({ ...kit, image: url })))
-      .catch(() => setAvatar(cleanAvatar(kit)))
-      .finally(() => setBusy(false));
+    setAvatar(cleanAvatar(isGuest ? randomGuestAvatar() : DEFAULT_AVATAR));
   }, [step, isGuest]);
 
   const save = async (next) => {

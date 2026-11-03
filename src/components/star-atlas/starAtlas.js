@@ -9,16 +9,25 @@ export const STAR_FIELDS = ['id', 'name', 'title', 'company', 'industry', 'count
 const WPM = 230;
 export const dwellMs = (text) => Math.max(4000, Math.round(((text || '').split(/\s+/).length / WPM) * 60000) + 1200);
 
+// A passage is never cut inside a word: an over-long sentence is trimmed back to its last
+// whole word and closed with an ellipsis, so a card never ends mid-syllable.
+const clip = (text, max) => {
+  if (text.length <= max) return text.trim();
+  const cut = text.slice(0, max);
+  const at = cut.lastIndexOf(' ');
+  return `${(at > max * 0.6 ? cut.slice(0, at) : cut).trim()}…`;
+};
+
 // Story sections cut into glass-sized cards on sentence boundaries (~260 chars each).
 export function storyCards(n) {
   const out = [];
   storyOf(n).forEach(({ label, text }) => {
     let buf = '';
     (text.match(/[^.!?]+[.!?]*\s*/g) || [text]).forEach(s => {
-      if (buf && (buf + s).length > 260) { out.push({ label, text: buf.trim() }); buf = ''; }
+      if (buf && (buf + s).length > 260) { out.push({ label, text: clip(buf, 300) }); buf = ''; }
       buf += s;
     });
-    if (buf.trim()) out.push({ label, text: buf.trim() });
+    if (buf.trim()) out.push({ label, text: clip(buf, 300) });
   });
   return out.map((c, i, all) => ({ ...c, part: all.filter(x => x.label === c.label).length > 1 ? all.slice(0, i + 1).filter(x => x.label === c.label).length : 0 }));
 }
@@ -45,10 +54,19 @@ export const DISCIPLINE_TITLES = {
   policy: 'Shapers of Policy', entrepreneurship: 'Founders of New Ventures',
 };
 
+// The exhibit reads the public record only, and says nothing where the record has nothing:
+// a field that is empty, a placeholder, or a truncated fragment is left out rather than shown.
+const usable = (v) => {
+  const s = String(v || '').trim();
+  if (s.length < 12) return '';
+  if (/^(n\/?a|none|not found|null|undefined|tbd)[.!]?$/i.test(s)) return '';
+  return s;
+};
+
 export const storyOf = (n) => [
-  n.description && { label: 'In one line', text: n.description },
-  n.linkedin_proudest_achievement && { label: 'Proudest work', text: n.linkedin_proudest_achievement },
-  (n.impact_summary || n.bio) && { label: 'The story', text: (n.impact_summary || n.bio).slice(0, 600) },
+  usable(n.description) && { label: 'In one line', text: usable(n.description) },
+  usable(n.linkedin_proudest_achievement) && { label: 'Proudest work', text: usable(n.linkedin_proudest_achievement) },
+  usable(n.impact_summary || n.bio) && { label: 'The story', text: usable(n.impact_summary || n.bio) },
 ].filter(Boolean);
 
 export const litIn = (passport, c) => (c.nominee_ids || []).filter(id => passport?.stars?.[id]).length;

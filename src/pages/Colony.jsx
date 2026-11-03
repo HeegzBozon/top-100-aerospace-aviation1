@@ -118,8 +118,10 @@ function ColonyRoom({ onReplayWelcome }) {
   const [callState, setCallState] = useState('lobby'); // lobby | joining | joined | error
   const [participants, setParticipants] = useState({});
   const [localSessionId, setLocalSessionId] = useState(null);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isCamOff, setIsCamOff] = useState(false);
+  // Voice and camera start off, and stay off until the visitor presses a key: a walk around
+  // the campus never asks the browser for a device.
+  const [isMuted, setIsMuted] = useState(true);
+  const [isCamOff, setIsCamOff] = useState(true);
   // Carried across room changes, so a new room's call starts the way you left the last.
   const mutedRef = useRef(isMuted); mutedRef.current = isMuted;
   const camOffRef = useRef(isCamOff); camOffRef.current = isCamOff;
@@ -195,7 +197,7 @@ function ColonyRoom({ onReplayWelcome }) {
     callRef.current?.startCamera?.().then(() => {
       callRef.current.setLocalAudio(true); callRef.current.setLocalVideo(true);
       setIsMuted(false); setIsCamOff(false);
-    }).catch(() => setMediaError('Still blocked. Check your browser and device permissions for this site.'));
+    }).catch(() => setMediaError('Still blocked by your browser — nothing is being shared. You can keep exploring with voice and camera off.'));
   };
 
   const activateZone = useCallback((z) => {
@@ -278,15 +280,10 @@ function ColonyRoom({ onReplayWelcome }) {
     if (sessionStorage.getItem('colony-guest-name')) {
       setMe(null);
       if (guestAvatar) { setAvatar(cleanAvatar(JSON.parse(guestAvatar))); return; }
-      // A guest gets a mascot made for them straight away; they can customise it later.
+      // A guest walks as a mascot from the kit — drawn at once, nothing generated and nothing
+      // spent. A portrait is theirs to ask for, from the character panel.
       const kit = randomGuestAvatar();
       setAvatar(cleanAvatar(kit));
-      base44.integrations.Core.GenerateImage({ prompt: guestAvatarPrompt(kit) }).then(({ url }) => {
-        const next = cleanAvatar({ ...kit, image: url });
-        sessionStorage.setItem('colony-guest-avatar', JSON.stringify(next));
-        setAvatar(next);
-        if (myPosRef.current) { myPosRef.current = { ...myPosRef.current, avatar: next }; sendPos(); }
-      }).catch(() => {});
       return;
     }
     base44.auth.me().then(u => {
@@ -351,9 +348,12 @@ function ColonyRoom({ onReplayWelcome }) {
     const { room, token } = res.data;
     setRoomCopy(res.data.copy || 1);
 
+    // No local device is opened when the room is joined: Daily is handed no audio or video
+    // source, so entering a room raises no permission prompt. A track is only requested when
+    // the visitor presses the microphone or the camera (see the HUD handlers).
     const call = Daily.createCallObject({
-      audioSource: true,
-      videoSource: true,
+      audioSource: false,
+      videoSource: false,
       // Only the people standing near you are streamed down (see the proximity effect).
       subscribeToTracksAutomatically: false,
     });
@@ -380,9 +380,14 @@ function ColonyRoom({ onReplayWelcome }) {
       const next = { ...prev }; delete next[e.participant.session_id]; return next;
     }));
 
-    // Browser or device refused the camera/mic: say so instead of failing silently.
+    // Browser or device refused the camera/mic: say so in plain words, and say that nothing
+    // is being shared. A visitor who declines simply keeps walking the campus.
     call.on('camera-error', (e) => {
-      setMediaError(e?.error?.msg || e?.errorMsg?.errorMsg || 'Camera or microphone is blocked. Allow access in your browser settings, then tap Retry.');
+      const raw = String(e?.error?.msg || e?.errorMsg?.errorMsg || '');
+      const denied = /permission|notallowed|denied/i.test(raw);
+      setMediaError(denied
+        ? 'Your browser blocked the camera and microphone for this site — nothing is being shared. Allow access in your browser settings and press Retry, or leave them off and keep exploring.'
+        : 'The camera or microphone could not start — nothing is being shared. You can keep exploring, or press Retry.');
     });
     call.on('started-camera', () => setMediaError(''));
 
@@ -573,7 +578,7 @@ function ColonyRoom({ onReplayWelcome }) {
           <ColonyOnline participants={participantList} positions={positions} localSessionId={localSessionId} myRoom={room}
             onClose={() => setPanel(null)} onGo={(r) => { setPanel(null); setZone(null); setRoom(r); }} />
         )}
-        {panel === 'concierge' && <ColonyConcierge brief={briefSummary(brief)} onClose={() => setPanel(null)} />}
+        {panel === 'concierge' && <ColonyConcierge onClose={() => setPanel(null)} />}
         {panel === 'person' && (
           <ColonyPersonCard name={personName} onClose={() => setPanel(null)}
             onGo={(to) => { setPanel(null); navigate(to); }} onChat={() => setPanel('chat')} />

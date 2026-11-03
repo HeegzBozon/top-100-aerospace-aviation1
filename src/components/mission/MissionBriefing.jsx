@@ -19,11 +19,11 @@ const BRIEFINGS = [
     body:
       'Nominating is how the pool is made. One name is a nomination; your ballot is your own TOP 100, in order — so naming and ordering are one piece of work, and it is only counted once it is submitted.',
     results: [
-      'Nominate 1 person',
-      'Nominate 50 people',
-      'Nominate 100 people',
-      'Order your ballot',
-      'Submit',
+      'Name one person you vouch for',
+      'Build your list in order',
+      'Write a reason for each name',
+      'Check the field you have built',
+      'Submit your nominations',
     ],
   },
   {

@@ -6,7 +6,9 @@ import { AVATAR_OPTIONS, cleanAvatar, drawAvatar, randomGuestAvatar, guestAvatar
 
 const GROUPS = [['skin', 'Skin'], ['outfit', 'Outfit'], ['headgear', 'Headgear'], ['accent', 'Accent']];
 
-// Choose your Colony character from the curated kit.
+// Choose your Colony character from the curated kit. Changing any part puts the kit sprite
+// back on screen at once, so the choice you just made is the one you see — a generated
+// portrait is an extra, never a layer that hides the kit.
 export default function ColonyAvatarPicker({ avatar, isGuest = false, onSave, onClose, saveLabel = 'Save character' }) {
   const [draft, setDraft] = useState(cleanAvatar(avatar));
   const [saving, setSaving] = useState(false);
@@ -15,18 +17,20 @@ export default function ColonyAvatarPicker({ avatar, isGuest = false, onSave, on
   const [open, setOpen] = useState(false);
   const [regen, setRegen] = useState(false);
 
-  // A fresh character in one tap: a new mascot for guests, a new portrait of the kit for members.
-  const regenerate = async () => {
-    setRegen(true); setError('');
-    try {
-      const kit = isGuest ? randomGuestAvatar() : draft;
-      const { url } = await base44.integrations.Core.GenerateImage({ prompt: isGuest ? guestAvatarPrompt(kit) : avatarPrompt(kit) });
-      setDraft(cleanAvatar({ ...kit, image: url }));
-    } catch { setError('Generation failed. Try again.'); }
-    setRegen(false);
+  const pickPart = (key, value) => setDraft(d => {
+    const { image, ...rest } = d;
+    return cleanAvatar({ ...rest, [key]: value });
+  });
+
+  // A fresh character in one tap. A guest gets a mascot from the kit; a portrait is only
+  // drawn when a member asks for one, because it costs the house a generation.
+  const regenerate = () => {
+    setError('');
+    setDraft(cleanAvatar(randomGuestAvatar()));
   };
 
   useEffect(() => {
+    if (!ref.current) return;
     const ctx = ref.current.getContext('2d');
     ctx.clearRect(0, 0, 96, 96);
     drawAvatar(ctx, 48, 56, draft, 'down', 5);
@@ -45,7 +49,7 @@ export default function ColonyAvatarPicker({ avatar, isGuest = false, onSave, on
         <button onClick={onClose} aria-label="Close"><X className="h-4 w-4" /></button>
       </div>
       <canvas ref={ref} width={96} height={96} className={`mx-auto mb-2 rounded bg-editorial-cream/10 ${draft.image ? 'hidden' : 'block'}`} />
-      {draft.image && <img src={draft.image} alt="Your character" className="mx-auto mb-2 h-32 w-32 rounded bg-editorial-cream object-contain [image-rendering:pixelated]" />}
+      {draft.image && <img src={draft.image} alt="Your character" className="mx-auto mb-2 h-32 w-24 rounded bg-editorial-cream object-contain [image-rendering:pixelated]" />}
       <div className="mb-2 flex gap-2">
         <button onClick={regenerate} disabled={regen} className="flex flex-1 items-center justify-center gap-1.5 rounded border border-editorial-gold py-1.5 text-xs font-semibold text-editorial-gold">
           {regen ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Shuffle className="h-3.5 w-3.5" />} Shuffle
@@ -60,7 +64,7 @@ export default function ColonyAvatarPicker({ avatar, isGuest = false, onSave, on
           <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-editorial-gold">{label}</p>
           <div className="flex flex-wrap gap-1.5">
             {AVATAR_OPTIONS[k].map(o => (
-              <button key={o.key} onClick={() => setDraft(d => ({ ...d, [k]: o.key }))} title={o.label}
+              <button key={o.key} onClick={() => pickPart(k, o.key)} title={o.label} aria-pressed={draft[k] === o.key}
                 className={`rounded border px-2 py-1 text-xs ${draft[k] === o.key ? 'border-editorial-copper bg-editorial-copper/30' : 'border-editorial-cream/20'}`}>
                 {o.color ? <span className="block h-4 w-4 rounded-full" style={{ background: o.color }} /> : o.label}
               </button>
