@@ -6,8 +6,8 @@ import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
 import FlipPage, { PAGE_RATIO } from '@/components/magazine/FlipPage';
 import ReaderModeToggle from '@/components/magazine/ReaderModeToggle';
-import { useCinematicPlayback } from '@/components/magazine/useCinematicPlayback';
-import { PlayPauseButton, SpeedSelector, PlaybackProgress } from '@/components/magazine/PlaybackControls';
+import { useCinematicPlayback, SKIM_SPEED } from '@/components/magazine/useCinematicPlayback';
+import { PlayPauseButton, SpeedSelector, PlaybackProgress, ReadAlongToggle } from '@/components/magazine/PlaybackControls';
 import ReadProgressMeter from '@/components/magazine/ReadProgressMeter';
 import PageScrollRail from '@/components/magazine/PageScrollRail';
 import { clearIssueProgress, readIssueProgress, saveIssueProgress } from '@/lib/readingProgress';
@@ -59,6 +59,20 @@ export default function CinematicFlipbook({
   // past its frame and one that does not, and either can be put on hold by itself.
   const [pausedPages, setPausedPages] = useState({});
   const [rollable, setRollable] = useState({});
+  // Read along: the spread followed word by word at reading pace.
+  const [readAlong, setReadAlong] = useState(false);
+
+  // Switching it on slows a skimmed issue to one and starts the film, because a page turned
+  // every second and a half is not a page anyone can follow a word through.
+  const toggleReadAlong = useCallback(() => {
+    setReadAlong((on) => {
+      if (!on) {
+        if (speed === SKIM_SPEED) setSpeed(1);
+        setIsPlaying(true);
+      }
+      return !on;
+    });
+  }, [speed, setSpeed, setIsPlaying]);
 
   const reportOverflow = useCallback((key, hasOverflow) => {
     setRollable((prev) => (Boolean(prev[key]) === hasOverflow ? prev : { ...prev, [key]: hasOverflow }));
@@ -327,6 +341,8 @@ export default function CinematicFlipbook({
                       totalPages={totalPages}
                       playing={isPlaying && open}
                       autoscroll={open}
+                      active={open}
+                      readAlong={readAlong}
                       speed={typeof speed === 'number' ? speed : 1}
                       paused={paused}
                       onOverflow={reportOverflow}
@@ -408,6 +424,7 @@ export default function CinematicFlipbook({
           {isPlaying ? `${Math.round(progress * 100)}%` : ''}
         </span>
         <SpeedSelector speed={speed} onChange={setSpeed} />
+        <ReadAlongToggle on={readAlong} onToggle={toggleReadAlong} />
         <button
           onClick={flipNext}
           disabled={currentPage >= totalPages - 1}

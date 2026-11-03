@@ -3,7 +3,7 @@ import { BookOpen, List } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
 import { useNavHint } from '@/components/handheld/faceHint';
-import { useCinematicPlayback, PLAYBACK_SPEEDS } from '@/components/magazine/useCinematicPlayback';
+import { useCinematicPlayback, PLAYBACK_SPEEDS, SKIM_SPEED } from '@/components/magazine/useCinematicPlayback';
 import { buildIssueContents, buildNameIndex, foldLabel } from '@/components/magazine/glass/glassIssueEntries';
 import GlassIssuePage from '@/components/magazine/glass/GlassIssuePage';
 import GlassNameIndex from '@/components/magazine/glass/GlassNameIndex';
@@ -45,6 +45,20 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
     return Math.min(place + 1, Math.max(total, 1));
   });
   const [cursor, setCursor] = useState(0);
+  // Read along: the page followed word by word at reading pace.
+  const [readAlong, setReadAlong] = useState(false);
+
+  // Switching it on slows a skimmed issue to one and starts the film, because a page turned
+  // every second and a half is not a page anyone can follow a word through.
+  const toggleReadAlong = () => {
+    const next = !readAlong;
+    setReadAlong(next);
+    if (next) {
+      if (speed === SKIM_SPEED) setSpeed(1);
+      setIsPlaying(true);
+      if (view === 'contents') setView('page');
+    }
+  };
 
   const contents = useMemo(() => {
     if (isPdf) {
@@ -323,6 +337,8 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
           const i = PLAYBACK_SPEEDS.indexOf(speed);
           setSpeed(PLAYBACK_SPEEDS[(i + 1) % PLAYBACK_SPEEDS.length]);
         }}
+        readAlong={readAlong}
+        onToggleReadAlong={toggleReadAlong}
         progress={progress}
         onTurn={turn}
         onJumpSection={() => {

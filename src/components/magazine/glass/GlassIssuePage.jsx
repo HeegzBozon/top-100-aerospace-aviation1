@@ -1,4 +1,4 @@
-import { BookOpen, ChevronLeft, ChevronsRight, Gauge, Loader2, Pause, Play, SkipForward, Undo2 } from 'lucide-react';
+import { AlignLeft, BookOpen, ChevronLeft, ChevronsRight, Gauge, Loader2, Pause, Play, SkipForward, Undo2 } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
 import { foldLabel } from '@/components/magazine/glass/glassIssueEntries';
@@ -25,6 +25,8 @@ export default function GlassIssuePage({
   onTogglePlay,
   speed,
   onCycleSpeed,
+  readAlong = false,
+  onToggleReadAlong,
   progress,
   onTurn,
   onJumpSection,
@@ -103,6 +105,8 @@ export default function GlassIssuePage({
             totalPages={total}
             playing={playing}
             progress={progress}
+            speed={speed}
+            readAlong={readAlong}
           />
         ) : (
           <div className="flex h-full items-center justify-center p-6 text-center">
@@ -148,6 +152,19 @@ export default function GlassIssuePage({
           style={chrome}
         >
           <Gauge className="h-3 w-3" /> {speedLabel(speed)}
+        </button>
+
+        {/* Read along: the page followed word by word at reading pace */}
+        <button
+          type="button"
+          onClick={onToggleReadAlong}
+          aria-pressed={readAlong}
+          aria-label={readAlong ? 'Read along is on — follow the word' : 'Read along — follow the word at reading pace'}
+          title={readAlong ? 'Read along is on' : 'Read along'}
+          className="flex h-7 w-7 flex-none items-center justify-center rounded-full"
+          style={readAlong ? { background: P.copper, color: P.cream, border: `1px solid ${P.copper}` } : chrome}
+        >
+          <AlignLeft className="h-3 w-3" />
         </button>
 
         <div className="flex flex-none items-center gap-1.5">

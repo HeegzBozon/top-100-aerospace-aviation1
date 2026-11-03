@@ -11,6 +11,8 @@ import { CENTERFOLD_LABEL, HOUSE_AD_LABEL, PATRON_LABEL } from '@/components/mag
 import HonoreeLink, { nomineeIndex, resolveNomineeId } from '@/components/magazine/HonoreeLink';
 import MagazineLink, { TextWithLinks } from '@/components/magazine/MagazineLink';
 import { usePageTeleprompter, PAGE_SCROLL_ATTR } from '@/components/magazine/pageTeleprompter';
+import { useReadAlong, READ_ALONG_ATTR } from '@/components/magazine/readAlong';
+import ReadAlongCursor from '@/components/magazine/ReadAlongCursor';
 
 // The blocks that make up a page's head: what pins to the top of the frame while the body
 // runs beneath it.
@@ -18,16 +20,34 @@ const HEAD_TYPES = ['kicker', 'heading', 'byline'];
 
 // Renders a single magazine page's content based on its layout type and blocks.
 // Used by both the flipbook and single-page reader.
-export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, onOverflow }) {
+export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, onOverflow, readAlong = false, active = true }) {
+  // A page carries something to read only if it sets body copy — the same words its dwell
+  // is reckoned from. Every other kind of page is looked at, so read along leaves it alone
+  // and the roll it had before stands.
+  const pageBlocks = page.content_blocks || [];
+  const hasCopy = pageBlocks.some((block) => block.type === 'body' || block.type === 'pull_quote');
+
   // A page that runs past its frame rolls under the reader as a teleprompter at reading
   // pace — while the issue plays as a film and while it is read by hand. A page can be put
   // on hold on its own: the roll of the left-hand page has nothing to do with the right's.
   const { ref: scrollRef, overflow } = usePageTeleprompter({
     playing,
     pageKey: page?.id || pageNumber,
-    autoscroll,
+    // Read along draws the frame after the word, so the roll stands down: one hand on the
+    // page at a time, never two pulling the same scroll against each other.
+    autoscroll: autoscroll && !(readAlong && hasCopy),
     speed,
     paused,
+  });
+  // Read along: the same clock the page is held for, pointed at the type.
+  const { cursor } = useReadAlong({
+    containerRef: scrollRef,
+    pageKey: page?.id || pageNumber,
+    active,
+    enabled: readAlong && hasCopy,
+    playing,
+    paused,
+    speed,
   });
   // The reader only offers a hold to a page that actually runs past its frame, so the
   // page tells the book whether it has anything to roll.
@@ -36,7 +56,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     onOverflow?.(rollKey, overflow > 0);
   }, [onOverflow, rollKey, overflow]);
 
-  const blocks = page.content_blocks || [];
+  const blocks = pageBlocks;
   const bg = page.background_image_url;
   const credits = issue.cover_credits || {};
   // The people this page is about, resolved once: a page stores names, the profile is
@@ -260,6 +280,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     return (
       <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
         <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+          <ReadAlongCursor cursor={cursor} />
           <div className="px-6 pb-6 pt-7 sm:px-8">
             {kicker?.text && (
               <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.4em]" style={{ color: P.copper }}>{kicker.text}</p>
@@ -347,6 +368,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     return (
       <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
         <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+          <ReadAlongCursor cursor={cursor} />
           {image?.url ? (
             <figure className="relative">
               {/* The crop steps from side to side down the run, so a wall of portraits
@@ -451,6 +473,7 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   return (
     <div className="w-full h-full overflow-hidden flex flex-col" style={{ background: P.cream }}>
       <div className="page-scroll flex-1 overflow-y-auto" {...{ [PAGE_SCROLL_ATTR]: '' }} ref={scrollRef}>
+        <ReadAlongCursor cursor={cursor} />
         {headEnd > 0 && (
           <PinnedPageHead className="px-6 sm:px-8">
             {blocks.slice(0, headEnd).map((block, i) => <BlockRenderer key={i} block={block} />)}
@@ -490,6 +513,7 @@ function BlockRenderer({ block, lead = false }) {
         <p
           className={`leading-relaxed mb-3 ${lead ? 'text-[13px] sm:text-[15px]' : 'text-xs sm:text-sm'} ${opened ? 'first-letter:float-left first-letter:font-serif first-letter:text-[2.6rem] first-letter:leading-[0.78] first-letter:pr-1.5 first-letter:text-[#B87333]' : ''}`}
           style={{ color: 'rgba(30,58,90,0.8)' }}
+          {...{ [READ_ALONG_ATTR]: '' }}
         >
           <TextWithLinks
             text={block.text}
@@ -528,7 +552,13 @@ function BlockRenderer({ block, lead = false }) {
     case 'pull_quote':
       return (
         <blockquote className="my-4 pl-4" style={{ borderLeft: `3px solid ${P.gold}` }}>
-          <p className="font-serif text-base italic leading-relaxed" style={{ color: P.navy }}>{block.text}</p>
+          <p
+            className="font-serif text-base italic leading-relaxed"
+            style={{ color: P.navy }}
+            {...{ [READ_ALONG_ATTR]: '' }}
+          >
+            {block.text}
+          </p>
           {block.attribution && <p className="text-xs mt-2" style={{ color: P.copper }}>— {block.attribution}</p>}
         </blockquote>
       );

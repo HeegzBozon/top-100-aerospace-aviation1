@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Pause, Gauge } from 'lucide-react';
+import { Play, Pause, Gauge, AlignLeft } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import { PLAYBACK_OPTIONS, speedLabel } from '@/components/magazine/useCinematicPlayback';
 
@@ -64,6 +64,27 @@ export function SpeedSelector({ speed, onChange, theme = 'dark' }) {
         </>
       )}
     </div>
+  );
+}
+
+// Read along — the page followed word by word at reading pace.
+//
+// It sits beside the speed because it is a way of reading, not a separate reader: the same
+// film, its clock pointed at the type. Switching it on slows a skimmed issue to one and
+// starts it, because neither of those is a pace a reader can follow.
+export function ReadAlongToggle({ on, onToggle, theme = 'dark' }) {
+  const idle = theme === 'dark' ? P.cream : P.navy;
+  return (
+    <button
+      onClick={onToggle}
+      aria-pressed={on}
+      className="flex h-9 items-center gap-1.5 rounded-full px-2.5 transition-all hover:bg-white/10"
+      style={{ color: on ? P.gold : idle }}
+      title={on ? 'Read along is on — follow the word' : 'Read along — follow the word at reading pace'}
+    >
+      <AlignLeft className="h-3.5 w-3.5" />
+      <span className="text-[10px] font-bold uppercase tracking-[0.14em]">Read along</span>
+    </button>
   );
 }
 
