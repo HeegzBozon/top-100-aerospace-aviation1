@@ -14,6 +14,7 @@ import MagazineLink, { TextWithLinks } from '@/components/magazine/MagazineLink'
 import { usePageTeleprompter, PAGE_SCROLL_ATTR } from '@/components/magazine/pageTeleprompter';
 import { useReadAlong, READ_ALONG_ATTR } from '@/components/magazine/readAlong';
 import ReadAlongCursor from '@/components/magazine/ReadAlongCursor';
+import TipJar from '@/components/magazine/TipJar';
 
 // The blocks that make up a page's head: what pins to the top of the frame while the body
 // runs beneath it.
@@ -85,6 +86,11 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
     return (
       <div className="relative w-full h-full overflow-hidden" style={{ background: P.navy }}>
         {bg && <img src={bg} alt="" className="absolute inset-0 w-full h-full object-cover" />}
+        {/* The founder's tip jar, kept at the foot of the plate where a closing page prints
+            its last address: the one thing a reader who has finished the issue can do. */}
+        <div className="absolute inset-x-0 bottom-5 flex justify-center px-5">
+          <TipJar />
+        </div>
       </div>
     );
   }

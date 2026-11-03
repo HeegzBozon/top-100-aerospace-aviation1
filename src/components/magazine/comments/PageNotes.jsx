@@ -64,7 +64,7 @@ export default function PageNotes({
         title="Your margin — notes and marks on this page"
       >
         <MessageSquare className="h-4 w-4" style={{ color: P.gold }} />
-        <span className="hidden lg:inline">Notes</span>
+        <span className="hidden sm:inline">Notes</span>
       </button>
 
       {open && (
