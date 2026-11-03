@@ -16,6 +16,7 @@ import { useConsoleFace } from '@/components/handheld/consoleMode';
 export default function GlassIssuePage({
   issue,
   page,
+  pages = [],
   pdf = false,
   signedUrl,
   articles = [],
@@ -101,6 +102,7 @@ export default function GlassIssuePage({
             page={page}
             issue={issue}
             articles={articles}
+            pages={pages}
             pageNumber={position}
             totalPages={total}
             playing={playing}

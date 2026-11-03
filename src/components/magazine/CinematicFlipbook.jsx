@@ -7,7 +7,14 @@ import PageRenderer from '@/components/magazine/PageRenderer';
 import FlipPage, { PAGE_RATIO } from '@/components/magazine/FlipPage';
 import ReaderModeToggle from '@/components/magazine/ReaderModeToggle';
 import PageNotes from '@/components/magazine/comments/PageNotes';
-import { useCinematicPlayback, SKIM_SPEED } from '@/components/magazine/useCinematicPlayback';
+import {
+  useCinematicPlayback,
+  SKIM_SPEED,
+  computePageDwell,
+  isTimedSpeed,
+  timedSeconds,
+  timelineDwells,
+} from '@/components/magazine/useCinematicPlayback';
 import { PlayPauseButton, SpeedSelector, PlaybackProgress, ReadAlongToggle } from '@/components/magazine/PlaybackControls';
 import ReadProgressMeter from '@/components/magazine/ReadProgressMeter';
 import PageScrollRail from '@/components/magazine/PageScrollRail';
@@ -70,7 +77,8 @@ export default function CinematicFlipbook({
   const toggleReadAlong = useCallback(() => {
     setReadAlong((on) => {
       if (!on) {
-        if (speed === SKIM_SPEED) setSpeed(1);
+        // Neither a skim nor a timed film is a pace a word can be followed at.
+        if (speed === SKIM_SPEED || isTimedSpeed(speed)) setSpeed(1);
         setIsPlaying(true);
       }
       return !on;
@@ -155,6 +163,18 @@ export default function CinematicFlipbook({
     isPlaying,
     speed,
   });
+
+  // A timed film turns its pages on its own clock, so a page's roll is scaled to the beat it is
+  // actually given rather than to reading pace — the words finish as the page turns.
+  const timedDwells = useMemo(
+    () => (isTimedSpeed(speed) ? timelineDwells(pages, timedSeconds(speed)) : null),
+    [speed, pages],
+  );
+  const pagePace = useCallback((idx) => {
+    const reading = typeof speed === 'number' && speed > 0 ? speed : 1;
+    if (readAlong || !timedDwells) return reading;
+    return Math.max(1, computePageDwell(pages[idx]) / Math.max(timedDwells[idx] || 1, 1));
+  }, [readAlong, speed, timedDwells, pages]);
 
   // The largest spread the stage holds: two pages side by side with margin enough for the
   // turn's shadow, or one page when the stage is too narrow to hold two.
@@ -338,7 +358,9 @@ export default function CinematicFlipbook({
                 autoscroll
                 reading
                 readAlong
-                speed={typeof speed === 'number' ? speed : 1}
+                pages={pages}
+                onGoToPage={goToPage}
+                speed={pagePace(currentPage)}
                 paused={Boolean(pausedPages[pages[currentPage]?.id || currentPage + 1])}
                 onOverflow={reportOverflow}
               />
@@ -398,7 +420,9 @@ export default function CinematicFlipbook({
                       autoscroll={open}
                       active={open}
                       readAlong={readAlong}
-                      speed={typeof speed === 'number' ? speed : 1}
+                      pages={pages}
+                      onGoToPage={goToPage}
+                      speed={pagePace(i)}
                       paused={paused}
                       onOverflow={reportOverflow}
                     />

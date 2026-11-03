@@ -7,6 +7,7 @@ import FaceSpread from '@/components/magazine/FaceSpread';
 import PageImageBand from '@/components/magazine/PageImageBand';
 import Centerfold from '@/components/magazine/Centerfold';
 import HouseAdPage from '@/components/magazine/HouseAdPage';
+import AdAstraPage from '@/components/magazine/AdAstraPage';
 import { CENTERFOLD_LABEL, HOUSE_AD_LABEL, PATRON_LABEL } from '@/components/magazine/editionBands';
 import HonoreeLink, { nomineeIndex, resolveNomineeId } from '@/components/magazine/HonoreeLink';
 import MagazineLink, { TextWithLinks } from '@/components/magazine/MagazineLink';
@@ -20,7 +21,7 @@ const HEAD_TYPES = ['kicker', 'heading', 'byline'];
 
 // Renders a single magazine page's content based on its layout type and blocks.
 // Used by both the flipbook and single-page reader.
-export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, onOverflow, readAlong = false, reading = true, active = true }) {
+export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, onOverflow, readAlong = false, reading = true, active = true, pages = [], onGoToPage }) {
   // A page carries something to read only if it sets body copy — the same words its dwell
   // is reckoned from. Every other kind of page is looked at, so read along leaves it alone
   // and the roll it had before stands.
@@ -323,16 +324,19 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
   }
 
   // Colophon
+  // Ad Astra: the back of the book — the issue's calls to action gathered with the part and
+  // page each came from, then the issue's own parts, then the colophon.
   if (page.layout_type === 'colophon') {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center" style={{ background: P.cream }}>
-        <div className="w-10 h-px mb-6" style={{ background: P.copper }} />
-        <p className="font-serif text-base mb-4" style={{ color: P.navy }}>Ad Astra</p>
-        <p className="text-xs leading-relaxed max-w-xs" style={{ color: 'rgba(30,58,90,0.6)' }}>
-          {issue.colophon || 'TOP 100 Aerospace & Aviation. An institutional publication.'}
-        </p>
-        <div className="w-10 h-px mt-6" style={{ background: P.copper }} />
-      </div>
+      <AdAstraPage
+        page={page}
+        issue={issue}
+        pages={pages}
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+        scrollRef={scrollRef}
+        onGoToPage={onGoToPage}
+      />
     );
   }
 

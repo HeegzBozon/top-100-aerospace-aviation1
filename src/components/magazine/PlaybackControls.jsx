@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { Play, Pause, Gauge, AlignLeft } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
-import { PLAYBACK_OPTIONS, speedLabel } from '@/components/magazine/useCinematicPlayback';
+import {
+  PLAYBACK_OPTIONS,
+  TIME_PRESETS,
+  isTimedSpeed,
+  speedLabel,
+  timedSeconds,
+  timedSpeed,
+} from '@/components/magazine/useCinematicPlayback';
 
 // Play / pause button — drops into any nav bar.
 export function PlayPauseButton({ isPlaying, onToggle, disabled, theme = 'dark' }) {
@@ -20,9 +27,39 @@ export function PlayPauseButton({ isPlaying, onToggle, disabled, theme = 'dark' 
 }
 
 // Compact speed selector — appears above the nav bar.
+//
+// Two ways to pace an issue, because they answer two different questions. A pace ("1×", "Skim")
+// asks how fast to walk the book; a time ("60s") asks how long the whole thing should take, and
+// the book divides that time among its pages itself — see useCinematicPlayback. The custom
+// field is the same question with the reader's own answer.
 export function SpeedSelector({ speed, onChange, theme = 'dark' }) {
   const [open, setOpen] = useState(false);
+  const [custom, setCustom] = useState('');
   const labelColor = theme === 'dark' ? P.cream : P.navy;
+  const timed = isTimedSpeed(speed);
+  const presetAt = timed ? timedSeconds(speed) : 0;
+
+  const choose = (value) => {
+    onChange(value);
+    setOpen(false);
+  };
+
+  const takeCustom = () => {
+    const seconds = Number(custom);
+    if (!seconds) return;
+    onChange(timedSpeed(seconds));
+    setCustom('');
+    setOpen(false);
+  };
+
+  const pill = (active) => ({
+    background: active ? P.gold : 'transparent',
+    color: active ? P.navyVoid : P.cream,
+  });
+
+  const sectionLabel = {
+    color: 'rgba(250,248,245,0.38)',
+  };
 
   return (
     <div className="relative">
@@ -31,6 +68,7 @@ export function SpeedSelector({ speed, onChange, theme = 'dark' }) {
         className="flex h-9 items-center gap-1 px-2.5 rounded-full transition-all hover:bg-white/10 text-xs font-medium tabular-nums"
         style={{ color: labelColor }}
         aria-label="Playback speed"
+        aria-expanded={open}
       >
         <Gauge className="h-3.5 w-3.5" />
         {speedLabel(speed)}
@@ -39,7 +77,7 @@ export function SpeedSelector({ speed, onChange, theme = 'dark' }) {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div
-            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 rounded-xl p-1 min-w-[86px] shadow-2xl"
+            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 rounded-xl p-1.5 w-[184px] shadow-2xl"
             style={{
               background: 'rgba(7,15,31,0.95)',
               border: '1px solid rgba(201,168,124,0.25)',
@@ -47,19 +85,57 @@ export function SpeedSelector({ speed, onChange, theme = 'dark' }) {
               WebkitBackdropFilter: 'blur(20px)',
             }}
           >
-            {PLAYBACK_OPTIONS.map(({ value, label }) => (
+            <p className="px-1 pb-1 text-[8px] font-bold uppercase tracking-[0.2em]" style={sectionLabel}>
+              Reading pace
+            </p>
+            <div className="grid grid-cols-3 gap-0.5">
+              {PLAYBACK_OPTIONS.map(({ value, label }) => (
+                <button
+                  key={value}
+                  onClick={() => choose(value)}
+                  className="rounded-lg px-1 py-1.5 text-[11px] font-medium tabular-nums transition-all hover:bg-white/10"
+                  style={pill(speed === value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <p className="px-1 pb-1 pt-2 text-[8px] font-bold uppercase tracking-[0.2em]" style={sectionLabel}>
+              Whole issue in
+            </p>
+            <div className="grid grid-cols-4 gap-0.5">
+              {TIME_PRESETS.map((seconds) => (
+                <button
+                  key={seconds}
+                  onClick={() => choose(timedSpeed(seconds))}
+                  className="rounded-lg px-1 py-1.5 text-[11px] font-medium tabular-nums transition-all hover:bg-white/10"
+                  style={pill(timed && presetAt === seconds)}
+                >
+                  {seconds}s
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-1 flex items-center gap-1">
+              <input
+                value={custom}
+                onChange={(event) => setCustom(event.target.value.replace(/[^\d]/g, ''))}
+                onKeyDown={(event) => { if (event.key === 'Enter') takeCustom(); }}
+                inputMode="numeric"
+                placeholder={timed && !TIME_PRESETS.includes(presetAt) ? String(presetAt) : 'Custom'}
+                aria-label="Seconds for the whole issue"
+                className="min-w-0 flex-1 rounded-lg bg-white/5 px-2 py-1 text-[11px] tabular-nums outline-none"
+                style={{ color: P.cream, border: '1px solid rgba(201,168,124,0.28)' }}
+              />
               <button
-                key={value}
-                onClick={() => { onChange(value); setOpen(false); }}
-                className="w-full text-center px-3 py-1.5 rounded-lg text-xs font-medium tabular-nums transition-all hover:bg-white/10"
-                style={{
-                  background: speed === value ? P.gold : 'transparent',
-                  color: speed === value ? P.navyVoid : P.cream,
-                }}
+                onClick={takeCustom}
+                className="rounded-lg px-2 py-1 text-[9px] font-bold uppercase tracking-[0.14em] transition-opacity hover:opacity-85"
+                style={{ background: P.copper, color: P.cream }}
               >
-                {label}
+                Set
               </button>
-            ))}
+            </div>
           </div>
         </>
       )}

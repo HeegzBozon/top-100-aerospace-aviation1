@@ -325,6 +325,7 @@ export default function GlassIssueReader({ issue, pages = [], articles = [], sig
       <GlassIssuePage
         issue={issue}
         page={openPage}
+        pages={pages}
         pdf={isPdf}
         signedUrl={signedUrl}
         articles={articles}

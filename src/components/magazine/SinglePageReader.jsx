@@ -89,6 +89,8 @@ export default function SinglePageReader({ pages, articles = [], issue, mode, on
                   page={page}
                   issue={issue}
                   articles={articles}
+                  pages={pages}
+                  onGoToPage={scrollToPage}
                   pageNumber={idx + 1}
                   totalPages={totalPages}
                 />
