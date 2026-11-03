@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { C } from '@/components/crm/crmConfig';
 import BookMeetingForm from '@/components/meetings/BookMeetingForm';
 import MeetingRow from '@/components/meetings/MeetingRow';
+import LaunchPartiesRail from '@/components/aerosync/LaunchPartiesRail';
 
 // AeroSync Meetings: ask anyone in the network for time, and answer who has asked you.
 export default function AeroSyncMeetings() {
@@ -49,6 +50,9 @@ export default function AeroSyncMeetings() {
           <BookMeetingForm user={user} initialName={params.get('with') || ''} source={params.get('from') || 'aerosync'} onBooked={() => load(user)} />
           {section('Asked of you', rows.incoming, true)}
           {section('You asked', rows.outgoing, false)}
+          {/* The parties in the diary: a launch party is an appointment the Fellow keeps,
+              and the door it opens is the same record the theatre reads. */}
+          <LaunchPartiesRail me={user} />
         </>}
         <div className="h-24" />
       </div>

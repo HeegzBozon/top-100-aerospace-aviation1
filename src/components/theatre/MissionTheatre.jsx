@@ -6,6 +6,7 @@ import useTheatreStream from './useTheatreStream';
 import TheatreScreen from './TheatreScreen';
 import TheatreBill from './TheatreBill';
 import TheatreProgramme from './TheatreProgramme';
+import TheatreRoom from './TheatreRoom';
 
 // The Mission Theatre: the broadcast on the pad, the bill beside it, and the rest of the
 // programme under both. It reads the launch library itself, so the same theatre stands in
@@ -85,11 +86,14 @@ export default function MissionTheatre({ variant = 'page' }) {
           <>
             <div className="mt-5 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
               <TheatreScreen launch={featured} streamId={streamId} searching={searching} />
-              <div
-                className="rounded-lg px-4 py-4"
-                style={{ background: THEATRE.plate, border: `1px solid ${THEATRE.line}` }}
-              >
-                <TheatreBill launch={featured} />
+              <div className="space-y-4">
+                <div
+                  className="rounded-lg px-4 py-4"
+                  style={{ background: THEATRE.plate, border: `1px solid ${THEATRE.line}` }}
+                >
+                  <TheatreBill launch={featured} />
+                </div>
+                <TheatreRoom launch={featured} />
               </div>
             </div>
 

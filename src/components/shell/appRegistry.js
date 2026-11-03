@@ -1,7 +1,7 @@
 import {
   Award, BookOpen, Briefcase, Calendar, CalendarCheck, CalendarDays, Compass, GraduationCap,
   Globe2, Heart, Info, Landmark, Layers, LayoutGrid, LogIn, LogOut, Mail,
-  MessageCircle, Network, Newspaper, Radar, Rocket, Scissors, Send, Shield,
+  MessageCircle, Network, Newspaper, PartyPopper, Radar, Rocket, Scissors, Send, Shield,
   ShoppingBag, Ticket, Trophy, User, UserPlus, Users,
 } from "lucide-react";
 
@@ -72,6 +72,7 @@ export const APP_GROUPS = [
       { label: "Operation Moon Joy", to: "/hangouts", icon: Rocket },
       { label: "Local Legends", to: "/local-legends", icon: Users },
       { label: "Mission Theatre", to: "/LaunchParty", icon: Ticket },
+      { label: "Launch Parties", to: "/launch-parties", icon: PartyPopper },
       { label: "2030 Vision", to: "/2030-vision", icon: Landmark },
       { label: "About", to: "/about", icon: Info },
     ],

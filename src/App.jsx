@@ -39,6 +39,8 @@ const AuthorityStackPortal    = lazy(() => import('@/pages/AuthorityStackPortal'
 const Solutions               = lazy(() => import('@/pages/Solutions'));
 const LinkedInManager         = lazy(() => import('@/pages/LinkedInManager'));
 const LaunchParty             = lazy(() => import('@/pages/LaunchParty'));
+const LaunchParties           = lazy(() => import('@/pages/LaunchParties'));
+const LaunchPartyRoom         = lazy(() => import('@/pages/LaunchPartyRoom'));
 const Top100AerospaceAviationTV = lazy(() => import('@/pages/Top100AerospaceAviationTV'));
 const Top100TV = lazy(() => import('@/pages/Top100TV'));
 const PaymentPlan = lazy(() => import('@/pages/PaymentPlan'));
@@ -197,6 +199,10 @@ const AuthenticatedApp = () => {
       <Route path="/global-intelligence" element={<GlobalIntelligence />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
       <Route path="/LaunchParty" element={<LaunchParty />} />
+      {/* The parties themselves: the board every room is opened from, and one room on its
+          own door. A party is watched in the theatre, so both point back at it. */}
+      <Route path="/launch-parties" element={<LaunchParties />} />
+      <Route path="/launch-party/:code" element={<LaunchPartyRoom />} />
       <Route path="/AgentSkillRegistry" element={<AgentSkillRegistry />} />
       <Route path="/agent-skills" element={<AgentSkillRegistry />} />
       <Route path="/terms" element={<TermsOfService />} />
