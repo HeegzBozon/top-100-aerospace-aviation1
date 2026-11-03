@@ -1,0 +1,131 @@
+{
+  "name": "Invoice",
+  "type": "object",
+  "properties": {
+    "invoice_number": {
+      "type": "string",
+      "description": "Human reference printed on the invoice, e.g. INV-2026-0004."
+    },
+    "client_name": {
+      "type": "string",
+      "description": "The person the invoice is addressed to."
+    },
+    "client_company": {
+      "type": "string",
+      "description": "The client's organisation, printed under their name."
+    },
+    "client_email": {
+      "type": "string",
+      "description": "Where the invoice is sent. Blank when the client reaches the house another way."
+    },
+    "project": {
+      "type": "string",
+      "description": "What the invoice is for, in a few words."
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The day the invoice is dated."
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The day payment is due."
+    },
+    "source_notes": {
+      "type": "string",
+      "description": "The plain notes the invoice was composed from, kept so the bill can be re-read against what was written."
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit_price_cents": {
+            "type": "number"
+          }
+        }
+      },
+      "default": [],
+      "description": "What is being billed, one line each. Money is held in cents."
+    },
+    "subtotal_cents": {
+      "type": "number",
+      "description": "Sum of the line items in cents."
+    },
+    "tax_rate": {
+      "type": "number",
+      "description": "Tax applied to the subtotal, as a percentage."
+    },
+    "tax_cents": {
+      "type": "number",
+      "description": "The tax the rate works out to, in cents."
+    },
+    "total_cents": {
+      "type": "number",
+      "description": "What the client owes, in cents."
+    },
+    "currency": {
+      "type": "string",
+      "default": "usd"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "paid",
+        "void"
+      ],
+      "default": "draft",
+      "description": "Where the bill stands: drafted, sent to the client, settled, or withdrawn."
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the invoice last left the house."
+    },
+    "paid_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the invoice was settled."
+    },
+    "memo": {
+      "type": "string",
+      "description": "One short line printed under the total, for the client to read."
+    }
+  },
+  "required": [
+    "invoice_number",
+    "client_name",
+    "issue_date"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

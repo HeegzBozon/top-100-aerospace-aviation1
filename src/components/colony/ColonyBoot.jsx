@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ColonySplash from './ColonySplash';
+import AdminQuickActions from '@/components/start/AdminQuickActions';
 import { registerPicker } from '@/components/handheld/handheldPicker';
 import { isReturningVisitor } from '@/components/core/appOpening';
 
@@ -58,6 +59,19 @@ export default function ColonyBoot({ onDone }) {
   return (
     <div className="as-frame" style={{ zIndex: 95 }}>
       <ColonySplash ready={ready} label={ready ? 'Connected' : 'Connecting…'} />
+
+      {/* The operator's key, in the corner of the plate: a way straight into the tools
+          from the splash, for whoever runs the house. */}
+      <div className="absolute right-4 top-4 z-20 md:right-8 md:top-8">
+        <AdminQuickActions
+          variant="desk"
+          onNavigate={() => {
+            sessionStorage.setItem(KEY, '1');
+            sessionStorage.setItem('colony-intro-seen', '1');
+            onDone();
+          }}
+        />
+      </div>
       {ready && (
         <div className="absolute inset-x-0 bottom-20 z-10 flex flex-col items-center gap-3 as-rise">
           {options.map((o, i) => (

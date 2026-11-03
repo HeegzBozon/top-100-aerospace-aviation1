@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import moment from "moment";
 import { base44 } from "@/api/base44Client";
 import { hourPhase, isReturningVisitor, markVisit, pickHint, pickLine } from "./appOpening";
+import AdminQuickActions from "@/components/start/AdminQuickActions";
 
 // The title card. Every load opens the way a game opens: the studio mark, the
 // hour's sky, then the welcome — plain for a first visit, by name for a Fellow
@@ -91,6 +92,12 @@ export default function AppSplash() {
         aria-label="Skip the opening"
         className="absolute inset-0 z-10 cursor-default"
       />
+
+      {/* The operator's key, in the corner of the plate: drawn for an admin alone, and
+          taking the card away with it as it opens the surface it was asked for. */}
+      <div className="pointer-events-auto absolute right-5 top-16 z-40 md:right-12 md:top-28">
+        <AdminQuickActions variant="desk" onNavigate={close} />
+      </div>
 
       <div className="pointer-events-none relative z-20 flex h-full flex-col justify-between px-7 py-8 md:px-16 md:py-14">
         <div className="as-mark flex items-center gap-3">

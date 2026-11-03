@@ -1,0 +1,100 @@
+<mjml>
+  <mj-head>
+    <mj-title>Invoice {{invoice_number}} from TOP 100 Aerospace &amp; Aviation</mj-title>
+    <mj-preview>{{total}} due {{due_date}}</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-section background-color="#ffffff" padding="0 36px" />
+      <mj-text color="#1e3a5a" font-size="15px" line-height="1.6" padding="0" />
+      <mj-button background-color="#b87333" color="#000000" border-radius="3px" font-weight="700" inner-padding="14px 26px" align="left" />
+    </mj-attributes>
+  </mj-head>
+
+  <mj-body background-color="#070c16">
+    <mj-section background-color="#b87333" padding="18px 36px">
+      <mj-column>
+        <mj-image src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png" alt="TOP 100 Aerospace &amp; Aviation" width="44px" align="left" padding="0" />
+        <mj-text color="#000000" font-size="11px" font-weight="700" letter-spacing="2.5px" padding="10px 0 0 0">
+          TOP 100 AEROSPACE &amp; AVIATION
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="36px 36px 8px">
+      <mj-column>
+        <mj-text font-family="'Playfair Display', Georgia, serif" font-size="34px" line-height="1.1" color="#1e3a5a" padding="0">
+          Invoice {{invoice_number}}
+        </mj-text>
+        <mj-text color="#42627f" font-size="15px" padding="12px 0 0 0">
+          {{client_name}}, your invoice is ready. The work is itemised below and settles by {{due_date}}.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="22px 36px 6px">
+      <mj-column width="50%">
+        <mj-text font-size="10px" font-weight="700" letter-spacing="2px" color="#8f5c2c" padding="0">
+          BILLED TO
+        </mj-text>
+        <mj-text font-size="14px" font-weight="700" color="#1e3a5a" padding="8px 0 0 0">
+          {{client_name}}
+        </mj-text>
+        <mj-text font-size="13px" color="#42627f" padding="2px 0 0 0">
+          {{client_company}}
+        </mj-text>
+      </mj-column>
+      <mj-column width="50%">
+        <mj-text font-size="10px" font-weight="700" letter-spacing="2px" color="#8f5c2c" padding="0" align="right">
+          ISSUED / DUE
+        </mj-text>
+        <mj-text font-size="14px" color="#1e3a5a" padding="8px 0 0 0" align="right">
+          {{issue_date}}
+        </mj-text>
+        <mj-text font-size="14px" color="#1e3a5a" padding="2px 0 0 0" align="right">
+          {{due_date}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="18px 36px 0">
+      <mj-column>
+        <mj-text padding="0">
+          {{items_html}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="14px 36px 0">
+      <mj-column>
+        <mj-text font-size="10px" font-weight="700" letter-spacing="2px" color="#8f5c2c" padding="0">
+          TOTAL DUE
+        </mj-text>
+        <mj-text font-family="'Playfair Display', Georgia, serif" font-size="30px" color="#1e3a5a" padding="8px 0 0 0">
+          {{total}}
+        </mj-text>
+        <mj-text font-size="13px" color="#42627f" padding="10px 0 0 0">
+          {{memo}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="20px 36px 34px">
+      <mj-column>
+        <mj-button href="https://top100aero.space">
+          Open the platform
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#0b1320" padding="20px 36px">
+      <mj-column>
+        <mj-text color="#8fb2cc" font-size="11px" letter-spacing="1.6px" padding="0">
+          TOP 100 AEROSPACE &amp; AVIATION. HIGHER, FURTHER, FASTER.
+        </mj-text>
+        <mj-text color="#5d7a94" font-size="11px" padding="8px 0 0 0">
+          This invoice was issued to {{client_name}} and sent from top100aero.space.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

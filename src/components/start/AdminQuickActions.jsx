@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, Clock, Eye, Gauge, RefreshCw, Settings, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, Clock, Eye, FileText, Gauge, RefreshCw, Settings, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 // The operator's key on the title screen. A Fellow never sees it: it is drawn only for an
@@ -10,11 +10,12 @@ const ACTIONS = [
   { label: 'Mission Control', note: 'Seasons, people, editorial', to: '/Admin?tab=dashboard', icon: ShieldCheck },
   { label: 'Live monitor', note: 'Ballots as they are cast', to: '/Admin?tab=selection-monitor', icon: Gauge, live: true },
   { label: "God's Eye", note: 'Every collection counted', to: '/Admin?tab=gods-eye', icon: Eye },
+  { label: 'Invoicing', note: 'Notes into bills', to: '/Admin?tab=invoicing', icon: FileText },
   { label: 'Timecard & expenses', note: 'Hours and receipts', to: '/Admin?tab=timecard', icon: Clock },
   { label: 'Platform settings', note: 'The console itself', to: '/Admin?tab=settings', icon: Settings },
 ];
 
-export default function AdminQuickActions({ variant = 'plate' }) {
+export default function AdminQuickActions({ variant = 'plate', onNavigate = null }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -41,6 +42,8 @@ export default function AdminQuickActions({ variant = 'plate' }) {
   const go = (to) => {
     setOpen(false);
     navigate(to);
+    // A splash screen standing over the app hands the frame back as the key is taken.
+    if (onNavigate) onNavigate(to);
   };
 
   return (
