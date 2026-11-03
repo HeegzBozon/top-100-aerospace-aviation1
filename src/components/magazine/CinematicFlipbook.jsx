@@ -6,6 +6,7 @@ import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
 import PageRenderer from '@/components/magazine/PageRenderer';
 import FlipPage, { PAGE_RATIO } from '@/components/magazine/FlipPage';
 import ReaderModeToggle from '@/components/magazine/ReaderModeToggle';
+import PageNotes from '@/components/magazine/comments/PageNotes';
 import { useCinematicPlayback, SKIM_SPEED } from '@/components/magazine/useCinematicPlayback';
 import { PlayPauseButton, SpeedSelector, PlaybackProgress, ReadAlongToggle } from '@/components/magazine/PlaybackControls';
 import ReadProgressMeter from '@/components/magazine/ReadProgressMeter';
@@ -288,6 +289,13 @@ export default function CinematicFlipbook({
         <ReadProgressMeter percent={issuePercent} />
         <ReaderModeToggle mode={mode} onChange={onModeChange} />
         <div className="flex items-center gap-0.5">
+          {/* The margin of the page under the reader: a private note to the masthead */}
+          <PageNotes
+            issue={issue}
+            page={pages[currentPage]}
+            articles={articles}
+            pageNumber={currentPage + 1}
+          />
           <button
             onClick={() => setShowContents(true)}
             className="flex h-8 w-8 items-center justify-center rounded-full transition-all hover:bg-white/10"

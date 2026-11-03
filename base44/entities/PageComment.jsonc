@@ -1,0 +1,115 @@
+{
+  "name": "PageComment",
+  "type": "object",
+  "properties": {
+    "issue_id": {
+      "type": "string",
+      "description": "ID of the MagazineIssue the page belongs to."
+    },
+    "issue_title": {
+      "type": "string",
+      "description": "Issue title at the time the note was written, so a thread still names its issue after the edition is archived."
+    },
+    "page_id": {
+      "type": "string",
+      "description": "ID of the MagazinePage the note sits on. The thread belongs to this page."
+    },
+    "page_number": {
+      "type": "number",
+      "description": "Page number within the issue, shown as the note's context."
+    },
+    "page_label": {
+      "type": "string",
+      "description": "The page's own heading or chapter label at write time, so the reader can recognise the page the thread is on."
+    },
+    "thread_owner_email": {
+      "type": "string",
+      "description": "Email of the reader whose private thread this note belongs to. Every reply carries it too, including the platform's replies, which is what keeps the whole conversation readable to that reader and to nobody else."
+    },
+    "thread_owner_name": {
+      "type": "string",
+      "description": "Display name of the reader the thread belongs to."
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "ID of the note this one replies to. Empty for the note that opens a thread."
+    },
+    "body": {
+      "type": "string",
+      "description": "The note itself, as the author wrote it."
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email of whoever wrote this note \u2014 the reader, or the platform answering them."
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of whoever wrote this note."
+    },
+    "author_role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "admin"
+      ],
+      "default": "user",
+      "description": "Role the author held when the note was written. Used only to name the platform's own replies in the thread."
+    }
+  },
+  "required": [
+    "issue_id",
+    "page_id",
+    "thread_owner_email",
+    "body"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.thread_owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.thread_owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
