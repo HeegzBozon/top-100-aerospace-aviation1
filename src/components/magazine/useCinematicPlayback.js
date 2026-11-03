@@ -34,6 +34,10 @@ export function computePageDwell(page) {
       case 'heading':    dwell += 800; break;
       case 'kicker':     dwell += 400; break;
       case 'byline':     dwell += 300; break;
+      // A panel is looked at and then read: the picture takes a beat of its own, and the
+      // narrator's line takes the time its words take. A plate tile (which carries an
+      // attribution — a name and a standing) is only looked at.
+      case 'image':      dwell += wordsIn(b.text) * READ_MS_PER_WORD + (b.text && !b.attribution ? 900 : 300); break;
       default: break;
     }
   }

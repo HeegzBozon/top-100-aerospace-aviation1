@@ -355,6 +355,7 @@ export default function CinematicFlipbook({
                 onGoToPage={goToPage}
                 speed={pagePace(currentPage)}
                 paused={Boolean(pausedPages[pages[currentPage]?.id || currentPage + 1])}
+                progress={isPlaying ? progress : null}
                 onOverflow={reportOverflow}
               />
             </FlipPage>
@@ -417,6 +418,9 @@ export default function CinematicFlipbook({
                       onGoToPage={goToPage}
                       speed={pagePace(i)}
                       paused={paused}
+                      // The beat of the turn, handed to the page being played: its panels
+                      // unfold one at a time rather than arriving as a finished sheet.
+                      progress={i === currentPage ? progress : null}
                       onOverflow={reportOverflow}
                     />
                   </FlipPage>

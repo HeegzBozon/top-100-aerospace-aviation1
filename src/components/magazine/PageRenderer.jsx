@@ -15,14 +15,38 @@ import { usePageTeleprompter, PAGE_SCROLL_ATTR } from '@/components/magazine/pag
 import { useReadAlong, READ_ALONG_ATTR } from '@/components/magazine/readAlong';
 import ReadAlongCursor from '@/components/magazine/ReadAlongCursor';
 import TipJar from '@/components/magazine/TipJar';
+import PanelGrid from '@/components/magazine/PanelGrid';
 
 // The blocks that make up a page's head: what pins to the top of the frame while the body
 // runs beneath it.
 const HEAD_TYPES = ['kicker', 'heading', 'byline'];
 
+// A run of two or more consecutive image blocks that carry narration and no attribution is a
+// panel sheet: the page's comic grammar, gathered here so the page can play it in beats.
+const asPanel = (block) => block.type === 'image' && block.url && block.text && !block.attribution;
+
+function groupPanels(blocks) {
+  const items = [];
+  for (let i = 0; i < blocks.length; i += 1) {
+    if (!asPanel(blocks[i])) {
+      items.push({ index: i, block: blocks[i] });
+      continue;
+    }
+    let end = i;
+    while (end < blocks.length && asPanel(blocks[end])) end += 1;
+    if (end - i >= 2) {
+      items.push({ index: i, panels: blocks.slice(i, end) });
+      i = end - 1;
+    } else {
+      items.push({ index: i, block: blocks[i] });
+    }
+  }
+  return items;
+}
+
 // Renders a single magazine page's content based on its layout type and blocks.
 // Used by both the flipbook and single-page reader.
-export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, onOverflow, readAlong = false, reading = true, active = true, pages = [], onGoToPage }) {
+export default function PageRenderer({ page, issue, articles = [], pageNumber, totalPages, playing = false, autoscroll = false, speed = 1, paused = false, progress = null, onOverflow, readAlong = false, reading = true, active = true, pages = [], onGoToPage }) {
   // A page carries something to read only if it sets body copy — the same words its dwell
   // is reckoned from. Every other kind of page is looked at, so read along leaves it alone
   // and the roll it had before stands.
@@ -504,7 +528,12 @@ export default function PageRenderer({ page, issue, articles = [], pageNumber, t
           </PinnedPageHead>
         )}
         <div className="px-6 pb-6 pt-4 sm:px-8">
-          {blocks.slice(headEnd).map((block, i) => <BlockRenderer key={headEnd + i} block={block} lead={headEnd + i === leadBody} />)}
+          {groupPanels(blocks.slice(headEnd)).map((item) => (
+            item.panels
+              // A sheet of panels — the page's own beats, unfolded as the issue plays.
+              ? <PanelGrid key={`panels-${item.index}`} panels={item.panels} progress={playing ? progress : null} />
+              : <BlockRenderer key={item.index} block={item.block} lead={headEnd + item.index === leadBody} />
+          ))}
         </div>
       </div>
       {/* Page number footer */}
