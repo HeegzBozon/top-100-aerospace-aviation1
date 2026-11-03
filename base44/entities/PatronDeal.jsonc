@@ -1,0 +1,362 @@
+{
+  "name": "PatronDeal",
+  "type": "object",
+  "properties": {
+    "organization_name": {
+      "type": "string",
+      "description": "The organization being sold to."
+    },
+    "contact_name": {
+      "type": "string",
+      "description": "The named person on the deal."
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Primary contact address. Deduplication key for the pipeline."
+    },
+    "contact_role": {
+      "type": "string",
+      "description": "Contact's role or title."
+    },
+    "phone": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "media_kit",
+        "warm_intro",
+        "outbound",
+        "referral",
+        "event",
+        "reply"
+      ],
+      "description": "How the conversation started. Warm paths are worked before cold ones."
+    },
+    "source_detail": {
+      "type": "string",
+      "description": "Which surface, event or referrer produced the lead."
+    },
+    "fit_category": {
+      "type": "string",
+      "enum": [
+        "space_defense_vc",
+        "b2b_tools",
+        "recruiter",
+        "event_organizer",
+        "prime",
+        "other"
+      ],
+      "description": "Buyer segment. Primes are a weaker fit; the desk says so rather than hiding it."
+    },
+    "consent_basis": {
+      "type": "string",
+      "description": "Why we may contact this person: who asked, what they asked for, and when."
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "identified",
+        "touched",
+        "replied",
+        "qualified",
+        "pitched",
+        "committed",
+        "contracted",
+        "paid",
+        "delivered",
+        "reported",
+        "renewed",
+        "declined"
+      ],
+      "default": "identified",
+      "description": "Lifecycle stage. Every advance is gated \u2014 see the shared lifecycle module for what each stage requires."
+    },
+    "owner_qualifier": {
+      "type": "string",
+      "description": "Who qualifies the lead. Erwin holds first contact."
+    },
+    "owner_pitcher": {
+      "type": "string",
+      "description": "Who pitches and closes. Matthew takes the handoff within one business day."
+    },
+    "slot_id": {
+      "type": "string",
+      "description": "SponsorSlot this deal holds, once committed."
+    },
+    "issue_number": {
+      "type": "number",
+      "description": "Issue the placement runs in."
+    },
+    "rate_amount": {
+      "type": "number",
+      "description": "Agreed rate in whole dollars."
+    },
+    "bundle": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Deliverable keys included in the sale: issue, linkedin, volume."
+    },
+    "ghl_contact_id": {
+      "type": "string",
+      "description": "GoHighLevel contact id. GHL is the CRM of record; this record holds the lifecycle."
+    },
+    "ghl_sync_state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "synced",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Whether the contact has reached GHL. A failed sync is surfaced, never hidden."
+    },
+    "next_action": {
+      "type": "string",
+      "description": "The one thing that moves this deal next."
+    },
+    "next_action_due": {
+      "type": "string",
+      "format": "date",
+      "description": "When the next action is owed."
+    },
+    "firewall_acknowledged": {
+      "type": "boolean",
+      "default": false,
+      "description": "The buyer has been told, in writing, that patronage never touches measurement."
+    },
+    "approvals": {
+      "type": "object",
+      "description": "Internal gates keyed by approval key (firewall, paid_label, offering_language, pricing, data_use). Each holds status, approver, date and note.",
+      "properties": {
+        "firewall": {
+          "type": "object"
+        },
+        "paid_label": {
+          "type": "object"
+        },
+        "offering_language": {
+          "type": "object"
+        },
+        "pricing": {
+          "type": "object"
+        },
+        "data_use": {
+          "type": "object"
+        }
+      }
+    },
+    "agreement": {
+      "type": "object",
+      "description": "The signed instrument: status, version, date and terms note.",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "none",
+            "sent",
+            "signed",
+            "declined"
+          ]
+        },
+        "version": {
+          "type": "string"
+        },
+        "signed_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "terms_note": {
+          "type": "string"
+        }
+      }
+    },
+    "payment": {
+      "type": "object",
+      "description": "Invoice and settlement state.",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "none",
+            "invoiced",
+            "paid",
+            "void"
+          ]
+        },
+        "method": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "paid_date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "description": "What the Patron supplied. Only the Patron's own placement is ever built from these.",
+      "properties": {
+        "logo_url": {
+          "type": "string"
+        },
+        "headline": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "destination_url": {
+          "type": "string"
+        },
+        "tracked_link": {
+          "type": "string"
+        },
+        "utm_campaign": {
+          "type": "string"
+        },
+        "category_note": {
+          "type": "string"
+        },
+        "received_date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "placement": {
+      "type": "object",
+      "description": "The proof and the approval of the placement itself.",
+      "properties": {
+        "label_text": {
+          "type": "string"
+        },
+        "firewall_line": {
+          "type": "string"
+        },
+        "approved_by": {
+          "type": "string"
+        },
+        "approved_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "links_tested": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "deliverables": {
+      "type": "array",
+      "description": "Every promised surface, one row each: the issue slot, the native post, the Volume credit.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "enum": [
+              "issue",
+              "linkedin",
+              "volume"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "scheduled",
+              "delivered",
+              "missed"
+            ]
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "delivered_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "stage_history": {
+      "type": "array",
+      "description": "Append-only audit trail of stage changes with who and when.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "by": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "declined_reason": {
+      "type": "string"
+    },
+    "is_test": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for a walk-through of the flow. Test deals are excluded from the desk counters and from any reported figure."
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "organization_name",
+    "contact_name",
+    "contact_email",
+    "stage"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

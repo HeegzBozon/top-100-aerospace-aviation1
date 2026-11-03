@@ -114,6 +114,8 @@ const AppStore = lazy(() => import('@/pages/AppStore'));
 const AppStoreShelf = lazy(() => import('@/pages/AppStoreShelf'));
 const AppStoreRecruiter = lazy(() => import('@/pages/AppStoreRecruiter'));
 const PressKitStudio = lazy(() => import('@/pages/PressKitStudio'));
+const Patronage = lazy(() => import('@/pages/Patronage'));
+const PatronDesk = lazy(() => import('@/pages/PatronDesk'));
 const PressKitPublic = lazy(() => import('@/pages/PressKitPublic'));
 const Classifieds = lazy(() => import('@/pages/Classifieds'));
 const Review = lazy(() => import('@/pages/Review'));
@@ -254,6 +256,11 @@ const AuthenticatedApp = () => {
       <Route path="/gift-shop" element={<Shop />} />
       <Route path="/press-kit" element={<PressKitStudio />} />
       <Route path="/press-kit/:shareCode" element={<PressKitPublic />} />
+      {/* The public media kit, and the desk the lifecycle is worked from. Attribution,
+          never placement: the offer is Patron of Record, and the desk behind it is
+          admin-only and unindexed. */}
+      <Route path="/patronage" element={<Patronage />} />
+      <Route path="/patronage/desk" element={<PatronDesk />} />
       {/* The board: positions, mandates and the open desk, put up by Fellows. Read as a
           classified page — the old desk's address lands on it. */}
       <Route path="/classifieds" element={<Classifieds />} />

@@ -1,0 +1,118 @@
+{
+  "name": "SponsorDecision",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Stable register key, e.g. 'DEC7'. Referenced by slots, deals and the desk."
+    },
+    "title": {
+      "type": "string"
+    },
+    "question": {
+      "type": "string",
+      "description": "The decision in one line, as it would be asked in a meeting."
+    },
+    "context": {
+      "type": "string",
+      "description": "What makes the decision unavoidable, and what it blocks."
+    },
+    "options": {
+      "type": "array",
+      "description": "The choices on the table, with the recommended one marked. Never a single option dressed as a choice.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "recommended": {
+            "type": "boolean"
+          },
+          "consequence": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "recommendation": {
+      "type": "string",
+      "description": "The recommendation as proposed. A proposal is never a decision until it is resolved."
+    },
+    "approver_name": {
+      "type": "string",
+      "description": "Who holds this decision."
+    },
+    "approver_role": {
+      "type": "string",
+      "description": "The seat that holds it: numbers, firewall, timing."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "resolved",
+        "blocked"
+      ],
+      "default": "open",
+      "description": "Open blocks the gate it is tied to. Blocked means waiting on someone outside the house."
+    },
+    "resolution": {
+      "type": "string",
+      "description": "What was actually decided, in the approver's words."
+    },
+    "resolved_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "resolved_by": {
+      "type": "string"
+    },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Lifecycle gates held shut until this is resolved, e.g. 'rate_card', 'public_copy', 'paid_slot'."
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "key",
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

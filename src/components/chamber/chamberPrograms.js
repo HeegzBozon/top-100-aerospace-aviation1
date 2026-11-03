@@ -68,9 +68,9 @@ export const CHAMBER_OFFICES = [
   {
     key: "sponsorship",
     index: "13",
-    label: "Sponsorship",
-    blurb: "Partnership with the record — patron of the work, never of the measurement.",
-    to: "/SponsorPitch",
+    label: "Patronage",
+    blurb: "Partnership with the record — a Patron of Record, never of the measurement.",
+    to: "/patronage",
     icon: Handshake,
   },
   {
