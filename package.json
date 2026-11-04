@@ -15,7 +15,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
     "@base44/sdk": "^0.8.59",
-    "@base44/vite-plugin": "^1.0.51",
+    "@base44/vite-plugin": "^1.0.52",
     "@daily-co/daily-js": "^0.94.0",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
