@@ -15,12 +15,12 @@ function RuleRow({ rule, onChange, onRemove, seasons = [] }) {
   const field = SEGMENT_FIELDS.find((entry) => entry.field === rule.field) || SEGMENT_FIELDS[0];
   const options = optionsFor(field, seasons);
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <select
         value={field.field}
         onChange={(event) => onChange({ field: event.target.value, value: '' })}
-        className={inputClass}
-        style={{ ...inputStyle, maxWidth: 180 }}
+        className={`${inputClass} min-w-0 flex-1`}
+        style={{ ...inputStyle, flexBasis: 140, maxWidth: 180 }}
       >
         {SEGMENT_FIELDS.map((entry) => (
           <option key={entry.field} value={entry.field} style={{ color: '#111' }}>
@@ -35,15 +35,15 @@ function RuleRow({ rule, onChange, onRemove, seasons = [] }) {
           onChange={(event) => onChange({ ...rule, value: event.target.value })}
           placeholder={field.placeholder || ''}
           inputMode="numeric"
-          className={inputClass}
-          style={{ ...inputStyle, maxWidth: 90 }}
+          className={`${inputClass} min-w-0 flex-1`}
+          style={{ ...inputStyle, flexBasis: 80, maxWidth: 110 }}
         />
       ) : (
         <select
           value={String(rule.value || '')}
           onChange={(event) => onChange({ ...rule, value: event.target.value })}
-          className={inputClass}
-          style={inputStyle}
+          className={`${inputClass} min-w-0 flex-1`}
+          style={{ ...inputStyle, flexBasis: 110 }}
         >
           <option value="" style={{ color: '#111' }}>Anyone</option>
           {options.map((option) => (
@@ -54,8 +54,8 @@ function RuleRow({ rule, onChange, onRemove, seasons = [] }) {
         </select>
       )}
 
-      <button onClick={onRemove} className="desk-key desk-key-quiet" aria-label="Remove rule">
-        <Trash2 className="h-3 w-3" />
+      <button onClick={onRemove} className="desk-key desk-key-quiet flex-none" aria-label="Remove rule">
+        <Trash2 className="h-3.5 w-3.5" />
       </button>
     </div>
   );

@@ -6,6 +6,35 @@ import { roomLabel } from '@/components/admin/timecard/scheduleConfig';
 
 const clockOf = (value) => (value ? String(value).slice(11, 16) : '');
 
+// The row's three keys, cut once and set down twice: beside the figure on a desk, and
+// under the entry itself on a phone, where a row's width belongs to what it says.
+function RowActions({ open, hasDetail, onToggle, onEdit, onDelete }) {
+  const key = 'flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-white/10 sm:h-auto sm:w-auto sm:p-1.5';
+  const glyph = 'h-4 w-4 sm:h-3.5 sm:w-3.5';
+  return (
+    <div className="flex items-center gap-1">
+      {hasDetail && (
+        <button
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-label={open ? 'Hide the session detail' : 'Show the session detail'}
+          title={open ? 'Hide the session detail' : 'Show the session detail'}
+          className={key}
+          style={{ color: open ? TC.gold : TC.soft }}
+        >
+          {open ? <ChevronUp className={glyph} /> : <ChevronDown className={glyph} />}
+        </button>
+      )}
+      <button onClick={onEdit} aria-label="Edit entry" title="Edit entry" className={key} style={{ color: TC.soft }}>
+        <Pencil className={glyph} />
+      </button>
+      <button onClick={onDelete} aria-label="Delete entry" title="Delete entry" className={key} style={{ color: TC.soft }}>
+        <Trash2 className={glyph} />
+      </button>
+    </div>
+  );
+}
+
 // One line of the ledger. The kind sets the glyph and the figure; the status is a lamp
 // in its own colour, so the desk can be read down the column at a glance. A session
 // imported from a work log opens to the jobs it was made of and what it produced.
@@ -65,6 +94,17 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
             {rooms.length > 0 ? ` · ${rooms.map((room) => roomLabel(room.room_key)).join(', ')}` : ''}
           </p>
           {entry.notes && <p className="mt-1 text-[11px] italic" style={{ color: TC.dim }}>{entry.notes}</p>}
+
+          {/* On a phone the keys sit under the entry, where the thumb already is. */}
+          <div className="mt-1.5 sm:hidden">
+            <RowActions
+              open={open}
+              hasDetail={hasDetail}
+              onToggle={() => setOpen((v) => !v)}
+              onEdit={() => onEdit(entry)}
+              onDelete={() => onDelete(entry)}
+            />
+          </div>
         </div>
 
         <div className="flex flex-shrink-0 flex-col items-end gap-1">
@@ -76,33 +116,14 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
           </span>
         </div>
 
-        <div className="flex flex-shrink-0 items-center gap-1">
-          {hasDetail && (
-            <button
-              onClick={() => setOpen((v) => !v)}
-              title={open ? 'Hide the session detail' : 'Show the session detail'}
-              className="rounded-md p-1.5 transition-colors hover:bg-white/10"
-              style={{ color: open ? TC.gold : TC.soft }}
-            >
-              {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </button>
-          )}
-          <button
-            onClick={() => onEdit(entry)}
-            title="Edit entry"
-            className="rounded-md p-1.5 transition-colors hover:bg-white/10"
-            style={{ color: TC.soft }}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={() => onDelete(entry)}
-            title="Delete entry"
-            className="rounded-md p-1.5 transition-colors hover:bg-white/10"
-            style={{ color: TC.soft }}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
+        <div className="hidden flex-shrink-0 items-center gap-1 sm:flex">
+          <RowActions
+            open={open}
+            hasDetail={hasDetail}
+            onToggle={() => setOpen((v) => !v)}
+            onEdit={() => onEdit(entry)}
+            onDelete={() => onDelete(entry)}
+          />
         </div>
       </div>
 

@@ -161,7 +161,7 @@ export default function InvoicingDesk() {
         </button>
       </DeskPanelBar>
 
-      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
         <DeskTile label="Outstanding" value={money(summary.sent)} note="Sent, not yet settled" />
         <DeskTile
           label="Settled"
@@ -169,12 +169,14 @@ export default function InvoicingDesk() {
           note={`${summary.paidCount} of ${summary.issued} bills cleared`}
           meter={summary.issued ? summary.paidCount / summary.issued : 0}
         />
-        <DeskTile
-          label="In draft"
-          value={summary.draft}
-          note={summary.draft ? 'Waiting on a signature' : 'Nothing unposted'}
-          tone="#8f5c2c"
-        />
+        <div className="col-span-2 sm:col-span-1">
+          <DeskTile
+            label="In draft"
+            value={summary.draft}
+            note={summary.draft ? 'Waiting on a signature' : 'Nothing unposted'}
+            tone="#8f5c2c"
+          />
+        </div>
       </div>
 
       {summary.square && (

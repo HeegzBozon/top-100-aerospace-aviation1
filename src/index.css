@@ -2198,3 +2198,68 @@ body.hh-landscape .hh-viewer-foot {
   .desk-lamp { animation: none; }
   .desk-key { transition: none; }
 }
+
+/* ===== THE DESK, HELD IN ONE HAND =====
+   On a phone the house desks are read through a 330px picture, so the furniture is
+   re-cut for a thumb: every key stands at the height a thumb can find without looking,
+   and a sheet that holds a form rises from the foot of the glass instead of hanging
+   under its bar, where the chin would take half of it. Nothing about the desk changes
+   — it is the same instrument, cut for a smaller hand. */
+@media (max-width: 767px) {
+  .desk-key {
+    min-height: 40px;
+    padding: 10px 13px;
+    font-size: 10.5px;
+  }
+
+  /* A key that carries an icon and a word may fill the row it stands on. */
+  .desk-key-row {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  /* The sheet: pinned to the foot of the glass, above the controls centre, with its own
+     roll so a long form never runs past the picture. The scrim behind it belongs to the
+     surface that opened it. */
+  .desk-sheet {
+    position: fixed;
+    top: auto;
+    left: var(--hh-glass-inset, 7px);
+    right: var(--hh-glass-inset, 7px);
+    bottom: calc(var(--hh-bottom, 0px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 6px);
+    z-index: 45;
+    width: auto;
+    max-height: 72dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 14px;
+    animation: desk-sheet-rise 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* With the keys up, the sheet sits on them: the field being written into stays in
+     view above the keyboard. */
+  body.hh-keyboard .desk-sheet {
+    bottom: calc(var(--hh-keyboard, 0px) + env(safe-area-inset-bottom) + 6px);
+    max-height: 58dvh;
+  }
+
+  /* The admin portal gives its own frame to the glass, so the section head can stand
+     still across the top of the picture while the desk under it rolls. */
+  .admin-shell {
+    height: auto;
+    overflow: visible;
+  }
+  .admin-shell .admin-body {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+@keyframes desk-sheet-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desk-sheet { animation: none; }
+}
