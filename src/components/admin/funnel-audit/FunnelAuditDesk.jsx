@@ -4,6 +4,7 @@ import { AUDIT_METHOD, AUDIT_READ_ON, FINDINGS, FUNNELS, coverageOf, severityCou
 import FunnelLedger from './FunnelLedger';
 import FunnelFindings from './FunnelFindings';
 import FunnelRoadmap from './FunnelRoadmap';
+import useFunnelEvidence from './useFunnelEvidence';
 
 // THE AUDIT DESK — everything the house runs as a journey, read against the code that runs it.
 //
@@ -20,6 +21,7 @@ const TABS = [
 export default function FunnelAuditDesk() {
   const [tab, setTab] = useState('ledger');
   const [selectedId, setSelectedId] = useState(FUNNELS[0].id);
+  const { evidence, state: evidenceState, error: evidenceError, reload } = useFunnelEvidence();
 
   const rungs = useMemo(() => {
     const totals = FUNNELS.reduce(
@@ -112,7 +114,14 @@ export default function FunnelAuditDesk() {
 
       {tab === 'ledger' ? (
         <div className="desk-plate p-4 md:p-5">
-          <FunnelLedger selectedId={selectedId} onSelect={setSelectedId} />
+          <FunnelLedger
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            evidence={evidence}
+            evidenceState={evidenceState}
+            evidenceError={evidenceError}
+            onRetry={reload}
+          />
         </div>
       ) : null}
 
