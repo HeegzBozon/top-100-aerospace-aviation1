@@ -15,8 +15,31 @@ import { isViewingAsVisitor } from '@/lib/viewerPreview';
 //
 // The check is the app's own: an unreachable answer opens the surface as a visitor
 // rather than holding it, and a redirect can always be refused.
+
+// The channel a promoted link came through, carried in the query string as ?src=:
+// a post, an email, a badge read off a conference table. Only a short slug is ever
+// read, so nothing a sender puts in the address can reach a record or a log.
+const SOURCE_PATTERN = /^[a-z0-9_-]{1,32}$/i;
+
+function readSource() {
+  try {
+    const raw = new URLSearchParams(window.location.search).get('src') || '';
+    return SOURCE_PATTERN.test(raw) ? raw : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function Vote() {
   const [state, setState] = useState({ status: 'checking', user: null });
+  const [source] = useState(readSource);
+
+  // Recorded once, and only for a tagged arrival: an untagged ballot is already
+  // counted by the page view, and a channel is only worth reporting when it was named.
+  useEffect(() => {
+    if (!source) return;
+    base44.analytics.track({ eventName: 'ballot_link_open', properties: { source } });
+  }, [source]);
 
   useEffect(() => {
     let active = true;
@@ -40,7 +63,7 @@ export default function Vote() {
 
   if (state.status === 'checking') return <ConsoleLoading label="Opening the ballot" />;
 
-  if (state.status === 'visitor') return <VoteGate />;
+  if (state.status === 'visitor') return <VoteGate source={source} />;
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">

@@ -32,6 +32,10 @@
   <url><loc>https://top100aero.space/patronage</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://top100aero.space/classifieds</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
 
+  <!-- The ballot's public invitation. The ballot itself sits behind the door, so this is
+       the address a feed, a post or a crawler may read and the one the vote is promoted by. -->
+  <url><loc>https://top100aero.space/ballot</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+
   <!-- Standing terms -->
   <url><loc>https://top100aero.space/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 

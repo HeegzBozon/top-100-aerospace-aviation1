@@ -15,8 +15,11 @@ import { brand } from '@/components/nominate/NominateConfig';
 //
 // The press is offered rather than made: a redirect can be refused, and the invitation
 // must never be a wall with nothing on it.
-export default function VoteGate() {
-  const toDoor = () => base44.auth.redirectToLogin('/vote');
+export default function VoteGate({ source }) {
+  // The channel travels with them through the door, so the arrival is still attributed
+  // once the account exists and the ballot is what they land on.
+  const door = source ? `/vote?src=${encodeURIComponent(source)}` : '/vote';
+  const toDoor = () => base44.auth.redirectToLogin(door);
 
   useEffect(() => {
     const previous = document.title;
