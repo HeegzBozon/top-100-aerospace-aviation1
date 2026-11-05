@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
-  CROSSCHECK, CROSSCHECK_LINE, CROSSCHECK_HOW, CROSSCHECK_PROMPTS,
+  CROSSCHECK, CROSSCHECK_LINE, CROSSCHECK_IS, CROSSCHECK_HOW, CROSSCHECK_PROMPTS,
 } from '@/components/voting/ballotNaming';
 import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
@@ -377,7 +377,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 reads what the set measures before the first tap is made. */}
             <p className="text-[9.5px] leading-snug md:max-w-md md:text-[11px]" style={{ color: `${brand.navy}66` }}>
               <span className="hidden md:inline">{CROSSCHECK_LINE} </span>
-              {CROSSCHECK_HOW}
+              {CROSSCHECK_IS} {CROSSCHECK_HOW}
             </p>
           </div>
         </div>

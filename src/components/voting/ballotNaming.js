@@ -16,9 +16,13 @@ export const BALLOT_DISTINCTION =
 export const CROSSCHECK_LINE =
   'Measure each record by its contribution to aerospace and aviation.';
 
+// What the Crosscheck is, said plainly: the smallest form of a ranked-choice ballot.
+export const CROSSCHECK_IS =
+  'A mini ranked-choice ballot — four records, one order, every set a complete ballot.';
+
 // How a set is taken: three taps, and the fourth record places itself.
 export const CROSSCHECK_HOW =
-  'Four records arrive together. Tap the one that leads, then the next — the fourth places itself.';
+  'Rank the four records: tap the one that leads, then the next — the fourth places itself.';
 
 // The question standing before each tap, by how many records are already placed.
 export const CROSSCHECK_PROMPTS = ['Which record leads?', 'Which is next?', 'And next?'];

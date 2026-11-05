@@ -32,7 +32,7 @@ const BRIEFINGS = [
     kicker: CROSSCHECK,
     objective: 'Weigh the field.',
     body:
-      'Four records arrive together, assigned by the house — you do not choose who you compare. Put them in order: the one that leads, then the next, then the next. The fourth record places itself. A record you cannot judge closes the set; nothing is scored from a set that is not complete.',
+      'A mini ranked-choice ballot, four records deep. They arrive together, assigned by the house — you do not choose who you compare. Rank all four: the one that leads, then the next, then the next, and the fourth places itself. Every set you finish is a complete ballot. A record you cannot judge closes the set; nothing is scored from a set that is not complete.',
     results: ['1 set', '10 sets', '20 sets', '50 sets', '100 sets'],
   },
 ];

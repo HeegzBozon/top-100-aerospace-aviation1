@@ -57,14 +57,15 @@ export default function VoteGate({ source }) {
           className="mb-8 max-w-md text-sm leading-relaxed"
           style={{ color: `${brand.navy}99`, fontFamily: 'var(--font-body)' }}
         >
-          Four records arrive together, chosen by the house rather than by you. You put them
-          in order: the one that leads, then the next, then the next — the fourth places
-          itself. No leaderboard, no tally in front of you, nothing to game — just the measure.
+          It is a mini ranked-choice ballot, four records deep. Four records arrive together,
+          chosen by the house rather than by you, and you rank all four: the one that leads,
+          then the next, then the next — the fourth places itself. No leaderboard, no tally in
+          front of you, nothing to game — just the measure.
         </p>
 
         <ul className="mb-9 flex flex-col gap-3">
           {[
-            'Four records at a time, judged on the record in front of you.',
+            'Four records at a time — one small ranked-choice ballot, judged on the record in front of you.',
             'A record you cannot judge closes the set; nothing is scored from it.',
             'Every set you record is kept to your own contribution record.',
             'The measure is public. The formulas are not.',
