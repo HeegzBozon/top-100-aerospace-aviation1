@@ -53,6 +53,7 @@ const LocalLegendsManager       = lazy(() => import('@/components/admin/LocalLeg
 const TopViralPostsManager      = lazy(() => import('@/components/admin/TopViralPostsManager'));
 const EpisodePipeline           = lazy(() => import('@/components/admin/EpisodePipeline'));
 const SeasonalPlanningDashboard = lazy(() => import('@/components/admin/SeasonalPlanningDashboard'));
+const MailRoom                  = lazy(() => import('@/components/admin/mailroom/MailRoom'));
 import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
@@ -357,6 +358,9 @@ export default function Admin() {
         return <HouseDesk initialTab="ledger" />;
       case 'invoicing':
         return <HouseDesk initialTab="invoices" />;
+      // The mail room: the audience ledger, the smart lists and the letter itself.
+      case 'mail-room':
+        return <MailRoom />;
       default:
         return (
           <div className="py-16 text-center text-[var(--muted)]">
