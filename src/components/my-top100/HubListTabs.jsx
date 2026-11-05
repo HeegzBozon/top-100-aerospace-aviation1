@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
 import { Rocket, Sparkles, ListOrdered } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
+import { MANIFEST, CROSSCHECK } from '@/components/voting/ballotNaming';
 
 export default function HubListTabs({ activeTab, onTabChange, nominationCount, listCount }) {
   const tabs = [
     { key: 'start', label: 'Start Here', icon: Rocket },
-    { key: 'nominate', label: 'Finalize Your TOP 100', icon: Sparkles, badge: `${listCount}/100` },
-    { key: 'vote', label: 'Vote', icon: ListOrdered },
+    { key: 'nominate', label: MANIFEST, icon: Sparkles, badge: `${listCount}/100` },
+    { key: 'vote', label: CROSSCHECK, icon: ListOrdered },
   ];
 
   return (

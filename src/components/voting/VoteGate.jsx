@@ -23,7 +23,7 @@ export default function VoteGate({ source }) {
 
   useEffect(() => {
     const previous = document.title;
-    document.title = 'Vote — TOP 100 Aerospace & Aviation';
+    document.title = 'The Crosscheck — TOP 100 Aerospace & Aviation';
     return () => { document.title = previous; };
   }, []);
 
@@ -42,7 +42,7 @@ export default function VoteGate({ source }) {
             className="text-[10px] font-bold uppercase tracking-[0.28em]"
             style={{ color: '#8f5c2c', fontFamily: 'var(--font-body)' }}
           >
-            The ballot
+            The Crosscheck
           </p>
         </div>
 
@@ -57,14 +57,15 @@ export default function VoteGate({ source }) {
           className="mb-8 max-w-md text-sm leading-relaxed"
           style={{ color: `${brand.navy}99`, fontFamily: 'var(--font-body)' }}
         >
-          Endorsing puts a name forward. Balloting decides which names stand. Fellows are
-          shown two nominees at a time and pick the stronger record, one pairing at a time.
-          No leaderboard, no tally in front of you, nothing to game — just the measure.
+          Four records arrive together, chosen by the house rather than by you. You put them
+          in order: the one that leads, then the next, then the next — the fourth places
+          itself. No leaderboard, no tally in front of you, nothing to game — just the measure.
         </p>
 
         <ul className="mb-9 flex flex-col gap-3">
           {[
-            'One pairing at a time, judged on the record in front of you.',
+            'Four records at a time, judged on the record in front of you.',
+            'A record you cannot judge closes the set; nothing is scored from it.',
             'Every set you record is kept to your own contribution record.',
             'The measure is public. The formulas are not.',
           ].map((line) => (
@@ -91,7 +92,7 @@ export default function VoteGate({ source }) {
           className="group flex w-full items-center justify-center gap-2 rounded-full px-8 py-3.5 font-bold shadow-xl transition-transform active:scale-[0.99]"
           style={{ background: `linear-gradient(135deg, ${brand.navy}, #0b2542)`, color: '#FAF8F5' }}
         >
-          Enter the ballot
+          Enter the Crosscheck
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </button>
 
@@ -108,7 +109,7 @@ export default function VoteGate({ source }) {
             className="text-[11px] font-semibold uppercase tracking-[0.18em] underline underline-offset-4"
             style={{ color: `${brand.navy}80`, fontFamily: 'var(--font-body)' }}
           >
-            Not ready to vote? Read the season
+            Not ready to weigh the field? Read the season
           </a>
         </div>
 

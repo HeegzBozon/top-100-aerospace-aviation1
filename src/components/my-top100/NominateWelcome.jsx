@@ -68,7 +68,7 @@ export default function NominateWelcome({ onBegin, onVote, hasExisting }) {
 
         {/* Footer */}
         <p className="text-[12px] mt-6 max-w-md leading-relaxed" style={{ color: '#b5b5b5' }}>
-          New: Curate and rank your personal Top 100 — it doubles as your ranked choice ballot.
+          The Manifest is your own TOP 100, in order — you choose who to back, and how strongly.
         </p>
       </motion.div>
     </div>

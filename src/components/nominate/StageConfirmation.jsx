@@ -48,6 +48,7 @@ export default function StageConfirmation({ womenCount = 0, menCount = 0, angels
         <div className="space-y-4 text-sm sm:text-base leading-relaxed mb-10" style={{ color: `${brand.navy}80` }}>
           <p>Every name you submitted enters the <strong style={{ color: brand.navy }}>Season 4 review queue</strong> and gets reviewed personally by the TOP 100 team. If they're a fit, we'll reach out within <strong style={{ color: brand.navy }}>5 business days</strong>.</p>
           <p>For Local Legends nominations, the message they receive will include your name unless you chose to remain anonymous.</p>
+          <p>A nomination puts a name into the field. It is not a vote and it carries no weight in the measure — the field is weighed later, on the ballot, by Fellows.</p>
         </div>
 
         <div className="rounded-2xl border bg-white p-5 mb-8" style={{ borderColor: `${brand.navy}10` }}>

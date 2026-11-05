@@ -45,7 +45,7 @@ export default function StageWelcome({ onBegin }) {
       </div>
 
       <p className="text-[11px]" style={{ color: `${brand.navy}45` }}>
-        New: Curate and rank your personal Top 100 — it doubles as your ranked choice ballot.
+        The Manifest is your own TOP 100, in order — you choose who to back, and how strongly.
       </p>
     </div>
   );

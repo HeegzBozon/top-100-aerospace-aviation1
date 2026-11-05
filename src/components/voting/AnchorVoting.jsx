@@ -6,9 +6,12 @@ import { awardStardust } from '@/functions/awardStardust';
 import { progressQuest } from '@/functions/progressQuest';
 import { brand } from '@/components/nominate/NominateConfig';
 import {
-  Loader2, Info, ArrowUp, ArrowDown, Check, Undo2, ArrowLeft,
+  Loader2, Info, Check, Undo2, ArrowLeft,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  CROSSCHECK, CROSSCHECK_LINE, CROSSCHECK_HOW, CROSSCHECK_PROMPTS,
+} from '@/components/voting/ballotNaming';
 import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
 import { registerDigits, registerFaceKeys } from '@/components/handheld/handheldKeys';
@@ -51,9 +54,11 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   const [nomineeIndex, setNomineeIndex] = useState(() => new Map());
   const [currentSet, setCurrentSet] = useState([]);
   const [seenIds, setSeenIds] = useState([]);
-  const [phase, setPhase] = useState('best'); // best | worst | submitting | success
-  const [topId, setTopId] = useState(null);
-  const [bottomId, setBottomId] = useState(null);
+  // The order as it is tapped: first, then second, then third. The fourth record places
+  // itself, so no screen ever asks a voter to name a last place. A set is measured across
+  // all four records, so a record marked cannot judge closes the set rather than reshaping it.
+  const [phase, setPhase] = useState('ordering'); // ordering | submitting | success | closed | review
+  const [order, setOrder] = useState([]);
   const [panelNominee, setPanelNominee] = useState(null);
   const [panelToken, setPanelToken] = useState('A');
   const [sessionCount, setSessionCount] = useState(0);
@@ -127,11 +132,10 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     return () => { active = false; };
   }, []);
 
-  const advance = useCallback(() => {
-    setHistory((prev) => [...prev, { set: currentSet, topId, bottomId }].slice(-5));
-    setTopId(null);
-    setBottomId(null);
-    setPhase('best');
+  const advance = useCallback((completed = null) => {
+    setHistory((prev) => [...prev, ...(completed ? [completed] : [])].slice(-5));
+    setOrder([]);
+    setPhase('ordering');
     setSeenIds((prev) => {
       const next = [...prev, ...(currentSet.map((n) => n.id))];
       // keep only the last 10 seen to avoid starving the pool
@@ -139,76 +143,80 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     });
     setCurrentSet(drawSet(pool, seenIds));
     setSessionCount((c) => c + 1);
-  }, [currentSet, pool, seenIds, topId, bottomId]);
+  }, [currentSet, pool, seenIds]);
 
-  // Mid-set undo: clear the "first" anchor and return to the first prompt.
-  const undoFirstPick = useCallback(() => {
-    setTopId(null);
-    setBottomId(null);
-    setPhase('best');
+  // Undo the last tap while the set is still standing: the record goes back into the field
+  // and the question it answered is asked again.
+  const undoLastTap = useCallback(() => {
+    setOrder((prev) => prev.slice(0, -1));
   }, []);
 
-  // Go back to review the last completed set (read-only — vote already recorded).
+  // A record the voter cannot judge ends the set. Nothing is recorded from it: the
+  // instrument measures four records or it measures none, so a partial set is never scored.
+  const closeSet = useCallback(() => {
+    if (phase !== 'ordering') return;
+    setPhase('closed');
+    setTimeout(() => advance(), 2200);
+  }, [phase, advance]);
+
+  // Go back to read the last completed set (read-only — the set is already recorded).
   const goBack = useCallback(() => {
     if (!history.length) return;
     const last = history[history.length - 1];
     setHistory(history.slice(0, -1));
     setCurrentSet(last.set);
-    setTopId(last.topId);
-    setBottomId(last.bottomId);
+    setOrder(last.order || []);
     setPhase('review');
   }, [history]);
 
   const resumeVoting = useCallback(() => {
-    setTopId(null);
-    setBottomId(null);
-    setPhase('best');
+    setOrder([]);
+    setPhase('ordering');
     setCurrentSet(drawSet(pool, seenIds));
   }, [pool, seenIds]);
 
   const handleSelect = async (nominee) => {
-    if (phase === 'best') {
-      setTopId(nominee.id);
-      setPhase('worst');
+    if (phase !== 'ordering' || !nominee) return;
+    if (order.includes(nominee.id)) return;
+
+    const next = [...order, nominee.id];
+    // Three taps are all the set asks for. The fourth record places itself.
+    if (next.length < 3) {
+      setOrder(next);
       return;
     }
-    if (phase === 'worst' && nominee.id === topId) {
-      // De-select the "first" anchor by clicking it again → back to the first prompt.
-      setTopId(null);
-      setBottomId(null);
-      setPhase('best');
-      return;
-    }
-    if (phase === 'worst' && nominee.id !== topId) {
-      const bottom = nominee.id;
-      const neutrals = currentSet.filter((n) => n.id !== topId && n.id !== bottom).map((n) => n.id);
-      setBottomId(bottom);
-      setPhase('submitting');
-      try {
-        const res = await submitAnchorVote({
-          top_nominee_id: topId,
-          bottom_nominee_id: bottom,
-          neutral_nominee_ids: neutrals,
-          season_id: season.id,
-        });
-        if (!res.data || !res.data.success) throw new Error(res.data?.error || 'Submission failed');
 
-        // Non-blocking rewards, mirroring the pairwise flow.
-        Promise.all([awardStardust({ action_type: 'vote' }), progressQuest({ action: 'anchor_vote' })]).catch(() => {});
+    const lastId = currentSet.map((n) => n.id).find((id) => !next.includes(id));
+    const ordered = [...next, lastId].filter(Boolean);
+    if (ordered.length < 4) return;
 
-        onRecorded?.(res.data.progress);
+    setOrder(next);
+    setPhase('submitting');
+    try {
+      // The record is kept by the instrument as its two anchors and the two between them.
+      const res = await submitAnchorVote({
+        top_nominee_id: ordered[0],
+        bottom_nominee_id: ordered[3],
+        neutral_nominee_ids: [ordered[1], ordered[2]],
+        season_id: season.id,
+      });
+      if (!res.data || !res.data.success) throw new Error(res.data?.error || 'Submission failed');
 
-        setPhase('success');
-        setTimeout(() => advance(), 750);
-      } catch (e) {
-        toast({
-          variant: 'destructive',
-          title: 'Vote failed',
-          description: e?.response?.data?.error || e.message,
-        });
-        setBottomId(null);
-        setPhase('worst');
-      }
+      // Non-blocking rewards, mirroring the other ballot.
+      Promise.all([awardStardust({ action_type: 'vote' }), progressQuest({ action: 'anchor_vote' })]).catch(() => {});
+
+      onRecorded?.(res.data.progress);
+
+      setPhase('success');
+      setTimeout(() => advance({ set: currentSet, order: ordered }), 900);
+    } catch (e) {
+      toast({
+        variant: 'destructive',
+        title: 'Set not recorded',
+        description: e?.response?.data?.error || e.message,
+      });
+      setOrder(next.slice(0, -1));
+      setPhase('ordering');
     }
   };
 
@@ -219,7 +227,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // and the keys belong to the reader, not to the ballot, so no mark can be made by
   // accident.
   const reading = guideOpen || Boolean(panelNominee);
-  const standing = (phase === 'best' || phase === 'worst') && !reading;
+  const standing = phase === 'ordering' && !reading;
   // Which face the case is wearing. The chamber is voted from the hardware either way,
   // but the radio has no X, Y, A or B to press: its candidates stand on the digits in
   // reading order — 1–4 vote, 5–8 open the same four files — and each card prints both
@@ -248,7 +256,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // keys go back to the console — A confirm, B back, X sections, Y share.
   const voteKeys = useRef(null);
   voteKeys.current =
-    (phase === 'best' || phase === 'worst') && !reading && currentSet.length === 4
+    phase === 'ordering' && !reading && currentSet.length === 4
       ? (key) => {
           const i = VOTE_KEYS.indexOf(key);
           if (i < 0 || !currentSet[i]) return false;
@@ -321,24 +329,37 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           Not enough nominees to vote
         </h2>
         <p className="text-xs max-w-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
-          Anchor selection needs at least four nominees in the active pool. Check back once the season is seeded.
+          The Crosscheck needs at least four records in the field. Check back once the season is seeded.
         </p>
       </div>
     );
   }
 
+  // Where each record stands, for the plates. The fourth has no tap of its own: once three
+  // are placed, the one left standing is fourth by elimination.
+  const positionOf = (id) => {
+    const placed = order.indexOf(id);
+    if (placed >= 0) return placed + 1;
+    if (order.length === 3) {
+      const rest = currentSet.find((n) => !order.includes(n.id));
+      if (rest && rest.id === id) return 4;
+    }
+    return null;
+  };
+
   const prompt =
-    phase === 'best' ? 'Rank 1?' :
-    phase === 'worst' ? 'Rank 4?' :
-    phase === 'submitting' ? 'Recording your comparisons…' :
+    phase === 'ordering' ? CROSSCHECK_PROMPTS[Math.min(order.length, 2)] :
+    phase === 'submitting' ? 'Recording the set…' :
+    phase === 'success' ? 'Set recorded.' :
+    phase === 'closed' ? 'Set closed · not recorded' :
     phase === 'review' ? 'Reviewing your last set.' :
-    'Anchored. Drawing the next set.';
+    CROSSCHECK_PROMPTS[0];
 
   // Undo, review and resume are offered only when they mean something, and they are the
   // one row the ballot ever adds: on the glass they are kept off the cards' budget
   // entirely on the phases that have nothing to offer.
   const hasControls =
-    phase === 'worst' || phase === 'review' || (history.length > 0 && (phase === 'best' || phase === 'worst'));
+    phase === 'review' || (phase === 'ordering' && (order.length > 0 || history.length > 0));
 
   return (
     <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
@@ -347,13 +368,16 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         <div className="max-w-5xl mx-auto w-full flex flex-col flex-1 min-h-0">
         {/* The console names this panel on its own strip, so on the glass the title
             stands down and the prompt and the cards take the room. */}
-        <div className="mb-1 hidden md:block">
+        <div className="mb-1 shrink-0 md:mb-2">
           <div>
-            <h2 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
-              Anchor Selection
+            <h2 className="hidden text-lg font-bold md:block" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
+              {CROSSCHECK}
             </h2>
-            <p className="hidden text-[11px] leading-snug max-w-md md:block" style={{ color: `${brand.navy}60` }}>
-              Two taps. The one you advance first and the one you advance last become anchors — five real comparisons, recorded as observations.
+            {/* The line is fixed, and it stands on the glass as well as the desk: a voter
+                reads what the set measures before the first tap is made. */}
+            <p className="text-[9.5px] leading-snug md:max-w-md md:text-[11px]" style={{ color: `${brand.navy}66` }}>
+              <span className="hidden md:inline">{CROSSCHECK_LINE} </span>
+              {CROSSCHECK_HOW}
             </p>
           </div>
         </div>
@@ -369,19 +393,23 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             transition={{ duration: 0.2 }}
             className="mb-1 mt-0 flex items-center gap-1.5 md:mb-4 md:mt-3 md:gap-2"
           >
-            {phase === 'best' && (
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.gold}1F` }}>
-                <ArrowUp className="h-3 w-3" style={{ color: brand.gold }} />
-              </span>
-            )}
-            {phase === 'worst' && (
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
-                <ArrowDown className="h-3 w-3" style={{ color: `${brand.navy}90` }} />
+            {phase === 'ordering' && (
+              // The place the next tap fills, so the sequence is legible without reading.
+              <span
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9.5px] font-bold tabular-nums"
+                style={{ background: `${brand.gold}1F`, color: brand.navy }}
+              >
+                {order.length + 1}
               </span>
             )}
             {phase === 'submitting' && (
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
                 <Loader2 className="h-3 w-3 animate-spin" style={{ color: brand.gold }} />
+              </span>
+            )}
+            {(phase === 'success' || phase === 'closed') && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
+                <Check className="h-3 w-3" style={{ color: phase === 'success' ? brand.gold : `${brand.navy}70` }} />
               </span>
             )}
             <p className="min-w-0 truncate font-heading text-[14px] leading-none md:text-[17px]" style={{ color: brand.navy }}>{prompt}</p>
@@ -430,12 +458,12 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
 
         {/* Controls: undo mid-set / review last set / resume */}
         <div className={hasControls ? 'mb-1 flex flex-wrap items-center gap-1.5 md:mb-3 md:gap-2' : 'hidden'}>
-          {phase === 'worst' && (
-            <button onClick={undoFirstPick} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
-              <Undo2 className="w-3.5 h-3.5" /> Undo first pick
+          {phase === 'ordering' && order.length > 0 && (
+            <button onClick={undoLastTap} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+              <Undo2 className="w-3.5 h-3.5" /> Undo last tap
             </button>
           )}
-          {history.length > 0 && (phase === 'best' || phase === 'worst') && (
+          {history.length > 0 && phase === 'ordering' && (
             <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <ArrowLeft className="w-3.5 h-3.5" /> Review last set
             </button>
@@ -451,23 +479,22 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             at once, so the grid takes its rows from the height it is given. */}
         <div className="grid grid-cols-2 grid-rows-2 gap-1.5 sm:gap-3 lg:gap-4 flex-1 min-h-0">
           {currentSet.map((nominee, idx) => {
-            const isTop = nominee.id === topId;
-            const isBottom = nominee.id === bottomId;
             const token = String.fromCharCode(65 + idx);
-            // All cards stay clickable in 'worst' so the top pick can be de-selected by tapping it again.
-            const selectable = phase === 'best' || phase === 'worst';
+            // The plates answer a tap only while the set is being ordered: once the third
+            // record is placed, the fourth places itself and the set is read, not pressed.
+            const selectable = phase === 'ordering' && !reading;
             return (
               <JudgeCard
                 key={nominee.id}
                 nominee={nominee}
                 token={token}
-                isTop={isTop}
-                isBottom={isBottom}
+                position={positionOf(nominee.id)}
                 honoreeVolumes={honoreeVolumes(nominee, honoreeIndex, nomineeIndex)}
-                selectable={selectable && !reading && phase !== 'submitting' && phase !== 'success' && phase !== 'review'}
+                selectable={selectable}
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
+                onExclude={selectable ? () => closeSet() : null}
                 keyLabel={radio ? String(idx + 1) : VOTE_KEYS[idx]}
                 infoKeyLabel={radio ? String(idx + 1 + currentSet.length) : null}
                 dense={radio}
@@ -486,7 +513,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
               className="mx-auto mt-2 flex items-center justify-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-bold md:mt-5 md:text-xs"
               style={{ background: `${brand.gold}18`, border: `1px solid ${brand.gold}55`, color: brand.navy }}
             >
-              <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> 5 comparisons recorded
+              <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> Set recorded · 5 comparisons
             </motion.div>
           )}
         </AnimatePresence>

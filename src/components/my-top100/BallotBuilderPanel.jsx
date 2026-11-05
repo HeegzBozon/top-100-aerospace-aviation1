@@ -1,5 +1,6 @@
 import { AlertCircle, ArrowRight, Compass, Loader2, RefreshCw, Search, Sparkles, UserPlus } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
+import { MANIFEST } from '@/components/voting/ballotNaming';
 import BallotSuggestionCard from '@/components/my-top100/BallotSuggestionCard';
 import useBallotSuggestions from '@/components/my-top100/useBallotSuggestions';
 
@@ -37,12 +38,12 @@ export default function BallotBuilderPanel({
 
   return (
     <div className="pb-4">
-      <SectionLabel>Selection Committee · Ballot</SectionLabel>
+      <SectionLabel>Selection Committee · {MANIFEST}</SectionLabel>
       <h2 className="mt-1 font-heading text-[22px] leading-tight" style={{ color: brand.navy }}>
-        Finalize your TOP 100
+        Who's on your manifest?
       </h2>
       <p className="mt-1 text-[11px] leading-relaxed" style={{ color: `${brand.navy}60` }}>
-        Position one reads as position one. Arrange the order below, and the surface keeps it
+        Put them in order. Position one reads as position one, and the surface keeps your order
         as you go.
       </p>
 

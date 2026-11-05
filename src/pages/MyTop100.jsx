@@ -403,7 +403,7 @@ export default function MyTop100() {
           My Top 100
         </h1>
         <p className="text-sm mb-8 max-w-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
-          Sign in to build your personal ranked list of the most impactful aerospace & aviation leaders.
+          Sign in to build your Manifest — your own TOP 100, in order, of the most impactful aerospace &amp; aviation leaders.
         </p>
         <button
           onClick={() => base44.auth.redirectToLogin(window.location.pathname)}

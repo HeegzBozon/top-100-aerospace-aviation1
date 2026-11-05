@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ArrowRight } from 'lucide-react';
 import { brand } from '@/components/nominate/NominateConfig';
+import { MANIFEST, CROSSCHECK, BALLOT_DISTINCTION } from '@/components/voting/ballotNaming';
 
 // The committee's briefing: two surfaces, one objective each, and the key results that
 // say the objective has been reached. It replaces the old voter guide — which walked the
@@ -14,10 +15,10 @@ import { brand } from '@/components/nominate/NominateConfig';
 const BRIEFINGS = [
   {
     key: 'nominate',
-    kicker: 'Nominate',
+    kicker: MANIFEST,
     objective: 'Build the field.',
     body:
-      'Nominating is how the pool is made. One name is a nomination; your ballot is your own TOP 100, in order — so naming and ordering are one piece of work, and it is only counted once it is submitted.',
+      'Naming puts someone forward; the order says how strongly you stand behind them. The Manifest is your own TOP 100 in order — you choose who to back, and nothing is counted until you submit it. A short list you would vouch for is worth more than a long one you would not.',
     results: [
       'Name one person you vouch for',
       'Build your list in order',
@@ -28,10 +29,10 @@ const BRIEFINGS = [
   },
   {
     key: 'vote',
-    kicker: 'Vote',
+    kicker: CROSSCHECK,
     objective: 'Weigh the field.',
     body:
-      'Voting is the measurement, taken four names at a time. Mark the one you would advance first, then the one you would advance last; the instrument settles the pairings between. You rank. The institution measures.',
+      'Four records arrive together, assigned by the house — you do not choose who you compare. Put them in order: the one that leads, then the next, then the next. The fourth record places itself. A record you cannot judge closes the set; nothing is scored from a set that is not complete.',
     results: ['1 set', '10 sets', '20 sets', '50 sets', '100 sets'],
   },
 ];
@@ -96,7 +97,7 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
           <p className="mt-1.5 text-[11.5px] leading-relaxed" style={{ color: `${brand.navy}80` }}>
             {single
               ? single.body
-              : 'Each surface has a single objective. The key results are the ladder that says you have reached it.'}
+              : `${BALLOT_DISTINCTION} Each surface has a single objective. The key results are the ladder that says you have reached it.`}
           </p>
 
           {briefs.map((brief) => (
