@@ -677,22 +677,43 @@ Write the letter. Rules that override everything else:
       const activeRes = await base44.asServiceRole.entities.EditorialStandard.filter({ status: 'active' }, { limit: 1 });
       const active = (activeRes?.items || activeRes || [])[0] || null;
 
-      if (active) {
-        await base44.asServiceRole.entities.EditorialStandard.update(active.id, { status: 'superseded' });
+      // Only the parts of a standard are carried forward and edited. The record's own
+      // bookkeeping — its id, its dates, its status — belongs to this file, never to a
+      // patch, so a new version is composed from the clauses and nothing else.
+      const CLAUSES = [
+        'title',
+        'stance',
+        'structure',
+        'lengths',
+        'voice_do',
+        'voice_dont',
+        'use_words',
+        'never_words',
+        'banned_words',
+        'punctuation',
+        'sourcing',
+        'gates',
+        'open_decisions',
+      ];
+      const next = {};
+      for (const key of CLAUSES) next[key] = active?.[key] ?? STANDARD_V1[key];
+      for (const key of CLAUSES) {
+        if (patch[key] !== undefined) next[key] = patch[key];
       }
 
-      const next = { ...STANDARD_V1, ...(active || {}), ...patch };
+      // Filed first, superseded second: a failed write must never leave the house with
+      // no standard in force.
       const created = await base44.asServiceRole.entities.EditorialStandard.create({
         ...next,
         version: (active?.version || 0) + 1,
         status: 'active',
         effective_from: todayKey(),
         body: composeBody(next),
-        id: undefined,
-        created_date: undefined,
-        updated_date: undefined,
-        created_by_id: undefined,
       });
+
+      if (active?.id) {
+        await base44.asServiceRole.entities.EditorialStandard.update(active.id, { status: 'superseded' });
+      }
 
       return Response.json({ standard: created });
     }
