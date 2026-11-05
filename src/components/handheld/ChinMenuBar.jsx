@@ -62,6 +62,7 @@ export default function ChinMenuBar({
         onFile={onFile}
         onEdit={onEdit}
         onNotifications={onNotifications}
+        showRouteBack
         showViewAs={realUser?.role === "admin"}
         viewingAsVisitor={viewingAsVisitor}
         onToggleViewAs={toggleViewingAsVisitor}

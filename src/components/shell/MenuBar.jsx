@@ -1,4 +1,5 @@
 import { Bell, ChevronLeft, Home } from "lucide-react";
+import RouteBackKey from "@/components/mobile/navigation/RouteBackKey";
 import ViewAsCell from "@/components/shell/ViewAsCell";
 import MenuBarClock from "@/components/shell/MenuBarClock";
 import { useMenuBarStatus } from "@/components/shell/menuBarStatus";
@@ -94,6 +95,9 @@ export default function MenuBar({
   editHint = "",
   /* The desk prints the clock at the far end of its strip; the glass has no room for it. */
   showClock = false,
+  /* The phone's band: a nested address puts an arrow at its head, so the page carries
+     its own way out. The desk keeps its strip as it was. */
+  showRouteBack = false,
   className = "",
   style,
 }) {
@@ -112,6 +116,7 @@ export default function MenuBar({
           <ChevronLeft className="h-[17px] w-[17px]" strokeWidth={2} />
         </BarKey>
       )}
+      {!onBack && showRouteBack ? <RouteBackKey /> : null}
       <BarKey label="Home" onClick={onHome}>
         <Home className="h-[15px] w-[15px]" strokeWidth={1.8} />
       </BarKey>

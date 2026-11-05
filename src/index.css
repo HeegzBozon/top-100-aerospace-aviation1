@@ -2225,6 +2225,8 @@ body.hh-landscape .hh-viewer-foot {
   .cfs-tab {
     -webkit-user-select: none;
     user-select: none;
+    /* No grey flash over the label under the thumb: a key is a key, not text. */
+    -webkit-tap-highlight-color: transparent;
   }
 
   button svg,
@@ -2234,9 +2236,20 @@ body.hh-landscape .hh-viewer-foot {
   nav a svg {
     -webkit-user-select: none;
     user-select: none;
+    /* The glyph belongs to its key: a press on it is a press, never a picture to save. */
+    -webkit-touch-callout: none;
   }
 
-  body.hh-shell .hh-stage {
+  /* Every wrapper the device scrolls inside holds its own overflow. A pull past the head
+     of a surface is that surface's gesture to answer — the shell, the page behind it and
+     the browser's own chrome never take the movement on. */
+  body.hh-shell,
+  body.hh-shell .hh-stage,
+  body.hh-shell [data-handheld-screen],
+  body.hh-shell .hh-slide-window,
+  body.hh-shell .hh-slide,
+  body.hh-shell .page-scroll,
+  body.hh-shell .imac-screen {
     overscroll-behavior: none;
   }
 }

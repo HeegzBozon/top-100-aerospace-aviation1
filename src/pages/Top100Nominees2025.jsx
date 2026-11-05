@@ -19,7 +19,7 @@ import VotingModal from '@/components/voting/VotingModal';
 import NominationModal from '@/components/nominations/NominationModal';
 import { motion } from 'framer-motion';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import PullToRefresh from '@/components/mobile/PullToRefresh';
+import PullToRefresh from '@/components/capabilities/performance/PullToRefresh';
 
 export default function Top100Nominees2025() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -458,8 +458,8 @@ export default function Top100Nominees2025() {
   }
 
   return (
+    <PullToRefresh onRefresh={() => setRefreshToken((count) => count + 1)}>
     <div className="min-h-screen bg-[var(--bg)] p-4 md:p-6">
-      <PullToRefresh onRefresh={() => setRefreshToken((count) => count + 1)} />
       <div className="max-w-7xl mx-auto">
         <EngagementCTA 
           currentUser={currentUser}
@@ -810,5 +810,6 @@ export default function Top100Nominees2025() {
         onClose={() => setNominationModalOpen(false)} 
       />
     </div>
+    </PullToRefresh>
   );
 }

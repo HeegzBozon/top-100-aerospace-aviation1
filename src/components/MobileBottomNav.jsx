@@ -1,14 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
+import { Home, MessageCircle, Cpu } from "lucide-react";
 import { createPageUrl } from "@/utils";
-import * as LucideIcons from "lucide-react";
 import { CORE_NAV_ITEMS, brandColors } from "@/components/layout/navConfig";
+import { useMobileNav, tabOf } from "@/components/mobile/navigation/MobileNavState";
 
 import { cn } from "@/lib/utils";
 
-const ICON_MAP = LucideIcons;
+const ICON_MAP = { Home, MessageCircle, Cpu };
 
 export default function MobileBottomNav({ currentPageName }) {
   const location = useLocation();
+  const nav = useMobileNav();
   const currentPath = location.pathname.split('/').pop() || 'Landing';
 
   return (
@@ -24,12 +26,19 @@ export default function MobileBottomNav({ currentPageName }) {
     >
       <div className="flex items-center justify-around h-16 px-2 max-w-lg mx-auto">
         {CORE_NAV_ITEMS.map(item => {
-          const isActive = currentPath === item.pageName || currentPageName === item.pageName;
-          const Icon = ICON_MAP[item.icon];
+          const root = createPageUrl(item.pageName);
+          // One journey per tab: the key opens the tab where it was last left, and its
+          // lamp stays lit for any page standing under it.
+          const target = nav ? nav.lastPathFor(root) : root;
+          const isActive =
+            tabOf(location.pathname) === tabOf(root) ||
+            currentPath === item.pageName ||
+            currentPageName === item.pageName;
+          const Icon = ICON_MAP[item.icon] || Home;
           return (
             <Link
               key={item.label}
-              to={createPageUrl(item.pageName)}
+              to={target}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-lg transition-all min-w-[56px]",
                 isActive ? "scale-105" : "opacity-70"
