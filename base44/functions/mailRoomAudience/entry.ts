@@ -5,6 +5,8 @@ import {
   mailableRows,
   audienceSummary,
   entryPointCounts,
+  standingCounts,
+  volumeCounts,
   yearOfSeason,
 } from '../../shared/audience.ts';
 
@@ -89,6 +91,8 @@ export default async function (req: Request): Promise<Response> {
       summary,
       segments: resolved,
       seasons,
+      standing: standingCounts(mailableRows(audience)),
+      volumes: volumeCounts(mailableRows(audience)),
       by_entry: entryPointCounts(audience),
       rows: matching.slice(0, limit),
       matching: matching.length,

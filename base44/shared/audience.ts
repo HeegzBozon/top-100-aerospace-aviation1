@@ -259,6 +259,35 @@ export function entryPointCounts(rows: AudienceRow[]) {
     .sort((a, b) => b.count - a.count);
 }
 
+// STANDING, AS ONE READING — every address falls in exactly one band, strongest first, so the
+// bands always add up to the whole. A person who has both nominated and been printed counts
+// once, as a nominator: the chart reads how deep the house's relationship goes, not how many
+// times a name appears.
+export function standingCounts(rows: AudienceRow[]) {
+  let nominator = 0;
+  let honoree = 0;
+  let nominee = 0;
+  let other = 0;
+  for (const row of rows) {
+    if (row.is_nominator) nominator += 1;
+    else if (row.season_ids.some((id) => VOLUME_SEASON_IDS.includes(id))) honoree += 1;
+    else if (row.in_pool) nominee += 1;
+    else other += 1;
+  }
+  return { nominator, honoree, nominee, other };
+}
+
+// The printed record, volume by volume: how many reachable addresses hold an appearance in
+// each volume the house has bound. A person printed twice is counted in both volumes — this is
+// a reading of the volumes, not of the people.
+export function volumeCounts(rows: AudienceRow[]) {
+  return VOLUME_SEASONS.map((volume) => ({
+    season_id: volume.id,
+    label: volume.label,
+    count: rows.filter((row) => row.season_ids.includes(volume.id)).length,
+  }));
+}
+
 // The house's greeting: a first name, taken from the name where there is one and from the
 // address where there is not. Never a guess at more than that.
 export function firstNameOf(name: unknown, email: unknown): string {

@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Plus, Trash2, Pencil, Users, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { SEGMENT_FIELDS, describeRules, optionsFor } from './mailRoomConfig';
+import SegmentInsights from './SegmentInsights';
 
 const BLANK = { id: '', name: '', description: '', ghl_tag: '', rules: [] };
 
@@ -154,6 +155,8 @@ export default function SegmentsPanel({ room }) {
           </button>
         </div>
       </div>
+
+      {room.state !== 'error' && <SegmentInsights room={room} />}
 
       {draft && (
         <div className="desk-plate space-y-3 p-3.5">
