@@ -136,6 +136,37 @@ const STANDARD_V1 = {
   body: '',
 };
 
+// The standard as one piece of prose, so a drafting prompt reads the whole policy rather
+// than the fields it happens to name. Composed from the version's own parts, never invented.
+const composeBody = (standard) => {
+  const lines = [standard.stance || ''];
+  if (standard.structure?.length) {
+    lines.push(
+      'Standard structure, in print order: ' +
+        standard.structure.map((row) => `${row.section} (${row.words}, by ${row.byline || 'none'}): ${row.job}`).join('; ') +
+        '.',
+    );
+  }
+  if (standard.lengths?.length) {
+    lines.push(
+      'Lengths: ' + standard.lengths.map((row) => `${row.type} ${row.words} (${row.what_changes})`).join('; ') + '.',
+    );
+  }
+  if (standard.voice_do?.length) lines.push(`Voice, do: ${standard.voice_do.join('; ')}.`);
+  if (standard.voice_dont?.length) lines.push(`Voice, do not: ${standard.voice_dont.join('; ')}.`);
+  if (standard.use_words?.length) lines.push(`Use: ${standard.use_words.join(', ')}.`);
+  if (standard.never_words?.length) lines.push(`Never use: ${standard.never_words.join(', ')}.`);
+  if (standard.banned_words?.length) lines.push(`Banned words: ${standard.banned_words.join(', ')}.`);
+  if (standard.punctuation?.length) lines.push(`Punctuation: ${standard.punctuation.join('; ')}.`);
+  if (standard.sourcing?.length) lines.push(`Sourcing: ${standard.sourcing.join(' ')}`);
+  if (standard.gates?.length) {
+    lines.push(
+      'Gates before an issue goes out: ' + standard.gates.map((row) => `${row.gate} cleared by ${row.owner} (${row.covers})`).join('; ') + '.',
+    );
+  }
+  return lines.filter(Boolean).join('\n\n');
+};
+
 const MAGAZINE_DONE = ['published', 'archived'];
 const MAIL_DONE = ['sent'];
 const CAMPAIGN_DONE = ['reported', 'closed'];
@@ -350,7 +381,7 @@ export default async function (req) {
       if (!standard) {
         standard = await base44.asServiceRole.entities.EditorialStandard.create({
           ...STANDARD_V1,
-          body: STANDARD_V1.stance,
+          body: composeBody(STANDARD_V1),
         });
       }
 
@@ -650,12 +681,17 @@ Write the letter. Rules that override everything else:
         await base44.asServiceRole.entities.EditorialStandard.update(active.id, { status: 'superseded' });
       }
 
+      const next = { ...STANDARD_V1, ...(active || {}), ...patch };
       const created = await base44.asServiceRole.entities.EditorialStandard.create({
-        ...STANDARD_V1,
-        ...patch,
+        ...next,
         version: (active?.version || 0) + 1,
         status: 'active',
         effective_from: todayKey(),
+        body: composeBody(next),
+        id: undefined,
+        created_date: undefined,
+        updated_date: undefined,
+        created_by_id: undefined,
       });
 
       return Response.json({ standard: created });
