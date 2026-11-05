@@ -54,6 +54,7 @@ const TopViralPostsManager      = lazy(() => import('@/components/admin/TopViral
 const EpisodePipeline           = lazy(() => import('@/components/admin/EpisodePipeline'));
 const SeasonalPlanningDashboard = lazy(() => import('@/components/admin/SeasonalPlanningDashboard'));
 const MailRoom                  = lazy(() => import('@/components/admin/mailroom/MailRoom'));
+const EditorialCalendarDesk     = lazy(() => import('@/components/admin/editorial-calendar/EditorialCalendarDesk'));
 import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
@@ -287,6 +288,8 @@ export default function Admin() {
             </div>
           </div>
         );
+      case 'editorial-calendar':
+        return <EditorialCalendarDesk />;
       case 'content':
         return <KBArticleManager articles={kbArticles} onArticlesUpdate={loadAllData} />;
       case 'viral-posts':

@@ -1,0 +1,216 @@
+{
+  "name": "EditorialIssue",
+  "type": "object",
+  "description": "One issue on the editorial calendar: the authoritative planning record for what the house intends to publish, when, at what length, who owns the next step, and the three desk records it is handed to. The desks keep their own substance; this record keeps the plan and the links.",
+  "properties": {
+    "source_key": {
+      "type": "string",
+      "description": "Stable key for the schedule row this issue came from, e.g. 'playbook-42'. Seeding matches on it, so the grid can be imported twice without doubling the calendar."
+    },
+    "issue_no": {
+      "type": "number",
+      "description": "The issue number printed in the masthead, e.g. 42."
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The day the issue lands."
+    },
+    "issue_name": {
+      "type": "string",
+      "description": "Working title of the issue, e.g. 'The Talent Issue'."
+    },
+    "issue_type": {
+      "type": "string",
+      "enum": [
+        "Standard",
+        "Voting",
+        "Community",
+        "Show",
+        "Live",
+        "Debrief",
+        "Quarterly",
+        "Annual",
+        "Special"
+      ],
+      "description": "The type of issue, which sets its length and treatment in the style guide.",
+      "enumColors": [
+        "blue",
+        "yellow",
+        "yellow",
+        "purple",
+        "pink",
+        "gray",
+        "green",
+        "green",
+        "red"
+      ]
+    },
+    "year": {
+      "type": "number",
+      "description": "The publishing year, held apart from the date so a year can be read as a band."
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "quick",
+        "magazine"
+      ],
+      "default": "quick",
+      "description": "Quick is the biweekly briefing format; magazine is the longer treatment kept for Quarterlies and the Annual."
+    },
+    "word_target": {
+      "type": "string",
+      "description": "The length the style guide sets for this issue type, transcribed onto the row so the desk reads without loading the guide."
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "drafting",
+        "review",
+        "ready",
+        "published",
+        "held"
+      ],
+      "default": "planned",
+      "description": "Where the house holds the issue. The desk states read against this; it is set by a person, never advanced on its own.",
+      "enumColors": [
+        "gray",
+        "blue",
+        "yellow",
+        "purple",
+        "green",
+        "red"
+      ]
+    },
+    "lead_story": {
+      "type": "string",
+      "description": "The one lead story the Briefing carries, in a sentence."
+    },
+    "why_now": {
+      "type": "string",
+      "description": "Why this issue matters now. Feeds the Editor's Note."
+    },
+    "section_plan": {
+      "type": "array",
+      "description": "The issue's sections as planned against the style guide's standard structure. A plan, not the composed pages.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "words": {
+            "type": "string"
+          },
+          "byline": {
+            "type": "string"
+          },
+          "job": {
+            "type": "string"
+          },
+          "done": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "default": []
+    },
+    "owner_name": {
+      "type": "string",
+      "description": "Who owns the next step on this issue."
+    },
+    "owner_email": {
+      "type": "string"
+    },
+    "next_action": {
+      "type": "string",
+      "description": "The single next thing that has to happen, in plain words."
+    },
+    "next_action_due": {
+      "type": "string",
+      "format": "date"
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "What is holding the issue. Cleared by a person when it is unblocked."
+    },
+    "magazine_issue_id": {
+      "type": "string",
+      "description": "The MagazineIssue this issue is assembled in. Magazine Studio owns its content."
+    },
+    "mail_issue_id": {
+      "type": "string",
+      "description": "The MailIssue letter this issue is posted as. Mail Room owns its copy and its send."
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "The EditorialCampaign the Funnel Desk carries this issue with."
+    },
+    "style_version": {
+      "type": "number",
+      "description": "The version of the editorial standard this issue is drafted to, held so a letter can be read against the guide in force when it was written."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal note on the issue. Never printed."
+    },
+    "timeline": {
+      "type": "array",
+      "description": "What was done to this record, in order: a status change, a desk staged, a standard applied. Written by the function, never by hand.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "by": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "issue_no",
+    "issue_date",
+    "issue_name",
+    "issue_type"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

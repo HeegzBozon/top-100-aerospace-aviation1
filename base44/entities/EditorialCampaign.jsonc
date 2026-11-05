@@ -1,0 +1,123 @@
+{
+  "name": "EditorialCampaign",
+  "type": "object",
+  "description": "The Funnel Desk's plan for carrying one issue: who it is for, what the reader is asked to do, where it is carried, and how the house will know. Holds no editorial copy and no audience list of its own.",
+  "properties": {
+    "issue_id": {
+      "type": "string",
+      "description": "The EditorialIssue this campaign carries."
+    },
+    "issue_no": {
+      "type": "number",
+      "description": "The issue number, held with the campaign so it reads without loading the calendar."
+    },
+    "issue_name": {
+      "type": "string"
+    },
+    "audience": {
+      "type": "string",
+      "description": "Who the issue is being carried to, in plain words, e.g. 'Fellows who have not claimed their record'."
+    },
+    "segment_id": {
+      "type": "string",
+      "description": "The AudienceSegment in the Mail Room this campaign is aimed at, when it is one."
+    },
+    "reader_action": {
+      "type": "string",
+      "description": "The one thing the reader is asked to do: claim a record, nominate, RSVP, subscribe, read a profile."
+    },
+    "action_url": {
+      "type": "string",
+      "description": "Where that action is taken. An app path or an https address."
+    },
+    "channels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Where the issue is carried. Curated: newsletter, linkedin, instagram, site, event, direct."
+    },
+    "measure": {
+      "type": "string",
+      "description": "What the house will count, named before the issue goes out, e.g. 'record claims and nominations from the issue link'."
+    },
+    "measure_event": {
+      "type": "string",
+      "description": "The analytics event the measure reads, when there is one, e.g. 'hub_nomination_submitted'."
+    },
+    "start_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "drafting",
+        "scheduled",
+        "live",
+        "reported",
+        "closed"
+      ],
+      "default": "planned",
+      "description": "Where the campaign stands. Read by the calendar; owned here.",
+      "enumColors": [
+        "gray",
+        "blue",
+        "yellow",
+        "purple",
+        "green",
+        "gray"
+      ]
+    },
+    "owner_name": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "string",
+      "description": "What the house can actually show after the issue ran, quoted from the source it was read from. Left empty when there is nothing to quote, which is a reading, not a zero."
+    },
+    "evidence_source": {
+      "type": "string",
+      "description": "Where the evidence was read: the analytics page, a funnel stream, a desk ledger."
+    },
+    "evidence_checked_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "issue_id",
+    "issue_no"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
