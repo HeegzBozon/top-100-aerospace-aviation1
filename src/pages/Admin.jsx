@@ -34,6 +34,7 @@ const UserMergeManager          = lazy(() => import('@/components/admin/UserMerg
 const SalesAnalytics            = lazy(() => import('@/components/admin/SalesAnalytics'));
 const DispatchFunnelPanel       = lazy(() => import('@/components/admin/DispatchFunnelPanel'));
 const NominationFunnelPanel     = lazy(() => import('@/components/admin/NominationFunnelPanel'));
+const FunnelAuditDesk           = lazy(() => import('@/components/admin/funnel-audit/FunnelAuditDesk'));
 const GodsEye                   = lazy(() => import('@/components/admin/GodsEye'));
 const HouseDesk                 = lazy(() => import('@/components/admin/desk/HouseDesk'));
 const SMEAssignmentPanel        = lazy(() => import('@/components/admin/SMEAssignmentPanel'));
@@ -336,10 +337,12 @@ export default function Admin() {
         return <RailItemManager />;
       case 'sales':
         return <SalesAnalytics />;
-      // The funnel desk: the house's two entry gates, read side by side.
+      // The funnel desk: the audit of every journey the house runs, then the house's two
+      // best-instrumented entry gates read side by side.
       case 'dispatch':
         return (
           <div className="space-y-6">
+            <FunnelAuditDesk />
             <DispatchFunnelPanel />
             <NominationFunnelPanel />
           </div>
