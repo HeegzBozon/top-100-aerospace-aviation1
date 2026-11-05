@@ -2260,6 +2260,39 @@ body.hh-landscape .hh-viewer-foot {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ===== A PANEL OPENS INSIDE THE PICTURE =====
+   A dialog opened from a surface belongs to the device, not to the handset: it is cut
+   to the glass and seated between the strip and the chin, so the hardware stays in
+   view and under the thumb while the panel is being worked. The centre of the ring
+   presses what the cursor is standing on and B closes the panel (see useOverlayPicker),
+   which only works if the controls centre is still there to be pressed — so while a
+   panel of Radix's own is open, the chin is lifted above the layer it mounts and given
+   its pointer events back, which the modal otherwise takes away from the whole body. */
+@media (max-width: 767px) {
+  body.hh-shell:has([role="dialog"][data-state="open"]) .hh-chin,
+  body.hh-shell:has([role="alertdialog"][data-state="open"]) .hh-chin,
+  body.hh-shell:has([role="menu"][data-state="open"]) .hh-chin {
+    z-index: 70;
+    pointer-events: auto;
+  }
+
+  body.hh-shell [role="dialog"][class*="fixed"],
+  body.hh-shell [role="alertdialog"][class*="fixed"] {
+    top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top) + 6px) !important;
+    bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 6px) !important;
+    left: var(--hh-glass-inset) !important;
+    right: var(--hh-glass-inset) !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    transform: none !important;
+    border-radius: 12px !important;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .desk-sheet { animation: none; }
 }

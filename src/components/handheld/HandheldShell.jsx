@@ -4,6 +4,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import useKeyboardOpen from "@/hooks/useKeyboardOpen";
 import useFieldIntoView from "@/hooks/useFieldIntoView";
 import HandheldDeck from "./HandheldDeck";
+import useOverlayPicker from "./useOverlayPicker";
 
 // The device wraps the whole app: every surface renders inside the picture
 // window and exactly one console is ever on screen. A layout that builds its
@@ -38,6 +39,10 @@ export default function HandheldShell() {
 
   // The field being typed into is kept above the keys, inside the glass.
   useFieldIntoView(keyboard.open, keyboard.height);
+
+  // A panel standing over the picture — a sheet, a menu, a form — hands the ring and
+  // the keypad to its own controls, so the machine keeps working while it is open.
+  useOverlayPicker(isMobile);
 
   useEffect(() => {
     if (!isMobile || !keyboard.open) return undefined;
