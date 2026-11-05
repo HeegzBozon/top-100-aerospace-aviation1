@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, ArrowLeft, ExternalLink, ChevronRight, Loader2, Inbox, AlertCircle, Quote as QuoteIcon } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import DispatchInvite from '@/components/newsletter/DispatchInvite';
 
 const STUDIO_PATH = '/Profile?studio=open&ref=viralpost2026';
 const NAVY = '#1e3a5a';
@@ -228,6 +229,14 @@ export default function ViralPost2026() {
           <Button onClick={openStudio} className="rounded-full px-8 h-12 font-semibold" style={{ background: NAVY, color: CREAM }}>
             Add my own Viral Post
           </Button>
+        </div>
+      </section>
+
+      {/* The Dispatch — the reader has finished the series; this is the standing
+          invitation to keep reading it week by week. */}
+      <section className="border-t px-6 pb-16 pt-14 md:px-10" style={{ borderColor: 'rgba(30,58,90,0.12)', background: CREAM }}>
+        <div className="mx-auto max-w-3xl">
+          <DispatchInvite entryPoint="viral_post_2026" />
         </div>
       </section>
     </div>

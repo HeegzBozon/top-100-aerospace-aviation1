@@ -3,6 +3,12 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 const GHL_BASE_URL = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2023-02-21';
 
+// The RFC-ish gate the whole platform uses: one @, something either side of it, and a
+// dot in the domain. Shallow on purpose — GoHighLevel is the system of record and will
+// refuse what is genuinely undeliverable. This only stops rubbish at the door, before
+// it can reach the CRM and pollute a list the house reports on.
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 async function ghlRequest(path, options = {}) {
   const token = Deno.env.get('GOHIGHLEVEL_API_KEY');
   const response = await fetch(`${GHL_BASE_URL}${path}`, {
@@ -40,23 +46,39 @@ const SMART_LIST_TAGS = {
   'general': 'SmartList: General Newsletter',
 };
 
+const DEVICES = ['mobile', 'desktop'];
+
+// A short, safe label out of whatever the caller sent: attribution is worth keeping,
+// but nothing a caller types may become a key in the CRM or the ledger.
+const label = (value, max = 48) => String(value ?? '').trim().slice(0, max);
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json().catch(() => ({}));
-    const { email, name, source = 'general', first_name } = body;
+    const { name, first_name } = body;
+
+    // Normalise first: the same address in different casing is one subscriber, and
+    // GoHighLevel matches on the address it is given.
+    const email = String(body.email ?? '').trim().toLowerCase();
+    const source = SOURCE_TAGS[body.source] ? body.source : 'general';
+    const entryPoint = label(body.entry_point, 40) || 'subscribe_page';
+    const device = DEVICES.includes(body.device) ? body.device : 'unknown';
 
     if (!email) {
-      return Response.json({ error: 'Email is required' }, { status: 400 });
+      return Response.json({ success: false, error: 'invalid_email', message: 'An email address is required.' }, { status: 400 });
+    }
+    if (!EMAIL.test(email) || email.length > 254) {
+      return Response.json({ success: false, error: 'invalid_email', message: 'That does not look like an email address.' }, { status: 400 });
     }
 
     const locationId = Deno.env.get('GOHIGHLEVEL_LOCATION_ID');
     if (!locationId) {
-      return Response.json({ error: 'GHL location not configured' }, { status: 500 });
+      return Response.json({ success: false, error: 'crm_not_configured', message: 'The list is not connected.' }, { status: 500 });
     }
 
-    const sourceTags = SOURCE_TAGS[source] || SOURCE_TAGS['general'];
-    const smartListTag = SMART_LIST_TAGS[source] || SMART_LIST_TAGS['general'];
+    const sourceTags = SOURCE_TAGS[source];
+    const smartListTag = SMART_LIST_TAGS[source];
 
     // Upsert contact in GHL with source-specific tags
     const contactPayload = {
@@ -77,30 +99,72 @@ Deno.serve(async (req) => {
       body: JSON.stringify(contactPayload),
     });
 
-    if (!result.ok) {
-      console.error('[GHL Subscribe] Error:', result.data);
-      // Still save locally even if GHL fails
-    }
-
     const contactId = result.data?.contact?.id;
+
+    // A failed upsert is a failed signup: the reader is not on the list, and telling
+    // them they are would be the one thing this surface must never do.
+    if (!result.ok) {
+      console.error('[subscribeNewsletter] GHL refused the upsert:', result.status, result.data);
+      return Response.json({ success: false, error: 'crm_unavailable', message: 'The list could not be reached.' }, { status: 502 });
+    }
 
     // Add to newsletter-specific GHL campaign/workflow via tag trigger
     // (GHL smart lists filter by tag, so tagging is the mechanism)
-    console.log(`[Newsletter Subscribe] ${email} | source: ${source} | GHL contact: ${contactId} | tags: ${[...sourceTags, smartListTag].join(', ')}`);
+    console.log(`[Newsletter Subscribe] ${email} | source: ${source} | entry: ${entryPoint} | GHL contact: ${contactId}`);
 
-    // Also save to LiveStreamLead for local record
-    await base44.asServiceRole.entities.LiveStreamLead.create({
-      email,
-      source: `newsletter_${source}`,
-    });
+    // The local echo of the CRM, and the only place the funnel's attribution is kept.
+    // One row per address per entry point: a reader who returns is the same reader.
+    const now = new Date().toISOString();
+    try {
+      const existing = await base44.asServiceRole.entities.NewsletterSignup.filter(
+        { email, entry_point: entryPoint },
+        { limit: 1 },
+      );
+      const rows = Array.isArray(existing) ? existing : existing?.items || [];
+      if (rows.length) {
+        await base44.asServiceRole.entities.NewsletterSignup.update(rows[0].id, {
+          status: 'submitted',
+          device,
+          source,
+          submitted_at: now,
+          crm_contact_id: contactId || rows[0].crm_contact_id || '',
+        });
+      } else {
+        await base44.asServiceRole.entities.NewsletterSignup.create({
+          email,
+          source,
+          entry_point: entryPoint,
+          device,
+          status: 'submitted',
+          crm_contact_id: contactId || '',
+          submitted_at: now,
+        });
+      }
+    } catch (ledgerError) {
+      // Bookkeeping must never cost the reader a signup the CRM already accepted.
+      console.error('[subscribeNewsletter] Local ledger write failed:', ledgerError.message);
+    }
+
+    // Also save to LiveStreamLead for the local lead record
+    try {
+      await base44.asServiceRole.entities.LiveStreamLead.create({
+        email,
+        source: `newsletter_${source}`,
+      });
+    } catch (leadError) {
+      console.error('[subscribeNewsletter] Lead record failed:', leadError.message);
+    }
 
     return Response.json({
       success: true,
+      status: 'submitted',
       contact_id: contactId,
       tags_applied: [...sourceTags, smartListTag],
+      // Said plainly so no surface has to imply a confirmation it cannot observe.
+      next_step: 'welcome_email',
     });
   } catch (error) {
     console.error('[subscribeNewsletter] Error:', error.message);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ success: false, error: 'request_failed', message: error.message }, { status: 500 });
   }
 });

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, TrendingUp, Quote as QuoteIcon, ChevronRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { HONOREES, ordinal, slugify, LINKEDIN_PULSE_URL } from '@/components/viral-post-2022/honorees';
+import DispatchInvite from '@/components/newsletter/DispatchInvite';
 
 const STUDIO_PATH = '/Profile?studio=open&ref=viralpost2022';
 
@@ -205,6 +206,13 @@ export default function ViralPost2022() {
               </Button>
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* The Dispatch — the reading continues past the archive. */}
+      <section className="border-t px-6 pb-16 pt-14 md:px-10" style={{ borderColor: 'rgba(30,58,90,0.12)', background: CREAM }}>
+        <div className="mx-auto max-w-3xl">
+          <DispatchInvite entryPoint="viral_post_2022" />
         </div>
       </section>
     </div>
