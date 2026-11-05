@@ -1,0 +1,67 @@
+{
+  "name": "BallotNoticeSend",
+  "type": "object",
+  "properties": {
+    "campaign": {
+      "type": "string",
+      "description": "Which notice this row belongs to, e.g. 'ballot-notice-2026'. The send only ever runs once per campaign."
+    },
+    "nominee_id": {
+      "type": "string",
+      "description": "The Nominee record the person resolved to. Display only."
+    },
+    "nominee_name": {
+      "type": "string",
+      "description": "The name the record is filed under."
+    },
+    "email": {
+      "type": "string",
+      "description": "The address the notice was sent to. Lowercased; the dedupe key for the campaign."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "failed"
+      ],
+      "default": "sent",
+      "description": "Whether the mail service accepted the send."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why a send failed, as the mail service reported it."
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the send was attempted."
+    }
+  },
+  "required": [
+    "campaign",
+    "email",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

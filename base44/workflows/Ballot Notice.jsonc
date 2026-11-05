@@ -1,0 +1,197 @@
+{
+  "description": "One-time send to every nominee on the active ballot: you are on the ballot, voting is live, vote and share. Fires Friday 6 November 2026 at 10:00 Eastern, and carries on in slices until the whole ballot has been written to.",
+  "name": "Ballot Notice",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "one_time",
+      "cron_expression": null,
+      "one_time_date": "2026-11-06T15:00:00Z",
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "ballot_notice",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_round_1": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendBallotNotice",
+            "args": {}
+          },
+          "then": "check_1",
+          "x-base44": {
+            "title": "Write to the ballot",
+            "description": "First slice of recipients"
+          }
+        }
+      },
+      {
+        "check_1": {
+          "switch": [
+            {
+              "when": "${ .send_round_1.remaining > 0 }",
+              "then": "pause_1"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ]
+        }
+      },
+      {
+        "pause_1": {
+          "wait": "PT2M",
+          "then": "send_round_2",
+          "x-base44": {
+            "title": "Two minutes",
+            "description": "Let the mail service breathe"
+          }
+        }
+      },
+      {
+        "send_round_2": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendBallotNotice",
+            "args": {}
+          },
+          "then": "check_2",
+          "x-base44": {
+            "title": "Write to the ballot",
+            "description": "Second slice of recipients"
+          }
+        }
+      },
+      {
+        "check_2": {
+          "switch": [
+            {
+              "when": "${ .send_round_2.remaining > 0 }",
+              "then": "pause_2"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ]
+        }
+      },
+      {
+        "pause_2": {
+          "wait": "PT2M",
+          "then": "send_round_3",
+          "x-base44": {
+            "title": "Two minutes",
+            "description": "Let the mail service breathe"
+          }
+        }
+      },
+      {
+        "send_round_3": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendBallotNotice",
+            "args": {}
+          },
+          "then": "check_3",
+          "x-base44": {
+            "title": "Write to the ballot",
+            "description": "Third slice of recipients"
+          }
+        }
+      },
+      {
+        "check_3": {
+          "switch": [
+            {
+              "when": "${ .send_round_3.remaining > 0 }",
+              "then": "pause_3"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ]
+        }
+      },
+      {
+        "pause_3": {
+          "wait": "PT2M",
+          "then": "send_round_4",
+          "x-base44": {
+            "title": "Two minutes",
+            "description": "Let the mail service breathe"
+          }
+        }
+      },
+      {
+        "send_round_4": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendBallotNotice",
+            "args": {}
+          },
+          "then": "check_4",
+          "x-base44": {
+            "title": "Write to the ballot",
+            "description": "Fourth slice of recipients"
+          }
+        }
+      },
+      {
+        "check_4": {
+          "switch": [
+            {
+              "when": "${ .send_round_4.remaining > 0 }",
+              "then": "pause_4"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ]
+        }
+      },
+      {
+        "pause_4": {
+          "wait": "PT2M",
+          "then": "send_round_5",
+          "x-base44": {
+            "title": "Two minutes",
+            "description": "Let the mail service breathe"
+          }
+        }
+      },
+      {
+        "send_round_5": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendBallotNotice",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Write to the ballot",
+            "description": "Final slice of recipients"
+          }
+        }
+      }
+    ]
+  }
+}

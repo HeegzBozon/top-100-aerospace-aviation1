@@ -1,0 +1,73 @@
+<mjml>
+  <mj-head>
+    <mj-title>You are on the ballot. Voting is open.</mj-title>
+    <mj-preview>Your record has been placed on the ballot for this cycle, and the selection is live.</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, Arial, sans-serif" />
+      <mj-section background-color="#ffffff" padding="0 36px" />
+      <mj-column padding="0" />
+      <mj-text color="#1e3a5a" font-size="15px" line-height="1.6" padding="0" />
+      <mj-button background-color="#b87333" color="#000000" border-radius="3px" font-size="15px" font-weight="700" inner-padding="14px 28px" padding="0" align="left" />
+      <mj-image padding="0" />
+      <mj-class name="h" font-family="'Playfair Display', Georgia, 'Times New Roman', Times, serif" font-weight="700" />
+      <mj-class name="label" font-size="11px" letter-spacing="2px" text-transform="uppercase" font-weight="700" color="#b87333" />
+    </mj-attributes>
+    <mj-style>
+      @media (max-width:480px) { .hero-h div { font-size:30px !important; line-height:1.12 !important; } }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#070c16" width="600px">
+    <mj-wrapper padding="28px 12px" background-color="#070c16">
+      <mj-section background-color="#b87333" padding="22px 36px" border-radius="3px 3px 0 0">
+        <mj-column>
+          <mj-image src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68996845be6727838fdb822e/72caf8e2f_TOP100AerospaceAviationlogo.png" alt="TOP 100 Aerospace &amp; Aviation" width="36px" align="center" padding="0 0 10px" />
+          <mj-text align="center" font-size="12px" letter-spacing="4px" font-weight="700" text-transform="uppercase" color="#000000">TOP 100 Aerospace &amp; Aviation</mj-text>
+        </mj-column>
+      </mj-section>
+
+      <mj-section background-color="#b87333" padding="52px 36px 48px">
+        <mj-column>
+          <mj-text font-size="11px" letter-spacing="3px" text-transform="uppercase" font-weight="700" color="#000000" align="left" padding="0 0 14px">The ballot is open</mj-text>
+          <mj-text mj-class="h" css-class="hero-h" align="left" font-size="40px" line-height="1.04" color="#000000" padding="0 0 26px">{{first_name}}, you are on the ballot.</mj-text>
+          <mj-button href="{{vote_url}}" align="left" background-color="#000000" color="#b87333" inner-padding="15px 32px">Cast your vote</mj-button>
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding="44px 36px 12px">
+        <mj-column>
+          <mj-text font-size="17px" line-height="1.65" color="#1e3a5a">Your record has been reviewed and placed on the ballot for this cycle. Voting is open now, and the Fellows of the network are reading the pool, weighing every record in it, yours among them.</mj-text>
+          <mj-text font-size="17px" line-height="1.65" color="#1e3a5a" padding="16px 0 0">Two things decide how far this goes: whether you vote, and whether your community does.</mj-text>
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding="8px 28px 16px">
+        <mj-column padding="0 8px 16px" inner-background-color="#f9f4ef" inner-border-radius="3px">
+          <mj-text mj-class="h" font-size="26px" line-height="1" color="#b87333" padding="22px 20px 12px">01</mj-text>
+          <mj-text mj-class="h" font-size="16px" line-height="1.35" padding="0 20px 6px">Cast your own ballot</mj-text>
+          <mj-text font-size="14px" line-height="1.6" color="#1e3a5a" padding="0 20px 22px">Your ballot belongs to you. Read the pool, put your selections in order, and submit. Every ballot is sealed and counted once.</mj-text>
+        </mj-column>
+        <mj-column padding="0 8px 16px" inner-background-color="#f9f4ef" inner-border-radius="3px">
+          <mj-text mj-class="h" font-size="26px" line-height="1" color="#b87333" padding="22px 10px 12px">02</mj-text>
+          <mj-text mj-class="h" font-size="16px" line-height="1.35" padding="0 10px 6px">Bring your community</mj-text>
+          <mj-text font-size="14px" line-height="1.6" color="#1e3a5a" padding="0 10px 22px">Your record is public. Send it to the people who know your work, so they can read the pool and endorse the records they would put forward.</mj-text>
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding="6px 36px 34px">
+        <mj-column>
+          <mj-text font-size="14px" line-height="1.65" color="#1e3a5a">Share your record with one line: it is on the ballot, and the selection is open.</mj-text>
+          <mj-button href="{{share_url}}" align="left" background-color="#b87333" color="#000000" inner-padding="15px 32px" padding="20px 0 0">Share your record</mj-button>
+        </mj-column>
+      </mj-section>
+
+      <mj-section background-color="#b87333" padding="34px 36px 36px" border-radius="0 0 3px 3px">
+        <mj-column>
+          <mj-text mj-class="h" align="center" font-size="18px" color="#000000" padding="0 0 6px">TOP 100 Aerospace &amp; Aviation</mj-text>
+          <mj-text align="center" font-size="11px" letter-spacing="3px" text-transform="uppercase" color="#000000" padding="0 0 14px">Higher, Further, Faster</mj-text>
+          <mj-text align="center" font-size="12px" line-height="1.6" color="#000000" padding="0 0 8px">You are receiving this because your record is on the ballot.</mj-text>
+          <mj-text align="center" font-size="12px" color="#000000"><a href="{{unsubscribe_url}}" style="color:#000000;text-decoration:underline;">Unsubscribe</a></mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+</mjml>
