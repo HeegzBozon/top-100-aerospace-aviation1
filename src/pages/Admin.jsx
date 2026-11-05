@@ -32,6 +32,7 @@ const AvailabilityManager       = lazy(() => import('@/components/admin/Availabi
 const ClaimsReviewManager       = lazy(() => import('@/components/admin/ClaimsReviewManager'));
 const UserMergeManager          = lazy(() => import('@/components/admin/UserMergeManager'));
 const SalesAnalytics            = lazy(() => import('@/components/admin/SalesAnalytics'));
+const DispatchFunnelPanel       = lazy(() => import('@/components/admin/DispatchFunnelPanel'));
 const GodsEye                   = lazy(() => import('@/components/admin/GodsEye'));
 const HouseDesk                 = lazy(() => import('@/components/admin/desk/HouseDesk'));
 const SMEAssignmentPanel        = lazy(() => import('@/components/admin/SMEAssignmentPanel'));
@@ -334,6 +335,8 @@ export default function Admin() {
         return <RailItemManager />;
       case 'sales':
         return <SalesAnalytics />;
+      case 'dispatch':
+        return <DispatchFunnelPanel />;
       case 'gods-eye':
         return <GodsEye />;
       // The house's paperwork is one desk now: hours, rota, bills and the diary. The old

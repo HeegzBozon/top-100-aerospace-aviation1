@@ -1,0 +1,72 @@
+{
+  "name": "NewsletterSignup",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "The address the reader gave, normalised to lower case. One row per address per entry point, so a returning reader is not counted twice."
+    },
+    "source": {
+      "type": "string",
+      "description": "The GoHighLevel source key the address was tagged with (general, moon_joy, vision_2030, \u2026). The CRM is the system of record; this is the local echo of it."
+    },
+    "entry_point": {
+      "type": "string",
+      "description": "Which invitation was on the glass when the reader joined: subscribe_page, viral_post_2026, viral_post_2022. Attribution only \u2014 never read by discovery, ranking or scoring."
+    },
+    "device": {
+      "type": "string",
+      "enum": [
+        "mobile",
+        "desktop",
+        "unknown"
+      ],
+      "default": "unknown",
+      "description": "The reader's bucket at the moment of submission, read from the shell's own breakpoint. No other environmental fact is kept."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "unsubscribed"
+      ],
+      "default": "submitted",
+      "description": "Submitted means the CRM accepted the address. This is not a confirmation: the welcome and every issue are sent by the GoHighLevel workflow behind the tag, which this app cannot observe."
+    },
+    "crm_contact_id": {
+      "type": "string",
+      "description": "The GoHighLevel contact the upsert returned, so a row can be read back against the CRM."
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the address was last accepted. A repeat submission moves this stamp rather than adding a row."
+    }
+  },
+  "required": [
+    "email",
+    "entry_point"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
