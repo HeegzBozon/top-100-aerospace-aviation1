@@ -1,5 +1,5 @@
 import { Plus, X } from 'lucide-react';
-import { describeRules } from './mailRoomConfig';
+import { EMPTY_SECTION, describeRules } from './mailRoomConfig';
 
 const input =
   'w-full rounded-md px-2.5 py-1.5 text-xs outline-none placeholder:text-[#5f7387]';
@@ -97,9 +97,20 @@ export default function LetterForm({ issue, segments, seasons = [], onChange }) 
       </Field>
 
       <div className="space-y-2 border-t pt-3" style={{ borderColor: 'rgba(250,248,245,0.08)' }}>
-        <p className="text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: '#c9a87c' }}>
-          Signals · three slots, the last two may stay empty
-        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: '#c9a87c' }}>
+            Signals · up to three, strongest first
+          </p>
+          {(issue.sections || []).length < 3 && (
+            <button
+              type="button"
+              onClick={() => patch({ sections: [...(issue.sections || []), { ...EMPTY_SECTION }] })}
+              className="desk-key desk-key-quiet"
+            >
+              <Plus className="h-3 w-3" /> Add item
+            </button>
+          )}
+        </div>
         {(issue.sections || []).map((story, index) => (
           <div key={index} className="rounded-md p-2.5" style={{ background: 'rgba(6,12,20,0.4)' }}>
             <div className="grid grid-cols-3 gap-2">
