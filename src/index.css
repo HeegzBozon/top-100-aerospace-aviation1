@@ -2198,3 +2198,45 @@ body.hh-landscape .hh-viewer-foot {
   .desk-lamp { animation: none; }
   .desk-key { transition: none; }
 }
+
+/* ===== THE PHONE'S TOUCH HYGIENE =====
+   A tap on a control is a press, not a selection. iOS otherwise paints a highlight
+   over the label under the thumb and offers a copy callout across an icon, which on a
+   console reads as the hardware misbehaving. Scoped to the controls themselves and to
+   the phone: body copy, the magazine and the desk keep every selection affordance
+   they had. And the glass does the moving — the document behind it never rubber-bands,
+   so a pull past the head of a surface is the surface's own gesture to answer. */
+@media (max-width: 767px) {
+  button,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  [role="switch"],
+  [role="checkbox"],
+  nav a,
+  .desk-key,
+  .arcade-key,
+  .pd-soc,
+  .mb-cell,
+  .hh-strip,
+  .hh-strip-key,
+  .hh-pad-key,
+  .hh-key,
+  .cfs-tab {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  button svg,
+  [role="button"] svg,
+  [role="tab"] svg,
+  [role="menuitem"] svg,
+  nav a svg {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  body.hh-shell .hh-stage {
+    overscroll-behavior: none;
+  }
+}
