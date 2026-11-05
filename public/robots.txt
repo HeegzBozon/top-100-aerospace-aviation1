@@ -1,47 +1,125 @@
 # TOP 100 Aerospace & Aviation — robots.txt
-# Public profile content is open to all crawlers, including AI assistants.
-# Internal/operational routes are disallowed here and noindex via meta tags.
+# The public record is open to every crawler, including AI assistants.
+# Internal and operational routes are disallowed here and noindex by meta tag.
+#
+# Note on hosts: https://top100aero.space is the canonical domain and the one every
+# sitemap and canonical tag points at. The base44.app address is a deployment alias.
 
 User-agent: *
 Allow: /
+
+# ── Internal / operational surfaces ────────────────────────────────────────────
 Disallow: /admin
 Disallow: /Admin
+Disallow: /admin-action
+Disallow: /AdminAction
 Disallow: /AnalyticsDashboard
 Disallow: /analytics
 Disallow: /GlobalIntelligence
 Disallow: /global-intelligence
+Disallow: /IntelligenceDashboard
 Disallow: /art-command-center
 Disallow: /team-manager
 Disallow: /feature-to-team-mapper
+Disallow: /agent-skills
+Disallow: /linkedin-manager
 Disallow: /platform-board
 Disallow: /ground-control
+Disallow: /factory-reset
 Disallow: /FactoryReset
 Disallow: /onboarding-admin
-Disallow: /Colony
-Disallow: /colony
+Disallow: /email-preview
+Disallow: /magazine-studio
+Disallow: /og-card-test
+Disallow: /og-card-generator
+Disallow: /women-collage-generator
+Disallow: /session-portal
+Disallow: /payment-success
+Disallow: /payment-cancel
+Disallow: /PaymentSuccess
+Disallow: /PaymentCancel
+
+# The member workspace and the internal desks behind the public surfaces.
+Disallow: /record
+Disallow: /Profile
+Disallow: /EditProfile
+Disallow: /inbox
+Disallow: /seasonal-planning
+Disallow: /board
+Disallow: /the-board
+Disallow: /aerosync
+Disallow: /patronage/desk
+Disallow: /conferences/host
+Disallow: /app-store
+Disallow: /comms
+Disallow: /Comms
+Disallow: /huddle
+Disallow: /Huddle
+Disallow: /publisher
+Disallow: /Publisher
+Disallow: /claim
+
+# Games, simulators and the campus: playable, not indexable.
 Disallow: /play
 Disallow: /common-ground-sim
-Disallow: /session-portal
+Disallow: /colony
+Disallow: /Colony
+Disallow: /arcade
+Disallow: /chess-club
+Disallow: /aero-frontier
+Disallow: /hangouts
 
-# AI crawlers — explicit allow
+# ── AI crawlers — explicit allow ───────────────────────────────────────────────
+# Training crawlers
 User-agent: GPTBot
 Allow: /
 
 User-agent: ClaudeBot
 Allow: /
 
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Answer-and-citation crawlers: these are the ones that decide whether an assistant
+# can name this institution and quote a profile when someone asks about it.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
 User-agent: PerplexityBot
 Allow: /
 
-User-agent: Applebot
+User-agent: Perplexity-User
 Allow: /
 
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+# ── Search engines ─────────────────────────────────────────────────────────────
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
-# One entry point on the custom domain: a sitemap index whose children are the
-# marketing pages and the generated profile sitemap.
+User-agent: Applebot
+Allow: /
+
+# ── One entry point ────────────────────────────────────────────────────────────
+# A sitemap index on the canonical domain. Its children are the public editorial
+# surfaces and the generated profile sitemap.
 Sitemap: https://top100aero.space/sitemap.xml
