@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Plus, Trash2, Pencil, Users } from 'lucide-react';
+import { Plus, Trash2, Pencil, Users, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { SEGMENT_FIELDS, describeRules } from './mailRoomConfig';
 
@@ -66,6 +66,7 @@ export default function SegmentsPanel({ room }) {
   const { toast } = useToast();
   const [draft, setDraft] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [seeding, setSeeding] = useState(false);
 
   const segments = room.data?.segments || [];
   const reachable = room.data?.summary?.mailable || 0;
@@ -97,6 +98,27 @@ export default function SegmentsPanel({ room }) {
     }
   };
 
+  // The house's own six lists, laid down in one pass. Safe to run again: a segment that
+  // already exists is left exactly as it is, so this never overwrites an edit.
+  const seed = async () => {
+    setSeeding(true);
+    try {
+      const res = await base44.functions.invoke('seedMailSegments', {});
+      if (res?.data?.error) throw new Error(res.data.error);
+      const created = res?.data?.created?.length || 0;
+      const skipped = res?.data?.skipped?.length || 0;
+      await room.reload();
+      toast({
+        title: created ? `${created} smart list${created === 1 ? '' : 's'} laid down` : 'The house set is already in place',
+        description: skipped ? `${skipped} existing list${skipped === 1 ? '' : 's'} left untouched.` : undefined,
+      });
+    } catch (error) {
+      toast({ title: 'The house set could not be laid down', description: error?.message, variant: 'destructive' });
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   const remove = async (segment) => {
     if (!window.confirm(`Remove "${segment.name}"? The rules go with it.`)) return;
     try {
@@ -121,9 +143,14 @@ export default function SegmentsPanel({ room }) {
               : 'A segment is a saved question about the audience. Nothing is copied when it is saved.'}
           </p>
         </div>
-        <button onClick={() => setDraft({ ...BLANK, rules: [{ field: 'source', value: 'subscriber' }] })} className="desk-key desk-key-primary">
-          <Plus className="h-3.5 w-3.5" /> New segment
-        </button>
+        <div className="flex flex-wrap gap-1.5">
+          <button onClick={seed} disabled={seeding} className="desk-key">
+            <Sparkles className="h-3.5 w-3.5" /> {seeding ? 'Laying down…' : "Seed the house's lists"}
+          </button>
+          <button onClick={() => setDraft({ ...BLANK, rules: [{ field: 'source', value: 'subscriber' }] })} className="desk-key desk-key-primary">
+            <Plus className="h-3.5 w-3.5" /> New segment
+          </button>
+        </div>
       </div>
 
       {draft && (
@@ -223,6 +250,9 @@ export default function SegmentsPanel({ room }) {
             Start with the readers who joined in the last thirty days, or the members who have never opened a letter.
             A segment holds rules, so it stays true as the audience changes.
           </p>
+          <button onClick={seed} disabled={seeding} className="desk-key desk-key-primary mt-3">
+            <Sparkles className="h-3.5 w-3.5" /> {seeding ? 'Laying down…' : "Lay down the house's six lists"}
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
