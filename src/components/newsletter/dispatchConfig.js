@@ -32,6 +32,16 @@ export const DISPATCH_ENTRY_POINTS = {
       'One brief a week: who moved, what launched, where the money went across the verified aerospace and aviation graph. Free, and every issue carries its own way out.',
     cta: 'Join the Dispatch',
   },
+  // The foot of a public record. Read there, never sold there: the invitation stands below
+  // everything the record itself says, and asks the same thing it asks everywhere else.
+  profile: {
+    label: 'The Dispatch',
+    source: 'general',
+    headline: 'The record, one brief a week.',
+    standfirst:
+      'Who moved, what launched, where the money went — measured across the verified aerospace and aviation graph. Free, and every issue carries its own way out.',
+    cta: 'Join the Dispatch',
+  },
 };
 
 export const DEFAULT_ENTRY_POINT = 'subscribe_page';

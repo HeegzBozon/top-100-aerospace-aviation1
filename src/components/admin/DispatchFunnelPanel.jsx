@@ -8,6 +8,7 @@ const ENTRY_LABELS = {
   subscribe_page: 'Signup page',
   viral_post_2026: 'Viral Posts 2026',
   viral_post_2022: 'Viral Posts 2022',
+  profile: 'Record pages',
 };
 
 const labelFor = (key) => ENTRY_LABELS[key] || key;
@@ -120,7 +121,7 @@ export default function DispatchFunnelPanel() {
                 <p className="mt-1 font-heading text-3xl text-editorial-navy">
                   {Object.keys(DISPATCH_ENTRY_POINTS).length}
                 </p>
-                <p className="mt-1 font-body text-[10px] text-editorial-navy/60">Signup page · both viral volumes</p>
+                <p className="mt-1 font-body text-[10px] text-editorial-navy/60">Signup page · both viral volumes · record pages</p>
               </div>
             </div>
 
@@ -134,8 +135,9 @@ export default function DispatchFunnelPanel() {
                 </div>
               ) : counts.total === 0 ? (
                 <p className="mt-3 rounded-md border border-white/10 bg-white/[0.03] p-4 font-body text-xs leading-6 text-[#a3b8c9]">
-                  No address has been filed yet. The invitations are live on the signup page and at the foot of
-                  both viral volumes — the first submission appears here the moment GoHighLevel accepts it.
+                  No address has been filed yet. The invitations are live on the signup page, at the foot of both
+                  viral volumes, and below every public record — the first submission appears here the moment
+                  GoHighLevel accepts it.
                 </p>
               ) : (
                 <ul className="mt-3 divide-y divide-white/[0.07]">

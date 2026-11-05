@@ -21,6 +21,8 @@ import { useDeskDockSlot } from '@/components/desktop/deskDockSlots';
 import { buildProfileBook } from '@/components/profile/book/profileBookPages';
 import useEpisodeIntake from '@/components/episode/useEpisodeIntake';
 import EpisodeSheet from '@/components/episode/EpisodeSheet';
+import ProfileDispatchInvite from '@/components/profile/ProfileDispatchInvite';
+import { isPublicRecord } from '@/components/profile/publicRecord';
 
 const NAVY_DEEP = '#16293f';
 
@@ -352,6 +354,10 @@ export default function ProfileView({ userId: propUserId = null }) {
                     )}
 
                     {profiles.nominee && <ProfileNeighborsRail nominee={profiles.nominee} />}
+
+                    {/* The house's invitation, once, at the foot of a public record —
+                        below everything the record says, never inside it. */}
+                    {isPublicRecord(profiles) && <ProfileDispatchInvite />}
                 </>
             )}
 
