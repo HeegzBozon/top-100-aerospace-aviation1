@@ -15,7 +15,7 @@ export default function MobileBottomNav({ currentPageName }) {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-[9998] lg:hidden"
+      className="fixed bottom-0 left-0 right-0 z-[9998] lg:hidden overscroll-y-none select-none"
       style={{
         background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
         backdropFilter: 'blur(20px) saturate(180%)',
@@ -40,7 +40,7 @@ export default function MobileBottomNav({ currentPageName }) {
               key={item.label}
               to={target}
               className={cn(
-                "flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-lg transition-all min-w-[56px]",
+                "flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-lg transition-all min-w-[56px] select-none",
                 isActive ? "scale-105" : "opacity-70"
               )}
             >

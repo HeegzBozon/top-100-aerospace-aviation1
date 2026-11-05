@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import PullToRefresh from '@/components/capabilities/performance/PullToRefresh';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import {
   WorldMonitorGlobe,
@@ -62,14 +64,24 @@ const BOTTOM_PANELS = [
 ];
 
 export default function GlobalIntelligence() {
+  // A pull on the phone re-mounts the feeds, so every panel reads its source afresh.
+  const [refreshToken, setRefreshToken] = useState(0);
+  const refresh = () =>
+    new Promise((resolve) => {
+      setRefreshToken((count) => count + 1);
+      setTimeout(resolve, 600);
+    });
+
   return (
+    <PullToRefresh onRefresh={refresh}>
     <div className="bg-[#070b14] text-white h-screen flex flex-col overflow-hidden font-mono">
 
       {/* Ticker */}
-      <TickerHeader />
+      <TickerHeader key={`ticker-${refreshToken}`} />
 
       {/* Main 3-column panel grid */}
       <PanelGroup
+        key={`main-${refreshToken}`}
         direction="horizontal"
         className="flex-1 min-h-0"
         autoSaveId="gi-main"
@@ -148,7 +160,7 @@ export default function GlobalIntelligence() {
       <div className="h-28 flex border-t border-slate-800 shrink-0">
         {BOTTOM_PANELS.map(({ label, Component }, i) => (
           <div
-            key={label}
+            key={`${label}-${refreshToken}`}
             className={`flex-1 min-w-0 ${i > 0 ? 'border-l border-slate-800' : ''}`}
           >
             <TerminalPanelCompact label={label}>
@@ -159,5 +171,6 @@ export default function GlobalIntelligence() {
       </div>
 
     </div>
+    </PullToRefresh>
   );
 }
