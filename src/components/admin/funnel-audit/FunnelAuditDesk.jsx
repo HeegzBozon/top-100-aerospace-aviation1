@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
-import { ClipboardCheck, ListChecks, Route, ShieldQuestion, TriangleAlert } from 'lucide-react';
+import { ClipboardCheck, Layers, ListChecks, Route, ShieldQuestion, TriangleAlert } from 'lucide-react';
 import { AUDIT_METHOD, AUDIT_READ_ON, FINDINGS, FUNNELS, coverageOf, severityCounts } from './funnelRegistry';
 import FunnelLedger from './FunnelLedger';
 import FunnelFindings from './FunnelFindings';
 import FunnelRoadmap from './FunnelRoadmap';
+import FunnelStreams from './FunnelStreams';
 import useFunnelEvidence from './useFunnelEvidence';
 
 // THE AUDIT DESK — everything the house runs as a journey, read against the code that runs it.
@@ -13,13 +14,14 @@ import useFunnelEvidence from './useFunnelEvidence';
 // It reads and reports; it changes nothing.
 
 const TABS = [
+  { key: 'streams', label: 'The five streams', icon: Layers },
   { key: 'ledger', label: 'The ledger', icon: Route },
   { key: 'findings', label: 'Findings', icon: TriangleAlert },
   { key: 'roadmap', label: 'What to do next', icon: ListChecks },
 ];
 
 export default function FunnelAuditDesk() {
-  const [tab, setTab] = useState('ledger');
+  const [tab, setTab] = useState('streams');
   const [selectedId, setSelectedId] = useState(FUNNELS[0].id);
   const { evidence, state: evidenceState, error: evidenceError, reload } = useFunnelEvidence();
 
@@ -111,6 +113,14 @@ export default function FunnelAuditDesk() {
           })}
         </div>
       </div>
+
+      {tab === 'streams' ? (
+        <FunnelStreams
+          evidence={evidence}
+          evidenceState={evidenceState}
+          onOpenFunnel={openFunnel}
+        />
+      ) : null}
 
       {tab === 'ledger' ? (
         <div className="desk-plate p-4 md:p-5">
