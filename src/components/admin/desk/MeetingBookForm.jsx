@@ -252,7 +252,7 @@ export default function MeetingBookForm({ roster, absences, meetings, onBook, me
           type="submit"
           disabled={saving}
           className="w-full rounded px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] disabled:opacity-60"
-          style={{ background: '#b87333', color: '#fdf8f0' }}
+          style={{ background: '#8f5c2c', color: '#fdf8f0' }}
         >
           {saving ? 'Writing the diary…' : 'Book it'}
         </button>

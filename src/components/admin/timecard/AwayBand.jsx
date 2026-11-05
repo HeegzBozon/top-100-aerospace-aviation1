@@ -11,7 +11,7 @@ export default function AwayBand({ away, coverage }) {
       <div className="rounded-xl px-3 py-2.5" style={{ background: TC.surface, border: `1px solid ${TC.line}` }}>
         <p className="text-[9px] uppercase tracking-[0.16em]" style={{ color: TC.soft }}>Away this week</p>
         {away.length === 0 ? (
-          <p className="mt-1 text-[11px]" style={{ color: '#4e677d' }}>Nobody is out this week.</p>
+          <p className="mt-1 text-[11px]" style={{ color: TC.dim }}>Nobody is out this week.</p>
         ) : (
           <ul className="mt-1 space-y-0.5">
             {away.map((row) => (
@@ -21,7 +21,7 @@ export default function AwayBand({ away, coverage }) {
                 <span className="tabular-nums" style={{ color: TC.soft }}>
                   {dayShort(row.iso)} {dayNum(row.iso)}
                 </span>
-                {row.note && <span className="truncate italic" style={{ color: '#4e677d' }}>· {row.note}</span>}
+                {row.note && <span className="truncate italic" style={{ color: TC.dim }}>· {row.note}</span>}
               </li>
             ))}
           </ul>
@@ -31,7 +31,7 @@ export default function AwayBand({ away, coverage }) {
       <div className="rounded-xl px-3 py-2.5" style={{ background: TC.surface, border: `1px solid ${TC.line}` }}>
         <p className="text-[9px] uppercase tracking-[0.16em]" style={{ color: TC.soft }}>Rooms carrying a shift</p>
         {coverage.length === 0 ? (
-          <p className="mt-1 text-[11px]" style={{ color: '#4e677d' }}>No room is staffed this week.</p>
+          <p className="mt-1 text-[11px]" style={{ color: TC.dim }}>No room is staffed this week.</p>
         ) : (
           <div className="mt-1 flex flex-wrap gap-1">
             {coverage.map((room) => (

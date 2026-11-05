@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { AlertCircle, ClipboardPaste, Plus, RefreshCw } from 'lucide-react';
+import { AlertCircle, Plus, RefreshCw } from 'lucide-react';
 import { TC } from '@/components/admin/timecard/timecardConfig';
 import TimecardSummary from '@/components/admin/timecard/TimecardSummary';
-import TimecardEntryForm from '@/components/admin/timecard/TimecardEntryForm';
 import TimecardRow from '@/components/admin/timecard/TimecardRow';
-import WorklogImport from '@/components/admin/timecard/WorklogImport';
-import WorklogReview from '@/components/admin/timecard/WorklogReview';
+import TimecardComposer from '@/components/admin/timecard/TimecardComposer';
 import DeskPanelBar from '@/components/admin/desk/DeskPanelBar';
 
 // The desk the platform's own hours and receipts are kept on: one ledger of time and
@@ -16,11 +14,10 @@ export default function TimecardDesk() {
   const [entries, setEntries] = useState([]);
   const [state, setState] = useState('loading');
   const [error, setError] = useState('');
-  const [draft, setDraft] = useState(null);
+  // One composer serves both ways in — typed by hand, or read out of a work log. It is
+  // null when shut, and holds the entry being edited when it is open.
+  const [composer, setComposer] = useState(null);
   const [filter, setFilter] = useState('all');
-  const [importing, setImporting] = useState(false);
-  const [parsed, setParsed] = useState(null);
-  const [duplicate, setDuplicate] = useState(null);
 
   const load = useCallback(async () => {
     setState('loading');
@@ -40,14 +37,15 @@ export default function TimecardDesk() {
   }, [load]);
 
   const save = async (payload) => {
-    if (draft?.id) {
-      const updated = await base44.entities.Timecard.update(draft.id, payload);
-      setEntries((prev) => prev.map((e) => (e.id === draft.id ? { ...e, ...updated } : e)));
+    const editing = composer?.entry;
+    if (editing?.id) {
+      const updated = await base44.entities.Timecard.update(editing.id, payload);
+      setEntries((prev) => prev.map((e) => (e.id === editing.id ? { ...e, ...updated } : e)));
     } else {
       const created = await base44.entities.Timecard.create(payload);
       setEntries((prev) => [created, ...prev]);
     }
-    setDraft(null);
+    setComposer(null);
   };
 
   // A reviewed session is filed once, carrying the clock times the log reported and the
@@ -55,8 +53,7 @@ export default function TimecardDesk() {
   const saveImported = async (payload) => {
     const created = await base44.entities.Timecard.create(payload);
     setEntries((prev) => [created, ...prev]);
-    setParsed(null);
-    setDuplicate(null);
+    setComposer(null);
   };
 
   const remove = async (entry) => {
@@ -83,70 +80,42 @@ export default function TimecardDesk() {
 
   return (
     <div className="space-y-4">
-      <DeskPanelBar label="Hours & Expenses" note={`${entries.length} filed`}>
-        <button
-          onClick={load}
-          className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
-          style={{ border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }}
-        >
-          <RefreshCw className="h-3 w-3" /> Re-read
-        </button>
-        <button
-          onClick={() => {
-            setParsed(null);
-            setDuplicate(null);
-            setImporting((open) => !open);
-          }}
-          className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
-          style={
-            importing
-              ? { background: 'rgba(184,115,51,0.22)', border: '1px solid #b87333', color: '#f5efe4' }
-              : { border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }
-          }
-        >
-          <ClipboardPaste className="h-3 w-3" /> Import work log
-        </button>
-        <button
-          onClick={() => setDraft({})}
-          className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
-          style={{ background: '#b87333', color: '#fdf8f0' }}
-        >
-          <Plus className="h-3.5 w-3.5" /> New entry
-        </button>
-      </DeskPanelBar>
+      <div className="relative">
+        <DeskPanelBar label="Hours & Expenses" note={`${entries.length} filed`}>
+          <button
+            onClick={load}
+            className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
+            style={{ border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }}
+          >
+            <RefreshCw className="h-3 w-3" /> Re-read
+          </button>
+          {/* One key for the whole way in: the sheet it opens offers the work log and
+              the blank entry side by side, rather than two buttons on the stripe. */}
+          <button
+            onClick={() => setComposer((open) => (open ? null : {}))}
+            aria-expanded={!!composer}
+            className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
+            style={
+              composer
+                ? { background: 'rgba(184,115,51,0.22)', border: '1px solid #b87333', color: '#f5efe4' }
+                : { background: TC.copperDeep, border: '1px solid rgba(201,168,124,0.34)', color: '#fdf8f0' }
+            }
+          >
+            <Plus className="h-3.5 w-3.5" /> New entry
+          </button>
+        </DeskPanelBar>
+
+        {composer && (
+          <TimecardComposer
+            entry={composer.entry || null}
+            onClose={() => setComposer(null)}
+            onSaveEntry={save}
+            onSaveImported={saveImported}
+          />
+        )}
+      </div>
 
       <TimecardSummary entries={entries} />
-
-      {importing && (
-        <WorklogImport
-          onCancel={() => setImporting(false)}
-          onParsed={(worklog, match) => {
-            setParsed(worklog);
-            setDuplicate(match);
-            setImporting(false);
-          }}
-        />
-      )}
-
-      {parsed && (
-        <WorklogReview
-          initial={parsed}
-          duplicate={duplicate}
-          onCancel={() => {
-            setParsed(null);
-            setDuplicate(null);
-          }}
-          onSave={saveImported}
-        />
-      )}
-
-      {draft !== null && (
-        <TimecardEntryForm
-          entry={draft.id ? draft : null}
-          onCancel={() => setDraft(null)}
-          onSave={save}
-        />
-      )}
 
       <div className="flex items-center gap-1.5">
         {[
@@ -161,7 +130,7 @@ export default function TimecardDesk() {
             className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider"
             style={
               filter === key
-                ? { background: TC.copper, color: '#fff' }
+                ? { background: TC.copperDeep, color: '#fdf8f0' }
                 : { background: 'transparent', color: TC.soft, border: `1px solid ${TC.line}` }
             }
           >
@@ -202,7 +171,7 @@ export default function TimecardDesk() {
       {state === 'ready' && shown.length > 0 && (
         <div className="space-y-2">
           {shown.map((entry) => (
-            <TimecardRow key={entry.id} entry={entry} onEdit={setDraft} onDelete={remove} />
+            <TimecardRow key={entry.id} entry={entry} onEdit={(row) => setComposer({ entry: row })} onDelete={remove} />
           ))}
         </div>
       )}

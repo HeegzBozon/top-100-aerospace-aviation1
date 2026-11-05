@@ -64,7 +64,7 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
             {entry.reimbursable ? ' · reimbursable' : ''}
             {rooms.length > 0 ? ` · ${rooms.map((room) => roomLabel(room.room_key)).join(', ')}` : ''}
           </p>
-          {entry.notes && <p className="mt-1 text-[11px] italic" style={{ color: '#4e677d' }}>{entry.notes}</p>}
+          {entry.notes && <p className="mt-1 text-[11px] italic" style={{ color: TC.dim }}>{entry.notes}</p>}
         </div>
 
         <div className="flex flex-shrink-0 flex-col items-end gap-1">
@@ -116,7 +116,7 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
                   <span className="min-w-0 flex-1" style={{ color: '#a8bed2' }}>{task.label || 'Job'}</span>
                   <span
                     className="text-[9px] uppercase tracking-[0.14em]"
-                    style={{ color: task.estimated === false ? '#7ec89a' : '#4e677d' }}
+                    style={{ color: task.estimated === false ? '#7ec89a' : TC.dim }}
                     title={task.estimated === false ? 'Minutes taken from the log' : 'Allocated across the session'}
                   >
                     {task.estimated === false ? 'logged' : 'est.'}
@@ -139,13 +139,13 @@ export default function TimecardRow({ entry, onEdit, onDelete }) {
 
           {deliverables.length > 0 && (
             <div>
-              <p className="text-[9px] uppercase tracking-[0.16em]" style={{ color: '#4e677d' }}>Produced</p>
+              <p className="text-[9px] uppercase tracking-[0.16em]" style={{ color: TC.dim }}>Produced</p>
               <p className="text-[11px]" style={{ color: '#a8bed2' }}>{deliverables.join(' · ')}</p>
             </div>
           )}
 
           {entry.source_label && (
-            <p className="text-[10px]" style={{ color: '#4e677d' }}>
+            <p className="text-[10px]" style={{ color: TC.dim }}>
               Read from {entry.source_label}
               {entry.timezone ? ` · times in ${entry.timezone}` : ''}
             </p>

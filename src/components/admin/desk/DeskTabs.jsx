@@ -17,7 +17,7 @@ export default function DeskTabs({ tabs, value, onChange }) {
               className="inline-flex items-center gap-1.5 rounded px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] transition-colors"
               style={
                 active
-                  ? { background: '#b87333', color: '#fdf8f0' }
+                  ? { background: '#8f5c2c', color: '#fdf8f0' }
                   : { color: tab.soon ? 'rgba(201,168,124,0.8)' : '#7d94aa' }
               }
             >

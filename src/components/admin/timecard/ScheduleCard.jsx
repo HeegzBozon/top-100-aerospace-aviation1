@@ -56,7 +56,7 @@ export default function ScheduleCard({ row, onEdit, onDelete }) {
       {row.status === 'cancelled' && (
         <p className="mt-1 text-[9px] uppercase tracking-[0.14em]" style={{ color: '#f2a1a1' }}>called off</p>
       )}
-      {row.note && <p className="mt-1 text-[10px] italic" style={{ color: '#4e677d' }}>{row.note}</p>}
+      {row.note && <p className="mt-1 text-[10px] italic" style={{ color: TC.dim }}>{row.note}</p>}
     </div>
   );
 }

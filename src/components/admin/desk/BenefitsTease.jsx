@@ -35,7 +35,7 @@ export default function BenefitsTease() {
       </div>
 
       <div className="desk-rule mx-auto mt-7 max-w-xs" />
-      <p className="mt-3 text-[10px]" style={{ color: '#5d7a94' }}>
+      <p className="mt-3 text-[10px]" style={{ color: '#7d97ad' }}>
         Nothing to file yet.
       </p>
     </div>

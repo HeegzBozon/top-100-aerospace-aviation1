@@ -155,7 +155,7 @@ export default function InvoicingDesk() {
         <button
           onClick={() => setView({ mode: 'compose' })}
           className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
-          style={{ background: '#b87333', color: '#fdf8f0' }}
+          style={{ background: '#8f5c2c', color: '#fdf8f0' }}
         >
           <Plus className="h-3.5 w-3.5" /> New invoice
         </button>

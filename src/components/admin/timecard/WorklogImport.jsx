@@ -13,7 +13,7 @@ const fieldStyle = { background: '#0e141b', border: `1px solid ${TC.line}`, colo
 
 const isTextual = (file) => !!file && (TEXTUAL.test(file.name) || file.type.startsWith('text/'));
 
-export default function WorklogImport({ onParsed, onCancel }) {
+export default function WorklogImport({ onParsed, onCancel, bare = false }) {
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
   const [reading, setReading] = useState(false);
@@ -89,8 +89,14 @@ export default function WorklogImport({ onParsed, onCancel }) {
 
   return (
     <div
-      className="rounded-xl p-3.5 space-y-3"
-      style={{ background: TC.surface, border: `1px ${dragging ? 'dashed' : 'solid'} ${TC.copper}` }}
+      className={bare ? 'space-y-3' : 'rounded-xl p-3.5 space-y-3'}
+      style={
+        bare
+          ? dragging
+            ? { outline: `1px dashed ${TC.copper}`, outlineOffset: '4px', borderRadius: 8 }
+            : undefined
+          : { background: TC.surface, border: `1px ${dragging ? 'dashed' : 'solid'} ${TC.copper}` }
+      }
       onDragOver={(event) => { event.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={(event) => {
@@ -159,7 +165,7 @@ export default function WorklogImport({ onParsed, onCancel }) {
             </button>
           </span>
         )}
-        <span className="text-[10px]" style={{ color: '#4e677d' }}>
+        <span className="text-[10px]" style={{ color: TC.dim }}>
           PDFs, documents and screenshots are read from a private upload (stored privately).
         </span>
       </div>
@@ -176,7 +182,7 @@ export default function WorklogImport({ onParsed, onCancel }) {
           onClick={() => read(file, text)}
           disabled={reading}
           className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold disabled:opacity-50"
-          style={{ background: TC.copper, color: '#fff' }}
+          style={{ background: TC.copperDeep, color: '#fdf8f0' }}
         >
           {reading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
           {reading ? 'Reading the log…' : 'Read work log'}

@@ -30,7 +30,7 @@ const blank = (kind = 'time') => ({
 
 // One sheet for both kinds of entry: the kind sets which figures are asked for, and
 // what the sheet saves is what the record holds — times and money are kept in cents.
-export default function TimecardEntryForm({ entry = null, onCancel, onSave }) {
+export default function TimecardEntryForm({ entry = null, onCancel, onSave, bare = false }) {
   const [form, setForm] = useState(() => {
     if (!entry) return blank();
     return {
@@ -104,8 +104,8 @@ export default function TimecardEntryForm({ entry = null, onCancel, onSave }) {
   return (
     <form
       onSubmit={submit}
-      className="rounded-xl p-3.5 space-y-3"
-      style={{ background: TC.surface, border: `1px solid ${TC.copper}` }}
+      className={bare ? 'space-y-3' : 'rounded-xl p-3.5 space-y-3'}
+      style={bare ? undefined : { background: TC.surface, border: `1px solid ${TC.copper}` }}
     >
       <div className="flex items-center justify-between gap-3">
         <p className="text-[11px] uppercase tracking-[0.18em]" style={{ color: TC.gold }}>
@@ -120,7 +120,7 @@ export default function TimecardEntryForm({ entry = null, onCancel, onSave }) {
               className="px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider transition-colors"
               style={
                 form.kind === kind
-                  ? { background: TC.copper, color: '#fff' }
+                  ? { background: TC.copperDeep, color: '#fdf8f0' }
                   : { background: 'transparent', color: TC.soft, border: `1px solid ${TC.line}` }
               }
             >
@@ -239,7 +239,7 @@ export default function TimecardEntryForm({ entry = null, onCancel, onSave }) {
           type="submit"
           disabled={saving}
           className="px-3.5 py-2 rounded-lg text-xs font-semibold disabled:opacity-50"
-          style={{ background: TC.copper, color: '#fff' }}
+          style={{ background: TC.copperDeep, color: '#fdf8f0' }}
         >
           {saving ? 'Saving…' : entry ? 'Save changes' : 'Add entry'}
         </button>

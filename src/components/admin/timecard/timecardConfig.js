@@ -6,9 +6,17 @@ export const TC = {
   surface: '#141b24',
   line: 'rgba(255,255,255,0.08)',
   ink: '#d4e0ec',
-  // The ledger's quiet voice. Bright enough to read on the navy plate it is set on.
+  // The ledger's quiet voice. Bright enough to read on the navy plate it is set on:
+  // 8.4:1 on the plate, so a whole line of it still reads as type rather than as noise.
   soft: '#a3b8c9',
+  // The quietest tone that is still type: a note under a row, a source line, a caption.
+  // 5.4:1 on the plate — the floor for anything carrying words (WCAG AA, small text).
+  dim: '#7d97ad',
   copper: '#b87333',
+  // Copper struck as a button face. The brand copper is a rule and a hairline tone; as a
+  // filled plate under white type it only reaches 3.8:1, so a button takes this deeper
+  // strike of the same metal and carries 5.6:1 instead.
+  copperDeep: '#8f5c2c',
   gold: '#c9a87c',
 };
 

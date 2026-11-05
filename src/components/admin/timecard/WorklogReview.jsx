@@ -27,7 +27,7 @@ function Field({ title, children, span = false }) {
 // The reviewed reading of a log, before it is filed. The elapsed figure the source
 // reported sits apart from the split across the jobs, and every job says whether its
 // minutes came from the log or were allocated across the session.
-export default function WorklogReview({ initial, duplicate, onCancel, onSave }) {
+export default function WorklogReview({ initial, duplicate, onCancel, onSave, bare = false }) {
   const [review, setReview] = useState(() => reviewOf(initial));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -82,8 +82,8 @@ export default function WorklogReview({ initial, duplicate, onCancel, onSave }) 
   return (
     <form
       onSubmit={submit}
-      className="rounded-xl p-3.5 space-y-3"
-      style={{ background: TC.surface, border: `1px solid ${TC.copper}` }}
+      className={bare ? 'space-y-3' : 'rounded-xl p-3.5 space-y-3'}
+      style={bare ? undefined : { background: TC.surface, border: `1px solid ${TC.copper}` }}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="text-[11px] uppercase tracking-[0.18em]" style={{ color: TC.gold }}>
@@ -188,7 +188,7 @@ export default function WorklogReview({ initial, duplicate, onCancel, onSave }) 
             {drift !== 0 ? ` · ${drift > 0 ? '+' : '−'}${minutesLabel(Math.abs(drift))} ${drift > 0 ? 'over' : 'unallocated'}` : ''}
           </p>
         </div>
-        <p className="mt-1 text-[10px] leading-snug" style={{ color: '#4e677d' }}>
+        <p className="mt-1 text-[10px] leading-snug" style={{ color: TC.dim }}>
           The elapsed figure is what the log clocked. The split below distributes it across the jobs and is an
           allocation, not a second measurement.
         </p>
@@ -299,7 +299,7 @@ export default function WorklogReview({ initial, duplicate, onCancel, onSave }) 
           type="submit"
           disabled={saving}
           className="rounded-lg px-3.5 py-2 text-xs font-semibold disabled:opacity-50"
-          style={{ background: TC.copper, color: '#fff' }}
+          style={{ background: TC.copperDeep, color: '#fdf8f0' }}
         >
           {saving ? 'Filing…' : 'File session'}
         </button>

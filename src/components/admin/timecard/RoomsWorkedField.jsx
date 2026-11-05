@@ -80,7 +80,7 @@ export default function RoomsWorkedField({ rooms, hours = 0, onChange }) {
       ))}
 
       {rows.length > 0 && (
-        <p className="text-[10px]" style={{ color: logged && expected && logged !== expected ? TC.gold : '#4e677d' }}>
+        <p className="text-[10px]" style={{ color: logged && expected && logged !== expected ? TC.gold : TC.dim }}>
           {minutesLabel(logged)} on rooms
           {expected ? ` · ${minutesLabel(expected)} filed${logged !== expected ? ' — the rest was off the floor' : ''}` : ''}
         </p>
