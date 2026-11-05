@@ -15,6 +15,7 @@ import ErrorBoundary from '@/components/core/ErrorBoundary';
 import HandheldShell from '@/components/handheld/HandheldShell';
 import DesktopShell from '@/components/desktop/DesktopShell';
 import AppSplash from '@/components/core/AppSplash';
+import { retireOpening, takesOwnDoor } from '@/components/core/openingCard';
 import ConsoleLoading from '@/components/core/ConsoleLoading';
 import PageTurn from '@/components/core/PageTurn';
 import SurfaceLoader from '@/components/core/SurfaceLoader';
@@ -411,8 +412,17 @@ const AuthenticatedApp = () => {
    — a low-vision reader can magnify the page again (WCAG 1.4.4). */
 
 // Splash first (Colony plate + two paths), then the welcome card over the chosen surface.
+//
+// A promoted link is the exception: /vote carries its own door, so the opening is retired
+// before it is drawn and the ballot answers the address directly.
 function BootSequence() {
+  const [skipped] = useState(() => {
+    if (!takesOwnDoor()) return false;
+    retireOpening();
+    return true;
+  });
   const [booted, setBooted] = useState(() => bootSeen());
+  if (skipped) return null;
   return booted ? <AppSplash /> : <ColonyBoot onDone={() => setBooted(true)} />;
 }
 
