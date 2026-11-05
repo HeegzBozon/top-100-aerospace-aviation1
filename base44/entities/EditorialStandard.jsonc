@@ -1,0 +1,185 @@
+{
+  "name": "EditorialStandard",
+  "type": "object",
+  "description": "One version of the house editorial standard: the stance, the standard structure, the lengths by issue type, the voice rules and the review gates. New versions are added, never edited, so a letter can always be read against the guide that was in force when it was written.",
+  "properties": {
+    "version": {
+      "type": "number",
+      "description": "Version number, counting from 1."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "superseded",
+        "draft"
+      ],
+      "default": "draft",
+      "description": "Exactly one version is active. Saving a new version supersedes the last.",
+      "enumColors": [
+        "green",
+        "gray",
+        "yellow"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string",
+      "description": "The whole standard as written, kept verbatim so nothing is lost in the structured fields."
+    },
+    "stance": {
+      "type": "string",
+      "description": "The editorial stance in one paragraph: what every issue is for, and what it does not do."
+    },
+    "structure": {
+      "type": "array",
+      "description": "The standard issue structure, in print order.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "type": "string"
+          },
+          "words": {
+            "type": "string"
+          },
+          "byline": {
+            "type": "string"
+          },
+          "job": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "lengths": {
+      "type": "array",
+      "description": "The length set for each issue type.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "words": {
+            "type": "string"
+          },
+          "what_changes": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "voice_do": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "voice_dont": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "use_words": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "The house vocabulary: Fellows, index, record, index position, Patron of Record."
+    },
+    "never_words": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "banned_words": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "punctuation": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Punctuation the house does not print, e.g. no em dashes or semicolons."
+    },
+    "sourcing": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "How a number, date or quote is allowed onto the page."
+    },
+    "gates": {
+      "type": "array",
+      "description": "Who clears what before an issue goes out.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gate": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "covers": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "open_decisions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "version"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

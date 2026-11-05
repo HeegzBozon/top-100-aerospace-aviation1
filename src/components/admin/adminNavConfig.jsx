@@ -67,6 +67,7 @@ export const ADMIN_SECTIONS = [
         icon: FileText,
         tabs: [
             { id: 'workspace-editorial', label: 'Cohort Workspace', icon: LayoutDashboard, component: 'CohortWorkspace' },
+            { id: 'editorial-calendar', label: 'Editorial Calendar', icon: Calendar, component: 'EditorialCalendarDesk' },
             { id: 'publications', label: 'Publications', icon: BookOpen, component: 'Publications' },
             { id: 'content', label: 'Knowledge Base', icon: FileText, component: 'KBArticleManager' },
             { id: 'episodes', label: 'Episodes', icon: Mic, component: 'EpisodePipeline' },

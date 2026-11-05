@@ -4,23 +4,68 @@ const LOGO =
 const SERIF = "'Playfair Display', Georgia, serif";
 const SANS = 'Arial, Helvetica, sans-serif';
 const INK = '#1e3a5a';
+const MUTED = '#4a6b8a';
 const DEEP = '#8f5c2c';
 const ROSE = '#c9a87c';
 const COVER = '#0e1e30';
+const CREAM = '#faf8f5';
+const HAIR = '#e8dfd2';
 
 const pad = (n) => String(n).padStart(2, '0');
 
-// THE LETTER AS IT WILL ARRIVE — the same shell base44/shared/mailShell.ts renders, shown on
-// the desk while it is being written. What an editor approves here is what reaches an inbox:
-// the cover plate, the numbered signals, the closing held as a pull-quote and the one key at
-// the foot do not change. The two files move together.
+// The gist, set bold: the first sentence of a body is the line a reader can take in while the
+// rest is still arriving. A one-sentence body stays plain — bolding all of it emphasises nothing.
+function Gist({ body, size }) {
+  const text = String(body || '').trim();
+  const match = text.match(/^([^.!?\n]{1,200}[.!?])\s+/);
+  const rest = match ? text.slice(match[1].length).trim() : '';
+  return (
+    <p style={{ margin: 0, fontFamily: SANS, fontSize: size, lineHeight: 1.68, color: INK }}>
+      {match && rest ? (
+        <>
+          <strong style={{ fontWeight: 700 }}>{match[1]}</strong> {rest}
+        </>
+      ) : (
+        text
+      )}
+    </p>
+  );
+}
+
+function Rubric({ label }) {
+  return (
+    <div className="flex items-center gap-2.5" style={{ marginBottom: 9 }}>
+      <span
+        style={{
+          fontFamily: SANS,
+          fontSize: 8.5,
+          fontWeight: 700,
+          letterSpacing: '2.2px',
+          textTransform: 'uppercase',
+          color: DEEP,
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {label}
+      </span>
+      <span style={{ flex: 1, height: 1, background: ROSE, opacity: 0.6 }} />
+    </div>
+  );
+}
+
+// THE LETTER AS IT WILL ARRIVE — the shell base44/shared/mailShell.ts renders, shown on the
+// desk while it is being written. The brief shape does not change here: the cover plate, the
+// greeting, the lead item, the shorter items, the quick hits, the closing and the one key at
+// the foot. What an editor approves here is what reaches an inbox, so the two files move
+// together.
 export default function IssuePreview({ issue, firstName = 'Reader' }) {
   const meta = [issue?.issue_no ? `No ${issue.issue_no}` : '', issue?.issue_date || '']
     .filter(Boolean)
     .join('  ·  ');
-  const signals = (issue?.sections || []).filter(
+  const items = (issue?.sections || []).filter(
     (story) => String(story?.title || '').trim() || String(story?.body || '').trim(),
   );
+  const quick = (issue?.quick_links || []).filter((link) => String(link?.title || '').trim());
 
   return (
     <div className="overflow-hidden rounded-sm" style={{ background: COVER }}>
@@ -90,87 +135,90 @@ export default function IssuePreview({ issue, firstName = 'Reader' }) {
 
       {/* THE PAPER */}
       <div style={{ background: '#ffffff' }}>
-        <div style={{ background: '#faf8f5', padding: '18px 26px 15px' }}>
-          <p style={{ margin: 0, fontFamily: SERIF, fontSize: 15, fontStyle: 'italic', color: INK }}>
-            Dear {firstName},
+        <div style={{ background: CREAM, padding: '17px 26px 15px' }}>
+          <p style={{ margin: 0, fontFamily: SERIF, fontSize: 16, lineHeight: 1.35, color: INK }}>
+            Morning, {firstName}.
+          </p>
+          <p style={{ margin: '5px 0 0', fontFamily: SANS, fontSize: 9.5, lineHeight: 1.5, color: MUTED }}>
+            What the record needs you to know this week.
           </p>
         </div>
 
-        <div style={{ padding: '0 26px' }}>
-          {signals.length === 0 && (
-            <p style={{ margin: 0, padding: '18px 0', fontFamily: SANS, fontSize: 12, color: '#8fa6bb' }}>
-              The signals you file will be printed here, in order, numbered like an index.
-            </p>
-          )}
+        {items.length === 0 && (
+          <p style={{ margin: 0, padding: '18px 26px', fontFamily: SANS, fontSize: 12, color: '#8fa6bb' }}>
+            The items you file will be printed here — the gist first, then why it matters.
+          </p>
+        )}
 
-          {signals.map((story, index) => (
-            <div key={index}>
-              {index > 0 && <div style={{ height: 1, background: '#e8dfd2' }} />}
-              <div className="flex gap-3" style={{ padding: '16px 0 18px' }}>
+        {items.map((story, index) => (
+          <div key={index} style={{ padding: index === 0 ? '22px 26px 0' : '18px 26px 0' }}>
+            {index > 0 && <div style={{ height: 1, background: HAIR, marginBottom: 18 }} />}
+            {String(story?.label || '').trim() && <Rubric label={story.label} />}
+            {String(story?.title || '').trim() && (
+              <p
+                style={{
+                  margin: '0 0 8px',
+                  fontFamily: SERIF,
+                  fontSize: index === 0 ? 20 : 16,
+                  fontWeight: 700,
+                  lineHeight: 1.26,
+                  color: INK,
+                }}
+              >
+                {story.title}
+              </p>
+            )}
+            {String(story?.body || '').trim() && <Gist body={story.body} size={index === 0 ? 12.5 : 12} />}
+            {String(story?.url || '').trim() && (
+              <p style={{ margin: '10px 0 0', fontFamily: SANS, fontSize: 11, fontWeight: 700, color: DEEP }}>
+                <span style={{ borderBottom: `1px solid ${ROSE}`, paddingBottom: 1 }}>
+                  {story.label || (index === 0 ? 'Read it' : 'More')} →
+                </span>
+              </p>
+            )}
+          </div>
+        ))}
+
+        {quick.length > 0 && (
+          <div style={{ padding: '22px 26px 0' }}>
+            <div style={{ background: CREAM, borderLeft: `2px solid ${ROSE}`, padding: '15px 17px' }}>
+              <p
+                style={{
+                  margin: '0 0 10px',
+                  fontFamily: SANS,
+                  fontSize: 8.5,
+                  fontWeight: 700,
+                  letterSpacing: '2.2px',
+                  textTransform: 'uppercase',
+                  color: DEEP,
+                }}
+              >
+                Also on the record
+              </p>
+              {quick.map((link, index) => (
                 <p
+                  key={index}
                   style={{
-                    margin: 0,
-                    width: 34,
-                    flex: 'none',
-                    fontFamily: SERIF,
-                    fontSize: 17,
-                    lineHeight: 1,
-                    color: ROSE,
+                    margin: index === 0 ? 0 : '9px 0 0',
+                    paddingTop: index === 0 ? 0 : 9,
+                    borderTop: index === 0 ? 'none' : `1px solid ${HAIR}`,
+                    fontFamily: SANS,
+                    fontSize: 11.5,
+                    lineHeight: 1.5,
+                    fontWeight: 600,
+                    color: INK,
                   }}
                 >
-                  {pad(index + 1)}
+                  {link.title} <span style={{ color: '#b87333', fontWeight: 700 }}>→</span>
                 </p>
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  {String(story?.label || '').trim() && (
-                    <p
-                      style={{
-                        margin: '0 0 5px',
-                        fontFamily: SANS,
-                        fontSize: 9,
-                        fontWeight: 700,
-                        letterSpacing: '2px',
-                        textTransform: 'uppercase',
-                        color: DEEP,
-                      }}
-                    >
-                      {story.label}
-                    </p>
-                  )}
-                  {String(story?.title || '').trim() && (
-                    <p
-                      style={{
-                        margin: '0 0 7px',
-                        fontFamily: SERIF,
-                        fontSize: 17,
-                        fontWeight: 700,
-                        lineHeight: 1.28,
-                        color: INK,
-                      }}
-                    >
-                      {story.title}
-                    </p>
-                  )}
-                  {String(story?.body || '').trim() && (
-                    <p style={{ margin: 0, fontFamily: SANS, fontSize: 12, lineHeight: 1.65, color: INK }}>
-                      {story.body}
-                    </p>
-                  )}
-                  {String(story?.url || '').trim() && (
-                    <p style={{ margin: '9px 0 0', fontFamily: SANS, fontSize: 11, fontWeight: 700, color: DEEP }}>
-                      <span style={{ borderBottom: `1px solid ${ROSE}`, paddingBottom: 1 }}>
-                        {story.label || 'Read it'} →
-                      </span>
-                    </p>
-                  )}
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
 
         {String(issue?.closing || '').trim() && (
-          <div style={{ padding: '4px 26px 0' }}>
-            <div style={{ background: '#faf8f5', borderLeft: '2px solid #b87333', padding: '15px 17px' }}>
+          <div style={{ padding: '20px 26px 0' }}>
+            <div style={{ background: CREAM, borderLeft: '2px solid #b87333', padding: '15px 17px' }}>
               <p style={{ margin: 0, fontFamily: SERIF, fontSize: 14, fontStyle: 'italic', lineHeight: 1.55, color: INK }}>
                 {issue.closing}
               </p>
@@ -179,7 +227,7 @@ export default function IssuePreview({ issue, firstName = 'Reader' }) {
         )}
 
         {String(issue?.cta_label || '').trim() && (
-          <div style={{ padding: '20px 26px 26px' }}>
+          <div style={{ padding: '22px 26px 26px' }}>
             <span
               style={{
                 display: 'inline-block',

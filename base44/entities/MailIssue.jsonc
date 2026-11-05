@@ -47,6 +47,24 @@
       },
       "default": []
     },
+    "quick_links": {
+      "type": "array",
+      "description": "The quick hits the letter closes on: short lines with a link each, up to five. Left empty, the letter simply ends after its signals.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "One short line, e.g. 'The 2026 cohort is open for nominations'."
+          },
+          "url": {
+            "type": "string",
+            "description": "Where the line goes. An app path or an https address."
+          }
+        }
+      },
+      "default": []
+    },
     "closing": {
       "type": "string",
       "description": "The line the editor signs off with, set in italic under the signals."

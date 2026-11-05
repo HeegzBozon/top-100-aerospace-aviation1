@@ -129,6 +129,7 @@ export function emptyIssue(nextNumber = 1) {
       { ...EMPTY_SECTION, label: 'Signal two' },
       { ...EMPTY_SECTION, label: 'Signal three' },
     ],
+    quick_links: [],
     closing: '',
     cta_label: 'Read the record',
     cta_url: 'https://top100aero.space',
