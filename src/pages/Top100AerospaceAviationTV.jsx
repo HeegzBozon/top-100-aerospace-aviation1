@@ -4,6 +4,7 @@ import { TV_CHANNELS, dialNumber } from '@/components/tv/tvChannels';
 import ChannelGuide from '@/components/tv/ChannelGuide';
 import ChannelScreen from '@/components/tv/ChannelScreen';
 import useChannelPicker from '@/components/tv/useChannelPicker';
+import useDeskDial from '@/components/tv/useDeskDial';
 import '@/components/tv/tv.css';
 
 // The house's television. A dial of channels, a guide beside it, and one station on the
@@ -47,6 +48,8 @@ export default function Top100AerospaceAviationTV() {
   }, [tunedIndex, tune]);
 
   useChannelPicker({ channels: TV_CHANNELS, activeKey: tuned.key, onTune: tune });
+  // On the desk the machine's own CH knob and SCAN key tune the set while it is up.
+  useDeskDial({ channels: TV_CHANNELS, index: tunedIndex, onTune: tune });
 
   return (
     <div className="tv-stage min-h-screen">

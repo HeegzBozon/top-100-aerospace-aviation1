@@ -9,6 +9,7 @@ import RadioIndexPanel from "./radio/RadioIndexPanel";
 import RadioStationPanel from "./radio/RadioStationPanel";
 import RadioBandPanel from "./radio/RadioBandPanel";
 import useRadioBand from "./radio/useRadioBand";
+import { useDeskTuner } from "./radio/deskTuner";
 import useStationUser from "./radio/useStationUser";
 import { getVolume, setVolume as setRecordVolume } from "@/components/handheld/consoleMusic";
 import "./deskRadio.css";
@@ -30,6 +31,9 @@ export default function ImacChin({ shelf, finish, pack, packs, options, finishKe
   const { pathname } = useLocation();
   const user = useStationUser();
   const band = useRadioBand();
+  // A surface that is a tuner in its own right — the television — borrows the dial while it
+  // stands on the picture. Everything else on the faceplate answers as it always has.
+  const tuner = useDeskTuner();
 
   const [mode, setMode] = useState("CH");
   const [panel, setPanel] = useState(null);
@@ -57,12 +61,20 @@ export default function ImacChin({ shelf, finish, pack, packs, options, finishKe
     setMode("VOL");
   };
 
+  // What the dial is standing on: the surface's own stations when it has borrowed the dial,
+  // the machine's band otherwise. A borrowed dial never navigates — it tunes.
+  const dialIndex = tuner ? tuner.index() : band.index;
+  const dialTotal = tuner ? tuner.count() : band.channels.length;
+  const dialTarget = tuner ? tuner.target() : band.target;
+
   const tune = (direction) => {
     setMode("CH");
+    if (tuner) return tuner.step(direction);
     band.step(direction);
   };
 
   const tuneIn = () => {
+    if (tuner) return tuner.enter();
     if (band.target) navigate(band.target.to);
   };
 
@@ -76,10 +88,10 @@ export default function ImacChin({ shelf, finish, pack, packs, options, finishKe
 
         <RadioDisplay
           mode={mode}
-          index={band.index}
-          total={band.channels.length}
-          target={band.target}
-          tuning={band.tuning}
+          index={dialIndex}
+          total={dialTotal}
+          target={dialTarget}
+          tuning={tuner ? false : band.tuning}
           volume={volume}
           signedIn={signedIn}
           memOpen={panel === "index"}
@@ -130,9 +142,9 @@ export default function ImacChin({ shelf, finish, pack, packs, options, finishKe
           label="CH · PUSH"
           ariaLabel="Channel — turn to tune, press to go"
           size="lg"
-          value={band.index + 1}
+          value={dialIndex + 1}
           min={1}
-          max={Math.max(band.channels.length, 1)}
+          max={Math.max(dialTotal, 1)}
           onTurn={tune}
           onPush={tuneIn}
         />

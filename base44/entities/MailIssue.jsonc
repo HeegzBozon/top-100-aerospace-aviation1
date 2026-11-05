@@ -1,0 +1,130 @@
+{
+  "name": "MailIssue",
+  "type": "object",
+  "description": "One letter the house sends: a Dispatch issue, a notice, or a note to a segment. Its shape is fixed (kicker, headline, standfirst, three signals, a closing and one key) so every letter the house posts reads as the same publication.",
+  "properties": {
+    "issue_no": {
+      "type": "number",
+      "description": "The sequence number printed in the letter's head, e.g. No 12."
+    },
+    "issue_date": {
+      "type": "string",
+      "description": "The date printed in the letter's head, e.g. November 5, 2026."
+    },
+    "kicker": {
+      "type": "string",
+      "description": "The line above the headline, printed in small capitals, e.g. 'The Dispatch \u00b7 Weekly'."
+    },
+    "headline": {
+      "type": "string",
+      "description": "The letter's headline. It is also the subject line as it reaches the inbox."
+    },
+    "standfirst": {
+      "type": "string",
+      "description": "One sentence under the headline, carried as the inbox preview line and printed under the headline in the letter."
+    },
+    "sections": {
+      "type": "array",
+      "description": "The signals, in print order. Slots two and three may be left empty.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "The small line above a signal, e.g. 'Launch' or 'Appointment'."
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Where the signal's link goes. An app path or an https address."
+          }
+        }
+      },
+      "default": []
+    },
+    "closing": {
+      "type": "string",
+      "description": "The line the editor signs off with, set in italic under the signals."
+    },
+    "cta_label": {
+      "type": "string",
+      "description": "The one key the letter carries, e.g. 'Read the record'."
+    },
+    "cta_url": {
+      "type": "string"
+    },
+    "segment_id": {
+      "type": "string",
+      "description": "The AudienceSegment the letter is addressed to. Empty addresses every mailable person the house can reach."
+    },
+    "segment_name": {
+      "type": "string",
+      "description": "The segment's name at the moment of addressing, held with the letter so a receipt can be read later."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sending",
+        "sent",
+        "halted"
+      ],
+      "default": "draft",
+      "description": "A letter is only ever posted once: a send that stops part way is resumed, never restarted."
+    },
+    "recipients": {
+      "type": "number",
+      "description": "How many people the letter was addressed to, resolved at send time."
+    },
+    "sent_count": {
+      "type": "number",
+      "description": "How many addresses the mail service accepted."
+    },
+    "failed_count": {
+      "type": "number",
+      "description": "How many addresses it refused. Every refusal is filed with its reason on MailSend."
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_error": {
+      "type": "string",
+      "description": "The last refusal the mail service gave, kept on the letter so a halted send can be read at a glance."
+    }
+  },
+  "required": [
+    "headline"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
