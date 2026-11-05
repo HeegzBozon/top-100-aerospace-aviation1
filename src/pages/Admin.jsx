@@ -438,7 +438,7 @@ export default function Admin() {
             onOpenSections={() => setMobileSidebarOpen(true)}
             onOpenSearch={() => setCommandPaletteOpen(true)}
           />
-          <div className={`${activeTab === 'selection-monitor' ? 'p-2.5 md:p-6 lg:p-8' : 'p-3 md:p-6 lg:p-8'}`}>
+          <div className={`${activeTab === 'selection-monitor' ? 'p-2 md:p-6 lg:p-8' : 'p-2.5 md:p-6 lg:p-8'}`}>
             <Suspense fallback={
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--accent)] border-t-transparent" />

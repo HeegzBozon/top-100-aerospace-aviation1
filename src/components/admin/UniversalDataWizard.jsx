@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -703,8 +702,8 @@ Focus on the Nominee entity. Output should be JSON only.`;
 
     return (
         <div className="w-full max-w-4xl mx-auto">
-            <div className="mb-8">
-                <Progress value={(currentStep / totalSteps) * 100} className="w-full mb-4" />
+            <div className="mb-4 md:mb-8">
+                <Progress value={(currentStep / totalSteps) * 100} className="w-full mb-2 md:mb-4" />
                 <div className="flex items-center justify-between">
                     {steps.map(step => (
                         <div key={step.id} className={`flex items-center text-sm font-medium ${step.id < currentStep ? 'text-green-600' : step.id === currentStep ? 'text-indigo-600' : 'text-gray-400'}`}>
@@ -716,7 +715,7 @@ Focus on the Nominee entity. Output should be JSON only.`;
                     ))}
                 </div>
             </div>
-            <Card><CardContent className="p-8">{steps.find(step => step.id === currentStep)?.component()}</CardContent></Card>
+            <Card><CardContent className="p-4 md:p-8">{steps.find(step => step.id === currentStep)?.component()}</CardContent></Card>
         </div>
     );
 }

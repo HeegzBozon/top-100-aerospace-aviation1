@@ -2293,6 +2293,67 @@ body.hh-landscape .hh-viewer-foot {
   }
 }
 
+/* ===== THE CONSOLE'S FURNITURE, HELD IN ONE HAND =====
+   The admin portal is a desk built for a wide picture, and most of its panels are laid
+   out as full-bleed seats: a scrim across the whole window, a card centred in it. On a
+   phone the window is not the screen — the screen is the glass between the strip and the
+   chin — so a 90vh card runs off both ends of the picture and the whole portal has to be
+   scrolled to find it. Every one of those seats is re-cut here, once, from the same
+   geometry the rest of the device uses: the panel rises inside the glass, fills it, and
+   the hardware stays under the thumb. Nothing in the portal's own code has to know. */
+@media (max-width: 767px) {
+  body.hh-shell .admin-shell .fixed.inset-0 {
+    top: calc(var(--hh-top) + var(--hh-nav) + env(safe-area-inset-top) + 5px);
+    bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+    left: var(--hh-glass-inset);
+    right: var(--hh-glass-inset);
+    padding: 0 !important;
+    border-radius: 12px;
+  }
+
+  /* The card inside the seat takes the seat's own height, so a list inside it scrolls
+     rather than the picture behind it. */
+  body.hh-shell .admin-shell .fixed.inset-0 > * {
+    max-height: 100% !important;
+    border-radius: 12px;
+  }
+
+  /* The index of sections is a sheet inside the picture too — drawn from the glass's
+     own left edge, shut at the chin's line. */
+  body.hh-shell .admin-shell .fixed.inset-y-0 {
+    top: calc(var(--hh-top) + env(safe-area-inset-top) + 5px);
+    bottom: calc(var(--hh-bottom) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+/* A wizard's keys ride the foot of the picture. A step is read from the top and answered
+   at the bottom, and on a phone the bottom of the step is a scroll away — so the way
+   back and the way on are pinned above the chin, within a thumb's reach of wherever the
+   reading has got to. On a desk the keys stay where they were, at the end of the step. */
+@media (max-width: 767px) {
+  .wizard-foot {
+    position: fixed;
+    left: var(--hh-glass-inset, 7px);
+    right: var(--hh-glass-inset, 7px);
+    bottom: calc(var(--hh-bottom, 0px) + var(--hh-foot, 0px) + env(safe-area-inset-bottom) + 5px);
+    z-index: 35;
+    display: flex;
+    gap: 8px;
+    margin: 0;
+    padding: 9px 10px;
+    border-top: 1px solid rgb(var(--editorial-copper-rgb) / 0.35);
+    background: rgba(250, 248, 245, 0.97);
+    box-shadow: 0 -14px 24px -18px rgba(3, 8, 15, 0.55);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  .wizard-foot > * {
+    flex: 1 1 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .desk-sheet { animation: none; }
 }

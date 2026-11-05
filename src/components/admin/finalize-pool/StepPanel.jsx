@@ -3,10 +3,10 @@ import { Loader2, AlertTriangle } from 'lucide-react';
 // Shared chrome for each wizard step: title, lede, and designed loading/error states.
 export default function StepPanel({ title, lede, loading, error, children }) {
   return (
-    <section className="rounded-2xl border border-editorial-navy/10 bg-white p-6 md:p-8 shadow-sm">
-      <h3 className="font-heading text-2xl text-editorial-navy">{title}</h3>
-      {lede && <p className="text-sm text-editorial-navy/60 mt-2 max-w-2xl">{lede}</p>}
-      <div className="h-px bg-editorial-copper/40 my-6" />
+    <section className="rounded-2xl border border-editorial-navy/10 bg-white p-4 md:p-8 shadow-sm">
+      <h3 className="font-heading text-xl md:text-2xl text-editorial-navy">{title}</h3>
+      {lede && <p className="text-[13px] md:text-sm text-editorial-navy/60 mt-2 max-w-2xl">{lede}</p>}
+      <div className="h-px bg-editorial-copper/40 my-4 md:my-6" />
       {loading ? (
         <div className="py-16 flex flex-col items-center gap-3 text-editorial-navy/60">
           <Loader2 className="w-7 h-7 animate-spin text-editorial-label" />
