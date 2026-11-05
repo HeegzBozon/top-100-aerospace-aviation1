@@ -20,21 +20,32 @@ export default function WorklogImport({ onParsed, onCancel }) {
   const [error, setError] = useState('');
   const inputRef = useRef(null);
 
+  const [dragging, setDragging] = useState(false);
+
+  // Attaching or dropping a file reads it straight away: one step from file to draft.
   const takeFile = async (picked) => {
     if (!picked) return;
     setError('');
     setFile(picked);
     // A plain text export is read here, on the desk; anything else is handed to the reader.
     if (isTextual(picked)) {
+      let content = '';
       try {
-        setText(await picked.text());
+        content = await picked.text();
+        setText(content);
       } catch {
         setError('That text file could not be read. Paste its contents instead.');
+        return;
       }
+      read(picked, content);
+    } else {
+      read(picked, '');
     }
   };
 
-  const read = async () => {
+  const read = async (pickedFile = file, pickedText = text) => {
+    const file = pickedFile;
+    const text = pickedText;
     setError('');
     if (!text.trim() && !file) {
       setError('Paste the work log, or attach the file it was exported to.');
@@ -77,13 +88,23 @@ export default function WorklogImport({ onParsed, onCancel }) {
   };
 
   return (
-    <div className="rounded-xl p-3.5 space-y-3" style={{ background: TC.surface, border: `1px solid ${TC.copper}` }}>
+    <div
+      className="rounded-xl p-3.5 space-y-3"
+      style={{ background: TC.surface, border: `1px ${dragging ? 'dashed' : 'solid'} ${TC.copper}` }}
+      onDragOver={(event) => { event.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(event) => {
+        event.preventDefault();
+        setDragging(false);
+        takeFile(event.dataTransfer.files?.[0]);
+      }}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] uppercase tracking-[0.18em]" style={{ color: TC.gold }}>Import a work log</p>
           <p className="mt-1 text-xs" style={{ color: TC.soft }}>
-            Paste the session as it was logged, or attach the file it was exported to. It is read into a
-            draft — nothing is filed until you have reviewed it.
+            Drop a work log here (PDF, document, screenshot or text) and it is read into a draft at once, or
+            paste the session as logged. Nothing is filed until you have reviewed it.
           </p>
         </div>
         <button
@@ -152,7 +173,7 @@ export default function WorklogImport({ onParsed, onCancel }) {
       <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={read}
+          onClick={() => read(file, text)}
           disabled={reading}
           className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold disabled:opacity-50"
           style={{ background: TC.copper, color: '#fff' }}

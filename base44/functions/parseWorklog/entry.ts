@@ -68,6 +68,7 @@ Rules:
 - session_date is the local calendar day the work happened. If the log gives several days, describe the first session of the most fully documented day and say so in notes.
 - start_time and end_time are the log's own local clock times, 24-hour. Never derive them from a duration, and never guess them.
 - duration_minutes is the elapsed time the log reports, as whole minutes. If the log gives only clock times, use the difference between them. If it gives neither, use 0.
+- If the log gives elapsed time with seconds (e.g. 52 minutes 36 seconds), round to the nearest whole minute. When it gives timestamps with seconds, use them for start_time and end_time at minute precision.
 - duration_minutes is wall-clock time, not active typing or attention time. Do not inflate it.
 - tasks are the jobs inside the session. Put them in the order they were worked. When the log states minutes or clock times for a job, use them and set reported true. When it does not, allocate the session's duration across the jobs in proportion to the work described, and set reported false. Mark every task either way.
 - deliverables are what the session actually produced: a draft, a file, a link, a decision, a reply. Short noun phrases, no sentences of praise.
@@ -167,6 +168,22 @@ export default async function (req: Request): Promise<Response> {
       }))
       .filter((task: { label: string; minutes: number }) => task.label || task.minutes)
       .slice(0, 24);
+
+    // Allocated minutes must add up to the session: when no task carries reported time, the
+    // model's split is rebalanced to the measured duration (proportionally, else evenly).
+    if (minutes > 0 && tasks.length > 0 && tasks.every((t: { estimated: boolean }) => t.estimated)) {
+      const total = tasks.reduce((sum: number, t: { minutes: number }) => sum + t.minutes, 0);
+      let assigned = 0;
+      tasks.forEach((t: { minutes: number }, i: number) => {
+        if (i === tasks.length - 1) {
+          t.minutes = Math.max(0, minutes - assigned);
+        } else {
+          const share = total > 0 ? t.minutes / total : 1 / tasks.length;
+          t.minutes = Math.round(minutes * share);
+          assigned += t.minutes;
+        }
+      });
+    }
 
     const deliverables = (Array.isArray(parsed.deliverables) ? parsed.deliverables : [])
       .map((item: unknown) => (typeof item === 'string' ? item.trim().slice(0, 200) : ''))
