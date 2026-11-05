@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { MessageCircle, ThumbsUp, Send, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
+import ReportContent from '@/components/moderation/ReportContent';
+import useAuthorBlocks from '@/hooks/useAuthorBlocks';
 
 const brandColors = {
   navyDeep: '#1e3a5a',
@@ -18,11 +20,22 @@ const brandColors = {
 export default function DiscussionPanel({ articleId }) {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const { data: viewer } = useQuery({
+    queryKey: ['discussion-viewer'],
+    queryFn: () => base44.auth.me().catch(() => null),
+  });
+  const { blocked, block } = useAuthorBlocks(viewer?.email);
 
   const { data: discussions = [], refetch } = useQuery({
     queryKey: ['article-discussions', articleId],
     queryFn: () => base44.entities.ArticleDiscussion.filter({ article_id: articleId }, '-created_date'),
   });
+
+  // Comments from Fellows this reader has blocked are held off their own reading of the
+  // discussion; what everyone else sees is untouched.
+  const visible = (discussions || []).filter(
+    (entry) => !blocked.has(String(entry.user_email || '').toLowerCase()),
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,7 +87,7 @@ export default function DiscussionPanel({ articleId }) {
       <CardHeader className="border-b" style={{ borderColor: `${brandColors.navyDeep}20` }}>
         <CardTitle className="flex items-center gap-2" style={{ color: brandColors.navyDeep }}>
           <MessageCircle className="w-5 h-5" />
-          Discussion ({discussions.length})
+          Discussion ({visible.length})
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6 space-y-4">
@@ -97,7 +110,14 @@ export default function DiscussionPanel({ articleId }) {
 
         {/* Comments List */}
         <div className="space-y-4 mt-6">
-          {discussions.map(discussion => (
+          {visible.length === 0 && (
+            <p className="text-sm" style={{ color: `${brandColors.navyDeep}70` }}>
+              {blocked.size > 0
+                ? 'Nothing here from the Fellows you have blocked.'
+                : 'No comments yet — be the first to raise a point.'}
+            </p>
+          )}
+          {visible.map(discussion => (
             <div key={discussion.id} className="flex gap-3 p-4 rounded-lg" style={{ background: 'white' }}>
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center" 
@@ -117,15 +137,30 @@ export default function DiscussionPanel({ articleId }) {
                 <p className="text-sm mb-2" style={{ color: `${brandColors.navyDeep}90` }}>
                   {discussion.message}
                 </p>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleUpvote(discussion.id, discussion.upvoted_by)}
-                  className="text-xs"
-                >
-                  <ThumbsUp className="w-3 h-3 mr-1" />
-                  {discussion.upvotes || 0}
-                </Button>
+                <div className="flex items-center gap-3">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleUpvote(discussion.id, discussion.upvoted_by)}
+                    className="text-xs"
+                  >
+                    <ThumbsUp className="w-3 h-3 mr-1" />
+                    {discussion.upvotes || 0}
+                  </Button>
+                  {discussion.user_email !== viewer?.email && (
+                    <ReportContent
+                      viewerEmail={viewer?.email}
+                      onBlocked={block}
+                      content={{
+                        type: 'article_comment',
+                        id: discussion.id,
+                        excerpt: discussion.message,
+                        authorEmail: discussion.user_email,
+                        authorName: discussion.user_name,
+                      }}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           ))}
