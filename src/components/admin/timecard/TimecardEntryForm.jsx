@@ -30,11 +30,13 @@ const blank = (kind = 'time') => ({
 
 // One sheet for both kinds of entry: the kind sets which figures are asked for, and
 // what the sheet saves is what the record holds — times and money are kept in cents.
-export default function TimecardEntryForm({ entry = null, onCancel, onSave, bare = false }) {
+// `lockKind` holds the sheet to one kind, which is how the expense workflow logs a receipt
+// on its own without offering to record hours instead.
+export default function TimecardEntryForm({ entry = null, lockKind = null, onCancel, onSave, bare = false }) {
   const [form, setForm] = useState(() => {
-    if (!entry) return blank();
+    if (!entry) return blank(lockKind || 'time');
     return {
-      ...blank(entry.kind),
+      ...blank(lockKind || entry.kind),
       ...entry,
       hours: entry.hours ?? '',
       rate: entry.rate_cents ? entry.rate_cents / 100 : '',
@@ -109,10 +111,14 @@ export default function TimecardEntryForm({ entry = null, onCancel, onSave, bare
     >
       <div className="flex items-center justify-between gap-3">
         <p className="text-[11px] uppercase tracking-[0.18em]" style={{ color: TC.gold }}>
-          {entry ? 'Edit entry' : 'New entry'}
+          {entry
+            ? 'Edit entry'
+            : lockKind === 'expense'
+              ? 'Log an expense'
+              : 'Type the hours'}
         </p>
         <div className="flex items-center gap-1">
-          {['time', 'expense'].map((kind) => (
+          {!lockKind && ['time', 'expense'].map((kind) => (
             <button
               key={kind}
               type="button"
@@ -241,7 +247,13 @@ export default function TimecardEntryForm({ entry = null, onCancel, onSave, bare
           className="px-3.5 py-2 rounded-lg text-xs font-semibold disabled:opacity-50"
           style={{ background: TC.copperDeep, color: '#fdf8f0' }}
         >
-          {saving ? 'Saving…' : entry ? 'Save changes' : 'Add entry'}
+          {saving
+            ? 'Saving…'
+            : entry
+              ? 'Save changes'
+              : lockKind === 'expense'
+                ? 'File the expense'
+                : 'Add hours'}
         </button>
         <button
           type="button"

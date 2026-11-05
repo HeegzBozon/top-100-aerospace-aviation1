@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { AlertCircle, Plus, RefreshCw } from 'lucide-react';
+import { AlertCircle, Clock, FileUp, Receipt, RefreshCw } from 'lucide-react';
 import { TC } from '@/components/admin/timecard/timecardConfig';
 import TimecardSummary from '@/components/admin/timecard/TimecardSummary';
 import TimecardRow from '@/components/admin/timecard/TimecardRow';
 import TimecardComposer from '@/components/admin/timecard/TimecardComposer';
 import DeskPanelBar from '@/components/admin/desk/DeskPanelBar';
+import { readPunch, writePunch, clearPunch, elapsedLabel } from '@/components/admin/timecard/clockPunch';
 
 // The desk the platform's own hours and receipts are kept on: one ledger of time and
 // expenses, filed against a project, settled through approval. Admin-only — the record
@@ -14,10 +15,20 @@ export default function TimecardDesk() {
   const [entries, setEntries] = useState([]);
   const [state, setState] = useState('loading');
   const [error, setError] = useState('');
-  // One composer serves both ways in — typed by hand, or read out of a work log. It is
-  // null when shut, and holds the entry being edited when it is open.
+  // One composer serves every way in — a log read from elsewhere, hours typed, a receipt,
+  // or a shift being closed. It is null when shut, and holds the entry being edited when
+  // it is open.
   const [composer, setComposer] = useState(null);
   const [filter, setFilter] = useState('all');
+  // The clock. A punch is kept on the machine so a reload never loses a shift in progress.
+  const [punch, setPunch] = useState(() => readPunch());
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!punch) return undefined;
+    const tick = setInterval(() => setNow(Date.now()), 10000);
+    return () => clearInterval(tick);
+  }, [punch]);
 
   const load = useCallback(async () => {
     setState('loading');
@@ -56,6 +67,15 @@ export default function TimecardDesk() {
     setComposer(null);
   };
 
+  // The punch becomes the session it measured: filed once, then the clock is cleared.
+  const saveClockOut = async (payload) => {
+    const created = await base44.entities.Timecard.create(payload);
+    setEntries((prev) => [created, ...prev]);
+    clearPunch();
+    setPunch(null);
+    setComposer(null);
+  };
+
   const remove = async (entry) => {
     if (!window.confirm(`Delete "${entry.description}"?`)) return;
     await base44.entities.Timecard.delete(entry.id);
@@ -89,28 +109,57 @@ export default function TimecardDesk() {
           >
             <RefreshCw className="h-3 w-3" /> Re-read
           </button>
-          {/* One key for the whole way in: the sheet it opens offers the work log and
-              the blank entry side by side, rather than two buttons on the stripe. */}
+          {/* Three ways in, each its own workflow: the clock, the work log read from
+              elsewhere, and the receipt. Only the clock is a standing state. */}
           <button
-            onClick={() => setComposer((open) => (open ? null : {}))}
-            aria-expanded={!!composer}
-            className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
+            onClick={() => {
+              if (punch) {
+                setComposer({ mode: 'clockout' });
+              } else {
+                const started = { started_at: new Date().toISOString() };
+                writePunch(started);
+                setPunch(started);
+                setNow(Date.now());
+              }
+            }}
+            aria-expanded={composer?.mode === 'clockout'}
+            className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] tabular-nums"
             style={
-              composer
+              punch
                 ? { background: 'rgba(184,115,51,0.22)', border: '1px solid #b87333', color: '#f5efe4' }
                 : { background: TC.copperDeep, border: '1px solid rgba(201,168,124,0.34)', color: '#fdf8f0' }
             }
           >
-            <Plus className="h-3.5 w-3.5" /> New entry
+            <Clock className="h-3.5 w-3.5" />
+            {punch ? `Clock out · ${elapsedLabel(punch.started_at, now)}` : 'Clock in'}
+          </button>
+          <button
+            onClick={() => setComposer((open) => (open?.mode === 'import' ? null : { mode: 'import' }))}
+            aria-expanded={composer?.mode === 'import'}
+            className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
+            style={{ border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }}
+          >
+            <FileUp className="h-3.5 w-3.5" /> Upload a log
+          </button>
+          <button
+            onClick={() => setComposer((open) => (open?.mode === 'expense' ? null : { mode: 'expense' }))}
+            aria-expanded={composer?.mode === 'expense'}
+            className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
+            style={{ border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }}
+          >
+            <Receipt className="h-3.5 w-3.5" /> Expense
           </button>
         </DeskPanelBar>
 
         {composer && (
           <TimecardComposer
             entry={composer.entry || null}
+            mode={composer.mode || 'import'}
+            punch={punch}
             onClose={() => setComposer(null)}
             onSaveEntry={save}
             onSaveImported={saveImported}
+            onSaveClockOut={saveClockOut}
           />
         )}
       </div>
@@ -162,8 +211,8 @@ export default function TimecardDesk() {
           </p>
           <p className="mx-auto mt-1.5 max-w-sm text-xs leading-relaxed" style={{ color: '#a3b8c9' }}>
             {entries.length
-              ? 'Switch the filter, or file a new entry against the project it belongs to.'
-              : 'File the first entry — hours worked, or a receipt that needs paying back.'}
+              ? 'Switch the filter, or clock in when the work starts.'
+              : 'Clock in when the work begins, upload a log you kept elsewhere, or file a receipt that needs paying back.'}
           </p>
         </div>
       )}
