@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom/client'
 import App from '@/App.jsx'
 import '@/index.css'
 import '@/styles/handheldHardware.css'
+import { syncDarkModeWithSystem } from '@/lib/systemDarkMode'
+
+syncDarkModeWithSystem()
 
 // A browser notification, not a fault: a ResizeObserver callback wrote layout in the
 // same frame it was notified in, so the round of notifications that followed never

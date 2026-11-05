@@ -359,14 +359,15 @@ export default function AgentSkillRegistry() {
             </div>
             <div className="space-y-2">
               <Label>Action</Label>
-              <select
-                value={importAction}
-                onChange={e => setImportAction(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg text-sm"
-              >
-                <option value="create">Create new (if name exists, add copy suffix)</option>
-                <option value="replace">Replace existing (if name matches)</option>
-              </select>
+              <Select value={importAction} onValueChange={setImportAction}>
+                <SelectTrigger aria-label="Import action" className="w-full text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="create">Create new (if name exists, add copy suffix)</SelectItem>
+                  <SelectItem value="replace">Replace existing (if name matches)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setImportModalOpen(false)}>Cancel</Button>

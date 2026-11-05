@@ -73,6 +73,15 @@ export default function DeleteAccountDialog({ open, onClose, onDeleted }) {
         <p className="mt-2 font-body text-[11.5px] leading-relaxed text-editorial-navy/55">
           Ballots you have cast stay exactly as recorded and still count.
         </p>
+        <div className="mt-3 border-t border-editorial-navy/10 pt-3">
+          <p className="pd-label">Your rights and what the law keeps</p>
+          <p className="mt-1.5 font-body text-[11.5px] leading-relaxed text-editorial-navy/65">
+            This is your right to erasure under the GDPR. Records the law requires us to
+            keep are the one exception: any investment or payment record tied to an
+            offering under SEC Regulation Crowdfunding is retained for five years, held
+            apart from any profile and used for no other purpose.
+          </p>
+        </div>
 
         <p aria-live="polite" className="mt-2 font-body text-[11.5px] leading-relaxed text-destructive">
           {error}
