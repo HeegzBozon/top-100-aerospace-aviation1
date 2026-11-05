@@ -150,6 +150,7 @@ export default function ViralPost2026Featured() {
             <ShareBar
               title={`${name}'s Top Viral Post — TOP 100 Aerospace & Aviation`}
               summary={`${name}'s featured post in the Top Viral Posts Series`}
+              eventName="viralpost2026_share"
             />
           </div>
 

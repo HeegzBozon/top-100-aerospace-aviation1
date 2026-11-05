@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Share2, Link2, Linkedin, Twitter, Facebook, Check } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 const NAVY = '#1e3a5a';
 const GOLD = '#c9a87c';
@@ -14,8 +15,13 @@ const CREAM = '#faf8f5';
  * Props:
  *  - title:   share text headline
  *  - summary: optional one-line summary prepended to the URL
+ *  - eventName: optional analytics event, fired once per share with its channel
  */
-export default function ShareBar({ title, summary }) {
+export default function ShareBar({ title, summary, eventName }) {
+  const trackShare = (channel) => {
+    if (!eventName) return;
+    base44.analytics.track({ eventName, properties: { channel } });
+  };
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [canNative, setCanNative] = useState(false);
@@ -37,14 +43,18 @@ export default function ShareBar({ title, summary }) {
   const url = typeof window !== 'undefined' ? window.location.href : '';
   const shareText = summary ? `${summary} — ${title}` : title;
   const enc = encodeURIComponent;
-  const linkProps = (href) => ({
+  const linkProps = (href, channel) => ({
     href,
     target: '_blank',
     rel: 'noopener noreferrer',
-    onClick: () => setOpen(false),
+    onClick: () => {
+      trackShare(channel);
+      setOpen(false);
+    },
   });
 
   const nativeShare = async () => {
+    trackShare('native');
     try {
       await navigator.share({ title, text: shareText, url });
     } catch {
@@ -55,6 +65,7 @@ export default function ShareBar({ title, summary }) {
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(url);
+      trackShare('copy_link');
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -90,7 +101,7 @@ export default function ShareBar({ title, summary }) {
           role="menu"
         >
           <a
-            {...linkProps(`https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`)}
+            {...linkProps(`https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`, 'linkedin')}
             className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-[rgba(30,58,90,0.05)] transition-colors"
             style={{ color: NAVY }}
             role="menuitem"
@@ -99,7 +110,7 @@ export default function ShareBar({ title, summary }) {
             Share on LinkedIn
           </a>
           <a
-            {...linkProps(`https://twitter.com/intent/tweet?text=${enc(shareText)}&url=${enc(url)}`)}
+            {...linkProps(`https://twitter.com/intent/tweet?text=${enc(shareText)}&url=${enc(url)}`, 'x')}
             className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-[rgba(30,58,90,0.05)] transition-colors"
             style={{ color: NAVY }}
             role="menuitem"
@@ -108,7 +119,7 @@ export default function ShareBar({ title, summary }) {
             Share on X
           </a>
           <a
-            {...linkProps(`https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`)}
+            {...linkProps(`https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`, 'facebook')}
             className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-[rgba(30,58,90,0.05)] transition-colors"
             style={{ color: NAVY }}
             role="menuitem"

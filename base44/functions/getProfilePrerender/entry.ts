@@ -76,7 +76,26 @@ export default async function (req: Request): Promise<Response> {
     if (n.description || n.bio) personSchema.description = n.description || n.bio;
     if (n.avatar_url) personSchema.image = n.avatar_url;
     if (n.country) personSchema.address = { "@type": "PostalAddress", addressCountry: n.country };
+    if (n.country) personSchema.nationality = { "@type": "Country", name: n.country };
     if (sameAsArr.length) personSchema.sameAs = sameAsArr;
+    // Expertise and education, so a crawler reading the static page sees the same
+    // substance the browser-rendered record carries.
+    const knowsAbout = [
+      ...(Array.isArray(n.skills) ? n.skills : []),
+      n.industry,
+      n.discipline ? DISCIPLINE_LABELS[n.discipline] : null,
+    ].filter(Boolean);
+    if (knowsAbout.length) personSchema.knowsAbout = knowsAbout;
+    const alumniOf = (Array.isArray(n.education) ? n.education : [])
+      .filter((e) => e && e.institution_name)
+      .slice(0, 5)
+      .map((e) => ({ "@type": "Organization", name: e.institution_name }));
+    if (alumniOf.length) personSchema.alumniOf = alumniOf;
+    personSchema.memberOf = {
+      "@type": "Organization",
+      name: "TOP 100 Aerospace & Aviation",
+      url: origin,
+    };
 
     const breadcrumbSchema = {
       "@context": "https://schema.org",
