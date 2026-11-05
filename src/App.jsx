@@ -346,6 +346,9 @@ const AuthenticatedApp = () => {
       <Route path="/Nominations" element={<Navigate to="/selection-committee" replace />} />
       <Route path="/nominations" element={<Navigate to="/selection-committee" replace />} />
       <Route path="/top100-tv" element={<Top100TV />} />
+      {/* The house's television: a dial of channels, the first of them the house's own
+          YouTube channel. `/top100-tv-channels` is the address the set was built at. */}
+      <Route path="/tv" element={<Top100AerospaceAviationTV />} />
       <Route path="/articles/nine-months-of-2026" element={<NineMonths2026 />} />
       <Route path="/viralpost2022" element={<ViralPost2022 />} />
       <Route path="/viralpost2022/featured/:slug" element={<ViralPost2022Featured />} />

@@ -2,7 +2,7 @@ import {
   Award, BookOpen, Briefcase, Calendar, CalendarCheck, CalendarDays, Compass, Gamepad2, GraduationCap,
   Globe2, Heart, Info, Landmark, Layers, LayoutGrid, LogIn, LogOut, Mail,
   MessageCircle, Network, Newspaper, PartyPopper, Radar, Rocket, Scissors, Send, Shield,
-  ShoppingBag, Ticket, Trophy, User, UserPlus, Users,
+  ShoppingBag, Ticket, Trophy, Tv, User, UserPlus, Users,
 } from "lucide-react";
 
 // THE APPLICATIONS THIS MACHINE RUNS.
@@ -82,6 +82,8 @@ export const APP_GROUPS = [
     key: "intelligence",
     label: "Intelligence",
     items: [
+      // The television: a dial of channels, the first of them the house's own airwaves.
+      { label: "TOP 100 TV", to: "/tv", icon: Tv },
       { label: "Intelligence Globe", to: "/intelligence-globe", icon: Globe2 },
       { label: "Global Intelligence", to: "/GlobalIntelligence", icon: Compass },
       { label: "Magazine Studio", to: "/magazine-studio", icon: BookOpen, membersOnly: true },

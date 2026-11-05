@@ -1,0 +1,371 @@
+/* ===== THE TELEVISION — THE SET IN THE BUILDING =====
+   The house's own television: a navy stage lit from above, the screen set into a moulded
+   bezel with a marquee across its head, and the guide standing beside it as a printed
+   column of stations. Copper is the structure — the rule under the masthead, the bezel's
+   hairline, the key the dial is standing on — and rose gold is the dial itself. Nothing
+   moves on its own: the only motion here is a key acknowledging a hand. */
+.tv-stage {
+  background:
+    radial-gradient(130% 88% at 50% -12%, rgba(74, 111, 153, 0.24) 0%, rgba(11, 22, 38, 0) 62%),
+    radial-gradient(rgba(250, 248, 245, 0.045) 1px, transparent 1.4px),
+    linear-gradient(180deg, #0d1b2c 0%, #0b1626 56%, #081120 100%);
+  background-size: auto, 26px 26px, auto;
+  background-repeat: no-repeat, repeat, no-repeat;
+}
+
+.tv-masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgb(var(--editorial-copper-rgb) / 0.5);
+  padding-bottom: 10px;
+}
+
+/* The small-caps label. Rose gold on navy carries AA; on cream it would not. */
+.tv-kicker {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #c9a87c;
+}
+
+.tv-title {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  line-height: 1.05;
+  color: #f6f1e8;
+  margin-top: 2px;
+}
+
+@media (min-width: 768px) {
+  .tv-title {
+    font-size: 34px;
+  }
+}
+
+/* The dial: the number the set is standing on, seated in a recessed readout. */
+.tv-dial {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  background: linear-gradient(180deg, #08121d 0%, #0c1826 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.tv-dial-label {
+  font-family: var(--font-body);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #7d93a8;
+}
+
+.tv-dial-number {
+  font-family: var(--font-heading);
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  color: #c9a87c;
+}
+
+.tv-dial-name {
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #e9e2d6;
+}
+
+/* The set: moulded bezel, then the glass. */
+.tv-set {
+  border-radius: 10px;
+  padding: 9px;
+  background: linear-gradient(180deg, #1b2b3d 0%, #0f1d2d 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 28px 56px -32px rgba(3, 8, 15, 0.95);
+}
+
+/* The marquee across the head of the glass: what is on, and what the station does. */
+.tv-marquee {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 2px 8px;
+}
+
+.tv-marquee-number {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  color: #c9a87c;
+}
+
+.tv-marquee-name {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #f2ece1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tv-marquee-seam {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgb(var(--editorial-copper-rgb) / 0.6), rgba(201, 168, 124, 0));
+}
+
+.tv-marquee-dial {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8ba0b4;
+  white-space: nowrap;
+}
+
+/* The glass: a dark pane with the bezel's shadow biting into its top edge. */
+.tv-glass {
+  border-radius: 5px;
+  overflow: hidden;
+  background: #050b12;
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.34),
+    inset 0 12px 26px -18px rgba(0, 0, 0, 0.95);
+}
+
+/* A lamp: dead glass until it is lit. */
+.tv-lamp {
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border-radius: 9999px;
+  background: rgba(239, 233, 220, 0.18);
+  box-shadow: inset 0 0 2px rgba(3, 8, 15, 0.6);
+}
+.tv-lamp[data-on="true"] {
+  background: #c9a87c;
+  box-shadow: 0 0 7px rgba(201, 168, 124, 0.9);
+}
+
+/* The guide: the printed column of stations. */
+.tv-guide {
+  border-radius: 6px;
+  padding: 9px 10px 10px;
+  background: linear-gradient(180deg, rgba(250, 248, 245, 0.055) 0%, rgba(250, 248, 245, 0.015) 100%);
+  box-shadow: inset 0 0 0 1px rgb(var(--editorial-gold-rgb) / 0.22);
+}
+
+.tv-guide-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgb(var(--editorial-copper-rgb) / 0.45);
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f2ece1;
+}
+
+.tv-guide-count {
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+  color: #7d93a8;
+}
+
+/* A station: a key on the guide, moulded like the set's own buttons. */
+.tv-key {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 5px;
+  padding: 7px 9px;
+  text-align: left;
+  border: 1px solid rgba(201, 168, 124, 0.2);
+  background: rgba(250, 248, 245, 0.03);
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+.tv-key:hover {
+  background: rgba(250, 248, 245, 0.075);
+  border-color: rgba(201, 168, 124, 0.48);
+}
+.tv-key.is-tuned {
+  border-color: #b87333;
+  background: linear-gradient(180deg, rgba(184, 115, 51, 0.24) 0%, rgba(184, 115, 51, 0.08) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(184, 115, 51, 0.55),
+    0 10px 22px -18px rgba(3, 8, 15, 0.9);
+}
+.tv-key:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 168, 124, 0.7);
+}
+
+.tv-key-number {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: #c9a87c;
+  min-width: 22px;
+}
+.tv-key.is-tuned .tv-key-number {
+  color: #f6e8d2;
+}
+
+.tv-key-name {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: #f2ece1;
+}
+
+.tv-key-strap {
+  display: block;
+  margin-top: 1px;
+  font-family: var(--font-body);
+  font-size: 9.5px;
+  color: #93a8bc;
+}
+
+/* The transport keys under the screen. */
+.tv-transport {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tv-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 5px;
+  border: 1px solid rgba(201, 168, 124, 0.3);
+  background: rgba(250, 248, 245, 0.04);
+  color: #e9e2d6;
+  padding: 6px 9px;
+  font-family: var(--font-body);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.tv-step:hover:not(:disabled) {
+  background: rgba(250, 248, 245, 0.09);
+  border-color: rgba(201, 168, 124, 0.58);
+}
+.tv-step:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.tv-step:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 168, 124, 0.7);
+}
+
+.tv-transport-hint {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7d93a8;
+}
+
+/* An upload on the house channel: a still, a title and the day it aired. */
+.tv-upload {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 4px;
+  padding: 5px;
+  text-align: left;
+  border: 1px solid transparent;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.tv-upload:hover {
+  background: rgba(250, 248, 245, 0.06);
+  border-color: rgba(201, 168, 124, 0.24);
+}
+.tv-upload.is-playing {
+  background: rgba(184, 115, 51, 0.14);
+  border-color: rgba(184, 115, 51, 0.55);
+}
+.tv-upload:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 168, 124, 0.7);
+}
+
+.tv-upload-thumb {
+  width: 62px;
+  height: 35px;
+  flex: none;
+  border-radius: 3px;
+  object-fit: cover;
+  background: #0c1826;
+  box-shadow: inset 0 0 0 1px rgba(201, 168, 124, 0.22);
+}
+
+.tv-upload-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #eae3d7;
+}
+
+.tv-upload-date {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-body);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7d93a8;
+}
+
+/* A slot on the dial with nothing on it: the antenna mark. */
+.tv-reserved-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  border: 1px solid rgba(201, 168, 124, 0.45);
+  color: #c9a87c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tv-key,
+  .tv-step,
+  .tv-upload {
+    transition: none;
+  }
+}

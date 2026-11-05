@@ -1,154 +1,98 @@
-import { useState } from 'react';
-import { Tv, Filter, Grid, List } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { STREAMS_DB } from '@/lib/channels-db';
-import ComprehensiveNewsStreams from '@/components/capabilities/global-intelligence/ComprehensiveNewsStreams';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { TV_CHANNELS, dialNumber } from '@/components/tv/tvChannels';
+import ChannelGuide from '@/components/tv/ChannelGuide';
+import ChannelScreen from '@/components/tv/ChannelScreen';
+import useChannelPicker from '@/components/tv/useChannelPicker';
+import '@/components/tv/tv.css';
+
+// The house's television. A dial of channels, a guide beside it, and one station on the
+// glass at a time — changed with the buttons the machine already has (see the channel
+// picker) or with the keys printed on the set. The channel stands in the address, so a
+// station can be handed to somebody.
+const channelAtAddress = () => {
+  const wanted = Number(new URLSearchParams(window.location.search).get('ch'));
+  return TV_CHANNELS.find((channel) => channel.number === wanted) || TV_CHANNELS[0];
+};
 
 export default function Top100AerospaceAviationTV() {
-  const [viewMode, setViewMode] = useState('grid');
-  const [selectedRegion, setSelectedRegion] = useState('all');
+  const [tunedKey, setTunedKey] = useState(() => channelAtAddress().key);
 
-  const regions = ['all', ...new Set(STREAMS_DB.map(c => c.region))].sort();
+  const tuned = useMemo(
+    () => TV_CHANNELS.find((channel) => channel.key === tunedKey) || TV_CHANNELS[0],
+    [tunedKey],
+  );
+  const tunedIndex = TV_CHANNELS.findIndex((channel) => channel.key === tuned.key);
 
-  const filteredChannels = selectedRegion === 'all'
-    ? STREAMS_DB
-    : STREAMS_DB.filter(c => c.region === selectedRegion);
+  const tune = useCallback((channel) => {
+    if (!channel) return;
+    setTunedKey(channel.key);
+    const url = new URL(window.location.href);
+    url.searchParams.set('ch', String(channel.number));
+    window.history.replaceState({}, '', url);
+  }, []);
+
+  // A back press that walked away from the surface is not the tuner's to keep.
+  useEffect(() => {
+    const onKey = (event) => {
+      if (event.target?.closest?.('input, textarea, select, [contenteditable]')) return;
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      const next = TV_CHANNELS[tunedIndex + (event.key === 'ArrowLeft' ? -1 : 1)];
+      if (!next) return;
+      event.preventDefault();
+      tune(next);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [tunedIndex, tune]);
+
+  useChannelPicker({ channels: TV_CHANNELS, activeKey: tuned.key, onTune: tune });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Tv className="w-8 h-8 text-[#c9a87c]" />
-            <h1 className="text-4xl font-bold">Top 100 Aerospace & Aviation TV</h1>
-          </div>
-          <p className="text-slate-400 text-lg">Global news channels tracking space, aviation, and aerospace developments</p>
-          <p className="text-slate-500 text-sm mt-2">{STREAMS_DB.length} international channels</p>
-        </div>
-
-        {/* Live Player */}
-        <div className="mb-8 rounded-lg border border-white/10 overflow-hidden bg-black/40">
-          <ComprehensiveNewsStreams />
-        </div>
-
-        {/* Controls */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-slate-400" />
-            <select
-              value={selectedRegion}
-              onChange={(e) => setSelectedRegion(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm hover:border-slate-600 transition-colors"
-            >
-              {regions.map(region => (
-                <option key={region} value={region}>
-                  {region === 'all' ? 'All Regions' : region}
-                </option>
-              ))}
-            </select>
+    <div className="tv-stage min-h-screen">
+      <div className="mx-auto w-full max-w-6xl px-3 py-4 md:px-8 md:py-8">
+        <header className="tv-masthead">
+          <div className="min-w-0">
+            <p className="tv-kicker">Top 100 Aerospace &amp; Aviation</p>
+            <h1 className="tv-title">Television</h1>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-              className="gap-1"
-            >
-              <Grid className="w-4 h-4" />
-              Grid
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-              className="gap-1"
-            >
-              <List className="w-4 h-4" />
-              List
-            </Button>
+          <div className="tv-dial">
+            <span className="tv-dial-label">On the dial</span>
+            <span className="tv-dial-number">{dialNumber(tuned.number)}</span>
+            <span className="tv-dial-name">{tuned.name}</span>
           </div>
-        </div>
+        </header>
 
-        {/* Channels Display */}
-        {viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredChannels.map(channel => (
-              <div
-                key={channel.id}
-                className="rounded-lg border border-white/10 bg-gradient-to-br from-slate-800/50 to-slate-900/50 p-4 hover:border-[#c9a87c]/50 transition-all hover:shadow-lg hover:shadow-[#c9a87c]/10"
+        <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_272px] md:items-start">
+          <div className="min-w-0">
+            <ChannelScreen channel={tuned} />
+
+            <div className="tv-transport mt-2.5">
+              <button
+                type="button"
+                onClick={() => tune(TV_CHANNELS[tunedIndex - 1])}
+                disabled={tunedIndex === 0}
+                className="tv-step"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <span className="text-2xl">{channel.icon}</span>
-                  {channel.geoBlocked && (
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-300">
-                      GEO
-                    </span>
-                  )}
-                </div>
-                <h3 className="font-semibold text-sm text-white mb-1">{channel.name}</h3>
-                <p className="text-[11px] text-slate-400 mb-3">{channel.region} • {channel.language}</p>
-                <div className="flex gap-1">
-                  {channel.hls && (
-                    <span className="inline-block px-2 py-0.5 rounded text-[10px] bg-blue-500/20 text-blue-300">
-                      HLS
-                    </span>
-                  )}
-                  {channel.youtube && (
-                    <a
-                      href={`https://www.youtube.com/@${channel.youtube}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block px-2 py-0.5 rounded text-[10px] bg-red-500/20 text-red-300 hover:bg-red-500/40 transition-colors"
-                    >
-                      YouTube
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {filteredChannels.map(channel => (
-              <div
-                key={channel.id}
-                className="rounded-lg border border-white/10 bg-slate-800/30 p-4 hover:bg-slate-800/50 transition-colors flex items-center justify-between"
+                <ChevronLeft className="h-3 w-3" /> Ch −
+              </button>
+              <span className="tv-transport-hint">
+                Channel {dialNumber(tuned.number)} of {dialNumber(TV_CHANNELS.length)}
+              </span>
+              <button
+                type="button"
+                onClick={() => tune(TV_CHANNELS[tunedIndex + 1])}
+                disabled={tunedIndex === TV_CHANNELS.length - 1}
+                className="tv-step"
               >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="text-2xl flex-shrink-0">{channel.icon}</span>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-white text-sm">{channel.name}</h3>
-                    <p className="text-xs text-slate-400">{channel.region} • {channel.language}</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 ml-4 flex-shrink-0">
-                  {channel.hls && (
-                    <span className="inline-block px-2 py-0.5 rounded text-[10px] bg-blue-500/20 text-blue-300">
-                      HLS
-                    </span>
-                  )}
-                  {channel.youtube && (
-                    <a
-                      href={`https://www.youtube.com/@${channel.youtube}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block px-2 py-0.5 rounded text-[10px] bg-red-500/20 text-red-300 hover:bg-red-500/40 transition-colors"
-                    >
-                      YouTube
-                    </a>
-                  )}
-                  {channel.geoBlocked && (
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-300">
-                      GEO
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
+                Ch + <ChevronRight className="h-3 w-3" />
+              </button>
+            </div>
           </div>
-        )}
+
+          <ChannelGuide channels={TV_CHANNELS} tunedKey={tuned.key} onTune={tune} />
+        </div>
       </div>
     </div>
   );
