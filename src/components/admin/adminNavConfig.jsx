@@ -28,6 +28,7 @@ import {
     Activity,
     Mic,
     Eye,
+    Mail,
 } from 'lucide-react';
 
 /**
@@ -117,7 +118,8 @@ export const ADMIN_SECTIONS = [
             { id: 'settings', label: 'Platform Settings', icon: Settings, component: 'PlatformSettings' },
             { id: 'rail-items', label: 'Icon Rail', icon: Columns, component: 'RailItemManager' },
             { id: 'sales', label: 'Sales Analytics', icon: DollarSign, component: 'SalesAnalytics' },
-            { id: 'dispatch', label: 'Dispatch Growth', icon: TrendingUp, component: 'DispatchFunnelPanel' },
+            { id: 'dispatch', label: 'Funnel Desk', icon: TrendingUp, component: 'DispatchFunnelPanel' },
+            { id: 'mail-room', label: 'Mail Room', icon: Mail, component: 'MailRoom' },
         ],
     },
 ];

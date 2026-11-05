@@ -9,8 +9,9 @@ import {
   emptyPersonNomination,
   emptyAngelNomination,
   emptyLocalLegend,
-  combineGuidedReason,
 } from '@/components/nominate/NominateConfig';
+import { fileNomination } from '@/components/nominate/fileNomination';
+import { trackNomination } from '@/components/nominate/nominationEvents';
 import NominateShell from '@/components/nominate/NominateShell';
 import StageWelcome from '@/components/nominate/StageWelcome';
 import StageAboutYou from '@/components/nominate/StageAboutYou';
@@ -27,7 +28,6 @@ import MyTop100 from '@/pages/MyTop100';
 import MissionBriefing from '@/components/mission/MissionBriefing';
 import useMissionBriefing from '@/components/mission/useMissionBriefing';
 
-const SURVEY_ID = '69f45633daacf496cacd8666';
 const DRAFT_KEY = 'top100_nomination_draft_v1';
 
 function loadDraft() {
@@ -141,6 +141,14 @@ export default function NominationForm({ isPreview = false } = {}) {
     base44.analytics.track({ eventName, properties });
   };
 
+  // Where the flow currently stands, read from outside the render so the funnel can be
+  // recorded when the surface is left rather than only when it is stepped through.
+  const stageRef = useRef(stage);
+  const startedTracked = useRef(false);
+  useEffect(() => {
+    stageRef.current = stage;
+  }, [stage]);
+
   // The head of the funnel: the hub was opened. Paired with
   // nomination_hub_submit_completed below, this is what turns "14 a month" into a
   // start-to-finish rate instead of a single number.
@@ -149,8 +157,39 @@ export default function NominationForm({ isPreview = false } = {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // The same funnel, staged: opened, then — if the reader leaves with the flow unfinished —
+  // the stage they left on. Only the guided hub itself is counted: a Fellow who is shown
+  // their own top 100 has not entered the nomination funnel and is not recorded as having
+  // abandoned it.
+  const guestFlowOnScreen = isPreview || signedIn === false;
+  useEffect(() => {
+    if (!guestFlowOnScreen) return undefined;
+    trackNomination('formViewed', { preview: !!isPreview, stage: STAGES.WELCOME });
+    let left = false;
+    const leave = () => {
+      if (left || stageRef.current === STAGES.CONFIRMATION) return;
+      left = true;
+      trackNomination('stageAbandoned', { stage: stageRef.current });
+    };
+    window.addEventListener('pagehide', leave);
+    return () => {
+      window.removeEventListener('pagehide', leave);
+      leave();
+    };
+  }, [guestFlowOnScreen, isPreview]);
+
+  // The first character typed anywhere in the flow. Recorded once.
+  const markStarted = () => {
+    if (startedTracked.current) return;
+    startedTracked.current = true;
+    trackNomination('formStarted', { stage: stageRef.current });
+  };
+
   const goTo = (s) => {
     trackHubEvent('nomination_hub_stage_viewed', { stage: s });
+    const from = STAGE_ORDER.indexOf(stage);
+    const to = STAGE_ORDER.indexOf(s);
+    if (to > from) trackNomination('stageAdvanced', { from: stage, to: s });
     setStage(s);
   };
   const next = () => {
@@ -164,13 +203,18 @@ export default function NominationForm({ isPreview = false } = {}) {
   };
 
   // Generic helpers for each category
-  const updateAboutYou = (field, value) => setAboutYou(p => ({ ...p, [field]: value }));
+  const updateAboutYou = (field, value) => {
+    markStarted();
+    setAboutYou(p => ({ ...p, [field]: value }));
+  };
 
   const addNomination = (category, factory) => {
+    markStarted();
     trackHubEvent('nomination_hub_nomination_added', { category });
     setNominations(p => ({ ...p, [category]: [...p[category], factory()] }));
   };
   const updateNomination = (category, idx, field, value) => {
+    markStarted();
     setNominations(p => ({
       ...p,
       [category]: p[category].map((n, i) => (i === idx ? { ...n, [field]: value } : n)),
@@ -189,6 +233,8 @@ export default function NominationForm({ isPreview = false } = {}) {
       const n = list[i];
       for (const f of requiredFields) {
         if (!n[f] || (typeof n[f] === 'string' && !n[f].trim())) {
+          // Where the flow refuses to move on: recorded, never changed.
+          trackNomination('submitRejected', { stage: stageRef.current, reason: 'validation' });
           toast({ title: `${label} #${i + 1}: please complete all required fields`, variant: 'destructive' });
           return false;
         }
@@ -222,15 +268,6 @@ export default function NominationForm({ isPreview = false } = {}) {
       local_legends_count: nominations.local_legends.length,
     });
     setSubmitting(true);
-    const answers = {
-      your_name: aboutYou.name,
-      your_email: aboutYou.email,
-      your_connection: aboutYou.connection,
-      women_nominations: nominations.women,
-      men_nominations: nominations.men,
-      angels_nominations: nominations.angels,
-      local_legends_nominations: nominations.local_legends,
-    };
 
     if (isPreview) {
       setSubmitting(false);
@@ -238,82 +275,22 @@ export default function NominationForm({ isPreview = false } = {}) {
       return;
     }
 
-    const submission = await base44.entities.SurveyResponse.create({
-      survey_id: SURVEY_ID,
-      respondent_email: aboutYou.email,
-      respondent_name: aboutYou.name,
-      answers,
-      completed: true,
-    });
-
-    const intakeBase = {
-      submission_id: submission.id,
-      survey_id: SURVEY_ID,
-      nominator_name: aboutYou.name,
-      nominator_email: aboutYou.email,
-      nominator_connection: aboutYou.connection,
-      source: 'unified_nomination_hub',
-      status: 'new',
-    };
-
-    const peopleIntakes = [
-      ...nominations.women.filter(n => n.name?.trim()).map(n => ({
-        ...intakeBase,
-        nomination_type: 'women',
-        nominee_name: n.name,
-        nominee_email: n.email,
-        role_org: n.role_org,
-        link: n.link,
-        location: n.location,
-        reason: combineGuidedReason(n),
-        share_name: n.share_name,
-      })),
-      ...nominations.men.filter(n => n.name?.trim()).map(n => ({
-        ...intakeBase,
-        nomination_type: 'men',
-        nominee_name: n.name,
-        nominee_email: n.email,
-        role_org: n.role_org,
-        link: n.link,
-        location: n.location,
-        reason: combineGuidedReason(n),
-        share_name: n.share_name,
-      })),
-      ...nominations.angels.filter(n => n.name?.trim()).map(n => ({
-        ...intakeBase,
-        nomination_type: 'angels',
-        nominee_name: n.name,
-        firm: n.firm,
-        link: n.link,
-        location: n.location,
-        investing_in: n.investing_in,
-        reason: n.reason,
-        share_name: n.share_name,
-      })),
-    ];
-
-    const localLegendIntakes = nominations.local_legends.filter(n => n.business_name?.trim()).map(n => ({
-      ...intakeBase,
-      business_name: n.business_name,
-      business_type: n.business_type,
-      city: n.city,
-      owner_name: n.owner_name,
-      link: n.link,
-      reason: n.reason,
-      share_name: n.share_name,
-    }));
-
-    if (peopleIntakes.length) await base44.entities.NominationIntake.bulkCreate(peopleIntakes);
-    if (localLegendIntakes.length) await base44.entities.LocalLegendNomination.bulkCreate(localLegendIntakes);
-
-    const surveys = await base44.entities.Survey.filter({ id: SURVEY_ID });
-    if (surveys[0]) {
-      await base44.entities.Survey.update(SURVEY_ID, {
-        response_count: (surveys[0].response_count || 0) + 1,
-      });
+    try {
+      await fileNomination({ aboutYou, nominations });
+    } catch (error) {
+      // The service refused the filing: recorded, then handed straight on as before.
+      trackNomination('submitFailed', { stage: STAGES.REVIEW, reason: 'request' });
+      throw error;
     }
 
     trackHubEvent('nomination_hub_submit_completed', {
+      women_count: nominations.women.length,
+      men_count: nominations.men.length,
+      angels_count: nominations.angels.length,
+      local_legends_count: nominations.local_legends.length,
+    });
+    trackNomination('submitted', {
+      stage: STAGES.CONFIRMATION,
       women_count: nominations.women.length,
       men_count: nominations.men.length,
       angels_count: nominations.angels.length,

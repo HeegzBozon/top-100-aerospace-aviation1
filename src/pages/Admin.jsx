@@ -33,6 +33,8 @@ const ClaimsReviewManager       = lazy(() => import('@/components/admin/ClaimsRe
 const UserMergeManager          = lazy(() => import('@/components/admin/UserMergeManager'));
 const SalesAnalytics            = lazy(() => import('@/components/admin/SalesAnalytics'));
 const DispatchFunnelPanel       = lazy(() => import('@/components/admin/DispatchFunnelPanel'));
+const NominationFunnelPanel     = lazy(() => import('@/components/admin/NominationFunnelPanel'));
+const FunnelAuditDesk           = lazy(() => import('@/components/admin/funnel-audit/FunnelAuditDesk'));
 const GodsEye                   = lazy(() => import('@/components/admin/GodsEye'));
 const HouseDesk                 = lazy(() => import('@/components/admin/desk/HouseDesk'));
 const SMEAssignmentPanel        = lazy(() => import('@/components/admin/SMEAssignmentPanel'));
@@ -51,6 +53,7 @@ const LocalLegendsManager       = lazy(() => import('@/components/admin/LocalLeg
 const TopViralPostsManager      = lazy(() => import('@/components/admin/TopViralPostsManager'));
 const EpisodePipeline           = lazy(() => import('@/components/admin/EpisodePipeline'));
 const SeasonalPlanningDashboard = lazy(() => import('@/components/admin/SeasonalPlanningDashboard'));
+const MailRoom                  = lazy(() => import('@/components/admin/mailroom/MailRoom'));
 import { Award } from 'lucide-react';
 
 const SIDEBAR_COLLAPSED_KEY = 'adminSidebarCollapsed';
@@ -335,8 +338,16 @@ export default function Admin() {
         return <RailItemManager />;
       case 'sales':
         return <SalesAnalytics />;
+      // The funnel desk: the audit of every journey the house runs, then the house's two
+      // best-instrumented entry gates read side by side.
       case 'dispatch':
-        return <DispatchFunnelPanel />;
+        return (
+          <div className="space-y-6">
+            <FunnelAuditDesk />
+            <DispatchFunnelPanel />
+            <NominationFunnelPanel />
+          </div>
+        );
       case 'gods-eye':
         return <GodsEye />;
       // The house's paperwork is one desk now: hours, rota, bills and the diary. The old
@@ -347,6 +358,9 @@ export default function Admin() {
         return <HouseDesk initialTab="ledger" />;
       case 'invoicing':
         return <HouseDesk initialTab="invoices" />;
+      // The mail room: the audience ledger, the smart lists and the letter itself.
+      case 'mail-room':
+        return <MailRoom />;
       default:
         return (
           <div className="py-16 text-center text-[var(--muted)]">
