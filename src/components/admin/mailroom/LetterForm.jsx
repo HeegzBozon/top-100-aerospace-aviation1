@@ -1,3 +1,4 @@
+import { Plus, X } from 'lucide-react';
 import { describeRules } from './mailRoomConfig';
 
 const input =
@@ -34,6 +35,12 @@ export default function LetterForm({ issue, segments, seasons = [], onChange }) 
     });
 
   const selected = segments.find((segment) => segment.id === issue.segment_id);
+  const links = issue.quick_links || [];
+  const patchLink = (index, changes) =>
+    onChange({
+      ...issue,
+      quick_links: links.map((link, position) => (position === index ? { ...link, ...changes } : link)),
+    });
 
   return (
     <div className="space-y-3">
@@ -69,7 +76,7 @@ export default function LetterForm({ issue, segments, seasons = [], onChange }) 
         />
       </Field>
 
-      <Field label="Headline" hint="Also the subject line as it reaches the inbox.">
+      <Field label="Headline" hint="Also the subject line. State the substance; never tease it.">
         <input
           value={issue.headline || ''}
           onChange={(event) => patch({ headline: event.target.value })}
@@ -118,12 +125,12 @@ export default function LetterForm({ issue, segments, seasons = [], onChange }) 
               </div>
             </div>
             <div className="mt-2">
-              <Field label="The signal">
+              <Field label="The gist" hint="The first sentence is set bold. Everything after it says why it matters.">
                 <textarea
                   value={story.body || ''}
                   onChange={(event) => patchSection(index, { body: event.target.value })}
                   rows={2}
-                  placeholder="Two sentences. What changed, and why it is on the record."
+                  placeholder="The gist in one sentence. Then why it matters to the reader."
                   className={`${input} resize-y`}
                   style={style}
                 />
@@ -140,6 +147,58 @@ export default function LetterForm({ issue, segments, seasons = [], onChange }) 
                 />
               </Field>
             </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-2 border-t pt-3" style={{ borderColor: 'rgba(250,248,245,0.08)' }}>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: '#c9a87c' }}>
+            Also on the record · {links.length}/5
+          </p>
+          {links.length < 5 && (
+            <button
+              type="button"
+              onClick={() => patch({ quick_links: [...links, { title: '', url: '' }] })}
+              className="desk-key desk-key-quiet"
+            >
+              <Plus className="h-3 w-3" /> Add line
+            </button>
+          )}
+        </div>
+        {!links.length && (
+          <p className="text-[10px]" style={{ color: '#5f7387' }}>
+            Optional quick hits under the brief: one line and a link each, printed as the letter closes.
+          </p>
+        )}
+        {links.map((link, index) => (
+          <div key={index} className="grid grid-cols-[1fr_1fr_auto] items-end gap-1.5">
+            <Field label={`Line ${index + 1}`}>
+              <input
+                value={link.title || ''}
+                onChange={(event) => patchLink(index, { title: event.target.value })}
+                placeholder="What is behind it"
+                className={input}
+                style={style}
+              />
+            </Field>
+            <Field label="Link">
+              <input
+                value={link.url || ''}
+                onChange={(event) => patchLink(index, { url: event.target.value })}
+                placeholder="/profiles/… or https://…"
+                className={input}
+                style={style}
+              />
+            </Field>
+            <button
+              type="button"
+              onClick={() => patch({ quick_links: links.filter((_, position) => position !== index) })}
+              className="mb-1 rounded p-1 hover:bg-white/10"
+              title="Remove this line"
+            >
+              <X className="h-3 w-3" style={{ color: '#7d94aa' }} />
+            </button>
           </div>
         ))}
       </div>

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Eye, FilePlus2, Send } from 'lucide-react';
+import { Eye, FilePlus2, FileUp, Send } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import LetterForm from './LetterForm';
 import IssuePreview from './IssuePreview';
+import UploadToDraft from './UploadToDraft';
 import { emptyIssue, ISSUE_STATUS_TONE, issueStatusLabel } from './mailRoomConfig';
 
 function payloadOf(issue, segmentName) {
@@ -18,6 +19,10 @@ function payloadOf(issue, segmentName) {
       title: String(story?.title || ''),
       body: String(story?.body || ''),
       url: String(story?.url || ''),
+    })),
+    quick_links: (issue.quick_links || []).map((link) => ({
+      title: String(link?.title || ''),
+      url: String(link?.url || ''),
     })),
     closing: String(issue.closing || ''),
     cta_label: String(issue.cta_label || ''),
@@ -44,6 +49,7 @@ export default function ComposePanel({ room }) {
   const [pending, setPending] = useState(null);
   const [receipt, setReceipt] = useState(null);
   const [error, setError] = useState('');
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   const segments = room.data?.segments || [];
   const nextNumber = letters.length
@@ -84,6 +90,7 @@ export default function ComposePanel({ room }) {
       sections: (letter.sections || []).length
         ? letter.sections
         : emptyIssue().sections,
+      quick_links: letter.quick_links || [],
       closing: letter.closing || '',
       cta_label: letter.cta_label || '',
       cta_url: letter.cta_url || '',
@@ -94,6 +101,27 @@ export default function ComposePanel({ room }) {
     setReceipt(null);
     setPending(null);
     setError('');
+  }
+
+  // A drafted issue lands as an unsaved letter: it is read, changed and saved like any other
+  // one. The reader never writes to the ledger, so nothing is filed until the desk says so.
+  function takeDraft(draft) {
+    setCurrent({
+      ...emptyIssue(nextNumber),
+      ...draft,
+      quick_links: draft.quick_links || [],
+      segment_id: '',
+    });
+    setCurrentId('');
+    setCurrentStatus('draft');
+    setReceipt(null);
+    setPending(null);
+    setError('');
+    setUploadOpen(false);
+    toast({
+      title: 'Draft written from the material',
+      description: 'Read it, change what you like, then save it or post it.',
+    });
   }
 
   const segmentName = segments.find((segment) => segment.id === current?.segment_id)?.name || '';
@@ -214,7 +242,13 @@ export default function ComposePanel({ room }) {
             </button>
           ))}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setUploadOpen((open) => !open)}
+            className={`desk-key ${uploadOpen ? 'desk-key-live' : 'desk-key-quiet'}`}
+          >
+            <FileUp className="h-3.5 w-3.5" /> Draft from a document
+          </button>
           <button
             onClick={() => {
               setCurrent(emptyIssue(nextNumber));
@@ -233,6 +267,8 @@ export default function ComposePanel({ room }) {
           </button>
         </div>
       </div>
+
+      {uploadOpen && <UploadToDraft onClose={() => setUploadOpen(false)} onDraft={takeDraft} />}
 
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-[1.05fr_0.95fr]">
         <div className="desk-plate p-3.5">
