@@ -3,6 +3,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useDevice } from "@/components/handheld/HandheldShell";
 import CommsMainView from "@/components/comms/CommsMainView";
 import MobileCommsView from "@/components/comms/MobileCommsView";
+import { useQueryClient } from "@tanstack/react-query";
+import PullToRefresh from "@/components/mobile/PullToRefresh";
 
 // The messaging surface, owned by the surface itself.
 //
@@ -15,6 +17,15 @@ export default function CommsPage() {
   const isMobile = useIsMobile();
   const device = useDevice();
   const [composerActive, setComposerActive] = useState(false);
+  const queryClient = useQueryClient();
+
+  // A pull at the head of the list re-reads the threads, the channels and the counts.
+  const refresh = () =>
+    Promise.all(
+      ["conversations", "public-channels", "messages", "unread-counts"].map((key) =>
+        queryClient.invalidateQueries({ queryKey: [key] })
+      )
+    );
 
   useEffect(() => {
     if (!device) return undefined;
@@ -24,6 +35,7 @@ export default function CommsPage() {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
+      {isMobile && !composerActive && <PullToRefresh onRefresh={refresh} />}
       {isMobile ? (
         <MobileCommsView onComposerActiveChange={setComposerActive} />
       ) : (
