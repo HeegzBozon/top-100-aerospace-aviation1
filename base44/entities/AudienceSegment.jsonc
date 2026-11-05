@@ -1,0 +1,82 @@
+{
+  "name": "AudienceSegment",
+  "type": "object",
+  "description": "A smart list: a saved rule set over the house's reachable audience. The rules are resolved live from the member ledger and the Dispatch ledger at read time, so a segment is never a stale copy of who it holds.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "How the segment is named on the desk, e.g. 'Readers who joined on a profile'."
+    },
+    "description": {
+      "type": "string",
+      "description": "One line on who this segment is for."
+    },
+    "rules": {
+      "type": "array",
+      "description": "The rules the segment holds. Every rule must match; an empty value is ignored. Read by base44/shared/audience.ts, which is the only resolver.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "source",
+              "has_account",
+              "role",
+              "entry_point",
+              "joined_within_days",
+              "status"
+            ]
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "ghl_tag": {
+      "type": "string",
+      "description": "The GoHighLevel tag this segment corresponds to, so the desk and the CRM name the same audience. The CRM is the system of record for contacts; this is the matching key."
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "An archived segment keeps its rules but is not offered when an issue is addressed."
+    },
+    "last_count": {
+      "type": "number",
+      "description": "The mailable count the resolver last returned. A cached reading for the desk, never used to address an issue."
+    },
+    "last_resolved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When that count was last read."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
