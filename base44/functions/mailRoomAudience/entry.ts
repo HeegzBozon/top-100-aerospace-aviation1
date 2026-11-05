@@ -5,6 +5,7 @@ import {
   mailableRows,
   audienceSummary,
   entryPointCounts,
+  yearOfSeason,
 } from '../../shared/audience.ts';
 
 // THE MAIL ROOM'S READING — who the house can reach, and who each smart list holds.
@@ -70,10 +71,24 @@ export default async function (req: Request): Promise<Response> {
         )
       : audience;
 
+    const seasonRes: any = await base44.asServiceRole.entities.Season.list({ limit: 200 });
+    const seasons = (seasonRes?.items || [])
+      .map((season: any) => ({
+        id: season.id,
+        label: String(season.name || '').trim() || season.id,
+        year: yearOfSeason(season),
+        count: audience.filter((row) => row.season_ids.includes(season.id)).length,
+      }))
+      .filter((season: any) => season.year)
+      .sort((a: any, b: any) =>
+        a.year === b.year ? a.label.localeCompare(b.label) : b.year.localeCompare(a.year),
+      );
+
     return Response.json({
       ok: true,
       summary,
       segments: resolved,
+      seasons,
       by_entry: entryPointCounts(audience),
       rows: matching.slice(0, limit),
       matching: matching.length,

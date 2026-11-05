@@ -54,9 +54,39 @@ export const SEGMENT_FIELDS = [
       { value: 'unsubscribed', label: 'Unsubscribed' },
     ],
   },
+  // Standing in the record, read off the pool: who has nominated, who the house has
+  // printed in a volume, and who holds a record at all.
+  {
+    field: 'affiliation',
+    label: 'Standing in the record',
+    options: [
+      { value: 'nominator', label: 'Has nominated' },
+      { value: 'honoree', label: 'Printed in a volume' },
+      { value: 'nominee', label: 'Holds a record in the pool' },
+    ],
+  },
+  // The seasons themselves come from the desk's own reading, so a season added at the desk
+  // is offerable here without a code change.
+  { field: 'season_id', label: 'Appeared in', dynamic: 'seasons' },
+  { field: 'season_year', label: 'Season year', dynamic: 'years' },
 ];
 
 const FIELD_BY_KEY = Object.fromEntries(SEGMENT_FIELDS.map((entry) => [entry.field, entry]));
+
+// A rule whose choices are read from the ledger rather than written here.
+export function optionsFor(field, seasons = []) {
+  if (field?.dynamic === 'seasons') return seasons.map((season) => ({ value: season.id, label: season.label }));
+  if (field?.dynamic === 'years') {
+    const years = Array.from(new Set(seasons.map((season) => season.year).filter(Boolean))).sort().reverse();
+    return years.map((year) => ({ value: year, label: year }));
+  }
+  return field?.options || [];
+}
+
+function optionLabel(field, value, seasons = []) {
+  const match = optionsFor(field, seasons).find((choice) => choice.value === String(value));
+  return match?.label || String(value);
+}
 
 export const LEDGER_LABEL = {
   member: 'Member',
@@ -65,15 +95,16 @@ export const LEDGER_LABEL = {
 };
 
 // A segment in one line, so the desk can be read without opening the editor.
-export function describeRules(rules = []) {
+export function describeRules(rules = [], seasons = []) {
   const parts = (rules || [])
     .filter((rule) => rule?.field && String(rule?.value ?? '').trim() !== '')
     .map((rule) => {
       const field = FIELD_BY_KEY[rule.field];
       if (!field) return '';
       if (field.free) return `joined within ${rule.value} days`;
-      const option = (field.options || []).find((choice) => choice.value === String(rule.value));
-      return `${field.label.toLowerCase()}: ${(option?.label || rule.value).toLowerCase()}`;
+      const label = optionLabel(field, rule.value, seasons);
+      if (field.dynamic === 'seasons') return `appeared in ${label.toLowerCase()}`;
+      return `${field.label.toLowerCase()}: ${label.toLowerCase()}`;
     })
     .filter(Boolean);
   return parts.length ? parts.join(' · ') : 'Everyone the house can reach';

@@ -236,7 +236,7 @@ export default function ComposePanel({ room }) {
 
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-[1.05fr_0.95fr]">
         <div className="desk-plate p-3.5">
-          <LetterForm issue={current} segments={segments} onChange={setCurrent} />
+          <LetterForm issue={current} segments={segments} seasons={room.data?.seasons || []} onChange={setCurrent} />
 
           <div className="mt-4 border-t pt-3" style={{ borderColor: 'rgba(250,248,245,0.08)' }}>
             {pending ? (

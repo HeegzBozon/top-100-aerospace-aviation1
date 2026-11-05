@@ -23,7 +23,7 @@ function Field({ label, children, hint }) {
 // THE LETTER'S FIVE PARTS. An editor fills them; they do not rearrange them. That is the
 // whole point of a house style: every issue arrives the same shape, so the only thing that
 // changes week to week is what the house has to say.
-export default function LetterForm({ issue, segments, onChange }) {
+export default function LetterForm({ issue, segments, seasons = [], onChange }) {
   const patch = (changes) => onChange({ ...issue, ...changes });
   const patchSection = (index, changes) =>
     onChange({
@@ -178,7 +178,7 @@ export default function LetterForm({ issue, segments, onChange }) {
 
       <Field
         label="Addressed to"
-        hint={selected ? describeRules(selected.rules) : 'Everyone the house can reach, minus anyone who left the list.'}
+        hint={selected ? describeRules(selected.rules, seasons) : 'Everyone the house can reach, minus anyone who left the list.'}
       >
         <select
           value={issue.segment_id || ''}

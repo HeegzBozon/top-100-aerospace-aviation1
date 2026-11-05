@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Plus, Trash2, Pencil, Users, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { SEGMENT_FIELDS, describeRules } from './mailRoomConfig';
+import { SEGMENT_FIELDS, describeRules, optionsFor } from './mailRoomConfig';
 
 const BLANK = { id: '', name: '', description: '', ghl_tag: '', rules: [] };
 
@@ -10,8 +10,9 @@ const inputClass =
   'w-full rounded-md px-2.5 py-1.5 text-xs outline-none placeholder:text-[#5f7387]';
 const inputStyle = { background: 'rgba(6,12,20,0.55)', color: '#efe9dc', border: '1px solid rgba(201,168,124,0.22)' };
 
-function RuleRow({ rule, onChange, onRemove }) {
+function RuleRow({ rule, onChange, onRemove, seasons = [] }) {
   const field = SEGMENT_FIELDS.find((entry) => entry.field === rule.field) || SEGMENT_FIELDS[0];
+  const options = optionsFor(field, seasons);
   return (
     <div className="flex items-center gap-2">
       <select
@@ -44,7 +45,7 @@ function RuleRow({ rule, onChange, onRemove }) {
           style={inputStyle}
         >
           <option value="" style={{ color: '#111' }}>Anyone</option>
-          {(field.options || []).map((option) => (
+          {options.map((option) => (
             <option key={option.value} value={option.value} style={{ color: '#111' }}>
               {option.label}
             </option>
@@ -69,6 +70,7 @@ export default function SegmentsPanel({ room }) {
   const [seeding, setSeeding] = useState(false);
 
   const segments = room.data?.segments || [];
+  const seasons = room.data?.seasons || [];
   const reachable = room.data?.summary?.mailable || 0;
 
   const save = async () => {
@@ -203,6 +205,7 @@ export default function SegmentsPanel({ room }) {
               <RuleRow
                 key={index}
                 rule={rule}
+                seasons={seasons}
                 onChange={(next) =>
                   setDraft({
                     ...draft,
@@ -223,7 +226,7 @@ export default function SegmentsPanel({ room }) {
           </div>
 
           <p className="text-[10px]" style={{ color: '#7d94aa' }}>
-            {describeRules(draft.rules)}
+            {describeRules(draft.rules, seasons)}
           </p>
 
           <div className="flex flex-wrap gap-2 border-t pt-3" style={{ borderColor: 'rgba(250,248,245,0.08)' }}>
@@ -288,7 +291,7 @@ export default function SegmentsPanel({ room }) {
                 </div>
               </div>
               <p className="mt-3 border-t pt-2 text-[11px] leading-relaxed" style={{ borderColor: 'rgba(250,248,245,0.08)', color: '#a3b8c9' }}>
-                {describeRules(segment.rules)}
+                {describeRules(segment.rules, seasons)}
               </p>
               {segment.ghl_tag && (
                 <p className="mt-2 inline-flex rounded px-1.5 py-0.5 text-[9px] uppercase tracking-[0.14em]" style={{ background: 'rgba(201,168,124,0.14)', color: '#c9a87c' }}>

@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
-import { readLedgers, resolveRules, mailableRows } from '../../shared/audience.ts';
+import { readLedgers, resolveRules, mailableRows, VOLUME_SEASONS } from '../../shared/audience.ts';
 
 // THE HOUSE'S FIRST SMART LISTS, laid down in one pass.
 //
@@ -55,6 +55,71 @@ const SEGMENTS = [
     description: 'Admins only — for proofing an issue before it is addressed to anyone.',
     ghl_tag: 'SmartList: House team',
     rules: [{ field: 'role', value: 'admin' }],
+  },
+
+  // ── The nominators — the people who put a name forward. They are the warmest voice the
+  // house has, and the ones who have given something without being asked.
+  {
+    name: 'Nominators',
+    description: 'Everyone who has put a name forward, in any season.',
+    ghl_tag: 'SmartList: Nominators',
+    rules: [{ field: 'affiliation', value: 'nominator' }],
+  },
+  {
+    name: 'Nominators, not yet members',
+    description: 'They nominated from outside the record and hold no account — invite them in.',
+    ghl_tag: 'SmartList: Nominators no account',
+    rules: [
+      { field: 'affiliation', value: 'nominator' },
+      { field: 'has_account', value: 'no' },
+    ],
+  },
+
+  // ── The archive — honorees, one list for every volume the house has printed, and the
+  // whole run of them together.
+  {
+    name: 'Honorees · every volume',
+    description: 'Everyone the house has printed in a volume, across every volume.',
+    ghl_tag: 'SmartList: Honorees all volumes',
+    rules: [{ field: 'affiliation', value: 'honoree' }],
+  },
+  ...VOLUME_SEASONS.map((volume) => ({
+    name: `Honorees · ${volume.label}`,
+    description: `Everyone printed in ${volume.label}.`,
+    ghl_tag: `SmartList: Honorees ${volume.label}`,
+    rules: [{ field: 'season_id', value: volume.id }],
+  })),
+
+  // ── The nominees — the pool itself, by season, and the whole roster together.
+  {
+    name: 'Nominees · the whole pool',
+    description: 'Everyone holding a record in the pool, in any season.',
+    ghl_tag: 'SmartList: Nominees all seasons',
+    rules: [{ field: 'affiliation', value: 'nominee' }],
+  },
+  {
+    name: 'Nominees · 2026',
+    description: 'The cohort being weighed this season.',
+    ghl_tag: 'SmartList: Nominees 2026',
+    rules: [{ field: 'season_year', value: '2026' }],
+  },
+  {
+    name: 'Nominees · 2025',
+    description: 'The 2025 cohort — the third volume.',
+    ghl_tag: 'SmartList: Nominees 2025',
+    rules: [{ field: 'season_year', value: '2025' }],
+  },
+  {
+    name: 'Nominees · 2022',
+    description: 'The 2022 cohort — the second volume and its components.',
+    ghl_tag: 'SmartList: Nominees 2022',
+    rules: [{ field: 'season_year', value: '2022' }],
+  },
+  {
+    name: 'Nominees · 2021',
+    description: 'The 2021 cohort — the first volume and its components.',
+    ghl_tag: 'SmartList: Nominees 2021',
+    rules: [{ field: 'season_year', value: '2021' }],
   },
 ];
 

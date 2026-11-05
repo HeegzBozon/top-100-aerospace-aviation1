@@ -22,9 +22,40 @@ export type AudienceRow = {
   status: 'subscribed' | 'unsubscribed';
   entry_points: string[];
   joined_at: string;
+  // Standing in the record. These are facts read off the nominee pool, never fields anyone
+  // types: a person is a nominator because they put a name forward, and an honoree because
+  // the house has printed them in a volume.
+  is_nominator: boolean;
+  in_pool: boolean;
+  season_ids: string[];
+  season_years: string[];
 };
 
 export type SegmentRule = { field: string; value: string | number };
+
+// The seasons the house has bound a volume to. Held here because "honoree" is not a
+// standing anyone can claim — it is a published appearance, and this is the list of
+// moments the house has printed. A cohort still being voted on is a nominee, never yet
+// an honoree.
+export const VOLUME_SEASONS = [
+  { id: '6a6b70136ccb7c358f77dd7f', label: 'Volume I · TOP 100 2021' },
+  { id: '696aec2d99297cdbe96ee71e', label: 'Volume I · Women 2021' },
+  { id: '6a6b699d7b16a7017ce0c3c0', label: 'Volume I · Men 2021' },
+  { id: '6a6b7954c924445e2599968d', label: 'Volume II · TOP 100 2022' },
+  { id: '6a6b756e5c6a4773130e2511', label: 'Volume II · Women 2022' },
+  { id: '6a6b77cb2f46f1f0cae76d75', label: 'Volume II · Men 2022' },
+  { id: '68a4e3ee564cf684ff502a06', label: 'Volume III · Women 2025' },
+];
+
+export const VOLUME_SEASON_IDS = VOLUME_SEASONS.map((volume) => volume.id);
+
+// A season's year, read from its own start date and falling back to the year in its name.
+export function yearOfSeason(season: any): string {
+  const start = String(season?.start_date || '');
+  if (/^\d{4}/.test(start)) return start.slice(0, 4);
+  const named = String(season?.name || '').match(/(19|20)\d{2}/);
+  return named ? named[0] : '';
+}
 
 const day = 86400000;
 
@@ -39,7 +70,14 @@ function asArray(res: unknown): any[] {
 
 // The two ledgers, folded. A member's own record is authoritative for their name and role;
 // the Dispatch ledger is authoritative for an opt-out and for where they arrived from.
-export function buildAudience(members: unknown[] = [], signups: unknown[] = []): AudienceRow[] {
+// The nominee pool is not a third ledger — it is what tells the folded rows where each
+// person stands in the record: who has nominated, who has been printed, and in which season.
+export function buildAudience(
+  members: unknown[] = [],
+  signups: unknown[] = [],
+  nominees: unknown[] = [],
+  seasons: unknown[] = [],
+): AudienceRow[] {
   const rows = new Map<string, AudienceRow>();
 
   for (const raw of asArray(members)) {
@@ -54,6 +92,10 @@ export function buildAudience(members: unknown[] = [], signups: unknown[] = []):
       status: 'subscribed',
       entry_points: [],
       joined_at: String(raw?.created_date || ''),
+      is_nominator: false,
+      in_pool: false,
+      season_ids: [],
+      season_years: [],
     });
   }
 
@@ -75,6 +117,10 @@ export function buildAudience(members: unknown[] = [], signups: unknown[] = []):
         status: unsubscribed ? 'unsubscribed' : 'subscribed',
         entry_points: entry ? [entry] : [],
         joined_at: stamp,
+        is_nominator: false,
+        in_pool: false,
+        season_ids: [],
+        season_years: [],
       });
       continue;
     }
@@ -83,6 +129,48 @@ export function buildAudience(members: unknown[] = [], signups: unknown[] = []):
     if (unsubscribed) held.status = 'unsubscribed';
     if (entry && !held.entry_points.includes(entry)) held.entry_points.push(entry);
     if (stamp && (!held.joined_at || stamp < held.joined_at)) held.joined_at = stamp;
+  }
+
+  // Standing, read off the pool. A nominator is an address that put a name forward; an
+  // appearance is every season a person's record has been bound to, whether through their
+  // current season or an archived one.
+  const yearBySeason = new Map<string, string>();
+  for (const raw of asArray(seasons)) {
+    const id = String(raw?.id || '');
+    if (id) yearBySeason.set(id, yearOfSeason(raw));
+  }
+
+  const nominators = new Set<string>();
+  const inPool = new Set<string>();
+  const appearances = new Map<string, Set<string>>();
+
+  for (const raw of asArray(nominees)) {
+    const nominator = key(raw?.nominated_by);
+    if (isValidEmail(nominator)) nominators.add(nominator);
+
+    const email = key(raw?.nominee_email);
+    if (!isValidEmail(email)) continue;
+    inPool.add(email);
+
+    const held = appearances.get(email) || new Set<string>();
+    const candidates: unknown[] = [
+      raw?.season_id,
+      ...(Array.isArray(raw?.season_ids) ? raw.season_ids : []),
+    ];
+    const archived = raw?.raw_nomination_data?.archive_appearances;
+    if (Array.isArray(archived)) for (const entry of archived) candidates.push(entry?.season_id);
+    for (const id of candidates) if (id) held.add(String(id));
+    appearances.set(email, held);
+  }
+
+  for (const row of rows.values()) {
+    const ids = Array.from(appearances.get(row.email) || []);
+    row.is_nominator = nominators.has(row.email);
+    row.in_pool = inPool.has(row.email);
+    row.season_ids = ids;
+    row.season_years = Array.from(
+      new Set(ids.map((id) => yearBySeason.get(id)).filter(Boolean) as string[]),
+    ).sort();
   }
 
   return Array.from(rows.values()).sort((a, b) => {
@@ -108,6 +196,17 @@ function matches(row: AudienceRow, rule: SegmentRule, now: number): boolean {
       return row.entry_points.includes(value);
     case 'status':
       return row.status === value;
+    // Standing in the record. 'honoree' is a published appearance, so a cohort still being
+    // voted on never answers to it; 'nominee' is anyone holding a record in the pool.
+    case 'affiliation':
+      if (value === 'nominator') return row.is_nominator;
+      if (value === 'honoree') return row.season_ids.some((id) => VOLUME_SEASON_IDS.includes(id));
+      if (value === 'nominee') return row.in_pool;
+      return true;
+    case 'season_id':
+      return row.season_ids.includes(value);
+    case 'season_year':
+      return row.season_years.includes(value);
     case 'joined_within_days': {
       const days = Number(value);
       if (!Number.isFinite(days) || days <= 0) return true;
@@ -199,5 +298,22 @@ export async function readLedgers(base44: any) {
     signupCursor = res.next_cursor;
   }
 
-  return buildAudience(members, signups);
+  // The pool and the seasons, read for standing only: they never add an address to the
+  // ledger, so nothing here can widen who the house writes to.
+  const nominees: any[] = [];
+  let nomineeCursor: string | null = null;
+  for (let page = 0; page < 25; page += 1) {
+    const res: any = await base44.asServiceRole.entities.Nominee.filter(
+      {},
+      { limit: 200, cursor: nomineeCursor },
+    );
+    nominees.push(...asArray(res));
+    if (!res?.has_more || !res?.next_cursor) break;
+    nomineeCursor = res.next_cursor;
+  }
+
+  const seasonRes: any = await base44.asServiceRole.entities.Season.list({ limit: 200 });
+  const seasons = asArray(seasonRes);
+
+  return buildAudience(members, signups, nominees, seasons);
 }
