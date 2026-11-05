@@ -5,6 +5,7 @@ import { TC } from '@/components/admin/timecard/timecardConfig';
 import TimecardSummary from '@/components/admin/timecard/TimecardSummary';
 import TimecardRow from '@/components/admin/timecard/TimecardRow';
 import TimecardComposer from '@/components/admin/timecard/TimecardComposer';
+import ShiftStrip from '@/components/admin/timecard/ShiftStrip';
 import DeskPanelBar from '@/components/admin/desk/DeskPanelBar';
 import { readPunch, writePunch, clearPunch, elapsedLabel } from '@/components/admin/timecard/clockPunch';
 
@@ -76,6 +77,15 @@ export default function TimecardDesk() {
     setComposer(null);
   };
 
+  // A clock started by mistake is taken back, not filed: the punch is cleared and no
+  // hours reach the ledger.
+  const cancelClockIn = () => {
+    if (!window.confirm('Cancel this clock-in? No hours will be filed.')) return;
+    clearPunch();
+    setPunch(null);
+    setComposer((open) => (open?.mode === 'clockout' ? null : open));
+  };
+
   const remove = async (entry) => {
     if (!window.confirm(`Delete "${entry.description}"?`)) return;
     await base44.entities.Timecard.delete(entry.id);
@@ -102,19 +112,13 @@ export default function TimecardDesk() {
     <div className="space-y-4">
       <div className="relative">
         <DeskPanelBar label="Hours & Expenses" note={`${entries.length} filed`}>
-          <button
-            onClick={load}
-            className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
-            style={{ border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }}
-          >
-            <RefreshCw className="h-3 w-3" /> Re-read
-          </button>
           {/* Three ways in, each its own workflow: the clock, the work log read from
-              elsewhere, and the receipt. Only the clock is a standing state. */}
+              elsewhere, and the receipt. Only the clock is a standing state, so it is
+              the key that carries the copper strike — and the live lamp once it runs. */}
           <button
             onClick={() => {
               if (punch) {
-                setComposer({ mode: 'clockout' });
+                setComposer((open) => (open?.mode === 'clockout' ? null : { mode: 'clockout' }));
               } else {
                 const started = { started_at: new Date().toISOString() };
                 writePunch(started);
@@ -123,31 +127,31 @@ export default function TimecardDesk() {
               }
             }}
             aria-expanded={composer?.mode === 'clockout'}
-            className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] tabular-nums"
-            style={
-              punch
-                ? { background: 'rgba(184,115,51,0.22)', border: '1px solid #b87333', color: '#f5efe4' }
-                : { background: TC.copperDeep, border: '1px solid rgba(201,168,124,0.34)', color: '#fdf8f0' }
-            }
+            className={`desk-key tabular-nums ${punch ? 'desk-key-live' : 'desk-key-primary'}`}
           >
-            <Clock className="h-3.5 w-3.5" />
+            {punch ? (
+              <span className="desk-lamp" aria-hidden="true" />
+            ) : (
+              <Clock className="h-3.5 w-3.5" />
+            )}
             {punch ? `Clock out · ${elapsedLabel(punch.started_at, now)}` : 'Clock in'}
           </button>
           <button
             onClick={() => setComposer((open) => (open?.mode === 'import' ? null : { mode: 'import' }))}
             aria-expanded={composer?.mode === 'import'}
-            className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
-            style={{ border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }}
+            className="desk-key"
           >
             <FileUp className="h-3.5 w-3.5" /> Upload a log
           </button>
           <button
             onClick={() => setComposer((open) => (open?.mode === 'expense' ? null : { mode: 'expense' }))}
             aria-expanded={composer?.mode === 'expense'}
-            className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em]"
-            style={{ border: '1px solid rgba(201,168,124,0.34)', color: '#dbe6ef' }}
+            className="desk-key"
           >
             <Receipt className="h-3.5 w-3.5" /> Expense
+          </button>
+          <button onClick={load} className="desk-key desk-key-quiet" title="Read the ledger again">
+            <RefreshCw className="h-3 w-3" /> Re-read
           </button>
         </DeskPanelBar>
 
@@ -160,13 +164,16 @@ export default function TimecardDesk() {
             onSaveEntry={save}
             onSaveImported={saveImported}
             onSaveClockOut={saveClockOut}
+            onDiscardPunch={cancelClockIn}
           />
         )}
       </div>
 
+      {punch && <ShiftStrip punch={punch} now={now} onCancel={cancelClockIn} />}
+
       <TimecardSummary entries={entries} />
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5">
         {[
           ['all', 'All'],
           ['time', 'Hours'],
@@ -176,14 +183,11 @@ export default function TimecardDesk() {
           <button
             key={key}
             onClick={() => setFilter(key)}
-            className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider"
-            style={
-              filter === key
-                ? { background: TC.copperDeep, color: '#fdf8f0' }
-                : { background: 'transparent', color: TC.soft, border: `1px solid ${TC.line}` }
-            }
+            aria-pressed={filter === key}
+            className={`desk-key ${filter === key ? 'desk-key-primary' : ''}`}
           >
-            {label} <span className="tabular-nums opacity-70">{counts[key]}</span>
+            {label}
+            <span className="tabular-nums opacity-70">{counts[key]}</span>
           </button>
         ))}
       </div>

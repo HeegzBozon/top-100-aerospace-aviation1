@@ -2104,3 +2104,97 @@ body.hh-landscape .hh-viewer-foot {
     animation: none;
   }
 }
+
+/* ===== THE DESK'S KEYS =====
+   The actions a house desk is worked with, moulded as one family: a quiet plate for
+   everything that is merely possible, a copper strike for the one that moves the desk
+   forward, and a bare key for the one that undoes something. Nothing here is a link in
+   a box — each key carries a hard 1px edge and a single line of light along its top,
+   so a row of them reads as the controls of an instrument. */
+.desk-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  padding: 7px 11px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #dbe6ef;
+  background: linear-gradient(180deg, rgba(250, 248, 245, 0.075) 0%, rgba(250, 248, 245, 0.025) 100%);
+  border: 1px solid rgb(var(--editorial-gold-rgb) / 0.30);
+  box-shadow:
+    inset 0 1px 0 rgba(250, 248, 245, 0.10),
+    0 1px 2px rgba(3, 8, 15, 0.45);
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+.desk-key:hover {
+  background: linear-gradient(180deg, rgba(250, 248, 245, 0.13) 0%, rgba(250, 248, 245, 0.05) 100%);
+  border-color: rgb(var(--editorial-gold-rgb) / 0.55);
+  color: #f5efe4;
+}
+.desk-key:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(var(--editorial-gold-rgb) / 0.75);
+}
+
+/* The one key that moves the desk forward: struck in copper. */
+.desk-key-primary {
+  color: #fdf8f0;
+  background: linear-gradient(180deg, #a4682f 0%, #8f5c2c 100%);
+  border-color: rgb(var(--editorial-gold-rgb) / 0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 2px 6px -2px rgba(3, 8, 15, 0.72);
+}
+.desk-key-primary:hover {
+  background: linear-gradient(180deg, #b0702f 0%, #9a632e 100%);
+  color: #fffdf9;
+}
+
+/* A standing state: the shift the clock is holding. Copper, and lit. */
+.desk-key-live {
+  color: #fdf8f0;
+  background: linear-gradient(180deg, rgba(184, 115, 51, 0.46) 0%, rgba(143, 92, 44, 0.42) 100%);
+  border-color: #b87333;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1px rgba(184, 115, 51, 0.24),
+    0 2px 8px -3px rgba(184, 115, 51, 0.65);
+}
+
+/* The key that takes something back. Bare, until it is reached for. */
+.desk-key-quiet {
+  color: #a3b8c9;
+  background: transparent;
+  border-color: rgba(250, 248, 245, 0.14);
+  box-shadow: none;
+}
+.desk-key-quiet:hover {
+  color: #f2a1a1;
+  border-color: rgba(242, 161, 161, 0.48);
+  background: rgba(242, 161, 161, 0.08);
+}
+
+/* The lamp on a running shift: lit from behind, breathing. */
+.desk-lamp {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #7ec89a;
+  box-shadow: 0 0 7px rgba(126, 200, 154, 0.9);
+  animation: desk-lamp 2.6s ease-in-out infinite;
+}
+@keyframes desk-lamp {
+  0%, 100% { opacity: 1; box-shadow: 0 0 7px rgba(126, 200, 154, 0.9); }
+  50% { opacity: 0.42; box-shadow: 0 0 2px rgba(126, 200, 154, 0.34); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desk-lamp { animation: none; }
+  .desk-key { transition: none; }
+}

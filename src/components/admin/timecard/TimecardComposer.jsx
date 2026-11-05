@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FileUp, PenLine } from 'lucide-react';
+import { FileUp, PenLine, X } from 'lucide-react';
 import { TC } from '@/components/admin/timecard/timecardConfig';
 import WorklogImport from '@/components/admin/timecard/WorklogImport';
 import WorklogReview from '@/components/admin/timecard/WorklogReview';
@@ -23,6 +23,7 @@ export default function TimecardComposer({
   onSaveEntry,
   onSaveImported,
   onSaveClockOut,
+  onDiscardPunch,
 }) {
   const editing = !!entry?.id;
   const [view, setView] = useState(() => {
@@ -62,6 +63,20 @@ export default function TimecardComposer({
           className="desk-plate max-h-[calc(100dvh-11rem)] overflow-y-auto p-3.5"
           style={{ boxShadow: '0 26px 60px -22px rgba(3,8,15,0.92), inset 0 0 0 1px rgba(184,115,51,0.45)' }}
         >
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: TC.gold }}>
+              {label}
+            </p>
+            <button
+              type="button"
+              onClick={onClose}
+              className="desk-key desk-key-quiet"
+              title="Put the sheet away"
+            >
+              <X className="h-3 w-3" /> Close
+            </button>
+          </div>
+
           {!editing && !['review', 'clockout', 'expense'].includes(view) && (
             <div className="mb-3 flex items-center gap-1.5">
               {TABS.map(([key, tabLabel, Glyph]) => (
@@ -86,7 +101,12 @@ export default function TimecardComposer({
           {view === 'review' && parsed ? (
             <WorklogReview bare initial={parsed} duplicate={duplicate} onCancel={onClose} onSave={onSaveImported} />
           ) : view === 'clockout' ? (
-            <ClockOutForm punch={punch} onCancel={onClose} onSave={onSaveClockOut} />
+            <ClockOutForm
+              punch={punch}
+              onCancel={onClose}
+              onSave={onSaveClockOut}
+              onDiscard={onDiscardPunch}
+            />
           ) : view === 'import' ? (
             <WorklogImport
               bare

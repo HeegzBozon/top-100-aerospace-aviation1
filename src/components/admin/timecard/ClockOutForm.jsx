@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, Trash2 } from 'lucide-react';
 import { TC, CATEGORIES, STATUSES } from '@/components/admin/timecard/timecardConfig';
 import RoomsWorkedField from '@/components/admin/timecard/RoomsWorkedField';
 import { punchSession, clockLabel, durationLabel } from '@/components/admin/timecard/clockPunch';
@@ -9,7 +9,7 @@ const fieldStyle = { background: '#0e141b', border: `1px solid ${TC.line}`, colo
 
 // Closing a shift. The punch already knows when the work began and ended, so the sheet
 // only asks what the hours were for — then files the session with its own clock times.
-export default function ClockOutForm({ punch, onCancel, onSave }) {
+export default function ClockOutForm({ punch, onCancel, onSave, onDiscard }) {
   // The moment the sheet opened is the moment the shift closed.
   const [finishedAt] = useState(() => new Date());
   const session = punchSession(punch, finishedAt);
@@ -191,6 +191,16 @@ export default function ClockOutForm({ punch, onCancel, onSave }) {
         >
           Stay clocked in
         </button>
+        {onDiscard && (
+          <button
+            type="button"
+            onClick={onDiscard}
+            className="desk-key desk-key-quiet ml-auto"
+            title="Scrap this shift without filing any hours"
+          >
+            <Trash2 className="h-3 w-3" /> Scrap the shift
+          </button>
+        )}
       </div>
     </form>
   );
