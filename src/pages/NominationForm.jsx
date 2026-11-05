@@ -141,6 +141,14 @@ export default function NominationForm({ isPreview = false } = {}) {
     base44.analytics.track({ eventName, properties });
   };
 
+  // The head of the funnel: the hub was opened. Paired with
+  // nomination_hub_submit_completed below, this is what turns "14 a month" into a
+  // start-to-finish rate instead of a single number.
+  useEffect(() => {
+    trackHubEvent('nomination_hub_opened', { preview: !!isPreview });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const goTo = (s) => {
     trackHubEvent('nomination_hub_stage_viewed', { stage: s });
     setStage(s);

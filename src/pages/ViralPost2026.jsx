@@ -135,7 +135,7 @@ export default function ViralPost2026() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {posts.map((p) => {
+            {posts.map((p, index) => {
               const byline = [p.nominee_title, p.nominee_company]
                 .filter((v) => v && v.toLowerCase() !== 'not found' && v.toLowerCase() !== 'n/a')
                 .join(' · ');
@@ -145,6 +145,10 @@ export default function ViralPost2026() {
                 <Link
                   key={p.slug}
                   to={`/viralpost2026/featured/${p.slug}`}
+                  onClick={() => base44.analytics.track({
+                    eventName: 'viralpost2026_featured_opened',
+                    properties: { slug: p.slug, position: index + 1 },
+                  })}
                   className="group bg-white rounded-2xl overflow-hidden border flex flex-col transition-all hover:shadow-lg"
                   style={{ borderColor: 'rgba(30,58,90,0.14)' }}
                 >

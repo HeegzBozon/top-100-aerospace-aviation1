@@ -3,6 +3,7 @@ import PublicationSectionBoundary from '@/components/publication/PublicationSect
 import PublicationLoading from '@/components/publication/PublicationLoading';
 import PublicationUnavailable from '@/components/publication/PublicationUnavailable';
 import useTop100WomenNominees, { resetEditionCache } from '@/components/publication/useTop100WomenNominees';
+import useDirectorySeo from '@/components/publication/useDirectorySeo';
 
 // Standalone publication route — same body as the HomeV3 front door.
 // Kept as a distinct crawlable entry point for SEO / deep-linking. It carries its own
@@ -10,6 +11,9 @@ import useTop100WomenNominees, { resetEditionCache } from '@/components/publicat
 // straight into the device shells — instead of through the legacy comms layout.
 export default function Top100Women2025() {
   const { nominees, loading, error } = useTop100WomenNominees();
+  // The list states itself: its own title, description, canonical, and the
+  // CollectionPage + ItemList that names the Fellows it holds.
+  useDirectorySeo(nominees);
 
   const reloadEdition = () => {
     resetEditionCache();
