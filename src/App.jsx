@@ -60,6 +60,7 @@ const LocalLegends = lazy(() => import('@/pages/LocalLegends'));
 const LocalLegendsPro = lazy(() => import('@/pages/LocalLegendsPro'));
 const LocalLegendsApply = lazy(() => import('@/pages/LocalLegendsApply'));
 const NominationForm = lazy(() => import('@/pages/NominationForm'));
+const Vote = lazy(() => import('@/pages/Vote'));
 const Hangouts = lazy(() => import('@/pages/Hangouts'));
 const Vision2030 = lazy(() => import('@/pages/Vision2030'));
 const FlightSimulator = lazy(() => import('@/pages/FlightSimulator'));
@@ -302,6 +303,9 @@ const AuthenticatedApp = () => {
       <Route path="/local-legends/apply" element={<LocalLegendsApply />} />
       <Route path="/selection-committee" element={<NominationForm />} />
       <Route path="/nominate" element={<Navigate to="/selection-committee" replace />} />
+      {/* The one address the ballot is promoted by. A Fellow lands on the weighing
+          itself; a visitor is given the invitation and comes back here once signed in. */}
+      <Route path="/vote" element={<Vote />} />
       <Route path="/hangouts" element={<Hangouts />} />
       <Route path="/moon-joy" element={<Hangouts />} />
       <Route path="/2030-vision" element={<Vision2030 />} />
