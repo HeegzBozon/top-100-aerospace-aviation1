@@ -304,6 +304,19 @@
   outline-offset: 2px;
 }
 
+/* A surface that has to hold its whole set in the picture asks the tube for its height.
+   The tube becomes a column — the menu bar standing at its head, the surface taking what
+   is left — so the plate is measured against the glass rather than against its own
+   contents, and nothing in it can be pushed under the fold by a taller neighbour. */
+.imac-screen:has(> [data-tube-fill]) {
+  display: flex;
+  flex-direction: column;
+}
+.imac-screen > [data-tube-fill] {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 /* The glass over the picture: one soft sheen, and the tube's own vignette. */
 .imac-glass {
   position: absolute;

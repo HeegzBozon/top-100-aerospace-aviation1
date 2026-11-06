@@ -16,6 +16,9 @@ const FEED_SETS = 6;
 const COMPARISONS_PER_REVIEW = 7;
 const SIGNAL_RUNGS = [10, 25, 50, 100, 250];
 
+// A count is a number; a page is an object. Read either without asking which was sent.
+const asCount = (value) => (typeof value === 'number' ? value : value?.count || 0);
+
 // A set is seven rows written in one call, so they share a voter and arrive together.
 function groupSets(rows) {
   const ordered = [...rows].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
@@ -78,7 +81,10 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0) {
     if (!seasonId) return;
     try {
       const since = new Date(Date.now() - PACE_WINDOW_MIN * 60000).toISOString();
-      const [tallies, recent, pace] = await Promise.all([
+      // How much of the field has been weighed at least once, and the comparisons an
+      // administrator's own test runs have written: the first sets the reading's own
+      // coverage line, the second is held out of every figure above it.
+      const [tallies, recent, pace, weighed, tests] = await Promise.all([
         base44.entities.PairwiseVote.aggregate({
           query: { season_id: seasonId, is_test: false },
           groupBy: 'voter_email',
@@ -92,6 +98,8 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0) {
           is_test: false,
           created_date: { $gte: since },
         }),
+        base44.entities.Nominee.count({ pairwise_appearance_count: { $gt: 0 } }),
+        base44.entities.PairwiseVote.count({ season_id: seasonId, is_test: true }),
       ]);
 
       const voterRows = tallies?.rows || [];
@@ -120,7 +128,9 @@ export default function useLiveBallotFeed(seasonId, refreshToken = 0) {
         comparisons,
         reviews,
         rungs,
-        recentComparisons: typeof pace === 'number' ? pace : pace?.count || 0,
+        weighedOnce: asCount(weighed),
+        testComparisons: asCount(tests),
+        recentComparisons: asCount(pace),
         feed: feed.map((set) => ({
           ...set,
           top_name: names[set.top] || null,

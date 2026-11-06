@@ -47,7 +47,7 @@ function drawSet(pool, exclude = []) {
   return shuffle(src).slice(0, 4);
 }
 
-export default function AnchorVoting({ user, activeSeason: resolvedSeason = null, onRecorded = null, progress = null }) {
+export default function AnchorVoting({ user, activeSeason: resolvedSeason = null, onRecorded = null, progress = null, onPoolSize = null }) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [pool, setPool] = useState([]);
@@ -147,6 +147,9 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         setNomineeIndex(new Map(raw.map((n) => [n.id, n])));
         setSeason(activeSeason);
         setPool(prepared);
+        // The field this ballot is drawing from, handed up so the operator's monitor sets
+        // its marks against the same pool the cards come out of.
+        onPoolSize?.(prepared.length);
         if (prepared.length >= 4) setCurrentSet(drawSet(prepared, []));
         // Anything the Fellow set aside, newest first. A hold is a convenience queue, so a
         // read that fails never stops the ballot opening.

@@ -55,6 +55,9 @@ export default function VoteSurface({ user }) {
   // Bumped when a set is recorded here, so the monitor beside the ballot redraws at once
   // rather than waiting for its next poll.
   const [feedToken, setFeedToken] = useState(0);
+  // The field the ballot is drawing from, as the ballot itself counted it: the monitor
+  // sets its marks against this pool, so the scale and the cards can never disagree.
+  const [poolSize, setPoolSize] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -211,7 +214,11 @@ export default function VoteSurface({ user }) {
     // charcoal, so a surface that paints no ground of its own hands the committee's navy
     // type a near-black field to sit on — the masthead, the ladder and the keys all but
     // disappear. The plate is cream, exactly as the invitation behind this door is.
+    // The plate is cut to the tube on a desk: it takes exactly the height the glass gives
+    // it and hands that height to the set, so the four cards are measured against the
+    // picture rather than against their own contents and never fall below the fold.
     <div
+      data-tube-fill=""
       className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden"
       style={{ background: brand.cream }}
     >
@@ -224,15 +231,18 @@ export default function VoteSurface({ user }) {
             activeSeason={target}
             onRecorded={onRecorded}
             progress={context.progress}
+            onPoolSize={setPoolSize}
           />
         </div>
 
         {(context.progress || isAdmin) && (
-          <aside className="hidden shrink-0 flex-col gap-3 lg:flex lg:w-[290px] lg:overflow-y-auto lg:pb-6">
+          <aside className="hidden shrink-0 flex-col gap-3 lg:flex lg:w-[320px] lg:overflow-y-auto lg:pb-6">
             {/* The operator watches the field while it is being weighed. A set cast by an
                 admin is a test of the flow, so the monitor stands on its own rather than
                 beside a ladder that does not move. */}
-            {isAdmin && <LiveBallotFeed seasonId={target.id} refreshToken={feedToken} />}
+            {isAdmin && (
+              <LiveBallotFeed seasonId={target.id} refreshToken={feedToken} pool={poolSize} />
+            )}
             {context.progress && <VotingProgressPanel progress={context.progress} />}
           </aside>
         )}
