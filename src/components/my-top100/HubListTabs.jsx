@@ -15,7 +15,10 @@ export default function HubListTabs({ activeTab, onTabChange, nominationCount = 
   return (
     <div className="sticky top-0 z-30 border-b border-editorial-navy/12 bg-editorial-cream/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-7xl items-end justify-between gap-4 px-4 lg:px-6">
-        <div className="flex items-end gap-6 overflow-x-auto scrollbar-hide">
+        {/* The strip scrolls sideways only when the three keys cannot sit side by side, so
+            it is clipped — never scrolled — in the other axis: a scroll container here used
+            to print a bar across the labels the moment a key overhung its edge by a pixel. */}
+        <div className="flex min-w-0 items-end gap-6 overflow-x-auto overflow-y-hidden scrollbar-hide">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.key;
             return (
@@ -24,10 +27,10 @@ export default function HubListTabs({ activeTab, onTabChange, nominationCount = 
                 type="button"
                 onClick={() => onTabChange(tab.key)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`-mb-px shrink-0 border-b-2 pb-2.5 pt-3 font-body text-[10.5px] font-bold uppercase tracking-[0.18em] transition-colors ${
+                className={`relative shrink-0 pb-2.5 pt-3 font-body text-[10.5px] font-bold uppercase tracking-[0.18em] transition-colors ${
                   isActive
-                    ? 'border-editorial-copper text-editorial-navy'
-                    : 'border-transparent text-editorial-navy/45 hover:text-editorial-navy/80'
+                    ? 'text-editorial-navy'
+                    : 'text-editorial-navy/45 hover:text-editorial-navy/80'
                 }`}
               >
                 {tab.label}
@@ -36,6 +39,12 @@ export default function HubListTabs({ activeTab, onTabChange, nominationCount = 
                     {tab.count}
                     {tab.of ? ` / ${tab.of}` : ''}
                   </span>
+                )}
+                {isActive && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 bottom-0 h-[2px] bg-editorial-copper"
+                  />
                 )}
               </button>
             );
