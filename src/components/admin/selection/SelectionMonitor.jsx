@@ -7,6 +7,7 @@ import useMonitorEditMenu from './useMonitorEditMenu';
 import MonitorStats from './MonitorStats';
 import ReadingSwitch from './ReadingSwitch';
 import SignalProgress from './SignalProgress';
+import LivePresence from './LivePresence';
 import PulseBand from './PulseBand';
 import CohortDive from './CohortDive';
 import StandingsBoard from './StandingsBoard';
@@ -143,9 +144,15 @@ export default function SelectionMonitor({ onOpenMenu }) {
         />
       </div>
 
+      {/* Who is on the wire this minute: the site's live readers, and the campus floor.
+          Sits under the counts — the audience is context, never the instrument. */}
+      <div className="order-4 md:order-none">
+        <LivePresence />
+      </div>
+
       {/* Two readings of the same room: where the field stands, and what has just landed
           in it. */}
-      <Tabs defaultValue="standings" className="order-4 md:order-none">
+      <Tabs defaultValue="standings" className="order-5 md:order-none">
         <TabsList className="grid h-auto w-full grid-cols-2 gap-0.5 bg-editorial-cream p-0.5 md:inline-flex md:h-10 md:w-auto md:gap-1 md:p-1">
           <TabsTrigger value="standings" className="px-2 text-[11px] md:px-4 md:text-sm">
             Standings
