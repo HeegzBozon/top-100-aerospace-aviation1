@@ -54,8 +54,8 @@ export default function usePatronMeta({ title, description, path, noindex = fals
 
       add('meta', { property: 'og:type', content: 'website' });
       add('meta', { property: 'og:url', content: canonical });
-      add('meta', { property: 'og:title', content: title });
-      add('meta', { property: 'og:description', content: description });
+      add('meta', { property: 'og:title', content: shareTitle });
+      add('meta', { property: 'og:description', content: shareDesc });
       add('meta', { property: 'og:site_name', content: SHARE_SITE_NAME });
       add('meta', { property: 'og:locale', content: 'en_US' });
       add('meta', { property: 'og:image', content: image });
@@ -66,7 +66,7 @@ export default function usePatronMeta({ title, description, path, noindex = fals
 
       add('meta', { name: 'twitter:card', content: 'summary_large_image' });
       add('meta', { name: 'twitter:site', content: SHARE_TWITTER_SITE });
-      add('meta', { name: 'twitter:title', content: title });
+      add('meta', { name: 'twitter:title', content: shareTitle });
       add('meta', { name: 'twitter:description', content: SHARE_TWITTER_DESCRIPTION });
       add('meta', { name: 'twitter:image', content: image });
       add('meta', { name: 'twitter:image:alt', content: SHARE_IMAGE_ALT });

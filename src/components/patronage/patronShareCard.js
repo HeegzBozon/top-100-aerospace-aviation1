@@ -9,19 +9,18 @@
 // list, not a count of verified Fellows.
 export const SHARE_ORIGIN = 'https://top100aero.space';
 
-export const SHARE_TITLE = 'TOP 100 Aerospace & Aviation — Patronage & 2026 Media Kit';
+export const SHARE_TITLE = 'TOP 100 Aerospace & Aviation Professionals — 2026 Media Kit';
 
 export const SHARE_DESCRIPTION =
-  'Attribution, never placement. A direct line to 6,400+ aerospace subscribers — defense investors, founders and senior engineering leaders.';
+  'Stand beside the leaders shaping the future of flight. Direct access to 6,400+ verified aerospace decision-makers & engineering fellows.';
 
-export const SHARE_TWITTER_DESCRIPTION =
-  'Attribution, never placement. Verified audience metrics, the rate card, and the governance firewall.';
+export const SHARE_TWITTER_DESCRIPTION = SHARE_DESCRIPTION;
 
 export const SHARE_IMAGE_PATH = '/og-patronage-media-kit.png';
 export const SHARE_IMAGE_WIDTH = 1200;
 export const SHARE_IMAGE_HEIGHT = 630;
 export const SHARE_IMAGE_ALT =
-  'TOP 100 Aerospace & Aviation Patronage & Media Kit executive preview';
+  'Top 100 Aerospace & Aviation 2026 Media Kit: an aerospace executive and the invitation to stand beside the leaders shaping the future of flight';
 
 export const SHARE_SITE_NAME = 'TOP 100 Aerospace & Aviation';
 export const SHARE_TWITTER_SITE = '@top100aero';
