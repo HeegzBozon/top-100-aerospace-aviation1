@@ -18,7 +18,7 @@ export const CROSSCHECK_LINE =
 
 // What the Crosscheck is, said plainly: the smallest form of a ranked-choice ballot.
 export const CROSSCHECK_IS =
-  'A mini ranked-choice ballot — four records, one order, every set a complete ballot.';
+  'A mini ranked-choice ballot — four records, one order, every review a complete ballot.';
 
 // How a set is taken: three taps, and the fourth record places itself. The verb is "put in
 // order", never "rank": the instrument orders, the house measures, and nobody ranks a
@@ -58,7 +58,7 @@ export const ANALYST_DUTIES = [
   {
     key: 'measure',
     label: 'Measure',
-    line: 'Take up the Crosscheck. Four records at a time, put in order — the comparison is the finding, and every set is kept.',
+    line: 'Take up the Crosscheck. Four records at a time, put in order — the comparison is the finding, and every review is kept.',
   },
   {
     key: 'carry',

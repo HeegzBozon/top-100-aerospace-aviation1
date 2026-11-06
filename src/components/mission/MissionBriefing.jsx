@@ -57,7 +57,7 @@ const BRIEFINGS = [
     objective: 'Analyse the field.',
     body:
       'You serve this season as an Analyst. Voting is analysis: a mini ranked-choice ballot, four records deep. They arrive together, assigned by the house — you do not choose who you compare. Put all four in order: the one that leads, then the next, then the next, and the fourth places itself. Every set you finish is a complete ballot. A record you cannot judge closes the set; nothing is scored from a set that is not complete.',
-    results: ['1 set analysed', '10 sets analysed', '20 sets analysed', '50 sets analysed', '100 sets analysed'],
+    results: ['10 reviews analysed', '25 reviews analysed', '50 reviews analysed', '100 reviews analysed', '250 reviews analysed'],
     // The measure itself. It stands above the cards on the desk; on the glass those
     // words live here, where the info key reaches them, rather than in a line of tiny
     // print laid over the set.

@@ -11,23 +11,26 @@
 export const XP_PER_SET = 10;
 export const XP_PER_BALLOT = 25;
 
-// The ladder. Thresholds are cumulative xp.
+// The ladder. Thresholds are cumulative xp, counted in whole reviews: one review of four
+// records is ten xp, so a rung is reached at a round number of reviews.
 //
-// Taking the first set up confers the office: an Analyst is what the ballot makes of
+// Taking the first review up confers the office: an Analyst is what the ballot makes of
 // whoever serves it, not something climbed into. The rungs above it name the experience
-// that accumulates behind the office.
+// that accumulates behind the office — Senior Analyst at fifty reviews, Lead at a hundred
+// and fifty, and so on up the house.
 export const LEVELS = [
   { level: 1, name: 'Analyst', at: 0 },
-  { level: 2, name: 'Senior Analyst', at: 60 },
-  { level: 3, name: 'Lead Analyst', at: 160 },
-  { level: 4, name: 'Principal Analyst', at: 340 },
-  { level: 5, name: 'Committee Member', at: 640 },
-  { level: 6, name: 'Committee Chair', at: 1100 },
-  { level: 7, name: 'Fellow of the Committee', at: 1800 },
+  { level: 2, name: 'Senior Analyst', at: 500 },
+  { level: 3, name: 'Lead Analyst', at: 1500 },
+  { level: 4, name: 'Principal Analyst', at: 3000 },
+  { level: 5, name: 'Committee Member', at: 5000 },
+  { level: 6, name: 'Committee Chair', at: 8000 },
+  { level: 7, name: 'Fellow of the Committee', at: 12000 },
 ];
 
-// Sets-completed milestones, and the ballot milestone.
-export const SET_MILESTONES = [1, 5, 15, 30, 60, 100];
+// Reviews-completed milestones, and the ballot milestone. The keys keep their original
+// prefix so a record already on the ladder is read as it was written.
+export const SET_MILESTONES = [1, 10, 25, 50, 100, 250];
 export const BALLOT_MILESTONE = 'ballot_saved';
 
 export function levelFor(xp) {
@@ -61,7 +64,7 @@ export function milestonesFor(setsCompleted, ballotsSaved) {
 
 // Every milestone the ladder defines, so a surface can draw the ones still ahead.
 export const ALL_MILESTONES = [
-  ...SET_MILESTONES.map((n) => ({ key: `sets_${n}`, sets: n, label: `${n} set${n === 1 ? '' : 's'}` })),
+  ...SET_MILESTONES.map((n) => ({ key: `sets_${n}`, sets: n, label: `${n} review${n === 1 ? '' : 's'}` })),
   { key: BALLOT_MILESTONE, sets: null, label: 'Ballot submitted' },
 ];
 

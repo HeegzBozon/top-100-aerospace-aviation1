@@ -25,6 +25,10 @@ import MissionBriefing from '@/components/mission/MissionBriefing';
 // standing, so the share moves to the ring's play zone for as long as the keys are held.
 const VOTE_KEYS = ['X', 'Y', 'A', 'B'];
 
+// One review is ten XP on the ladder (see base44/shared/votingProgress.ts). Held here so
+// the tally can say how many reviews stand between a Fellow and the next rung.
+const XP_PER_REVIEW = 10;
+
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -41,7 +45,7 @@ function drawSet(pool, exclude = []) {
   return shuffle(src).slice(0, 4);
 }
 
-export default function AnchorVoting({ user, activeSeason: resolvedSeason = null, onRecorded = null }) {
+export default function AnchorVoting({ user, activeSeason: resolvedSeason = null, onRecorded = null, progress = null }) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [pool, setPool] = useState([]);
@@ -67,6 +71,14 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // committee — this surface only offers it again from the info key beside the prompt.
   // One key, one panel: the info button IS the briefing, and it carries the vote alone.
   const [guideOpen, setGuideOpen] = useState(false);
+
+  // The record, not the session: what the Fellow has already weighed is read back from the
+  // ladder the house keeps, so closing the tab no longer loses the count. The session's own
+  // tally is only a fallback for a context that could not report one.
+  const reviews = progress?.sets_completed ?? sessionCount;
+  const nextRung = progress?.next_name
+    ? `${Math.ceil((progress.to_next || 0) / XP_PER_REVIEW)} to ${progress.next_name}`
+    : null;
 
   // Load active season + nominee pool once.
   useEffect(() => {
@@ -205,14 +217,16 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
       // Non-blocking rewards, mirroring the other ballot.
       Promise.all([awardStardust({ action_type: 'vote' }), progressQuest({ action: 'anchor_vote' })]).catch(() => {});
 
-      onRecorded?.(res.data.progress);
+      // The whole receipt, not just its rung: the surface needs `recorded`, the level-up
+      // and any fresh milestone as well as the progress itself.
+      onRecorded?.(res.data);
 
       setPhase('success');
       setTimeout(() => advance({ set: currentSet, order: ordered }), 900);
     } catch (e) {
       toast({
         variant: 'destructive',
-        title: 'Set not recorded',
+        title: 'Review not recorded',
         description: e?.response?.data?.error || e.message,
       });
       setOrder(next.slice(0, -1));
@@ -278,32 +292,44 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // cards' information doors are the next four keys — 5 opens the first card's file, 6
   // the second's, and so on. The console takes the press before the pad can tune or walk,
   // exactly as it does for X, Y, A and B on the wheel.
+  //
+  // The claim is held for as long as a review is standing, the file it opens included:
+  // while a candidate's file is up the pad belongs to the reader, so the press is taken
+  // and does nothing rather than falling through to the console's own numbers and moving
+  // the menu off the card being read.
+  //
+  // The handler is kept in a ref and re-pointed on every render, exactly as the face keys
+  // are: the mark it makes reads the order as it now stands. Registered once per standing
+  // review instead, it held the order from the render it was made in — so every press
+  // re-placed the first choice and no review could ever reach its third tap.
+  const digitKeys = useRef(null);
+  digitKeys.current =
+    radio && phase === 'ordering' && currentSet.length === 4
+      ? (digit) => {
+          if (reading) return true;
+          const n = Number(digit);
+          const count = currentSet.length;
+          const info = n > count;
+          const i = info ? n - count - 1 : n - 1;
+          const nominee = currentSet[i];
+          if (!(i >= 0 && i < count) || !nominee) return false;
+          // The ring lands on the card the digit names, so # and the centre key act on it
+          // rather than on the first card of the review.
+          landOn(i);
+          if (info) {
+            setPanelNominee(nominee);
+            setPanelToken(String.fromCharCode(65 + i));
+          } else {
+            handleSelect(nominee);
+          }
+          return true;
+        }
+      : null;
+
   useEffect(() => {
-    // The claim is held for as long as a set is standing, the file it opens included:
-    // while a candidate's file is up the pad belongs to the reader, so the press is
-    // taken and does nothing rather than falling through to the console's own numbers
-    // and moving the menu off the card being read.
-    if (!radio || phase !== 'ordering' || currentSet.length !== 4) return undefined;
-    return registerDigits((digit) => {
-      if (reading) return true;
-      const n = Number(digit);
-      const count = currentSet.length;
-      const info = n > count;
-      const i = info ? n - count - 1 : n - 1;
-      const nominee = currentSet[i];
-      if (!(i >= 0 && i < count) || !nominee) return false;
-      // The ring lands on the card the digit names, so # and the centre key act on it
-      // rather than on the first card of the set.
-      landOn(i);
-      if (info) {
-        setPanelNominee(nominee);
-        setPanelToken(String.fromCharCode(65 + i));
-      } else {
-        handleSelect(nominee);
-      }
-      return true;
-    });
-  }, [radio, phase, currentSet, reading, landOn]);
+    if (!digitKeys.current) return undefined;
+    return registerDigits((digit) => (digitKeys.current ? digitKeys.current(digit) : false));
+  }, [radio, phase, currentSet, reading]);
 
   // The desk's own keyboard answers the same way: X, Y, A and B vote for the four
   // faces exactly as the console's keys do, so the legends printed on the cards hold
@@ -360,10 +386,10 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
 
   const prompt =
     phase === 'ordering' ? CROSSCHECK_PROMPTS[Math.min(order.length, 2)] :
-    phase === 'submitting' ? 'Recording the set…' :
-    phase === 'success' ? 'Set recorded.' :
-    phase === 'closed' ? 'Set closed · not recorded' :
-    phase === 'review' ? 'Reviewing your last set.' :
+    phase === 'submitting' ? 'Recording the review…' :
+    phase === 'success' ? 'Review recorded.' :
+    phase === 'closed' ? 'Review closed · not recorded' :
+    phase === 'review' ? 'Reading back your last review.' :
     CROSSCHECK_PROMPTS[0];
 
   // Undo, review and resume are offered only when they mean something, and they are the
@@ -435,12 +461,24 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             >
               <Info className="h-3 w-3" />
             </button>
-            <span
-              className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-[9.5px] font-semibold tabular-nums md:px-2.5 md:py-1 md:text-[10px]"
-              style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
-            >
-              {sessionCount} sets
-            </span>
+            {/* The tally, read from the record rather than from this sitting, and under it
+                the rung it is carrying the Fellow towards. */}
+            <div className="ml-auto flex shrink-0 flex-col items-end leading-none">
+              <span
+                className="rounded-full px-2 py-0.5 text-[9.5px] font-semibold tabular-nums md:px-2.5 md:py-1 md:text-[10px]"
+                style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
+              >
+                {reviews} {reviews === 1 ? 'review' : 'reviews'}
+              </span>
+              {nextRung && (
+                <span
+                  className="mt-1 text-[8.5px] font-semibold uppercase tracking-[0.12em] tabular-nums md:text-[9px]"
+                  style={{ color: `${brand.navy}50` }}
+                >
+                  {nextRung}
+                </span>
+              )}
+            </div>
           </motion.div>
         </AnimatePresence>
 
@@ -474,7 +512,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           )}
           {history.length > 0 && phase === 'ordering' && (
             <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
-              <ArrowLeft className="w-3.5 h-3.5" /> Review last set
+              <ArrowLeft className="w-3.5 h-3.5" /> Last review
             </button>
           )}
           {phase === 'review' && (
@@ -522,7 +560,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
               className="mx-auto mt-2 flex items-center justify-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-bold md:mt-5 md:text-xs"
               style={{ background: `${brand.gold}18`, border: `1px solid ${brand.gold}55`, color: brand.navy }}
             >
-              <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> Set recorded · 5 comparisons
+              <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> Review recorded · 7 comparisons
             </motion.div>
           )}
         </AnimatePresence>

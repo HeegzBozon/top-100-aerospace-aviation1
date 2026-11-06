@@ -14,7 +14,7 @@ export default function VotingProgressPanel({ progress, compact = false }) {
   const ladder = progress.ladder || [];
 
   const figures = [
-    { label: 'Sets', value: progress.sets_completed || 0 },
+    { label: 'Reviews', value: progress.sets_completed || 0 },
     { label: 'Ballots', value: progress.ballots_saved || 0 },
     { label: 'Comparisons', value: progress.comparisons_recorded || 0 },
   ];

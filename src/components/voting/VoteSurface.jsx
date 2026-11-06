@@ -94,6 +94,15 @@ export default function VoteSurface({ user }) {
             }
           : prev
       );
+      // The receipt counts this cohort; the panel reads every cohort the Fellow has served
+      // in. So the ladder is re-read once, quietly, rather than being patched with a figure
+      // that would step backwards for anyone with earlier seasons behind them.
+      base44.functions
+        .invoke('getVotingContext', {})
+        .then((res) => {
+          if (res?.data?.success) setContext(res.data);
+        })
+        .catch(() => {});
       if (result.leveled_up) {
         toast({ title: `Level ${result.progress?.level}`, description: result.progress?.name });
       }
@@ -185,7 +194,12 @@ export default function VoteSurface({ user }) {
     <div className="flex flex-1 flex-col overflow-y-auto lg:overflow-hidden">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 pt-2 md:px-5 lg:flex-1 lg:flex-row lg:items-start lg:gap-6 lg:pt-5">
         <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:h-full">
-          <AnchorVoting user={user} activeSeason={target} onRecorded={onRecorded} />
+          <AnchorVoting
+            user={user}
+            activeSeason={target}
+            onRecorded={onRecorded}
+            progress={context.progress}
+          />
         </div>
 
         {(context.progress || isAdmin) && (
