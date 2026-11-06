@@ -104,8 +104,15 @@ export default function PatronRateCard() {
                       {slot.issue_date ? day(slot.issue_date) : slot.rate_note}
                     </span>
 
+                    {/* The note already carries the inventory row in the column before this
+                        one when the slot has no date of its own; printing it again here
+                        made every 2027 row read as the same sentence twice. */}
                     <span className="text-[11px]" style={{ color: P.muted }}>
-                      {slot.ad_close_date ? `Closes ${day(slot.ad_close_date)}` : slot.rate_note || '—'}
+                      {slot.ad_close_date
+                        ? `Closes ${day(slot.ad_close_date)}`
+                        : slot.issue_date
+                          ? slot.rate_note || '—'
+                          : '—'}
                     </span>
 
                     <div className="flex items-baseline justify-between gap-3 md:block">

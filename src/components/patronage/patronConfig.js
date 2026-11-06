@@ -164,7 +164,13 @@ export const money = (value) =>
 
 export const day = (value) => {
   if (!value) return '—';
-  const date = new Date(value);
+  // A calendar date ("2026-12-31") is the day the house prints, not an instant. Read
+  // bare-date strings at midday local, so a slot stamped 31 December never reads as the
+  // 30th to a reader west of Greenwich (the browser parses a bare date as UTC midnight,
+  // then prints it in local time — a day earlier for every reader in the Americas).
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(String(value))
+    ? new Date(`${value}T12:00:00`)
+    : new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
