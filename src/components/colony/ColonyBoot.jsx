@@ -73,12 +73,14 @@ export default function ColonyBoot({ onDone }) {
           }}
         />
       </div>
-      {/* The two ways off the plate, set as a line of type rather than as keys: each
-          choice is a word in the house face, and the one the ring is standing on is the
-          one with a copper rule drawn under it. Nothing blinks, nothing is filled, and
-          nothing is boxed — the plate stays the picture and the type stays on it. */}
+      {/* The two ways off the plate. Each choice is a word in the house face, set large
+          enough to be read at arm's length, and each carries its own rule — faint while it
+          is merely offered, copper and full once the ring is standing on it. Still nothing
+          blinks, nothing is filled and nothing is boxed: the type is the control, so it
+          has to carry the weight the box used to. The band under them is the plate's own
+          navy, laid down so the words hold against the picture. */}
       {ready && (
-        <div className="absolute inset-x-0 bottom-20 z-10 flex items-center justify-center as-rise">
+        <div className="absolute inset-x-0 bottom-16 z-10 flex items-center justify-center bg-gradient-to-t from-editorial-navy/80 via-editorial-navy/30 to-transparent px-5 pb-5 pt-10 as-rise">
           {options.map((o, i) => {
             const on = sel === i;
             return (
@@ -86,10 +88,10 @@ export default function ColonyBoot({ onDone }) {
                 {i > 0 && (
                   <span
                     aria-hidden="true"
-                    className="mx-5 h-3 w-px md:mx-8"
+                    className="mx-5 h-5 w-px md:mx-9"
                     style={{
                       background:
-                        'linear-gradient(180deg, transparent, rgb(var(--editorial-gold-rgb) / 0.5), transparent)',
+                        'linear-gradient(180deg, transparent, rgb(var(--editorial-gold-rgb) / 0.65), transparent)',
                     }}
                   />
                 )}
@@ -98,24 +100,27 @@ export default function ColonyBoot({ onDone }) {
                   onClick={() => choose(i)}
                   onMouseEnter={() => setSel(i)}
                   onFocus={() => setSel(i)}
-                  className="group relative px-1 pb-2.5 pt-1.5 focus:outline-none"
+                  className="group relative px-1 pb-3 pt-2 focus:outline-none"
                 >
                   <span
-                    className={`font-heading text-[13px] uppercase leading-none tracking-[0.36em] transition-colors duration-300 md:text-[15px] ${
+                    className={`font-heading text-[17px] uppercase leading-none tracking-[0.22em] transition-colors duration-300 md:text-[22px] md:tracking-[0.3em] ${
                       on
                         ? 'text-editorial-cream'
-                        : 'text-editorial-cream/50 group-hover:text-editorial-cream/75'
+                        : 'text-editorial-cream/70 group-hover:text-editorial-cream/90'
                     }`}
+                    style={{ textShadow: '0 1px 18px rgb(var(--editorial-navy-rgb) / 0.85)' }}
                   >
                     {o.label}
                   </span>
                   <span
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-center transition-transform duration-500 ease-out"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 origin-center transition-all duration-500 ease-out"
                     style={{
-                      background:
-                        'linear-gradient(90deg, transparent, rgb(var(--editorial-gold-rgb) / 0.85), rgb(var(--editorial-copper-rgb) / 0.9), transparent)',
-                      transform: `scaleX(${on ? 1 : 0})`,
+                      height: on ? 2 : 1,
+                      background: on
+                        ? 'linear-gradient(90deg, transparent, rgb(var(--editorial-gold-rgb)) 18%, rgb(var(--editorial-copper-rgb)) 82%, transparent)'
+                        : 'linear-gradient(90deg, transparent, rgb(var(--editorial-cream-rgb) / 0.5), transparent)',
+                      transform: `scaleX(${on ? 1 : 0.55})`,
                     }}
                   />
                 </button>
