@@ -44,8 +44,12 @@ export default function usePatronMeta({ title, description, path, noindex = fals
       const canonicalPath = path || sharePathFor(window.location.pathname);
       const canonical = `${SHARE_ORIGIN}${canonicalPath}`;
       const image = `${SHARE_ORIGIN}${SHARE_IMAGE_PATH}`;
+      // The media kit's own card is the default: the two doors onto it pass nothing and
+      // still get the offer, not a bare title.
+      const shareTitle = title || SHARE_TITLE;
+      const shareDesc = description || SHARE_DESCRIPTION;
 
-      add('meta', { name: 'description', content: description });
+      add('meta', { name: 'description', content: shareDesc });
       add('link', { rel: 'canonical', href: canonical });
 
       add('meta', { property: 'og:type', content: 'website' });
@@ -74,5 +78,3 @@ export default function usePatronMeta({ title, description, path, noindex = fals
     };
   }, [title, description, path, noindex]);
 }
-
-export { SHARE_TITLE, SHARE_DESCRIPTION };
