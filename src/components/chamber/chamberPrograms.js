@@ -70,7 +70,7 @@ export const CHAMBER_OFFICES = [
     index: "13",
     label: "Sponsorship",
     blurb: "Partnership with the record — a Sponsor of Record, never of the measurement.",
-    to: "/patronage",
+    to: "/mediakit",
     icon: Handshake,
   },
   {

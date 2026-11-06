@@ -272,7 +272,8 @@ const AuthenticatedApp = () => {
       {/* The public media kit, and the desk the lifecycle is worked from. Attribution,
           never placement: the offer is Sponsor of Record, and the desk behind it is
           admin-only and unindexed. */}
-      <Route path="/patronage" element={<Patronage />} />
+      <Route path="/mediakit" element={<Patronage />} />
+      <Route path="/patronage" element={<Navigate to="/mediakit" replace />} />
       <Route path="/patronage/desk" element={<PatronDesk />} />
       {/* The board: positions, mandates and the open desk, put up by Fellows. Read as a
           classified page — the old desk's address lands on it. */}

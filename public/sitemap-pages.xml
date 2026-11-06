@@ -29,7 +29,7 @@
   <url><loc>https://top100aero.space/viralpost2022</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 
   <!-- The institutional counter: patronage, and the open desk -->
-  <url><loc>https://top100aero.space/patronage</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://top100aero.space/mediakit</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://top100aero.space/classifieds</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
 
   <!-- The ballot's public invitation. The ballot itself sits behind the door, so this is

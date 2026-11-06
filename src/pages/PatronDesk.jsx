@@ -66,7 +66,7 @@ export default function PatronDesk() {
           </p>
           <div className="mt-5 flex items-center justify-center gap-3">
             <Link
-              to="/patronage"
+              to="/mediakit"
               className="rounded-lg px-4 py-2.5 text-[9px] font-bold uppercase tracking-[0.18em]"
               style={{ background: P.copper, color: P.cream }}
             >
@@ -102,7 +102,7 @@ export default function PatronDesk() {
               </p>
             </div>
             <Link
-              to="/patronage"
+              to="/mediakit"
               className="rounded-lg border px-3 py-2 text-[8.5px] font-bold uppercase tracking-[0.16em]"
               style={{ borderColor: P.hair, color: P.navy, background: 'white' }}
             >

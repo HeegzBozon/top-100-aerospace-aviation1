@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 // Page-level metadata, set and removed on mount so a surface never leaves a title behind.
 // The desk is internal: it carries noindex and no canonical, because nothing on it is for a
 // crawler to keep.
-export default function usePatronMeta({ title, description, path = '/patronage', noindex = false }) {
+export default function usePatronMeta({ title, description, path = '/mediakit', noindex = false }) {
   useEffect(() => {
     const previousTitle = document.title;
     document.title = title;
