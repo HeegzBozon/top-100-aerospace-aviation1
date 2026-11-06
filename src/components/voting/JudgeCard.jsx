@@ -44,7 +44,7 @@ function initials(name) {
 // stand in the glass at once with nothing to scroll. Every row that says what the card
 // IS stays — the face, the name, the band, the years, the pair of keys — and the story
 // is the one block given up first when the case is short.
-export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, position = null, selectable, cursor = false, dense = false, honoreeVolumes = [], onInfo, onSelect, onExclude = null }) {
+export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, position = null, selectable, cursor = false, dense = false, honoreeVolumes = [], onInfo, onSelect }) {
 
   const name = nominee.name || 'Unnamed nominee';
   const photo = nominee.avatar_url || nominee.photo_url || '';
@@ -234,22 +234,9 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
           </button>
         </div>
 
-        {/* A record the voter cannot judge. It is printed on the plate and pressed directly,
-            never hidden behind a long press, and it closes the set: a set is measured across
-            all four records, so nothing is scored from a set that lost one. */}
-        {onExclude ? (
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); onExclude(); }}
-            aria-label={`Cannot judge ${name}`}
-            className={`mt-0.5 w-full shrink-0 rounded-md font-bold uppercase tracking-[0.14em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 ${
-              dense ? "py-[3px] text-[7px]" : "py-[4px] text-[7.5px]"
-            }`}
-            style={{ border: `1px solid ${brand.navy}1F`, color: `${brand.navy}75`, background: 'rgba(255,255,255,0.55)' }}
-          >
-            Cannot judge
-          </button>
-        ) : null}
+
+        {/* Skipping and holding belong to the review, not to a record: one key for the
+            whole set is offered beside the cards, never once per plate. */}
       </motion.div>
     </div>
   );

@@ -71,10 +71,14 @@ export const ALL_MILESTONES = [
 // Record one accepted contribution. Called only after the vote itself has been
 // written, so a failed ballot never moves the ladder.
 export async function recordContribution(service, opts) {
-  const { fellow_email, fellow_name, season_id, cohort_key, action } = opts || {};
+  const { fellow_email, fellow_name, season_id, cohort_key, action, is_test } = opts || {};
   if (!fellow_email || !season_id || !action) {
     return { recorded: false, reason: 'Missing fellow, season, or action.' };
   }
+  // A walkthrough of the ballot is recorded, but in its own lane: a test never moves the
+  // Fellow's own xp, and a tester never mistakes their rehearsal for a contribution. One
+  // row carries both lanes so the ballot stays one record per Fellow per season.
+  const test = Boolean(is_test);
 
   const isSet = action === 'anchor_set';
   const xpGain = isSet ? XP_PER_SET : XP_PER_BALLOT;
@@ -90,20 +94,27 @@ export async function recordContribution(service, opts) {
     record = null;
   }
 
+  // The Fellow's own lane, and the tester's. Only one of them moves.
   const priorXp = record?.xp || 0;
-  const sets = (record?.sets_completed || 0) + (isSet ? 1 : 0);
-  const ballots = (record?.ballots_saved || 0) + (isSet ? 0 : 1);
-  const comparisons = (record?.comparisons_recorded || 0) + (isSet ? 7 : 0);
-  const xp = priorXp + xpGain;
+  const sets = (record?.sets_completed || 0) + (!test && isSet ? 1 : 0);
+  const ballots = (record?.ballots_saved || 0) + (!test && !isSet ? 1 : 0);
+  const comparisons = (record?.comparisons_recorded || 0) + (!test && isSet ? 7 : 0);
+  const xp = priorXp + (test ? 0 : xpGain);
+
+  const priorTestXp = record?.test_xp || 0;
+  const testXp = priorTestXp + (test ? xpGain : 0);
+  const testSets = (record?.test_sets_completed || 0) + (test && isSet ? 1 : 0);
+  const testComparisons = (record?.test_comparisons_recorded || 0) + (test && isSet ? 7 : 0);
 
   const cohortKeys = new Set(record?.cohort_keys || []);
   if (cohort_key) cohortKeys.add(cohort_key);
 
-  const before = levelFor(priorXp);
-  const after = levelFor(xp);
-  const earned = milestonesFor(sets, ballots);
+  // The lane this call moved: its level, its count, its milestones.
+  const before = levelFor(test ? priorTestXp : priorXp);
+  const after = levelFor(test ? testXp : xp);
+  const earned = test ? (record?.milestones || []) : milestonesFor(sets, ballots);
   const priorMilestones = record?.milestones || [];
-  const fresh = earned.filter((m) => !priorMilestones.includes(m));
+  const fresh = test ? [] : earned.filter((m) => !priorMilestones.includes(m));
 
   const payload = {
     fellow_email,
@@ -111,11 +122,14 @@ export async function recordContribution(service, opts) {
     season_id,
     cohort_keys: Array.from(cohortKeys),
     xp,
-    level: after.level,
-    level_name: after.name,
+    level: levelFor(xp).level,
+    level_name: levelFor(xp).name,
     sets_completed: sets,
     ballots_saved: ballots,
     comparisons_recorded: comparisons,
+    test_xp: testXp,
+    test_sets_completed: testSets,
+    test_comparisons_recorded: testComparisons,
     milestones: earned,
     last_action: isSet ? 'anchor_set' : 'ranked_ballot',
     last_action_at: new Date().toISOString(),
@@ -127,7 +141,14 @@ export async function recordContribution(service, opts) {
 
   return {
     recorded: true,
-    progress: { ...after, sets_completed: sets, ballots_saved: ballots, milestones: earned },
+    is_test: test,
+    progress: {
+      ...after,
+      sets_completed: test ? testSets : sets,
+      ballots_saved: ballots,
+      comparisons_recorded: test ? testComparisons : comparisons,
+      milestones: earned,
+    },
     xp_gained: xpGain,
     leveled_up: after.level > before.level,
     new_milestones: fresh.map((key) => {

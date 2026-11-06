@@ -6,11 +6,12 @@ import { awardStardust } from '@/functions/awardStardust';
 import { progressQuest } from '@/functions/progressQuest';
 import { brand } from '@/components/nominate/NominateConfig';
 import {
-  Loader2, Info, Check, Undo2, ArrowLeft,
+  Loader2, Info, Check, Undo2, ArrowLeft, Bookmark, BookmarkPlus, SkipForward,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import {
   CROSSCHECK, CROSSCHECK_LINE, CROSSCHECK_IS, CROSSCHECK_HOW, CROSSCHECK_PROMPTS, ANALYSIS,
+  CROSSCHECK_SKIP_LABEL, CROSSCHECK_HOLD_LABEL,
 } from '@/components/voting/ballotNaming';
 import JudgeCard from '@/components/voting/JudgeCard';
 import EvidencePopover from '@/components/voting/EvidencePopover';
@@ -71,13 +72,23 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   // committee — this surface only offers it again from the info key beside the prompt.
   // One key, one panel: the info button IS the briefing, and it carries the vote alone.
   const [guideOpen, setGuideOpen] = useState(false);
+  // Reviews set aside rather than weighed now: the four records as they were dealt, kept
+  // so the same review can be taken up again. `heldId` is the one standing on the glass.
+  const [holds, setHolds] = useState([]);
+  const [heldId, setHeldId] = useState(null);
 
   // The record, not the session: what the Fellow has already weighed is read back from the
   // ladder the house keeps, so closing the tab no longer loses the count. The session's own
   // tally is only a fallback for a context that could not report one.
-  const reviews = progress?.sets_completed ?? sessionCount;
-  const nextRung = progress?.next_name
-    ? `${Math.ceil((progress.to_next || 0) / XP_PER_REVIEW)} to ${progress.next_name}`
+  //
+  // An administrator walking the ballot is read from the tester's own lane instead, so a
+  // rehearsal is never mistaken for a Fellow's contribution — and the walkthrough still
+  // shows a tally, which is what makes it testable.
+  const testing = user?.role === 'admin';
+  const lane = testing ? progress?.test || null : progress;
+  const reviews = testing ? lane?.sets_completed ?? 0 : progress?.sets_completed ?? sessionCount;
+  const nextRung = lane?.next_name
+    ? `${Math.ceil((lane.to_next || 0) / XP_PER_REVIEW)} to ${lane.next_name}`
     : null;
 
   // Load active season + nominee pool once.
@@ -134,6 +145,12 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         setSeason(activeSeason);
         setPool(prepared);
         if (prepared.length >= 4) setCurrentSet(drawSet(prepared, []));
+        // Anything the Fellow set aside, newest first. A hold is a convenience queue, so a
+        // read that fails never stops the ballot opening.
+        const saved = await base44.entities.CrosscheckHold
+          .filter({ fellow_email: user?.email }, { sort: '-saved_at', limit: 20 })
+          .catch(() => null);
+        if (active) setHolds(saved?.items || (Array.isArray(saved) ? saved : []));
         setLoading(false);
       } catch (e) {
         if (!active) return;
@@ -145,6 +162,13 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
   }, []);
 
   const advance = useCallback((completed = null) => {
+    // A held review leaves the queue once it has been taken up: it was either weighed or
+    // skipped, and either way it is finished with.
+    if (heldId) {
+      base44.entities.CrosscheckHold.delete(heldId).catch(() => {});
+      setHolds((prev) => prev.filter((h) => h.id !== heldId));
+      setHeldId(null);
+    }
     setHistory((prev) => [...prev, ...(completed ? [completed] : [])].slice(-5));
     setOrder([]);
     setPhase('ordering');
@@ -155,7 +179,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     });
     setCurrentSet(drawSet(pool, seenIds));
     setSessionCount((c) => c + 1);
-  }, [currentSet, pool, seenIds]);
+  }, [currentSet, pool, seenIds, heldId]);
 
   // Undo the last tap while the set is still standing: the record goes back into the field
   // and the question it answered is asked again.
@@ -163,13 +187,52 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     setOrder((prev) => prev.slice(0, -1));
   }, []);
 
-  // A record the voter cannot judge ends the set. Nothing is recorded from it: the
-  // instrument measures four records or it measures none, so a partial set is never scored.
-  const closeSet = useCallback(() => {
+  // A review the Fellow passes over. Nothing is recorded from it: the instrument measures
+  // four records or it measures none, so a set nobody wanted to weigh is not evidence.
+  const skipSet = useCallback(() => {
     if (phase !== 'ordering') return;
-    setPhase('closed');
-    setTimeout(() => advance(), 2200);
+    setPhase('skipped');
+    setTimeout(() => advance(), 1600);
   }, [phase, advance]);
+
+  // Holding a review keeps the four records exactly as the house dealt them, so the Fellow
+  // comes back to the same comparison rather than being dealt a different one.
+  const holdReview = useCallback(async () => {
+    if (phase !== 'ordering' || currentSet.length !== 4) return;
+    try {
+      const saved = await base44.entities.CrosscheckHold.create({
+        fellow_email: user?.email,
+        fellow_name: user?.full_name || null,
+        season_id: season?.id || null,
+        nominee_ids: currentSet.map((n) => n.id),
+        labels: currentSet.map((n) => n.name || ''),
+        saved_at: new Date().toISOString(),
+      });
+      setHolds((prev) => [saved, ...prev]);
+      toast({ title: 'Held for later', description: 'It is waiting under Held.' });
+      advance();
+    } catch (e) {
+      toast({ variant: 'destructive', title: 'Could not hold this review', description: e.message });
+    }
+  }, [phase, currentSet, user, season, advance, toast]);
+
+  // Take up the review that has waited longest. A hold whose records have left the field
+  // retires itself and the next one is offered, so a stale queue never blocks the ballot.
+  const openHeld = useCallback(() => {
+    if (!holds.length) return;
+    const hold = holds[0];
+    const four = (hold.nominee_ids || []).map((id) => nomineeIndex.get(id)).filter(Boolean);
+    if (four.length < 4) {
+      base44.entities.CrosscheckHold.delete(hold.id).catch(() => {});
+      setHolds((prev) => prev.slice(1));
+      toast({ title: 'That review has retired', description: 'One of its records has left the field.' });
+      return;
+    }
+    setHeldId(hold.id);
+    setOrder([]);
+    setPhase('ordering');
+    setCurrentSet(four);
+  }, [holds, nomineeIndex, toast]);
 
   // Go back to read the last completed set (read-only — the set is already recorded).
   const goBack = useCallback(() => {
@@ -388,15 +451,13 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
     phase === 'ordering' ? CROSSCHECK_PROMPTS[Math.min(order.length, 2)] :
     phase === 'submitting' ? 'Recording the review…' :
     phase === 'success' ? 'Review recorded.' :
-    phase === 'closed' ? 'Review closed · not recorded' :
+    phase === 'skipped' ? 'Skipped · nothing recorded' :
     phase === 'review' ? 'Reading back your last review.' :
     CROSSCHECK_PROMPTS[0];
 
-  // Undo, review and resume are offered only when they mean something, and they are the
-  // one row the ballot ever adds: on the glass they are kept off the cards' budget
-  // entirely on the phases that have nothing to offer.
-  const hasControls =
-    phase === 'review' || (phase === 'ordering' && (order.length > 0 || history.length > 0));
+  // Undo, skip, hold, review and resume are offered only when they mean something: the one
+  // row the ballot ever adds, and on the glass it is kept to a single line of small keys.
+  const hasControls = phase === 'ordering' || phase === 'review';
 
   return (
     <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative">
@@ -442,7 +503,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 <Loader2 className="h-3 w-3 animate-spin" style={{ color: brand.gold }} />
               </span>
             )}
-            {(phase === 'success' || phase === 'closed') && (
+            {(phase === 'success' || phase === 'skipped') && (
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: `${brand.navy}0F` }}>
                 <Check className="h-3 w-3" style={{ color: phase === 'success' ? brand.gold : `${brand.navy}70` }} />
               </span>
@@ -468,7 +529,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 className="rounded-full px-2 py-0.5 text-[9.5px] font-semibold tabular-nums md:px-2.5 md:py-1 md:text-[10px]"
                 style={{ background: `${brand.navy}08`, color: `${brand.navy}80` }}
               >
-                {reviews} {reviews === 1 ? 'review' : 'reviews'}
+                {testing ? 'test · ' : ''}{reviews} {reviews === 1 ? 'review' : 'reviews'}
               </span>
               {nextRung && (
                 <span
@@ -505,6 +566,23 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
 
         {/* Controls: undo mid-set / review last set / resume */}
         <div className={hasControls ? 'mb-1 flex flex-wrap items-center gap-1.5 md:mb-3 md:gap-2' : 'hidden'}>
+          {/* One key for the whole review: skipping is a judgement on the comparison, not on
+              a single record, so it never sits on a plate. */}
+          {phase === 'ordering' && (
+            <button onClick={skipSet} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+              <SkipForward className="w-3.5 h-3.5" /> {CROSSCHECK_SKIP_LABEL}
+            </button>
+          )}
+          {phase === 'ordering' && (
+            <button onClick={holdReview} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+              <BookmarkPlus className="w-3.5 h-3.5" /> {CROSSCHECK_HOLD_LABEL}
+            </button>
+          )}
+          {phase === 'ordering' && holds.length > 0 && (
+            <button onClick={openHeld} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.gold}1F`, color: brand.navy, border: `1px solid ${brand.gold}66` }}>
+              <Bookmark className="w-3.5 h-3.5" /> Held · {holds.length}
+            </button>
+          )}
           {phase === 'ordering' && order.length > 0 && (
             <button onClick={undoLastTap} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
               <Undo2 className="w-3.5 h-3.5" /> Undo last tap
@@ -541,7 +619,6 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
                 cursor={standing && cursor === idx}
                 onInfo={() => { setPanelNominee(nominee); setPanelToken(token); }}
                 onSelect={() => handleSelect(nominee)}
-                onExclude={selectable ? () => closeSet() : null}
                 keyLabel={radio ? String(idx + 1) : VOTE_KEYS[idx]}
                 infoKeyLabel={radio ? String(idx + 1 + currentSet.length) : null}
                 dense={radio}

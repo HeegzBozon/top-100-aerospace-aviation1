@@ -90,7 +90,9 @@ export default function VoteSurface({ user }) {
           ? {
               ...prev,
               ballot: prev.ballot,
-              progress: { ...prev.progress, ...result.progress, ladder: prev.progress?.ladder },
+              progress: result.is_test
+                ? { ...prev.progress, test: { ...prev.progress?.test, ...result.progress } }
+                : { ...prev.progress, ...result.progress, ladder: prev.progress?.ladder },
             }
           : prev
       );

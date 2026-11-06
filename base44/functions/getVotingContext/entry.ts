@@ -53,6 +53,17 @@ export default async function (req) {
       { xp: 0, sets: 0, ballots: 0, comparisons: 0, milestones: [] }
     );
 
+    // The tester's own lane, kept apart from the Fellow's: a walkthrough of the ballot
+    // climbs this one and never the ladder above.
+    const testTotals = (contributions || []).reduce(
+      (acc, c) => ({
+        xp: acc.xp + (c.test_xp || 0),
+        sets: acc.sets + (c.test_sets_completed || 0),
+        comparisons: acc.comparisons + (c.test_comparisons_recorded || 0),
+      }),
+      { xp: 0, sets: 0, comparisons: 0 }
+    );
+
     const level = levelFor(totals.xp);
 
     return Response.json({
@@ -79,6 +90,13 @@ export default async function (req) {
         comparisons_recorded: totals.comparisons,
         milestones: totals.milestones,
         ladder: ALL_MILESTONES,
+        // Read only by the tester's own surface, so a rehearsal is never counted as a
+        // Fellow's contribution.
+        test: {
+          ...levelFor(testTotals.xp),
+          sets_completed: testTotals.sets,
+          comparisons_recorded: testTotals.comparisons,
+        },
         by_season: (contributions || []).map((c) => ({
           season_id: c.season_id,
           xp: c.xp || 0,
