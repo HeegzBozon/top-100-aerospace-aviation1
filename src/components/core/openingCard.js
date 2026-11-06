@@ -12,8 +12,10 @@
 const BOOT_KEY = 'colony-boot-seen';
 
 // The routes that carry their own door. Anchored on the whole path so nothing else can
-// borrow them by accident.
-const DIRECT_ENTRY = [/^\/vote$/i];
+// borrow them by accident. /patronage is the same promise in another dress: it is the
+// media kit a sponsor is sent to from a mail or a deck, and a buyer is not a Fellow —
+// standing the plate in front of it hands a stranger a menu instead of a rate card.
+const DIRECT_ENTRY = [/^\/vote$/i, /^\/patronage$/i];
 
 function currentPath() {
   try {
