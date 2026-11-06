@@ -18,7 +18,7 @@ const TABS = [
 
 const RULE = '1px solid rgb(var(--editorial-sand-rgb))';
 
-export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
+export default function LiveBallotFeed({ seasonId, refreshToken = 0, pool = 0 }) {
   const { data, loading, error, updatedAt, refresh } = useLiveBallotFeed(seasonId, refreshToken);
   const [tab, setTab] = useState('progress');
 
@@ -90,7 +90,7 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
             </button>
           </div>
         ) : tab === 'progress' ? (
-          <SignalProgress data={data} loading={loading} />
+          <SignalProgress data={data} loading={loading} pool={pool} />
         ) : (
           <LatestReviews data={data} loading={loading} updatedAt={updatedAt} />
         )}

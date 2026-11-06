@@ -38,8 +38,10 @@ const RULE = '1px solid rgb(var(--editorial-sand-rgb))';
 // pool sets for it. Printed as an instrument rather than a chart — one figure in the
 // largest hand on the plate, one measure under it, and the scale the figure is standing
 // on printed along the foot. Nothing here is a forecast: every number is a count.
-export default function SignalProgress({ data, loading }) {
-  const pool = Number(data?.pool) || 0;
+export default function SignalProgress({ data, loading, pool: poolSize = 0 }) {
+  // The pool is reported by the ballot itself — the field the cards are actually dealt
+  // from — so the marks and the Crosscheck can never be reading different fields.
+  const pool = Number(poolSize) || 0;
   const ballots = Number(data?.reviews) || 0;
   const comparisons = Number(data?.comparisons) || 0;
   const weighedOnce = Number(data?.weighedOnce) || 0;
