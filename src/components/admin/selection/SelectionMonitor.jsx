@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import useMonitorEditMenu from './useMonitorEditMenu';
 import MonitorStats from './MonitorStats';
 import ReadingSwitch from './ReadingSwitch';
+import SignalProgress from './SignalProgress';
 import PulseBand from './PulseBand';
 import CohortDive from './CohortDive';
 import StandingsBoard from './StandingsBoard';
@@ -104,6 +105,11 @@ export default function SelectionMonitor({ onOpenMenu }) {
   }
 
   const totals = data?.totals;
+  // Which pool the progress below is counted against.
+  const scopeLabel =
+    scope === 'all'
+      ? 'Every open cohort'
+      : data?.cohorts?.find((c) => c.id === scope)?.cohort_label || 'Selected cohort';
 
   return (
     <div className="space-y-3">
@@ -118,6 +124,10 @@ export default function SelectionMonitor({ onOpenMenu }) {
         live={totals?.comparisons_live}
         test={totals?.comparisons_test}
       />
+
+      {/* How far the pool has been reached, and how many marks the reading still needs
+          before it holds still. Counted from the live ledger alone. */}
+      <SignalProgress totals={totals} scopeLabel={scopeLabel} />
 
       {/* Two readings of the same room: where the field stands, and what has just landed
           in it. */}
