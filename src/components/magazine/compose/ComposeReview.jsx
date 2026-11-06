@@ -1,5 +1,6 @@
 import { ArrowRight, BookOpen, RotateCcw, Send } from 'lucide-react';
 import { COMPOSE_STEPS, isStepDone } from './composeConfig';
+import IssueScorecard from '@/components/magazine/review/IssueScorecard';
 
 // The lap, read back.
 //
@@ -26,7 +27,7 @@ const rows = (values) => [
   { key: 'colophon', label: 'Ad Astra', value: values.colophon, long: true },
 ];
 
-export default function ComposeReview({ values, onJump, onOpenClassic, onPublish, onAnotherLap }) {
+export default function ComposeReview({ values, issue, standard, articles, onJump, onOpenClassic, onPublish, onAnotherLap }) {
   const written = COMPOSE_STEPS.filter((step) => step.kind !== 'review' && isStepDone(values, step)).length;
   const total = COMPOSE_STEPS.filter((step) => step.kind !== 'review').length;
 
@@ -91,6 +92,10 @@ export default function ComposeReview({ values, onJump, onOpenClassic, onPublish
           <RotateCcw className="h-3.5 w-3.5" /> Take another lap
         </button>
       </div>
+
+      {/* The reading, at the end of the lap where a book is read: six measures, on
+          demand, so the last thing before the press is an editor's eye on it. */}
+      <IssueScorecard issue={issue} standard={standard} articles={articles} />
     </div>
   );
 }

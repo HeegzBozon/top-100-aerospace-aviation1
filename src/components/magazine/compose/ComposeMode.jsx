@@ -24,7 +24,7 @@ const KEY =
 const GO =
   'inline-flex items-center gap-2 bg-editorial-navy px-4 py-2.5 font-body text-[10px] font-bold uppercase tracking-[0.18em] text-editorial-cream transition-opacity hover:opacity-85 disabled:opacity-40';
 
-export default function ComposeMode({ issue, standard, onSave, onExit, onPublish }) {
+export default function ComposeMode({ issue, standard, articles = [], onSave, onExit, onPublish }) {
   const composer = useComposer({ issue, standard, onSave });
   const {
     index,
@@ -35,6 +35,8 @@ export default function ComposeMode({ issue, standard, onSave, onExit, onPublish
     askError,
     saving,
     saveError,
+    savedAt,
+    resumedFrom,
     isReview,
     setValue,
     setPlan,
@@ -124,6 +126,18 @@ export default function ComposeMode({ issue, standard, onSave, onExit, onPublish
           <ComposeRail values={values} index={index} onJump={jump} />
         </div>
 
+        {/* What happened to the last answer, said plainly: every step is filed to the
+            issue the moment it is continued, and the lap picks up where it was left. */}
+        <p
+          aria-live="polite"
+          className="mt-2 flex flex-wrap items-center gap-x-3 font-body text-[10px] uppercase tracking-[0.16em] text-editorial-navy/40"
+        >
+          <span>{saving ? 'Filing to the issue…' : savedAt ? 'Filed. Leave at any point.' : 'Every answer is filed as you continue.'}</span>
+          {resumedFrom > 0 && !savedAt && (
+            <span className="text-editorial-label">Picked up at step {resumedFrom + 1}</span>
+          )}
+        </p>
+
         <p aria-live="polite" className="sr-only">
           Step {index + 1}. {step.question}
         </p>
@@ -132,6 +146,9 @@ export default function ComposeMode({ issue, standard, onSave, onExit, onPublish
           {isReview ? (
             <ComposeReview
               values={values}
+              issue={issue}
+              standard={standard}
+              articles={articles}
               onJump={jump}
               onOpenClassic={onExit}
               onPublish={onPublish}

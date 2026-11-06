@@ -11,6 +11,7 @@ import ArticleInventory from '@/components/magazine/ArticleInventory';
 import PageComposer from '@/components/magazine/PageComposer';
 import PreviewPublish from '@/components/magazine/PreviewPublish';
 import IssueAnalyticsPanel from '@/components/magazine/IssueAnalyticsPanel';
+import IssueScorecard from '@/components/magazine/review/IssueScorecard';
 import ExportIssueVideo from '@/components/magazine/ExportIssueVideo';
 import StudioGlass from '@/components/magazine/StudioGlass';
 import { alchemizeTop100Women2025, rebindEdition } from '@/components/magazine/alchemizeEdition';
@@ -22,6 +23,7 @@ const TABS = [
   { key: 'articles', label: 'Articles' },
   { key: 'pages', label: 'Pages' },
   { key: 'analytics', label: 'Analytics' },
+  { key: 'review', label: 'Review' },
   { key: 'publish', label: 'Preview & Publish' },
 ];
 
@@ -469,6 +471,7 @@ export default function MagazineStudio() {
         key={selectedIssue.id}
         issue={selectedIssue}
         standard={standard}
+        articles={articles}
         onSave={(patch) => updateIssue(selectedIssue.id, patch)}
         onExit={() => setComposeMode(false)}
         onPublish={() => {
@@ -621,6 +624,8 @@ export default function MagazineStudio() {
           />
         ) : tab === 'analytics' ? (
           <IssueAnalyticsPanel issue={selectedIssue} pages={pages} articles={articles} />
+        ) : tab === 'review' ? (
+          <IssueScorecard issue={selectedIssue} articles={articles} standard={standard} />
         ) : (
           <div className="space-y-6">
             <PreviewPublish

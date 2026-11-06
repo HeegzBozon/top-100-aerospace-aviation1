@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { COMPOSE_STEPS, REVIEW_INDEX, stepPatch } from './composeConfig';
+import { COMPOSE_STEPS, REVIEW_INDEX, isStepDone, stepPatch } from './composeConfig';
 import { askForLines, askForPlan } from './composeAI';
 
 // The composer's own state: where the writer stands, what has been written, what the
@@ -7,9 +7,13 @@ import { askForLines, askForPlan } from './composeAI';
 // is filed through the studio's own save path, so a lap can be left at any point and
 // the issue holds exactly what was written.
 
+// An issue is created under a working name. That name is a placeholder, not a title, so
+// the composer treats it as unwritten and the naming step still stands open.
+const WORKING_TITLE = 'New Issue';
+
 const seed = (issue) => ({
   direction: issue.opening_config?.tone || '',
-  title: issue.title || '',
+  title: issue.title === WORKING_TITLE ? '' : issue.title || '',
   subtitle: issue.subtitle || '',
   cover_kicker: issue.cover_kicker || '',
   sections: issue.sections || [],
@@ -17,9 +21,21 @@ const seed = (issue) => ({
   colophon: issue.colophon || '',
 });
 
+// Where a lap is picked up: the first decision not yet written. Everything before it is
+// already filed on the issue, so a writer who leaves at any point — for the classic
+// editor, for another surface, for the day — comes back to the step they were standing
+// on rather than to the top of the lap.
+const resumeIndex = (issue) => {
+  const values = seed(issue);
+  const next = COMPOSE_STEPS.findIndex((step) => step.kind !== 'review' && !isStepDone(values, step));
+  return next < 0 ? REVIEW_INDEX : next;
+};
+
 export default function useComposer({ issue, standard, onSave }) {
-  const [index, setIndex] = useState(0);
+  const [resumedFrom] = useState(() => resumeIndex(issue));
+  const [index, setIndex] = useState(resumedFrom);
   const [values, setValues] = useState(() => seed(issue));
+  const [savedAt, setSavedAt] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [offer, setOffer] = useState(null);
@@ -73,6 +89,7 @@ export default function useComposer({ issue, standard, onSave }) {
     setSaveError('');
     try {
       await onSave(body);
+      setSavedAt(Date.now());
       advance();
     } catch (e) {
       setSaveError('That did not reach the record. The line is still here, try again.');
@@ -115,6 +132,8 @@ export default function useComposer({ issue, standard, onSave }) {
     askError,
     saving,
     saveError,
+    savedAt,
+    resumedFrom,
     isReview: index === REVIEW_INDEX,
     setValue,
     setPlan,
