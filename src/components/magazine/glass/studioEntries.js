@@ -45,6 +45,8 @@ export function buildSurfaces(issue, { articles, pages }) {
       hint: `${plural(sections.length, 'section')} · ${statusLabel(ISSUE_STATUSES, issue.status)}`,
       icon: LayoutList,
     },
+    // Compose is an action rather than a surface: it leaves the console for the lap.
+    { key: 'compose', action: 'compose', label: 'Compose', hint: 'One prompt at a time', icon: Sparkles },
     { key: 'articles', kind: 'surface', label: 'Articles', hint: plural(articles.length, 'article'), icon: FileText },
     { key: 'pages', kind: 'surface', label: 'Pages', hint: plural(pages.length, 'page'), icon: Layers },
     {

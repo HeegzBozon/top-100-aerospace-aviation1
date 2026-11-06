@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, BookOpen, Plus, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Loader2, BookOpen, Plus, ArrowLeft, RefreshCw, Sparkles } from 'lucide-react';
 import { MAGAZINE_PALETTE as P } from '@/components/magazine/magazineConfig';
+import ComposeMode from '@/components/magazine/compose/ComposeMode';
+import useEditorialGuide from '@/components/magazine/compose/editorialGuide';
 import IssueList from '@/components/magazine/IssueList';
 import IssueBlueprint from '@/components/magazine/IssueBlueprint';
 import ArticleInventory from '@/components/magazine/ArticleInventory';
@@ -36,6 +38,11 @@ export default function MagazineStudio() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState('');
   const [alchemizing, setAlchemizing] = useState(false);
+  // Compose mode: the same issue, walked one prompt at a time instead of worked on a
+  // bench. It is a way through the studio, never a replacement for it — the classic
+  // tabs are always one key away.
+  const [composeMode, setComposeMode] = useState(false);
+  const { standard } = useEditorialGuide();
   const isMobile = useIsMobile();
 
   // Admin check
@@ -453,6 +460,25 @@ export default function MagazineStudio() {
     );
   }
 
+  // Compose answers the whole page: one prompt in the glass and nothing else around it.
+  // It writes through the studio's own save path, so leaving it at any point leaves the
+  // issue holding exactly what was written.
+  if (composeMode && selectedIssue && !loadingDetail) {
+    return (
+      <ComposeMode
+        key={selectedIssue.id}
+        issue={selectedIssue}
+        standard={standard}
+        onSave={(patch) => updateIssue(selectedIssue.id, patch)}
+        onExit={() => setComposeMode(false)}
+        onPublish={() => {
+          setComposeMode(false);
+          setTab('publish');
+        }}
+      />
+    );
+  }
+
   // On the handheld the studio is the glass console: one editor, four levels deep,
   // walked on the ring, with a line being written into handed to the keys. The desk
   // keeps the tabbed workspace, which is the shape for a pointer.
@@ -480,6 +506,7 @@ export default function MagazineStudio() {
             retry: loadIssues,
             createIssue,
             alchemizeIssue,
+            openCompose: () => setComposeMode(true),
             updateIssue,
             deleteIssue,
             createArticle,
@@ -520,6 +547,15 @@ export default function MagazineStudio() {
           </div>
           {selectedIssue && (
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide">
+              <button
+                onClick={() => setComposeMode(true)}
+                className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-85"
+                style={{ background: P.copper, color: P.cream, border: `1px solid ${P.copper}` }}
+                title="Write the issue one prompt at a time"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Compose
+              </button>
               <button
                 onClick={rebindSelectedIssue}
                 disabled={alchemizing}

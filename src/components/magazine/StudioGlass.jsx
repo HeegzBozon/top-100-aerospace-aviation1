@@ -201,6 +201,9 @@ export default function StudioGlass({
           setLevel(3);
         }).catch(() => {});
         break;
+      case 'compose':
+        actions.openCompose?.();
+        break;
       case 'generate-pages':
         actions.generatePages?.();
         break;
