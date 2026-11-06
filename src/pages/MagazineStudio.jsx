@@ -23,7 +23,6 @@ const TABS = [
   { key: 'articles', label: 'Articles' },
   { key: 'pages', label: 'Pages' },
   { key: 'analytics', label: 'Analytics' },
-  { key: 'review', label: 'Review' },
   { key: 'publish', label: 'Preview & Publish' },
 ];
 
@@ -624,8 +623,6 @@ export default function MagazineStudio() {
           />
         ) : tab === 'analytics' ? (
           <IssueAnalyticsPanel issue={selectedIssue} pages={pages} articles={articles} />
-        ) : tab === 'review' ? (
-          <IssueScorecard issue={selectedIssue} articles={articles} standard={standard} />
         ) : (
           <div className="space-y-6">
             <PreviewPublish
@@ -635,6 +632,9 @@ export default function MagazineStudio() {
               onPublish={publishIssue}
               onUnpublish={unpublishIssue}
             />
+            {/* The reading, at the point of sign-off: six measures against the house
+                standard, taken on demand before the issue goes to press. */}
+            <IssueScorecard issue={selectedIssue} articles={articles} standard={standard} />
             {/* The issue as a file an editor can hand on: rendered here, downloaded here. */}
             <ExportIssueVideo issue={selectedIssue} pages={pages} articles={articles} />
           </div>
