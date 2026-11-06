@@ -123,7 +123,10 @@ export default function VoteSurface({ user }) {
 
   if (loading) {
     return (
-      <div className="flex flex-1 items-center justify-center py-20">
+      <div
+        className="flex flex-1 items-center justify-center py-20"
+        style={{ background: brand.cream }}
+      >
         <Loader2 className="h-7 w-7 animate-spin" style={{ color: brand.gold }} />
       </div>
     );
@@ -131,7 +134,10 @@ export default function VoteSurface({ user }) {
 
   if (error) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-20 text-center">
+      <div
+        className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-20 text-center"
+        style={{ background: brand.cream }}
+      >
         <p className="font-heading text-lg" style={{ color: brand.navy }}>
           The Crosscheck did not open
         </p>
@@ -161,7 +167,10 @@ export default function VoteSurface({ user }) {
       .sort((a, b) => new Date(a.voting_start) - new Date(b.voting_start))[0];
 
     return (
-      <div className="flex flex-1 flex-col overflow-y-auto px-5 py-8">
+      <div
+        className="flex flex-1 flex-col overflow-y-auto px-5 py-8"
+        style={{ background: brand.cream }}
+      >
         <div className="mx-auto w-full max-w-md">
           <div
             className="rounded-2xl p-6 text-center"
@@ -198,7 +207,14 @@ export default function VoteSurface({ user }) {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden">
+    // The ballot is a printed page, not a pane of the tube. The desk's screen is dark
+    // charcoal, so a surface that paints no ground of its own hands the committee's navy
+    // type a near-black field to sit on — the masthead, the ladder and the keys all but
+    // disappear. The plate is cream, exactly as the invitation behind this door is.
+    <div
+      className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden"
+      style={{ background: brand.cream }}
+    >
       {/* The row takes the whole height it is given on every machine, so the set below
           is sized to the picture rather than to its own contents. */}
       <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-4 px-2 pt-1 md:px-5 lg:flex-row lg:items-stretch lg:gap-6 lg:pb-4 lg:pt-4">

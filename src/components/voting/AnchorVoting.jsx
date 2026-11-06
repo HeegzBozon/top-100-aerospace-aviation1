@@ -487,13 +487,27 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         {/* The desk states the measure above the cards. On the glass the same words are
             the info key's: the briefing carries them in full, so the set keeps the whole
             of its height and a reader holding the device is not read to twice. */}
-        <div className="mb-2 hidden shrink-0 md:block">
-          <h2 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
+        <div className="mb-2.5 hidden shrink-0 md:mb-4 md:block">
+          <p
+            className="text-[9px] font-bold uppercase tracking-[0.26em]"
+            style={{ color: ink.label, fontFamily: 'var(--font-body)' }}
+          >
+            Selection Committee
+          </p>
+          <h2
+            className="mt-1 text-[20px] font-bold leading-tight"
+            style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
             {CROSSCHECK} &middot; {ANALYSIS}
           </h2>
-          <p className="text-[11px] leading-snug md:max-w-md" style={{ color: ink.soft }}>
+          <p className="mt-1.5 max-w-xl text-[12px] leading-relaxed" style={{ color: ink.body }}>
             {CROSSCHECK_LINE} {CROSSCHECK_IS} {CROSSCHECK_HOW}
           </p>
+          <span
+            aria-hidden
+            className="mt-2.5 block h-[2px] w-14"
+            style={{ background: 'rgb(var(--editorial-copper-rgb))' }}
+          />
         </div>
 
         {/* Prompt, with the way into the explainer beside it and the session's tally at
