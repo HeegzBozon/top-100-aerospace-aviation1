@@ -16,7 +16,8 @@ export default function ColonyBoot({ onDone }) {
   const [sel, setSel] = useState(0);
   const [returning] = useState(() => isReturningVisitor() || !!localStorage.getItem('colony-room'));
   const options = [
-    { label: returning ? 'Continue' : 'Press Start', to: '/colony' },
+    // A word, not an order: the plate opens the floor rather than shouting at the reader.
+    { label: returning ? 'Continue' : 'Enter', to: '/colony' },
     { label: 'Main Menu', to: '/' },
   ];
   const ref = useRef({});
@@ -72,23 +73,55 @@ export default function ColonyBoot({ onDone }) {
           }}
         />
       </div>
+      {/* The two ways off the plate, set as a line of type rather than as keys: each
+          choice is a word in the house face, and the one the ring is standing on is the
+          one with a copper rule drawn under it. Nothing blinks, nothing is filled, and
+          nothing is boxed — the plate stays the picture and the type stays on it. */}
       {ready && (
-        <div className="absolute inset-x-0 bottom-20 z-10 flex flex-col items-center gap-3 as-rise">
-          {options.map((o, i) => (
-            <button
-              key={o.label}
-              type="button"
-              onClick={() => choose(i)}
-              onMouseEnter={() => setSel(i)}
-              className={`min-w-[200px] px-5 py-2.5 font-heading text-base font-bold uppercase tracking-[0.28em] transition-colors ${
-                i === 0
-                  ? 'bg-editorial-copper text-editorial-cream'
-                  : 'bg-slate-950/85 text-editorial-gold ring-1 ring-editorial-gold/60'
-              } ${sel === i ? 'ring-2 ring-editorial-cream' : ''} ${sel === i && i === 0 ? 'hh-blink' : ''}`}
-            >
-              {o.label}
-            </button>
-          ))}
+        <div className="absolute inset-x-0 bottom-20 z-10 flex items-center justify-center as-rise">
+          {options.map((o, i) => {
+            const on = sel === i;
+            return (
+              <div key={o.label} className="flex items-center">
+                {i > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="mx-5 h-3 w-px md:mx-8"
+                    style={{
+                      background:
+                        'linear-gradient(180deg, transparent, rgb(var(--editorial-gold-rgb) / 0.5), transparent)',
+                    }}
+                  />
+                )}
+                <button
+                  type="button"
+                  onClick={() => choose(i)}
+                  onMouseEnter={() => setSel(i)}
+                  onFocus={() => setSel(i)}
+                  className="group relative px-1 pb-2.5 pt-1.5 focus:outline-none"
+                >
+                  <span
+                    className={`font-heading text-[13px] uppercase leading-none tracking-[0.36em] transition-colors duration-300 md:text-[15px] ${
+                      on
+                        ? 'text-editorial-cream'
+                        : 'text-editorial-cream/50 group-hover:text-editorial-cream/75'
+                    }`}
+                  >
+                    {o.label}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-center transition-transform duration-500 ease-out"
+                    style={{
+                      background:
+                        'linear-gradient(90deg, transparent, rgb(var(--editorial-gold-rgb) / 0.85), rgb(var(--editorial-copper-rgb) / 0.9), transparent)',
+                      transform: `scaleX(${on ? 1 : 0})`,
+                    }}
+                  />
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
