@@ -2253,3 +2253,37 @@ body.hh-landscape .hh-viewer-foot {
     overscroll-behavior: none;
   }
 }
+
+/* ===== THE PAGE BEHIND THE GLASS DOES NOT BOUNCE =====
+   A webview hands a pull past the head of the document to its own scroll view, which
+   answers by rubber-banding the whole page — and the picture then slides out from under
+   the hardware and over the navigation chrome. The document holds its own overflow, so a
+   pull that reaches the top of the page is the end of the gesture rather than a bounce.
+   This is the document's own line; a surface that means to answer a pull does so with
+   usePullToRefresh, above. */
+html,
+body {
+  overscroll-behavior-y: none;
+}
+
+/* ===== CONTROLS ARE OPERATED, NEVER SELECTED =====
+   A press on a key, a link or a tab is an activation, not the start of a text selection.
+   Selection on these surfaces is what turns a deliberate tap into a highlight wash across
+   the label, or a callout offering to copy an icon. The selection affordance stays where
+   it belongs — body copy, the magazine, the desks — because nothing here reaches an
+   element that carries reading matter rather than an action. */
+button,
+a,
+[role="button"],
+[role="link"],
+[role="tab"],
+[role="menuitem"],
+[role="option"],
+[role="switch"],
+[role="checkbox"],
+[data-tab] {
+  -webkit-user-select: none;
+  user-select: none;
+  /* No grey flash under the thumb: the key has its own pressed state. */
+  -webkit-tap-highlight-color: transparent;
+}
