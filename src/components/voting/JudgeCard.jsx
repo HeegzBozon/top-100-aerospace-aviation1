@@ -48,9 +48,9 @@ function initials(name) {
   return (a + b).toUpperCase();
 }
 
-// One face, one door. The card carries the identity and the six word story and
-// nothing else: everything the institution holds on the candidate is read in the
-// card's own information panel. On the glass that door is a labelled key at the foot
+// One face, one door. The card carries the identity and three lines — one word, the six
+// word story, the pitch — and nothing else: everything the institution holds on the
+// candidate is read in the card's own information panel. On the glass that door is a key at the foot
 // of the card, where a thumb finds it — a corner circle is neither found nor read as
 // "information" — and on the desk it is the circle in the corner it always was. Beside
 // the door on the glass sits the face key that votes for this card.
@@ -62,8 +62,7 @@ function initials(name) {
 // The ring walks these cards while a set is standing: the card the cursor is on
 // carries a copper ring, so where the wheel is pointing is legible on the glass.
 // `dense` is the radio's card: the same plate with its stock tightened, so four of them
-// stand in the glass at once with nothing to scroll. The face, the name and the pair of
-// keys always stay; the one word, the story and the pitch are what the plate is FOR.
+// stand in the glass at once with nothing to scroll.
 export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = null, position = null, selectable, cursor = false, dense = false, onInfo, onSelect }) {
 
   const name = nominee.name || 'Unnamed nominee';
