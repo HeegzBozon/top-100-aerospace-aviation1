@@ -12,24 +12,30 @@ import { CONFIDENCE, MARGINS, BANDS, marksRequired, bandFor, share } from './sig
 const num = (value) => (Number(value) || 0).toLocaleString();
 const pct = (value) => `${Math.round((Number(value) || 0) * 10) / 10}%`;
 
-export default function SignalProgress({ totals, scopeLabel }) {
+export default function SignalProgress({ totals, scopeLabel, standings = [], mode = 'live' }) {
   const [confKey, setConfKey] = useState('95');
   const [marginKey, setMarginKey] = useState('5');
 
   const pool = Number(totals?.pool) || 0;
-  const evaluated = Number(totals?.evaluated) || 0;
   const marks = Number(totals?.comparisons_live) || 0;
   const testMarks = Number(totals?.comparisons_test) || 0;
+
+  // Who the community's marks have reached. The ledger resolves it in one pass; until that
+  // reading is on the wire, the same count is taken from the board's appearance tally —
+  // which is only the community's when the community's reading is the one on the glass.
+  const tallied = standings.filter((row) => (row.appearances || 0) > 0).length;
+  const stated = Number(totals?.evaluated);
+  const evaluated = Number.isFinite(stated) ? stated : mode === 'live' ? tallied : null;
 
   const conf = CONFIDENCE.find((c) => c.key === confKey) || CONFIDENCE[1];
   const margin = MARGINS.find((m) => m.key === marginKey) || MARGINS[0];
   const required = marksRequired(pool, conf.z, margin.e);
 
-  const coverage = share(evaluated, pool);
+  const coverage = evaluated === null ? 0 : share(evaluated, pool);
   const marksShare = share(marks, required);
-  const strength = Math.min(coverage, marksShare);
+  const strength = evaluated === null ? marksShare : Math.min(coverage, marksShare);
   const band = bandFor(strength);
-  const remaining = Math.max(0, pool - evaluated);
+  const remaining = Math.max(0, pool - (evaluated || 0));
   const marksToGo = Math.max(0, required - marks);
 
   if (!pool) {
@@ -67,14 +73,20 @@ export default function SignalProgress({ totals, scopeLabel }) {
       {/* The pool figure: X of the N standing in scope. */}
       <div className="mt-1.5 flex items-end justify-between gap-3">
         <p className="flex items-baseline gap-1 font-heading leading-none text-editorial-navy">
-          <span className="text-[30px] tabular-nums">{num(evaluated)}</span>
+          <span className="text-[30px] tabular-nums">{evaluated === null ? '—' : num(evaluated)}</span>
           <span className="text-[17px] tabular-nums text-editorial-navy/35">/ {num(pool)}</span>
         </p>
         <p className="pb-0.5 text-right text-[10px] leading-tight text-editorial-navy/55">
-          <span className="font-semibold tabular-nums text-editorial-navy">{pct(coverage)}</span> of the pool
-          evaluated
-          <br />
-          {remaining > 0 ? `${num(remaining)} still unreached` : 'every nominee reached'}
+          {evaluated === null ? (
+            'Coverage is counted on the community reading'
+          ) : (
+            <>
+              <span className="font-semibold tabular-nums text-editorial-navy">{pct(coverage)}</span> of the
+              pool evaluated
+              <br />
+              {remaining > 0 ? `${num(remaining)} still unreached` : 'every nominee reached'}
+            </>
+          )}
         </p>
       </div>
 

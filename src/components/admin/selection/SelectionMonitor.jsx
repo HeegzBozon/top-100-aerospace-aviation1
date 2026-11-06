@@ -127,7 +127,12 @@ export default function SelectionMonitor({ onOpenMenu }) {
 
       {/* How far the pool has been reached, and how many marks the reading still needs
           before it holds still. Counted from the live ledger alone. */}
-      <SignalProgress totals={totals} scopeLabel={scopeLabel} />
+      <SignalProgress
+        totals={totals}
+        scopeLabel={scopeLabel}
+        standings={data?.standings || []}
+        mode={mode}
+      />
 
       {/* Two readings of the same room: where the field stands, and what has just landed
           in it. */}
