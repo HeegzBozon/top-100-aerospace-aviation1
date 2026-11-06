@@ -55,22 +55,29 @@ const BRIEFINGS = [
     lede: 'Mini ranked choice',
     objective: 'Assemble a crew from four records.',
     body:
-      'The Manifest, four records deep. The four are shuffled for you, so the comparison is never your own. Crew them — Commander, Pilot, Flight Engineer — and the fourth takes the seat left standing. Three taps finish a set. Finish it and it is one complete ballot. Skip it and nothing is recorded. Hold it and it returns as shuffled.',
+      'Four records, shuffled. Three taps, in order. A, B, C.',
     results: ['10 reviews analysed', '25 reviews analysed', '50 reviews analysed', '100 reviews analysed', '250 reviews analysed'],
     steps: [
       {
-        label: 'Four records, four seats',
-        line: 'Not one pick out of four. A whole crew in order — Commander, Pilot, Flight Engineer, and the seat left standing.',
+        label: 'First tap — Commander',
+        line: 'The record you would put in command.',
       },
       {
-        label: 'Three taps',
-        line: 'The one you would put in command, then the next, then the next. The fourth takes what is left.',
+        label: 'Second tap — Pilot',
+        line: 'The one next in line.',
       },
       {
-        label: 'One set, one ballot',
-        line: 'Finish a set and it is a complete ballot. Skip it and nothing is recorded. Hold it and it returns as shuffled.',
+        label: 'Third tap — Flight Engineer',
+        line: 'The fourth record takes the seat left standing. Set finished.',
       },
     ],
+    more: {
+      label: 'More on the Crosscheck',
+      lines: [
+        'The same method as the Manifest, four records deep. The four are shuffled for you, so the comparison is never your own.',
+        'Every set you finish is one complete ballot. Skip a set and nothing is recorded. Hold it and it returns exactly as it was shuffled.',
+      ],
+    },
     // The measure itself, and the keys that hold it. Both stand here rather than in print
     // laid over the set: the surface keeps the whole of its height for the four cards, and
     // the words are one press away on every machine, glass and desk alike.
@@ -201,6 +208,27 @@ export default function MissionBriefing({ open, onOpenChange, section = null }) 
               {single ? (
                 <>
                   {brief.steps && <Steps steps={brief.steps} />}
+                  {brief.more && (
+                    <details className="mt-2">
+                      <summary
+                        className="cursor-pointer list-none text-[10px] font-bold uppercase tracking-[0.16em] marker:hidden"
+                        style={{ color: '#8F5C2C' }}
+                      >
+                        {brief.more.label} +
+                      </summary>
+                      <div className="mt-1.5 space-y-1.5">
+                        {brief.more.lines.map((line) => (
+                          <p
+                            key={line}
+                            className="text-[11px] leading-relaxed"
+                            style={{ color: `${brand.navy}80` }}
+                          >
+                            {line}
+                          </p>
+                        ))}
+                      </div>
+                    </details>
+                  )}
                   {brief.keys && (
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {brief.keys.map(([key, what]) => (
