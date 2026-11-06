@@ -66,13 +66,22 @@ export function honoreeVolumes(nominee, yearIndex, byId) {
     }
   }
 
-  // A membership entry can supply the position of an appearance filed without one. It
-  // never introduces a volume of its own.
+  // The measured place is also filed on the membership itself: where a closed volume's
+  // appearance was never indexed, season_participation still states the place the person
+  // took, and that is the same record. So a membership entry supplies a missing position,
+  // and carries the volume in its own right when it states one. A membership with no place
+  // introduces nothing: standing in a cohort is not standing in the published volume, and a
+  // badge that cannot say where someone placed would print exactly that confusion.
   for (const source of rows) {
     for (const entry of source?.raw_nomination_data?.season_participation || []) {
-      const known = entry?.season_id ? filed.get(entry.season_id) : null;
-      if (!known || known.rank != null || entry.status === 'rejected') continue;
-      if (typeof entry.rank === 'number') filed.set(entry.season_id, { ...known, rank: entry.rank });
+      if (!entry?.season_id || entry.status === 'rejected') continue;
+      if (typeof entry.rank !== 'number') continue;
+      const known = filed.get(entry.season_id);
+      if (!known) {
+        filed.set(entry.season_id, { rank: entry.rank, artifact: '', volume: '', seasonName: '' });
+      } else if (known.rank == null) {
+        filed.set(entry.season_id, { ...known, rank: entry.rank });
+      }
     }
   }
 
