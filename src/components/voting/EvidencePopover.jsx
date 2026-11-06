@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import {
   Award, Briefcase, FileText, Lightbulb, Quote, Rocket, Users, X,
 } from 'lucide-react';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 import { careerTrajectory, metricCounts } from '@/components/voting/anonymize';
 import HonoreeChip from '@/components/voting/HonoreeChip';
 import { registerPicker, touchPicker } from '@/components/handheld/handheldPicker';
@@ -88,9 +88,9 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
           {trajectory.map((c, i) => (
             <div key={i} className="text-xs">
               <p className="font-semibold" style={{ color: brand.navy }}>
-                {c.role || 'Role'}{c.period && <span style={{ color: `${brand.navy}50` }}> · {c.period}</span>}
+                {c.role || 'Role'}{c.period && <span style={{ color: ink.soft }}> · {c.period}</span>}
               </p>
-              {c.description && <p className="mt-0.5 leading-relaxed" style={{ color: `${brand.navy}70` }}>{c.description}</p>}
+              {c.description && <p className="mt-0.5 leading-relaxed" style={{ color: ink.soft }}>{c.description}</p>}
             </div>
           ))}
         </div>
@@ -108,7 +108,7 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
                 <div key={s.label} className="rounded-lg p-2.5" style={{ background: 'white', border: `1px solid ${brand.navy}10` }}>
                   <div className="mb-0.5 flex items-center gap-1.5">
                     <s.icon className="h-3 w-3" style={{ color: brand.gold }} />
-                    <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: `${brand.navy}50` }}>{s.label}</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: ink.soft }}>{s.label}</span>
                   </div>
                   <p className="text-lg font-bold" style={{ color: brand.navy }}>{s.value}</p>
                 </div>
@@ -215,14 +215,14 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-bold truncate" style={{ color: brand.navy }}>{name}</h3>
-              <p className="hidden text-[11px] truncate md:block" style={{ color: `${brand.navy}60` }}>Evidence of judgment</p>
+              <p className="hidden text-[11px] truncate md:block" style={{ color: ink.soft }}>Evidence of judgment</p>
               {/* On the glass the wheel is the reader, so the panel says so. */}
-              <p className="text-[9px] font-bold uppercase tracking-[0.16em] md:hidden" style={{ color: `${brand.navy}50` }}>
+              <p className="text-[9px] font-bold uppercase tracking-[0.16em] md:hidden" style={{ color: ink.soft }}>
                 {keyHint({ walk: 'Sections', open: 'Open' })}
               </p>
             </div>
             <button onClick={onClose} className="h-8 w-8 rounded-full flex items-center justify-center shrink-0" style={{ background: `${brand.navy}06` }} aria-label="Put the panel away">
-              <X className="w-4 h-4" style={{ color: `${brand.navy}70` }} />
+              <X className="w-4 h-4" style={{ color: ink.soft }} />
             </button>
           </div>
 
@@ -235,7 +235,7 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
                   key={section.key}
                   ref={(node) => { sectionRefs.current[section.key] = node; }}
                 >
-                  <h4 className="text-[10px] font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1.5" style={{ color: `${brand.navy}40` }}>
+                  <h4 className="text-[10px] font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1.5" style={{ color: ink.label }}>
                     {Icon && <Icon className="w-3 h-3" />} {section.label}
                   </h4>
                   {section.body}
@@ -250,9 +250,9 @@ export default function EvidencePopover({ nominee, token, volumes = [], onClose 
 }
 
 function Prose({ children }) {
-  return <p className="text-sm leading-relaxed" style={{ color: `${brand.navy}80` }}>{children}</p>;
+  return <p className="text-sm leading-relaxed" style={{ color: ink.body }}>{children}</p>;
 }
 
 function Empty({ note }) {
-  return <p className="text-xs italic" style={{ color: `${brand.navy}50` }}>{note}</p>;
+  return <p className="text-xs italic" style={{ color: ink.soft }}>{note}</p>;
 }

@@ -1,9 +1,16 @@
 import { useEffect } from 'react';
-import { ArrowRight, Check, Lock } from 'lucide-react';
+import { ArrowRight, Lock } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 import InvitationPlate from '@/components/vote/InvitationPlate';
-import { CROSSCHECK, ANALYSIS, ANALYST, ANALYST_STANDING } from '@/components/voting/ballotNaming';
+import {
+  CROSSCHECK,
+  CROSSCHECK_IS,
+  MANIFEST,
+  ANALYSIS,
+  ANALYST,
+  ANALYST_STANDING,
+} from '@/components/voting/ballotNaming';
 
 // The invitation the ballot stands behind.
 //
@@ -64,43 +71,92 @@ export default function VoteGate({ source }) {
             </h1>
 
             <p
-              className="mb-8 max-w-md text-sm leading-relaxed"
-              style={{ color: `${brand.navy}99`, fontFamily: 'var(--font-body)' }}
+              className="mb-7 max-w-md text-sm leading-relaxed"
+              style={{ color: ink.body, fontFamily: 'var(--font-body)' }}
             >
-              Voting here is analysis. The Crosscheck is a mini ranked-choice ballot, four records
-              deep: four records arrive together, chosen by the house rather than by you, and you
-              put all four in order — the one that leads, then the next, then the next, and the
-              fourth places itself. No leaderboard, no tally in front of you, nothing to game —
-              just the measure.
+              Voting here is analysis. Two ballots are open to an {ANALYST}, and both are ranked
+              choice: the work is putting records in order, never scoring one against a number.
             </p>
 
-            <ul className="mb-9 flex flex-col gap-3">
+            {/* How to vote.
+                A promoted link is opened by somebody who has never seen the ballot, so the
+                instructions belong to the invitation: each ballot named, what it asks of
+                them, and the steps that cast it. */}
+            <div className="mb-9 flex flex-col gap-5">
               {[
-                'Four records at a time — one small ranked-choice ballot, and every order you leave is kept.',
-                'Skip a review and nothing is scored from it; save it for later and it comes back exactly as it was dealt.',
-                'Every set belongs to your own Analyst record, kept across cycles.',
-                'The measure is public. The formulas are not.',
-              ].map((line) => (
-                <li key={line} className="flex items-start gap-2.5">
-                  <span
-                    className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
-                    style={{ background: `${brand.navy}0F` }}
+                {
+                  name: MANIFEST,
+                  kind: 'Ranked choice',
+                  line: 'Your own TOP 100, in order — you choose who to back, and how strongly.',
+                  steps: [
+                    'Sign in, or open an account, and you come straight back to this address.',
+                    `Open ${MANIFEST} in the Selection Committee. It is the list you keep.`,
+                    'Place the names you carry for this cycle in order, strongest first.',
+                    'Save it. It is yours, and it stays editable while the window is open.',
+                  ],
+                },
+                {
+                  name: CROSSCHECK,
+                  kind: 'Mini ranked choice',
+                  line: CROSSCHECK_IS,
+                  steps: [
+                    'The house deals four records together — you do not choose the set.',
+                    'Tap the record that leads the four, then the one that follows it.',
+                    'The third tap completes the order: the fourth record places itself.',
+                    'Every set you finish is a complete ballot. Skip one and nothing is scored from it; save it for later and it returns as it was dealt.',
+                  ],
+                },
+              ].map((ballot) => (
+                <div key={ballot.name} className="border-t border-editorial-copper/40 pt-4">
+                  <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                    <h2
+                      className="text-base"
+                      style={{ color: brand.navy, fontFamily: 'var(--font-heading)' }}
+                    >
+                      {ballot.name}
+                    </h2>
+                    <span
+                      className="text-[9.5px] font-bold uppercase tracking-[0.2em]"
+                      style={{ color: ink.label, fontFamily: 'var(--font-body)' }}
+                    >
+                      {ballot.kind}
+                    </span>
+                  </div>
+                  <p
+                    className="mb-2.5 text-[13px] leading-relaxed"
+                    style={{ color: ink.body, fontFamily: 'var(--font-body)' }}
                   >
-                    <Check className="h-2.5 w-2.5" style={{ color: brand.navy }} />
-                  </span>
-                  <span
-                    className="text-[13px] leading-relaxed"
-                    style={{ color: `${brand.navy}B0`, fontFamily: 'var(--font-body)' }}
-                  >
-                    {line}
-                  </span>
-                </li>
+                    {ballot.line}
+                  </p>
+                  <ol className="flex flex-col gap-1.5">
+                    {ballot.steps.map((step, i) => (
+                      <li key={step} className="flex items-start gap-2.5">
+                        <span
+                          className="mt-[1px] flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold"
+                          style={{
+                            background: 'rgb(var(--editorial-navy-rgb) / 0.10)',
+                            color: brand.navy,
+                            fontFamily: 'var(--font-body)',
+                          }}
+                        >
+                          {i + 1}
+                        </span>
+                        <span
+                          className="text-[12.5px] leading-relaxed"
+                          style={{ color: ink.body, fontFamily: 'var(--font-body)' }}
+                        >
+                          {step}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
               ))}
-            </ul>
+            </div>
 
             <p
               className="mb-9 border-t border-editorial-copper/40 pt-4 text-[12px] leading-relaxed"
-              style={{ color: `${brand.navy}A6`, fontFamily: 'var(--font-body)' }}
+              style={{ color: ink.body, fontFamily: 'var(--font-body)' }}
             >
               The ballot is one duty of the office. An Analyst also finds the field and carries the
               record. {ANALYST_STANDING}
@@ -118,7 +174,7 @@ export default function VoteGate({ source }) {
 
             <p
               className="mt-3 text-center text-[11px] leading-relaxed"
-              style={{ color: `${brand.navy}66`, fontFamily: 'var(--font-body)' }}
+              style={{ color: ink.soft, fontFamily: 'var(--font-body)' }}
             >
               Sign in, or open an account. Either way you come straight back to the ballot, and the
               analysis is one set away.
@@ -130,7 +186,7 @@ export default function VoteGate({ source }) {
           <a
             href="/Top100Women2025"
             className="text-[11px] font-semibold uppercase tracking-[0.18em] underline underline-offset-4"
-            style={{ color: `${brand.navy}80`, fontFamily: 'var(--font-body)' }}
+            style={{ color: ink.soft, fontFamily: 'var(--font-body)' }}
           >
             Not ready to analyse the field? Read the season
           </a>

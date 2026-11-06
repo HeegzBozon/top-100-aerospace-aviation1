@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { brand } from './NominateConfig';
+import { brand, ink } from './NominateConfig';
 import { Rocket, ListChecks } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,8 +10,8 @@ export default function NominateShell({ children, stageKey, progress, onExit }) 
       {/* Top bar */}
       <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-white/40 backdrop-blur-sm border-b z-20" style={{ borderColor: `${brand.navy}10` }}>
         <div className="flex items-center gap-2">
-          <Rocket className="w-4 h-4" style={{ color: brand.gold }} />
-          <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: `${brand.navy}60` }}>
+          <Rocket className="w-4 h-4" style={{ color: ink.label }} />
+          <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: ink.soft }}>
             TOP 100 · Nominations
           </span>
         </div>
@@ -25,7 +25,7 @@ export default function NominateShell({ children, stageKey, progress, onExit }) 
             Build Your Top 100
           </button>
           {onExit && (
-            <button onClick={onExit} className="text-[11px] font-medium cursor-pointer" style={{ color: `${brand.navy}50` }}>
+            <button onClick={onExit} className="text-[11px] font-medium cursor-pointer" style={{ color: ink.soft }}>
               Exit
             </button>
           )}

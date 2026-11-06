@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
-import { brand } from './NominateConfig';
+import { brand, ink } from './NominateConfig';
 
 export default function HubMeter({ count = 0, label = 'nominations' }) {
   const strength = Math.min(count, 5);
@@ -9,7 +9,7 @@ export default function HubMeter({ count = 0, label = 'nominations' }) {
     <div className="rounded-3xl border bg-white/75 backdrop-blur-xl p-4 shadow-[0_18px_60px_rgba(30,58,90,0.08)]" style={{ borderColor: `${brand.navy}12` }}>
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: `${brand.navy}55` }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: ink.label }}>
             Hub Energy
           </p>
           <p className="mt-1 text-sm font-semibold" style={{ color: brand.navy }}>
@@ -25,7 +25,7 @@ export default function HubMeter({ count = 0, label = 'nominations' }) {
               className="h-8 w-8 rounded-full flex items-center justify-center"
               style={{ background: i < strength ? `linear-gradient(135deg, ${brand.gold}, #d8b99a)` : `${brand.navy}08` }}
             >
-              <Sparkles className="h-3.5 w-3.5" style={{ color: i < strength ? 'white' : `${brand.navy}35` }} />
+              <Sparkles className="h-3.5 w-3.5" style={{ color: i < strength ? 'white' : ink.soft }} />
             </motion.div>
           ))}
         </div>

@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { submitAnchorVote } from '@/functions/submitAnchorVote';
 import { awardStardust } from '@/functions/awardStardust';
 import { progressQuest } from '@/functions/progressQuest';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 import {
   Loader2, Info, Check, Undo2, ArrowLeft, Bookmark, BookmarkPlus, SkipForward,
 } from 'lucide-react';
@@ -432,7 +432,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
         <h2 className="text-base font-bold mb-1.5" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
           Not enough nominees to vote
         </h2>
-        <p className="text-xs max-w-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
+        <p className="text-xs max-w-xs leading-relaxed" style={{ color: ink.soft }}>
           The Crosscheck needs at least four records in the field. Check back once the season is seeded.
         </p>
       </div>
@@ -491,7 +491,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           <h2 className="text-lg font-bold" style={{ color: brand.navy, fontFamily: "'Playfair Display', Georgia, serif" }}>
             {CROSSCHECK} &middot; {ANALYSIS}
           </h2>
-          <p className="text-[11px] leading-snug md:max-w-md" style={{ color: `${brand.navy}66` }}>
+          <p className="text-[11px] leading-snug md:max-w-md" style={{ color: ink.soft }}>
             {CROSSCHECK_LINE} {CROSSCHECK_IS} {CROSSCHECK_HOW}
           </p>
         </div>
@@ -536,7 +536,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
               aria-label="Mission briefing — the vote's objective and key results"
               title="Mission briefing"
               className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-              style={{ background: `${brand.navy}0A`, border: `1px solid ${brand.navy}1A`, color: `${brand.navy}70` }}
+              style={{ background: `${brand.navy}0A`, border: `1px solid ${brand.navy}1A`, color: ink.soft }}
             >
               <Info className="h-3 w-3" />
             </button>
@@ -552,10 +552,10 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             ['X Y A B', 'vote'],
             ['I', 'info'],
           ].map(([key, text]) => (
-            <span key={key} className="inline-flex items-center gap-1.5 text-[10px]" style={{ color: `${brand.navy}55` }}>
+            <span key={key} className="inline-flex items-center gap-1.5 text-[10px]" style={{ color: ink.soft }}>
               <span
                 className="rounded-md px-1.5 py-[1px] text-[9px] font-semibold"
-                style={{ background: `${brand.navy}06`, border: `1px solid ${brand.navy}16`, color: `${brand.navy}80` }}
+                style={{ background: `${brand.navy}06`, border: `1px solid ${brand.navy}16`, color: ink.soft }}
               >
                 {key}
               </span>
@@ -571,12 +571,12 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           {/* One key for the whole review: skipping is a judgement on the comparison, not on
               a single record, so it never sits on a plate. */}
           {phase === 'ordering' && (
-            <button onClick={skipSet} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+            <button onClick={skipSet} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
               <SkipForward className="w-3.5 h-3.5" /> {CROSSCHECK_SKIP_LABEL}
             </button>
           )}
           {phase === 'ordering' && (
-            <button onClick={holdReview} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+            <button onClick={holdReview} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
               <BookmarkPlus className="w-3.5 h-3.5" /> {CROSSCHECK_HOLD_LABEL}
             </button>
           )}
@@ -586,12 +586,12 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             </button>
           )}
           {phase === 'ordering' && order.length > 0 && (
-            <button onClick={undoLastTap} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+            <button onClick={undoLastTap} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
               <Undo2 className="w-3.5 h-3.5" /> Undo<span className="hidden md:inline"> last tap</span>
             </button>
           )}
           {history.length > 0 && phase === 'ordering' && (
-            <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: `${brand.navy}80`, border: `1px solid ${brand.navy}14` }}>
+            <button onClick={goBack} className="text-[11px] font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-full flex shrink-0 items-center gap-1.5" style={{ background: `${brand.navy}06`, color: ink.soft, border: `1px solid ${brand.navy}14` }}>
               <ArrowLeft className="w-3.5 h-3.5" /> Last review
             </button>
           )}

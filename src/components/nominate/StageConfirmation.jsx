@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { brand } from './NominateConfig';
+import { brand, ink } from './NominateConfig';
 import { Link } from 'react-router-dom';
 
 export default function StageConfirmation({ womenCount = 0, menCount = 0, angelsCount = 0, localLegendsCount = 0 }) {
@@ -24,7 +24,7 @@ export default function StageConfirmation({ womenCount = 0, menCount = 0, angels
         className="text-center max-w-lg"
       >
         <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ background: `${brand.gold}20` }}>
-          <CheckCircle2 className="w-10 h-10" style={{ color: brand.gold }} />
+          <CheckCircle2 className="w-10 h-10" style={{ color: ink.label }} />
         </div>
 
         <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
@@ -32,7 +32,7 @@ export default function StageConfirmation({ womenCount = 0, menCount = 0, angels
         </h1>
 
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8" style={{ background: `${brand.gold}18`, border: `1px solid ${brand.gold}35` }}>
-          <CheckCircle2 className="w-4 h-4" style={{ color: brand.gold }} />
+          <CheckCircle2 className="w-4 h-4" style={{ color: ink.label }} />
           <span className="text-sm font-semibold" style={{ color: brand.navy }}>{total} {total === 1 ? 'nomination' : 'nominations'} submitted</span>
         </div>
 
@@ -45,14 +45,14 @@ export default function StageConfirmation({ womenCount = 0, menCount = 0, angels
           </div>
         )}
 
-        <div className="space-y-4 text-sm sm:text-base leading-relaxed mb-10" style={{ color: `${brand.navy}80` }}>
+        <div className="space-y-4 text-sm sm:text-base leading-relaxed mb-10" style={{ color: ink.body }}>
           <p>Every name you submitted enters the <strong style={{ color: brand.navy }}>Season 4 review queue</strong> and gets reviewed personally by the TOP 100 team. If they're a fit, we'll reach out within <strong style={{ color: brand.navy }}>5 business days</strong>.</p>
           <p>For Local Legends nominations, the message they receive will include your name unless you chose to remain anonymous.</p>
           <p>A nomination puts a name into the field. It is not a vote and it carries no weight in the measure — the field is weighed later, on the ballot, by Fellows.</p>
         </div>
 
         <div className="rounded-2xl border bg-white p-5 mb-8" style={{ borderColor: `${brand.navy}10` }}>
-          <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: brand.gold }}>
+          <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: ink.label }}>
             Share with someone else who might want to nominate
           </p>
           <Button
@@ -71,10 +71,10 @@ export default function StageConfirmation({ womenCount = 0, menCount = 0, angels
           </Button>
         </Link>
 
-        <p className="text-xs italic mt-12" style={{ color: `${brand.navy}40`, fontFamily: "'Playfair Display', serif" }}>
+        <p className="text-xs italic mt-12" style={{ color: ink.soft, fontFamily: "'Playfair Display', serif" }}>
           Think Global. Act Local. Ad Astra.
         </p>
-        <p className="text-[10px] tracking-[0.2em] uppercase mt-2" style={{ color: `${brand.navy}30` }}>
+        <p className="text-[10px] tracking-[0.2em] uppercase mt-2" style={{ color: ink.label }}>
           top100aero.space
         </p>
       </motion.div>
@@ -85,7 +85,7 @@ export default function StageConfirmation({ womenCount = 0, menCount = 0, angels
 function Pill({ label, count }) {
   return (
     <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: 'white', border: `1px solid ${brand.gold}40`, color: brand.navy }}>
-      <span style={{ color: brand.gold }}>{count}</span> {label}
+      <span style={{ color: ink.label }}>{count}</span> {label}
     </div>
   );
 }

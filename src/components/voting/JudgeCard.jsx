@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Info } from 'lucide-react';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 import { PLACE_LABELS } from '@/components/voting/ballotNaming';
 import HonoreeStack from '@/components/voting/HonoreeStack';
 import { DISCIPLINE_LABELS } from '@/components/voting/anonymize';
@@ -129,7 +129,7 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
                 className={`mt-0.5 truncate font-bold uppercase leading-tight md:mt-1 md:text-[9.5px] ${
                   dense ? "text-[7.5px] tracking-[0.1em]" : "text-[8.5px] tracking-[0.13em]"
                 }`}
-                style={{ color: `${brand.navy}5E` }}
+                style={{ color: ink.soft }}
               >
                 {band}
               </p>
@@ -170,12 +170,12 @@ export default function JudgeCard({ nominee, token, keyLabel, infoKeyLabel = nul
             </p>
           </div>
         ) : (
-          <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: `${brand.navy}40` }}>No story on file</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: ink.label }}>No story on file</p>
         )}
 
         {/* Biography snippet — the desk has room for it on the face of the card. */}
         {bio && (
-          <p className="hidden text-xs leading-relaxed line-clamp-2 md:block lg:text-sm lg:line-clamp-3" style={{ color: `${brand.navy}70` }}>{bio}</p>
+          <p className="hidden text-xs leading-relaxed line-clamp-2 md:block lg:text-sm lg:line-clamp-3" style={{ color: ink.soft }}>{bio}</p>
         )}
 
         {/* The foot of the card on the glass: the key that votes for it, printed the way

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Lock, LogIn } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 
 // The ballot is a Fellow's work.
 //
@@ -33,7 +33,7 @@ export default function NominateBallotGate() {
 
       <p
         className="mb-3 text-[10px] font-bold uppercase tracking-[0.28em]"
-        style={{ color: brand.gold }}
+        style={{ color: ink.label }}
       >
         Analysts measure
       </p>
@@ -47,7 +47,7 @@ export default function NominateBallotGate() {
 
       <p
         className="mb-8 max-w-md text-sm leading-relaxed"
-        style={{ color: `${brand.navy}70`, fontFamily: "'Montserrat', sans-serif" }}
+        style={{ color: ink.body, fontFamily: "'Montserrat', sans-serif" }}
       >
         Anyone may nominate and anyone may read the edition. Measuring the nominees against one
         another is the work of an Analyst, so the ballot asks who you are first.

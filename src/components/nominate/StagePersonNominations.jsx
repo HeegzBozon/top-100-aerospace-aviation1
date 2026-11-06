@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft, Plus, Check, Trash2, SkipForward } from 'lucide-react';
-import { brand, GUIDED_PROMPTS } from './NominateConfig';
+import { brand, ink, GUIDED_PROMPTS } from './NominateConfig';
 import CategoryHeader from './CategoryHeader';
 import HubMeter from './HubMeter';
 import ImpactMeter from './ImpactMeter';
@@ -65,7 +65,7 @@ export default function StagePersonNominations({
 
       {nominations.length === 0 && (
         <div className="rounded-2xl border-2 border-dashed p-8 text-center" style={{ borderColor: `${brand.navy}20` }}>
-          <p className="text-sm mb-4" style={{ color: `${brand.navy}60` }}>No nominations yet for this category.</p>
+          <p className="text-sm mb-4" style={{ color: ink.body }}>No nominations yet for this category.</p>
           <Button
             onClick={() => { handleAdd(); }}
             className="rounded-full gap-2 cursor-pointer text-white"
@@ -87,7 +87,7 @@ export default function StagePersonNominations({
             style={{ borderColor: `${brand.navy}10` }}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: brand.gold }}>
+              <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: ink.label }}>
                 Nomination {idx + 1}
               </span>
               <button onClick={() => handleRemove(idx)} className="text-red-400 hover:text-red-600 cursor-pointer p-1">
@@ -123,15 +123,15 @@ export default function StagePersonNominations({
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: `${brand.navy}70` }}>
-                  Why does {pronounSubject} deserve to be recognized?<span style={{ color: brand.gold }}> *</span>
+                <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: ink.label }}>
+                  Why does {pronounSubject} deserve to be recognized?<span style={{ color: ink.label }}> *</span>
                 </label>
                 <ImpactMeter text={`${nom.reason_contribution || ''} ${nom.reason_impact || ''} ${nom.reason_leadership || ''}`} />
               </div>
               <div className="space-y-3">
                 {GUIDED_PROMPTS.map((p) => (
                   <div key={p.key}>
-                    <p className="text-[11px] font-medium mb-1" style={{ color: `${brand.navy}55` }}>{p.label}</p>
+                    <p className="text-[11px] font-medium mb-1" style={{ color: ink.soft }}>{p.label}</p>
                     <Textarea
                       value={nom[p.key] || ''}
                       onChange={e => onUpdate(idx, p.key, e.target.value)}
@@ -162,7 +162,7 @@ export default function StagePersonNominations({
         <button
           onClick={handleAdd}
           className="w-full flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed text-sm font-semibold cursor-pointer"
-          style={{ borderColor: `${brand.gold}60`, color: brand.gold }}
+          style={{ borderColor: `${brand.gold}60`, color: ink.label }}
         >
           <Plus className="w-4 h-4" /> {addLabel}
         </button>
@@ -172,11 +172,11 @@ export default function StagePersonNominations({
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
         <div className="flex items-center gap-4 order-2 sm:order-1">
           {onPrev && (
-            <button onClick={onPrev} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer" style={{ color: `${brand.navy}55` }}>
+            <button onClick={onPrev} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer" style={{ color: ink.soft }}>
               <ArrowLeft className="w-3.5 h-3.5" /> {prevLabel}
             </button>
           )}
-          <button onClick={onSkip} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer" style={{ color: `${brand.navy}55` }}>
+          <button onClick={onSkip} className="text-sm font-medium flex items-center gap-1.5 cursor-pointer" style={{ color: ink.soft }}>
             <SkipForward className="w-3.5 h-3.5" /> Skip
           </button>
         </div>
@@ -196,10 +196,10 @@ export default function StagePersonNominations({
 function Field({ label, required, hint, children }) {
   return (
     <div>
-      <label className="text-xs font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: `${brand.navy}70` }}>
-        {label}{required && <span style={{ color: brand.gold }}> *</span>}
+      <label className="text-xs font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: ink.label }}>
+        {label}{required && <span style={{ color: ink.label }}> *</span>}
       </label>
-      {hint && <p className="text-[11px] mb-1.5" style={{ color: `${brand.navy}45` }}>{hint}</p>}
+      {hint && <p className="text-[11px] mb-1.5" style={{ color: ink.soft }}>{hint}</p>}
       {children}
     </div>
   );

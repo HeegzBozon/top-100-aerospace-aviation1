@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 
 // The contribution ladder, drawn from the record rather than from the session: every
 // set a Fellow has weighed is counted here, so closing the tab no longer loses the
@@ -30,7 +30,7 @@ export default function VotingProgressPanel({ progress, compact = false }) {
         </p>
         <p
           className="text-[9px] font-bold uppercase tracking-[0.16em]"
-          style={{ color: `${brand.navy}45` }}
+          style={{ color: ink.soft }}
         >
           {progress.xp || 0} XP
         </p>
@@ -39,7 +39,7 @@ export default function VotingProgressPanel({ progress, compact = false }) {
       <p className="mt-1.5 font-heading text-[19px] leading-tight" style={{ color: brand.navy }}>
         {progress.name}
       </p>
-      <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: `${brand.navy}55` }}>
+      <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: ink.soft }}>
         Level {progress.level}
         {progress.next_name ? ` · next: ${progress.next_name}` : ' · top of the ladder'}
       </p>
@@ -53,7 +53,7 @@ export default function VotingProgressPanel({ progress, compact = false }) {
           style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${brand.navy}, ${brand.gold})` }}
         />
       </div>
-      <p className="mt-1.5 text-[10px]" style={{ color: `${brand.navy}60` }}>
+      <p className="mt-1.5 text-[10px]" style={{ color: ink.soft }}>
         {progress.next_at ? `${progress.to_next} XP to ${progress.next_name}` : 'Every rung climbed.'}
       </p>
 
@@ -65,7 +65,7 @@ export default function VotingProgressPanel({ progress, compact = false }) {
             </p>
             <p
               className="mt-1 text-[8px] font-bold uppercase tracking-[0.14em]"
-              style={{ color: `${brand.navy}50` }}
+              style={{ color: ink.soft }}
             >
               {f.label}
             </p>

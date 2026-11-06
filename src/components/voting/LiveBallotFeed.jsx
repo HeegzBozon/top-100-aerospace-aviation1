@@ -1,5 +1,5 @@
 import { Activity, RefreshCw } from 'lucide-react';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 import useLiveBallotFeed from '@/hooks/useLiveBallotFeed';
 
 function elapsed(iso) {
@@ -54,7 +54,7 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
         >
           <RefreshCw
             className={`h-2.5 w-2.5 ${loading ? 'animate-spin' : ''}`}
-            style={{ color: `${brand.navy}60` }}
+            style={{ color: ink.soft }}
           />
         </button>
       </div>
@@ -67,7 +67,7 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
             </p>
             <p
               className="mt-1 text-[8px] font-bold uppercase tracking-[0.14em]"
-              style={{ color: `${brand.navy}50` }}
+              style={{ color: ink.soft }}
             >
               {f.label}
             </p>
@@ -77,11 +77,11 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
 
       <div className="mt-3">
         <div className="flex items-baseline justify-between">
-          <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: `${brand.navy}50` }}>
+          <p className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: ink.soft }}>
             Latest reviews
           </p>
           {updatedAt && (
-            <p className="text-[8.5px]" style={{ color: `${brand.navy}35` }}>
+            <p className="text-[8.5px]" style={{ color: ink.soft }}>
               {elapsed(updatedAt.toISOString())}
             </p>
           )}
@@ -115,17 +115,17 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
                   <p className="truncate text-[10px] font-semibold" style={{ color: brand.navy }}>
                     {set.voter_email}
                   </p>
-                  <span className="shrink-0 text-[8.5px]" style={{ color: `${brand.navy}40` }}>
+                  <span className="shrink-0 text-[8.5px]" style={{ color: ink.soft }}>
                     {elapsed(set.created_date)}
                   </span>
                 </div>
-                <p className="mt-0.5 truncate text-[9.5px]" style={{ color: `${brand.navy}70` }}>
+                <p className="mt-0.5 truncate text-[9.5px]" style={{ color: ink.soft }}>
                   <span style={{ color: brand.gold }}>▲</span> {set.top_name || 'Nominee'}
-                  <span className="mx-1" style={{ color: `${brand.navy}25` }}>·</span>
+                  <span className="mx-1" style={{ color: ink.soft }}>·</span>
                   <span style={{ color: '#8F5C2C' }}>▼</span> {set.bottom_name || 'Nominee'}
                 </p>
                 {set.is_test && (
-                  <p className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.18em]" style={{ color: `${brand.navy}30` }}>
+                  <p className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.18em]" style={{ color: ink.soft }}>
                     Test set · not measured
                   </p>
                 )}
@@ -134,11 +134,11 @@ export default function LiveBallotFeed({ seasonId, refreshToken = 0 }) {
           </ul>
         ) : (
           <div className="mt-2 rounded-lg px-3 py-4 text-center" style={{ background: `${brand.navy}05` }}>
-            <Activity className="mx-auto h-3.5 w-3.5" style={{ color: `${brand.navy}30` }} />
+            <Activity className="mx-auto h-3.5 w-3.5" style={{ color: ink.soft }} />
             <p className="mt-1.5 font-heading text-[11px]" style={{ color: brand.navy }}>
               No ballots yet
             </p>
-            <p className="mt-0.5 text-[9px] leading-snug" style={{ color: `${brand.navy}45` }}>
+            <p className="mt-0.5 text-[9px] leading-snug" style={{ color: ink.soft }}>
               Sets appear here the moment a Fellow records one.
             </p>
           </div>

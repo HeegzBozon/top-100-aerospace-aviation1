@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, LogIn, UserPlus, LogOut, CheckCircle2 } from 'lucide-react';
-import { brand, CONNECTION_OPTIONS } from './NominateConfig';
+import { brand, ink, CONNECTION_OPTIONS } from './NominateConfig';
 
 export default function StageAboutYou({ data, onUpdate, onContinue, user, onLogin, onLogout }) {
   const firstRef = useRef(null);
@@ -29,7 +29,7 @@ export default function StageAboutYou({ data, onUpdate, onContinue, user, onLogi
             <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: brand.navy }} />
             <div className="min-w-0">
               <p className="text-sm font-semibold truncate" style={{ color: brand.navy }}>{user.full_name || user.email}</p>
-              <p className="text-xs truncate" style={{ color: `${brand.navy}80` }}>Signed in — your details are pre-filled</p>
+              <p className="text-xs truncate" style={{ color: ink.body }}>Signed in — your details are pre-filled</p>
             </div>
           </div>
           <button onClick={onLogout} className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full" style={{ color: brand.navy, background: 'white' }}>
@@ -38,7 +38,7 @@ export default function StageAboutYou({ data, onUpdate, onContinue, user, onLogi
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: `${brand.navy}70` }}>
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: ink.label }}>
             Have an account?
           </p>
           <div className="flex flex-col sm:flex-row gap-2.5">
@@ -51,7 +51,7 @@ export default function StageAboutYou({ data, onUpdate, onContinue, user, onLogi
           </div>
           <div className="flex items-center gap-3 py-1">
             <div className="h-px flex-1" style={{ background: `${brand.navy}18` }} />
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: `${brand.navy}60` }}>or continue as guest</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: ink.label }}>or continue as guest</span>
             <div className="h-px flex-1" style={{ background: `${brand.navy}18` }} />
           </div>
         </div>
@@ -99,8 +99,8 @@ export default function StageAboutYou({ data, onUpdate, onContinue, user, onLogi
 function Field({ label, required, children }) {
   return (
     <div>
-      <label className="text-xs font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: `${brand.navy}70` }}>
-        {label}{required && <span style={{ color: brand.gold }}> *</span>}
+      <label className="text-xs font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: ink.label }}>
+        {label}{required && <span style={{ color: ink.label }}> *</span>}
       </label>
       {children}
     </div>

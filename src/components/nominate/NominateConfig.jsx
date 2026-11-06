@@ -2,6 +2,21 @@
 
 export const brand = { navy: '#1e3a5a', gold: '#c9a87c', cream: '#faf8f5' };
 
+// Ink on the committee's cream plate.
+//
+// A tint of navy written as a hex alpha dissolves into cream long before it stops being
+// legible: at the weights these screens were using — 45, 55, 70, 99 — supporting copy sat
+// between 1.4:1 and 3.2:1, which is light on light. The plate is cream, so the ink is
+// navy at a weight that holds: strong reads at 10.9:1, body 6.5:1, soft 4.9:1, and a
+// small-caps label takes the burnished copper (5.3:1) that rose gold cannot carry here.
+// Every committee surface reads its ink from this one place rather than tinting its own.
+export const ink = {
+  strong: 'rgb(var(--editorial-navy-rgb))',
+  body: 'rgb(var(--editorial-navy-rgb) / 0.82)',
+  soft: 'rgb(var(--editorial-navy-rgb) / 0.72)',
+  label: 'rgb(var(--editorial-label-rgb))',
+};
+
 export const CONNECTION_OPTIONS = [
   'I work in aerospace / aviation / space',
   "I'm a TOP 100 Fellow or Alumni",

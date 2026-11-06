@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { brand } from './NominateConfig';
+import { brand, ink } from './NominateConfig';
 
 /**
  * Strong section header that makes each category feel like its own distinct stage.
@@ -25,9 +25,9 @@ export default function CategoryHeader({ stageNumber, categoryLabel, accentColor
       {/* Multi-category hint */}
       <div className="flex items-center gap-2 mb-3">
         <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: `${brand.gold}20` }}>
-          <span className="text-[10px]" style={{ color: brand.gold }}>✦</span>
+          <span className="text-[10px]" style={{ color: ink.label }}>✦</span>
         </div>
-        <p className="text-[11px] font-semibold leading-tight" style={{ color: `${brand.navy}70` }}>
+        <p className="text-[11px] font-semibold leading-tight" style={{ color: ink.body }}>
           Nominate across <span style={{ color: brand.navy }}>all four categories</span> — jump to any anytime.
         </p>
       </div>
@@ -44,19 +44,25 @@ export default function CategoryHeader({ stageNumber, categoryLabel, accentColor
               onClick={() => onNavigate?.(item.n)}
               className="relative flex flex-col items-center justify-center gap-1 px-2 py-3 rounded-2xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer"
               style={{
-                background: isActive ? accent : isPast ? `${brand.navy}08` : 'white',
-                color: isActive ? '#fff' : isPast ? brand.navy : `${brand.navy}55`,
-                border: `2px solid ${isActive ? accent : isPast ? `${brand.navy}25` : `${brand.navy}12`}`,
-                boxShadow: isActive ? `0 6px 20px ${accent}40` : 'none',
+                // The chosen category is a navy plate with cream type. White on the rose
+                // accent read at 2.7:1 — light on light — and white on rose gold at 2.1:1,
+                // so the plate is navy whatever the category is, and the accent carries the
+                // identity in the dot under the title and the label beside it instead.
+                background: isActive ? brand.navy : isPast ? `${brand.navy}08` : 'white',
+                color: isActive ? brand.cream : isPast ? brand.navy : ink.soft,
+                border: `2px solid ${isActive ? brand.navy : isPast ? `${brand.navy}25` : `${brand.navy}12`}`,
+                boxShadow: isActive ? '0 6px 20px rgb(var(--editorial-navy-rgb) / 0.28)' : 'none',
               }}
             >
               {count > 0 && (
                 <span
                   className="absolute -top-2 -right-2 min-w-5 h-5 px-1 rounded-full flex items-center justify-center text-[10px] font-bold"
                   style={{
-                    background: isActive ? '#fff' : brand.gold,
-                    color: isActive ? accent : '#fff',
-                    border: `1.5px solid ${isActive ? accent : 'white'}`,
+                    // The count reads as navy on rose gold (5.2:1). It was white on the same
+                    // gold before, at 2.1:1, and the accent on white when the chip was lit.
+                    background: brand.gold,
+                    color: brand.navy,
+                    border: `1.5px solid ${isActive ? brand.cream : 'white'}`,
                   }}
                 >
                   {count}
@@ -72,15 +78,17 @@ export default function CategoryHeader({ stageNumber, categoryLabel, accentColor
       <div className="flex items-center gap-3 mb-5">
         <div
           className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-md"
-          style={{ background: `linear-gradient(135deg, ${accent}, ${accent}cc)` }}
+          style={{ background: brand.navy }}
         >
-          {Icon && <Icon className="w-6 h-6 text-white" />}
+          {/* A navy plate with a cream mark: the same plate the count and the chip use, so
+              no category's mark is ever printed light on a light ground. */}
+          {Icon && <Icon className="w-6 h-6" style={{ color: brand.cream }} />}
         </div>
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.25em]" style={{ color: `${brand.navy}50` }}>
+          <div className="text-[10px] font-bold uppercase tracking-[0.25em]" style={{ color: ink.label }}>
             Category {stageNumber} of 4
           </div>
-          <div className="text-base font-bold tracking-wide" style={{ color: accent }}>
+          <div className="text-base font-bold tracking-wide" style={{ color: brand.navy }}>
             {categoryLabel}
           </div>
         </div>
@@ -92,7 +100,7 @@ export default function CategoryHeader({ stageNumber, categoryLabel, accentColor
       </h1>
 
       {/* Intro */}
-      <p className="text-sm sm:text-base leading-relaxed" style={{ color: `${brand.navy}80` }}>
+      <p className="text-sm sm:text-base leading-relaxed" style={{ color: ink.body }}>
         {intro}
       </p>
 

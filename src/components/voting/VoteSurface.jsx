@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Lock, RefreshCw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 import AnchorVoting from '@/components/voting/AnchorVoting';
 import VotingProgressPanel from '@/components/voting/VotingProgressPanel';
 import LiveBallotFeed from '@/components/voting/LiveBallotFeed';
@@ -135,7 +135,7 @@ export default function VoteSurface({ user }) {
         <p className="font-heading text-lg" style={{ color: brand.navy }}>
           The Crosscheck did not open
         </p>
-        <p className="max-w-sm text-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
+        <p className="max-w-sm text-xs leading-relaxed" style={{ color: ink.soft }}>
           {error}
         </p>
         <button
@@ -171,17 +171,17 @@ export default function VoteSurface({ user }) {
               className="inline-flex h-11 w-11 items-center justify-center rounded-full"
               style={{ background: `${brand.navy}0A` }}
             >
-              <Lock className="h-5 w-5" style={{ color: `${brand.navy}70` }} />
+              <Lock className="h-5 w-5" style={{ color: ink.soft }} />
             </span>
             <h2 className="mt-3 font-heading text-xl" style={{ color: brand.navy }}>
               The Crosscheck is closed
             </h2>
-            <p className="mt-1.5 text-xs leading-relaxed" style={{ color: `${brand.navy}60` }}>
+            <p className="mt-1.5 text-xs leading-relaxed" style={{ color: ink.soft }}>
               {upcoming
                 ? `The next counting cohort opens ${fmtDate(upcoming.voting_start)}. Your contribution record is kept.`
                 : 'No cohort is counting right now. Your contribution record is kept.'}
             </p>
-            <p className="mt-1.5 text-[11px] leading-relaxed" style={{ color: `${brand.navy}55` }}>
+            <p className="mt-1.5 text-[11px] leading-relaxed" style={{ color: ink.soft }}>
               In the Manifest you choose who to back. In the Crosscheck the house chooses who you
               compare. Analysis resumes with the next window.
             </p>

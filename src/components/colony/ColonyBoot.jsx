@@ -17,7 +17,10 @@ export default function ColonyBoot({ onDone }) {
   const [returning] = useState(() => isReturningVisitor() || !!localStorage.getItem('colony-room'));
   const options = [
     // A word, not an order: the plate opens the floor rather than shouting at the reader.
-    { label: returning ? 'Continue' : 'Enter', to: '/colony' },
+    { label: returning ? 'Continue' : 'Explore', to: '/colony' },
+    // The weighing, one press from the plate: /vote is the Crosscheck itself for a Fellow,
+    // and the invitation that explains both ballots for whoever has not signed in yet.
+    { label: 'Crosscheck', to: '/vote' },
     { label: 'Main Menu', to: '/' },
   ];
   const ref = useRef({});
@@ -38,8 +41,10 @@ export default function ColonyBoot({ onDone }) {
   useEffect(() => {
     if (!ready) return undefined;
     const onKey = (e) => {
-      if (['ArrowUp', 'ArrowLeft'].includes(e.key)) setSel(0);
-      else if (['ArrowDown', 'ArrowRight'].includes(e.key)) setSel(1);
+      if (['ArrowUp', 'ArrowLeft'].includes(e.key)) setSel((s) => Math.max(0, s - 1));
+      else if (['ArrowDown', 'ArrowRight'].includes(e.key)) {
+        setSel((s) => Math.min(options.length - 1, s + 1));
+      }
       else if (e.key === 'Enter' || e.key === ' ') ref.current.choose(ref.current.sel);
     };
     window.addEventListener('keydown', onKey);
@@ -48,7 +53,7 @@ export default function ColonyBoot({ onDone }) {
       enterLabel: 'Select',
       labels: () => options.map((o) => o.label),
       index: () => ref.current.sel,
-      step: (d) => { setSel((s) => Math.max(0, Math.min(1, s + d))); return true; },
+      step: (d) => { setSel((s) => Math.max(0, Math.min(options.length - 1, s + d))); return true; },
       goTo: (i) => setSel(i),
       page: () => true,
       enter: () => { ref.current.choose(ref.current.sel); return true; },

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Award } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 
 // The year alone rides the card; the volume, the recorded position and the way into the
 // archive are one press, or one hover, away. The chip never selects the card under it.
@@ -82,7 +82,7 @@ export default function HonoreeChip({ volume, size = 'sm' }) {
             className="mt-1.5 flex items-baseline justify-between gap-2 border-t pt-1.5"
             style={{ borderColor: `${brand.navy}14` }}
           >
-            <span className="text-[7.5px] font-bold uppercase tracking-[0.12em]" style={{ color: `${brand.navy}70` }}>
+            <span className="text-[7.5px] font-bold uppercase tracking-[0.12em]" style={{ color: ink.soft }}>
               Measured
             </span>
             <span className="font-heading text-[13px]" style={{ color: brand.navy }}>
@@ -91,7 +91,7 @@ export default function HonoreeChip({ volume, size = 'sm' }) {
           </div>
 
           {volume.volume && (
-            <p className="mt-1 text-[8px] font-bold uppercase tracking-[0.12em]" style={{ color: `${brand.navy}55` }}>
+            <p className="mt-1 text-[8px] font-bold uppercase tracking-[0.12em]" style={{ color: ink.soft }}>
               Volume {volume.volume}
             </p>
           )}

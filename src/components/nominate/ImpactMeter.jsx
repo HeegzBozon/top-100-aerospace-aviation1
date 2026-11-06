@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { brand } from './NominateConfig';
+import { brand, ink } from './NominateConfig';
 
 /**
  * Visual "impact quality" meter for nomination reasons.
@@ -9,7 +9,7 @@ export default function ImpactMeter({ text }) {
   const words = (text || '').trim().split(/\s+/).filter(Boolean).length;
 
   let pct, label, color;
-  if (words === 0) { pct = 0; label = 'Start typing…'; color = `${brand.navy}40`; }
+  if (words === 0) { pct = 0; label = 'Start typing…'; color = ink.label; }
   else if (words < 8) { pct = 20; label = 'Just getting started'; color = '#d4a574'; }
   else if (words < 20) { pct = 45; label = 'Good detail'; color = brand.gold; }
   else if (words < 35) { pct = 72; label = 'Rich context'; color = '#8fb069'; }
@@ -34,7 +34,7 @@ export default function ImpactMeter({ text }) {
       </svg>
       <div className="min-w-0">
         <p className="text-[11px] font-semibold leading-tight" style={{ color }}>{label}</p>
-        <p className="text-[10px] leading-tight" style={{ color: `${brand.navy}50` }}>{words} words</p>
+        <p className="text-[10px] leading-tight" style={{ color: ink.label }}>{words} words</p>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Loader2, Pencil, Sparkles } from 'lucide-react';
-import { brand } from './NominateConfig';
+import { brand, ink } from './NominateConfig';
 
 export default function StageReview({ nominations, onEdit, onSubmit, submitting }) {
   const all = [
@@ -13,7 +13,7 @@ export default function StageReview({ nominations, onEdit, onSubmit, submitting 
   return (
     <div className="space-y-6 py-4">
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] mb-4" style={{ background: `${brand.gold}20`, color: brand.gold, border: `1px solid ${brand.gold}30` }}>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] mb-4" style={{ background: `${brand.gold}20`, color: ink.label, border: `1px solid ${brand.gold}30` }}>
           <Sparkles className="w-3 h-3" /> Almost There
         </div>
         <h1 className="text-2xl md:text-4xl font-bold leading-tight" style={{ color: brand.navy, fontFamily: "'Playfair Display', serif" }}>
@@ -23,7 +23,7 @@ export default function StageReview({ nominations, onEdit, onSubmit, submitting 
 
       {all.length === 0 ? (
         <div className="rounded-2xl border-2 border-dashed p-8 text-center" style={{ borderColor: `${brand.navy}20` }}>
-          <p className="text-sm" style={{ color: `${brand.navy}60` }}>You haven't added any nominations yet. Go back and add at least one.</p>
+          <p className="text-sm" style={{ color: ink.body }}>You haven't added any nominations yet. Go back and add at least one.</p>
         </div>
       ) : (
         <div className="rounded-2xl border bg-white overflow-hidden" style={{ borderColor: `${brand.navy}10` }}>
@@ -35,9 +35,9 @@ export default function StageReview({ nominations, onEdit, onSubmit, submitting 
             >
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-base truncate" style={{ color: brand.navy }}>{item.name}</div>
-                {item.detail && <div className="text-xs truncate mt-0.5" style={{ color: `${brand.navy}55` }}>{item.detail}</div>}
+                {item.detail && <div className="text-xs truncate mt-0.5" style={{ color: ink.soft }}>{item.detail}</div>}
               </div>
-              <div className="text-[10px] font-bold uppercase tracking-widest ml-3 shrink-0" style={{ color: brand.gold }}>
+              <div className="text-[10px] font-bold uppercase tracking-widest ml-3 shrink-0" style={{ color: ink.label }}>
                 {item.category}
               </div>
             </div>
@@ -46,7 +46,7 @@ export default function StageReview({ nominations, onEdit, onSubmit, submitting 
       )}
 
       {all.length > 0 && (
-        <p className="text-sm text-center" style={{ color: `${brand.navy}70` }}>
+        <p className="text-sm text-center" style={{ color: ink.body }}>
           Everything look right?
         </p>
       )}

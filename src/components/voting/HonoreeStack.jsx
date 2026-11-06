@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Award } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { brand } from '@/components/nominate/NominateConfig';
+import { brand, ink } from '@/components/nominate/NominateConfig';
 import HonoreeChip from '@/components/voting/HonoreeChip';
 
 // The record in one line, however deep it runs. The most recent distinction rides a
@@ -63,7 +63,7 @@ export default function HonoreeStack({ volumes = [], className = '' }) {
               </div>
               <p
                 className="mt-1 text-[7.5px] font-bold uppercase tracking-[0.12em]"
-                style={{ color: `${brand.navy}66` }}
+                style={{ color: ink.soft }}
               >
                 {volumes.length} volumes on the archive
               </p>
