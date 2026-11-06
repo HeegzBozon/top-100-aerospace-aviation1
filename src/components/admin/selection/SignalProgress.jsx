@@ -1,21 +1,32 @@
-import { useState } from 'react';
-import { CONFIDENCE, MARGINS, BANDS, marksRequired, bandFor, share } from './signalConfig';
+import {
+  SCENARIOS,
+  COMPARISONS_PER_SET,
+  setsTarget,
+  comparisonsPerNominee,
+  appearancesPerNominee,
+  bandForSets,
+  share,
+} from './signalConfig';
 
-// The monitor's progress instrument: how much of the pool the community has actually
-// weighed, how many marks the reading needs before it holds still, and which band the
-// signal has reached. Coverage is counted from the live ledger alone, so a test set can
-// never move this figure.
+// The monitor's progress instrument, read in the units the season's design math uses.
 //
-// Two axes, read together: people reached, and marks behind them. Both are drawn, because
-// neither one alone is progress.
+// The unit of turnout is the set: one vote, four cards, five comparisons. Progress is
+// therefore measured as sets cast against the design's floor and ideal, and as the depth
+// those sets have bought each nominee — comparisons per nominee, appearances per nominee.
+// A share of the pool that has merely been touched is not progress on its own, so it is
+// printed beside the depth rather than in place of it.
+//
+// Each reading counts only its own ledger: the community's sets, or the operator's test
+// walk-through. Neither can move the other.
 
-const num = (value) => (Number(value) || 0).toLocaleString();
-const pct = (value) => `${Math.round((Number(value) || 0) * 10) / 10}%`;
+const num = (value) => Math.round(Number(value) || 0).toLocaleString();
+const dec = (value) =>
+  (Number(value) || 0).toLocaleString(undefined, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
 export default function SignalProgress({ totals, scopeLabel, standings = [], mode = 'live' }) {
-  const [confKey, setConfKey] = useState('95');
-  const [marginKey, setMarginKey] = useState('5');
-
   const live = mode === 'live';
 
   const pool = Number(totals?.pool) || 0;
@@ -23,23 +34,28 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
   const marks = Number(live ? totals?.comparisons_live : totals?.comparisons_test) || 0;
   const heldApart = Number(live ? totals?.comparisons_test : totals?.comparisons_live) || 0;
 
+  // One vote is one set of five comparisons, so turnout is read straight off the marks.
+  const sets = marks / COMPARISONS_PER_SET;
+
   // Who this reading's marks have reached. The ledger resolves the community's figure in one
   // pass; until that reading is on the wire, the count comes from the board's own appearance
   // tally, which is that same reading's standing.
   const tallied = standings.filter((row) => (row.appearances || 0) > 0).length;
   const stated = Number(totals?.evaluated);
-  const evaluated = live && Number.isFinite(stated) ? stated : tallied;
+  const reached = live && Number.isFinite(stated) ? stated : tallied;
 
-  const conf = CONFIDENCE.find((c) => c.key === confKey) || CONFIDENCE[1];
-  const margin = MARGINS.find((m) => m.key === marginKey) || MARGINS[0];
-  const required = marksRequired(pool, conf.z, margin.e);
+  const ladder = SCENARIOS.map((scenario) => ({
+    ...scenario,
+    sets: setsTarget(scenario.setsFor550, pool),
+  }));
+  const floor = ladder[0];
+  const ideal = ladder[2];
+  const band = bandForSets(sets, pool);
 
-  const coverage = share(evaluated, pool);
-  const marksShare = share(marks, required);
-  const strength = Math.min(coverage, marksShare);
-  const band = bandFor(strength);
-  const remaining = Math.max(0, pool - evaluated);
-  const marksToGo = Math.max(0, required - marks);
+  const depth = comparisonsPerNominee(sets, pool);
+  const appearances = appearancesPerNominee(sets, pool);
+  const toFloor = Math.max(0, floor.sets - sets);
+  const measure = share(sets, ideal.sets);
 
   if (!pool) {
     return (
@@ -49,8 +65,8 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
         </p>
         <p className="mt-1.5 font-heading text-base text-editorial-navy">No pool is standing here yet</p>
         <p className="mx-auto mt-1 max-w-sm text-[11px] leading-relaxed text-editorial-navy/55">
-          Coverage is counted against the nominees eligible in this scope. Once a pool is
-          settled, this instrument will report how much of it the field has reached.
+          The targets are read against the nominees eligible in this scope. Once a pool is
+          settled, this instrument will report the sets cast against it.
         </p>
       </div>
     );
@@ -58,7 +74,7 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
 
   return (
     <div className="rounded-xl border border-editorial-navy/10 bg-card px-3 py-2.5">
-      {/* Head: what is being counted, and where the signal stands. */}
+      {/* Head: what is being counted, and which scenario the run of sets has reached. */}
       <div className="flex items-baseline justify-between gap-2">
         <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-editorial-label">
           Signal progress
@@ -68,127 +84,115 @@ export default function SignalProgress({ totals, scopeLabel, standings = [], mod
             {scopeLabel || 'Scope'}
           </span>
           <span className="rounded-full border border-editorial-copper/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-editorial-copper">
-            {band.label}
+            {band ? band.label : 'Below floor'}
           </span>
         </span>
       </div>
 
-      {/* The pool figure: X of the N standing in scope. */}
+      {/* The headline: sets cast, against the floor and the ideal. */}
       <div className="mt-1.5 flex items-end justify-between gap-3">
         <p className="flex items-baseline gap-1 font-heading leading-none text-editorial-navy">
-          <span className="text-[30px] tabular-nums">{num(evaluated)}</span>
-          <span className="text-[17px] tabular-nums text-editorial-navy/35">/ {num(pool)}</span>
+          <span className="text-[30px] tabular-nums">{num(sets)}</span>
+          <span className="text-[13px] tabular-nums text-editorial-navy/35">
+            / {num(floor.sets)} floor
+          </span>
         </p>
         <p className="pb-0.5 text-right text-[10px] leading-tight text-editorial-navy/55">
-          <span className="font-semibold tabular-nums text-editorial-navy">{pct(coverage)}</span> of the pool{' '}
-          {live ? 'evaluated' : 'walked'}
+          {toFloor > 0 ? (
+            <>
+              <span className="font-semibold tabular-nums text-editorial-navy">{num(toFloor)}</span> sets
+              to the floor
+            </>
+          ) : (
+            <span className="font-semibold text-editorial-navy">Floor cleared</span>
+          )}
           <br />
-          {remaining > 0
-            ? live
-              ? `${num(remaining)} still unreached`
-              : `${num(remaining)} not yet walked`
-            : 'every nominee reached'}
+          {num(ideal.sets)} at the ideal
         </p>
       </div>
 
-      {/* The pool's measure. */}
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-editorial-navy/10">
+      {/* The measure of the run, with the floor marked on it. */}
+      <div className="relative mt-2 h-1.5 overflow-hidden rounded-full bg-editorial-navy/10">
         <div
           className="h-full rounded-full bg-editorial-copper transition-[width] duration-500"
-          style={{ width: `${coverage}%` }}
+          style={{ width: `${measure}%` }}
+        />
+        <span
+          className="absolute inset-y-0 w-px bg-editorial-navy/45"
+          style={{ left: `${share(floor.sets, ideal.sets)}%` }}
+          aria-hidden="true"
         />
       </div>
 
-      {/* The second axis: marks behind the reading, against the target the two keys set. */}
-      <div className="mt-2.5 flex flex-wrap items-end justify-between gap-x-4 gap-y-1.5 border-t border-editorial-navy/10 pt-2">
+      {/* The second axis: the depth those sets have bought each nominee. */}
+      <div className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-editorial-navy/10 pt-2">
         <div>
           <p className="text-[8.5px] font-semibold uppercase tracking-[0.14em] text-editorial-navy/45">
-            {live ? 'Marks toward a reliable signal' : 'Test marks toward a reliable signal'}
+            {live ? 'Comparisons per nominee' : 'Test comparisons per nominee'}
           </p>
           <p className="mt-0.5 flex items-baseline gap-1 text-editorial-navy">
-            <span className="font-heading text-[15px] tabular-nums">{num(marks)}</span>
-            <span className="text-[11px] tabular-nums text-editorial-navy/35">of {num(required)}</span>
-            <span className="text-[9.5px] text-editorial-navy/45">
-              {marksToGo > 0 ? `${num(marksToGo)} to go` : 'target met'}
+            <span className="font-heading text-[15px] tabular-nums">{dec(depth)}</span>
+            <span className="text-[9.5px] tabular-nums text-editorial-navy/40">
+              of {dec(comparisonsPerNominee(floor.sets, pool))} ·{' '}
+              {dec(comparisonsPerNominee(ideal.sets, pool))}
             </span>
           </p>
         </div>
-
-        <div className="flex items-center gap-1.5">
-          <Keys
-            label="Confidence"
-            options={CONFIDENCE}
-            value={confKey}
-            onChange={setConfKey}
-          />
-          <Keys label="Margin" options={MARGINS} value={marginKey} onChange={setMarginKey} />
+        <div>
+          <p className="text-[8.5px] font-semibold uppercase tracking-[0.14em] text-editorial-navy/45">
+            Appearances per nominee
+          </p>
+          <p className="mt-0.5 flex items-baseline gap-1 text-editorial-navy">
+            <span className="font-heading text-[15px] tabular-nums">{dec(appearances)}</span>
+            <span className="text-[9.5px] tabular-nums text-editorial-navy/40">
+              of {dec(appearancesPerNominee(floor.sets, pool))} ·{' '}
+              {dec(appearancesPerNominee(ideal.sets, pool))}
+            </span>
+          </p>
         </div>
       </div>
 
-      {/* The bands, in order. A band is crossed only when both axes clear it. */}
+      {/* The scenarios, in order, with the set total each one asks of this pool. */}
       <div className="mt-2 flex items-end gap-1">
-        {BANDS.map((step) => {
-          const reached = strength >= step.at;
+        {ladder.map((step) => {
+          const cleared = sets >= step.sets;
           return (
             <div key={step.key} className="flex-1">
               <div
                 className={`h-1 rounded-full transition-colors duration-300 ${
-                  reached ? 'bg-editorial-copper' : 'bg-editorial-navy/10'
+                  cleared ? 'bg-editorial-copper' : 'bg-editorial-navy/10'
                 }`}
               />
               <p
                 className={`mt-1 text-[8px] uppercase tracking-[0.1em] ${
-                  step.key === band.key
+                  band?.key === step.key
                     ? 'font-semibold text-editorial-copper'
-                    : reached
+                    : cleared
                       ? 'text-editorial-navy/45'
                       : 'text-editorial-navy/25'
                 }`}
               >
-                {step.label}
+                {step.label} <span className="tabular-nums">{num(step.sets)}</span>
               </p>
             </div>
           );
         })}
       </div>
 
-      {/* The assumptions, stated where the target is read. */}
+      {/* Reach, printed beside the depth: the totals only hold if the allocator spreads sets. */}
       <p className="mt-1.5 text-[9px] leading-relaxed text-editorial-navy/40">
-        A sample target for a pool of {num(pool)}, at {conf.label} confidence and {margin.label} margin —
-        the share of the pool the reading has to reach to hold still. An estimate, not a guarantee.
+        {num(reached)} of {num(pool)} nominees {live ? 'weighed' : 'walked'} at least once. Five
+        comparisons to the set, four card appearances, five set targets scaled from a pool of 550.
+        The totals hold only if the sets are spread evenly; precision is read at the cut line, not
+        from volume alone.
         {live
           ? heldApart > 0
-            ? ` ${num(heldApart)} test ${heldApart === 1 ? 'mark is' : 'marks are'} held apart from this figure.`
+            ? ` ${num(heldApart)} test comparisons are held apart from this figure.`
             : ''
-          : ` Read from test marks alone; the community's figures are untouched. ${num(
+          : ` Read from test sets alone; the community's figures are untouched. ${num(
               heldApart
-            )} community ${heldApart === 1 ? 'mark stands' : 'marks stand'} outside this view.`}
+            )} community comparisons stand outside this view.`}
       </p>
-    </div>
-  );
-}
-
-function Keys({ label, options, value, onChange }) {
-  return (
-    <div className="flex items-center gap-1">
-      <span className="text-[8px] uppercase tracking-[0.1em] text-editorial-navy/35">{label}</span>
-      <div className="flex overflow-hidden rounded-md border border-editorial-navy/15">
-        {options.map((option) => (
-          <button
-            key={option.key}
-            type="button"
-            onClick={() => onChange(option.key)}
-            aria-pressed={option.key === value}
-            className={`px-1.5 py-0.5 text-[9px] font-semibold tabular-nums transition-colors ${
-              option.key === value
-                ? 'bg-editorial-navy text-editorial-cream'
-                : 'text-editorial-navy/55 hover:bg-editorial-navy/5'
-            }`}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }

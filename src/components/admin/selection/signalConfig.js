@@ -1,46 +1,55 @@
-// The pool's measurement targets, kept in one place so the panel, its copy and any
-// export read the same arithmetic.
+// The season's vote targets, exactly as the design math sets them.
 //
-// The reliability figure is a finite-population proportion sample size: n0 = z²p(1−p)/e²,
-// then corrected for a population of N. The share p is held at 0.5 — the most conservative
-// value there is, so the target never flatters us — and N is the pool itself: the people
-// being measured, never the possible pairs between them. It answers one question only,
-// how many marks it takes for the field's reading to hold still at the stated confidence.
-// It does not promise that the pool was chosen well, so the panel never presents it as a
-// guarantee.
+// One vote is one set: four cards, a top and a bottom pick, five comparisons resolved and
+// ten nominee-comparisons revealed. A set therefore carries four card appearances and five
+// comparisons, and the depth a nominee has been weighed to is read two ways — comparisons
+// per nominee (sets × 10 ÷ pool) and appearances per nominee (sets × 4 ÷ pool).
+//
+// The floor (1,750 sets) and the ideal (2,650) are the only two figures the design math
+// produced: 48 and 32 comparisons per nominee, converted through 2.5 comparisons per
+// appearance. Realistic (2,000) and ambitious (4,000) are judgment calls around them. Both
+// ends are stated for a pool of 550, so a pool of another size scales the set total and
+// leaves the depth per nominee alone.
 
-export const CONFIDENCE = [
-  { key: '90', label: '90%', z: 1.645 },
-  { key: '95', label: '95%', z: 1.96 },
-  { key: '99', label: '99%', z: 2.576 },
+export const BASE_POOL = 550;
+export const COMPARISONS_PER_SET = 5;
+export const CARDS_PER_SET = 4;
+
+export const SCENARIOS = [
+  { key: 'floor', label: 'Floor', setsFor550: 1750, note: 'the hard floor' },
+  { key: 'realistic', label: 'Realistic', setsFor550: 2000, note: 'a judgment call' },
+  { key: 'ideal', label: 'Ideal', setsFor550: 2650, note: 'the design target' },
+  { key: 'ambitious', label: 'Ambitious', setsFor550: 4000, note: 'a chosen stretch' },
 ];
 
-export const MARGINS = [
-  { key: '5', label: '±5%', e: 0.05 },
-  { key: '3', label: '±3%', e: 0.03 },
-];
-
-export function marksRequired(pool, z, e) {
+// Sets for a pool of this size: the design's per-nominee depth, held constant.
+export function setsTarget(setsFor550, pool) {
   const n = Number(pool) || 0;
-  if (n < 2) return 0;
-  const n0 = (z * z * 0.25) / (e * e);
-  return Math.ceil(n0 / (1 + (n0 - 1) / n));
+  if (!n) return 0;
+  return Math.round((setsFor550 * n) / BASE_POOL);
 }
 
-// The bands a signal is read against. Both axes have to hold — a pool nobody has reached,
-// and a field with too few marks behind it, are each unfinished on their own — so the band
-// is taken from whichever of the two is furthest behind.
-export const BANDS = [
-  { key: 'held', label: 'Held', at: 0 },
-  { key: 'gathering', label: 'Gathering', at: 25 },
-  { key: 'workable', label: 'Workable', at: 50 },
-  { key: 'reliable', label: 'Reliable', at: 75 },
-  { key: 'settled', label: 'Settled', at: 100 },
-];
+// Comparisons per nominee — the document's "comparisons per nominee" column.
+export function comparisonsPerNominee(sets, pool) {
+  const n = Number(pool) || 0;
+  if (!n) return 0;
+  return ((Number(sets) || 0) * COMPARISONS_PER_SET * 2) / n;
+}
 
-export function bandFor(strength) {
-  const value = Number(strength) || 0;
-  return [...BANDS].reverse().find((band) => value >= band.at) || BANDS[0];
+// Card appearances per nominee — the document's "appearances per nominee" column.
+export function appearancesPerNominee(sets, pool) {
+  const n = Number(pool) || 0;
+  if (!n) return 0;
+  return ((Number(sets) || 0) * CARDS_PER_SET) / n;
+}
+
+// The tallest scenario the run of sets has already cleared, if any.
+export function bandForSets(sets, pool) {
+  const cast = Number(sets) || 0;
+  const cleared = [...SCENARIOS]
+    .reverse()
+    .find((scenario) => cast >= setsTarget(scenario.setsFor550, pool));
+  return cleared || null;
 }
 
 export const share = (part, whole) => {
