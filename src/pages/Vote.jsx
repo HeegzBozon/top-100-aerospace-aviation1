@@ -66,7 +66,9 @@ export default function Vote() {
   if (state.status === 'visitor') return <VoteGate source={source} />;
 
   return (
-    <div className="imac-fit flex flex-1 flex-col overflow-hidden">
+    // The wrapper takes the tube's own fill contract: the glass measures the ballot
+    // against itself, so the cream plate ends on the picture's bottom edge.
+    <div className="imac-fit flex flex-1 flex-col overflow-hidden" data-tube-fill="">
       <VoteSurface user={state.user} />
     </div>
   );

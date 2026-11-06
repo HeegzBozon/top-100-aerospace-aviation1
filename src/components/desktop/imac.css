@@ -13,10 +13,7 @@
      opening card, the page turn, the bars) reads the same two numbers. */
   --room-top: 46px;
   --room-x: clamp(28px, 5vw, 128px);
-  /* The lip of desk in front of the machine. It is a lip, not a band: the machine stands
-     on the desk rather than floating over it, and the picture takes everything above that
-     line — the window's foot is never a strip of empty room under the chin. */
-  --room-foot: clamp(8px, 1.1vh, 18px);
+  --room-foot: clamp(44px, 7.5vh, 146px);
   --imac-crown: 58px;
   --imac-side: 30px;
   /* The chin is a faceplate now, not a printed band: it carries the readout, the key
@@ -296,11 +293,15 @@
   overflow-x: hidden;
   border-radius: var(--imac-tube-radius);
   background: var(--imac-tube);
+  /* The opening is a hairline and the shadow its lip casts, not a vignette painted over
+     the picture: a printed page inside the tube must reach the glass's own foot in its
+     own ink, and a 90px black bloom round the opening read as an empty band inside the
+     screen whenever the surface was cream. */
   box-shadow:
     inset 0 0 0 1px var(--imac-tube-edge),
     inset 0 11px 20px -14px rgba(0, 0, 0, 0.85),
     inset 0 -7px 13px -11px rgba(255, 255, 255, 0.10),
-    inset 0 0 90px rgba(0, 0, 0, 0.45);
+    inset 0 0 22px rgba(0, 0, 0, 0.10);
 }
 .imac-screen:focus-visible {
   outline: 2px solid rgba(201, 168, 124, 0.85);
@@ -318,6 +319,12 @@
 .imac-screen > [data-tube-fill] {
   flex: 1 1 auto;
   min-height: 0;
+}
+/* A surface mounted straight into the tube that carries the fill contract drops the
+   arithmetic: it takes whatever is left under the menu bar, so the picture ends on the
+   glass's own bottom edge at every window height rather than on a measurement of it. */
+.imac-screen:has(> [data-tube-fill]) > .imac-fit {
+  height: auto;
 }
 
 /* The glass over the picture: one soft sheen, and the tube's own vignette. */
