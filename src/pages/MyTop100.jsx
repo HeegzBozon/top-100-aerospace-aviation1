@@ -504,7 +504,7 @@ export default function MyTop100() {
   // resolves the counting cohort and carries the ladder beside the weighing.
   const chamberNode = <VoteSurface user={user} />;
 
-  const voteNode = <div className="flex-1 flex flex-col overflow-hidden">{chamberNode}</div>;
+  const voteNode = <div className="flex-1 min-h-0 flex flex-col overflow-hidden">{chamberNode}</div>;
 
   // On the glass the ballot is read the way the title screen is read: the surfaces the
   // vote tab reaches are drawn as keys and walked by the wheel — the ballot itself,
@@ -562,7 +562,10 @@ export default function MyTop100() {
   const shownTab = glass ? glassOpen : activeTab;
 
   return (
-    <div className="min-h-screen flex flex-col relative" style={{ background: brand.cream }}>
+    <div
+      className={`min-h-screen flex flex-col relative ${!glass && activeTab === 'vote' ? 'imac-fit' : ''}`}
+      style={{ background: brand.cream }}
+    >
       {glass ? (
         <GlassConsole
           kicker="Selection Committee"

@@ -649,14 +649,16 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
           })}
         </CrosscheckDeal>
 
-        {/* Success pulse */}
+        {/* Success pulse — laid over the foot of the set rather than below it, so the
+            cards keep their size while the review is filed. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex justify-center md:bottom-5">
         <AnimatePresence>
           {phase === 'success' && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="mx-auto mt-2 flex items-center justify-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-bold md:mt-5 md:text-xs"
+              className="flex items-center justify-center gap-2 rounded-full bg-editorial-cream px-3.5 py-1.5 text-[11px] font-bold shadow-lg md:text-xs"
               style={{ background: `${brand.gold}18`, border: `1px solid ${brand.gold}55`, color: brand.navy }}
             >
               <Check className="w-3.5 h-3.5" style={{ color: brand.gold }} /> Review recorded
@@ -664,6 +666,7 @@ export default function AnchorVoting({ user, activeSeason: resolvedSeason = null
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
         </div>
       </div>
 

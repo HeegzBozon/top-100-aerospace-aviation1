@@ -198,9 +198,9 @@ export default function VoteSurface({ user }) {
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto lg:overflow-hidden">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 pt-2 md:px-5 lg:flex-1 lg:flex-row lg:items-start lg:gap-6 lg:pt-5">
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:h-full">
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 pt-2 md:px-5 lg:min-h-0 lg:flex-1 lg:flex-row lg:items-stretch lg:gap-6 lg:pb-4 lg:pt-4">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <AnchorVoting
             user={user}
             activeSeason={target}

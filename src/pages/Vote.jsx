@@ -66,7 +66,7 @@ export default function Vote() {
   if (state.status === 'visitor') return <VoteGate source={source} />;
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
+    <div className="imac-fit flex flex-1 flex-col overflow-hidden">
       <VoteSurface user={state.user} />
     </div>
   );
