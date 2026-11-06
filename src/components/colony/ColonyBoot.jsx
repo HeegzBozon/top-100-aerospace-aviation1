@@ -80,7 +80,7 @@ export default function ColonyBoot({ onDone }) {
           has to carry the weight the box used to. The band under them is the plate's own
           navy, laid down so the words hold against the picture. */}
       {ready && (
-        <div className="absolute inset-x-0 bottom-16 z-10 flex items-center justify-center bg-gradient-to-t from-editorial-navy/80 via-editorial-navy/30 to-transparent px-5 pb-5 pt-10 as-rise">
+        <div className="absolute inset-x-0 bottom-4 z-10 flex items-center justify-center bg-gradient-to-t from-editorial-navy/80 via-editorial-navy/30 to-transparent px-4 pb-4 pt-10 md:bottom-16 md:px-5 md:pb-5 as-rise">
           {options.map((o, i) => {
             const on = sel === i;
             return (
